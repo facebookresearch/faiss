@@ -154,6 +154,12 @@ void faiss_IndexIVF_invlists_get_ids(
         size_t list_no,
         idx_t* invlist);
 
+int faiss_IndexIVF_train_encoder(
+        FaissIndexIVF* index,
+        idx_t n,
+        const float* x,
+        const idx_t* assign);
+
 typedef struct FaissIndexIVFStats {
     size_t nq;                // nb of queries run
     size_t nlist;             // nb of inverted lists scanned

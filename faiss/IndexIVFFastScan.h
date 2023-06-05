@@ -45,7 +45,6 @@ struct IndexIVFFastScan : IndexIVF {
     int implem = 0;
     // skip some parts of the computation (for timing)
     int skip = 0;
-    bool by_residual = false;
 
     // batching factors at search time (0 = default)
     int qbs = 0;

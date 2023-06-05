@@ -29,15 +29,13 @@ namespace faiss {
 namespace gpu {
 
 struct GpuIndexConfig {
-    inline GpuIndexConfig() : device(0), memorySpace(MemorySpace::Device) {}
-
     /// GPU device on which the index is resident
-    int device;
+    int device = 0;
 
     /// What memory space to use for primary storage.
     /// On Pascal and above (CC 6+) architectures, allows GPUs to use
     /// more memory than is available on the GPU.
-    MemorySpace memorySpace;
+    MemorySpace memorySpace = MemorySpace::Device;
 
     /// Should the index dispatch down to RAFT?
     bool use_raft = false;

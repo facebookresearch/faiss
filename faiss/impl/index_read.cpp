@@ -33,6 +33,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
@@ -860,7 +861,22 @@ Index* read_index(IOReader* f, int io_flags) {
             h == fourcc("IvPQ") || h == fourcc("IvQR") || h == fourcc("IwPQ") ||
             h == fourcc("IwQR")) {
         idx = read_ivfpq(f, h, io_flags);
-
+    } else if (h == fourcc("IwIQ")) {
+        auto* indep = new IndexIVFIndependentQuantizer();
+        indep->own_fields = true;
+        read_index_header(indep, f);
+        indep->quantizer = read_index(f, io_flags);
+        bool has_vt;
+        READ1(has_vt);
+        if (has_vt) {
+            indep->vt = read_VectorTransform(f);
+        }
+        indep->index_ivf = dynamic_cast<IndexIVF*>(read_index(f, io_flags));
+        FAISS_THROW_IF_NOT(indep->index_ivf);
+        if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
+            READ1(index_ivfpq->use_precomputed_table);
+        }
+        idx = indep;
     } else if (h == fourcc("IxPT")) {
         IndexPreTransform* ixpt = new IndexPreTransform();
         ixpt->own_fields = true;

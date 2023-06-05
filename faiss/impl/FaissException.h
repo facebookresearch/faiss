@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -76,6 +77,23 @@ struct ScopeDeleter1 {
     }
     ~ScopeDeleter1() {
         delete ptr;
+    }
+};
+
+/** RAII object for a set of possibly transformed vectors (deallocated only if
+ * they are indeed transformed)
+ */
+struct TransformedVectors {
+    const float* x;
+    bool own_x;
+    TransformedVectors(const float* x_orig, const float* x) : x(x) {
+        own_x = x_orig != x;
+    }
+
+    ~TransformedVectors() {
+        if (own_x) {
+            delete[] x;
+        }
     }
 };
 

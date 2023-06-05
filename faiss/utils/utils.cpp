@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <type_traits>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -101,6 +102,9 @@ int sgemv_(
 
 namespace faiss {
 
+// this will be set at load time from GPU Faiss
+std::string gpu_compile_options;
+
 std::string get_compile_options() {
     std::string options;
 
@@ -110,12 +114,14 @@ std::string get_compile_options() {
 #endif
 
 #ifdef __AVX2__
-    options += "AVX2";
+    options += "AVX2 ";
 #elif defined(__aarch64__)
-    options += "NEON";
+    options += "NEON ";
 #else
-    options += "GENERIC";
+    options += "GENERIC ";
 #endif
+
+    options += gpu_compile_options;
 
     return options;
 }
@@ -423,13 +429,33 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     }
 }
 
-size_t ivec_checksum(size_t n, const int32_t* asigned) {
+uint64_t ivec_checksum(size_t n, const int32_t* asigned) {
     const uint32_t* a = reinterpret_cast<const uint32_t*>(asigned);
-    size_t cs = 112909;
+    uint64_t cs = 112909;
     while (n--) {
         cs = cs * 65713 + a[n] * 1686049;
     }
     return cs;
+}
+
+uint64_t bvec_checksum(size_t n, const uint8_t* a) {
+    uint64_t cs = ivec_checksum(n / 4, (const int32_t*)a);
+    for (size_t i = n / 4 * 4; i < n; i++) {
+        cs = cs * 65713 + a[n] * 1686049;
+    }
+    return cs;
+}
+
+void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
+    // MSVC can't accept unsigned index for #pragma omp parallel for
+    // so below codes only accept n <= std::numeric_limits<ssize_t>::max()
+    using ssize_t = std::make_signed<std::size_t>::type;
+    const ssize_t size = n;
+#pragma omp parallel for if (size > 1000)
+    for (ssize_t i_ = 0; i_ < size; i_++) {
+        const auto i = static_cast<std::size_t>(i_);
+        cs[i] = bvec_checksum(d, a + i * d);
+    }
 }
 
 const float* fvecs_maybe_subsample(
@@ -526,6 +552,67 @@ bool check_openmp() {
     }
 
     return true;
+}
+
+namespace {
+
+int64_t count_lt(int64_t n, const float* row, float threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] < threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+int64_t count_gt(int64_t n, const float* row, float threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] > threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+} // namespace
+
+void CombinerRangeKNN::compute_sizes(int64_t* L_res) {
+    this->L_res = L_res;
+    L_res[0] = 0;
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in;
+        if (!mask || !mask[i]) {
+            const float* row = D + i * k;
+            n_in = keep_max ? count_gt(k, row, r2) : count_lt(k, row, r2);
+        } else {
+            n_in = lim_remain[j + 1] - lim_remain[j];
+            j++;
+        }
+        L_res[i + 1] = n_in; // L_res[i] + n_in;
+    }
+    // cumsum
+    for (int64_t i = 0; i < nq; i++) {
+        L_res[i + 1] += L_res[i];
+    }
+}
+
+void CombinerRangeKNN::write_result(float* D_res, int64_t* I_res) {
+    FAISS_THROW_IF_NOT(L_res);
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in = L_res[i + 1] - L_res[i];
+        float* D_row = D_res + L_res[i];
+        int64_t* I_row = I_res + L_res[i];
+        if (!mask || !mask[i]) {
+            memcpy(D_row, D + i * k, n_in * sizeof(*D_row));
+            memcpy(I_row, I + i * k, n_in * sizeof(*I_row));
+        } else {
+            memcpy(D_row, D_remain + lim_remain[j], n_in * sizeof(*D_row));
+            memcpy(I_row, I_remain + lim_remain[j], n_in * sizeof(*I_row));
+            j++;
+        }
+    }
 }
 
 } // namespace faiss

@@ -1061,22 +1061,52 @@ void IndexIVF::update_vectors(int n, const idx_t* new_ids, const float* x) {
 }
 
 void IndexIVF::train(idx_t n, const float* x) {
-    if (verbose)
+    if (verbose) {
         printf("Training level-1 quantizer\n");
+    }
 
     train_q1(n, x, verbose, metric_type);
 
-    if (verbose)
+    if (verbose) {
         printf("Training IVF residual\n");
+    }
 
-    train_residual(n, x);
+    // optional subsampling
+    idx_t max_nt = train_encoder_num_vectors();
+    if (max_nt <= 0) {
+        max_nt = (size_t)1 << 35;
+    }
+
+    TransformedVectors tv(
+            x, fvecs_maybe_subsample(d, (size_t*)&n, max_nt, x, verbose));
+
+    if (by_residual) {
+        std::vector<idx_t> assign(n);
+        quantizer->assign(n, tv.x, assign.data());
+
+        std::vector<float> residuals(n * d);
+        quantizer->compute_residual_n(n, tv.x, residuals.data(), assign.data());
+
+        train_encoder(n, residuals.data(), assign.data());
+    } else {
+        train_encoder(n, tv.x, nullptr);
+    }
+
     is_trained = true;
 }
 
-void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
-    if (verbose)
-        printf("IndexIVF: no residual training\n");
+idx_t IndexIVF::train_encoder_num_vectors() const {
+    return 0;
+}
+
+void IndexIVF::train_encoder(
+        idx_t /*n*/,
+        const float* /*x*/,
+        const idx_t* assign) {
     // does nothing by default
+    if (verbose) {
+        printf("IndexIVF: no residual training\n");
+    }
 }
 
 bool check_compatible_for_merge_expensive_check = true;

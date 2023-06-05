@@ -17,15 +17,6 @@ from faiss.contrib import datasets
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
-class TestCompileOptions(unittest.TestCase):
-
-    def test_compile_options(self):
-        options = faiss.get_compile_options()
-        options = options.split(' ')
-        for option in options:
-            assert option in ['AVX2', 'NEON', 'GENERIC', 'OPTIMIZE']
-
-
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):

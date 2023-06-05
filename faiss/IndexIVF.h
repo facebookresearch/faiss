@@ -177,6 +177,7 @@ struct IndexIVF : Index, IndexIVFInterface {
     bool own_invlists = false;
 
     size_t code_size = 0; ///< code size per vector in bytes
+
     /** Parallel mode determines how queries are parallelized with OpenMP
      *
      * 0 (default): split over queries
@@ -194,6 +195,10 @@ struct IndexIVF : Index, IndexIVFInterface {
      *  enables reconstruct() */
     DirectMap direct_map;
 
+    /// do the codes in the invlists encode the vectors relative to the
+    /// centroids?
+    bool by_residual = true;
+
     /** The Inverted file takes a quantizer (an Index) on input,
      * which implements the function mapping a vector to a list
      * identifier.
@@ -207,7 +212,7 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     void reset() override;
 
-    /// Trains the quantizer and calls train_residual to train sub-quantizers
+    /// Trains the quantizer and calls train_encoder to train sub-quantizers
     void train(idx_t n, const float* x) override;
 
     /// Calls add_with_ids with NULL ids
@@ -252,9 +257,15 @@ struct IndexIVF : Index, IndexIVFInterface {
      */
     void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
 
-    /// Sub-classes that encode the residuals can train their encoders here
-    /// does nothing by default
-    virtual void train_residual(idx_t n, const float* x);
+    /** Train the encoder for the vectors.
+     *
+     * If by_residual then it is called with residuals and corresponding assign
+     * array, otherwise x is the raw training vectors and assign=nullptr */
+    virtual void train_encoder(idx_t n, const float* x, const idx_t* assign);
+
+    /// can be redefined by subclasses to indicate how many training vectors
+    /// they need
+    virtual idx_t train_encoder_num_vectors() const;
 
     void search_preassigned(
             idx_t n,

@@ -65,7 +65,6 @@ struct IndexScalarQuantizer : IndexFlatCodes {
 
 struct IndexIVFScalarQuantizer : IndexIVF {
     ScalarQuantizer sq;
-    bool by_residual;
 
     IndexIVFScalarQuantizer(
             Index* quantizer,
@@ -73,11 +72,13 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             size_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric = METRIC_L2,
-            bool encode_residual = true);
+            bool by_residual = true);
 
     IndexIVFScalarQuantizer();
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
+
+    idx_t train_encoder_num_vectors() const override;
 
     void encode_vectors(
             idx_t n,

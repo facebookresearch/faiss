@@ -18,11 +18,9 @@ class IVFFlat;
 class GpuIndexFlat;
 
 struct GpuIndexIVFScalarQuantizerConfig : public GpuIndexIVFConfig {
-    inline GpuIndexIVFScalarQuantizerConfig() : interleavedLayout(true) {}
-
     /// Use the alternative memory layout for the IVF lists
     /// (currently the default)
-    bool interleavedLayout;
+    bool interleavedLayout = true;
 };
 
 /// Wrapper around the GPU implementation that looks like

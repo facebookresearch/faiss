@@ -88,11 +88,6 @@ int faiss_IndexIVFScalarQuantizer_add_core(
         const idx_t* xids,
         const idx_t* precomputed_idx);
 
-int faiss_IndexIVFScalarQuantizer_train_residual(
-        FaissIndexIVFScalarQuantizer* index,
-        idx_t n,
-        const float* x);
-
 #ifdef __cplusplus
 }
 #endif

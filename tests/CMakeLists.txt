@@ -27,6 +27,8 @@ set(FAISS_TEST_SRC
   test_RCQ_cropping.cpp
   test_distances_simd.cpp
   test_heap.cpp
+  test_code_distance.cpp
+  test_hnsw.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

@@ -223,6 +223,76 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
+/// Special version of inner product that computes 4 distances
+/// between x and yi
+FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+void fvec_inner_product_batch_4(
+        const float* __restrict x,
+        const float* __restrict y0,
+        const float* __restrict y1,
+        const float* __restrict y2,
+        const float* __restrict y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    float d0 = 0;
+    float d1 = 0;
+    float d2 = 0;
+    float d3 = 0;
+    FAISS_PRAGMA_IMPRECISE_LOOP
+    for (size_t i = 0; i < d; ++i) {
+        d0 += x[i] * y0[i];
+        d1 += x[i] * y1[i];
+        d2 += x[i] * y2[i];
+        d3 += x[i] * y3[i];
+    }
+
+    dis0 = d0;
+    dis1 = d1;
+    dis2 = d2;
+    dis3 = d3;
+}
+FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+/// Special version of L2sqr that computes 4 distances
+/// between x and yi, which is performance oriented.
+FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+void fvec_L2sqr_batch_4(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    float d0 = 0;
+    float d1 = 0;
+    float d2 = 0;
+    float d3 = 0;
+    FAISS_PRAGMA_IMPRECISE_LOOP
+    for (size_t i = 0; i < d; ++i) {
+        const float q0 = x[i] - y0[i];
+        const float q1 = x[i] - y1[i];
+        const float q2 = x[i] - y2[i];
+        const float q3 = x[i] - y3[i];
+        d0 += q0 * q0;
+        d1 += q1 * q1;
+        d2 += q2 * q2;
+        d3 += q3 * q3;
+    }
+
+    dis0 = d0;
+    dis1 = d1;
+    dis2 = d2;
+    dis3 = d3;
+}
+FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
 /*********************************************************
  * SSE and AVX implementations
  */

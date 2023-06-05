@@ -165,7 +165,7 @@ struct FAISS_API InterruptCallback {
 /// set implementation optimized for fast access.
 struct VisitedTable {
     std::vector<uint8_t> visited;
-    int visno;
+    uint8_t visno;
 
     explicit VisitedTable(int size) : visited(size), visno(1) {}
 

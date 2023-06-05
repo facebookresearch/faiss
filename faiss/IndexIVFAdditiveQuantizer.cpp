@@ -37,30 +37,20 @@ IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(
 IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq)
         : IndexIVF(), aq(aq) {}
 
-void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
-    const float* x_in = x;
+void IndexIVFAdditiveQuantizer::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
+    aq->train(n, x);
+}
 
+idx_t IndexIVFAdditiveQuantizer::train_encoder_num_vectors() const {
     size_t max_train_points = 1024 * ((size_t)1 << aq->nbits[0]);
     // we need more data to train LSQ
     if (dynamic_cast<LocalSearchQuantizer*>(aq)) {
         max_train_points = 1024 * aq->M * ((size_t)1 << aq->nbits[0]);
     }
-
-    x = fvecs_maybe_subsample(
-            d, (size_t*)&n, max_train_points, x, verbose, 1234);
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
-
-    if (by_residual) {
-        std::vector<idx_t> idx(n);
-        quantizer->assign(n, x, idx.data());
-
-        std::vector<float> residuals(n * d);
-        quantizer->compute_residual_n(n, x, residuals.data(), idx.data());
-
-        aq->train(n, residuals.data());
-    } else {
-        aq->train(n, x);
-    }
+    return max_train_points;
 }
 
 void IndexIVFAdditiveQuantizer::encode_vectors(

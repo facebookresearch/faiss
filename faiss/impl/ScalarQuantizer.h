@@ -65,14 +65,6 @@ struct ScalarQuantizer : Quantizer {
 
     void train(size_t n, const float* x) override;
 
-    /// Used by an IVF index to train based on the residuals
-    void train_residual(
-            size_t n,
-            const float* x,
-            Index* quantizer,
-            bool by_residual,
-            bool verbose);
-
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d

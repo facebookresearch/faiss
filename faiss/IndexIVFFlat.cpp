@@ -36,6 +36,11 @@ IndexIVFFlat::IndexIVFFlat(
         MetricType metric)
         : IndexIVF(quantizer, d, nlist, sizeof(float) * d, metric) {
     code_size = sizeof(float) * d;
+    by_residual = false;
+}
+
+IndexIVFFlat::IndexIVFFlat() {
+    by_residual = false;
 }
 
 void IndexIVFFlat::add_core(
@@ -45,6 +50,7 @@ void IndexIVFFlat::add_core(
         const int64_t* coarse_idx) {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
+    FAISS_THROW_IF_NOT(!by_residual);
     assert(invlists);
     direct_map.check_can_add(xids);
 
@@ -89,6 +95,7 @@ void IndexIVFFlat::encode_vectors(
         const idx_t* list_nos,
         uint8_t* codes,
         bool include_listnos) const {
+    FAISS_THROW_IF_NOT(!by_residual);
     if (!include_listnos) {
         memcpy(codes, x, code_size * n);
     } else {
