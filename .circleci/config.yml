@@ -150,6 +150,9 @@ jobs:
       gpu:
         type: string
         default: "OFF"
+      raft:
+        type: string
+        default: "OFF"
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
@@ -187,6 +190,7 @@ jobs:
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=OFF \
                   -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
+                  -DFAISS_ENABLE_RAFT=<< parameters.raft >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DPYTHON_EXECUTABLE=$(which python) \
@@ -244,8 +248,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - format:
-          name: Format
       - build_cmake:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
@@ -257,111 +259,8 @@ workflows:
           name: Linux x86_64 GPU (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
-          requires:
-            - Linux x86_64 (cmake)
-      - build_conda:
-          name: Linux x86_64 (conda)
-          exec: linux-x86_64-cpu
-      - build_conda:
-          name: OSX x86_64 (conda)
-          exec: macosx-x86_64-cpu
-      - build_conda:
-          name: Windows x86_64 (conda)
-          exec: windows-x86_64-cpu
-      - build_conda:
-          name: Linux arm64 (conda)
-          exec: linux-arm64-cpu
-      - build_conda:
-          name: Linux x86_64 packages
-          exec: linux-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Linux x86_64 GPU packages (CUDA 11.4)
+      - build_cmake:
+          name: Linux x86_64 GPU w/ RAFT (cmake)
           exec: linux-x86_64-gpu
-          label: main
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Windows x86_64 packages
-          exec: windows-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: OSX x86_64 packages
-          exec: macosx-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: OSX arm64 packages
-          exec: macosx-arm64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Linux arm64 packages
-          exec: linux-arm64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - build_conda:
-          name: Linux x86_64 nightlies
-          exec: linux-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 11.4)
-          exec: linux-x86_64-gpu
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          label: nightly
-      - build_conda:
-          name: Windows x86_64 nightlies
-          exec: windows-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX x86_64 nightlies
-          exec: macosx-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX arm64 nightlies
-          exec: macosx-arm64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux arm64 nightlies
-          exec: linux-arm64-cpu
-          label: nightly
+          gpu: "ON"
+          raft: "ON"
