@@ -65,6 +65,10 @@ function run_on_1machine_3h {
     run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=3:00:00 --partition=scavenge" "$@"
 }
 
+function run_on_1machine_24h {
+    run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=24:00:00 --partition=scavenge" "$@"
+}
+
 function run_on_4gpu_3h {
     run_on "--cpus-per-task=40 --gres=gpu:4 --mem=100G --time=3:00:00 --partition=scavenge" "$@"
 }
@@ -603,20 +607,21 @@ fi
 ## coarse quantizer experiments on RCQ centroids of SSN++
 
 
-for k in 1 4 16 24 64; do
+for k in 1; do # 4 16 24 64; do
 
-    for db in flat_10000000 flat_16777216 rcq_16777216; do
+    for db in flat_8M flat_16M; do # rcq_16777216; do
 
         indexkeys="
-            PQ256x4fs,RFlat
-            HNSW32
-            HNSW64
             IVF2048,PQ256x4fs,RFlat
             IVF4096,PQ256x4fs,RFlat
             IVF8192,PQ256x4fs,RFlat
             IVF16384,PQ256x4fs,RFlat
         "
-#            RCQ_8_8_8
+ #           RCQ_8_8_8
+#            SQ8
+#            HNSW32
+#            HNSW64
+#            PQ256x4fs,RFlat
 
         for indexkey in $indexkeys; do
             key=autotune.db$db.k$k.${indexkey//,/_}
@@ -625,7 +630,7 @@ for k in 1 4 16 24 64; do
             fn=autotune.db$db.${indexkey//,/_}
             fn="${fn//(/_}"
             fn="${fn//)/_}"
-            run_on_1machine_3h "$key.a" \
+            run_on_1machine_24h "$key.c" \
                     python -u bench_all_ivf.py \
                     --db $db \
                     --indexkey "$indexkey" \
@@ -634,9 +639,11 @@ for k in 1 4 16 24 64; do
                     --inter \
                     --searchthreads 64 \
                     --k $k \
-                    --autotune_range k_factor_rf:256,512,1024,2048,4096 \
-                    efSearch:1024,2048,4096,8192 \
-                    nprobe:128,256,512,1024,2048,4096
+                    --autotune_range k_factor_rf:256,512,1024 \ 
+                    #,2048,4096 \
+                    # efSearch:1024,2048 \ 
+                    #,4096,8192 \
+                    nprobe:128,256,512,1024 #,2048,4096
         done
     done
 done

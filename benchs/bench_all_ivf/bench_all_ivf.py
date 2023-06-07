@@ -47,9 +47,9 @@ class Dataset16M(Dataset):
     def __init__(self):
         Dataset.__init__(self)
         basedir = '/checkpoint/gsz/rcq/'
-        self.xb = np.load(basedir + "centroids_16M.npy")
-        self.xq = np.load(basedir + "centroids_10M_500M_dedup.npy", mmap_mode="r")[:10_000].copy()
-        self.gt = np.load(basedir + "I_gt_flat16M.npy")
+        self.xb = np.load(basedir + "centroids_16M_983M.npy")
+        self.xq = np.load(basedir + "ssnpp_40M_deduped.npy", mmap_mode="r")[37_500_000:].copy()
+        self.gt = np.load(basedir + "IVF16M_DKM_Flat.40M.xq.assign.npy")
         self.d, self.nt, self.nb, self.nq = self.xb.shape[1], self.xb.shape[0], self.xb.shape[0], self.xq.shape[0]
 
     def get_queries(self):
@@ -68,13 +68,13 @@ class Dataset16M(Dataset):
             gt = self.gt[:self.nq, :k]
         return gt
 
-class Dataset10M(Dataset):
+class Dataset8M(Dataset):
     def __init__(self):
         Dataset.__init__(self)
         basedir = '/checkpoint/gsz/rcq/'
-        self.xb = np.load(basedir + "centroids_10M_500M_dedup.npy")
-        self.xq = np.load(basedir + "centroids_1M.npy", mmap_mode="r")[:10_000].copy()
-        self.gt = np.load(basedir + "I_gt_flat10M.npy")
+        self.xb = np.load(basedir + "centroids_8M_983M.npy")
+        self.xq = np.load(basedir + "ssnpp_40M_deduped.npy", mmap_mode="r")[37_500_000:].copy()
+        self.gt = np.load(basedir + "IVF8388608_DKNN_Flat.40M.xq.assign.npy")
         self.d, self.nt, self.nb, self.nq = self.xb.shape[1], self.xb.shape[0], self.xb.shape[0], self.xq.shape[0]
 
     def get_queries(self):
@@ -96,10 +96,10 @@ class Dataset10M(Dataset):
 def load_dataset(dataset):
     if dataset == 'rcq_16777216':
         return DatasetRCQ()
-    elif dataset == 'flat_16777216':
+    elif dataset == 'flat_16M':
         return Dataset16M()
-    elif dataset == 'flat_10000000':
-        return Dataset10M()
+    elif dataset == 'flat_8M':
+        return Dataset8M()
     else:
         assert False
 
