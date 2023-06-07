@@ -4,8 +4,10 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-echo Removing /Users/distiller/miniconda/conda-bld
-rm -rf /Users/distiller/miniconda/conda-bld
+echo Fixing /Users/distiller/miniconda/conda-bld
+rm -fr /Users/distiller/miniconda/conda-bld/osx-64/.cache 
+rm -f /Users/distiller/miniconda/conda-bld/osx-64/*repodata*
+conda index /Users/distiller/miniconda/conda-bld
 
 set -e
 
