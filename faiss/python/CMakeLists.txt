@@ -11,7 +11,7 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(SWIG REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
