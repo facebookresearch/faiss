@@ -9220,6 +9220,6 @@
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </para>
     </detaileddescription>
-    <location file="faiss/AutoTune.h" line="20" column="1"/>
+    <location file="faiss/AutoTune.h" line="19" column="1"/>
   </compounddef>
 </doxygen>

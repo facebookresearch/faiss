@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="158" column="12"/>
+        <location file="faiss/AutoTune.h" line="157" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1ab311c622327c18b42aa66e2b9bcd5a7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="161" column="10"/>
+        <location file="faiss/AutoTune.h" line="160" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1af5081b3739982c6be702e46df666fec4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="164" column="17"/>
+        <location file="faiss/AutoTune.h" line="163" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a066ae6501cf7b31b1b5bb1e34bb8d0dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -117,7 +117,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="167" column="10"/>
+        <location file="faiss/AutoTune.h" line="166" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref> &amp;</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="170" column="20"/>
+        <location file="faiss/AutoTune.h" line="169" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -157,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="176" column="10"/>
+        <location file="faiss/AutoTune.h" line="175" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="179" column="10"/>
+        <location file="faiss/AutoTune.h" line="178" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -209,7 +209,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="189" column="10"/>
+        <location file="faiss/AutoTune.h" line="188" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -276,7 +276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="201" column="10"/>
+        <location file="faiss/AutoTune.h" line="200" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -292,7 +292,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="134" column="17" bodyfile="faiss/AutoTune.h" bodystart="134" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="133" column="17" bodyfile="faiss/AutoTune.h" bodystart="133" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a7a9f2292c4e0ac3aad569434edea87b0" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -306,7 +306,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="139" column="9" bodyfile="faiss/AutoTune.h" bodystart="139" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="138" column="9" bodyfile="faiss/AutoTune.h" bodystart="138" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a76aeae25b3269fb24a26194fbe013b86" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -320,7 +320,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="142" column="9" bodyfile="faiss/AutoTune.h" bodystart="142" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="141" column="9" bodyfile="faiss/AutoTune.h" bodystart="141" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -334,7 +334,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="145" column="12" bodyfile="faiss/AutoTune.h" bodystart="145" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="144" column="12" bodyfile="faiss/AutoTune.h" bodystart="144" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1af6dc3b9c5631b509cbae99bf0f24170b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -348,7 +348,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="149" column="10" bodyfile="faiss/AutoTune.h" bodystart="149" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="148" column="10" bodyfile="faiss/AutoTune.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a50d9d784d69d9812c12dc9b2baf9351d" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -362,7 +362,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="153" column="12" bodyfile="faiss/AutoTune.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="152" column="12" bodyfile="faiss/AutoTune.h" bodystart="152" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="58" column="11" bodyfile="faiss/AutoTune.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="57" column="11" bodyfile="faiss/AutoTune.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="27" column="11" bodyfile="faiss/AutoTune.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="26" column="11" bodyfile="faiss/AutoTune.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="28" column="11" bodyfile="faiss/AutoTune.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="27" column="11" bodyfile="faiss/AutoTune.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="29" column="11" bodyfile="faiss/AutoTune.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="28" column="11" bodyfile="faiss/AutoTune.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="31" column="17" bodyfile="faiss/AutoTune.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="30" column="17" bodyfile="faiss/AutoTune.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="32" column="17" bodyfile="faiss/AutoTune.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/AutoTune.h" line="31" column="17" bodyfile="faiss/AutoTune.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="60" column="5"/>
+        <location file="faiss/AutoTune.h" line="59" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>double</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="62" column="12"/>
+        <location file="faiss/AutoTune.h" line="61" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OneRecallAtRCriterion_1a79b1af707034d3984debd15a6aa34255" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -164,7 +164,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="64" column="5" bodyfile="faiss/AutoTune.h" bodystart="64" bodyend="64"/>
+        <location file="faiss/AutoTune.h" line="63" column="5" bodyfile="faiss/AutoTune.h" bodystart="63" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -208,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="41" column="10"/>
+        <location file="faiss/AutoTune.h" line="40" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -239,7 +239,7 @@
         <link refid="structfaiss_1_1AutoTuneCriterion"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/AutoTune.h" line="57" column="1" bodyfile="faiss/AutoTune.h" bodystart="57" bodyend="65"/>
+    <location file="faiss/AutoTune.h" line="56" column="1" bodyfile="faiss/AutoTune.h" bodystart="56" bodyend="64"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AutoTuneCriterion_1abd85ee0d09e9f4958330c42e867e432b" prot="public" virt="non-virtual"><scope>faiss::OneRecallAtRCriterion</scope><name>AutoTuneCriterion</name></member>
       <member refid="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d" prot="public" virt="virtual"><scope>faiss::OneRecallAtRCriterion</scope><name>evaluate</name></member>
