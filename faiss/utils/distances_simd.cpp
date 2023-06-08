@@ -2176,10 +2176,13 @@ void pq2_8cents_table(
     switch (nout) {
         case 4:
             ip3.storeu(out + 3 * ldo);
+            [[fallthrough]];
         case 3:
             ip2.storeu(out + 2 * ldo);
+            [[fallthrough]];
         case 2:
             ip1.storeu(out + 1 * ldo);
+            [[fallthrough]];
         case 1:
             ip0.storeu(out);
     }
