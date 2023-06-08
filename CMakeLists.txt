@@ -35,6 +35,8 @@ include(rapids-export)
 include(rapids-find)
 
 rapids_cuda_init_architectures(faiss)
+rapids_cuda_init_architectures(pyfaiss)
+rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
