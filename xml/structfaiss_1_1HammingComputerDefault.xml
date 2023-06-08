@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="268" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="268" bodyend="327"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="268" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="268" bodyend="340"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="329" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="329" bodyend="331"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="342" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="342" bodyend="344"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -235,7 +235,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="251" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="251" bodyend="332"/>
+    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="251" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="251" bodyend="345"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault</scope><name>a8</name></member>
       <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault</scope><name>get_code_size</name></member>
