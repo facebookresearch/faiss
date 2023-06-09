@@ -215,7 +215,7 @@ void hnsw_add_vertices(
 
                     hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
 
-                    if (prev_display >= 0 && i - i0 > prev_display + 10000) {
+                    if (prev_display >= 0 && i - i0 >= prev_display + 10000) {
                         prev_display = i - i0;
                         printf("  %d / %d\r", (i - i0) * num_threads, i1 - i0);
                         fflush(stdout);
