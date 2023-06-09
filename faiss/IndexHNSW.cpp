@@ -190,7 +190,7 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                int num_threads = omp_get_num_threads();
+                int nt = omp_get_num_threads();
 
                 VisitedTable vt(ntotal);
 
@@ -218,7 +218,7 @@ void hnsw_add_vertices(
 
                     if (prev_display >= 0 && i - i0 >= prev_display + 10000) {
                         prev_display = i - i0;
-                        printf("  %d / %d\r", (i - i0) * num_threads, i1 - i0);
+                        printf("  %d / %d\r", (i - i0) * nt, i1 - i0);
                         fflush(stdout);
                     }
                     if (counter % check_period == 0) {
