@@ -73,7 +73,7 @@ found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
 The basic requirements are:
-- a C++11 compiler (with support for OpenMP support version 2 or higher),
+- a C++17 compiler (with support for OpenMP support version 2 or higher),
 - a BLAS implementation (we strongly recommend using Intel MKL for best
 performance).
 
