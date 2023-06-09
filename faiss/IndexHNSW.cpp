@@ -173,7 +173,7 @@ void hnsw_add_vertices(
     { // perform add
         RandomGenerator rng2(789);
         int num_threads = omp_get_num_threads();
-        
+
         int i1 = n;
 
         for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
