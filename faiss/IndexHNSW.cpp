@@ -172,7 +172,6 @@ void hnsw_add_vertices(
 
     { // perform add
         RandomGenerator rng2(789);
-        int num_threads = omp_get_num_threads();
 
         int i1 = n;
 
@@ -191,6 +190,8 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
+                int num_threads = omp_get_num_threads();
+
                 VisitedTable vt(ntotal);
 
                 DistanceComputer* dis =
