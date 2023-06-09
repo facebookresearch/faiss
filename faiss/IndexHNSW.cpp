@@ -172,7 +172,8 @@ void hnsw_add_vertices(
 
     { // perform add
         RandomGenerator rng2(789);
-
+        int num_threads = omp_get_num_threads();
+        
         int i1 = n;
 
         for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
@@ -216,9 +217,7 @@ void hnsw_add_vertices(
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
-                        printf("  %d / %d\r",
-                               (i - i0) * omp_get_num_threads(),
-                               i1 - i0);
+                        printf("  %d / %d\r", (i - i0) * num_threads, i1 - i0);
                         fflush(stdout);
                     }
                     if (counter % check_period == 0) {
