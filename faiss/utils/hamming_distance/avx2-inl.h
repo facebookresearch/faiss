@@ -277,6 +277,7 @@ struct HammingComputerDefault {
                     len -= 8;
                     accu += popcount64(a64[i] ^ b64[i]);
                     i++;
+                    [[fallthrough]];
                     case 7:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
