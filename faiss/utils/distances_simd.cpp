@@ -306,8 +306,10 @@ static inline __m128 masked_read(int d, const float* x) {
     switch (d) {
         case 3:
             buf[2] = x[2];
+            [[fallthrough]];
         case 2:
             buf[1] = x[1];
+            [[fallthrough]];
         case 1:
             buf[0] = x[0];
     }
