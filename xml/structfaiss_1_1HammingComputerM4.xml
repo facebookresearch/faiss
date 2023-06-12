@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="379" column="20" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="379" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="380" column="20" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="380" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HammingComputerM4_1a850a14fffa6e73400dc351ce9f2f4098" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="380" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="380" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="381" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="381" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="382" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="382" bodyend="382"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="383" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="383" bodyend="383"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerM4_1ad33e45019079424426fdb64c7f7a55f9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="384" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="384" bodyend="386"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="385" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="385" bodyend="387"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerM4_1ae058888cc2117ecd2a3695a43468097c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="388" column="10" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="388" bodyend="392"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="389" column="10" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="389" bodyend="393"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerM4_1ae12ba4b1be2bf0458d833a94b86c5adc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="394" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="394" bodyend="400"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="395" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="395" bodyend="401"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerM4_1aa033f5097b71788523d826ba64a95e60" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -114,7 +114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="402" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="402" bodyend="404"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="403" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="403" bodyend="405"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerM4_1a3438297be27f32d1fdc62607404b9060" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -206,7 +206,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="378" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="378" bodyend="405"/>
+    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="379" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="379" bodyend="406"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputerM4_1a315cf1b68bf3fbb652c97e11c85aacf9" prot="public" virt="non-virtual"><scope>faiss::HammingComputerM4</scope><name>a</name></member>
       <member refid="structfaiss_1_1HammingComputerM4_1aa033f5097b71788523d826ba64a95e60" prot="public" virt="non-virtual"><scope>faiss::HammingComputerM4</scope><name>get_code_size</name></member>

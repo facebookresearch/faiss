@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="513" column="20" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="513" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="514" column="20" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="514" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1GenHammingComputerM8_1a72fd506e611fda59d86cfc5d3f96694f" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="514" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="514" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="515" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="515" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="516" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="516" bodyend="520"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="517" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="517" bodyend="521"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="522" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="522" bodyend="539"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="523" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="523" bodyend="540"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="541" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="541" bodyend="543"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="542" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="542" bodyend="544"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -138,7 +138,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="512" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="512" bodyend="544"/>
+    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="513" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="513" bodyend="545"/>
     <listofallmembers>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a62badfbabf1ad93fc25d4c6fc800ffcf" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>a</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>GenHammingComputerM8</name></member>
