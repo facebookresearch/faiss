@@ -306,8 +306,10 @@ static inline __m128 masked_read(int d, const float* x) {
     switch (d) {
         case 3:
             buf[2] = x[2];
+            [[fallthrough]];
         case 2:
             buf[1] = x[1];
+            [[fallthrough]];
         case 1:
             buf[0] = x[0];
     }
@@ -2176,10 +2178,13 @@ void pq2_8cents_table(
     switch (nout) {
         case 4:
             ip3.storeu(out + 3 * ldo);
+            [[fallthrough]];
         case 3:
             ip2.storeu(out + 2 * ldo);
+            [[fallthrough]];
         case 2:
             ip1.storeu(out + 1 * ldo);
+            [[fallthrough]];
         case 1:
             ip0.storeu(out);
     }

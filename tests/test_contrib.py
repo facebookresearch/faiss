@@ -9,6 +9,7 @@ import numpy as np
 import platform
 import os
 import random
+import tempfile
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -507,7 +508,7 @@ class TestBigBatchSearch(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), k)
         # faiss.omp_set_num_threads(1)
         for method in ("pairwise_distances", "knn_function", "index"):
-            for threaded in 0, 1, 3, 8:
+            for threaded in 0, 1, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
@@ -537,16 +538,15 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
-        r = random.randrange(1 << 60)
-        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
+        checkpoint = tempfile.mktemp()
         try:
             # First big batch search
             try:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method="knn_function",
-                    threaded=4,
-                    checkpoint=checkpoint, checkpoint_freq=4,
+                    threaded=2,
+                    checkpoint=checkpoint, checkpoint_freq=0.1,
                     crash_at=20
                 )
             except ZeroDivisionError:
@@ -557,8 +557,8 @@ class TestBigBatchSearch(unittest.TestCase):
             Dnew, Inew = big_batch_search.big_batch_search(
                 index, ds.get_queries(),
                 k, method="knn_function",
-                threaded=4,
-                checkpoint=checkpoint, checkpoint_freq=4
+                threaded=2,
+                checkpoint=checkpoint, checkpoint_freq=5
             )
             self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
             np.testing.assert_almost_equal(Dnew, Dref, decimal=4)

@@ -152,12 +152,10 @@ bool OperatingPoints::add(
             return false;
         }
     }
-    { // remove non-optimal points from array
-        int i = a.size() - 1;
-        while (i > 0) {
-            if (a[i].t < a[i - 1].t)
-                a.erase(a.begin() + (i - 1));
-            i--;
+    // remove non-optimal points from array
+    for (int i = a.size() - 1; i > 0; --i) {
+        if (a[i].t < a[i - 1].t) {
+            a.erase(a.begin() + (i - 1));
         }
     }
     return true;
