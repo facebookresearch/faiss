@@ -12,17 +12,34 @@
 
 namespace faiss {
 
+namespace {
+
+// IndexBinary needs to update the code_size when d is set...
+
+void sync_d(Index* index) {}
+
+void sync_d(IndexBinary* index) {
+    FAISS_THROW_IF_NOT(index->d % 8 == 0);
+    index->code_size = index->d / 8;
+}
+
+} // anonymous namespace
+
 template <typename IndexT>
 IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(bool threaded)
         : ThreadedIndex<IndexT>(threaded) {}
 
 template <typename IndexT>
 IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(idx_t d, bool threaded)
-        : ThreadedIndex<IndexT>(d, threaded) {}
+        : ThreadedIndex<IndexT>(d, threaded) {
+    sync_d(this);
+}
 
 template <typename IndexT>
 IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(int d, bool threaded)
-        : ThreadedIndex<IndexT>(d, threaded) {}
+        : ThreadedIndex<IndexT>(d, threaded) {
+    sync_d(this);
+}
 
 template <typename IndexT>
 void IndexReplicasTemplate<IndexT>::onAfterAddIndex(IndexT* index) {
@@ -168,6 +185,8 @@ void IndexReplicasTemplate<IndexT>::syncWithSubIndexes() {
     }
 
     auto firstIndex = this->at(0);
+    this->d = firstIndex->d;
+    sync_d(this);
     this->metric_type = firstIndex->metric_type;
     this->is_trained = firstIndex->is_trained;
     this->ntotal = firstIndex->ntotal;
@@ -175,28 +194,6 @@ void IndexReplicasTemplate<IndexT>::syncWithSubIndexes() {
     for (int i = 1; i < this->count(); ++i) {
         auto index = this->at(i);
         FAISS_THROW_IF_NOT(this->metric_type == index->metric_type);
-        FAISS_THROW_IF_NOT(this->d == index->d);
-        FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
-        FAISS_THROW_IF_NOT(this->ntotal == index->ntotal);
-    }
-}
-
-// No metric_type for IndexBinary
-template <>
-void IndexReplicasTemplate<IndexBinary>::syncWithSubIndexes() {
-    if (!this->count()) {
-        this->is_trained = false;
-        this->ntotal = 0;
-
-        return;
-    }
-
-    auto firstIndex = this->at(0);
-    this->is_trained = firstIndex->is_trained;
-    this->ntotal = firstIndex->ntotal;
-
-    for (int i = 1; i < this->count(); ++i) {
-        auto index = this->at(i);
         FAISS_THROW_IF_NOT(this->d == index->d);
         FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
         FAISS_THROW_IF_NOT(this->ntotal == index->ntotal);

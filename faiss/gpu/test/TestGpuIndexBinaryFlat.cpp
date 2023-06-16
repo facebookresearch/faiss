@@ -11,6 +11,7 @@
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -162,6 +163,30 @@ TEST(TestGpuIndexBinaryFlat, LargeIndex) {
     gpuIndex.search(nq, xq.data(), k, gpuDist.data(), gpuLabels.data());
 
     compareBinaryDist(cpuDist, cpuLabels, gpuDist, gpuLabels, nq, k);
+}
+
+TEST(TestGpuIndexBinaryFlat, Reconstruct) {
+    int n = 1000;
+    std::vector<uint8_t> xb(8 * n);
+    faiss::byte_rand(xb.data(), xb.size(), 123);
+    std::unique_ptr<faiss::IndexBinaryFlat> index(
+            new faiss::IndexBinaryFlat(64));
+    index->add(n, xb.data());
+
+    std::vector<uint8_t> xb3(8 * n);
+    index->reconstruct_n(0, index->ntotal, xb3.data());
+    EXPECT_EQ(xb, xb3);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    std::unique_ptr<faiss::gpu::GpuIndexBinaryFlat> index2(
+            new faiss::gpu::GpuIndexBinaryFlat(&res, index.get()));
+
+    std::vector<uint8_t> xb2(8 * n);
+
+    index2->reconstruct_n(0, index->ntotal, xb2.data());
+    EXPECT_EQ(xb2, xb3);
 }
 
 int main(int argc, char** argv) {
