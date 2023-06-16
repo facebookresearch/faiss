@@ -125,8 +125,6 @@ jobs:
                 command: |
                   cd conda
                   conda build faiss --python 3.8 --user pytorch --label <<parameters.label>> -c pytorch -c pkgs/main -c conda-forge
-                  conda build faiss --python 3.9 --user pytorch --label <<parameters.label>> -c pytorch -c pkgs/main -c conda-forge
-                  conda build faiss --python 3.10 --user pytorch --label <<parameters.label>> -c pytorch -c pkgs/main -c conda-forge
       - when:
           condition:
             and:
