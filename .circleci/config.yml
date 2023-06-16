@@ -152,6 +152,9 @@ jobs:
       gpu:
         type: string
         default: "OFF"
+      raft:
+        type: string
+        default: "OFF"
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
@@ -189,6 +192,7 @@ jobs:
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=OFF \
                   -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
+                  -DFAISS_ENABLE_RAFT=<< parameters.raft >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DPYTHON_EXECUTABLE=$(which python) \
