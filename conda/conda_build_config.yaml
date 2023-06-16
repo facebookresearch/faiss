@@ -1,4 +1,4 @@
 python:
-  - 3.8
+  - 3.8  # [not x86_64 or not osx]
   - 3.9
   - 3.10
