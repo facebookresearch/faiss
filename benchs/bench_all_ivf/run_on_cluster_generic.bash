@@ -607,17 +607,18 @@ fi
 ## coarse quantizer experiments on RCQ centroids of SSN++
 
 
-for k in 1; do # 4 16 24 64; do
+for k in 1 4 16 24 64; do
 
-    for db in flat_8M flat_16M; do # rcq_16777216; do
+    for db in rcq_16777216; do # flat_4M flat_16M
 
         indexkeys="
-            IVF2048,PQ256x4fs,RFlat
-            IVF4096,PQ256x4fs,RFlat
-            IVF8192,PQ256x4fs,RFlat
-            IVF16384,PQ256x4fs,RFlat
+            RCQ_8_8_8
         "
- #           RCQ_8_8_8
+
+            # IVF2048,PQ256x4fs,RFlat
+            # IVF4096,PQ256x4fs,RFlat
+            # IVF8192,PQ256x4fs,RFlat
+            # IVF16384,PQ256x4fs,RFlat
 #            SQ8
 #            HNSW32
 #            HNSW64
@@ -630,7 +631,7 @@ for k in 1; do # 4 16 24 64; do
             fn=autotune.db$db.${indexkey//,/_}
             fn="${fn//(/_}"
             fn="${fn//)/_}"
-            run_on_1machine_24h "$key.c" \
+            run_on_1machine_24h "$key.a" \
                     python -u bench_all_ivf.py \
                     --db $db \
                     --indexkey "$indexkey" \
@@ -639,11 +640,11 @@ for k in 1; do # 4 16 24 64; do
                     --inter \
                     --searchthreads 64 \
                     --k $k \
-                    --autotune_range k_factor_rf:256,512,1024 \ 
+                    --autotune_range k_factor_rf:256,512,1024 nprobe:128,256,512,1024
                     #,2048,4096 \
                     # efSearch:1024,2048 \ 
                     #,4096,8192 \
-                    nprobe:128,256,512,1024 #,2048,4096
+                    # nprobe:128,256,512,1024 #,2048,4096
         done
     done
 done

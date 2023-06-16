@@ -408,7 +408,7 @@ if __name__ == "__main__":
     pyplot.gcf().set_size_inches(15, 10)
 
     i=1
-    for ncent in ['rcq_16777216', 'flat_16777216', 'flat_10000000']:
+    for ncent in ['rcq_16777216', 'flat_16M', 'flat_4M']:
 
         xyd = defaultdict(list)
 
@@ -418,23 +418,25 @@ if __name__ == "__main__":
             allres, allstats = collect_results_for(db=db, prefix="autotune.")
 
             for indexkey, res in allres.items():
+                # print(indexkey)
+                # print(res[:, 0])
                 idx, = np.where(res[:, 0] >= 0.99)
                 if idx.size > 0:
                     xyd[indexkey].append((k, 1000 / res[idx[0], 1]))
 
-        pyplot.subplot(2, 2, i)
-        i += 1
+        # pyplot.subplot(2, 2, i)
+        # i += 1
         for indexkey, xy in xyd.items():
             xy = np.array(xy)
-            pyplot.loglog(xy[:, 0], xy[:, 1], 'o-', label=indexkey)
+            pyplot.loglog(xy[:, 0], xy[:, 1], 'o-', label=ncent + " " + indexkey)
 
-        pyplot.title(f"{ncent} centroids")
-        pyplot.xlabel("k")
-        xt = 2**np.arange(9)
-        pyplot.xticks(xt, ["%d" % x for x in xt])
-        pyplot.ylabel("QPS (64 threads)")
-        pyplot.legend()
-        pyplot.grid()
+        # pyplot.title(f"{ncent} centroids")
+    pyplot.xlabel("k")
+    xt = 2**np.arange(6)
+    pyplot.xticks(xt, ["%d" % x for x in xt])
+    pyplot.ylabel("QPS (64 threads)")
+    pyplot.legend()
+    pyplot.grid()
 
     pyplot.savefig('../plots/rcq_centroids_min99.png')
 
