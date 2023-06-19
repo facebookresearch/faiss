@@ -184,8 +184,6 @@ jobs:
           name: Build all targets
           no_output_timeout: 30m
           command: |
-            eval "$(conda shell.bash hook)"
-            conda activate
             cmake -B build \
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=OFF \
