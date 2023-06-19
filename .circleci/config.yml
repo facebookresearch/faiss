@@ -170,7 +170,6 @@ jobs:
               apt install -y curl
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
-              ~/miniconda/bin/conda init
             fi
       - when:
           condition:
@@ -182,6 +181,8 @@ jobs:
       - run:
           name: Set up environment
           command: |
+            source ~/miniconda/etc/profile.d/conda.sh
+            conda activate base
             conda update -y -q conda
             conda install -y -q cmake=3.23.1 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge
       - run:
@@ -206,11 +207,15 @@ jobs:
       - run:
           name: C++ tests
           command: |
+            source ~/miniconda/etc/profile.d/conda.sh
+            conda activate base
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Install Python extension
           command: |
+            source ~/miniconda/etc/profile.d/conda.sh
+            conda activate base
             cd build/faiss/python
             python setup.py install
       - when:
@@ -220,6 +225,8 @@ jobs:
             - run:
                 name: Python tests (CPU only)
                 command: |
+                  source ~/miniconda/etc/profile.d/conda.sh
+                  conda activate base
                   conda install -y -q pytorch -c pytorch
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -230,6 +237,8 @@ jobs:
             - run:
                 name: Python tests (CPU + GPU)
                 command: |
+                  source ~/miniconda/etc/profile.d/conda.sh
+                  conda activate base
                   conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -243,6 +252,8 @@ jobs:
             - run:
                 name: Test avx2 loading
                 command: |
+                  source ~/miniconda/etc/profile.d/conda.sh
+                  conda activate base
                   FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss.so
                   LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss_avx2.so
       - store_test_results:
