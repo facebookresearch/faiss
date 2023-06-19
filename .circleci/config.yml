@@ -180,12 +180,6 @@ jobs:
           command: |
             conda update -y -q conda
             conda install -y -q cmake=3.23.1 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge
-      - run:
-          name: Build all targets
-          no_output_timeout: 30m
-          command: |
-            source ~/.bashrc      
-            conda activate
             cmake -B build \
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=OFF \
