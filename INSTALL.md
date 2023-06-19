@@ -6,39 +6,42 @@ pre-release nightly builds.
 
 The CPU-only `faiss-cpu` conda package is currently available on Linux, OSX, and
 Windows. The `faiss-gpu`, containing both CPU and GPU indices, is available on
-Linux systems, for various versions of CUDA.
+Linux systems, for CUDA 11.4. Packages are built for Python versions 3.8-3.10.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu
+$ conda install -c pytorch faiss-cpu=1.7.4 mkl=2021
 
 # GPU(+CPU) version
-$ conda install -c pytorch faiss-gpu
-
-# or for a specific CUDA version
-$ conda install -c pytorch faiss-gpu cudatoolkit=10.2 # for CUDA 10.2
+$ conda install -c pytorch -c nvidia faiss-gpu=1.7.4 mkl=2021
 ```
 
-Nightly pre-release packages can be installed as follows:
+For faiss-gpu, the nvidia channel is required for cudatoolkit=11.4, which is not
+published in the main anaconda channel.
+
+NOTE: due to a bug in the latest 1.7.4 release, Intel MKL 2021 needs to be installed
+separately where applicable. Remove the MKL reference when installing on
+non-Intel platforms.
+
+Nightly pre-release packages can be installed as follows. There is no need to
+install MKL separately, the correct package is automatically installed as a
+dependency where necessary:
 
 ``` shell
 # CPU-only version
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly faiss-gpu
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu
 ```
 
-A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-05-08):
+A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-06-19):
 ```
 conda create --name faiss_1.7.4 python=3.10
 conda activate faiss_1.7.4
-conda install faiss-gpu=1.7.4 -c pytorch -c nvidia
-conda install faiss-gpu pytorch pytorch-cuda -c pytorch -c nvidia
-conda install -c conda-forge notebook
-conda install -y matplotlib
+conda install faiss-gpu=1.7.4 mkl=2021 pytorch pytorch-cuda numpy -c pytorch -c nvidia
 ```
 
 ## Installing from conda-forge
@@ -111,7 +114,7 @@ Several options can be passed to CMake, among which:
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
   - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
-    are `ON` and `OFF`), 
+    are `ON` and `OFF`),
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
