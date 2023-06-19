@@ -45,8 +45,8 @@ jobs:
       - run:
           name: Install clang-format
           command: |
-            apt-get update
-            apt-get install -y git-core clang-format-11
+            apt update
+            apt install -y git-core clang-format-11
       - run:
           name: Verify clang-format
           command: |
@@ -166,6 +166,8 @@ jobs:
           command: |
             if [ -n "${CONDA_ARCH}" ]
             then
+              apt update
+              apt install -y curl
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
