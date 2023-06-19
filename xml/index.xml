@@ -470,20 +470,20 @@
     <member refid="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" kind="function"><name>decode</name></member>
   </compound>
   <compound refid="structfaiss_1_1CombinerRangeKNN" kind="struct"><name>faiss::CombinerRangeKNN</name>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a6e963a30d4930e979a74f069b492ae99" kind="variable"><name>nq</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a5bcb66ad5b474f52622e366f64e90b89" kind="variable"><name>k</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a4b9f30973b6b953b6550f60f261ad0c0" kind="variable"><name>r2</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a9651daa7c3e886e62162343ca543a6a5" kind="variable"><name>keep_max</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a08f58c52e9bf8228da8c4e2fb49afe28" kind="variable"><name>I</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a21dc45a5d9b41d2e6bd06cea10dde104" kind="variable"><name>D</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1ad606113a585e0bb7481ab8c8293a92b7" kind="variable"><name>mask</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a12d557a790a43a51fbfd5c0fc701369d" kind="variable"><name>lim_remain</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1aa4edd2fe071ee15b6ad979c8565db712" kind="variable"><name>D_remain</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1acd017c4b0a67d51f095a86f73aaa4647" kind="variable"><name>I_remain</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a92f44d2aea8b30a9d3f25b89b46e2ac8" kind="variable"><name>L_res</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1ab1261e0d586c0b3bdfee636961aa1e81" kind="function"><name>CombinerRangeKNN</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1a3487826b2d2849a65798ed09755d1ff3" kind="function"><name>compute_sizes</name></member>
-    <member refid="structfaiss_1_1CombinerRangeKNN_1ac576d33d57432e5b4c1d493ea09442a0" kind="function"><name>write_result</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a431b53f8def97be262a6854c33853d21" kind="variable"><name>nq</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a512c0573e1f6d06edbd52efc713bd87e" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a533c4abee4eda14e5d3d7c1aa9ae00fa" kind="variable"><name>r2</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a2bfdb0e40d08040b47b2684fec5f0674" kind="variable"><name>keep_max</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a092c91d01f6227c4acc437d0d2805e2e" kind="variable"><name>I</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1adb040f0aab9e0822cf97b7ae8f77554c" kind="variable"><name>D</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a99ffc825bff4b6bc07b5e3f3087d5a4d" kind="variable"><name>mask</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1af170c7fc6b3ff56a93f0a0141a49265d" kind="variable"><name>lim_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a8a4621b4b68545cbd08269086be63fa6" kind="variable"><name>D_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a328ba7a9c54628328b3594d3e767abff" kind="variable"><name>I_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1aa14fedf775fc3f0a1f060d693be75430" kind="variable"><name>L_res</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a74330b6afb5296263e2a53482178c35d" kind="function"><name>CombinerRangeKNN</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1adbefea1de2c511a05d0980eaa7134fca" kind="function"><name>compute_sizes</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1ae4dc62c36a66b7ebfc3076f2a35a911f" kind="function"><name>write_result</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1CpuTimer" kind="class"><name>faiss::gpu::CpuTimer</name>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" kind="variable"><name>start_</name></member>
@@ -8381,6 +8381,7 @@
     <member refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kind="variable"><name>bucket_sort_verbose</name></member>
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>
     <member refid="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" kind="function"><name>clone_Quantizer</name></member>
+    <member refid="namespacefaiss_1aa052b2baf4ccdf2c7d2841f6db35e4bc" kind="function"><name>clone_binary_index</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" kind="function"><name>distance_single_code_generic</name></member>
     <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
@@ -8692,6 +8693,9 @@
     <member refid="GpuCloner_8h_1a500b37234fbe71aed08ff67c3d7926dd" kind="function"><name>index_gpu_to_cpu</name></member>
     <member refid="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" kind="function"><name>index_cpu_to_gpu</name></member>
     <member refid="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
+    <member refid="GpuCloner_8h_1a3c1d63b6841829a0a51c42e041589adb" kind="function"><name>index_binary_gpu_to_cpu</name></member>
+    <member refid="GpuCloner_8h_1a912ba9955075b7e10790c311f574d781" kind="function"><name>index_binary_cpu_to_gpu</name></member>
+    <member refid="GpuCloner_8h_1a0738a578f6f04c79a547a842c7e3a0e8" kind="function"><name>index_binary_cpu_to_gpu_multiple</name></member>
     <member refid="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
     <member refid="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" kind="function"><name>bfKnn_tiling</name></member>
     <member refid="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" kind="function"><name>bruteForceKnn</name></member>

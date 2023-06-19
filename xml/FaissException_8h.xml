@@ -84,10 +84,10 @@
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
       </node>
-      <node id="42">
+      <node id="33">
         <label>faiss/utils/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="43" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -106,17 +106,11 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="40">
-        <label>faiss/IndexIDMap.h</label>
-        <link refid="IndexIDMap_8h_source"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-      </node>
       <node id="21">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="43">
+      <node id="34">
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
@@ -128,12 +122,6 @@
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
       </node>
-      <node id="33">
-        <label>faiss/AutoTune.h</label>
-        <link refid="AutoTune_8h_source"/>
-        <childnode refid="34" relation="include">
-        </childnode>
-      </node>
       <node id="7">
         <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
         <link refid="GpuIndexBinaryFlat_8h_source"/>
@@ -142,7 +130,7 @@
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
-      <node id="44">
+      <node id="35">
         <label>faiss/utils/simdlib_neon.h</label>
         <link refid="simdlib__neon_8h_source"/>
       </node>
@@ -164,55 +152,19 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="39">
-        <label>faiss/IndexBinaryIVF.h</label>
-        <link refid="IndexBinaryIVF_8h_source"/>
-      </node>
-      <node id="38">
-        <label>faiss/IndexBinaryFromFloat.h</label>
-        <link refid="IndexBinaryFromFloat_8h_source"/>
-      </node>
-      <node id="37">
-        <label>faiss/IndexBinaryHash.h</label>
-        <link refid="IndexBinaryHash_8h_source"/>
-      </node>
       <node id="22">
         <label>faiss/impl/NNDescent.h</label>
         <link refid="NNDescent_8h_source"/>
         <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="41">
+      <node id="32">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
         <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
       <node id="11">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
         <link refid="GpuIndexIVFPQ_8h_source"/>
-      </node>
-      <node id="32">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h_source"/>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="35" relation="include">
-        </childnode>
-        <childnode refid="36" relation="include">
-        </childnode>
-        <childnode refid="38" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
       </node>
       <node id="13">
         <label>faiss/gpu/StandardGpuResources.h</label>
@@ -252,16 +204,6 @@
         <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="36">
-        <label>faiss/IndexBinaryFlat.h</label>
-        <link refid="IndexBinaryFlat_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
       <node id="28">
         <label>faiss/IndexReplicas.h</label>
         <link refid="IndexReplicas_8h_source"/>
@@ -275,10 +217,6 @@
         <link refid="IndexWrapper-inl_8h_source"/>
         <childnode refid="14" relation="include">
         </childnode>
-      </node>
-      <node id="34">
-        <label>faiss/gpu/GpuAutoTune.h</label>
-        <link refid="GpuAutoTune_8h_source"/>
       </node>
       <node id="2">
         <label>faiss/impl/FaissAssert.h</label>
@@ -303,11 +241,9 @@
         </childnode>
         <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="41" relation="include">
+        <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -321,10 +257,6 @@
         <link refid="IndexNNDescent_8h_source"/>
         <childnode refid="24" relation="include">
         </childnode>
-      </node>
-      <node id="35">
-        <label>faiss/index_factory.h</label>
-        <link refid="index__factory_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>

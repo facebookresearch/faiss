@@ -44,6 +44,7 @@
         <definition>IndexT* faiss::IndexIDMapTemplate&lt; IndexT &gt;::index</definition>
         <argsstring></argsstring>
         <name>index</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,6 +58,7 @@
         <definition>bool faiss::IndexIDMapTemplate&lt; IndexT &gt;::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>! the sub-index </para>
         </briefdescription>

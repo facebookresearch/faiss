@@ -276,7 +276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="68" column="14" declfile="faiss/gpu/GpuCloner.h" declline="68" declcolumn="14"/>
+        <location file="faiss/gpu/GpuCloner.h" line="70" column="14" declfile="faiss/gpu/GpuCloner.h" declline="70" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -307,7 +307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="71" column="14" declfile="faiss/gpu/GpuCloner.h" declline="71" declcolumn="14"/>
+        <location file="faiss/gpu/GpuCloner.h" line="73" column="14" declfile="faiss/gpu/GpuCloner.h" declline="73" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -337,7 +337,85 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="77" column="14" declfile="faiss/gpu/GpuCloner.h" declline="77" declcolumn="14"/>
+        <location file="faiss/gpu/GpuCloner.h" line="79" column="14" declfile="faiss/gpu/GpuCloner.h" declline="79" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuCloner_8h_1a3c1d63b6841829a0a51c42e041589adb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary* faiss::gpu::index_binary_gpu_to_cpu</definition>
+        <argsstring>(const faiss::IndexBinary *gpu_index)</argsstring>
+        <name>index_binary_gpu_to_cpu</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>gpu_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuCloner.h" line="104" column="20" declfile="faiss/gpu/GpuCloner.h" declline="104" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuCloner_8h_1a912ba9955075b7e10790c311f574d781" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary* faiss::gpu::index_binary_cpu_to_gpu</definition>
+        <argsstring>(GpuResourcesProvider *provider, int device, const faiss::IndexBinary *index, const GpuClonerOptions *options=nullptr)</argsstring>
+        <name>index_binary_cpu_to_gpu</name>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
+          <declname>provider</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref> *</type>
+          <declname>options</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>converts any CPU index that can be converted to GPU </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuCloner.h" line="108" column="20" declfile="faiss/gpu/GpuCloner.h" declline="108" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuCloner_8h_1a0738a578f6f04c79a547a842c7e3a0e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+        <definition>faiss::IndexBinary* faiss::gpu::index_binary_cpu_to_gpu_multiple</definition>
+        <argsstring>(std::vector&lt; GpuResourcesProvider * &gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const faiss::IndexBinary *index, const GpuMultipleClonerOptions *options=nullptr)</argsstring>
+        <name>index_binary_cpu_to_gpu_multiple</name>
+        <param>
+          <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
+          <declname>provider</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int &gt; &amp;</type>
+          <declname>devices</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref> *</type>
+          <declname>options</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuCloner.h" line="114" column="20" declfile="faiss/gpu/GpuCloner.h" declline="114" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
