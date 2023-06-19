@@ -21,18 +21,31 @@
 
 namespace faiss {
 
+namespace {
+
+// IndexBinary needs to update the code_size when d is set...
+
+void sync_d(Index* index) {}
+
+void sync_d(IndexBinary* index) {
+    FAISS_THROW_IF_NOT(index->d % 8 == 0);
+    index->code_size = index->d / 8;
+}
+
+} // anonymous namespace
+
 /*****************************************************
  * IndexIDMap implementation
  *******************************************************/
 
 template <typename IndexT>
-IndexIDMapTemplate<IndexT>::IndexIDMapTemplate(IndexT* index)
-        : index(index), own_fields(false) {
+IndexIDMapTemplate<IndexT>::IndexIDMapTemplate(IndexT* index) : index(index) {
     FAISS_THROW_IF_NOT_MSG(index->ntotal == 0, "index must be empty on input");
     this->is_trained = index->is_trained;
     this->metric_type = index->metric_type;
     this->verbose = index->verbose;
     this->d = index->d;
+    sync_d(this);
 }
 
 template <typename IndexT>

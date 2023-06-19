@@ -457,6 +457,36 @@ class TestRangeSearchMaxResults(unittest.TestCase):
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
 
+    def test_binary(self):
+        ds = datasets.SyntheticDataset(64, 1000, 1000, 200)
+        tobinary = faiss.index_factory(ds.d, "LSHrt")
+        tobinary.train(ds.get_train())
+        index = faiss.IndexBinaryFlat(ds.d)
+        xb = tobinary.sa_encode(ds.get_database())
+        xq = tobinary.sa_encode(ds.get_queries())
+        index.add(xb)
+
+        # find a reasonable radius
+        D, _ = index.search(xq, 10)
+        radius0 = int(np.median(D[:, -1]))
+
+        # baseline = search with that radius
+        lims_ref, Dref, Iref = index.range_search(xq, radius0)
+
+        # now see if using just the total number of results, we can get back
+        # the same result table
+        query_iterator = exponential_query_iterator(xq)
+
+        radius1, lims_new, Dnew, Inew = range_search_max_results(
+            index, query_iterator, ds.d // 2,
+            min_results=Dref.size, clip_to_min=True
+        )
+
+        evaluation.check_ref_range_results(
+            lims_ref, Dref, Iref,
+            lims_new, Dnew, Inew
+        )
+
 
 class TestClustering(unittest.TestCase):
 

@@ -124,6 +124,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
+
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -250,6 +251,7 @@ namespace std {
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 %template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
+
 
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
@@ -385,6 +387,9 @@ void gpu_sync_all_devices()
 // order matters because includes are not recursive
 
 %include  <faiss/utils/utils.h>
+%template(CombinerRangeKNNfloat) faiss::CombinerRangeKNN<float>;
+%template(CombinerRangeKNNint16) faiss::CombinerRangeKNN<int16_t>;
+
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
@@ -580,6 +585,7 @@ void gpu_sync_all_devices()
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
+%newobject clone_binary_index;
 %newobject clone_Quantizer;
 %newobject clone_VectorTransform;
 

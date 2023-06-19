@@ -15,6 +15,11 @@
 
 namespace faiss {
 
+IndexBinary::IndexBinary(idx_t d, MetricType metric)
+        : d(d), code_size(d / 8), metric_type(metric) {
+    FAISS_THROW_IF_NOT(d % 8 == 0);
+}
+
 IndexBinary::~IndexBinary() {}
 
 void IndexBinary::train(idx_t, const uint8_t*) {
@@ -51,7 +56,7 @@ void IndexBinary::reconstruct(idx_t, uint8_t*) const {
 
 void IndexBinary::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
     for (idx_t i = 0; i < ni; i++) {
-        reconstruct(i0 + i, recons + i * d);
+        reconstruct(i0 + i, recons + i * code_size);
     }
 }
 
@@ -70,10 +75,10 @@ void IndexBinary::search_and_reconstruct(
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;
             idx_t key = labels[ij];
-            uint8_t* reconstructed = recons + ij * d;
+            uint8_t* reconstructed = recons + ij * code_size;
             if (key < 0) {
                 // Fill with NaNs
-                memset(reconstructed, -1, sizeof(*reconstructed) * d);
+                memset(reconstructed, -1, code_size);
             } else {
                 reconstruct(key, reconstructed);
             }

@@ -6,7 +6,6 @@
 """this is a basic test script for simple indices work"""
 
 import os
-import sys
 import numpy as np
 import unittest
 import faiss
@@ -374,6 +373,7 @@ class TestReplicasAndShards(unittest.TestCase):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
             index.addIndex(sub_idx)
+        self.assertEqual(index_ref.code_size, index.code_size)
 
         D, I = index.search(xq, 10)
 
