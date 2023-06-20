@@ -65,7 +65,7 @@ struct Index {
     using component_t = float;
     using distance_t = float;
 
-    int d;        ///< vector dimension
+    idx_t d;      ///< vector dimension
     idx_t ntotal; ///< total nb of indexed vectors
     bool verbose; ///< verbosity level
 
