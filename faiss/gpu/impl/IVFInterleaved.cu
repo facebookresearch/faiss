@@ -192,24 +192,43 @@ void runIVFInterleavedScan(
     // caught for exceptions at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
+    const auto ivf_interleaved_call = [&](const auto func) {
+        func(queries,
+             listIds,
+             listData,
+             listIndices,
+             indicesOptions,
+             listLengths,
+             k,
+             metric,
+             useResidual,
+             residualBase,
+             scalarQ,
+             outDistances,
+             outIndices,
+             res);
+    };
+
     if (k == 1) {
-        IVF_INTERLEAVED_CALL(1);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_1_PARAMS>);
     } else if (k <= 32) {
-        IVF_INTERLEAVED_CALL(32);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_32_PARAMS>);
     } else if (k <= 64) {
-        IVF_INTERLEAVED_CALL(64);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_64_PARAMS>);
     } else if (k <= 128) {
-        IVF_INTERLEAVED_CALL(128);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_128_PARAMS>);
     } else if (k <= 256) {
-        IVF_INTERLEAVED_CALL(256);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_256_PARAMS>);
     } else if (k <= 512) {
-        IVF_INTERLEAVED_CALL(512);
+        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_512_PARAMS>);
     } else if (k <= 1024) {
-        IVF_INTERLEAVED_CALL(1024);
+        ivf_interleaved_call(
+                ivfInterleavedScanImpl<IVFINTERLEAVED_1024_PARAMS>);
     }
 #if GPU_MAX_SELECTION_K >= 2048
     else if (k <= 2048) {
-        IVF_INTERLEAVED_CALL(2048);
+        ivf_interleaved_call(
+                ivfInterleavedScanImpl<IVFINTERLEAVED_2048_PARAMS>);
     }
 #endif
 }

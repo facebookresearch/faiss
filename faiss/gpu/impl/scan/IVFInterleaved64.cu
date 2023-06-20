@@ -10,7 +10,7 @@
 namespace faiss {
 namespace gpu {
 
-IVF_INTERLEAVED_IMPL(128, 64, 3)
+IVF_INTERLEAVED_IMPL(IVFINTERLEAVED_64_PARAMS)
 
 }
 } // namespace faiss
