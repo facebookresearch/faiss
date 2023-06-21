@@ -122,9 +122,10 @@ __global__ void ivfInterleavedScan(
 
             // whole blocks
             for (int dBase = 0; dBase < dimBlocks; dBase += kWarpSize) {
-                int loadDim = dBase + laneId;
-                float queryReg = query[loadDim];
-                float residualReg = Residual ? residualBaseSlice[loadDim] : 0;
+                const int loadDim = dBase + laneId;
+                const float queryReg = query[loadDim];
+                [[maybe_unused]] const float residualReg =
+                        Residual ? residualBaseSlice[loadDim] : 0;
 
                 constexpr int kUnroll = 4;
 
@@ -151,7 +152,7 @@ __global__ void ivfInterleavedScan(
                         decV[j] = codec.decodeNew(dBase + d, encV[j]);
                     }
 
-                    if (Residual) {
+                    if constexpr (Residual) {
 #pragma unroll
                         for (int j = 0; j < kUnroll; ++j) {
                             int d = i * kUnroll + j;
@@ -169,13 +170,13 @@ __global__ void ivfInterleavedScan(
             }
 
             // remainder
-            int loadDim = dimBlocks + laneId;
-            bool loadDimInBounds = loadDim < dim;
+            const int loadDim = dimBlocks + laneId;
+            const bool loadDimInBounds = loadDim < dim;
 
-            float queryReg = loadDimInBounds ? query[loadDim] : 0;
-            float residualReg = Residual && loadDimInBounds
-                    ? residualBaseSlice[loadDim]
-                    : 0;
+            const float queryReg = loadDimInBounds ? query[loadDim] : 0;
+            [[maybe_unused]] const float residualReg =
+                    Residual && loadDimInBounds ? residualBaseSlice[loadDim]
+                                                : 0;
 
             for (int d = 0; d < dim - dimBlocks;
                  ++d, data += wordsPerVectorBlockDim) {
@@ -186,7 +187,7 @@ __global__ void ivfInterleavedScan(
                 enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::postRead(
                         laneId, enc);
                 float dec = codec.decodeNew(dimBlocks + d, enc);
-                if (Residual) {
+                if constexpr (Residual) {
                     dec += SHFL_SYNC(residualReg, d, kWarpSize);
                 }
 
@@ -216,198 +217,6 @@ __global__ void ivfInterleavedScan(
 // We split up the scan function into multiple compilation units to cut down on
 // compile time using these macros to define the function body
 //
-
-#define IVFINT_RUN(CODEC_TYPE, METRIC_TYPE, THREADS, NUM_WARP_Q, NUM_THREAD_Q) \
-    do {                                                                       \
-        dim3 grid(nprobe, std::min(nq, (idx_t)getMaxGridCurrentDevice().y));   \
-        if (useResidual) {                                                     \
-            ivfInterleavedScan<                                                \
-                    CODEC_TYPE,                                                \
-                    METRIC_TYPE,                                               \
-                    THREADS,                                                   \
-                    NUM_WARP_Q,                                                \
-                    NUM_THREAD_Q,                                              \
-                    true><<<grid, THREADS, codec.getSmemSize(dim), stream>>>(  \
-                    queries,                                                   \
-                    residualBase,                                              \
-                    listIds,                                                   \
-                    listData.data(),                                           \
-                    listLengths.data(),                                        \
-                    codec,                                                     \
-                    metric,                                                    \
-                    k,                                                         \
-                    distanceTemp,                                              \
-                    indicesTemp);                                              \
-        } else {                                                               \
-            ivfInterleavedScan<                                                \
-                    CODEC_TYPE,                                                \
-                    METRIC_TYPE,                                               \
-                    THREADS,                                                   \
-                    NUM_WARP_Q,                                                \
-                    NUM_THREAD_Q,                                              \
-                    false><<<grid, THREADS, codec.getSmemSize(dim), stream>>>( \
-                    queries,                                                   \
-                    residualBase,                                              \
-                    listIds,                                                   \
-                    listData.data(),                                           \
-                    listLengths.data(),                                        \
-                    codec,                                                     \
-                    metric,                                                    \
-                    k,                                                         \
-                    distanceTemp,                                              \
-                    indicesTemp);                                              \
-        }                                                                      \
-                                                                               \
-        runIVFInterleavedScan2(                                                \
-                distanceTemp,                                                  \
-                indicesTemp,                                                   \
-                listIds,                                                       \
-                k,                                                             \
-                listIndices,                                                   \
-                indicesOptions,                                                \
-                METRIC_TYPE::kDirection,                                       \
-                outDistances,                                                  \
-                outIndices,                                                    \
-                stream);                                                       \
-    } while (0);
-
-#define IVFINT_CODECS(METRIC_TYPE, THREADS, NUM_WARP_Q, NUM_THREAD_Q)          \
-    do {                                                                       \
-        if (!scalarQ) {                                                        \
-            using CodecT = CodecFloat;                                         \
-            CodecT codec(dim * sizeof(float));                                 \
-            IVFINT_RUN(                                                        \
-                    CodecT, METRIC_TYPE, THREADS, NUM_WARP_Q, NUM_THREAD_Q);   \
-        } else {                                                               \
-            switch (scalarQ->qtype) {                                          \
-                case ScalarQuantizer::QuantizerType::QT_8bit: {                \
-                    using CodecT =                                             \
-                            Codec<ScalarQuantizer::QuantizerType::QT_8bit, 1>; \
-                    CodecT codec(                                              \
-                            scalarQ->code_size,                                \
-                            scalarQ->gpuTrained.data(),                        \
-                            scalarQ->gpuTrained.data() + dim);                 \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_8bit_uniform: {        \
-                    using CodecT = Codec<                                      \
-                            ScalarQuantizer::QuantizerType::QT_8bit_uniform,   \
-                            1>;                                                \
-                    CodecT codec(                                              \
-                            scalarQ->code_size,                                \
-                            scalarQ->trained[0],                               \
-                            scalarQ->trained[1]);                              \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_fp16: {                \
-                    using CodecT =                                             \
-                            Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1>; \
-                    CodecT codec(scalarQ->code_size);                          \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_8bit_direct: {         \
-                    using CodecT = Codec<                                      \
-                            ScalarQuantizer::QuantizerType::QT_8bit_direct,    \
-                            1>;                                                \
-                    Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1>   \
-                            codec(scalarQ->code_size);                         \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_6bit: {                \
-                    using CodecT =                                             \
-                            Codec<ScalarQuantizer::QuantizerType::QT_6bit, 1>; \
-                    Codec<ScalarQuantizer::QuantizerType::QT_6bit, 1> codec(   \
-                            scalarQ->code_size,                                \
-                            scalarQ->gpuTrained.data(),                        \
-                            scalarQ->gpuTrained.data() + dim);                 \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_4bit: {                \
-                    using CodecT =                                             \
-                            Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1>; \
-                    Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> codec(   \
-                            scalarQ->code_size,                                \
-                            scalarQ->gpuTrained.data(),                        \
-                            scalarQ->gpuTrained.data() + dim);                 \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                case ScalarQuantizer::QuantizerType::QT_4bit_uniform: {        \
-                    using CodecT = Codec<                                      \
-                            ScalarQuantizer::QuantizerType::QT_4bit_uniform,   \
-                            1>;                                                \
-                    Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1>  \
-                            codec(scalarQ->code_size,                          \
-                                  scalarQ->trained[0],                         \
-                                  scalarQ->trained[1]);                        \
-                    IVFINT_RUN(                                                \
-                            CodecT,                                            \
-                            METRIC_TYPE,                                       \
-                            THREADS,                                           \
-                            NUM_WARP_Q,                                        \
-                            NUM_THREAD_Q);                                     \
-                } break;                                                       \
-                default:                                                       \
-                    FAISS_ASSERT(false);                                       \
-            }                                                                  \
-        }                                                                      \
-    } while (0)
-
-#define IVFINT_METRICS(THREADS, NUM_WARP_Q, NUM_THREAD_Q)                 \
-    do {                                                                  \
-        auto stream = res->getDefaultStreamCurrentDevice();               \
-        auto nq = queries.getSize(0);                                     \
-        auto dim = queries.getSize(1);                                    \
-        auto nprobe = listIds.getSize(1);                                 \
-                                                                          \
-        DeviceTensor<float, 3, true> distanceTemp(                        \
-                res,                                                      \
-                makeTempAlloc(AllocType::Other, stream),                  \
-                {queries.getSize(0), listIds.getSize(1), k});             \
-        DeviceTensor<idx_t, 3, true> indicesTemp(                         \
-                res,                                                      \
-                makeTempAlloc(AllocType::Other, stream),                  \
-                {queries.getSize(0), listIds.getSize(1), k});             \
-                                                                          \
-        if (metric == MetricType::METRIC_L2) {                            \
-            L2Distance metric;                                            \
-            IVFINT_CODECS(L2Distance, THREADS, NUM_WARP_Q, NUM_THREAD_Q); \
-        } else if (metric == MetricType::METRIC_INNER_PRODUCT) {          \
-            IPDistance metric;                                            \
-            IVFINT_CODECS(IPDistance, THREADS, NUM_WARP_Q, NUM_THREAD_Q); \
-        } else {                                                          \
-            FAISS_ASSERT(false);                                          \
-        }                                                                 \
-    } while (0)
 
 // Top-level IVF scan function for the interleaved by 32 layout
 // with all implementations
