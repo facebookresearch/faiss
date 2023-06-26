@@ -308,6 +308,104 @@
              
   <section id="file-hamdis-inl-h">
 <h1>File hamdis-inl.h<a class="headerlink" href="#file-hamdis-inl-h" title="Permalink to this heading"></a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SPECIALIZED_HC">
+<span class="target" id="hamdis-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9"></span><span class="sig-name descname"><span class="n"><span class="pre">SPECIALIZED_HC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">CODE_SIZE</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SPECIALIZED_HC" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DISPATCH_HC">
+<span class="target" id="hamdis-inl_8h_1aed2bbccac7883ce7cdab514e99fca28f"></span><span class="sig-name descname"><span class="n"><span class="pre">DISPATCH_HC</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">CODE_SIZE</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DISPATCH_HC" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a> is intended to define a subset of vectors to handle (for removal or as subset to search)</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. PQ4 SIMD packing and accumulation functions</p>
+<p>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</p>
+<p>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</p>
+<p>The SIMDResultHandler object is intended to be templated and inlined. Methods:<ul class="simple">
+<li><p>handle(): called when 32 distances are computed and provided in two <a class="reference internal" href="../struct/structfaiss_1_1simd16uint16.html#structfaiss_1_1simd16uint16"><span class="std std-ref">simd16uint16</span></a>. (q, b) indicate which entry it is in the block.</p></li>
+<li><p>set_block_origin(): set the sub-matrix that is being computed</p></li>
+</ul>
+</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1a3c20def47976af19292a160b2ec551d2"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(4)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(8)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(16)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(20)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(32)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae"></span><span class="sig-name descname"><span class="pre">SPECIALIZED_HC</span> <span class="pre">(64)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN5faiss24dispatch_HammingComputerEN8Consumer1TEiR8ConsumerDp5Types">
+<span id="_CPPv3I0DpEN5faiss24dispatch_HammingComputerEiR8ConsumerDp5Types"></span><span id="_CPPv2I0DpEN5faiss24dispatch_HammingComputerEiR8ConsumerDp5Types"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Consumer</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Types</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacefaiss_1af53a51eeba20beeeefb82758e28c7712"></span><a class="reference internal" href="#_CPPv4I0DpEN5faiss24dispatch_HammingComputerEN8Consumer1TEiR8ConsumerDp5Types" title="faiss::dispatch_HammingComputer::Consumer"><span class="n"><span class="pre">Consumer</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dispatch_HammingComputer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN5faiss24dispatch_HammingComputerEN8Consumer1TEiR8ConsumerDp5Types" title="faiss::dispatch_HammingComputer::Consumer"><span class="n"><span class="pre">Consumer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">consumer</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN5faiss24dispatch_HammingComputerEN8Consumer1TEiR8ConsumerDp5Types" title="faiss::dispatch_HammingComputer::Types"><span class="n"><span class="pre">Types</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN5faiss24dispatch_HammingComputerEN8Consumer1TEiR8ConsumerDp5Types" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_iEN5faiss15HammingComputerE">
+<span id="_CPPv3I_iEN5faiss15HammingComputerE"></span><span id="_CPPv2I_iEN5faiss15HammingComputerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CODE_SIZE</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1HammingComputer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="generic-inl_8h.html#_CPPv4N5faiss22HammingComputerDefaultE" title="faiss::HammingComputerDefault"><span class="n"><span class="pre">HammingComputerDefault</span></span></a><a class="headerlink" href="#_CPPv4I_iEN5faiss15HammingComputerE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15HammingComputer15HammingComputerEPK7uint8_ti">
+<span id="_CPPv3N5faiss15HammingComputer15HammingComputerEPK7uint8_ti"></span><span id="_CPPv2N5faiss15HammingComputer15HammingComputerEPK7uint8_ti"></span><span id="faiss::HammingComputer::HammingComputer__uint8_tCP.i"></span><span class="target" id="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15HammingComputer15HammingComputerEPK7uint8_ti" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
