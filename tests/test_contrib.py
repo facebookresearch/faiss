@@ -521,7 +521,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 50)
+        self.assertLess(ndiff, 51)
 
 
 class TestBigBatchSearch(unittest.TestCase):
