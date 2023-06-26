@@ -1440,7 +1440,6 @@
   </compound>
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
-    <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
@@ -1556,34 +1555,6 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1HammingComputerM4" kind="struct"><name>faiss::HammingComputerM4</name>
-    <member refid="structfaiss_1_1HammingComputerM4_1a315cf1b68bf3fbb652c97e11c85aacf9" kind="variable"><name>a</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1a850a14fffa6e73400dc351ce9f2f4098" kind="variable"><name>n</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1a3438297be27f32d1fdc62607404b9060" kind="function"><name>HammingComputerM4</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ad33e45019079424426fdb64c7f7a55f9" kind="function"><name>HammingComputerM4</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ae058888cc2117ecd2a3695a43468097c" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ae12ba4b1be2bf0458d833a94b86c5adc" kind="function"><name>hamming</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1aa033f5097b71788523d826ba64a95e60" kind="function"><name>get_code_size</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1a3438297be27f32d1fdc62607404b9060" kind="function"><name>HammingComputerM4</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ad33e45019079424426fdb64c7f7a55f9" kind="function"><name>HammingComputerM4</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ae058888cc2117ecd2a3695a43468097c" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1ae12ba4b1be2bf0458d833a94b86c5adc" kind="function"><name>hamming</name></member>
-    <member refid="structfaiss_1_1HammingComputerM4_1aa033f5097b71788523d826ba64a95e60" kind="function"><name>get_code_size</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1HammingComputerM8" kind="struct"><name>faiss::HammingComputerM8</name>
-    <member refid="structfaiss_1_1HammingComputerM8_1aa6598dbcaa96219b27bf9d5f38fd7ed2" kind="variable"><name>a</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a2c69b8d3ad9c8f0b08d4f18956ea76ac" kind="variable"><name>n</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1ac1cf28a150bab758028e2b3885f509ec" kind="function"><name>HammingComputerM8</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a33e9ebd57c6621f0b777784962a85213" kind="function"><name>HammingComputerM8</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" kind="function"><name>hamming</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a059b12821ac3ca32f6193c82f1db3825" kind="function"><name>get_code_size</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1ac1cf28a150bab758028e2b3885f509ec" kind="function"><name>HammingComputerM8</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a33e9ebd57c6621f0b777784962a85213" kind="function"><name>HammingComputerM8</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" kind="function"><name>hamming</name></member>
-    <member refid="structfaiss_1_1HammingComputerM8_1a059b12821ac3ca32f6193c82f1db3825" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HCounterState" kind="struct"><name>faiss::HCounterState</name>
     <member refid="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe" kind="variable"><name>counters</name></member>
@@ -8498,15 +8469,16 @@
     <member refid="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" kind="function"><name>hamming&lt; 64 &gt;</name></member>
     <member refid="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" kind="function"><name>hamming&lt; 128 &gt;</name></member>
     <member refid="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" kind="function"><name>hamming&lt; 256 &gt;</name></member>
+    <member refid="namespacefaiss_1a69337e23232a204be3e1464713fee62d" kind="function"><name>generalized_hamming_64</name></member>
+    <member refid="namespacefaiss_1a8af12986585c75db3a1dbb2b74b6111e" kind="function"><name>popcount32</name></member>
+    <member refid="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" kind="function"><name>popcount64</name></member>
     <member refid="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1a69337e23232a204be3e1464713fee62d" kind="function"><name>generalized_hamming_64</name></member>
-    <member refid="namespacefaiss_1a8af12986585c75db3a1dbb2b74b6111e" kind="function"><name>popcount32</name></member>
-    <member refid="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" kind="function"><name>popcount64</name></member>
+    <member refid="namespacefaiss_1af53a51eeba20beeeefb82758e28c7712" kind="function"><name>dispatch_HammingComputer</name></member>
     <member refid="namespacefaiss_1a1d40aec5723474516de576263cc03048" kind="function"><name>heap_pop</name></member>
     <member refid="namespacefaiss_1a2e2264988d2658c0cd467463bc03254c" kind="function"><name>heap_push</name></member>
     <member refid="namespacefaiss_1abedf9900fe8f4b4566801aad585d60c1" kind="function"><name>heap_replace_top</name></member>
@@ -9213,7 +9185,6 @@
   <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
   </compound>
   <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-    <member refid="hamming__distance_2avx2-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>
   </compound>
   <compound refid="generic_8h" kind="file"><name>generic.h</name>
   </compound>
@@ -9253,9 +9224,10 @@
     <member refid="common_8h_1af54d4643f130c0bc719a8d181ca68a2b" kind="typedef"><name>hamdis_t</name></member>
   </compound>
   <compound refid="generic-inl_8h" kind="file"><name>generic-inl.h</name>
-    <member refid="generic-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>
   </compound>
   <compound refid="hamdis-inl_8h" kind="file"><name>hamdis-inl.h</name>
+    <member refid="hamdis-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>
+    <member refid="hamdis-inl_8h_1aed2bbccac7883ce7cdab514e99fca28f" kind="define"><name>DISPATCH_HC</name></member>
   </compound>
   <compound refid="neon-inl_8h" kind="file"><name>neon-inl.h</name>
   </compound>

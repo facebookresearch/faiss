@@ -3,7 +3,6 @@
   <compounddef id="structfaiss_1_1HammingComputerDefault" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputerDefault</compoundname>
     <derivedcompoundref refid="structfaiss_1_1HammingComputer" prot="public" virt="non-virtual">faiss::HammingComputer&lt; CODE_SIZE &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1HammingComputer" prot="public" virt="non-virtual">faiss::HammingComputer&lt; CODE_SIZE &gt;</derivedcompoundref>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
@@ -229,8 +228,6 @@
       <node id="2">
         <label>faiss::HammingComputer&lt; CODE_SIZE &gt;</label>
         <link refid="structfaiss_1_1HammingComputer"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

@@ -89,35 +89,36 @@
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>popcount32(uint32_t<sp/>x)<sp/>{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__builtin_popcount(x);</highlight></codeline>
-<codeline lineno="22"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>popcount</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>popcount64(uint64_t<sp/>x)<sp/>{</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__builtin_popcountl(x);</highlight></codeline>
-<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>table<sp/>was<sp/>moved<sp/>from<sp/>.cpp<sp/>to<sp/>.h<sp/>file,<sp/>because</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>otherwise<sp/>it<sp/>was<sp/>causing<sp/>compilation<sp/>errors<sp/>while<sp/>trying<sp/>to</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compile<sp/>swig<sp/>modules<sp/>on<sp/>Windows.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo<sp/>for<sp/>C++17:<sp/>switch<sp/>to<sp/>&apos;inline<sp/>constexpr&apos;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>uint8_t<sp/>hamdis_tab_ham_bytes[256]<sp/>=<sp/>{</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0,<sp/>1,<sp/>1,<sp/>2,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>6,<sp/>7,<sp/>7,<sp/>8};</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>trust<sp/>the<sp/>compiler<sp/>to<sp/>provide<sp/>efficient<sp/>popcount<sp/>implementations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>popcount32(uint32_t<sp/>x)<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__builtin_popcount(x);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>popcount</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>popcount64(uint64_t<sp/>x)<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>__builtin_popcountl(x);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>table<sp/>was<sp/>moved<sp/>from<sp/>.cpp<sp/>to<sp/>.h<sp/>file,<sp/>because</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>otherwise<sp/>it<sp/>was<sp/>causing<sp/>compilation<sp/>errors<sp/>while<sp/>trying<sp/>to</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compile<sp/>swig<sp/>modules<sp/>on<sp/>Windows.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo<sp/>for<sp/>C++17:<sp/>switch<sp/>to<sp/>&apos;inline<sp/>constexpr&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>uint8_t<sp/>hamdis_tab_ham_bytes[256]<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0,<sp/>1,<sp/>1,<sp/>2,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>5,<sp/>6,<sp/>6,<sp/>7,<sp/>6,<sp/>7,<sp/>7,<sp/>8};</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/utils/hamming_distance/common.h"/>
   </compounddef>

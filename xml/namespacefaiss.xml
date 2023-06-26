@@ -224,13 +224,11 @@
     <innerclass refid="structfaiss_1_1HammingComputer32" prot="public">faiss::HammingComputer32</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer64" prot="public">faiss::HammingComputer64</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputerDefault" prot="public">faiss::HammingComputerDefault</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputerM8" prot="public">faiss::HammingComputerM8</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputerM4" prot="public">faiss::HammingComputerM4</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer8" prot="public">faiss::GenHammingComputer8</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer16" prot="public">faiss::GenHammingComputer16</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer32" prot="public">faiss::GenHammingComputer32</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputerM8" prot="public">faiss::GenHammingComputerM8</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
     <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
     <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
     <innerclass refid="structfaiss_1_1CMin" prot="public">faiss::CMin</innerclass>
@@ -917,7 +915,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="33" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/common.h" line="34" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PartitionStats" kindref="compound">PartitionStats</ref></type>
@@ -5897,102 +5895,6 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/avx2-inl.h" line="59" column="8" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="59" bodyend="62"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(4)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>4</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="426" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="426" declcolumn="1"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(8)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>8</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="427" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="427" declcolumn="1"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(16)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>16</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="428" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="428" declcolumn="1"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(20)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>20</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="429" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="429" declcolumn="1"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(32)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>32</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="430" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="430" declcolumn="1"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::SPECIALIZED_HC</definition>
-        <argsstring>(64)</argsstring>
-        <name>SPECIALIZED_HC</name>
-        <param>
-          <type>64</type>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="431" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="431" declcolumn="1"/>
-      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69337e23232a204be3e1464713fee62d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::generalized_hamming_64</definition>
@@ -6008,7 +5910,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="440" column="12" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="440" bodyend="446"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="353" column="12" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="353" bodyend="359"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8af12986585c75db3a1dbb2b74b6111e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -6025,7 +5927,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="20" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="20" bodyend="22"/>
+        <location file="faiss/utils/hamming_distance/common.h" line="21" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="21" bodyend="23"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -6042,7 +5944,138 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="25" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="25" bodyend="27"/>
+        <location file="faiss/utils/hamming_distance/common.h" line="26" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(4)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>4</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="46" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="46" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(8)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="47" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="47" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(16)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>16</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="48" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="48" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(20)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>20</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="49" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="49" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(32)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>32</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="50" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="50" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SPECIALIZED_HC</definition>
+        <argsstring>(64)</argsstring>
+        <name>SPECIALIZED_HC</name>
+        <param>
+          <type>64</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="51" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="51" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af53a51eeba20beeeefb82758e28c7712" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Consumer</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Types</declname>
+            <defname>Types</defname>
+          </param>
+        </templateparamlist>
+        <type>Consumer::T</type>
+        <definition>Consumer::T faiss::dispatch_HammingComputer</definition>
+        <argsstring>(int code_size, Consumer &amp;consumer, Types... args)</argsstring>
+        <name>dispatch_HammingComputer</name>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>Consumer &amp;</type>
+          <declname>consumer</declname>
+        </param>
+        <param>
+          <type>Types...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="62" column="22" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="62" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d40aec5723474516de576263cc03048" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
