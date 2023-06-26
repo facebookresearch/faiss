@@ -263,13 +263,6 @@ workflows:
           gpu: "ON"
           requires:
             - Linux x86_64 (cmake)
-      - build_cmake:
-          name: Linux x86_64 GPU w/ RAFT (cmake)
-          exec: linux-x86_64-gpu
-          gpu: "ON"
-          raft: "ON"
-          requires:
-            - Linux x86_64 (cmake)
       - build_conda:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
@@ -376,3 +369,18 @@ workflows:
           name: Linux arm64 nightlies
           exec: linux-arm64-cpu
           label: nightly
+
+  raft_nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - build_cmake:
+          name: Linux x86_64 GPU w/ RAFT (cmake)
+          exec: linux-x86_64-gpu
+          gpu: "ON"
+          raft: "ON"
