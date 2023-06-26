@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 /*
  * Implementation of Hamming related functions (distances, smallest distance
  * selection with regular heap|radix and probabilistic heap|radix.
  *
  * IMPLEMENTATION NOTES
- * Bitvectors are generally assumed to be multiples of 64 bits.
+ * Optimal speed is typically obtained for vector sizes of multiples of 64
+ * bits.
  *
  * hamdis_t is used for distances because at this time
  * it is not clear how we will need to balance
@@ -20,8 +19,6 @@
  * - memory usage
  * - cache-misses when dealing with large volumes of data (lower bits is better)
  *
- * The hamdis_t should optimally be compatibe with one of the Torch Storage
- * (Byte,Short,Long) and therefore should be signed for 2-bytes and 4-bytes
  */
 
 #include <faiss/utils/hamming.h>
@@ -165,9 +162,11 @@ size_t match_hamming_thres(
     return posm;
 }
 
+namespace {
+
 /* Return closest neighbors w.r.t Hamming distance, using a heap. */
 template <class HammingComputer>
-static void hammings_knn_hc(
+void hammings_knn_hc(
         int bytes_per_code,
         int_maxheap_array_t* __restrict ha,
         const uint8_t* __restrict bs1,
@@ -234,7 +233,7 @@ static void hammings_knn_hc(
 
 /* Return closest neighbors w.r.t Hamming distance, using max count. */
 template <class HammingComputer>
-static void hammings_knn_mc(
+void hammings_knn_mc(
         int bytes_per_code,
         const uint8_t* __restrict a,
         const uint8_t* __restrict b,
@@ -286,6 +285,63 @@ static void hammings_knn_mc(
         }
     }
 }
+
+template <class HammingComputer>
+void hamming_range_search(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        int radius,
+        size_t code_size,
+        RangeSearchResult* res) {
+#pragma omp parallel
+    {
+        RangeSearchPartialResult pres(res);
+
+#pragma omp for
+        for (int64_t i = 0; i < na; i++) {
+            HammingComputer hc(a + i * code_size, code_size);
+            const uint8_t* yi = b;
+            RangeQueryResult& qres = pres.new_result(i);
+
+            for (size_t j = 0; j < nb; j++) {
+                int dis = hc.hamming(yi);
+                if (dis < radius) {
+                    qres.add(dis, j);
+                }
+                yi += code_size;
+            }
+        }
+        pres.finalize();
+    }
+}
+
+struct Run_hammings_knn_hc {
+    using T = void;
+    template <class HammingComputer, class... Types>
+    void f(Types... args) {
+        hammings_knn_hc<HammingComputer>(args...);
+    }
+};
+
+struct Run_hammings_knn_mc {
+    using T = void;
+    template <class HammingComputer, class... Types>
+    void f(Types... args) {
+        hammings_knn_mc<HammingComputer>(args...);
+    }
+};
+
+struct Run_hamming_range_search {
+    using T = void;
+    template <class HammingComputer, class... Types>
+    void f(Types... args) {
+        hamming_range_search<HammingComputer>(args...);
+    }
+};
+
+} // namespace
 
 /* Functions to maps vectors to bits. Assume proper allocation done beforehand,
    meaning that b should be be able to receive as many bits as x may produce. */
@@ -437,28 +493,9 @@ void hammings_knn_hc(
         size_t ncodes,
         int order,
         ApproxTopK_mode_t approx_topk_mode) {
-    switch (ncodes) {
-        case 4:
-            hammings_knn_hc<faiss::HammingComputer4>(
-                    4, ha, a, b, nb, order, true, approx_topk_mode);
-            break;
-        case 8:
-            hammings_knn_hc<faiss::HammingComputer8>(
-                    8, ha, a, b, nb, order, true, approx_topk_mode);
-            break;
-        case 16:
-            hammings_knn_hc<faiss::HammingComputer16>(
-                    16, ha, a, b, nb, order, true, approx_topk_mode);
-            break;
-        case 32:
-            hammings_knn_hc<faiss::HammingComputer32>(
-                    32, ha, a, b, nb, order, true, approx_topk_mode);
-            break;
-        default:
-            hammings_knn_hc<faiss::HammingComputerDefault>(
-                    ncodes, ha, a, b, nb, order, true, approx_topk_mode);
-            break;
-    }
+    Run_hammings_knn_hc r;
+    dispatch_HammingComputer(
+            ncodes, r, ncodes, ha, a, b, nb, order, true, approx_topk_mode);
 }
 
 void hammings_knn_mc(
@@ -470,58 +507,9 @@ void hammings_knn_mc(
         size_t ncodes,
         int32_t* __restrict distances,
         int64_t* __restrict labels) {
-    switch (ncodes) {
-        case 4:
-            hammings_knn_mc<faiss::HammingComputer4>(
-                    4, a, b, na, nb, k, distances, labels);
-            break;
-        case 8:
-            hammings_knn_mc<faiss::HammingComputer8>(
-                    8, a, b, na, nb, k, distances, labels);
-            break;
-        case 16:
-            hammings_knn_mc<faiss::HammingComputer16>(
-                    16, a, b, na, nb, k, distances, labels);
-            break;
-        case 32:
-            hammings_knn_mc<faiss::HammingComputer32>(
-                    32, a, b, na, nb, k, distances, labels);
-            break;
-        default:
-            hammings_knn_mc<faiss::HammingComputerDefault>(
-                    ncodes, a, b, na, nb, k, distances, labels);
-            break;
-    }
-}
-template <class HammingComputer>
-static void hamming_range_search_template(
-        const uint8_t* a,
-        const uint8_t* b,
-        size_t na,
-        size_t nb,
-        int radius,
-        size_t code_size,
-        RangeSearchResult* res) {
-#pragma omp parallel
-    {
-        RangeSearchPartialResult pres(res);
-
-#pragma omp for
-        for (int64_t i = 0; i < na; i++) {
-            HammingComputer hc(a + i * code_size, code_size);
-            const uint8_t* yi = b;
-            RangeQueryResult& qres = pres.new_result(i);
-
-            for (size_t j = 0; j < nb; j++) {
-                int dis = hc.hamming(yi);
-                if (dis < radius) {
-                    qres.add(dis, j);
-                }
-                yi += code_size;
-            }
-        }
-        pres.finalize();
-    }
+    Run_hammings_knn_mc r;
+    dispatch_HammingComputer(
+            ncodes, r, ncodes, a, b, na, nb, k, distances, labels);
 }
 
 void hamming_range_search(
@@ -532,27 +520,9 @@ void hamming_range_search(
         int radius,
         size_t code_size,
         RangeSearchResult* result) {
-#define HC(name) \
-    hamming_range_search_template<name>(a, b, na, nb, radius, code_size, result)
-
-    switch (code_size) {
-        case 4:
-            HC(HammingComputer4);
-            break;
-        case 8:
-            HC(HammingComputer8);
-            break;
-        case 16:
-            HC(HammingComputer16);
-            break;
-        case 32:
-            HC(HammingComputer32);
-            break;
-        default:
-            HC(HammingComputerDefault);
-            break;
-    }
-#undef HC
+    Run_hamming_range_search r;
+    dispatch_HammingComputer(
+            code_size, r, a, b, na, nb, radius, code_size, result);
 }
 
 /* Count number of matches given a max threshold            */
