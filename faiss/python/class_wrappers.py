@@ -495,7 +495,7 @@ def handle_Index(the_class):
             Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
         """
         if ni == -1:
-            ni = self.ntotal
+            ni = self.ntotal - n0
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -767,32 +767,43 @@ def handle_IndexBinary(the_class):
     def replacement_add(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
         x = _check_dtype_uint8(x)
         ids = np.ascontiguousarray(ids, dtype='int64')
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.train_c(n, swig_ptr(x))
 
     def replacement_reconstruct(self, key):
-        x = np.empty(self.d // 8, dtype=np.uint8)
+        x = np.empty(self.code_size, dtype=np.uint8)
         self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
+        if ni == -1:
+            ni = self.ntotal - n0
+        if x is None:
+            x = np.empty((ni, self.code_size), dtype=np.uint8)
+        else:
+            assert x.shape == (ni, self.code_size)
+
+        self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
 
     def replacement_search(self, x, k):
         x = _check_dtype_uint8(x)
         n, d = x.shape
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
         labels = np.empty((n, k), dtype=np.int64)
@@ -804,7 +815,7 @@ def handle_IndexBinary(the_class):
     def replacement_search_preassigned(self, x, k, Iq, Dq):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
 
         D = np.empty((n, k), dtype=np.int32)
@@ -829,7 +840,7 @@ def handle_IndexBinary(the_class):
     def replacement_range_search(self, x, thresh):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res)
         # get pointers and copy them
@@ -842,7 +853,7 @@ def handle_IndexBinary(the_class):
     def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
 
         Iq = np.ascontiguousarray(Iq, dtype='int64')
         assert params is None, "params not supported"
@@ -866,9 +877,6 @@ def handle_IndexBinary(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
-
-
-
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
             sel = x
@@ -884,6 +892,7 @@ def handle_IndexBinary(the_class):
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)

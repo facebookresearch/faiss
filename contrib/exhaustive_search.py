@@ -60,12 +60,18 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
     - None. In that case, at most gpu_k results will be returned
     """
     nq, d = xq.shape
-    k = min(index_gpu.ntotal, gpu_k)
+    is_binary_index = isinstance(index_gpu, faiss.IndexBinary)
     keep_max = faiss.is_similarity_metric(index_gpu.metric_type)
-    LOG.debug(f"GPU search {nq} queries with {k=:}")
+    r2 = int(r2) if is_binary_index else float(r2)
+    k = min(index_gpu.ntotal, gpu_k)
+    LOG.debug(
+        f"GPU search {nq} queries with {k=:} {is_binary_index=:} {keep_max=:}")
     t0 = time.time()
     D, I = index_gpu.search(xq, k)
     t1 = time.time() - t0
+    if is_binary_index:
+        assert d * 8 < 32768  # let's compact the distance matrix
+        D = D.astype('int16')
     t2 = 0
     lim_remain = None
     if index_cpu is not None:
@@ -79,14 +85,24 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
             if isinstance(index_cpu, np.ndarray):
                 # then it in fact an array that we have to make flat
                 xb = index_cpu
-                index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
+                if is_binary_index:
+                    index_cpu = faiss.IndexBinaryFlat(d * 8)
+                else:
+                    index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
                 index_cpu.add(xb)
             lim_remain, D_remain, I_remain = index_cpu.range_search(xq[mask], r2)
+            if is_binary_index:
+                D_remain = D_remain.astype('int16')
             t2 = time.time() - t0
     LOG.debug("combine")
     t0 = time.time()
 
-    combiner = faiss.CombinerRangeKNN(nq, k, float(r2), keep_max)
+    CombinerRangeKNN = (
+        faiss.CombinerRangeKNNint16 if is_binary_index else
+        faiss.CombinerRangeKNNfloat
+    )
+
+    combiner = CombinerRangeKNN(nq, k, r2, keep_max)
     if True:
         sp = faiss.swig_ptr
         combiner.I = sp(I)
@@ -101,7 +117,7 @@ def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
         L_res = np.empty(nq + 1, dtype='int64')
         combiner.compute_sizes(sp(L_res))
         nres = L_res[-1]
-        D_res = np.empty(nres, dtype='float32')
+        D_res = np.empty(nres, dtype=D.dtype)
         I_res = np.empty(nres, dtype='int64')
         combiner.write_result(sp(D_res), sp(I_res))
     else:
@@ -251,6 +267,7 @@ def range_search_max_results(index, query_iterator, radius,
     """
     # TODO: all result manipulations are in python, should move to C++ if perf
     # critical
+    is_binary_index = isinstance(index, faiss.IndexBinary)
 
     if min_results is None:
         assert max_results is not None
@@ -268,6 +285,8 @@ def range_search_max_results(index, query_iterator, radius,
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
         index_gpu = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
+    else:
+        index_gpu = None
 
     t_start = time.time()
     t_search = t_post_process = 0
@@ -276,7 +295,8 @@ def range_search_max_results(index, query_iterator, radius,
 
     for xqi in query_iterator:
         t0 = time.time()
-        if ngpu > 0:
+        LOG.debug(f"searching {len(xqi)} vectors")
+        if index_gpu:
             lims_i, Di, Ii = range_search_gpu(xqi, radius, index_gpu, index)
         else:
             lims_i, Di, Ii = index.range_search(xqi, radius)
@@ -286,8 +306,7 @@ def range_search_max_results(index, query_iterator, radius,
         qtot += len(xqi)
 
         t1 = time.time()
-        if xqi.dtype != np.float32:
-            # for binary indexes
+        if is_binary_index:
             # weird Faiss quirk that returns floats for Hamming distances
             Di = Di.astype('int16')
 
@@ -299,7 +318,7 @@ def range_search_max_results(index, query_iterator, radius,
                      (totres, max_results))
             radius, totres = apply_maxres(
                 res_batches, min_results,
-                keep_max=faiss.is_similarity_metric(index.metric_type)
+                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
             )
         t2 = time.time()
         t_search += t1 - t0
@@ -315,7 +334,7 @@ def range_search_max_results(index, query_iterator, radius,
     if clip_to_min and totres > min_results:
         radius, totres = apply_maxres(
             res_batches, min_results,
-            keep_max=faiss.is_similarity_metric(index.metric_type)
+            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
         )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])

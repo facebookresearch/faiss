@@ -335,10 +335,10 @@ def knn(xq, xb, k, metric=METRIC_L2):
     Parameters
     ----------
     xq : array_like
-        Query vectors, shape (nq, d) where d is appropriate for the index.
+        Query vectors, shape (nq, d) where the dimension d is that same as xb
         `dtype` must be float32.
     xb : array_like
-        Database vectors, shape (nb, d) where d is appropriate for the index.
+        Database vectors, shape (nb, d) where dimension d is the same as xq
         `dtype` must be float32.
     k : int
         Number of nearest neighbors.
@@ -373,6 +373,56 @@ def knn(xq, xb, k, metric=METRIC_L2):
         )
     else:
         raise NotImplementedError("only L2 and INNER_PRODUCT are supported")
+    return D, I
+
+def knn_hamming(xq, xb, k, variant="hc"):
+    """
+    Compute the k nearest neighbors of a set of vectors without constructing an index.
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    k : int
+        Number of nearest neighbors.
+    variant : string
+        Function variant to use, either "mc" (counter) or "hc" (heap)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
+    # other variant is "mc"
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+    D = np.empty((nq, k), dtype='int32')
+    I = np.empty((nq, k), dtype='int64')
+
+    if variant == "hc":
+        heap = faiss.int_maxheap_array_t()
+        heap.k = k
+        heap.nh = nq
+        heap.ids = faiss.swig_ptr(I)
+        heap.val = faiss.swig_ptr(D)
+        faiss.hammings_knn_hc(
+            heap, faiss.swig_ptr(xq), faiss.swig_ptr(xb), nb,
+            d, 1
+        )
+    elif variant == "mc":
+        faiss.hammings_knn_mc(
+            faiss.swig_ptr(xq), faiss.swig_ptr(xb), nq, nb, k, d,
+            faiss.swig_ptr(D), faiss.swig_ptr(I)
+        )
+    else:
+        raise NotImplementedError
     return D, I
 
 
