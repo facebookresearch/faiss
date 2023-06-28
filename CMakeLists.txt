@@ -35,6 +35,8 @@ include(rapids-export)
 include(rapids-find)
 
 rapids_cuda_init_architectures(faiss)
+rapids_cuda_init_architectures(pyfaiss)
+rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
@@ -44,11 +46,7 @@ project(faiss
   LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
-if(FAISS_ENABLE_RAFT)
 set(CMAKE_CXX_STANDARD 17)
-else()
-set(CMAKE_CXX_STANDARD 11)
-endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

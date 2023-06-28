@@ -178,25 +178,26 @@ bool check_openmp();
 /** This class is used to combine range and knn search results
  * in contrib.exhaustive_search.range_search_gpu */
 
+template <typename T>
 struct CombinerRangeKNN {
     int64_t nq;    /// nb of queries
     size_t k;      /// number of neighbors for the knn search part
-    float r2;      /// range search radius
+    T r2;          /// range search radius
     bool keep_max; /// whether to keep max values instead of min.
 
-    CombinerRangeKNN(int64_t nq, size_t k, float r2, bool keep_max)
+    CombinerRangeKNN(int64_t nq, size_t k, T r2, bool keep_max)
             : nq(nq), k(k), r2(r2), keep_max(keep_max) {}
 
     /// Knn search results
     const int64_t* I = nullptr; /// size nq * k
-    const float* D = nullptr;   /// size nq * k
+    const T* D = nullptr;       /// size nq * k
 
     /// optional: range search results (ignored if mask is NULL)
     const bool* mask =
             nullptr; /// mask for where knn results are valid, size nq
     // range search results for remaining entries nrange = sum(mask)
     const int64_t* lim_remain = nullptr; /// size nrange + 1
-    const float* D_remain = nullptr;     /// size lim_remain[nrange]
+    const T* D_remain = nullptr;         /// size lim_remain[nrange]
     const int64_t* I_remain = nullptr;   /// size lim_remain[nrange]
 
     const int64_t* L_res = nullptr; /// size nq + 1
@@ -205,7 +206,7 @@ struct CombinerRangeKNN {
 
     /// Phase 2: caller allocates D_res and I_res (size L_res[nq])
     /// Phase 3: fill in D_res and I_res
-    void write_result(float* D_res, int64_t* I_res);
+    void write_result(T* D_res, int64_t* I_res);
 };
 
 } // namespace faiss

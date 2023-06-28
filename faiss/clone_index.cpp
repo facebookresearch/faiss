@@ -17,6 +17,8 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexBinary.h>
+#include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
@@ -35,6 +37,7 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
+
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
 
@@ -383,6 +386,14 @@ Quantizer* clone_Quantizer(const Quantizer* quant) {
     TRYCLONE(ProductQuantizer, quant)
     TRYCLONE(ScalarQuantizer, quant)
     FAISS_THROW_MSG("Did not recognize quantizer to clone");
+}
+
+IndexBinary* clone_binary_index(const IndexBinary* index) {
+    if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
+        return new IndexBinaryFlat(*ii);
+    } else {
+        FAISS_THROW_MSG("cannot clone this type of index");
+    }
 }
 
 } // namespace faiss

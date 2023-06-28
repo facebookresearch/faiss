@@ -11,6 +11,7 @@
 
 #include <faiss/gpu/StandardGpuResources.h>
 
+#include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
@@ -21,6 +22,7 @@
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexBinaryFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
@@ -481,6 +483,77 @@ Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
     IndexFlatL2 index(dim);
     ncall++;
     return index_cpu_to_gpu_multiple(vres, devices, &index, &options);
+}
+
+/*********************************************
+ * Cloning binary indexes
+ *********************************************/
+
+faiss::IndexBinary* index_binary_gpu_to_cpu(
+        const faiss::IndexBinary* gpu_index) {
+    if (auto ii = dynamic_cast<const GpuIndexBinaryFlat*>(gpu_index)) {
+        IndexBinaryFlat* ret = new IndexBinaryFlat();
+        ii->copyTo(ret);
+        return ret;
+    } else {
+        FAISS_THROW_MSG("cannot clone this type of index");
+    }
+}
+
+faiss::IndexBinary* index_binary_cpu_to_gpu(
+        GpuResourcesProvider* provider,
+        int device,
+        const faiss::IndexBinary* index,
+        const GpuClonerOptions* options) {
+    if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
+        GpuIndexBinaryFlatConfig config;
+        config.device = device;
+        if (options) {
+            config.use_raft = options->use_raft;
+        }
+        return new GpuIndexBinaryFlat(provider, ii, config);
+    } else {
+        FAISS_THROW_MSG("cannot clone this type of index");
+    }
+}
+
+faiss::IndexBinary* index_binary_cpu_to_gpu_multiple(
+        std::vector<GpuResourcesProvider*>& provider,
+        std::vector<int>& devices,
+        const faiss::IndexBinary* index,
+        const GpuMultipleClonerOptions* options) {
+    GpuMultipleClonerOptions defaults;
+    FAISS_THROW_IF_NOT(devices.size() == provider.size());
+    int n = devices.size();
+    if (n == 1) {
+        return index_binary_cpu_to_gpu(provider[0], devices[0], index, options);
+    }
+    if (!options) {
+        options = &defaults;
+    }
+    if (options->shard) {
+        auto* fi = dynamic_cast<const IndexBinaryFlat*>(index);
+        FAISS_THROW_IF_NOT_MSG(fi, "only flat index cloning supported");
+        IndexBinaryShards* ret = new IndexBinaryShards(true, true);
+        for (int i = 0; i < n; i++) {
+            IndexBinaryFlat fig(fi->d);
+            size_t i0 = i * fi->ntotal / n;
+            size_t i1 = (i + 1) * fi->ntotal / n;
+            fig.add(i1 - i0, fi->xb.data() + i0 * fi->code_size);
+            ret->addIndex(index_binary_cpu_to_gpu(
+                    provider[i], devices[i], &fig, options));
+        }
+        ret->own_indices = true;
+        return ret;
+    } else { // replicas
+        IndexBinaryReplicas* ret = new IndexBinaryReplicas(true);
+        for (int i = 0; i < n; i++) {
+            ret->addIndex(index_binary_cpu_to_gpu(
+                    provider[i], devices[i], index, options));
+        }
+        ret->own_indices = true;
+        return ret;
+    }
 }
 
 } // namespace gpu

@@ -263,21 +263,23 @@ void IndexPQStats::reset() {
 
 IndexPQStats indexPQ_stats;
 
+namespace {
+
 template <class HammingComputer>
-static size_t polysemous_inner_loop(
-        const IndexPQ& index,
+size_t polysemous_inner_loop(
+        const IndexPQ* index,
         const float* dis_table_qi,
         const uint8_t* q_code,
         size_t k,
         float* heap_dis,
         int64_t* heap_ids,
         int ht) {
-    int M = index.pq.M;
-    int code_size = index.pq.code_size;
-    int ksub = index.pq.ksub;
-    size_t ntotal = index.ntotal;
+    int M = index->pq.M;
+    int code_size = index->pq.code_size;
+    int ksub = index->pq.ksub;
+    size_t ntotal = index->ntotal;
 
-    const uint8_t* b_code = index.codes.data();
+    const uint8_t* b_code = index->codes.data();
 
     size_t n_pass_i = 0;
 
@@ -304,6 +306,16 @@ static size_t polysemous_inner_loop(
     }
     return n_pass_i;
 }
+
+struct Run_polysemous_inner_loop {
+    using T = size_t;
+    template <class HammingComputer, class... Types>
+    size_t f(Types... args) {
+        return polysemous_inner_loop<HammingComputer>(args...);
+    }
+};
+
+} // anonymous namespace
 
 void IndexPQ::search_core_polysemous(
         idx_t n,
@@ -355,45 +367,24 @@ void IndexPQ::search_core_polysemous(
         maxheap_heapify(k, heap_dis, heap_ids);
 
         if (!generalized_hamming) {
-            switch (pq.code_size) {
-#define DISPATCH(cs)                                          \
-    case cs:                                                  \
-        n_pass += polysemous_inner_loop<HammingComputer##cs>( \
-                *this,                                        \
-                dis_table_qi,                                 \
-                q_code,                                       \
-                k,                                            \
-                heap_dis,                                     \
-                heap_ids,                                     \
-                polysemous_ht);                               \
-        break;
-                DISPATCH(4)
-                DISPATCH(8)
-                DISPATCH(16)
-                DISPATCH(32)
-                DISPATCH(20)
-                default:
-                    if (pq.code_size % 4 == 0) {
-                        n_pass += polysemous_inner_loop<HammingComputerDefault>(
-                                *this,
-                                dis_table_qi,
-                                q_code,
-                                k,
-                                heap_dis,
-                                heap_ids,
-                                polysemous_ht);
-                    } else {
-                        bad_code_size++;
-                    }
-                    break;
-            }
-#undef DISPATCH
+            Run_polysemous_inner_loop r;
+            n_pass += dispatch_HammingComputer(
+                    pq.code_size,
+                    r,
+                    this,
+                    dis_table_qi,
+                    q_code,
+                    k,
+                    heap_dis,
+                    heap_ids,
+                    polysemous_ht);
+
         } else { // generalized hamming
             switch (pq.code_size) {
 #define DISPATCH(cs)                                             \
     case cs:                                                     \
         n_pass += polysemous_inner_loop<GenHammingComputer##cs>( \
-                *this,                                           \
+                this,                                            \
                 dis_table_qi,                                    \
                 q_code,                                          \
                 k,                                               \
@@ -407,7 +398,7 @@ void IndexPQ::search_core_polysemous(
                 default:
                     if (pq.code_size % 8 == 0) {
                         n_pass += polysemous_inner_loop<GenHammingComputerM8>(
-                                *this,
+                                this,
                                 dis_table_qi,
                                 q_code,
                                 k,

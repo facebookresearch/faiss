@@ -18,6 +18,66 @@
 
 using namespace faiss;
 
+// These implementations are currently slower than HammingComputerDefault so
+// they are not in the main faiss anymore.
+struct HammingComputerM8 {
+    const uint64_t* a;
+    int n;
+
+    HammingComputerM8() {}
+
+    HammingComputerM8(const uint8_t* a8, int code_size) {
+        set(a8, code_size);
+    }
+
+    void set(const uint8_t* a8, int code_size) {
+        assert(code_size % 8 == 0);
+        a = (uint64_t*)a8;
+        n = code_size / 8;
+    }
+
+    int hamming(const uint8_t* b8) const {
+        const uint64_t* b = (uint64_t*)b8;
+        int accu = 0;
+        for (int i = 0; i < n; i++)
+            accu += popcount64(a[i] ^ b[i]);
+        return accu;
+    }
+
+    inline int get_code_size() const {
+        return n * 8;
+    }
+};
+
+struct HammingComputerM4 {
+    const uint32_t* a;
+    int n;
+
+    HammingComputerM4() {}
+
+    HammingComputerM4(const uint8_t* a4, int code_size) {
+        set(a4, code_size);
+    }
+
+    void set(const uint8_t* a4, int code_size) {
+        assert(code_size % 4 == 0);
+        a = (uint32_t*)a4;
+        n = code_size / 4;
+    }
+
+    int hamming(const uint8_t* b8) const {
+        const uint32_t* b = (uint32_t*)b8;
+        int accu = 0;
+        for (int i = 0; i < n; i++)
+            accu += popcount64(a[i] ^ b[i]);
+        return accu;
+    }
+
+    inline int get_code_size() const {
+        return n * 4;
+    }
+};
+
 template <class T>
 void hamming_cpt_test(
         int code_size,

@@ -12,7 +12,8 @@ from common_faiss_tests import get_dataset_2
 
 from faiss.contrib import datasets, evaluation, big_batch_search
 from faiss.contrib.exhaustive_search import knn_ground_truth, \
-    range_ground_truth, range_search_gpu
+    range_ground_truth, range_search_gpu, \
+    range_search_max_results, exponential_query_iterator
 
 
 class TestComputeGT(unittest.TestCase):
@@ -61,6 +62,41 @@ class TestComputeGT(unittest.TestCase):
 
     def test_range_IP(self):
         self.do_test_range(faiss.METRIC_INNER_PRODUCT)
+
+    def test_max_results_binary(self, ngpu=1):
+        ds = datasets.SyntheticDataset(64, 1000, 1000, 200)
+        tobinary = faiss.index_factory(ds.d, "LSHrt")
+        tobinary.train(ds.get_train())
+        index = faiss.IndexBinaryFlat(ds.d)
+        xb = tobinary.sa_encode(ds.get_database())
+        xq = tobinary.sa_encode(ds.get_queries())
+        index.add(xb)
+
+        # find a reasonable radius
+        D, _ = index.search(xq, 10)
+        radius0 = int(np.median(D[:, -1]))
+
+        # baseline = search with that radius
+        lims_ref, Dref, Iref = index.range_search(xq, radius0)
+
+        # now see if using just the total number of results, we can get back
+        # the same result table
+        query_iterator = exponential_query_iterator(xq)
+
+        radius1, lims_new, Dnew, Inew = range_search_max_results(
+            index, query_iterator, ds.d // 2,
+            min_results=Dref.size, clip_to_min=True,
+            ngpu=1
+        )
+
+        evaluation.check_ref_range_results(
+            lims_ref, Dref, Iref,
+            lims_new, Dnew, Inew
+        )
+
+    @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
+    def test_max_results_binary_multigpu(self):
+        self.test_max_results_binary(ngpu=2)
 
 
 class TestBigBatchSearch(unittest.TestCase):
