@@ -35,8 +35,7 @@ template <
         typename Metric,
         int ThreadsPerBlock,
         int NumWarpQ,
-        int NumThreadQ,
-        bool Residual>
+        int NumThreadQ>
 __global__ void ivfInterleavedScan(
         Tensor<float, 2, true> queries,
         Tensor<float, 3, true> residualBase,
@@ -48,7 +47,8 @@ __global__ void ivfInterleavedScan(
         int k,
         // [query][probe][k]
         Tensor<float, 3, true> distanceOut,
-        Tensor<idx_t, 3, true> indicesOut) {
+        Tensor<idx_t, 3, true> indicesOut,
+        const bool Residual) {
     extern __shared__ float smem[];
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
@@ -124,7 +124,7 @@ __global__ void ivfInterleavedScan(
             for (int dBase = 0; dBase < dimBlocks; dBase += kWarpSize) {
                 const int loadDim = dBase + laneId;
                 const float queryReg = query[loadDim];
-                [[maybe_unused]] const float residualReg =
+                const float residualReg =
                         Residual ? residualBaseSlice[loadDim] : 0;
 
                 constexpr int kUnroll = 4;
@@ -152,7 +152,7 @@ __global__ void ivfInterleavedScan(
                         decV[j] = codec.decodeNew(dBase + d, encV[j]);
                     }
 
-                    if constexpr (Residual) {
+                    if (Residual) {
 #pragma unroll
                         for (int j = 0; j < kUnroll; ++j) {
                             int d = i * kUnroll + j;
@@ -174,9 +174,9 @@ __global__ void ivfInterleavedScan(
             const bool loadDimInBounds = loadDim < dim;
 
             const float queryReg = loadDimInBounds ? query[loadDim] : 0;
-            [[maybe_unused]] const float residualReg =
-                    Residual && loadDimInBounds ? residualBaseSlice[loadDim]
-                                                : 0;
+            const float residualReg = Residual && loadDimInBounds
+                    ? residualBaseSlice[loadDim]
+                    : 0;
 
             for (int d = 0; d < dim - dimBlocks;
                  ++d, data += wordsPerVectorBlockDim) {
@@ -187,7 +187,7 @@ __global__ void ivfInterleavedScan(
                 enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::postRead(
                         laneId, enc);
                 float dec = codec.decodeNew(dimBlocks + d, enc);
-                if constexpr (Residual) {
+                if (Residual) {
                     dec += SHFL_SYNC(residualReg, d, kWarpSize);
                 }
 
