@@ -210,25 +210,23 @@ void runIVFInterleavedScan(
     };
 
     if (k == 1) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_1_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 1, 1>);
     } else if (k <= 32) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_32_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 32, 2>);
     } else if (k <= 64) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_64_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 64, 3>);
     } else if (k <= 128) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_128_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 128, 3>);
     } else if (k <= 256) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_256_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 256, 4>);
     } else if (k <= 512) {
-        ivf_interleaved_call(ivfInterleavedScanImpl<IVFINTERLEAVED_512_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 512, 8>);
     } else if (k <= 1024) {
-        ivf_interleaved_call(
-                ivfInterleavedScanImpl<IVFINTERLEAVED_1024_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 1024, 8>);
     }
 #if GPU_MAX_SELECTION_K >= 2048
     else if (k <= 2048) {
-        ivf_interleaved_call(
-                ivfInterleavedScanImpl<IVFINTERLEAVED_2048_PARAMS>);
+        ivf_interleaved_call(ivfInterleavedScanImpl<64, 2048, 8>);
     }
 #endif
 }
