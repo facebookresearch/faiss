@@ -49,7 +49,7 @@ class Randu10k:
         for rank in 1, 10, 100:
             e[rank] = ((I[:, :rank] == self.gt.reshape(-1, 1)).sum() /
                        float(self.nq))
-        print("1-recalls: %s" % e)
+        # print("1-recalls: %s" % e)
         return e
 
 

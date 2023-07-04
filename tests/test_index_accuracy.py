@@ -264,7 +264,7 @@ class TestSQFlavors(unittest.TestCase):
                 radius = float(D[:, -1].max())
             else:
                 radius = float(D[:, -1].min())
-            print("radius", radius)
+            # print("radius", radius)
 
             lims, D3, I3 = index.range_search(xq, radius)
             ntot = ndiff = 0
@@ -278,14 +278,14 @@ class TestSQFlavors(unittest.TestCase):
                 Iref = set(I2[i, mask])
                 ndiff += len(Inew ^ Iref)
                 ntot += len(Iref)
-            print("ndiff %d / %d" % (ndiff, ntot))
+            # print("ndiff %d / %d" % (ndiff, ntot))
             assert ndiff < ntot * 0.01
 
             for pm in 1, 2:
-                print("parallel_mode=%d" % pm)
+                # print("parallel_mode=%d" % pm)
                 index.parallel_mode = pm
                 lims4, D4, I4 = index.range_search(xq, radius)
-                print("sizes", lims4[1:] - lims4[:-1])
+                # print("sizes", lims4[1:] - lims4[:-1])
                 for qno in range(len(lims) - 1):
                     Iref = I3[lims[qno]: lims[qno + 1]]
                     Inew = I4[lims4[qno]: lims4[qno + 1]]
