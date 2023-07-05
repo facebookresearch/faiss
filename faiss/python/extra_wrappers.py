@@ -108,7 +108,7 @@ def checksum(a):
     """ compute a checksum for quick-and-dirty comparisons of arrays """
     a = a.view('uint8')
     if a.ndim == 1:
-        return bvec_checksum(s.size, swig_ptr(a))
+        return bvec_checksum(a.size, swig_ptr(a))
     n, d = a.shape
     cs = np.zeros(n, dtype='uint64')
     bvecs_checksum(n, d, swig_ptr(a), swig_ptr(cs))

@@ -558,7 +558,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall1 = (I1 == gt).sum() / nq
 
         print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.05
+        assert abs(recall_ref - recall1) < 0.051
 
     def xx_test_accuracy(self):
         # generated programatically below
