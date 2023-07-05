@@ -15,7 +15,7 @@ To install the latest stable release:
 $ conda install -c pytorch faiss-cpu=1.7.4 mkl=2021 blas=1.0=mkl
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.7.4 mkl=2021
+$ conda install -c pytorch -c nvidia faiss-gpu=1.7.4 mkl=2021 blas=1.0=mkl
 ```
 
 For faiss-gpu, the nvidia channel is required for cudatoolkit=11.4, which is not
