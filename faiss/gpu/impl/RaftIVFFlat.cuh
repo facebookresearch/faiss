@@ -27,6 +27,9 @@
 
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/impl/IVFBase.cuh>
+
+#include <faiss/impl/CodePacker.h>
 
 #include <optional>
 
@@ -98,27 +101,57 @@ class RaftIVFFlat : public IVFFlat {
 
     void updateQuantizer(Index* quantizer) override;
 
-    //
-    //    /// Copy all inverted lists from a CPU representation to ourselves
-    //    void copyInvertedListsFrom(const InvertedLists* ivf) override;
-    //
-    //    /// Copy all inverted lists from ourselves to a CPU representation
-    //    void copyInvertedListsTo(InvertedLists* ivf) override;
+    /// Copy all inverted lists from a CPU representation to ourselves
+    void copyInvertedListsFrom(const InvertedLists* ivf) override;
+    
+    /// Copy all inverted lists from ourselves to a CPU representation
+    void copyInvertedListsTo(InvertedLists* ivf) override;
 
    protected:
-    //    /// Adds a set of codes and indices to a list, with the representation
-    //    /// coming from the CPU equivalent
-    //    void addEncodedVectorsToList_(
-    //            int listId,
-    //            // resident on the host
-    //            const void* codes,
-    //            // resident on the host
-    //            const Index::idx_t* indices,
-    //            size_t numVecs) override;
+       /// Adds a set of codes and indices to a list, with the representation
+       /// coming from the CPU equivalent
+       void addEncodedVectorsToList_(
+            idx_t listId,
+            // resident on the host
+            const void* codes,
+            // resident on the host
+            const idx_t* indices,
+            idx_t numVecs) override;
+        
+        /// Returns the number of bytes in which an IVF list containing numVecs
+    /// vectors is encoded on the device. Note that due to padding this is not
+    /// the same as the encoding size for a subset of vectors in an IVF list;
+    /// this is the size for an entire IVF list
+    size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>
             raft_knn_index{std::nullopt};
 };
+
+
+struct RaftIVFFlatCodePackerInterleaved : CodePacker {
+    RaftIVFFlatCodePackerInterleaved(size_t list_size, size_t dim, size_t veclen);
+    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
+            const final;
+    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
+            const final;
+
+    protected:
+        size_t list_size;
+        size_t veclen;
+        size_t dim;
+};
+struct RaftIVFFlatCodePackerFlat : CodePacker {
+    RaftIVFFlatCodePackerFlat(GpuResources* resources_, size_t code_size);
+    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
+            const final;
+    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
+            const final;
+    
+    protected:
+        GpuResources* resources;
+};
+
 
 } // namespace gpu
 } // namespace faiss
