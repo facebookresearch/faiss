@@ -122,10 +122,9 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD/Vector instructions. possible values are
-  below:
-    - On x86\_64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
-    - On aarch64, `generic` and `sve` , by increasing order of optimization,
+  generate code using optimized SIMD instructions (possible values are `generic`,
+  `avx2` and `avx512`, by increasing order of optimization),
+  - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
