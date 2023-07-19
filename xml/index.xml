@@ -469,6 +469,12 @@
     <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" kind="function"><name>encode</name></member>
     <member refid="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" kind="function"><name>decode</name></member>
   </compound>
+  <compound refid="structfaiss_1_1CodeSet" kind="struct"><name>faiss::CodeSet</name>
+    <member refid="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1CodeSet_1afedcaf6cc25213d3d442d0f2f14f60cc" kind="variable"><name>s</name></member>
+    <member refid="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" kind="function"><name>CodeSet</name></member>
+    <member refid="structfaiss_1_1CodeSet_1a427b0b7caf3bd66c1f27e841ce95d23b" kind="function"><name>insert</name></member>
+  </compound>
   <compound refid="structfaiss_1_1CombinerRangeKNN" kind="struct"><name>faiss::CombinerRangeKNN</name>
     <member refid="structfaiss_1_1CombinerRangeKNN_1a431b53f8def97be262a6854c33853d21" kind="variable"><name>nq</name></member>
     <member refid="structfaiss_1_1CombinerRangeKNN_1a512c0573e1f6d06edbd52efc713bd87e" kind="variable"><name>k</name></member>

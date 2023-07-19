@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1CodeSet" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::CodeSet</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CodeSet::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="215" column="12" bodyfile="faiss/utils/utils.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CodeSet_1afedcaf6cc25213d3d442d0f2f14f60cc" prot="public" static="no" mutable="no">
+        <type>std::set&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::set&lt;std::vector&lt;uint8_t&gt; &gt; faiss::CodeSet::s</definition>
+        <argsstring></argsstring>
+        <name>s</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="216" column="14" bodyfile="faiss/utils/utils.h" bodystart="216" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::CodeSet::CodeSet</definition>
+        <argsstring>(size_t d)</argsstring>
+        <name>CodeSet</name>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="218" column="14" bodyfile="faiss/utils/utils.h" bodystart="218" bodyend="218"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CodeSet_1a427b0b7caf3bd66c1f27e841ce95d23b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::CodeSet::insert</definition>
+        <argsstring>(size_t n, const uint8_t *codes, bool *inserted)</argsstring>
+        <name>insert</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>bool *</type>
+          <declname>inserted</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="219" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/utils.h" line="214" column="1" bodyfile="faiss/utils/utils.h" bodystart="214" bodyend="220"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>CodeSet</name></member>
+      <member refid="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>d</name></member>
+      <member refid="structfaiss_1_1CodeSet_1a427b0b7caf3bd66c1f27e841ce95d23b" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>insert</name></member>
+      <member refid="structfaiss_1_1CodeSet_1afedcaf6cc25213d3d442d0f2f14f60cc" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>s</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

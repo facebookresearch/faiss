@@ -15,7 +15,7 @@
     <includedby refid="IndexAdditiveQuantizer_8h" local="no">faiss/IndexAdditiveQuantizer.h</includedby>
     <includedby refid="IndexIVFAdditiveQuantizer_8h" local="no">faiss/IndexIVFAdditiveQuantizer.h</includedby>
     <incdepgraph>
-      <node id="25">
+      <node id="26">
         <label>limits</label>
       </node>
       <node id="17">
@@ -53,7 +53,7 @@
       <node id="8">
         <label>cmath</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>cassert</label>
       </node>
       <node id="4">
@@ -106,40 +106,40 @@
       <node id="14">
         <label>sstream</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
       </node>
-      <node id="26">
+      <node id="27">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="5">
         <label>unordered_map</label>
       </node>
-      <node id="22">
+      <node id="23">
         <label>climits</label>
       </node>
       <node id="10">
@@ -178,7 +178,10 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="21">
+        <label>set</label>
+      </node>
+      <node id="24">
         <label>cstring</label>
       </node>
       <node id="20">
@@ -186,11 +189,15 @@
         <link refid="utils_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
     </incdepgraph>
