@@ -11,7 +11,7 @@ import faiss
 import numpy as np
 
 from faiss.contrib.datasets import SyntheticDataset
-from faiss.contrib.ivf_tools import big_batch_search
+from faiss.contrib.big_batch_search import big_batch_search
 
 parser = argparse.ArgumentParser()
 
