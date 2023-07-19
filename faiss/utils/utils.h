@@ -17,7 +17,9 @@
 #define FAISS_utils_h
 
 #include <stdint.h>
+#include <set>
 #include <string>
+#include <vector>
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
@@ -207,6 +209,14 @@ struct CombinerRangeKNN {
     /// Phase 2: caller allocates D_res and I_res (size L_res[nq])
     /// Phase 3: fill in D_res and I_res
     void write_result(T* D_res, int64_t* I_res);
+};
+
+struct CodeSet {
+    size_t d;
+    std::set<std::vector<uint8_t>> s;
+
+    explicit CodeSet(size_t d) : d(d) {}
+    void insert(size_t n, const uint8_t* codes, bool* inserted);
 };
 
 } // namespace faiss

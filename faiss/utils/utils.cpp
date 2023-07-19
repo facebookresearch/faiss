@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <set>
 #include <type_traits>
 #include <vector>
 
@@ -622,5 +623,13 @@ void CombinerRangeKNN<T>::write_result(T* D_res, int64_t* I_res) {
 // explicit template instantiations
 template struct CombinerRangeKNN<float>;
 template struct CombinerRangeKNN<int16_t>;
+
+void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
+    for (size_t i = 0; i < n; i++) {
+        auto res = s.insert(
+                std::vector<uint8_t>(codes + i * d, codes + i * d + d));
+        inserted[i] = res.second;
+    }
+}
 
 } // namespace faiss

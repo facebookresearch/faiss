@@ -630,3 +630,17 @@ class TestInvlistSort(unittest.TestCase):
         np.testing.assert_equal(Dnew, Dref)
         Inew_remap = perm[Inew]
         np.testing.assert_equal(Inew_remap, Iref)
+
+
+class TestCodeSet(unittest.TestCase):
+
+    def test_code_set(self):
+        """ CodeSet and np.unique should produce the same output """
+        d = 8
+        n = 1000  # > 256 and using only 0 or 1 so there must be duplicates
+        codes = np.random.randint(0, 2, (n, d), dtype=np.uint8)
+        s = faiss.CodeSet(d)
+        inserted = s.insert(codes)
+        np.testing.assert_equal(
+            np.sort(np.unique(codes, axis=0), axis=None),
+            np.sort(codes[inserted], axis=None))
