@@ -94,14 +94,14 @@ jobs:
           name: Install conda build tools
           command: |
             conda update -y -q conda
-            conda install -y -q conda-build
+            conda install -y -q conda-build --solver=libmamba
       - when:
           condition: << parameters.label >>
           steps:
             - run:
                 name: Enable anaconda uploads
                 command: |
-                  conda install -y -q anaconda-client
+                  conda install -y -q anaconda-client --solver=libmamba
                   conda config --set anaconda_upload yes
       - when:
           condition:
@@ -179,15 +179,15 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q pkgs/main::python=3.10 cmake=3.23.1 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge
+            conda install -y -q pkgs/main::python=3.10 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge --solver=libmamba
       - when:
           condition:
             equal: [ "ON", << parameters.raft >> ]
           steps:
             - run:
-                name: Enable RAFT
+                name: Install libraft
                 command: |
-                  conda install -y -q libraft cudatoolkit=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
+                  conda install -y -q libraft cudatoolkit=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge --solver=libmamba
       - run:
           name: Build all targets
           no_output_timeout: 30m
@@ -224,7 +224,7 @@ jobs:
             - run:
                 name: Python tests (CPU only)
                 command: |
-                  conda install -y -q pytorch -c pytorch
+                  conda install -y -q pytorch -c pytorch --solver=libmamba
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - when:
@@ -234,7 +234,7 @@ jobs:
             - run:
                 name: Python tests (CPU + GPU)
                 command: |
-                  conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
+                  conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia --solver=libmamba
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
                   cp tests/common_faiss_tests.py faiss/gpu/test
@@ -256,6 +256,9 @@ workflows:
   version: 2
   build:
     jobs:
+      - build_conda:
+          name: Linux x86_64 (conda)
+          exec: linux-x86_64-cpu
       - build_cmake:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
