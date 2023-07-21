@@ -180,6 +180,14 @@ jobs:
           command: |
             conda update -y -q conda
             conda install -y -q pkgs/main::python=3.10 cmake=3.23.1 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge
+      - when:
+          condition:
+            equal: [ "ON", << parameters.raft >> ]
+          steps:
+            - run:
+                name: Enable RAFT
+                command: |
+                  conda install -y -q libraft cudatoolkit=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
@@ -248,8 +256,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - format:
-          name: Format
       - build_cmake:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
@@ -263,122 +269,6 @@ workflows:
           gpu: "ON"
           requires:
             - Linux x86_64 (cmake)
-      - build_conda:
-          name: Linux x86_64 (conda)
-          exec: linux-x86_64-cpu
-      - build_conda:
-          name: OSX x86_64 (conda)
-          exec: macosx-x86_64-cpu
-      - build_conda:
-          name: Windows x86_64 (conda)
-          exec: windows-x86_64-cpu
-      - build_conda:
-          name: Linux arm64 (conda)
-          exec: linux-arm64-cpu
-      - build_conda:
-          name: Linux x86_64 packages
-          exec: linux-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Linux x86_64 GPU packages (CUDA 11.4)
-          exec: linux-x86_64-gpu
-          label: main
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Windows x86_64 packages
-          exec: windows-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: OSX x86_64 packages
-          exec: macosx-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: OSX arm64 packages
-          exec: macosx-arm64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
-          name: Linux arm64 packages
-          exec: linux-arm64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - build_conda:
-          name: Linux x86_64 nightlies
-          exec: linux-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 11.4)
-          exec: linux-x86_64-gpu
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          label: nightly
-      - build_conda:
-          name: Windows x86_64 nightlies
-          exec: windows-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX x86_64 nightlies
-          exec: macosx-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX arm64 nightlies
-          exec: macosx-arm64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux arm64 nightlies
-          exec: linux-arm64-cpu
-          label: nightly
-
-  raft_nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
       - build_cmake:
           name: Linux x86_64 GPU w/ RAFT (cmake)
           exec: linux-x86_64-gpu
