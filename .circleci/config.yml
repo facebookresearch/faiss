@@ -93,7 +93,6 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda config --set solver libmamba
             conda update -y -q conda
             conda install -y -q conda-build
       - when:
