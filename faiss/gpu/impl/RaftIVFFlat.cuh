@@ -130,28 +130,16 @@ class RaftIVFFlat : public IVFFlat {
 
 
 struct RaftIVFFlatCodePackerInterleaved : CodePacker {
-    RaftIVFFlatCodePackerInterleaved(size_t list_size, size_t dim, size_t veclen);
+    RaftIVFFlatCodePackerInterleaved(size_t list_size, uint32_t dim, uint32_t chuk_size);
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
             const final;
 
     protected:
-        size_t list_size;
-        size_t veclen;
-        size_t dim;
+        uint32_t chunk_size;
+        uint32_t dim;
 };
-struct RaftIVFFlatCodePackerFlat : CodePacker {
-    RaftIVFFlatCodePackerFlat(GpuResources* resources_, size_t code_size);
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
-    
-    protected:
-        GpuResources* resources;
-};
-
 
 } // namespace gpu
 } // namespace faiss

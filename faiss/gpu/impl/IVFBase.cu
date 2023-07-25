@@ -323,6 +323,7 @@ std::vector<uint8_t> IVFBase::getListVectorData(idx_t listId, bool gpuFormat)
 }
 
 void IVFBase::copyInvertedListsFrom(const InvertedLists* ivf) {
+    printf("inside ivf-flat's copyInvertedListsFrom\n");
     idx_t nlist = ivf ? ivf->nlist : 0;
     for (idx_t i = 0; i < nlist; ++i) {
         addEncodedVectorsToList_(

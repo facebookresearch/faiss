@@ -177,24 +177,9 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
 
-    if (config_.use_raft) {
-        printf("Reconstructing %d original vectors and adding to GPU index\n",
-               ntotal);
-
-        // Quantizer should already have been updated above. Add reconstructed
-        // vectors to raft index
-        if (ntotal > 0) {
-            std::vector<float> buf_host(ntotal * d);
-            std::vector<idx_t> ids(ntotal);
-            std::iota(ids.begin(), ids.end(), 0);
-            index->reconstruct_n(0, ntotal, buf_host.data());
-            add_with_ids(ntotal, buf_host.data(), ids.data());
-        }
-    } else {
-        // Copy all of the IVF data
-        printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
-        index_->copyInvertedListsFrom(index->invlists);
-    }
+    // Copy all of the IVF data
+    printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
+    index_->copyInvertedListsFrom(index->invlists);
 }
 
 void GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {

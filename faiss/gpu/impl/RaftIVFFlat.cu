@@ -190,15 +190,19 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
 
-    uint32_t size = getListLength(listId);
+    idx_t listSize = getListLength(listId);
 
-    std::vector<idx_t> vec(size);
-    raft::copy(
-            vec.data(),
-            *(raft_knn_index.value().inds_ptrs().data_handle() + listId),
-            size,
-            raft_handle.get_stream());
+    std::vector<idx_t> vec(listSize);
+
+    idx_t* list_indices_ptr;
+
+    // fetch the list indices ptr on host
+    raft::update_host(&list_indices_ptr, raft_knn_index.value().inds_ptrs().data_handle()+listId, 1, stream);  // Copy the pointer to the first array from device to host
+    raft_handle.sync_stream();
+
+    raft::update_host(vec.data(), list_indices_ptr, listSize, stream);
     raft_handle.sync_stream();
     return vec;
 }
@@ -209,28 +213,33 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(idx_t listId, bool gpuFormat
     printf("Inside RaftIVFFlat getListVectorData\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
+
+    const raft::device_resources& raft_handle = resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
 
     std::cout << "Calling getListVectorData for " << listId << std::endl;
 
-    using elem_t = decltype(raft_knn_index.value().data_ptrs())::element_type;
-    size_t dim = raft_knn_index.value().dim();
-    idx_t list_size = getListLength(listId);
+    idx_t listSize = getListLength(listId);
 
     // the interleaved block can be slightly larger than the list size (it's
     // rounded up)
-    size_t nblocks = utils::divUp(list_size, raft::neighbors::ivf_flat::kIndexGroupSize);
-    size_t interleavedCodeSize = nblocks * raft::neighbors::ivf_flat::kIndexGroupSize * dim * sizeof(elem_t);
-    size_t flat_code_size = list_size * dim * sizeof(elem_t);
-    std::vector<uint8_t> interleaved_codes(interleavedCodeSize);
-    std::vector<uint8_t> flat_codes(flat_code_size);
+    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(listSize);
+    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(listSize);
 
-    RaftIVFFlatCodePackerFlat p(resources_, interleavedCodeSize);
-    p.unpack_1(reinterpret_cast<const uint8_t*>(
-                    raft_knn_index.value().data_ptrs().data_handle()+listId), 0, interleaved_codes.data());
-    RaftIVFFlatCodePackerInterleaved up((size_t)list_size, (size_t)dim, (size_t)raft_knn_index.value().veclen());
-    up.unpack_1(interleaved_codes.data(), 0, flat_codes.data());
+    std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+    std::vector<uint8_t> flat_codes(cpuListSizeInBytes);
+
+     float* list_data_ptr;
+
+   // fetch the list data ptr on host
+    raft::update_host(&list_data_ptr, raft_knn_index.value().data_ptrs().data_handle()+listId, 1, stream);  // Copy the pointer to the first array from device to host
+    raft_handle.sync_stream();
+    printf("data ptr fetched successfully\n");
+
+    raft::update_host(interleaved_codes.data(), reinterpret_cast<uint8_t*>(list_data_ptr), gpuListSizeInBytes, stream);
+    raft_handle.sync_stream();
+    RaftIVFFlatCodePackerInterleaved packer((size_t)listSize, dim_, raft_knn_index.value().veclen());
+    packer.unpack_all(interleaved_codes.data(), flat_codes.data());
     return flat_codes;
 }
 
@@ -265,6 +274,10 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     raft::neighbors::ivf_flat::index_params pams;
     pams.add_data_on_build = false;
 
+    pams.n_lists = this->numLists_;
+
+    printf("numLists %d", pams.n_lists);
+
     switch (this->metric_) {
         case faiss::METRIC_L2:
             printf("Using L2!\n");
@@ -280,15 +293,12 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     raft_knn_index.emplace(
             handle,
-            pams.metric,
-            (uint32_t)this->numLists_,
-            false,
-	    false,
+            pams,
             (uint32_t)this->dim_);
 
     printf("Reconstructing\n");
     // Copy (reconstructed) centroids over, rather than re-training
-    rmm::device_uvector<float> buf_dev(total_elems, stream);
+//     rmm::device_uvector<float> buf_dev(total_elems, stream);
     std::vector<float> buf_host(total_elems);
     quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
 
@@ -310,45 +320,66 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 //
 //
 void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
+   printf("Inside raft's copyInvertedListsFrom\n");
    size_t nlist = ivf ? ivf->nlist : 0;
    size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
 
-   raft::device_resources &handle = resources_->getRaftHandleCurrentDevice();
+   raft::device_resources &raft_handle = resources_->getRaftHandleCurrentDevice();
 
    std::vector<std::uint32_t> list_sizes_(nlist);
-   std::vector<idx_t> list_offsets_(nlist+1);
    std::vector<idx_t> indices_(ntotal);
 
-   raft::neighbors::ivf_flat::index_params raft_idx_params;
-   raft_idx_params.n_lists = nlist;
-   raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-   raft_idx_params.add_data_on_build = false;
-   raft_idx_params.kmeans_n_iters = 100;
-//
-   raft_knn_index.emplace(handle, raft_idx_params, dim_);
-//    raft_knn_index.value().allocate(handle, ntotal, true);
-//
-   for (size_t i = 0; i < nlist; ++i) {
-       size_t listSize = ivf->list_size(i);
-       list_sizes_[i] = listSize;
+   // the index must already exist
+   FAISS_ASSERT(raft_knn_index.has_value());
+//    if(!raft_knn_index.has_value()) {
+//         printf("emplacing because index is null");
+//    raft::neighbors::ivf_flat::index_params raft_idx_params;
+//    raft_idx_params.n_lists = nlist;
+//    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
+//    raft_idx_params.add_data_on_build = false;
+//    raft_idx_params.kmeans_n_iters = 100;
 
-       // GPU index can only support max int entries per list
+//    raft_knn_index.emplace(handle, raft_idx_params, dim_);
+//    }
+//    raft_knn_index.value().allocate(handle, ntotal, true);
+  auto& raft_lists = raft_knn_index.value().lists();
+
+  // conservative memory alloc for cloning cpu inverted lists
+  raft::neighbors::ivf_flat::list_spec<uint32_t, float, idx_t> raft_list_spec{static_cast<uint32_t>(dim_), true};
+
+   for (size_t i = 0; i < nlist; ++i) {
+
+        size_t listSize = ivf->list_size(i);
+
+        // GPU index can only support max int entries per list
        FAISS_THROW_IF_NOT_FMT(
                listSize <= (size_t)std::numeric_limits<int>::max(),
                "GPU inverted list can only support "
                "%zu entries; %zu found",
                (size_t)std::numeric_limits<int>::max(),
                listSize);
+        
+        // store the list size
+        list_sizes_[i] = static_cast<uint32_t>(listSize);
 
-       addEncodedVectorsToList_(
-               i, ivf->get_codes(i), ivf->get_ids(i), listSize);
+       raft::neighbors::ivf::resize_list(raft_handle,
+                        raft_lists[i],
+                       raft_list_spec,
+                       (uint32_t)(raft::Pow2<raft::neighbors::ivf_flat::kIndexGroupSize>::roundUp(listSize)),
+                       (uint32_t)0);
+        printf("listSize %d\n", listSize);
    }
-//
-   raft::update_device(raft_knn_index.value().list_sizes().data_handle(),
-   list_sizes_.data(), nlist, handle.get_stream());
-//    raft::update_device(raft_knn_index.value().list_offsets().data_handle(),
-//    list_offsets_.data(), nlist+1, handle.get_stream());
-//
+
+  // Update the pointers and the sizes
+  raft_knn_index.value().recompute_internal_state(raft_handle);
+
+        for (size_t i = 0; i < nlist; ++i) {
+                size_t listSize = ivf->list_size(i);
+       addEncodedVectorsToList_(i, ivf->get_codes(i), ivf->get_ids(i), listSize);
+   }
+
+    raft::update_device(raft_knn_index.value().list_sizes().data_handle(), list_sizes_.data(), nlist, raft_handle.get_stream());
+    raft_handle.sync_stream();
 }
 
 size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
@@ -373,6 +404,7 @@ void RaftIVFFlat::addEncodedVectorsToList_(
             const void* codes,
             const idx_t* indices,
             idx_t numVecs) {
+   printf("inside addEncodedVectorsToList_ for listId %d\n", listId);
    auto stream = resources_->getDefaultStreamCurrentDevice();
 
    // This list must already exist
@@ -389,6 +421,10 @@ void RaftIVFFlat::addEncodedVectorsToList_(
    // The GPU might have a different layout of the memory
    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(numVecs);
+   
+   printf("numVecs %d\n", numVecs);
+   printf("gpuListSizeInBytes %d\n", gpuListSizeInBytes);
+   printf("cpuListSizeInBytes %d\n", cpuListSizeInBytes);
 
   // We only have int32 length representations on the GPU per each
   // list; the length is in sizeof(char)
@@ -396,25 +432,40 @@ void RaftIVFFlat::addEncodedVectorsToList_(
    (size_t)std::numeric_limits<int>::max());
 
    // Translate the codes as needed to our preferred form
-   std::vector<uint8_t> codesV(cpuListSizeInBytes);
-   std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
+//    std::vector<uint8_t> codesV(cpuListSizeInBytes);
+//    std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
 //    auto translatedCodes = translateCodesToGpu_(std::move(codesV), numVecs);
 
-   std::cout << "numVecs=" << numVecs << "gpuListSizeInBytes=" <<
-   gpuListSizeInBytes << std::endl;
-//    utils::divUp(numVecs, 32);
-   RaftIVFFlatCodePackerInterleaved transform_packer((size_t)numVecs, (size_t)dim_, (size_t)raft_knn_index.value().veclen());
-   std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
-   std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
-   transform_packer.pack_1(codesV.data(), 0, interleaved_codes.data());
-   RaftIVFFlatCodePackerFlat copy_packer(resources_, cpuListSizeInBytes);
-   copy_packer.unpack_1(interleaved_codes.data(), 0, (uint8_t*)(raft_knn_index.value().data_ptrs().data_handle() + listId));
+        std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+printf("dim %d\n", dim_);
+printf("veclen %d\n", raft_knn_index.value().veclen());
+   RaftIVFFlatCodePackerInterleaved packer((size_t)numVecs, (uint32_t)dim_, raft_knn_index.value().veclen());
+   
+   printf("Allocated interleaved codes\n");
+   packer.pack_all(reinterpret_cast<const uint8_t*>(codes), interleaved_codes.data());
+   printf("packing done\n");
 
-   uint32_t size = numVecs;
-   raft::update_device(raft_knn_index.value().list_sizes().data_handle() + listId, &size, 1, stream);
+   float* list_data_ptr;
+   const raft::device_resources& raft_handle = resources_->getRaftHandleCurrentDevice();
+
+   // fetch the list data ptr on host
+    raft::update_host(&list_data_ptr, raft_knn_index.value().data_ptrs().data_handle()+listId, 1, stream);  // Copy the pointer to the first array from device to host
+    raft_handle.sync_stream();
+    printf("data ptr fetched successfully\n");
+   
+   raft::update_device(reinterpret_cast<uint8_t*>(list_data_ptr), interleaved_codes.data(), gpuListSizeInBytes, stream);
+   raft_handle.sync_stream();
+   printf("copied to gpu\n");
 
     // Handle the indices as well
-    raft::update_device((idx_t*)(raft_knn_index.value().inds_ptrs().data_handle() + listId), indices, numVecs, stream);
+    idx_t* list_indices_ptr;
+
+    // fetch the list indices ptr on host
+    raft::update_host(&list_indices_ptr, raft_knn_index.value().inds_ptrs().data_handle()+listId, 1, stream);  // Copy the pointer to the first array from device to host
+        raft_handle.sync_stream();
+    raft::update_device(list_indices_ptr, indices, numVecs, stream);
+    raft_handle.sync_stream();
+    printf("Done copying indices\n");
 }
 /// Copy all inverted lists from ourselves to a CPU representation
 void RaftIVFFlat::copyInvertedListsTo(InvertedLists* ivf) {
@@ -455,55 +506,34 @@ void RaftIVFFlat::copyInvertedListsTo(InvertedLists* ivf) {
 
 
 
-RaftIVFFlatCodePackerInterleaved::RaftIVFFlatCodePackerInterleaved(size_t list_size, size_t dim, size_t veclen) {
-    this->list_size = list_size;
+RaftIVFFlatCodePackerInterleaved::RaftIVFFlatCodePackerInterleaved(size_t list_size, uint32_t dim, uint32_t chunk_size) {
     this->dim = dim;
-    this->veclen = veclen;
-    nvec = 1;
-    code_size = list_size * dim * sizeof(uint32_t);
-    block_size = utils::divUp(list_size, raft::neighbors::ivf_flat::kIndexGroupSize);
+    this->chunk_size = chunk_size;
+    // NB: dim should be divisible by the number of 4 byte records in one chunk
+    FAISS_ASSERT(dim % chunk_size == 0);
+    nvec = list_size;
+    code_size = dim * 4;
+    block_size = utils::roundUp(nvec, raft::neighbors::ivf_flat::kIndexGroupSize);
 }
 
 void RaftIVFFlatCodePackerInterleaved::pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block) const {
-        FAISS_ASSERT(offset == 0);
-    raft::neighbors::ivf_flat::helpers::pack_host_interleaved(
-        flat_code,
-        block,
-        nvec,
+        printf("packing offset %zu\n", offset);
+    raft::neighbors::ivf_flat::codepacker::pack_1(
+        reinterpret_cast<const uint32_t*>(flat_code),
+        reinterpret_cast<uint32_t*>(block),
         dim,
-        veclen);
+        chunk_size,
+        static_cast<uint32_t>(offset));
 }
 
 void RaftIVFFlatCodePackerInterleaved::unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code) const {
-        FAISS_ASSERT(offset == 0);
-    raft::neighbors::ivf_flat::helpers::unpack_host_interleaved(
-        block,
-        flat_code,
-        nvec,
+    raft::neighbors::ivf_flat::codepacker::unpack_1(
+        reinterpret_cast<const uint32_t*>(block),
+        reinterpret_cast<uint32_t*>(flat_code),
         dim,
-        veclen);
+        chunk_size,
+        static_cast<uint32_t>(offset));
 }
-
-RaftIVFFlatCodePackerFlat::RaftIVFFlatCodePackerFlat(GpuResources* resources_, size_t code_size) {
-    this->resources = resources_;
-    nvec = 1;
-    code_size = code_size;
-    block_size = code_size;
-}
-
-void RaftIVFFlatCodePackerFlat::pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block) const {
-        FAISS_ASSERT(offset == 0);
-    const raft::device_resources& raft_handle = resources->getRaftHandleCurrentDevice();
-    raft::update_device(block, flat_code, code_size * nvec, raft_handle.get_stream());
-}
-
-void RaftIVFFlatCodePackerFlat::unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code) const {
-        FAISS_ASSERT(offset == 0);
-    const raft::device_resources& raft_handle = resources->getRaftHandleCurrentDevice();
-    raft::update_host(flat_code, block, code_size * nvec, raft_handle.get_stream());
-    raft_handle.sync_stream();
-}
-
 
 } // namespace gpu
 } // namespace faiss
