@@ -1102,3 +1102,21 @@ def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):
         self.original_init(*args)
 
     the_class.__init__ = replacement_init
+
+
+def handle_CodeSet(the_class):
+
+    def replacement_insert(self, codes, inserted=None):
+        n, d = codes.shape
+        assert d == self.d
+        codes = np.ascontiguousarray(codes, dtype=np.uint8)
+
+        if inserted is None:
+            inserted = np.empty(n, dtype=bool)
+        else:
+            assert inserted.shape == (n, )
+
+        self.insert_c(n, swig_ptr(codes), swig_ptr(inserted))
+        return inserted
+
+    replace_method(the_class, 'insert', replacement_insert)
