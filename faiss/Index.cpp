@@ -34,8 +34,14 @@ void Index::range_search(
 }
 
 void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
-    std::vector<float> distances(n * k);
-    search(n, x, k, distances.data(), labels);
+    // this operation seems to be thread-safe and can be computed by batch.
+    idx_t bs = 256;
+#pragma omp parallel for
+    for (idx_t i0 = 0; i0 < n; i0 += bs) {
+        idx_t i1 = std::min(n, i0 + bs);
+        std::vector<float> distances((i1 - i0) * k);
+        search(i1 - i0, x + i0 * d, k, distances.data(), labels + i0);
+    }
 }
 
 void Index::add_with_ids(
