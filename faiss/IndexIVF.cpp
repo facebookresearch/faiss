@@ -180,14 +180,7 @@ void IndexIVF::add(idx_t n, const float* x) {
 
 void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     std::unique_ptr<idx_t[]> coarse_idx(new idx_t[n]);
-
-    idx_t bs = 256;
-#pragma omp parallel for
-    for (idx_t i0 = 0; i0 < n; i0 += bs) {
-        idx_t i1 = std::min(n, i0 + bs);
-        quantizer->assign(i1 - i0, x + i0 * d, coarse_idx.get() + i0);
-    }
-
+    quantizer->assign(n, x, coarse_idx.get());
     add_core(n, x, xids, coarse_idx.get());
 }
 

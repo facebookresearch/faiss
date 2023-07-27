@@ -9,6 +9,8 @@
 
 #include <faiss/Index.h>
 
+#include <omp.h>
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
@@ -35,7 +37,18 @@ void Index::range_search(
 
 void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     std::vector<float> distances(n * k);
-    search(n, x, k, distances.data(), labels);
+    idx_t bs = n / omp_get_max_threads() + 1;
+
+    // this operation seems to be thread-safe and can be computed by batch.
+#pragma omp parallel for
+    for (idx_t i0 = 0; i0 < n; i0 += bs) {
+        idx_t i1 = std::min(n, i0 + bs);
+        search(i1 - i0,
+               x + i0 * d,
+               k,
+               distances.data() + i0 * k,
+               labels + i0 * k);
+    }
 }
 
 void Index::add_with_ids(
