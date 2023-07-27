@@ -37,7 +37,7 @@ void Index::range_search(
 
 void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     std::vector<float> distances(n * k);
-    idx_t bs = n / omp_get_max_threads() + 1;
+    idx_t bs = 256;
 
     // this operation seems to be thread-safe and can be computed by batch.
 #pragma omp parallel for
