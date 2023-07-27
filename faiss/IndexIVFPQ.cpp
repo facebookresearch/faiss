@@ -271,12 +271,12 @@ void IndexIVFPQ::add_core_o(
 
     double t2 = getmillisecs();
     size_t nadd = 0, n_ignore = 0;
-    
+
 #pragma omp parallel reduction(+ : nadd, n_ignore)
     {
         int nt = omp_get_num_threads();
         int rank = omp_get_thread_num();
-        
+
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
             idx_t key = idx[i];
@@ -287,7 +287,7 @@ void IndexIVFPQ::add_core_o(
                 size_t offset = invlists->add_entry(key, id, code);
 
                 direct_map.add_single_id(id, key, offset);
-                
+
                 if (residuals_2) {
                     float* res2 = residuals_2 + i * d;
                     const float* xi = to_encode + i * d;
@@ -298,7 +298,7 @@ void IndexIVFPQ::add_core_o(
                 nadd++;
             } else if (key == -1 && rank == 0) {
                 direct_map.add_single_id(id, -1, 0);
-                
+
                 if (residuals_2)
                     memset(residuals_2, 0, sizeof(*residuals_2) * d);
                 n_ignore++;
