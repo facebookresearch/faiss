@@ -222,7 +222,7 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
     return max_level;
 }
 
-/** Enumerate vertices from farthest to nearest from query, keep a
+/** Enumerate vertices from nearest to farthest from query, keep a
  * neighbor only if there is no previous neighbor that is closer to
  * that vertex than the query.
  */
