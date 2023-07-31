@@ -139,12 +139,6 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
-        printf("original add vectors: [");
-        for (int i = 0; i < 50; ++i) {
-            printf("%f, ", addVecs[i]);
-        }
-        printf("]\n");
-
         faiss::IndexFlatL2 quantizerL2(opt.dim);
         faiss::IndexFlatIP quantizerIP(opt.dim);
         faiss::Index* quantizer = metricType == faiss::METRIC_L2
