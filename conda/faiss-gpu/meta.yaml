@@ -40,7 +40,7 @@ outputs:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17  # [linux64]
         - llvm-openmp  # [osx]
-        - cmake =3.23.1
+        - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
       host:
@@ -71,7 +71,7 @@ outputs:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig
-        - cmake =3.23.1
+        - cmake >=3.23.1
         - make  # [not win]
       host:
         - python {{ python }}
