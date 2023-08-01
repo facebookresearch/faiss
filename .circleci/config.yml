@@ -270,8 +270,12 @@ workflows:
           name: Linux x86_64 GPU (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
-          requires:
-            - Linux x86_64 (cmake)
+      - build_cmake:
+          name: Linux x86_64 GPU w/ RAFT (cmake)
+          exec: linux-x86_64-gpu
+          opt_level: "avx2"
+          gpu: "ON"
+          raft: "ON"
       - build_conda:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
