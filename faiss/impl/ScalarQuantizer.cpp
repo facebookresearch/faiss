@@ -74,18 +74,15 @@ struct Codec8bit {
     }
 
 #ifdef __AVX2__
-    static __m256 decode_8_components(const uint8_t* code, int i) {
-        uint64_t c8 = *(uint64_t*)(code + i);
-        __m128i c4lo = _mm_cvtepu8_epi32(_mm_set1_epi32(c8));
-        __m128i c4hi = _mm_cvtepu8_epi32(_mm_set1_epi32(c8 >> 32));
-        // __m256i i8 = _mm256_set_m128i(c4lo, c4hi);
-        __m256i i8 = _mm256_castsi128_si256(c4lo);
-        i8 = _mm256_insertf128_si256(i8, c4hi, 1);
-        __m256 f8 = _mm256_cvtepi32_ps(i8);
-        __m256 half = _mm256_set1_ps(0.5f);
-        f8 = _mm256_add_ps(f8, half);
-        __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return _mm256_mul_ps(f8, one_255);
+    static inline __m256 decode_8_components(const uint8_t* code, int i) {
+        const uint64_t c8 = *(uint64_t*)(code + i);
+        
+        const __m128i i8 = _mm_set1_epi64x(c8);
+        const __m256i i32 = _mm256_cvtepu8_epi32(i8);
+        const __m256 f8 = _mm256_cvtepi32_ps(i32);
+        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
+        const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
+        return _mm256_fmadd_ps(f8, one_255, half_one_255);
     }
 #endif
 };
