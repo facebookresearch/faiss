@@ -32,13 +32,14 @@ function(find_and_configure_raft)
             GLOBAL_TARGETS      raft::raft
             BUILD_EXPORT_SET    faiss-exports
             INSTALL_EXPORT_SET  faiss-exports
+	    COMPONENTS   compiled
             CPM_ARGS
             GIT_REPOSITORY https://github.com/${PKG_FORK}/raft.git
             GIT_TAG        ${PKG_PINNED_TAG}
             SOURCE_SUBDIR  cpp
             OPTIONS
             "BUILD_TESTS OFF"
-            "RAFT_COMPILE_LIBRARY OFF"
+	        "RAFT_COMPILE_LIBRARY ON"
             )
 endfunction()
 
