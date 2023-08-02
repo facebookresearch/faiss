@@ -76,7 +76,7 @@ struct Codec8bit {
 #ifdef __AVX2__
     static inline __m256 decode_8_components(const uint8_t* code, int i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
-        
+
         const __m128i i8 = _mm_set1_epi64x(c8);
         const __m256i i32 = _mm256_cvtepu8_epi32(i8);
         const __m256 f8 = _mm256_cvtepi32_ps(i32);
