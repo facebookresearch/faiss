@@ -9,6 +9,7 @@
 
 #include <faiss/impl/HNSW.h>
 
+#include <cmath>
 #include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -542,12 +543,11 @@ int search_from_candidates(
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
-        FAISS_ASSERT(v1 >= 0);
+        assert(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (nres < k) {
-                faiss::maxheap_push(++nres, D, I, d, v1);
-            } else if (d < D[0]) {
-                faiss::maxheap_replace_top(nres, D, I, d, v1);
+            if (d < D[0]) {
+                faiss::maxheap_replace_top(k, D, I, d, v1);
+                nres++;
             }
         }
         vt.set(v1);
@@ -612,10 +612,9 @@ int search_from_candidates(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (!sel || sel->is_member(idx)) {
-                if (nres < k) {
-                    faiss::maxheap_push(++nres, D, I, dis, idx);
-                } else if (dis < D[0]) {
-                    faiss::maxheap_replace_top(nres, D, I, dis, idx);
+                if (dis < D[0]) {
+                    faiss::maxheap_replace_top(k, D, I, dis, idx);
+                    nres++;
                 }
             }
             candidates.push(idx, dis);
@@ -668,7 +667,7 @@ int search_from_candidates(
         stats.n3 += ndis;
     }
 
-    return nres;
+    return std::min(nres, k);
 }
 
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
@@ -816,6 +815,11 @@ HNSWStats HNSW::search(
         //  greedy search on upper levels
         storage_idx_t nearest = entry_point;
         float d_nearest = qdis(nearest);
+        if (!std::isfinite(d_nearest)) {
+            // means either the query or the entry point are NaN: in
+            // both cases we can only return -1 as a result
+            return stats;
+        }
 
         for (int level = max_level; level >= 1; level--) {
             greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
@@ -826,7 +830,6 @@ HNSWStats HNSW::search(
             MinimaxHeap candidates(ef);
 
             candidates.push(nearest, d_nearest);
-
             search_from_candidates(
                     *this, qdis, k, I, D, candidates, vt, stats, 0, 0, params);
         } else {
