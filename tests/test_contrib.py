@@ -219,6 +219,16 @@ class TestInspect(unittest.TestCase):
         Ynew = lt.apply(X)
         np.testing.assert_equal(Yref, Ynew)
 
+    def test_NSG_neighbors(self):
+        # FIXME number of elements to add should be >> 100
+        ds = datasets.SyntheticDataset(32, 0, 200, 10)
+        index = faiss.index_factory(ds.d, "NSG")
+        index.add(ds.get_database())
+        neighbors = inspect_tools.get_NSG_neighbors(index.nsg)
+        # neighbors should be either valid indexes or -1
+        np.testing.assert_array_less(-2, neighbors)
+        np.testing.assert_array_less(neighbors, ds.nb)
+
 
 class TestRangeEval(unittest.TestCase):
 

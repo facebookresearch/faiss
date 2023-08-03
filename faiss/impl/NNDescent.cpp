@@ -374,6 +374,10 @@ void NNDescent::init_graph(DistanceComputer& qdis) {
 
 void NNDescent::build(DistanceComputer& qdis, const int n, bool verbose) {
     FAISS_THROW_IF_NOT_MSG(L >= K, "L should be >= K in NNDescent.build");
+    FAISS_THROW_IF_NOT_FMT(
+            n > NUM_EVAL_POINTS,
+            "NNDescent.build cannot build a graph smaller than %d",
+            int(NUM_EVAL_POINTS));
 
     if (verbose) {
         printf("Parameters: K=%d, S=%d, R=%d, L=%d, iter=%d\n",
@@ -403,7 +407,7 @@ void NNDescent::build(DistanceComputer& qdis, const int n, bool verbose) {
     has_built = true;
 
     if (verbose) {
-        printf("Addes %d points into the index\n", ntotal);
+        printf("Added %d points into the index\n", ntotal);
     }
 }
 

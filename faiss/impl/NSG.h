@@ -54,7 +54,7 @@ namespace nsg {
 
 template <class node_t>
 struct Graph {
-    node_t* data;    ///< the flattened adjacency matrix
+    node_t* data;    ///< the flattened adjacency matrix, size N-by-K
     int K;           ///< nb of neighbors per node
     int N;           ///< total nb of nodes
     bool own_fields; ///< the underlying data owned by itself or not
