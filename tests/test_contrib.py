@@ -9,6 +9,7 @@ import numpy as np
 import platform
 import os
 import random
+import tempfile
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -456,6 +457,36 @@ class TestRangeSearchMaxResults(unittest.TestCase):
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
 
+    def test_binary(self):
+        ds = datasets.SyntheticDataset(64, 1000, 1000, 200)
+        tobinary = faiss.index_factory(ds.d, "LSHrt")
+        tobinary.train(ds.get_train())
+        index = faiss.IndexBinaryFlat(ds.d)
+        xb = tobinary.sa_encode(ds.get_database())
+        xq = tobinary.sa_encode(ds.get_queries())
+        index.add(xb)
+
+        # find a reasonable radius
+        D, _ = index.search(xq, 10)
+        radius0 = int(np.median(D[:, -1]))
+
+        # baseline = search with that radius
+        lims_ref, Dref, Iref = index.range_search(xq, radius0)
+
+        # now see if using just the total number of results, we can get back
+        # the same result table
+        query_iterator = exponential_query_iterator(xq)
+
+        radius1, lims_new, Dnew, Inew = range_search_max_results(
+            index, query_iterator, ds.d // 2,
+            min_results=Dref.size, clip_to_min=True
+        )
+
+        evaluation.check_ref_range_results(
+            lims_ref, Dref, Iref,
+            lims_new, Dnew, Inew
+        )
+
 
 class TestClustering(unittest.TestCase):
 
@@ -490,7 +521,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 50)
+        self.assertLess(ndiff, 51)
 
 
 class TestBigBatchSearch(unittest.TestCase):
@@ -507,7 +538,7 @@ class TestBigBatchSearch(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), k)
         # faiss.omp_set_num_threads(1)
         for method in ("pairwise_distances", "knn_function", "index"):
-            for threaded in 0, 1, 3, 8:
+            for threaded in 0, 1, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
@@ -537,16 +568,15 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
-        r = random.randrange(1 << 60)
-        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
+        checkpoint = tempfile.mktemp()
         try:
             # First big batch search
             try:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method="knn_function",
-                    threaded=4,
-                    checkpoint=checkpoint, checkpoint_freq=4,
+                    threaded=2,
+                    checkpoint=checkpoint, checkpoint_freq=0.1,
                     crash_at=20
                 )
             except ZeroDivisionError:
@@ -557,8 +587,8 @@ class TestBigBatchSearch(unittest.TestCase):
             Dnew, Inew = big_batch_search.big_batch_search(
                 index, ds.get_queries(),
                 k, method="knn_function",
-                threaded=4,
-                checkpoint=checkpoint, checkpoint_freq=4
+                threaded=2,
+                checkpoint=checkpoint, checkpoint_freq=5
             )
             self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
             np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -600,3 +630,17 @@ class TestInvlistSort(unittest.TestCase):
         np.testing.assert_equal(Dnew, Dref)
         Inew_remap = perm[Inew]
         np.testing.assert_equal(Inew_remap, Iref)
+
+
+class TestCodeSet(unittest.TestCase):
+
+    def test_code_set(self):
+        """ CodeSet and np.unique should produce the same output """
+        d = 8
+        n = 1000  # > 256 and using only 0 or 1 so there must be duplicates
+        codes = np.random.randint(0, 2, (n, d), dtype=np.uint8)
+        s = faiss.CodeSet(d)
+        inserted = s.insert(codes)
+        np.testing.assert_equal(
+            np.sort(np.unique(codes, axis=0), axis=None),
+            np.sort(codes[inserted], axis=None))

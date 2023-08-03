@@ -281,31 +281,21 @@ struct FlatHammingDis : DistanceComputer {
     }
 };
 
+struct BuildDistanceComputer {
+    using T = DistanceComputer*;
+    template <class HammingComputer>
+    DistanceComputer* f(IndexBinaryFlat* flat_storage) {
+        return new FlatHammingDis<HammingComputer>(*flat_storage);
+    }
+};
+
 } // namespace
 
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
-
     FAISS_ASSERT(flat_storage != nullptr);
-
-    switch (code_size) {
-        case 4:
-            return new FlatHammingDis<HammingComputer4>(*flat_storage);
-        case 8:
-            return new FlatHammingDis<HammingComputer8>(*flat_storage);
-        case 16:
-            return new FlatHammingDis<HammingComputer16>(*flat_storage);
-        case 20:
-            return new FlatHammingDis<HammingComputer20>(*flat_storage);
-        case 32:
-            return new FlatHammingDis<HammingComputer32>(*flat_storage);
-        case 64:
-            return new FlatHammingDis<HammingComputer64>(*flat_storage);
-        default:
-            break;
-    }
-
-    return new FlatHammingDis<HammingComputerDefault>(*flat_storage);
+    BuildDistanceComputer bd;
+    return dispatch_HammingComputer(code_size, bd, flat_storage);
 }
 
 } // namespace faiss

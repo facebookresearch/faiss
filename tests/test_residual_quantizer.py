@@ -210,7 +210,7 @@ class TestResidualQuantizer(unittest.TestCase):
 
         # in practice RQ is often better than PQ but it does not the case here, so just check
         # that we are within some factor.
-        print(err_pq, err_rq)
+        # print(err_pq, err_rq)
         self.assertLess(err_rq, err_pq * 1.2)
 
     def test_beam_size(self):
@@ -285,7 +285,6 @@ class TestResidualQuantizer(unittest.TestCase):
 
         # verify that prefixes are the same
         for i in range(ds.nb):
-            print(i, ds.nb)
             br = faiss.BitstringReader(faiss.swig_ptr(codes[i]), rq.code_size)
             br2 = faiss.BitstringReader(faiss.swig_ptr(codes2[i]), rq2.code_size)
             self.assertEqual(br.read(rq2.tot_bits), br2.read(rq2.tot_bits))
@@ -319,10 +318,10 @@ def retrain_AQ_codebook(index, xt):
 
     x_decoded = index.sa_decode(codes_packed)
     MSE = ((xt - x_decoded) ** 2).sum() / n
-    print(f"Initial MSE on training set: {MSE:g}")
+    # print(f"Initial MSE on training set: {MSE:g}")
 
     codes = unpack_codes(index.rq, codes_packed)
-    print("ref codes", codes[0])
+    # print("ref codes", codes[0])
     codebook_offsets = faiss.vector_to_array(rq.codebook_offsets)
 
     # build sparse code matrix (represented as a dense matrix)
@@ -342,7 +341,7 @@ def retrain_AQ_codebook(index, xt):
         B, residuals, rank, singvals = scipy.linalg.lstsq(C, xt, )
 
     MSE = ((C @ B - xt) ** 2).sum() / n
-    print(f"MSE after retrainining: {MSE:g}")
+    # print(f"MSE after retrainining: {MSE:g}")
 
     # replace codebook
     # faiss.copy_array_to_vector(B.astype('float32').ravel(), index.rq.codebooks)
@@ -503,7 +502,7 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         xt_decoded = ir.sa_decode(ir.sa_encode(xt))
         err_after_refined = ((xt - xt_decoded) ** 2).sum()
 
-        print(err_before, err_after_refined)
+        # print(err_before, err_after_refined)
         # ref run 7474.98 / 7006.1777
         self.assertGreater(err_before, err_after_refined * 1.06)
 
@@ -1165,7 +1164,7 @@ class TestProductResidualQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        print(err_prq, err_pq)
+        # print(err_prq, err_pq)
         self.assertLess(err_prq, err_pq)
 
     def test_with_rq(self):
@@ -1186,7 +1185,7 @@ class TestProductResidualQuantizer(unittest.TestCase):
         rq.train(xt)
         err_rq = eval_codec(rq, xb)
 
-        print(err_prq, err_rq)
+        # print(err_prq, err_rq)
         self.assertEqual(err_prq, err_rq)
 
 

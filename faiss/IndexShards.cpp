@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexShards.h>
 
 #include <cinttypes>
@@ -21,6 +19,15 @@ namespace faiss {
 
 // subroutines
 namespace {
+
+// IndexBinary needs to update the code_size when d is set...
+
+void sync_d(Index* index) {}
+
+void sync_d(IndexBinary* index) {
+    FAISS_THROW_IF_NOT(index->d % 8 == 0);
+    index->code_size = index->d / 8;
+}
 
 // add translation to all valid labels
 void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
@@ -40,20 +47,26 @@ IndexShardsTemplate<IndexT>::IndexShardsTemplate(
         idx_t d,
         bool threaded,
         bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {}
+        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+    sync_d(this);
+}
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
         int d,
         bool threaded,
         bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {}
+        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+    sync_d(this);
+}
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
         bool threaded,
         bool successive_ids)
-        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids) {}
+        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids) {
+    sync_d(this);
+}
 
 template <typename IndexT>
 void IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* index /* unused */) {
@@ -78,6 +91,8 @@ void IndexShardsTemplate<IndexT>::syncWithSubIndexes() {
     }
 
     auto firstIndex = this->at(0);
+    this->d = firstIndex->d;
+    sync_d(this);
     this->metric_type = firstIndex->metric_type;
     this->is_trained = firstIndex->is_trained;
     this->ntotal = firstIndex->ntotal;
@@ -85,29 +100,6 @@ void IndexShardsTemplate<IndexT>::syncWithSubIndexes() {
     for (int i = 1; i < this->count(); ++i) {
         auto index = this->at(i);
         FAISS_THROW_IF_NOT(this->metric_type == index->metric_type);
-        FAISS_THROW_IF_NOT(this->d == index->d);
-        FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
-
-        this->ntotal += index->ntotal;
-    }
-}
-
-// No metric_type for IndexBinary
-template <>
-void IndexShardsTemplate<IndexBinary>::syncWithSubIndexes() {
-    if (!this->count()) {
-        this->is_trained = false;
-        this->ntotal = 0;
-
-        return;
-    }
-
-    auto firstIndex = this->at(0);
-    this->is_trained = firstIndex->is_trained;
-    this->ntotal = firstIndex->ntotal;
-
-    for (int i = 1; i < this->count(); ++i) {
-        auto index = this->at(i);
         FAISS_THROW_IF_NOT(this->d == index->d);
         FAISS_THROW_IF_NOT(this->is_trained == index->is_trained);
 

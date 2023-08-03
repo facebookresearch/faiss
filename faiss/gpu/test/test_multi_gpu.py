@@ -9,7 +9,7 @@ import numpy as np
 import faiss
 
 from faiss.contrib.datasets import SyntheticDataset
-
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 class TestShardedFlat(unittest.TestCase):
 
@@ -97,6 +97,32 @@ class TestShardedFlat(unittest.TestCase):
 
     def test_sharded_IVF_HNSW(self):
         self.do_test_sharded_ivf("IVF1000_HNSW,Flat")
+
+    def test_binary_clone(self, ngpu=1, shard=False):
+        ds = SyntheticDataset(64, 1000, 1000, 200)
+        tobinary = faiss.index_factory(ds.d, "LSHrt")
+        tobinary.train(ds.get_train())
+        index = faiss.IndexBinaryFlat(ds.d)
+        xb = tobinary.sa_encode(ds.get_database())
+        xq = tobinary.sa_encode(ds.get_queries())
+        index.add(xb)
+        Dref, Iref = index.search(xq, 5)
+
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = shard
+
+        # index2 = faiss.index_cpu_to_all_gpus(index, ngpu=ngpu)
+        res = faiss.StandardGpuResources()
+        index2 = faiss.GpuIndexBinaryFlat(res, index)
+
+        Dnew, Inew = index2.search(xq, 5)
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
+
+    def test_binary_clone_replicas(self):
+        self.test_binary_clone(ngpu=2, shard=False)
+
+    def test_binary_clone_shards(self):
+        self.test_binary_clone(ngpu=2, shard=True)
 
 
 # This class also has a multi-GPU test within

@@ -9,6 +9,7 @@
 
 #include <faiss/IndexBinaryFromFloat.h>
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
 #include <memory>

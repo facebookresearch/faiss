@@ -29,8 +29,10 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
     for i, res in zip(gpus, resources):
         vdev.push_back(i)
         vres.push_back(res)
-    index = index_cpu_to_gpu_multiple(vres, vdev, index, co)
-    return index
+    if isinstance(index, IndexBinary):
+        return index_binary_cpu_to_gpu_multiple(vres, vdev, index, co)
+    else:
+        return index_cpu_to_gpu_multiple(vres, vdev, index, co)
 
 
 def index_cpu_to_all_gpus(index, co=None, ngpu=-1):

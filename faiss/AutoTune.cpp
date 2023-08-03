@@ -284,6 +284,8 @@ std::string ParameterSpace::combination_name(size_t cno) const {
     char buf[1000], *wp = buf;
     *wp = 0;
     for (int i = 0; i < parameter_ranges.size(); i++) {
+        FAISS_THROW_IF_NOT_MSG(
+                buf + 1000 - wp >= 0, "Overflow detected in snprintf");
         const ParameterRange& pr = parameter_ranges[i];
         size_t j = cno % pr.values.size();
         cno /= pr.values.size();
