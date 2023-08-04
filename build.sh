@@ -16,6 +16,7 @@ fi
 
 if [ "$1" == "clean" ]; then
   rm -rf build
+  rm -rf .cache
   exit 0
 fi
 

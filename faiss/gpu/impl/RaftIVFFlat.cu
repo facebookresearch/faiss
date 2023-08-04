@@ -130,17 +130,25 @@ idx_t RaftIVFFlat::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
 
+    raft::print_device_vector("vecs", vecs.data(), 5, std::cout);
+    raft::print_device_vector("indices", indices.data(), indices.getSize(0), std::cout);
+
     auto vecs_view = raft::make_device_matrix_view<const float, idx_t>(
             vecs.data(), vecs.getSize(0), dim_);
     auto inds_view = raft::make_device_vector_view<const idx_t, idx_t>(
             indices.data(), (idx_t)indices.getSize(0));
+
+
+    printf("vecs.getSize(0) %d", vecs.getSize(0));
+    printf("indices.getSize(0) %d", indices.getSize(0));
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     // TODO: We probably don't want to ignore the coarse quantizer here
 
-    if (raft_knn_index.has_value()) {
+    FAISS_ASSERT(raft_knn_index.has_value());
+//     cudaMemcpyAsync(raft_knn_index.value().centers().data_handle(), coarseQuantizer.codes.data(), raft_knn_index.value().n_lists() * dim_ * sizeof(float), cudaMemcpyDefault, raft_handle.get_stream());
         raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
                 raft_handle,
                 vecs_view,
@@ -149,7 +157,6 @@ idx_t RaftIVFFlat::addVectors(
                         inds_view),
 	        raft_knn_index.value()));
 
-    }
     return vecs.getSize(0);
 }
 
@@ -348,6 +355,10 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                             raft_handle.get_stream());
         }
         raft_handle.sync_stream();
+}
+
+void RaftIVFFlat::set_index_(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx) {
+        raft_knn_index.emplace(std::move(idx.value()));
 }
 
 size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {

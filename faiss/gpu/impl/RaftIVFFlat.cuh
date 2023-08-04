@@ -84,6 +84,9 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
 
+    /// Reserve GPU memory in our inverted lists for this number of vectors
+//     void reserveMemory(idx_t numVecs) override;
+
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
     void reset() override;
@@ -103,10 +106,9 @@ class RaftIVFFlat : public IVFFlat {
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
-    
-    /// Copy all inverted lists from ourselves to a CPU representation
-    void copyInvertedListsTo(InvertedLists* ivf) override;
 
+    void set_index_(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx);
+    
    protected:
        /// Adds a set of codes and indices to a list, with the representation
        /// coming from the CPU equivalent

@@ -102,6 +102,8 @@ size_t GpuIndex::getMinPagingSize() const {
 
 void GpuIndex::add(idx_t n, const float* x) {
     // Pass to add_with_ids
+    printf("add called with n = %d\n", n);
+    raft::print_host_vector("x", x, 5, std::cout);
     add_with_ids(n, x, nullptr);
 }
 

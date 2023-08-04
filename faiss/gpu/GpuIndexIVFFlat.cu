@@ -18,6 +18,11 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
+#include <raft/core/handle.hpp>
+#include <raft/distance/distance_types.hpp>
+#include <raft/neighbors/ivf_flat_types.hpp>
+#include <raft/neighbors/ivf_flat.cuh>
+
 #include <limits>
 
 namespace faiss {
@@ -85,8 +90,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
                 ivfFlatConfig_.interleavedLayout,
                 ivfFlatConfig_.indicesOptions,
                 config_.memorySpace);
-        baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-        updateQuantizer();
     }
 }
 
@@ -235,6 +238,7 @@ void GpuIndexIVFFlat::updateQuantizer() {
 }
 
 void GpuIndexIVFFlat::train(idx_t n, const float* x) {
+    printf("Inside train");
     DeviceScope scope(config_.device);
 
     // just in case someone changed our quantizer
@@ -250,12 +254,14 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     // FIXME: GPUize more of this
     // First, make sure that the data is resident on the CPU, if it is not on
     // the CPU, as we depend upon parts of the CPU code
+    if (!config_.use_raft) {
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
             {n, this->d});
 
     trainQuantizer_(n, hostData.data());
+    }
 
     // The quantizer is now trained; construct the IVF index
     set_index_(
@@ -269,9 +275,27 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
-
-    if (reserveMemoryVecs_) {
+    
+    if (!config_.use_raft && reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
+    }
+
+    if (config_.use_raft) {
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+
+        raft::neighbors::ivf_flat::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
+        raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_trainset_fraction = 1.0;
+        raft_idx_params.kmeans_n_iters = cp.niter;
+        raft_idx_params.adaptive_centers = !cp.frozen_centroids;
+
+        printf("raft_idx_params.k_means_n_iters %u\n", cp.niter);
+
+        std::dynamic_pointer_cast<RaftIVFFlat>(index_)->set_index_(std::make_optional<raft::neighbors::ivf_flat::index<float, idx_t>>(raft::neighbors::ivf_flat::build(
+                raft_handle, raft_idx_params, x, n, (idx_t)d)));
     }
 
     this->is_trained = true;

@@ -5,11 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <raft/core/handle.hpp>
-#include <raft/distance/distance_types.hpp>
-#include <raft/neighbors/ivf_flat_types.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
-
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/gpu/GpuCloner.h>
@@ -268,6 +263,7 @@ void GpuIndexIVF::addImpl_(idx_t n, const float* x, const idx_t* xids) {
     // Device is already set in GpuIndex::add
     FAISS_ASSERT(baseIndex_);
     FAISS_ASSERT(n > 0);
+    printf("addVectors called from gpuindexivf");
 
     // Data is already resident on the GPU
     Tensor<float, 2, true> data(const_cast<float*>(x), {n, this->d});
@@ -445,41 +441,18 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         return;
     }
 
-    printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
-
-    if (config_.use_raft) {
-        printf("Using raft to train quantizer for %d vectors\n", n);
-        const raft::device_resources& raft_handle =
-                resources_->getRaftHandleCurrentDevice();
-
-        raft::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction = 1.0;
-        raft_idx_params.kmeans_n_iters = cp.niter;
-        raft_idx_params.adaptive_centers = !cp.frozen_centroids;
-
-        auto raft_index = raft::neighbors::ivf_flat::build(
-                raft_handle, raft_idx_params, x, n, (idx_t)d);
-
-        raft_handle.sync_stream();
-
-        // TODO: Validate this is all we need to do
-        quantizer->reset();
-        quantizer->train(nlist, raft_index.centers().data_handle());
-        quantizer->add(nlist, raft_index.centers().data_handle());
-
-    } else {
-        // leverage the CPU-side k-means code, which works for the GPU
-        // flat index as well
-        quantizer->reset();
-        Clustering clus(this->d, nlist, this->cp);
-        clus.verbose = verbose;
-        clus.train(n, x, *quantizer);
+    if (this->verbose) {
+        printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
     }
 
+    // leverage the CPU-side k-means code, which works for the GPU
+    // flat index as well
+    quantizer->reset();
+    Clustering clus(this->d, nlist, this->cp);
+    clus.verbose = verbose;
+    clus.train(n, x, *quantizer);
     quantizer->is_trained = true;
+
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }
 
