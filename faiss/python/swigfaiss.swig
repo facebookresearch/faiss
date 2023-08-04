@@ -454,7 +454,20 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexNNDescent.h>
 
 %include  <faiss/IndexIVFFlat.h>
+
+%warnfilter(509) faiss::nsg::Graph< int >::at(int,int);
+
 %include  <faiss/impl/NSG.h>
+
+%template(NSG_Graph_int) faiss::nsg::Graph<int>;
+
+// not using %shared_ptr to avoid mem leaks
+%extend faiss::NSG {
+    faiss::nsg::Graph<int>* get_final_graph() {
+        return $self->final_graph.get();
+    }
+}
+
 %include  <faiss/IndexNSG.h>
 
 #ifndef SWIGWIN
