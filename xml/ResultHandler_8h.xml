@@ -614,8 +614,8 @@
 <codeline lineno="445"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>begin<sp/>results<sp/>for<sp/>query<sp/>#<sp/>i</highlight></codeline>
 <codeline lineno="446" refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" kindref="member">begin</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>current_idx)<sp/>{</highlight></codeline>
 <codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;current_idx<sp/>=<sp/>current_idx;</highlight></codeline>
-<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_dis<sp/>=<sp/>HUGE_VALF;</highlight></codeline>
-<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_idx<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_dis<sp/>=<sp/>C::neutral();</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_idx<sp/>=<sp/>-1;</highlight></codeline>
 <codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="451"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="452"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>add<sp/>one<sp/>result<sp/>for<sp/>query<sp/>i</highlight></codeline>
@@ -641,44 +641,45 @@
 <codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;i1<sp/>=<sp/>i1;</highlight></codeline>
 <codeline lineno="473"><highlight class="normal"></highlight></codeline>
 <codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>i0;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;dis_tab[i]<sp/>=<sp/>HUGE_VALF;</highlight></codeline>
-<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="478"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="479"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>results<sp/>for<sp/>query<sp/>i0..i1<sp/>and<sp/>j0..j1</highlight></codeline>
-<codeline lineno="480" refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" kindref="member">add_results</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/>dis_tab)<sp/>{</highlight></codeline>
-<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(int64_t<sp/>i<sp/>=<sp/>i0;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/>dis_tab_i<sp/>=<sp/>dis_tab<sp/>+<sp/>(j1<sp/>-<sp/>j0)<sp/>*<sp/>(i<sp/>-<sp/>i0)<sp/>-<sp/>j0;</highlight></codeline>
-<codeline lineno="483"><highlight class="normal"></highlight></codeline>
-<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_distance<sp/>=<sp/>this-&gt;dis_tab[i];</highlight></codeline>
-<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_index<sp/>=<sp/>this-&gt;ids_tab[i];</highlight></codeline>
-<codeline lineno="486"><highlight class="normal"></highlight></codeline>
-<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>j0;<sp/>j<sp/>&lt;<sp/>j1;<sp/>j++)<sp/>{</highlight></codeline>
-<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>distance<sp/>=<sp/>dis_tab_i[j];</highlight></codeline>
-<codeline lineno="489"><highlight class="normal"></highlight></codeline>
-<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(min_distance,<sp/>distance))<sp/>{</highlight></codeline>
-<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_distance<sp/>=<sp/>distance;</highlight></codeline>
-<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_index<sp/>=<sp/>j;</highlight></codeline>
-<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="497"><highlight class="normal"></highlight></codeline>
-<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_result(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>dis,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI<sp/>idx)<sp/>{</highlight></codeline>
-<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_distance<sp/>=<sp/>this-&gt;dis_tab[i];</highlight></codeline>
-<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_index<sp/>=<sp/>this-&gt;ids_tab[i];</highlight></codeline>
-<codeline lineno="501"><highlight class="normal"></highlight></codeline>
-<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(min_distance,<sp/>dis))<sp/>{</highlight></codeline>
-<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_distance<sp/>=<sp/>dis;</highlight></codeline>
-<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_index<sp/>=<sp/>idx;</highlight></codeline>
-<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="507"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="508"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>series<sp/>of<sp/>results<sp/>for<sp/>queries<sp/>i0..i1<sp/>is<sp/>done</highlight></codeline>
-<codeline lineno="509" refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" kindref="member">end_multiple</ref>()<sp/>{}</highlight></codeline>
-<codeline lineno="510"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="511"><highlight class="normal"></highlight></codeline>
-<codeline lineno="512"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;dis_tab[i]<sp/>=<sp/>C::neutral();</highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;ids_tab[i]<sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="480"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>results<sp/>for<sp/>query<sp/>i0..i1<sp/>and<sp/>j0..j1</highlight></codeline>
+<codeline lineno="481" refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" kindref="member">add_results</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/>dis_tab)<sp/>{</highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(int64_t<sp/>i<sp/>=<sp/>i0;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/>dis_tab_i<sp/>=<sp/>dis_tab<sp/>+<sp/>(j1<sp/>-<sp/>j0)<sp/>*<sp/>(i<sp/>-<sp/>i0)<sp/>-<sp/>j0;</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_distance<sp/>=<sp/>this-&gt;dis_tab[i];</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_index<sp/>=<sp/>this-&gt;ids_tab[i];</highlight></codeline>
+<codeline lineno="487"><highlight class="normal"></highlight></codeline>
+<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>j0;<sp/>j<sp/>&lt;<sp/>j1;<sp/>j++)<sp/>{</highlight></codeline>
+<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>distance<sp/>=<sp/>dis_tab_i[j];</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"></highlight></codeline>
+<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(min_distance,<sp/>distance))<sp/>{</highlight></codeline>
+<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_distance<sp/>=<sp/>distance;</highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_index<sp/>=<sp/>j;</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"></highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_result(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T<sp/>dis,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI<sp/>idx)<sp/>{</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_distance<sp/>=<sp/>this-&gt;dis_tab[i];</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>min_index<sp/>=<sp/>this-&gt;ids_tab[i];</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"></highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(min_distance,<sp/>dis))<sp/>{</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_distance<sp/>=<sp/>dis;</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_index<sp/>=<sp/>idx;</highlight></codeline>
+<codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="507"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="508"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="509"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>series<sp/>of<sp/>results<sp/>for<sp/>queries<sp/>i0..i1<sp/>is<sp/>done</highlight></codeline>
+<codeline lineno="510" refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" kindref="member">end_multiple</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="511"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="512"><highlight class="normal"></highlight></codeline>
+<codeline lineno="513"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/ResultHandler.h"/>
   </compounddef>
