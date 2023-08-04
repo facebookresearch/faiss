@@ -34,7 +34,7 @@ dependency where necessary:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.7.4
 ```
 
 A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-06-19):
