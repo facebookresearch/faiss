@@ -14,7 +14,7 @@
         <argsstring></argsstring>
         <name>data</name>
         <briefdescription>
-<para>the flattened adjacency matrix </para>
+<para>the flattened adjacency matrix, size N-by-K </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
