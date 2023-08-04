@@ -63,9 +63,7 @@ if(FAISS_ENABLE_GPU)
 endif()
 
 if(FAISS_ENABLE_RAFT)
-  rapids_cpm_init()
-  include(cmake/thirdparty/get_raft.cmake)
-  include(cmake/thirdparty/get_cutlass.cmake)
+  find_package(raft COMPONENTS compiled distributed)
 endif()
 
 add_subdirectory(faiss)
