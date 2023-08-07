@@ -72,9 +72,6 @@ jobs:
       cuda_archs:
         type: string
         default: ""
-      raft:
-        type: string
-        default: ""
       compiler_version:
         type: string
         default: ""
