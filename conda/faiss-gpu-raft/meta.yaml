@@ -26,7 +26,7 @@ source:
 
 outputs:
   - name: libfaiss
-    script: ../common/build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib.sh  # [x86_64 and not win and not osx]
     script: build-lib-osx.sh  # [x86_64 and osx]
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
@@ -35,8 +35,6 @@ outputs:
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
-        - GPU
-        - RAFT
         - CUDA_ARCHS
     requirements:
       build:
@@ -66,15 +64,12 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-gpu-raft
-    script: ../common/build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
     script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
-      script_env:
-        - GPU
-        - RAFT
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -103,7 +98,7 @@ outputs:
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
-        - ../common/test_cpu_dispatch.sh  # [linux64]
+        - test_cpu_dispatch.sh  # [linux64]
       source_files:
         - tests/
         - faiss/gpu/test/

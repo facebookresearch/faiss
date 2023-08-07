@@ -63,19 +63,16 @@ jobs:
       label:
         type: string
         default: ""
-      gpu:
-        type: string
-        default: "OFF"
-      raft:
-        type: string
-        default: "OFF"
-      libraft:
-        type: string
-        default: ""
       cuda:
         type: string
         default: ""
+      raft:
+        type: string
+        default: ""
       cuda_archs:
+        type: string
+        default: ""
+      raft:
         type: string
         default: ""
       compiler_version:
@@ -88,8 +85,6 @@ jobs:
       OMP_NUM_THREADS: 10
       PACKAGE_TYPE: <<parameters.label>>
       CUDA_ARCHS: <<parameters.cuda_archs>>
-      GPU: <<parameters.gpu>>
-      RAFT: <<parameters.raft>>
     steps:
       - checkout
       - run:
@@ -118,7 +113,7 @@ jobs:
           condition:
             and:
               - not: << parameters.label >>
-              - equal: [ "OFF", << parameters.gpu >> ]
+              - not: << parameters.cuda >>
           steps:
             - run:
                 name: Conda build (CPU)
@@ -142,8 +137,8 @@ jobs:
           condition:
             and:
               - not: << parameters.label >>
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "OFF", << parameters.raft >> ]
+              - << parameters.cuda >>
+              - not: << parameters.raft >>
           steps:
             - run:
                 name: Conda build (GPU)
@@ -157,8 +152,8 @@ jobs:
           condition:
             and:
               - << parameters.label >>
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "OFF", << parameters.raft >> ]
+              - << parameters.cuda >>
+              - not: << parameters.raft >>
           steps:
             - run:
                 name: Conda build (GPU) w/ anaconda upload
@@ -172,8 +167,8 @@ jobs:
           condition:
             and:
               - not: << parameters.label >>
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "ON", << parameters.raft >> ]
+              - << parameters.cuda >>
+              - << parameters.raft >>
           steps:
             - run:
                 name: Conda build (GPU w/ RAFT)
@@ -181,14 +176,14 @@ jobs:
                 command: |
                   sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
-                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "libraft": "<<parameters.libraft>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      -c pytorch -c nvidia -c pkgs/main -c conda-forge
+                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "libraft": "<<parameters.raft>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      -c pytorch -c nvidia -c rapidsai-nightly -c pkgs/main -c conda-forge
       - when:
           condition:
             and:
               - << parameters.label >>
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "ON", << parameters.raft >> ]
+              - << parameters.cuda >>
+              - << parameters.raft >>
           steps:
             - run:
                 name: Conda build (GPU w/ RAFT) w/ anaconda upload
@@ -196,8 +191,8 @@ jobs:
                 command: |
                   sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
-                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "libraft": "<<parameters.libraft>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia -c pkgs/main -c conda-forge
+                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "libraft": "<<parameters.raft>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia -c rapidsai-nightly -c pkgs/main -c conda-forge
 
   build_cmake:
     parameters:
@@ -364,7 +359,6 @@ workflows:
           name: Linux x86_64 GPU packages (CUDA 11.4)
           exec: linux-x86_64-gpu
           # label: main
-          gpu: "ON"
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
@@ -377,10 +371,8 @@ workflows:
           name: Linux x86_64 GPU w/ RAFT packages (CUDA 11.4)
           exec: linux-x86_64-gpu
           # label: main
-          gpu: "ON"
-          raft: "ON"
+          raft: "23.08"
           cuda: "11.4"
-          libraft: "23.08"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
           # filters:
@@ -441,7 +433,6 @@ workflows:
       - build_conda:
           name: Linux x86_64 GPU nightlies (CUDA 11.4)
           exec: linux-x86_64-gpu
-          gpu: "ON"
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
