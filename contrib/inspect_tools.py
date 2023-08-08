@@ -96,3 +96,16 @@ def get_flat_data(index):
     """ copy and return the data matrix in an IndexFlat """
     xb = faiss.vector_to_array(index.codes).view("float32")
     return xb.reshape(index.ntotal, index.d)
+
+
+def get_NSG_neighbors(nsg):
+    """ get the neighbor list for the vectors stored in the NSG structure, as
+    a N-by-K matrix of indices """
+    graph = nsg.get_final_graph()
+    neighbors = np.zeros((graph.N, graph.K), dtype='int32')
+    faiss.memcpy(
+        faiss.swig_ptr(neighbors),
+        graph.data,
+        neighbors.nbytes
+    )
+    return neighbors

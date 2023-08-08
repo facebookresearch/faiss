@@ -445,8 +445,8 @@ struct SingleBestResultHandler {
         /// begin results for query # i
         void begin(const size_t current_idx) {
             this->current_idx = current_idx;
-            min_dis = HUGE_VALF;
-            min_idx = 0;
+            min_dis = C::neutral();
+            min_idx = -1;
         }
 
         /// add one result for query i
@@ -472,7 +472,8 @@ struct SingleBestResultHandler {
         this->i1 = i1;
 
         for (size_t i = i0; i < i1; i++) {
-            this->dis_tab[i] = HUGE_VALF;
+            this->dis_tab[i] = C::neutral();
+            this->ids_tab[i] = -1;
         }
     }
 
