@@ -663,93 +663,92 @@ TEST(TestRaftGpuIndexFlat, Reconstruct) {
 #endif
 
 void testSearchAndReconstruct(bool use_raft) {
-   // Construct on a random device to test multi-device, if we have
-   // multiple devices
-   int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+    // Construct on a random device to test multi-device, if we have
+    // multiple devices
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
 
-   faiss::gpu::StandardGpuResources res;
-   res.noTempMemory();
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
 
-   size_t dim = 32;
-   size_t nb = 5000;
-   size_t nq = 10;
-   int k = 10;
+    size_t dim = 32;
+    size_t nb = 5000;
+    size_t nq = 10;
+    int k = 10;
 
-   auto xb = faiss::gpu::randVecs(nb, dim);
-   auto xq = faiss::gpu::randVecs(nq, dim);
+    auto xb = faiss::gpu::randVecs(nb, dim);
+    auto xq = faiss::gpu::randVecs(nq, dim);
 
-   faiss::IndexFlatL2 cpuIndex(dim);
+    faiss::IndexFlatL2 cpuIndex(dim);
 
-   faiss::gpu::GpuIndexFlatConfig config;
-   config.device = device;
-   config.use_raft = use_raft;
-   faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
+    faiss::gpu::GpuIndexFlatConfig config;
+    config.device = device;
+    config.use_raft = use_raft;
+    faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
 
-   cpuIndex.add(nb, xb.data());
-   gpuIndex.add(nb, xb.data());
+    cpuIndex.add(nb, xb.data());
+    gpuIndex.add(nb, xb.data());
 
-   std::vector<float> refDistance(nq * k, 0);
-   std::vector<faiss::idx_t> refIndices(nq * k, -1);
-   std::vector<float> refReconstruct(nq * k * dim, 0);
-   cpuIndex.search_and_reconstruct(
-           nq,
-           xq.data(),
-           k,
-           refDistance.data(),
-           refIndices.data(),
-           refReconstruct.data());
+    std::vector<float> refDistance(nq * k, 0);
+    std::vector<faiss::idx_t> refIndices(nq * k, -1);
+    std::vector<float> refReconstruct(nq * k * dim, 0);
+    cpuIndex.search_and_reconstruct(
+            nq,
+            xq.data(),
+            k,
+            refDistance.data(),
+            refIndices.data(),
+            refReconstruct.data());
 
-   std::vector<float> testDistance(nq * k, 0);
-   std::vector<faiss::idx_t> testIndices(nq * k, -1);
-   std::vector<float> testReconstruct(nq * k * dim, 0);
-   gpuIndex.search_and_reconstruct(
-           nq,
-           xq.data(),
-           k,
-           testDistance.data(),
-           testIndices.data(),
-           testReconstruct.data());
+    std::vector<float> testDistance(nq * k, 0);
+    std::vector<faiss::idx_t> testIndices(nq * k, -1);
+    std::vector<float> testReconstruct(nq * k * dim, 0);
+    gpuIndex.search_and_reconstruct(
+            nq,
+            xq.data(),
+            k,
+            testDistance.data(),
+            testIndices.data(),
+            testReconstruct.data());
 
-   // This handles the search results
-   faiss::gpu::compareLists(
-           refDistance.data(),
-           refIndices.data(),
-           testDistance.data(),
-           testIndices.data(),
-           nq,
-           k,
-           "SearchAndReconstruct",
-           true,
-           false,
-           true,
-           kF32MaxRelErr,
-           0.1f,
-           0.015f);
+    // This handles the search results
+    faiss::gpu::compareLists(
+            refDistance.data(),
+            refIndices.data(),
+            testDistance.data(),
+            testIndices.data(),
+            nq,
+            k,
+            "SearchAndReconstruct",
+            true,
+            false,
+            true,
+            kF32MaxRelErr,
+            0.1f,
+            0.015f);
 
-   // As the search results may be slightly different (though compareLists
-   // above will ensure a decent number of matches), reconstruction should be
-   // the same for the vectors that do match
-   for (int i = 0; i < nq; ++i) {
-       std::unordered_map<faiss::idx_t, int> refLocation;
+    // As the search results may be slightly different (though compareLists
+    // above will ensure a decent number of matches), reconstruction should be
+    // the same for the vectors that do match
+    for (int i = 0; i < nq; ++i) {
+        std::unordered_map<faiss::idx_t, int> refLocation;
 
-       for (int j = 0; j < k; ++j) {
-           refLocation.insert(std::make_pair(refIndices[i * k + j], j));
-       }
+        for (int j = 0; j < k; ++j) {
+            refLocation.insert(std::make_pair(refIndices[i * k + j], j));
+        }
 
-       for (int j = 0; j < k; ++j) {
-           auto idx = testIndices[i * k + j];
-           auto it = refLocation.find(idx);
-           if (it != refLocation.end()) {
-               for (int d = 0; d < dim; ++d) {
-                   EXPECT_EQ(
-                           refReconstruct[(i * k + it->second) * dim + d],
-                           testReconstruct[(i * k + j) * dim + d]);
-               }
-           }
-       }
-   }
+        for (int j = 0; j < k; ++j) {
+            auto idx = testIndices[i * k + j];
+            auto it = refLocation.find(idx);
+            if (it != refLocation.end()) {
+                for (int d = 0; d < dim; ++d) {
+                    EXPECT_EQ(
+                            refReconstruct[(i * k + it->second) * dim + d],
+                            testReconstruct[(i * k + j) * dim + d]);
+                }
+            }
+        }
+    }
 }
-
 TEST(TestGpuIndexFlat, SearchAndReconstruct) {
    testSearchAndReconstruct(false);
 }

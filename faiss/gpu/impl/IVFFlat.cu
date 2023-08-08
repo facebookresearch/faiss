@@ -92,10 +92,6 @@ std::vector<uint8_t> IVFFlat::translateCodesToGpu_(
     }
 
     bool sc = scalarQ_ ? true : false;
-    int bitsPerCode = scalarQ_ ? scalarQ_->bits : 32;
-    std::cout << "dim_=" << dim_ << ", scalarQ_=" << sc
-              << ", bitsPerCode=" << bitsPerCode
-              << ", interleavedLayout_=" << interleavedLayout_ << std::endl;
 
     auto up =
             unpackNonInterleaved(std::move(codes), numVecs, dim_, bitsPerCode);

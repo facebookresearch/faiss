@@ -232,7 +232,6 @@ void copyToTest(bool useFloat16CoarseQuantizer) {
             compFloat16 ? 0.30f : 0.015f);
 }
 
-
 void copyFromTest(bool useFloat16CoarseQuantizer) {
     Options opt;
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
