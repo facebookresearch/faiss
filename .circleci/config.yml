@@ -117,7 +117,7 @@ jobs:
                 no_output_timeout: 30m
                 command: |
                   cd conda
-                  conda build faiss --python 3.10 -c pytorch
+                  conda build faiss --python 3.11 -c pytorch
       - when:
           condition:
             and:
@@ -231,7 +231,7 @@ jobs:
           command: |
             conda config --set solver libmamba
             conda update -y -q conda
-            conda install -y -q pkgs/main::python=3.10 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 -c pkgs/main -c conda-forge
+            conda install -y -q pkgs/main::python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 -c pkgs/main -c conda-forge
       - when:
           condition:
             equal: [ "ON", << parameters.raft >> ]
