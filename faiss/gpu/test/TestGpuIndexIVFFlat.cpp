@@ -509,19 +509,19 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
 
     // should not crash
     EXPECT_EQ(gpuIndex.ntotal, 0);
-    // gpuIndex.add(numNans, nans.data());
+    gpuIndex.add(numNans, nans.data());
 
-    // std::vector<float> queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
-    // std::vector<float> distance(opt.numQuery * opt.k, 0);
-    // std::vector<faiss::idx_t> indices(opt.numQuery * opt.k, 0);
+    std::vector<float> queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+    std::vector<float> distance(opt.numQuery * opt.k, 0);
+    std::vector<faiss::idx_t> indices(opt.numQuery * opt.k, 0);
 
-    // // should not crash
-    // gpuIndex.search(
-    //         opt.numQuery,
-    //         queryVecs.data(),
-    //         opt.k,
-    //         distance.data(),
-    //         indices.data());
+    // should not crash
+    gpuIndex.search(
+            opt.numQuery,
+            queryVecs.data(),
+            opt.k,
+            distance.data(),
+            indices.data());
 }
 
 TEST(TestGpuIndexIVFFlat, UnifiedMemory) {

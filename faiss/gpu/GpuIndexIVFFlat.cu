@@ -76,7 +76,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
           reserveMemoryVecs_(0) {
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
-
     if (this->is_trained) {
         FAISS_ASSERT(this->quantizer);
         set_index_(

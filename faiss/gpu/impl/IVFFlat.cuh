@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifdef FAISS_ENABLE_RAFT
+#if defined USE_NVIDIA_RAFT
 #include <raft/core/handle.hpp>
 #include <raft/spatial/knn/ivf_flat_types.hpp>
 #endif

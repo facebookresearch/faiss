@@ -263,7 +263,6 @@ void GpuIndexIVF::addImpl_(idx_t n, const float* x, const idx_t* xids) {
     // Device is already set in GpuIndex::add
     FAISS_ASSERT(baseIndex_);
     FAISS_ASSERT(n > 0);
-    printf("addVectors called from gpuindexivf");
 
     // Data is already resident on the GPU
     Tensor<float, 2, true> data(const_cast<float*>(x), {n, this->d});
