@@ -91,6 +91,8 @@ std::vector<uint8_t> IVFFlat::translateCodesToGpu_(
         return codes;
     }
 
+    int bitsPerCode = scalarQ_ ? scalarQ_->bits : 32;
+
     auto up =
             unpackNonInterleaved(std::move(codes), numVecs, dim_, bitsPerCode);
     return packInterleaved(std::move(up), numVecs, dim_, bitsPerCode);
@@ -283,10 +285,8 @@ void IVFFlat::searchPreassigned(
 
 void IVFFlat::searchImpl_(
         Tensor<float, 2, true>& queries,
-
         Tensor<float, 2, true>& coarseDistances,
         Tensor<idx_t, 2, true>& coarseIndices,
-
         Tensor<float, 3, true>& ivfCentroids,
         int k,
         Tensor<float, 2, true>& outDistances,
