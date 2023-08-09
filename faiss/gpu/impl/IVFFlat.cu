@@ -126,6 +126,7 @@ void IVFFlat::appendVectors_(
     //
     // Append the new encodings
     //
+
     // Append indices to the IVF lists
     runIVFIndicesAppend(
             listIds,
