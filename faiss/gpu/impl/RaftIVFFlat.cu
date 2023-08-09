@@ -19,12 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <raft/core/device_mdspan.hpp>
-#include <raft/core/handle.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <raft/neighbors/ivf_flat.cuh>
 
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuResources.h>
@@ -47,10 +44,11 @@
 #include <limits>
 #include <unordered_map>
 
+#include <raft/core/device_mdspan.hpp>
+#include <raft/core/handle.hpp>
+#include <raft/neighbors/ivf_flat.cuh>
+#include <raft/neighbors/ivf_flat_codepacker.hpp>
 #include <raft/neighbors/ivf_flat_types.hpp>
-#include <raft/neighbors/ivf_flat_helpers.cuh>
-
-#include <raft/core/logger.hpp>
 
 namespace faiss {
 namespace gpu {

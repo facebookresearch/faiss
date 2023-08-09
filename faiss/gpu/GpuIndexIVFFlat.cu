@@ -11,17 +11,18 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <raft/core/cudart_utils.hpp>
 #include <raft/core/handle.hpp>
 #include <raft/distance/distance_types.hpp>
 #include <raft/neighbors/ivf_flat_types.hpp>
 #include <raft/neighbors/ivf_flat.cuh>
+#endif
 
 #include <limits>
 
@@ -106,6 +107,8 @@ void GpuIndexIVFFlat::set_index_(
         bool interleavedLayout,
         IndicesOptions indicesOptions,
         MemorySpace space) {
+#if defined USE_NVIDIA_RAFT
+
     if (config_.use_raft) {
         index_.reset(new RaftIVFFlat(
                 resources,
@@ -118,7 +121,14 @@ void GpuIndexIVFFlat::set_index_(
                 interleavedLayout,
                 indicesOptions,
                 space));
-    } else {
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
         index_.reset(new IVFFlat(
                 resources,
                 dim,
@@ -151,9 +161,13 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     // This will copy GpuIndexIVF data such as the coarse quantizer
     GpuIndexIVF::copyFrom(index);
 
+    printf("GpuIndexIVFcopyFrom done\n");
+
     // Clear out our old data
     index_.reset();
     baseIndex_.reset();
+
+    printf("indices reset\n");
 
     // The other index might not be trained
     if (!index->is_trained) {
@@ -177,7 +191,7 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
 
-    // Copy all of the IVF data
+     // Copy all of the IVF data
     printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
     index_->copyInvertedListsFrom(index->invlists);
 }
@@ -276,6 +290,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
 
+#if defined USE_NVIDIA_RAFT
+
     if (config_.use_raft) {
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
@@ -294,6 +310,12 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
                         raft::neighbors::ivf_flat::build(
                                 raft_handle, raft_idx_params, x, n, (idx_t)d)));
     }
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    }
+#endif
 
     this->is_trained = true;
 }

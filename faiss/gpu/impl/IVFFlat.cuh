@@ -7,11 +7,6 @@
 
 #pragma once
 
-#if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
-#include <raft/spatial/knn/ivf_flat_types.hpp>
-#endif
-
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFBase.cuh>
 

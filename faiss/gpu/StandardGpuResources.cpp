@@ -361,7 +361,9 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
+#if defined USE_NVIDIA_RAFT
     raftHandles_.emplace(std::make_pair(device, defaultStream));
+#endif
 
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(

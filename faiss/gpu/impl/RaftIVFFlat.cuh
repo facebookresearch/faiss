@@ -22,12 +22,11 @@
 
 #pragma once
 
-#include <raft/core/handle.hpp>
 #include <raft/neighbors/ivf_flat_types.hpp>
 
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/impl/IVFBase.cuh>
+#include <faiss/gpu/impl/IVFFlat.cuh>
 
 #include <faiss/impl/CodePacker.h>
 
@@ -85,7 +84,7 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<idx_t, 1, true>& indices) override;
 
     /// Reserve GPU memory in our inverted lists for this number of vectors
-//     void reserveMemory(idx_t numVecs) override;
+    //     void reserveMemory(idx_t numVecs) override;
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
@@ -107,22 +106,25 @@ class RaftIVFFlat : public IVFFlat {
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    void set_index_(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx);
+    /// Update the raft index
+    void set_index_(
+            std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx);
 
+    /// Filter out matrix rows containing NaN values
     void validRowIndices_(Tensor<float, 2, true>& vecs, bool* nan_flag);
-    
+
    protected:
-       /// Adds a set of codes and indices to a list, with the representation
-       /// coming from the CPU equivalent
-       void addEncodedVectorsToList_(
+    /// Adds a set of codes and indices to a list, with the representation
+    /// coming from the CPU equivalent
+    void addEncodedVectorsToList_(
             idx_t listId,
             // resident on the host
             const void* codes,
             // resident on the host
             const idx_t* indices,
             idx_t numVecs) override;
-        
-        /// Returns the number of bytes in which an IVF list containing numVecs
+
+    /// Returns the number of bytes in which an IVF list containing numVecs
     /// vectors is encoded on the device. Note that due to padding this is not
     /// the same as the encoding size for a subset of vectors in an IVF list;
     /// this is the size for an entire IVF list
@@ -132,17 +134,19 @@ class RaftIVFFlat : public IVFFlat {
             raft_knn_index{std::nullopt};
 };
 
-
 struct RaftIVFFlatCodePackerInterleaved : CodePacker {
-    RaftIVFFlatCodePackerInterleaved(size_t list_size, uint32_t dim, uint32_t chuk_size);
+    RaftIVFFlatCodePackerInterleaved(
+            size_t list_size,
+            uint32_t dim,
+            uint32_t chuk_size);
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
             const final;
 
-    protected:
-        uint32_t chunk_size;
-        uint32_t dim;
+   protected:
+    uint32_t chunk_size;
+    uint32_t dim;
 };
 
 } // namespace gpu
