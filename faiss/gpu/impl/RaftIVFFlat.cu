@@ -90,13 +90,14 @@ void RaftIVFFlat::search(
         Tensor<idx_t, 2, true>& outIndices) {
     // TODO: We probably don't want to ignore the coarse quantizer here...
 
-    uint32_t n = queries.getSize(0);
+    uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
     uint32_t k_ = k;
 
     // Device is already set in GpuIndex::search
     FAISS_ASSERT(raft_knn_index.has_value());
-    FAISS_ASSERT(n > 0);
+    FAISS_ASSERT(numQueries > 0);
+    FAISS_ASSERT(cols == dim_);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
 
     const raft::device_resources& raft_handle =
@@ -104,35 +105,13 @@ void RaftIVFFlat::search(
     raft::neighbors::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
 
-    uint32_t n_rows = n;
-
-    auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
-
-    thrust::fill_n(
-            raft_handle.get_thrust_policy(),
-            nan_flag.data_handle(),
-            n_rows,
-            true);
-    raft::linalg::map_offset(
-            raft_handle,
-            nan_flag.view(),
-            [queries = queries.data(), dim_ = this->dim_] __device__(idx_t i) {
-                for (idx_t col = 0; col < dim_; col++) {
-                    if (!isfinite(queries[i * dim_ + col])) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-
-    // TODO: We probably don't want to ignore the coarse quantizer here
-
     auto queries_view = raft::make_device_matrix_view<const float>(
-            queries.data(), n_rows, cols);
-    auto out_inds_view =
-            raft::make_device_matrix_view<idx_t>(outIndices.data(), n_rows, k_);
+            queries.data(), numQueries, cols);
+    auto out_inds_view = raft::make_device_matrix_view<idx_t>(
+            outIndices.data(), numQueries, k_);
     auto out_dists_view = raft::make_device_matrix_view<float>(
-            outDistances.data(), n_rows, k_);
+            outDistances.data(), numQueries, k_);
+
     raft::neighbors::ivf_flat::search<float, idx_t>(
             raft_handle,
             pams,
@@ -140,10 +119,15 @@ void RaftIVFFlat::search(
             queries_view,
             out_inds_view,
             out_dists_view);
-    float max_val = std::numeric_limits<float>::max();
+
+    /// Identify NaN rows and mask their nearest neighbors
+    auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
+
+    validRowIndices_(queries, nan_flag.data_handle());
+
     raft::linalg::map_offset(
             raft_handle,
-            raft::make_device_vector_view(outIndices.data(), n_rows * k_),
+            raft::make_device_vector_view(outIndices.data(), numQueries * k_),
             [nan_flag = nan_flag.data_handle(),
              out_inds = outIndices.data(),
              k_] __device__(uint32_t i) {
@@ -152,9 +136,11 @@ void RaftIVFFlat::search(
                     return idx_t(-1);
                 return out_inds[i];
             });
+
+    float max_val = std::numeric_limits<float>::max();
     raft::linalg::map_offset(
             raft_handle,
-            raft::make_device_vector_view(outDistances.data(), n_rows * k_),
+            raft::make_device_vector_view(outDistances.data(), numQueries * k_),
             [nan_flag = nan_flag.data_handle(),
              out_dists = outDistances.data(),
              max_val,
@@ -164,8 +150,6 @@ void RaftIVFFlat::search(
                     return max_val;
                 return out_dists[i];
             });
-
-    raft_handle.sync_stream();
 }
 
 /// Classify and encode/add vectors to our IVF lists.
@@ -184,57 +168,45 @@ idx_t RaftIVFFlat::addVectors(
     /// Remove NaN values
     auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-    thrust::fill_n(
-            raft_handle.get_thrust_policy(),
-            nan_flag.data_handle(),
-            n_rows,
-            true);
-    raft::linalg::map_offset(
-            raft_handle,
-            nan_flag.view(),
-            [vecs = vecs.data(), dim_ = this->dim_] __device__(idx_t i) {
-                for (idx_t col = 0; col < dim_; col++) {
-                    if (!isfinite(vecs[i * dim_ + col])) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-    raft_handle.sync_stream();
+    validRowIndices_(vecs, nan_flag.data_handle());
+
     idx_t n_rows_valid = thrust::reduce(
             raft_handle.get_thrust_policy(),
             nan_flag.data_handle(),
             nan_flag.data_handle() + n_rows,
             0);
-    auto gather_indices =
-            raft::make_device_vector<idx_t, idx_t>(raft_handle, n_rows_valid);
-    auto count = thrust::make_counting_iterator(0);
-    thrust::copy_if(
-            raft_handle.get_thrust_policy(),
-            count,
-            count + n_rows,
-            gather_indices.data_handle(),
-            [nan_flag = nan_flag.data_handle()] __device__(auto i) {
-                return nan_flag[i];
-            });
+
     if (n_rows_valid < n_rows) {
+        auto gather_indices = raft::make_device_vector<idx_t, idx_t>(
+                raft_handle, n_rows_valid);
+
+        auto count = thrust::make_counting_iterator(0);
+
+        thrust::copy_if(
+                raft_handle.get_thrust_policy(),
+                count,
+                count + n_rows,
+                gather_indices.data_handle(),
+                [nan_flag = nan_flag.data_handle()] __device__(auto i) {
+                    return nan_flag[i];
+                });
+
         raft::matrix::gather(
                 raft_handle,
                 raft::make_device_matrix_view<float, idx_t>(
                         vecs.data(), n_rows, dim_),
                 raft::make_const_mdspan(gather_indices.view()),
                 (idx_t)16);
-    }
-    auto valid_indices =
-            raft::make_device_vector<idx_t, idx_t>(raft_handle, n_rows);
 
-    raft::matrix::gather(
-            raft_handle,
-            raft::make_device_matrix_view<const idx_t>(
-                    indices.data(), n_rows, (idx_t)1),
-            raft::make_const_mdspan(gather_indices.view()),
-            raft::make_device_matrix_view(
-                    valid_indices.data_handle(), n_rows_valid, (idx_t)1));
+        auto valid_indices = raft::make_device_vector<idx_t, idx_t>(
+                raft_handle, n_rows_valid);
+
+        raft::matrix::gather(
+                raft_handle,
+                raft::make_device_matrix_view<idx_t>(
+                        indices.data(), n_rows, (idx_t)1),
+                raft::make_const_mdspan(gather_indices.view()));
+    }
 
     /// TODO: We probably don't want to ignore the coarse quantizer here
 
@@ -244,7 +216,8 @@ idx_t RaftIVFFlat::addVectors(
             raft::make_device_matrix_view<const float, idx_t>(
                     vecs.data(), n_rows_valid, dim_),
             std::make_optional<raft::device_vector_view<const idx_t, idx_t>>(
-                    valid_indices.view()),
+                    raft::make_device_vector_view<const idx_t, idx_t>(
+                            indices.data(), n_rows_valid)),
             raft_knn_index.value()));
 
     return n_rows_valid;
@@ -549,6 +522,27 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     raft_handle.sync_stream();
     raft::update_device(list_indices_ptr, indices, numVecs, stream);
     raft_handle.sync_stream();
+}
+
+void RaftIVFFlat::validRowIndices_(
+        Tensor<float, 2, true>& vecs,
+        bool* nan_flag) {
+    raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    idx_t n_rows = vecs.getSize(0);
+
+    thrust::fill_n(raft_handle.get_thrust_policy(), nan_flag, n_rows, true);
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view<bool, idx_t>(nan_flag, n_rows),
+            [vecs = vecs.data(), dim_ = this->dim_] __device__(idx_t i) {
+                for (idx_t col = 0; col < dim_; col++) {
+                    if (!isfinite(vecs[i * dim_ + col])) {
+                        return false;
+                    }
+                }
+                return true;
+            });
 }
 
 RaftIVFFlatCodePackerInterleaved::RaftIVFFlatCodePackerInterleaved(

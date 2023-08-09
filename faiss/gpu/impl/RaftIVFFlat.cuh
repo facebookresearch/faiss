@@ -108,6 +108,8 @@ class RaftIVFFlat : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     void set_index_(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx);
+
+    void validRowIndices_(Tensor<float, 2, true>& vecs, bool* nan_flag);
     
    protected:
        /// Adds a set of codes and indices to a list, with the representation
