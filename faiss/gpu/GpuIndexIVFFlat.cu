@@ -11,13 +11,13 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <raft/core/cudart_utils.hpp>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
+#include <raft/core/cudart_utils.hpp>
 #include <raft/core/handle.hpp>
 #include <raft/distance/distance_types.hpp>
 #include <raft/neighbors/ivf_flat_types.hpp>
@@ -107,7 +107,6 @@ void GpuIndexIVFFlat::set_index_(
         IndicesOptions indicesOptions,
         MemorySpace space) {
     if (config_.use_raft) {
-        printf("Setting RaftIVFFlat index\n");
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,
@@ -237,7 +236,6 @@ void GpuIndexIVFFlat::updateQuantizer() {
 }
 
 void GpuIndexIVFFlat::train(idx_t n, const float* x) {
-    printf("Inside train");
     DeviceScope scope(config_.device);
 
     // just in case someone changed our quantizer
@@ -254,12 +252,12 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     // First, make sure that the data is resident on the CPU, if it is not on
     // the CPU, as we depend upon parts of the CPU code
     if (!config_.use_raft) {
-    auto hostData = toHost<float, 2>(
-            (float*)x,
-            resources_->getDefaultStream(config_.device),
-            {n, this->d});
+        auto hostData = toHost<float, 2>(
+                (float*)x,
+                resources_->getDefaultStream(config_.device),
+                {n, this->d});
 
-    trainQuantizer_(n, hostData.data());
+        trainQuantizer_(n, hostData.data());
     }
 
     // The quantizer is now trained; construct the IVF index
@@ -274,7 +272,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
-    
+
     if (!config_.use_raft && reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
@@ -291,10 +289,11 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         raft_idx_params.kmeans_n_iters = cp.niter;
         raft_idx_params.adaptive_centers = !cp.frozen_centroids;
 
-        printf("raft_idx_params.k_means_n_iters %u\n", cp.niter);
-
-        std::dynamic_pointer_cast<RaftIVFFlat>(index_)->set_index_(std::make_optional<raft::neighbors::ivf_flat::index<float, idx_t>>(raft::neighbors::ivf_flat::build(
-                raft_handle, raft_idx_params, x, n, (idx_t)d)));
+        std::dynamic_pointer_cast<RaftIVFFlat>(index_)->set_index_(
+                std::make_optional<
+                        raft::neighbors::ivf_flat::index<float, idx_t>>(
+                        raft::neighbors::ivf_flat::build(
+                                raft_handle, raft_idx_params, x, n, (idx_t)d)));
     }
 
     this->is_trained = true;
