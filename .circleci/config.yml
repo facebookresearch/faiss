@@ -21,7 +21,7 @@ executors:
     environment:
       CONDA_ARCH: MacOSX-x86_64
     macos:
-      xcode: 11.7.0  # max supported for conda build, https://circleci.com/docs/using-macos#supported-xcode-versions
+      xcode: 14.2.0
   macosx-arm64-cpu:
     environment:
       CONDA_ARCH: MacOSX-arm64
