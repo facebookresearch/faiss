@@ -17,11 +17,6 @@ executors:
     machine:
       image: ubuntu-2004:current
     resource_class: arm.medium
-  macosx-x86_64-cpu:
-    environment:
-      CONDA_ARCH: MacOSX-x86_64
-    macos:
-      xcode: 14.2.0
   macosx-arm64-cpu:
     environment:
       CONDA_ARCH: MacOSX-arm64
@@ -96,6 +91,7 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
+            conda config --set solver libmamba
             conda update -y -q conda
             conda install -y -q conda-build
       - when:
@@ -239,7 +235,7 @@ jobs:
             - run:
                 name: Install libraft
                 command: |
-                  conda install -y -q libraft cudatoolkit=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
+                  conda install -y -q libraft=23.08 cudatoolkit=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
@@ -334,9 +330,6 @@ workflows:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
       - build_conda:
-          name: OSX x86_64 (conda)
-          exec: macosx-x86_64-cpu
-      - build_conda:
           name: Windows x86_64 (conda)
           exec: windows-x86_64-cpu
       - build_conda:
@@ -386,15 +379,6 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: OSX x86_64 packages
-          exec: macosx-x86_64-cpu
-          label: main
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_conda:
           name: OSX arm64 packages
           exec: macosx-arm64-cpu
           label: main
@@ -436,10 +420,6 @@ workflows:
       - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX x86_64 nightlies
-          exec: macosx-x86_64-cpu
           label: nightly
       - build_conda:
           name: OSX arm64 nightlies
