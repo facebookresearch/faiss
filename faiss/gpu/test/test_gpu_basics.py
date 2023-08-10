@@ -275,15 +275,15 @@ class TestKnn(unittest.TestCase):
             faiss.bfKnn(res, params)
 
         self.assertTrue(np.allclose(ref_d, out_d, atol=1e-5))
-        self.assertGreaterEqual((out_i == ref_i).sum(), ref_i.size)
+        self.assertTrue(np.array_equal(out_i, ref_i))
 
-        out_d, out_i = faiss.knn_gpu(
-            res, qs, xs, k, device=gpu_id,
+        faiss.knn_gpu(
+            res, qs, xs, k, out_d, out_i, device=gpu_id,
             vectorsMemoryLimit=vectorsMemoryLimit,
             queriesMemoryLimit=queriesMemoryLimit)
 
         self.assertTrue(np.allclose(ref_d, out_d, atol=1e-5))
-        self.assertGreaterEqual((out_i == ref_i).sum(), ref_i.size)
+        self.assertTrue(np.array_equal(out_i, ref_i))
 
         # Try int32 out indices
         out_i32 = np.empty((nq, k), dtype=np.int32)
@@ -292,7 +292,8 @@ class TestKnn(unittest.TestCase):
 
         faiss.bfKnn(res, params)
 
-        self.assertEqual((out_i32 == ref_i).sum(), ref_i.size)
+        self.assertTrue(np.allclose(ref_d, out_d, atol=1e-5))
+        self.assertTrue(np.array_equal(out_i32, ref_i))
 
         # Try float16 data/queries, i64 out indices
         xs_f16 = xs.astype(np.float16)
