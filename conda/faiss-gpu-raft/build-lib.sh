@@ -11,7 +11,7 @@ set -e
 cmake -B _build \
       -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TESTING=OFF \
-      -DFAISS_OPT_LEVEL=Generic \
+      -DFAISS_OPT_LEVEL=avx2 \
       -DFAISS_ENABLE_GPU=OFF \
       -DFAISS_ENABLE_RAFT=OFF \
       -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \

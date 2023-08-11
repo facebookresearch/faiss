@@ -10,7 +10,7 @@ set -e
 # Build swigfaiss.so/swigfaiss_avx2.so.
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
-      -DFAISS_OPT_LEVEL=Generic \
+      -DFAISS_OPT_LEVEL=avx2 \
       -DFAISS_ENABLE_GPU=OFF \
       -DFAISS_ENABLE_RAFT=OFF \
       -DCMAKE_BUILD_TYPE=Release \

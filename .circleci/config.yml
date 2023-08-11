@@ -92,7 +92,7 @@ jobs:
           name: Install conda build tools
           command: |
             conda config --set solver libmamba
-            conda config --set verbosity 3  
+            # conda config --set verbosity 3  
             conda update -y -q conda
             conda install -y -q conda-build
       - when:
