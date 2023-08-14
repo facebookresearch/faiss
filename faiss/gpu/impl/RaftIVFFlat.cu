@@ -73,7 +73,7 @@ RaftIVFFlat::RaftIVFFlat(
                   scalarQ,
                   interleavedLayout,
                   indicesOptions,
-                  space) {}
+                  space) {printf("RaftIVFFlat constructor called\n"); reset();}
 
 RaftIVFFlat::~RaftIVFFlat() {}
 
@@ -121,33 +121,33 @@ void RaftIVFFlat::search(
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-    validRowIndices_(queries, nan_flag.data_handle());
+//     validRowIndices_(queries, nan_flag.data_handle());
 
-    raft::linalg::map_offset(
-            raft_handle,
-            raft::make_device_vector_view(outIndices.data(), numQueries * k_),
-            [nan_flag = nan_flag.data_handle(),
-             out_inds = outIndices.data(),
-             k_] __device__(uint32_t i) {
-                uint32_t row = i / k_;
-                if (!nan_flag[row])
-                    return idx_t(-1);
-                return out_inds[i];
-            });
+//     raft::linalg::map_offset(
+//             raft_handle,
+//             raft::make_device_vector_view(outIndices.data(), numQueries * k_),
+//             [nan_flag = nan_flag.data_handle(),
+//              out_inds = outIndices.data(),
+//              k_] __device__(uint32_t i) {
+//                 uint32_t row = i / k_;
+//                 if (!nan_flag[row])
+//                     return idx_t(-1);
+//                 return out_inds[i];
+//             });
 
-    float max_val = std::numeric_limits<float>::max();
-    raft::linalg::map_offset(
-            raft_handle,
-            raft::make_device_vector_view(outDistances.data(), numQueries * k_),
-            [nan_flag = nan_flag.data_handle(),
-             out_dists = outDistances.data(),
-             max_val,
-             k_] __device__(uint32_t i) {
-                uint32_t row = i / k_;
-                if (!nan_flag[row])
-                    return max_val;
-                return out_dists[i];
-            });
+//     float max_val = std::numeric_limits<float>::max();
+//     raft::linalg::map_offset(
+//             raft_handle,
+//             raft::make_device_vector_view(outDistances.data(), numQueries * k_),
+//             [nan_flag = nan_flag.data_handle(),
+//              out_dists = outDistances.data(),
+//              max_val,
+//              k_] __device__(uint32_t i) {
+//                 uint32_t row = i / k_;
+//                 if (!nan_flag[row])
+//                     return max_val;
+//                 return out_dists[i];
+//             });
 }
 
 /// Classify and encode/add vectors to our IVF lists.
@@ -175,6 +175,7 @@ idx_t RaftIVFFlat::addVectors(
             0);
 
     if (n_rows_valid < n_rows) {
+        printf("NaN values found");
         auto gather_indices = raft::make_device_vector<idx_t, idx_t>(
                 raft_handle, n_rows_valid);
 
@@ -270,6 +271,10 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 std::vector<uint8_t> RaftIVFFlat::getListVectorData(
         idx_t listId,
         bool gpuFormat) const {
+    if (gpuFormat) {
+        FAISS_THROW_MSG("gpuFormat is not suppported for raft indices");
+    }
+    printf("inside getlistvectordata of raft");
     FAISS_ASSERT(raft_knn_index.has_value());
 
     const raft::device_resources& raft_handle =
@@ -465,6 +470,8 @@ void RaftIVFFlat::addEncodedVectorsToList_(
 
     // This list must already exist
     FAISS_ASSERT(raft_knn_index.has_value());
+
+    printf("getListLength(listId), %d\n", getListLength(listId));
 
     // This list must currently be empty
     FAISS_ASSERT(getListLength(listId) == 0);

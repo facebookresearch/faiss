@@ -106,6 +106,7 @@ void IVFBase::reserveMemory(idx_t numVecs) {
 }
 
 void IVFBase::reset() {
+    printf("inside ivfbase::reset\n");
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     deviceListData_.clear();
@@ -323,6 +324,7 @@ std::vector<uint8_t> IVFBase::getListVectorData(idx_t listId, bool gpuFormat)
 }
 
 void IVFBase::copyInvertedListsFrom(const InvertedLists* ivf) {
+    printf("Inside IVFBase's copyInvertedListsFrom\n");
     idx_t nlist = ivf ? ivf->nlist : 0;
     for (idx_t i = 0; i < nlist; ++i) {
         addEncodedVectorsToList_(

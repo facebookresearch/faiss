@@ -110,6 +110,7 @@ void GpuIndexIVFFlat::set_index_(
 #if defined USE_NVIDIA_RAFT
 
     if (config_.use_raft) {
+        printf("inside GpuIndexIVFFlat's set_index_ use_raft = true\n");
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,
@@ -121,6 +122,7 @@ void GpuIndexIVFFlat::set_index_(
                 interleavedLayout,
                 indicesOptions,
                 space));
+        own_fields = false;
     } else
 #else
     if (config_.use_raft) {
@@ -128,7 +130,8 @@ void GpuIndexIVFFlat::set_index_(
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif
-    {
+    {   
+        printf("inside GpuIndexIVFFlat's set_index_ use_raft = false\n");
         index_.reset(new IVFFlat(
                 resources,
                 dim,
@@ -141,7 +144,6 @@ void GpuIndexIVFFlat::set_index_(
                 indicesOptions,
                 space));
     }
-
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
     updateQuantizer();
 }
@@ -156,12 +158,13 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 }
 
 void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
+    printf("Inside GpuIndexIVFFlat's copyFrom\n");
     DeviceScope scope(config_.device);
 
     // This will copy GpuIndexIVF data such as the coarse quantizer
     GpuIndexIVF::copyFrom(index);
 
-    printf("GpuIndexIVFcopyFrom done\n");
+    printf("GpuIndexIVF's copyFrom done\n");
 
     // Clear out our old data
     index_.reset();
@@ -192,7 +195,7 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             config_.memorySpace);
 
      // Copy all of the IVF data
-    printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
+    printf("Copying inverted lists from cpu index to FAISS gpu index ivfflat\n");
     index_->copyInvertedListsFrom(index->invlists);
 }
 

@@ -212,6 +212,7 @@ void GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
     index->nprobe = nprobe;
 
     FAISS_ASSERT(quantizer);
+    printf("index -> own_fields %d\n", index->own_fields);
     if (index->own_fields) {
         delete index->quantizer;
         index->quantizer = nullptr;
