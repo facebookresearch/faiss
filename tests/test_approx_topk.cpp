@@ -188,7 +188,7 @@ void test_approx_topk(
 }
 
 //
-TEST(TEST_APPROX_TOPK, COMMON) {
+TEST(testApproxTopk, COMMON) {
     constexpr bool verbose = false;
 
     //

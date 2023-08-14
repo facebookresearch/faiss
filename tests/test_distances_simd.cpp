@@ -41,7 +41,7 @@ void fvec_L2sqr_ny_ref(
 }
 
 // test templated versions of fvec_L2sqr_ny
-TEST(TEST_FVEC_L2SQR_NY, D2) {
+TEST(TestFvecL2sqrNy, D2) {
     // we're using int values in order to get 100% accurate
     // results with floats.
     std::default_random_engine rng(123);
@@ -75,7 +75,7 @@ TEST(TEST_FVEC_L2SQR_NY, D2) {
 }
 
 // fvec_inner_products_ny
-TEST(TEST_FVEC_INNER_PRODUCTS_NY, D2) {
+TEST(TestFvecInnerProductsNy, D2) {
     // we're using int values in order to get 100% accurate
     // results with floats.
     std::default_random_engine rng(123);
