@@ -38,7 +38,7 @@ outputs:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }} =12
+        - {{ compiler('cxx') }}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.23.1

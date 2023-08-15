@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/utils/partitioning.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/partitioning.h>
 
 using namespace faiss;
 
@@ -20,7 +20,7 @@ TEST(TEST_PARTITIONING, TestPartitioning) {
     for (auto i = 0; i < n; i++) {
         tab[i] = i * 64;
     }
-    int32_t hist[16] {};
+    int32_t hist[16]{};
     simd_histogram_16(tab.get(), n, 0, 12, hist);
     for (auto i = 0; i < 16; i++) {
         ASSERT_EQ(hist[i], 64);
