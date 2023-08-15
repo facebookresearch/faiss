@@ -38,7 +38,7 @@ outputs:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }}
+        - {{ compiler('cxx') }} =12
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.23.1
@@ -48,12 +48,12 @@ outputs:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - cudatoolkit {{ cudatoolkit }}
-        - libraft  #=23.08
+        - libraft =23.08
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
-        - libraft  #=23.08
+        - libraft =23.08
     test:
       requires:
         - conda-build

@@ -29,6 +29,7 @@ set(FAISS_TEST_SRC
   test_heap.cpp
   test_code_distance.cpp
   test_hnsw.cpp
+  test_partitioning.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
