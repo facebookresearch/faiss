@@ -1075,11 +1075,6 @@ void ScalarQuantizer::set_derived_sizes() {
 }
 
 void ScalarQuantizer::train(size_t n, const float* x) {
-    for (size_t i = 0; i < n * d; i++) {
-        FAISS_THROW_IF_NOT_MSG(
-                std::isfinite(x[i]), "training data contains NaN or Inf");
-    }
-
     int bit_per_dim = qtype == QT_4bit_uniform ? 4
             : qtype == QT_4bit                 ? 4
             : qtype == QT_6bit                 ? 6
