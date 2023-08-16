@@ -274,16 +274,16 @@ class TestKnn(unittest.TestCase):
         else:
             faiss.bfKnn(res, params)
 
-        np.testing.assert_allclose(ref_d, out_d, atol=1e-5))
-        np.testing.assert_array_equal(out_i, ref_i))
+        np.testing.assert_allclose(ref_d, out_d, atol=1e-5)
+        np.testing.assert_array_equal(out_i, ref_i)
 
         faiss.knn_gpu(
             res, qs, xs, k, out_d, out_i, device=gpu_id,
             vectorsMemoryLimit=vectorsMemoryLimit,
             queriesMemoryLimit=queriesMemoryLimit)
 
-        np.testing.assert_allclose(ref_d, out_d, atol=1e-5))
-        np.testing.assert_array_equal(out_i, ref_i))
+        np.testing.assert_allclose(ref_d, out_d, atol=1e-5)
+        np.testing.assert_array_equal(out_i, ref_i)
 
         # Try int32 out indices
         out_i32 = np.empty((nq, k), dtype=np.int32)
@@ -292,8 +292,8 @@ class TestKnn(unittest.TestCase):
 
         faiss.bfKnn(res, params)
 
-        np.testing.assert_allclose(ref_d, out_d, atol=1e-5))
-        np.testing.assert_array_equal(out_i32, ref_i))
+        np.testing.assert_allclose(ref_d, out_d, atol=1e-5)
+        np.testing.assert_array_equal(out_i32, ref_i)
 
         # Try float16 data/queries, i64 out indices
         xs_f16 = xs.astype(np.float16)
@@ -321,7 +321,7 @@ class TestKnn(unittest.TestCase):
         faiss.bfKnn(res, params)
 
         self.assertGreaterEqual((out_i_f16 == ref_i_f16).sum(), ref_i_f16.size - 5)
-        np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 2e-3))
+        np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 2e-3)
 
 class TestAllPairwiseDistance(unittest.TestCase):
     def test_dist(self):
@@ -382,7 +382,7 @@ class TestAllPairwiseDistance(unittest.TestCase):
 
             print('f32', np.abs(ref_d - out_d).max())
 
-            np.testing.assert_allclose(ref_d, out_d, atol=1e-5))
+            np.testing.assert_allclose(ref_d, out_d, atol=1e-5)
 
             # Try float16 data/queries
             xs_f16 = xs.astype(np.float16)
@@ -415,7 +415,7 @@ class TestAllPairwiseDistance(unittest.TestCase):
 
             print('f16', np.abs(ref_d_f16 - out_d_f16).max())
 
-            np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 4e-3))
+            np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 4e-3)
 
 
 
