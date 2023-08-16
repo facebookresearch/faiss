@@ -4,6 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 """this is a basic test script for simple indices work"""
+from __future__ import absolute_import, division, print_function
+# no unicode_literals because it messes up in py2
 
 import numpy as np
 import unittest
@@ -11,16 +13,15 @@ import faiss
 import tempfile
 import os
 import re
+import warnings
 
 from common_faiss_tests import get_dataset, get_dataset_2
-
 
 class TestModuleInterface(unittest.TestCase):
 
     def test_version_attribute(self):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
-
 
 class TestIndexFlat(unittest.TestCase):
 
@@ -108,14 +109,6 @@ class TestIndexFlat(unittest.TestCase):
     def test_with_blas_reservoir_ip(self):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
-    def test_noblas_1res(self):
-        self.do_test(10, k=1)
-
-    def test_with_blas_1res(self):
-        self.do_test(200, k=1)
-
-    def test_with_blas_1res_ip(self):
-        self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=1)
 
 class TestIndexFlatL2(unittest.TestCase):
     def test_indexflat_l2_sync_norms_1(self):
@@ -1014,6 +1007,41 @@ class TestShardReplicas(unittest.TestCase):
         index.remove_replica(index1)
         self.assertEqual(index.ntotal, 0)
 
+class TestReconsException(unittest.TestCase):
+
+    def test_recons_exception(self):
+
+        d = 64                           # dimension
+        nb = 1000
+        rs = np.random.RandomState(1234)
+        xb = rs.rand(nb, d).astype('float32')
+        nlist = 10
+        quantizer = faiss.IndexFlatL2(d)  # the other index
+        index = faiss.IndexIVFFlat(quantizer, d, nlist)
+        index.train(xb)
+        index.add(xb)
+        index.make_direct_map()
+
+        index.reconstruct(9)
+
+        self.assertRaises(
+            RuntimeError,
+            index.reconstruct, 100001
+        )
+
+    def test_reconstuct_after_add(self):
+        index = faiss.index_factory(10, 'IVF5,SQfp16')
+        index.train(faiss.randn((100, 10), 123))
+        index.add(faiss.randn((100, 10), 345))
+        index.make_direct_map()
+        index.add(faiss.randn((100, 10), 678))
+
+        # should not raise an exception
+        index.reconstruct(5)
+        print(index.ntotal)
+        index.reconstruct(150)
+
+
 class TestReconsHash(unittest.TestCase):
 
     def do_test(self, index_key):
@@ -1084,6 +1112,62 @@ class TestReconsHash(unittest.TestCase):
     def test_IVFPQ(self):
         self.do_test("IVF5,PQ4x4np")
 
+
+class TestValidIndexParams(unittest.TestCase):
+
+    def test_IndexIVFPQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+
+        coarse_quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFPQ(coarse_quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.train(xt)
+        index.add(xb)
+
+        # invalid nprobe
+        index.nprobe = 0
+        k = 10
+        self.assertRaises(RuntimeError, index.search, xq, k)
+
+        # invalid k
+        index.nprobe = 4
+        k = -10
+        self.assertRaises(AssertionError, index.search, xq, k)
+
+        # valid params
+        index.nprobe = 4
+        k = 10
+        D, nns = index.search(xq, k)
+
+        self.assertEqual(D.shape[0], nq)
+        self.assertEqual(D.shape[1], k)
+
+    def test_IndexFlat(self):
+        d = 32
+        nb = 1000
+        nt = 0
+        nq = 200
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlat(d, faiss.METRIC_L2)
+
+        index.add(xb)
+
+        # invalid k
+        k = -5
+        self.assertRaises(AssertionError, index.search, xq, k)
+
+        # valid k
+        k = 5
+        D, I = index.search(xq, k)
+
+        self.assertEqual(D.shape[0], nq)
+        self.assertEqual(D.shape[1], k)
 
 
 class TestLargeRangeSearch(unittest.TestCase):
