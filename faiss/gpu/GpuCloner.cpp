@@ -333,7 +333,7 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
                     const_cast<Index*>(quantizer),
                     index_ivfpq->d,
                     index_ivfpq->nlist,
-                    index_ivfpq->code_size,
+                    index_ivfpq->pq.M,
                     index_ivfpq->pq.nbits);
             idx2.metric_type = index_ivfpq->metric_type;
             idx2.pq = index_ivfpq->pq;
