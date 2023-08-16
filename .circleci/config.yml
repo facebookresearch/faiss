@@ -348,28 +348,28 @@ workflows:
       - build_conda:
           name: Linux x86_64 GPU packages (CUDA 11.4)
           exec: linux-x86_64-gpu
-          # label: main
+          label: main
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - build_conda:
           name: Linux x86_64 GPU w/ RAFT packages (CUDA 11.4)
           exec: linux-x86_64-gpu
-          # label: main
+          label: main
           raft: "ON"
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - build_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu

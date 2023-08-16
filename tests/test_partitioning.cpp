@@ -14,6 +14,11 @@ using namespace faiss;
 
 typedef AlignedTable<uint16_t> AlignedTableUint16;
 
+// TODO: This test fails when Faiss is compiled with 
+// GCC 13.2 from conda-forge with AVX2 enabled. This may be
+// a GCC bug that needs to be investigated further.
+// As of 16-AUG-2023 the Faiss conda packages are built 
+// with GCC 11.2, so the published binaries are not affected.
 TEST(TEST_PARTITIONING, TestPartitioning) {
     auto n = 1024;
     AlignedTableUint16 tab(n);
