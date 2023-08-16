@@ -1066,6 +1066,28 @@ def add_to_referenced_objects(self, ref):
     else:
         self.referenced_objects.append(ref)
 
+class RememberSwigOwnership(object):
+    """
+    SWIG's seattr transfers ownership of SWIG wrapped objects to the class
+    (btw this seems to contradict https://www.swig.org/Doc1.3/Python.html#Python_nn22
+    31.4.2)
+    This interferes with how we manage ownership: with the referenced_objects
+    table. Therefore, we reset the thisown field in this context manager.
+    """
+
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __enter__(self):
+        if hasattr(self.obj, "thisown"):
+            self.old_thisown = self.obj.thisown
+        else:
+            self.old_thisown = None
+
+    def __exit__(self, *ignored):
+        if self.old_thisown is not None:
+            self.obj.thisown = self.old_thisown
+
 
 def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
@@ -1080,8 +1102,9 @@ def handle_SearchParameters(the_class):
         self.original_init()
         for k, v in args.items():
             assert hasattr(self, k)
-            setattr(self, k, v)
-            if inspect.isclass(v):
+            with RememberSwigOwnership(v):
+                setattr(self, k, v)
+            if type(v) not in (int, float, bool, str):
                 add_to_referenced_objects(self, v)
 
     the_class.__init__ = replacement_init
