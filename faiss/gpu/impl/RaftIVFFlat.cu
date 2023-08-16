@@ -121,33 +121,34 @@ void RaftIVFFlat::search(
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-//     validRowIndices_(queries, nan_flag.data_handle());
+    validRowIndices_(queries, nan_flag.data_handle());
 
-//     raft::linalg::map_offset(
-//             raft_handle,
-//             raft::make_device_vector_view(outIndices.data(), numQueries * k_),
-//             [nan_flag = nan_flag.data_handle(),
-//              out_inds = outIndices.data(),
-//              k_] __device__(uint32_t i) {
-//                 uint32_t row = i / k_;
-//                 if (!nan_flag[row])
-//                     return idx_t(-1);
-//                 return out_inds[i];
-//             });
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view(outIndices.data(), numQueries * k_),
+            [nan_flag = nan_flag.data_handle(),
+             out_inds = outIndices.data(),
+             k_] __device__(uint32_t i) {
+                uint32_t row = i / k_;
+                if (!nan_flag[row])
+                    return idx_t(-1);
+                return out_inds[i];
+            });
 
-//     float max_val = std::numeric_limits<float>::max();
-//     raft::linalg::map_offset(
-//             raft_handle,
-//             raft::make_device_vector_view(outDistances.data(), numQueries * k_),
-//             [nan_flag = nan_flag.data_handle(),
-//              out_dists = outDistances.data(),
-//              max_val,
-//              k_] __device__(uint32_t i) {
-//                 uint32_t row = i / k_;
-//                 if (!nan_flag[row])
-//                     return max_val;
-//                 return out_dists[i];
-//             });
+    float max_val = std::numeric_limits<float>::max();
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view(outDistances.data(), numQueries * k_),
+            [nan_flag = nan_flag.data_handle(),
+             out_dists = outDistances.data(),
+             max_val,
+             k_] __device__(uint32_t i) {
+                uint32_t row = i / k_;
+                if (!nan_flag[row])
+                    return max_val;
+                return out_dists[i];
+            });
+    raft_handle.sync_stream();
 }
 
 /// Classify and encode/add vectors to our IVF lists.
@@ -158,6 +159,8 @@ idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
+
+    raft::print_device_vector("raft_centers from addVectors", raft_knn_index.value().centers().data_handle(), dim_ * this->numLists_, std::cout);
     idx_t n_rows = vecs.getSize(0);
 
     const raft::device_resources& raft_handle =
@@ -173,6 +176,7 @@ idx_t RaftIVFFlat::addVectors(
             nan_flag.data_handle(),
             nan_flag.data_handle() + n_rows,
             0);
+    printf("n_rows_valid %d %d\n", n_rows_valid, n_rows);
 
     if (n_rows_valid < n_rows) {
         printf("NaN values found");
@@ -366,6 +370,9 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             buf_host.data(),
             total_elems,
             stream);
+    thrust::fill_n(handle.get_thrust_policy(), raft_knn_index.value().list_sizes().data_handle(), pams.n_lists, 0);	
+    
+    raft::print_device_vector("raft_idx_centers", raft_knn_index.value().centers().data_handle(), total_elems, std::cout);
 }
 
 void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {

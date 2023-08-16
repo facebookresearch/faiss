@@ -199,6 +199,7 @@ void copyToTest(bool useFloat16CoarseQuantizer, bool use_raft) {
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
+    printf("opt.numCentroids %d", opt.numCentroids);
     gpuIndex.train(opt.numTrain, trainVecs.data());
     gpuIndex.add(opt.numAdd, addVecs.data());
     gpuIndex.nprobe = opt.nprobe;

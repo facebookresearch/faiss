@@ -17,11 +17,6 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
-#include <raft/core/cudart_utils.hpp>
-#include <raft/core/handle.hpp>
-#include <raft/distance/distance_types.hpp>
-#include <raft/neighbors/ivf_flat_types.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
 #endif
 
 #include <limits>
@@ -90,6 +85,8 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
                 ivfFlatConfig_.interleavedLayout,
                 ivfFlatConfig_.indicesOptions,
                 config_.memorySpace);
+        baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+        updateQuantizer();
     }
 }
 
@@ -110,7 +107,6 @@ void GpuIndexIVFFlat::set_index_(
 #if defined USE_NVIDIA_RAFT
 
     if (config_.use_raft) {
-        printf("inside GpuIndexIVFFlat's set_index_ use_raft = true\n");
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,
@@ -122,7 +118,6 @@ void GpuIndexIVFFlat::set_index_(
                 interleavedLayout,
                 indicesOptions,
                 space));
-        own_fields = false;
     } else
 #else
     if (config_.use_raft) {
@@ -130,8 +125,7 @@ void GpuIndexIVFFlat::set_index_(
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif
-    {   
-        printf("inside GpuIndexIVFFlat's set_index_ use_raft = false\n");
+    {
         index_.reset(new IVFFlat(
                 resources,
                 dim,
@@ -144,8 +138,6 @@ void GpuIndexIVFFlat::set_index_(
                 indicesOptions,
                 space));
     }
-    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-    updateQuantizer();
 }
 
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
@@ -158,19 +150,14 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 }
 
 void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-    printf("Inside GpuIndexIVFFlat's copyFrom\n");
     DeviceScope scope(config_.device);
 
     // This will copy GpuIndexIVF data such as the coarse quantizer
     GpuIndexIVF::copyFrom(index);
 
-    printf("GpuIndexIVF's copyFrom done\n");
-
     // Clear out our old data
     index_.reset();
     baseIndex_.reset();
-
-    printf("indices reset\n");
 
     // The other index might not be trained
     if (!index->is_trained) {
@@ -193,9 +180,10 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+    updateQuantizer();
 
-     // Copy all of the IVF data
-    printf("Copying inverted lists from cpu index to FAISS gpu index ivfflat\n");
+    // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
 }
 
@@ -264,15 +252,25 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
-    if (!config_.use_raft) {
+#if defined USE_NVIDIA_RAFT
+    if (config_.use_raft) {
+        // No need to copy the data to host
+        trainQuantizer_(n, x);
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        // FIXME: GPUize more of this
+        // First, make sure that the data is resident on the CPU, if it is not
+        // on the CPU, as we depend upon parts of the CPU code
         auto hostData = toHost<float, 2>(
                 (float*)x,
                 resources_->getDefaultStream(config_.device),
                 {n, this->d});
-
         trainQuantizer_(n, hostData.data());
     }
 
@@ -288,37 +286,12 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+    updateQuantizer();
 
-    if (!config_.use_raft && reserveMemoryVecs_) {
+    if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
-
-#if defined USE_NVIDIA_RAFT
-
-    if (config_.use_raft) {
-        const raft::device_resources& raft_handle =
-                resources_->getRaftHandleCurrentDevice();
-
-        raft::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction = 1.0;
-        raft_idx_params.kmeans_n_iters = cp.niter;
-        raft_idx_params.adaptive_centers = !cp.frozen_centroids;
-
-        std::dynamic_pointer_cast<RaftIVFFlat>(index_)->set_index_(
-                std::make_optional<
-                        raft::neighbors::ivf_flat::index<float, idx_t>>(
-                        raft::neighbors::ivf_flat::build(
-                                raft_handle, raft_idx_params, x, n, (idx_t)d)));
-    }
-#else
-    if (config_.use_raft) {
-        FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
-    }
-#endif
 
     this->is_trained = true;
 }
