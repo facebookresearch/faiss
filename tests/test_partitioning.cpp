@@ -19,7 +19,7 @@ typedef AlignedTable<uint16_t> AlignedTableUint16;
 // a GCC bug that needs to be investigated further.
 // As of 16-AUG-2023 the Faiss conda packages are built
 // with GCC 11.2, so the published binaries are not affected.
-TEST(TEST_PARTITIONING, TestPartitioning) {
+TEST(TestPartitioning, TestPartitioningBigRange) {
     auto n = 1024;
     AlignedTableUint16 tab(n);
     for (auto i = 0; i < n; i++) {
