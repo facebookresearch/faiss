@@ -6,5 +6,5 @@
 
 set -e
 
-wget -O - https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1-Linux-x86_64.tar.gz | tar xzf -
-cp -R cmake-3.17.1-Linux-x86_64/* $PREFIX
+FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss.so
+LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx2.so

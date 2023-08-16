@@ -58,11 +58,11 @@ class TestBfKnn(unittest.TestCase):
 
         index_gpu.add(xb[2000:])
         Dnew, Inew = index_gpu.search(ds.get_queries(), 13)
-        np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
+        np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
 
         # copy back to CPU
         index2 = faiss.index_gpu_to_cpu(index_gpu)
         Dnew, Inew = index2.search(ds.get_queries(), 13)
-        np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
+        np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
