@@ -419,6 +419,14 @@ workflows:
           compiler_version: "11.2"
           label: nightly
       - build_conda:
+          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.4)
+          exec: linux-x86_64-gpu
+          raft: "ON"
+          cuda: "11.4"
+          cuda_archs: "60;61;70;72;75;80;86"
+          compiler_version: "11.2"
+          label: nightly
+      - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
           label: nightly
