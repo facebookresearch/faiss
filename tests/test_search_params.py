@@ -7,6 +7,8 @@ import numpy as np
 
 import faiss
 import unittest
+import sys
+import gc
 
 from faiss.contrib import datasets
 from faiss.contrib.evaluation import sort_range_res_2, check_ref_range_results
@@ -346,6 +348,28 @@ class TestSearchParams(unittest.TestCase):
             if stats.ndis < target_ndis:
                 np.testing.assert_equal(I0[q], Iq[0])
 
+    def test_ownership(self):
+        # see https://github.com/facebookresearch/faiss/issues/2996
+        subset = np.arange(0, 50)
+        sel = faiss.IDSelectorBatch(subset)
+        self.assertTrue(sel.this.own())
+        params = faiss.SearchParameters(sel=sel)
+        self.assertTrue(sel.this.own())  # otherwise mem leak!
+        # this is a somewhat fragile test because it assumes the
+        # gc decreases refcounts immediately.
+        prev_count = sys.getrefcount(sel)
+        del params
+        new_count = sys.getrefcount(sel)
+        self.assertEqual(new_count, prev_count - 1)
+
+        # check for other objects as well
+        sel1 = faiss.IDSelectorBatch([1, 2, 3])
+        sel2 = faiss.IDSelectorBatch([4, 5, 6])
+        sel = faiss.IDSelectorAnd(sel1, sel2)
+        # make storage is still managed by python
+        self.assertTrue(sel1.this.own())
+        self.assertTrue(sel2.this.own())
+
 
 class TestSelectorCallback(unittest.TestCase):
 
@@ -416,6 +440,7 @@ class TestSortedIDSelectorRange(unittest.TestCase):
             len(ids), sp(ids), sp(j01[:1]), sp(j01[1:]))
         print(j01)
         assert j01[0] >= j01[1]
+
 
 class TestPrecomputed(unittest.TestCase):
 
