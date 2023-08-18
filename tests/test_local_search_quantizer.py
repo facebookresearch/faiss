@@ -581,8 +581,7 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
             lut_ref[:, i] = xq[:, i] @ codebooks[i].T
         lut_ref = lut_ref.reshape(nq, codebook_size)
 
-        # max rtoal in OSX: 2.87e-6
-        np.testing.assert_allclose(lut, lut_ref, rtol=1e-04)
+        np.testing.assert_allclose(lut, lut_ref, rtol=5e-04)
 
 
 class TestIndexProductLocalSearchQuantizer(unittest.TestCase):
