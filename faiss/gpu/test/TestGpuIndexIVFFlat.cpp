@@ -64,7 +64,7 @@ struct Options {
         str << "IVFFlat device " << device << " numVecs " << numAdd << " dim "
             << dim << " numCentroids " << numCentroids << " nprobe " << nprobe
             << " numQuery " << numQuery << " k " << k << " indicesOpt "
-            << indicesOpt <<" use_raft "<< use_raft;
+            << indicesOpt << " use_raft " << use_raft;
 
         return str.str();
     }
@@ -133,7 +133,10 @@ void queryTest(
     }
 }
 
-void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer, bool use_raft) {
+void addTest(
+        faiss::MetricType metricType,
+        bool useFloat16CoarseQuantizer,
+        bool use_raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
 
@@ -591,8 +594,8 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
             indices.data());
 
 #if defined USE_NVIDIA_RAFT
-config.use_raft = true;
-faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    config.use_raft = true;
+    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.nprobe = opt.nprobe;
     raftGpuIndex.train(opt.numTrain, trainVecs.data());
@@ -667,8 +670,8 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
             0.015f);
 
 #if defined USE_NVIDIA_RAFT
-config.use_raft = true;
-faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    config.use_raft = true;
+    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.copyFrom(&cpuIndex);
     raftGpuIndex.nprobe = nprobe;
@@ -744,7 +747,7 @@ TEST(TestGpuIndexIVFFlat, LongIVFList) {
             0.015f);
 
 #if defined USE_NVIDIA_RAFT
-    config.use_raft = true;    
+    config.use_raft = true;
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.train(numTrain, trainVecs.data());
