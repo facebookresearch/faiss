@@ -31,9 +31,11 @@ outputs:
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_raft{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      script_env:
+        - CUDA_ARCHS
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -45,9 +47,13 @@ outputs:
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
+        - cudatoolkit {{ cudatoolkit }}
+        - libraft =23.08
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
+        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
+        - libraft =23.08
     test:
       requires:
         - conda-build
@@ -57,13 +63,13 @@ outputs:
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
-  - name: faiss-cpu
+  - name: faiss-gpu-raft
     script: build-pkg.sh  # [x86_64 and not win and not osx]
     script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
-      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -87,8 +93,12 @@ outputs:
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+        - cp tests/common_faiss_tests.py faiss/gpu/test
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]
       source_files:
         - tests/
+        - faiss/gpu/test/

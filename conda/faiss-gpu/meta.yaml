@@ -26,7 +26,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh  # [x86_64 and not win]
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
@@ -38,7 +39,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - sysroot_linux-64 =2.17  # [linux64]
+        - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.23.1
         - make  # [not win]
@@ -61,7 +62,8 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-gpu
-    script: build-pkg.sh  # [x86_64 and not win]
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:

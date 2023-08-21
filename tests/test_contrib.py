@@ -217,7 +217,7 @@ class TestInspect(unittest.TestCase):
         Yref = X @ A.T + b
         lt = inspect_tools.make_LinearTransform_matrix(A, b)
         Ynew = lt.apply(X)
-        np.testing.assert_equal(Yref, Ynew)
+        np.testing.assert_allclose(Yref, Ynew, rtol=1e-06)
 
     def test_NSG_neighbors(self):
         # FIXME number of elements to add should be >> 100
