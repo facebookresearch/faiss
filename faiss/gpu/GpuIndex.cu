@@ -77,7 +77,6 @@ int GpuIndex::getDevice() const {
 }
 
 void GpuIndex::copyFrom(const faiss::Index* index) {
-    printf("inside gpuindex copyFrom\n");
     d = index->d;
     metric_type = index->metric_type;
     metric_arg = index->metric_arg;
