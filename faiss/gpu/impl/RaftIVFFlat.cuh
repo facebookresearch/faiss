@@ -22,13 +22,13 @@
 
 #pragma once
 
-#include <raft/neighbors/ivf_flat_types.hpp>
-
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
 #include <faiss/impl/CodePacker.h>
+
+#include <raft/neighbors/ivf_flat.cuh>
 
 #include <optional>
 
@@ -105,10 +105,6 @@ class RaftIVFFlat : public IVFFlat {
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
-
-    /// Update the raft index
-    void set_index_(
-            std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx);
 
     /// Filter out matrix rows containing NaN values
     void validRowIndices_(Tensor<float, 2, true>& vecs, bool* nan_flag);

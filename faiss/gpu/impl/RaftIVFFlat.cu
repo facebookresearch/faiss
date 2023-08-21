@@ -46,9 +46,8 @@
 
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/handle.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
 #include <raft/neighbors/ivf_flat_codepacker.hpp>
-#include <raft/neighbors/ivf_flat_types.hpp>
+#include <raft/neighbors/ivf_flat.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -73,7 +72,9 @@ RaftIVFFlat::RaftIVFFlat(
                   scalarQ,
                   interleavedLayout,
                   indicesOptions,
-                  space) {printf("RaftIVFFlat constructor called\n"); reset();}
+                  space) {
+    reset();
+}
 
 RaftIVFFlat::~RaftIVFFlat() {}
 
@@ -103,12 +104,12 @@ void RaftIVFFlat::search(
     raft::neighbors::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
 
-    auto queries_view = raft::make_device_matrix_view<const float>(
-            queries.data(), numQueries, cols);
-    auto out_inds_view = raft::make_device_matrix_view<idx_t>(
-            outIndices.data(), numQueries, k_);
-    auto out_dists_view = raft::make_device_matrix_view<float>(
-            outDistances.data(), numQueries, k_);
+    auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
+            queries.data(), (idx_t)numQueries, (idx_t)cols);
+    auto out_inds_view = raft::make_device_matrix_view<idx_t, idx_t>(
+            outIndices.data(), (idx_t)numQueries, (idx_t)k_);
+    auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
+            outDistances.data(), (idx_t)numQueries, (idx_t)k_);
 
     raft::neighbors::ivf_flat::search<float, idx_t>(
             raft_handle,
@@ -148,7 +149,6 @@ void RaftIVFFlat::search(
                     return max_val;
                 return out_dists[i];
             });
-    raft_handle.sync_stream();
 }
 
 /// Classify and encode/add vectors to our IVF lists.
@@ -159,8 +159,6 @@ idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
-
-    raft::print_device_vector("raft_centers from addVectors", raft_knn_index.value().centers().data_handle(), dim_ * this->numLists_, std::cout);
     idx_t n_rows = vecs.getSize(0);
 
     const raft::device_resources& raft_handle =
@@ -176,10 +174,8 @@ idx_t RaftIVFFlat::addVectors(
             nan_flag.data_handle(),
             nan_flag.data_handle() + n_rows,
             0);
-    printf("n_rows_valid %d %d\n", n_rows_valid, n_rows);
 
     if (n_rows_valid < n_rows) {
-        printf("NaN values found");
         auto gather_indices = raft::make_device_vector<idx_t, idx_t>(
                 raft_handle, n_rows_valid);
 
@@ -236,13 +232,14 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
             resources_->getRaftHandleCurrentDevice();
 
     uint32_t size;
-    raft::copy(
+    raft::update_host(
             &size,
             raft_knn_index.value().list_sizes().data_handle() + listId,
             1,
             raft_handle.get_stream());
     raft_handle.sync_stream();
-    return int(size);
+
+    return static_cast<int>(size);
 }
 
 /// Return the list indices of a particular list back to the CPU
@@ -256,6 +253,7 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 
     std::vector<idx_t> vec(listSize);
 
+    // fetch the list indices ptr on host
     idx_t* list_indices_ptr;
 
     // fetch the list indices ptr on host
@@ -268,6 +266,7 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 
     raft::update_host(vec.data(), list_indices_ptr, listSize, stream);
     raft_handle.sync_stream();
+
     return vec;
 }
 
@@ -278,7 +277,6 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(
     if (gpuFormat) {
         FAISS_THROW_MSG("gpuFormat is not suppported for raft indices");
     }
-    printf("inside getlistvectordata of raft");
     FAISS_ASSERT(raft_knn_index.has_value());
 
     const raft::device_resources& raft_handle =
@@ -335,9 +333,9 @@ void RaftIVFFlat::searchPreassigned(
 void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     idx_t quantizer_ntotal = quantizer->ntotal;
 
-    const raft::device_resources& handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    auto stream = handle.get_stream();
+    auto stream = raft_handle.get_stream();
 
     auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
 
@@ -359,7 +357,23 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             FAISS_THROW_MSG("Metric is not supported.");
     }
 
-    raft_knn_index.emplace(handle, pams, (uint32_t)this->dim_);
+    raft_knn_index.emplace(raft_handle, pams, (uint32_t)this->dim_);
+
+    cudaMemsetAsync(
+            raft_knn_index.value().list_sizes().data_handle(),
+            0,
+            raft_knn_index.value().list_sizes().size() * sizeof(uint32_t),
+            stream);
+    cudaMemsetAsync(
+            raft_knn_index.value().data_ptrs().data_handle(),
+            0,
+            raft_knn_index.value().data_ptrs().size() * sizeof(float*),
+            stream);
+    cudaMemsetAsync(
+            raft_knn_index.value().inds_ptrs().data_handle(),
+            0,
+            raft_knn_index.value().inds_ptrs().size() * sizeof(idx_t*),
+            stream);
 
     /// Copy (reconstructed) centroids over, rather than re-training
     std::vector<float> buf_host(total_elems);
@@ -370,9 +384,6 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             buf_host.data(),
             total_elems,
             stream);
-    thrust::fill_n(handle.get_thrust_policy(), raft_knn_index.value().list_sizes().data_handle(), pams.n_lists, 0);	
-    
-    raft::print_device_vector("raft_idx_centers", raft_knn_index.value().centers().data_handle(), total_elems, std::cout);
 }
 
 void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
@@ -435,7 +446,7 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     if (this->metric_ == faiss::METRIC_L2) {
         raft_knn_index.value().allocate_center_norms(raft_handle);
         raft::linalg::rowNorm(
-                raft_knn_index.value().center_norms()->data_handle(),
+                raft_knn_index.value().center_norms().value().data_handle(),
                 raft_knn_index.value().centers().data_handle(),
                 raft_knn_index.value().dim(),
                 (uint32_t)nlist,
@@ -443,12 +454,6 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 true,
                 raft_handle.get_stream());
     }
-    raft_handle.sync_stream();
-}
-
-void RaftIVFFlat::set_index_(
-        std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> idx) {
-    raft_knn_index.emplace(std::move(idx.value()));
 }
 
 size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
@@ -477,8 +482,6 @@ void RaftIVFFlat::addEncodedVectorsToList_(
 
     // This list must already exist
     FAISS_ASSERT(raft_knn_index.has_value());
-
-    printf("getListLength(listId), %d\n", getListLength(listId));
 
     // This list must currently be empty
     FAISS_ASSERT(getListLength(listId) == 0);
@@ -520,7 +523,6 @@ void RaftIVFFlat::addEncodedVectorsToList_(
             interleaved_codes.data(),
             gpuListSizeInBytes,
             stream);
-    raft_handle.sync_stream();
 
     /// Handle the indices as well
     idx_t* list_indices_ptr;
@@ -532,8 +534,8 @@ void RaftIVFFlat::addEncodedVectorsToList_(
             1,
             stream);
     raft_handle.sync_stream();
+
     raft::update_device(list_indices_ptr, indices, numVecs, stream);
-    raft_handle.sync_stream();
 }
 
 void RaftIVFFlat::validRowIndices_(
