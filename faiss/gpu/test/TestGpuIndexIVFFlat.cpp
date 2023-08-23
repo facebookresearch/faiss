@@ -476,6 +476,14 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
+    // Construct a positive test set
+    auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+
+    // Put all vecs on positive size
+    for (auto& f : queryVecs) {
+        f = std::abs(f);
+    }
+
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
     config.indicesOptions = opt.indicesOpt;
@@ -484,14 +492,6 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
             &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
     gpuIndex.copyFrom(&cpuIndex);
     gpuIndex.nprobe = opt.nprobe;
-
-    // Construct a positive test set
-    auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
-
-    // Put all vecs on positive size
-    for (auto& f : queryVecs) {
-        f = std::abs(f);
-    }
 
     bool compFloat16 = false;
     faiss::gpu::compareIndices(
@@ -508,6 +508,30 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
             // in fp16. Figure out another way to test
             compFloat16 ? 0.99f : 0.1f,
             compFloat16 ? 0.65f : 0.015f);
+
+#if defined USE_NVIDIA_RAFT
+    config.use_raft = true;
+
+    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+            &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
+    raftGpuIndex.copyFrom(&cpuIndex);
+    raftGpuIndex.nprobe = opt.nprobe;
+
+    faiss::gpu::compareIndices(
+            queryVecs,
+            cpuIndex,
+            raftGpuIndex,
+            opt.numQuery,
+            opt.dim,
+            opt.k,
+            opt.toString(),
+            compFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
+            // FIXME: the fp16 bounds are
+            // useless when math (the accumulator) is
+            // in fp16. Figure out another way to test
+            compFloat16 ? 0.99f : 0.1f,
+            compFloat16 ? 0.65f : 0.015f);
+#endif
 }
 
 //
@@ -523,6 +547,13 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
+    int numQuery = 10;
+    std::vector<float> nans(
+            numQuery * opt.dim, std::numeric_limits<float>::quiet_NaN());
+
+    std::vector<float> distances(numQuery * opt.k, 0);
+    std::vector<faiss::idx_t> indices(numQuery * opt.k, 0);
+
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
     config.indicesOptions = opt.indicesOpt;
@@ -535,13 +566,6 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
     gpuIndex.train(opt.numTrain, trainVecs.data());
     gpuIndex.add(opt.numAdd, addVecs.data());
 
-    int numQuery = 10;
-    std::vector<float> nans(
-            numQuery * opt.dim, std::numeric_limits<float>::quiet_NaN());
-
-    std::vector<float> distances(numQuery * opt.k, 0);
-    std::vector<faiss::idx_t> indices(numQuery * opt.k, 0);
-
     gpuIndex.search(
             numQuery, nans.data(), opt.k, distances.data(), indices.data());
 
@@ -553,6 +577,30 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
                     std::numeric_limits<float>::max());
         }
     }
+
+#if defined USE_NVIDIA_RAFT
+    config.use_raft = true;
+    std::fill(distances.begin(), distances.end(), 0);
+    std::fill(indices.begin(), indices.end(), 0);
+    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+            &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
+    raftGpuIndex.nprobe = opt.nprobe;
+
+    raftGpuIndex.train(opt.numTrain, trainVecs.data());
+    raftGpuIndex.add(opt.numAdd, addVecs.data());
+
+    raftGpuIndex.search(
+            numQuery, nans.data(), opt.k, distances.data(), indices.data());
+
+    for (int q = 0; q < numQuery; ++q) {
+        for (int k = 0; k < opt.k; ++k) {
+            EXPECT_EQ(indices[q * opt.k + k], -1);
+            EXPECT_EQ(
+                    distances[q * opt.k + k],
+                    std::numeric_limits<float>::max());
+        }
+    }
+#endif
 }
 
 TEST(TestGpuIndexIVFFlat, AddNaN) {
