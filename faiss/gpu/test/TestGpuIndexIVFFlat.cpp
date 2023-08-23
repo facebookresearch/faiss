@@ -351,6 +351,11 @@ TEST(TestGpuIndexIVFFlat, LargeBatch) {
     opt.dim = 3;
     opt.numQuery = 100000;
     queryTest(opt, faiss::METRIC_L2, false);
+
+#if defined USE_NVIDIA_RAFT
+    opt.use_raft = true;
+    queryTest(opt, faiss::METRIC_L2, false);
+#endif
 }
 
 // float16 coarse quantizer

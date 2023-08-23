@@ -50,4 +50,9 @@ cmake \
  ${EXTRA_CMAKE_ARGS} \
  ../
 
+
+# make -C build -j12 faiss
 cmake  --build . -j12
+# make -C build -j12 swigfaiss
+# (cd build/faiss/python && python setup.py install)
+
