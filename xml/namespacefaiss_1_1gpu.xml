@@ -876,7 +876,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/impl/RaftUtils.h" line="32" column="37" bodyfile="faiss/gpu/impl/RaftUtils.h" bodystart="32" bodyend="56"/>
+        <location file="faiss/gpu/impl/RaftUtils.h" line="32" column="37" bodyfile="faiss/gpu/impl/RaftUtils.h" bodystart="32" bodyend="55"/>
       </memberdef>
       <memberdef kind="function" id="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
