@@ -292,11 +292,17 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
     aq->set_derived_values();
 }
 
-static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
+static void read_ResidualQuantizer(
+        ResidualQuantizer* rq,
+        IOReader* f,
+        int io_flags) {
     read_AdditiveQuantizer(rq, f);
     READ1(rq->train_type);
     READ1(rq->max_beam_size);
-    if (!(rq->train_type & ResidualQuantizer::Skip_codebook_tables)) {
+    if ((rq->train_type & ResidualQuantizer::Skip_codebook_tables) ||
+        (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE)) {
+        // don't precompute the tables
+    } else {
         rq->compute_codebook_tables();
     }
 }
@@ -325,12 +331,13 @@ static void read_ProductAdditiveQuantizer(
 
 static void read_ProductResidualQuantizer(
         ProductResidualQuantizer* prq,
-        IOReader* f) {
+        IOReader* f,
+        int io_flags) {
     read_ProductAdditiveQuantizer(prq, f);
 
     for (size_t i = 0; i < prq->nsplits; i++) {
         auto rq = new ResidualQuantizer();
-        read_ResidualQuantizer(rq, f);
+        read_ResidualQuantizer(rq, f, io_flags);
         prq->quantizers.push_back(rq);
     }
 }
@@ -601,7 +608,7 @@ Index* read_index(IOReader* f, int io_flags) {
         if (h == fourcc("IxRQ")) {
             read_ResidualQuantizer_old(&idxr->rq, f);
         } else {
-            read_ResidualQuantizer(&idxr->rq, f);
+            read_ResidualQuantizer(&idxr->rq, f, io_flags);
         }
         READ1(idxr->code_size);
         READVECTOR(idxr->codes);
@@ -616,7 +623,7 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("IxPR")) {
         auto idxpr = new IndexProductResidualQuantizer();
         read_index_header(idxpr, f);
-        read_ProductResidualQuantizer(&idxpr->prq, f);
+        read_ProductResidualQuantizer(&idxpr->prq, f, io_flags);
         READ1(idxpr->code_size);
         READVECTOR(idxpr->codes);
         idx = idxpr;
@@ -630,8 +637,13 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("ImRQ")) {
         ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
         read_index_header(idxr, f);
-        read_ResidualQuantizer(&idxr->rq, f);
+        read_ResidualQuantizer(&idxr->rq, f, io_flags);
         READ1(idxr->beam_factor);
+        if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
+            // then we force the beam factor to -1
+            // which skips the table precomputation.
+            idxr->beam_factor = -1;
+        }
         idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
     } else if (
@@ -656,13 +668,14 @@ Index* read_index(IOReader* f, int io_flags) {
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
         } else if (is_RQ) {
-            read_ResidualQuantizer((ResidualQuantizer*)idxaqfs->aq, f);
+            read_ResidualQuantizer(
+                    (ResidualQuantizer*)idxaqfs->aq, f, io_flags);
         } else if (is_PLSQ) {
             read_ProductLocalSearchQuantizer(
                     (ProductLocalSearchQuantizer*)idxaqfs->aq, f);
         } else {
             read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)idxaqfs->aq, f);
+                    (ProductResidualQuantizer*)idxaqfs->aq, f, io_flags);
         }
 
         READ1(idxaqfs->implem);
@@ -704,13 +717,13 @@ Index* read_index(IOReader* f, int io_flags) {
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
         } else if (is_RQ) {
-            read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
+            read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f, io_flags);
         } else if (is_PLSQ) {
             read_ProductLocalSearchQuantizer(
                     (ProductLocalSearchQuantizer*)ivaqfs->aq, f);
         } else {
             read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)ivaqfs->aq, f);
+                    (ProductResidualQuantizer*)ivaqfs->aq, f, io_flags);
         }
 
         READ1(ivaqfs->by_residual);
@@ -832,13 +845,13 @@ Index* read_index(IOReader* f, int io_flags) {
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
         } else if (is_RQ) {
-            read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
+            read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f, io_flags);
         } else if (is_PLSQ) {
             read_ProductLocalSearchQuantizer(
                     (ProductLocalSearchQuantizer*)iva->aq, f);
         } else {
             read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)iva->aq, f);
+                    (ProductResidualQuantizer*)iva->aq, f, io_flags);
         }
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);
