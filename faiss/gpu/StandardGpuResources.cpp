@@ -432,6 +432,9 @@ raft::device_resources& StandardGpuResourcesImpl::getRaftHandle(int device) {
         // Make sure we are using the stream the user may have already assigned
         // to the current GpuResources
         raftHandles_.emplace(std::make_pair(device, getDefaultStream(device)));
+
+        // Initialize cublas handle
+        raftHandles_[device].get_cublas_handle();
     }
 
     // Otherwise, our base default handle
