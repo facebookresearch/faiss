@@ -148,10 +148,10 @@ struct ResidualQuantizer : AdditiveQuantizer {
      */
     void compute_codebook_tables();
 
-    /// dot products of all codebook vectors with each other
-    /// size total_codebook_size * total_codebook_size
+    /// dot products of all codebook entries with the previous codebooks
+    /// size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1)
     std::vector<float> codebook_cross_products;
-    /// norms of all vectors
+    /// norms of all codebook entries (size total_codebook_size)
     std::vector<float> cent_norms;
 };
 

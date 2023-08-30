@@ -86,6 +86,10 @@ void beam_search_encode_step_tab(
 
 /********************************************************************
  * Multiple encoding steps
+ *
+ * The following functions take buffer objects that they use as temp
+ * memory (allocated within the functions). The buffers are intended
+ * to be re-used over batches of points to encode.
  ********************************************************************/
 
 struct ResidualQuantizer;
