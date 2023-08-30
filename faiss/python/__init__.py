@@ -298,10 +298,10 @@ def serialize_index(index):
     return vector_to_array(writer.data)
 
 
-def deserialize_index(data):
+def deserialize_index(data, io_flags=0):
     reader = VectorIOReader()
     copy_array_to_vector(data, reader.data)
-    return read_index(reader)
+    return read_index(reader, io_flags)
 
 
 def serialize_index_binary(index):

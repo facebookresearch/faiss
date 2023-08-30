@@ -642,15 +642,13 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         np.testing.assert_array_almost_equal(CDref, CDnew, decimal=5)
         np.testing.assert_array_equal(CIref, CInew)
 
-    def test_norms_oom(self):
-        "check if allocating too large norms tables raises an exception"
-        index = faiss.index_factory(32, "RQ20x8")
-        try:
-            index.train(np.zeros((100, 32), dtype="float32"))
-        except RuntimeError:
-            pass # ok
-        else:
-            self.assertFalse()
+        # check that you can load the index without computing the tables
+        quantizer.set_beam_factor(2.0)
+        self.assertNotEqual(quantizer.rq.codebook_cross_products.size(), 0)
+        quantizer3 = faiss.deserialize_index(
+            faiss.serialize_index(quantizer), faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE)
+        self.assertEqual(quantizer3.rq.codebook_cross_products.size(), 0)
+        CD3, CI3 = quantizer3.search(ds.get_queries(), 10)
 
 
 ###########################################################
