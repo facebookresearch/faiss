@@ -125,6 +125,10 @@ void ResidualQuantizer::initialize_from(
     }
 }
 
+/****************************************************************
+ * Encoding steps, used both for training and search
+ */
+
 void beam_search_encode_step(
         size_t d,
         size_t K,
@@ -276,6 +280,10 @@ void beam_search_encode_step(
         }
     }
 }
+
+/****************************************************************
+ * Training
+ ****************************************************************/
 
 void ResidualQuantizer::train(size_t n, const float* x) {
     codebooks.resize(d * codebook_offsets.back());
@@ -568,7 +576,12 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
     return mem;
 }
 
-// a namespace full of preallocated buffers
+/****************************************************************
+ * Encoding
+ ****************************************************************/
+
+// a namespace full of preallocated buffers. This speeds up
+// computations, instead of re-allocating them at every encoing step
 namespace {
 
 // Preallocated memory chunk for refine_beam_mp() call
@@ -608,8 +621,6 @@ struct ComputeCodesAddCentroidsLUT1MemoryPool {
     std::vector<float> residuals;
     RefineBeamLUTMemoryPool refine_beam_lut_pool;
 };
-
-} // namespace
 
 // forward declaration
 void refine_beam_mp(
@@ -743,6 +754,8 @@ void compute_codes_add_centroids_mp_lut1(
             centroids);
 }
 
+} // namespace
+
 void ResidualQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
@@ -769,11 +782,6 @@ void ResidualQuantizer::compute_codes_add_centroids(
             cent = centroids + i0 * d;
         }
 
-        // compute_codes_add_centroids(
-        //   x + i0 * d,
-        //   codes_out + i0 * code_size,
-        //   i1 - i0,
-        //   cent);
         if (use_beam_LUT == 0) {
             compute_codes_add_centroids_mp_lut0(
                     *this,
@@ -793,6 +801,8 @@ void ResidualQuantizer::compute_codes_add_centroids(
         }
     }
 }
+
+namespace {
 
 void refine_beam_mp(
         const ResidualQuantizer& rq,
@@ -873,15 +883,11 @@ void refine_beam_mp(
                 codebooks_m,
                 n,
                 cur_beam_size,
-                // residuals.data(),
                 residuals_ptr,
                 m,
-                // codes.data(),
                 codes_ptr,
                 new_beam_size,
-                // new_codes.data(),
                 new_codes_ptr,
-                // new_residuals.data(),
                 new_residuals_ptr,
                 pool.distances.data(),
                 assign_index.get(),
@@ -896,9 +902,6 @@ void refine_beam_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            // for (int j = 0; j < distances.size(); j++) {
-            //     sum_distances += distances[j];
-            // }
             for (int j = 0; j < distances_size; j++) {
                 sum_distances += pool.distances[j];
             }
@@ -914,26 +917,21 @@ void refine_beam_mp(
     }
 
     if (out_codes) {
-        // memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
         memcpy(out_codes, codes_ptr, codes_size * sizeof(*codes_ptr));
     }
     if (out_residuals) {
-        // memcpy(out_residuals,
-        //        residuals.data(),
-        //        residuals.size() * sizeof(residuals[0]));
         memcpy(out_residuals,
                residuals_ptr,
                residuals_size * sizeof(*residuals_ptr));
     }
     if (out_distances) {
-        // memcpy(out_distances,
-        //        distances.data(),
-        //        distances.size() * sizeof(distances[0]));
         memcpy(out_distances,
                pool.distances.data(),
                distances_size * sizeof(pool.distances[0]));
     }
 }
+
+} // anonymous namespace
 
 void ResidualQuantizer::refine_beam(
         size_t n,
@@ -1165,7 +1163,7 @@ void accum_and_finalize_tab(
     }
 }
 
-} // namespace
+} // anonymous namespace
 
 void beam_search_encode_step_tab(
         size_t K,
@@ -1390,6 +1388,8 @@ void beam_search_encode_step_tab(
     }
 }
 
+namespace {
+
 //
 void refine_beam_LUT_mp(
         const ResidualQuantizer& rq,
@@ -1443,12 +1443,8 @@ void refine_beam_LUT_mp(
     for (int m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
-        // it is guaranteed that (new_beam_size <= than max_beam_size) ==
-        // true
+        // it is guaranteed that (new_beam_size <= max_beam_size)
         int new_beam_size = std::min(beam_size * K, out_beam_size);
-
-        // std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
-        // std::vector<float> new_distances(n * new_beam_size);
 
         codes_size = n * new_beam_size * (m + 1);
         distances_size = n * new_beam_size;
@@ -1464,29 +1460,20 @@ void refine_beam_LUT_mp(
                 rq.total_codebook_size,
                 rq.cent_norms.data() + rq.codebook_offsets[m],
                 m,
-                // codes.data(),
                 codes_ptr,
-                // distances.data(),
                 distances_ptr,
                 new_beam_size,
-                // new_codes.data(),
                 new_codes_ptr,
-                // new_distances.data()
                 new_distances_ptr,
                 rq.approx_topk_mode);
 
-        // codes.swap(new_codes);
         std::swap(codes_ptr, new_codes_ptr);
-        // distances.swap(new_distances);
         std::swap(distances_ptr, new_distances_ptr);
 
         beam_size = new_beam_size;
 
         if (rq.verbose) {
             float sum_distances = 0;
-            // for (int j = 0; j < distances.size(); j++) {
-            //     sum_distances += distances[j];
-            // }
             for (int j = 0; j < distances_size; j++) {
                 sum_distances += distances_ptr[j];
             }
@@ -1501,18 +1488,16 @@ void refine_beam_LUT_mp(
     }
 
     if (out_codes) {
-        // memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
         memcpy(out_codes, codes_ptr, codes_size * sizeof(*codes_ptr));
     }
     if (out_distances) {
-        // memcpy(out_distances,
-        //        distances.data(),
-        //        distances.size() * sizeof(distances[0]));
         memcpy(out_distances,
                distances_ptr,
                distances_size * sizeof(*distances_ptr));
     }
 }
+
+} // namespace
 
 void ResidualQuantizer::refine_beam_LUT(
         size_t n,
