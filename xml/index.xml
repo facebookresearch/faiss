@@ -398,7 +398,6 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
-    <member refid="structfaiss_1_1ClusteringParameters_1a86c8802261041f5d49b1a0d296da60be" kind="function"><name>ClusteringParameters</name></member>
   </compound>
   <compound refid="structfaiss_1_1CMax" kind="struct"><name>faiss::CMax</name>
     <member refid="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00" kind="typedef"><name>T</name></member>
@@ -6145,6 +6144,7 @@
     <member refid="structfaiss_1_1MatrixStats_1a494ebb8acad6fc220fe80f8fd37f939e" kind="variable"><name>n0</name></member>
     <member refid="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a" kind="variable"><name>min_norm2</name></member>
     <member refid="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252" kind="variable"><name>max_norm2</name></member>
+    <member refid="structfaiss_1_1MatrixStats_1ae2023f2b43cecf40aee729283d0195c7" kind="variable"><name>hash_value</name></member>
     <member refid="structfaiss_1_1MatrixStats_1a00f2d2a3ea1ed81ff4a36b5cbdbe218b" kind="variable"><name>per_dim_stats</name></member>
     <member refid="structfaiss_1_1MatrixStats_1ae072d04f76165117f77bec53aa24fd1a" kind="variable"><name>occurrences</name></member>
     <member refid="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b" kind="variable"><name>buf</name></member>
@@ -6549,7 +6549,6 @@
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1a12c78f5ef7c6ffd2287f1184a03a88fe" kind="variable"><name>n_valid</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1a78d220cd08414efb1fb31c5181472a57" kind="variable"><name>mean</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1a4a8222891e00c0a34cf8c415d85b3034" kind="variable"><name>stddev</name></member>
-    <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1a0974f23063edde22b5934008196b9c5b" kind="function"><name>PerDimStats</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0" kind="function"><name>compute_mean_std</name></member>
   </compound>

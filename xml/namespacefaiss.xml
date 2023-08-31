@@ -1073,7 +1073,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="185" column="7" declfile="faiss/Clustering.h" declline="185" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="195" column="7" declfile="faiss/Clustering.h" declline="195" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -9243,6 +9243,8 @@
     <detaileddescription>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implementation of k-means clustering with many variants.</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> is intended to define a subset of vectors to handle (for removal or as subset to search)</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>

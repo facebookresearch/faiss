@@ -17,39 +17,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="26" column="17" bodyfile="faiss/MatrixStats.h" bodystart="26" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="27" column="17" bodyfile="faiss/MatrixStats.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1aedb6ba91543e124fbfef68bc5ced5e02" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::MatrixStats::n</definition>
         <argsstring></argsstring>
         <name>n</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="29" column="12" bodyfile="faiss/MatrixStats.h" bodystart="29" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a204212670e82a7ad92de1018af72da7e" prot="public" static="no" mutable="no">
-        <type>size_t</type>
-        <definition>size_t faiss::MatrixStats::d</definition>
-        <argsstring></argsstring>
-        <name>d</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="29" column="14" bodyfile="faiss/MatrixStats.h" bodystart="29" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a3a5ef65b99fef1bf1249e51925e4dd98" prot="public" static="no" mutable="no">
-        <type>size_t</type>
-        <definition>size_t faiss::MatrixStats::n_collision</definition>
-        <argsstring></argsstring>
-        <name>n_collision</name>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -58,37 +33,26 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="30" column="12" bodyfile="faiss/MatrixStats.h" bodystart="30" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a4d1496f745ed63ce4742319d0aa722c6" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a204212670e82a7ad92de1018af72da7e" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::MatrixStats::n_valid</definition>
+        <definition>size_t faiss::MatrixStats::d</definition>
         <argsstring></argsstring>
-        <name>n_valid</name>
+        <name>d</name>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="30" column="24" bodyfile="faiss/MatrixStats.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="30" column="15" bodyfile="faiss/MatrixStats.h" bodystart="30" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a494ebb8acad6fc220fe80f8fd37f939e" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a3a5ef65b99fef1bf1249e51925e4dd98" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::MatrixStats::n0</definition>
+        <definition>size_t faiss::MatrixStats::n_collision</definition>
         <argsstring></argsstring>
-        <name>n0</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="30" column="32" bodyfile="faiss/MatrixStats.h" bodystart="30" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a" prot="public" static="no" mutable="no">
-        <type>double</type>
-        <definition>double faiss::MatrixStats::min_norm2</definition>
-        <argsstring></argsstring>
-        <name>min_norm2</name>
+        <name>n_collision</name>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -97,18 +61,75 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="31" column="12" bodyfile="faiss/MatrixStats.h" bodystart="31" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252" prot="public" static="no" mutable="no">
-        <type>double</type>
-        <definition>double faiss::MatrixStats::max_norm2</definition>
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a4d1496f745ed63ce4742319d0aa722c6" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MatrixStats::n_valid</definition>
         <argsstring></argsstring>
-        <name>max_norm2</name>
+        <name>n_valid</name>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="31" column="22" bodyfile="faiss/MatrixStats.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="32" column="12" bodyfile="faiss/MatrixStats.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a494ebb8acad6fc220fe80f8fd37f939e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MatrixStats::n0</definition>
+        <argsstring></argsstring>
+        <name>n0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MatrixStats.h" line="33" column="12" bodyfile="faiss/MatrixStats.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::MatrixStats::min_norm2</definition>
+        <argsstring></argsstring>
+        <name>min_norm2</name>
+        <initializer>= HUGE_VALF</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MatrixStats.h" line="34" column="12" bodyfile="faiss/MatrixStats.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::MatrixStats::max_norm2</definition>
+        <argsstring></argsstring>
+        <name>max_norm2</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MatrixStats.h" line="35" column="12" bodyfile="faiss/MatrixStats.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1ae2023f2b43cecf40aee729283d0195c7" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::MatrixStats::hash_value</definition>
+        <argsstring></argsstring>
+        <name>hash_value</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MatrixStats.h" line="36" column="14" bodyfile="faiss/MatrixStats.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a00f2d2a3ea1ed81ff4a36b5cbdbe218b" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1MatrixStats_1_1PerDimStats" kindref="compound">PerDimStats</ref> &gt;</type>
@@ -121,7 +142,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="47" column="17" bodyfile="faiss/MatrixStats.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="59" column="17" bodyfile="faiss/MatrixStats.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1ae072d04f76165117f77bec53aa24fd1a" prot="public" static="no" mutable="no">
         <type>std::unordered_map&lt; uint64_t, <ref refid="structfaiss_1_1MatrixStats_1_1Occurrence" kindref="compound">Occurrence</ref> &gt;</type>
@@ -134,7 +155,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="52" column="24" bodyfile="faiss/MatrixStats.h" bodystart="52" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="64" column="24" bodyfile="faiss/MatrixStats.h" bodystart="64" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -147,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="54" column="10" bodyfile="faiss/MatrixStats.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="66" column="10" bodyfile="faiss/MatrixStats.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1af44cf226b2ba9ecb3182d8ecae61d019" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -160,7 +181,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="55" column="12" bodyfile="faiss/MatrixStats.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/MatrixStats.h" line="67" column="12" bodyfile="faiss/MatrixStats.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -187,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="25" column="5"/>
+        <location file="faiss/MatrixStats.h" line="26" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MatrixStats_1af3bd3fcc97e8752995e986da026adb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -207,7 +228,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MatrixStats.h" line="56" column="10"/>
+        <location file="faiss/MatrixStats.h" line="68" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -216,12 +237,13 @@
 <para>Reports some statistics on a dataset and comments on them.</para>
 <para>It is a class rather than a function so that all stats can also be accessed from code </para>
     </detaileddescription>
-    <location file="faiss/MatrixStats.h" line="24" column="1" bodyfile="faiss/MatrixStats.h" bodystart="24" bodyend="57"/>
+    <location file="faiss/MatrixStats.h" line="25" column="1" bodyfile="faiss/MatrixStats.h" bodystart="25" bodyend="69"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>buf</name></member>
       <member refid="structfaiss_1_1MatrixStats_1a4c8fa1b0c904e48d18ddc3a0a3c40dea" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>comments</name></member>
       <member refid="structfaiss_1_1MatrixStats_1a204212670e82a7ad92de1018af72da7e" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>d</name></member>
       <member refid="structfaiss_1_1MatrixStats_1af3bd3fcc97e8752995e986da026adb46" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>do_comment</name></member>
+      <member refid="structfaiss_1_1MatrixStats_1ae2023f2b43cecf40aee729283d0195c7" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>hash_value</name></member>
       <member refid="structfaiss_1_1MatrixStats_1add5a53b274bce4decd3de1a91eeb1036" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>MatrixStats</name></member>
       <member refid="structfaiss_1_1MatrixStats_1ad6486a75bcbaf34af5312adac36f7252" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>max_norm2</name></member>
       <member refid="structfaiss_1_1MatrixStats_1af5c803ddc5c517af17711fde8538eb3a" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>min_norm2</name></member>
