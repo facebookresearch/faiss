@@ -408,79 +408,70 @@
 <dd><p>Class for the clustering parameters. Can be passed to the constructor of the <a class="reference internal" href="structfaiss_1_1Clustering.html#structfaiss_1_1Clustering"><span class="std std-ref">Clustering</span></a> object. </p>
 <p>Subclassed by <a class="reference internal" href="structfaiss_1_1Clustering.html#structfaiss_1_1Clustering"><span class="std std-ref">faiss::Clustering</span></a>, <a class="reference internal" href="structfaiss_1_1ProgressiveDimClusteringParameters.html#structfaiss_1_1ProgressiveDimClusteringParameters"><span class="std std-ref">faiss::ProgressiveDimClusteringParameters</span></a></p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters20ClusteringParametersEv">
-<span id="_CPPv3N5faiss20ClusteringParameters20ClusteringParametersEv"></span><span id="_CPPv2N5faiss20ClusteringParameters20ClusteringParametersEv"></span><span id="faiss::ClusteringParameters::ClusteringParameters"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a86c8802261041f5d49b1a0d296da60be"></span><span class="sig-name descname"><span class="n"><span class="pre">ClusteringParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>sets reasonable defaults </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters5niterE">
-<span id="_CPPv3N5faiss20ClusteringParameters5niterE"></span><span id="_CPPv2N5faiss20ClusteringParameters5niterE"></span><span id="faiss::ClusteringParameters::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">niter</span></span></span><br /></dt>
-<dd><p>clustering iterations </p>
+<span id="_CPPv3N5faiss20ClusteringParameters5niterE"></span><span id="_CPPv2N5faiss20ClusteringParameters5niterE"></span><span id="faiss::ClusteringParameters::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">niter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">25</span></span><br /></dt>
+<dd><p>number of clustering iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters5nredoE">
-<span id="_CPPv3N5faiss20ClusteringParameters5nredoE"></span><span id="_CPPv2N5faiss20ClusteringParameters5nredoE"></span><span id="faiss::ClusteringParameters::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nredo</span></span></span><br /></dt>
-<dd><p>redo clustering this many times and keep best </p>
+<span id="_CPPv3N5faiss20ClusteringParameters5nredoE"></span><span id="_CPPv2N5faiss20ClusteringParameters5nredoE"></span><span id="faiss::ClusteringParameters::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nredo</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><br /></dt>
+<dd><p>redo clustering this many times and keep the clusters with the best objective </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters7verboseE">
-<span id="_CPPv3N5faiss20ClusteringParameters7verboseE"></span><span id="_CPPv2N5faiss20ClusteringParameters7verboseE"></span><span id="faiss::ClusteringParameters::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss20ClusteringParameters7verboseE"></span><span id="_CPPv2N5faiss20ClusteringParameters7verboseE"></span><span id="faiss::ClusteringParameters::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters9sphericalE">
-<span id="_CPPv3N5faiss20ClusteringParameters9sphericalE"></span><span id="_CPPv2N5faiss20ClusteringParameters9sphericalE"></span><span id="faiss::ClusteringParameters::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">spherical</span></span></span><br /></dt>
-<dd><p>do we want normalized centroids? </p>
+<span id="_CPPv3N5faiss20ClusteringParameters9sphericalE"></span><span id="_CPPv2N5faiss20ClusteringParameters9sphericalE"></span><span id="faiss::ClusteringParameters::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">spherical</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>whether to normalize centroids after each iteration (useful for inner product clustering) </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters13int_centroidsE">
-<span id="_CPPv3N5faiss20ClusteringParameters13int_centroidsE"></span><span id="_CPPv2N5faiss20ClusteringParameters13int_centroidsE"></span><span id="faiss::ClusteringParameters::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_centroids</span></span></span><br /></dt>
-<dd><p>round centroids coordinates to integer </p>
+<span id="_CPPv3N5faiss20ClusteringParameters13int_centroidsE"></span><span id="_CPPv2N5faiss20ClusteringParameters13int_centroidsE"></span><span id="faiss::ClusteringParameters::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_centroids</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>round centroids coordinates to integer after each iteration? </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters12update_indexE">
-<span id="_CPPv3N5faiss20ClusteringParameters12update_indexE"></span><span id="_CPPv2N5faiss20ClusteringParameters12update_indexE"></span><span id="faiss::ClusteringParameters::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_index</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss20ClusteringParameters12update_indexE"></span><span id="_CPPv2N5faiss20ClusteringParameters12update_indexE"></span><span id="faiss::ClusteringParameters::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_index</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
 <dd><p>re-train index after each iteration? </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters16frozen_centroidsE">
-<span id="_CPPv3N5faiss20ClusteringParameters16frozen_centroidsE"></span><span id="_CPPv2N5faiss20ClusteringParameters16frozen_centroidsE"></span><span id="faiss::ClusteringParameters::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">frozen_centroids</span></span></span><br /></dt>
-<dd><p>use the centroids provided as input and do not change them during iterations </p>
+<span id="_CPPv3N5faiss20ClusteringParameters16frozen_centroidsE"></span><span id="_CPPv2N5faiss20ClusteringParameters16frozen_centroidsE"></span><span id="faiss::ClusteringParameters::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">frozen_centroids</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>Use the subset of centroids provided as input and do not change them during iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters23min_points_per_centroidE">
-<span id="_CPPv3N5faiss20ClusteringParameters23min_points_per_centroidE"></span><span id="_CPPv2N5faiss20ClusteringParameters23min_points_per_centroidE"></span><span id="faiss::ClusteringParameters::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_points_per_centroid</span></span></span><br /></dt>
-<dd><p>otherwise you get a warning </p>
+<span id="_CPPv3N5faiss20ClusteringParameters23min_points_per_centroidE"></span><span id="_CPPv2N5faiss20ClusteringParameters23min_points_per_centroidE"></span><span id="faiss::ClusteringParameters::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_points_per_centroid</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">39</span></span><br /></dt>
+<dd><p>If fewer than this number of training vectors per centroid are provided, writes a warning. Note that fewer than 1 point per centroid raises an exception. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters23max_points_per_centroidE">
-<span id="_CPPv3N5faiss20ClusteringParameters23max_points_per_centroidE"></span><span id="_CPPv2N5faiss20ClusteringParameters23max_points_per_centroidE"></span><span id="faiss::ClusteringParameters::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_points_per_centroid</span></span></span><br /></dt>
-<dd><p>to limit size of dataset </p>
+<span id="_CPPv3N5faiss20ClusteringParameters23max_points_per_centroidE"></span><span id="_CPPv2N5faiss20ClusteringParameters23max_points_per_centroidE"></span><span id="faiss::ClusteringParameters::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_points_per_centroid</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">256</span></span><br /></dt>
+<dd><p>to limit size of dataset, otherwise the training set is subsampled </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters4seedE">
-<span id="_CPPv3N5faiss20ClusteringParameters4seedE"></span><span id="_CPPv2N5faiss20ClusteringParameters4seedE"></span><span id="faiss::ClusteringParameters::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss20ClusteringParameters4seedE"></span><span id="_CPPv2N5faiss20ClusteringParameters4seedE"></span><span id="faiss::ClusteringParameters::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1234</span></span><br /></dt>
 <dd><p>seed for the random number generator </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParameters17decode_block_sizeE">
-<span id="_CPPv3N5faiss20ClusteringParameters17decode_block_sizeE"></span><span id="_CPPv2N5faiss20ClusteringParameters17decode_block_sizeE"></span><span id="faiss::ClusteringParameters::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_block_size</span></span></span><br /></dt>
-<dd><p>how many vectors at a time to decode </p>
+<span id="_CPPv3N5faiss20ClusteringParameters17decode_block_sizeE"></span><span id="_CPPv2N5faiss20ClusteringParameters17decode_block_sizeE"></span><span id="faiss::ClusteringParameters::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_block_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">32768</span></span><br /></dt>
+<dd><p>when the training set is encoded, batch size of the codec decoder </p>
 </dd></dl>
 
 </div>
