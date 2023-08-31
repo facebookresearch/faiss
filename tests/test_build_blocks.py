@@ -256,6 +256,14 @@ class TestMatrixStats(unittest.TestCase):
         print(comments)
         assert 'vectors are normalized' in comments
 
+    def test_hash(self):
+        cc = []
+        for _ in range(2):
+            rs = np.random.RandomState(123)
+            m = rs.rand(40, 20).astype('float32')
+            cc.append(faiss.MatrixStats(m).hash_value)
+        self.assertTrue(cc[0] == cc[1])
+
 
 class TestScalarQuantizer(unittest.TestCase):
 
