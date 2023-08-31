@@ -29,32 +29,16 @@ using namespace nsg;
  * IndexNSG implementation
  **************************************************************/
 
-IndexNSG::IndexNSG(int d, int R, MetricType metric)
-        : Index(d, metric),
-          nsg(R),
-          own_fields(false),
-          storage(nullptr),
-          is_built(false),
-          GK(64),
-          build_type(0) {
-    nndescent_S = 10;
-    nndescent_R = 100;
+IndexNSG::IndexNSG(int d, int R, MetricType metric) : Index(d, metric), nsg(R) {
     nndescent_L = GK + 50;
-    nndescent_iter = 10;
 }
 
 IndexNSG::IndexNSG(Index* storage, int R)
         : Index(storage->d, storage->metric_type),
           nsg(R),
-          own_fields(false),
           storage(storage),
-          is_built(false),
-          GK(64),
           build_type(1) {
-    nndescent_S = 10;
-    nndescent_R = 100;
     nndescent_L = GK + 50;
-    nndescent_iter = 10;
 }
 
 IndexNSG::~IndexNSG() {
@@ -304,8 +288,8 @@ IndexNSGFlat::IndexNSGFlat(int d, int R, MetricType metric)
 
 IndexNSGPQ::IndexNSGPQ() {}
 
-IndexNSGPQ::IndexNSGPQ(int d, int pq_m, int M)
-        : IndexNSG(new IndexPQ(d, pq_m, 8), M) {
+IndexNSGPQ::IndexNSGPQ(int d, int pq_m, int M, int pq_nbits)
+        : IndexNSG(new IndexPQ(d, pq_m, pq_nbits), M) {
     own_fields = true;
     is_trained = false;
 }
