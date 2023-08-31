@@ -12,6 +12,7 @@
 #include <stdarg.h> /* va_list, va_start, va_arg, va_end */
 
 #include <faiss/utils/utils.h>
+#include <inttypes.h>
 #include <cmath>
 #include <cstdio>
 
@@ -20,18 +21,6 @@ namespace faiss {
 /*********************************************************************
  * MatrixStats
  *********************************************************************/
-
-MatrixStats::PerDimStats::PerDimStats()
-        : n(0),
-          n_nan(0),
-          n_inf(0),
-          n0(0),
-          min(HUGE_VALF),
-          max(-HUGE_VALF),
-          sum(0),
-          sum2(0),
-          mean(NAN),
-          stddev(NAN) {}
 
 void MatrixStats::PerDimStats::add(float x) {
     n++;
@@ -74,25 +63,21 @@ void MatrixStats::do_comment(const char* fmt, ...) {
     buf += size;
 }
 
-MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
-        : n(n),
-          d(d),
-          n_collision(0),
-          n_valid(0),
-          n0(0),
-          min_norm2(HUGE_VAL),
-          max_norm2(0) {
+MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
     std::vector<char> comment_buf(10000);
     buf = comment_buf.data();
     nbuf = comment_buf.size();
 
-    do_comment("analyzing %ld vectors of size %ld\n", n, d);
+    do_comment("analyzing %zd vectors of size %zd\n", n, d);
 
     if (d > 1024) {
         do_comment(
                 "indexing this many dimensions is hard, "
                 "please consider dimensionality reducution (with PCAMatrix)\n");
     }
+
+    hash_value = hash_bytes((const uint8_t*)x, n * d * sizeof(*x));
+    do_comment("hash value 0x%016" PRIx64 "\n", hash_value);
 
     size_t nbytes = sizeof(x[0]) * d;
     per_dim_stats.resize(d);
@@ -156,7 +141,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
 
         if (n_collision > 0) {
             do_comment(
-                    "%ld collisions in hash table, "
+                    "%zd collisions in hash table, "
                     "counts may be invalid\n",
                     n_collision);
         }
@@ -167,14 +152,14 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
                 max = it->second;
             }
         }
-        do_comment("vector %ld has %ld copies\n", max.first, max.count);
+        do_comment("vector %zd has %zd copies\n", max.first, max.count);
     }
 
     { // norm stats
         min_norm2 = sqrt(min_norm2);
         max_norm2 = sqrt(max_norm2);
         do_comment(
-                "range of L2 norms=[%g, %g] (%ld null vectors)\n",
+                "range of L2 norms=[%g, %g] (%zd null vectors)\n",
                 min_norm2,
                 max_norm2,
                 n0);
@@ -182,7 +167,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
         if (max_norm2 < min_norm2 * 1.0001) {
             do_comment(
                     "vectors are normalized, inner product and "
-                    "L2  search are equivalent\n");
+                    "L2 search are equivalent\n");
         }
 
         if (max_norm2 > min_norm2 * 100) {
@@ -227,7 +212,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
             do_comment("no constant dimensions\n");
         } else {
             do_comment(
-                    "%ld dimensions are constant: they can be removed\n",
+                    "%zd dimensions are constant: they can be removed\n",
                     n_0_range);
         }
 
@@ -235,7 +220,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x)
             do_comment("no dimension has a too large mean\n");
         } else {
             do_comment(
-                    "%ld dimensions are too large "
+                    "%zd dimensions are too large "
                     "wrt. their variance, may loose precision "
                     "in IndexFlatL2 (use CenteringTransform)\n",
                     n_dangerous_range);
