@@ -250,18 +250,10 @@ void hnsw_add_vertices(
  **************************************************************/
 
 IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
-        : Index(d, metric),
-          hnsw(M),
-          own_fields(false),
-          storage(nullptr),
-          reconstruct_from_neighbors(nullptr) {}
+        : Index(d, metric), hnsw(M) {}
 
 IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type),
-          hnsw(M),
-          own_fields(false),
-          storage(storage),
-          reconstruct_from_neighbors(nullptr) {}
+        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {}
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {
@@ -886,8 +878,8 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
 
 IndexHNSWPQ::IndexHNSWPQ() {}
 
-IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M)
-        : IndexHNSW(new IndexPQ(d, pq_m, 8), M) {
+IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits)
+        : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits), M) {
     own_fields = true;
     is_trained = false;
 }
