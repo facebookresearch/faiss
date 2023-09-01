@@ -18,10 +18,10 @@
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="154" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSWPQ_1a12e170ee06d954c267e5352b9b050bfd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSWPQ_1a233ba94f8e3a81bde718b3d035840e13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexHNSWPQ::IndexHNSWPQ</definition>
-        <argsstring>(int d, int pq_m, int M)</argsstring>
+        <argsstring>(int d, int pq_m, int M, int pq_nbits=8)</argsstring>
         <name>IndexHNSWPQ</name>
         <param>
           <type>int</type>
@@ -34,6 +34,11 @@
         <param>
           <type>int</type>
           <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>pq_nbits</declname>
+          <defval>8</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1111,6 +1116,7 @@
         <definition>bool faiss::IndexHNSW::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1124,6 +1130,7 @@
         <definition>Index* faiss::IndexHNSW::storage</definition>
         <argsstring></argsstring>
         <name>storage</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1137,6 +1144,7 @@
         <definition>ReconstructFromNeighbors* faiss::IndexHNSW::reconstruct_from_neighbors</definition>
         <argsstring></argsstring>
         <name>reconstruct_from_neighbors</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1315,7 +1323,7 @@
       <member refid="structfaiss_1_1IndexHNSW_1a973769979e047374a8310b9fa891214c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>IndexHNSW</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a74d1ec193f1749a55ec83b6c7779119c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>IndexHNSW</name></member>
       <member refid="structfaiss_1_1IndexHNSWPQ_1ac8c54c9715e5fa2a44534d23581cf65b" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>IndexHNSWPQ</name></member>
-      <member refid="structfaiss_1_1IndexHNSWPQ_1a12e170ee06d954c267e5352b9b050bfd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>IndexHNSWPQ</name></member>
+      <member refid="structfaiss_1_1IndexHNSWPQ_1a233ba94f8e3a81bde718b3d035840e13" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>IndexHNSWPQ</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>init_level_0_from_entry_points</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a9a86c58212f3f9cf88394f5297cba525" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>init_level_0_from_knngraph</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>is_trained</name></member>

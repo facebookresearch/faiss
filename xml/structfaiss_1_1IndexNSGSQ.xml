@@ -956,6 +956,7 @@
         <definition>bool faiss::IndexNSG::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>the sequential storage </para>
         </briefdescription>
@@ -970,6 +971,7 @@
         <definition>Index* faiss::IndexNSG::storage</definition>
         <argsstring></argsstring>
         <name>storage</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -983,6 +985,7 @@
         <definition>bool faiss::IndexNSG::is_built</definition>
         <argsstring></argsstring>
         <name>is_built</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>the index is built or not </para>
         </briefdescription>
@@ -997,6 +1000,7 @@
         <definition>int faiss::IndexNSG::GK</definition>
         <argsstring></argsstring>
         <name>GK</name>
+        <initializer>= 64</initializer>
         <briefdescription>
 <para>K of KNN graph for building. </para>
         </briefdescription>
@@ -1011,6 +1015,7 @@
         <definition>char faiss::IndexNSG::build_type</definition>
         <argsstring></argsstring>
         <name>build_type</name>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1029,6 +1034,7 @@
         <definition>int faiss::IndexNSG::nndescent_S</definition>
         <argsstring></argsstring>
         <name>nndescent_S</name>
+        <initializer>= 10</initializer>
         <briefdescription>
 <para>parameters for nndescent </para>
         </briefdescription>
@@ -1043,6 +1049,7 @@
         <definition>int faiss::IndexNSG::nndescent_R</definition>
         <argsstring></argsstring>
         <name>nndescent_R</name>
+        <initializer>= 100</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1069,6 +1076,7 @@
         <definition>int faiss::IndexNSG::nndescent_iter</definition>
         <argsstring></argsstring>
         <name>nndescent_iter</name>
+        <initializer>= 10</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

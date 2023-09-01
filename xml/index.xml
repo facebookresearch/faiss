@@ -2651,7 +2651,7 @@
   </compound>
   <compound refid="structfaiss_1_1IndexHNSWPQ" kind="struct"><name>faiss::IndexHNSWPQ</name>
     <member refid="structfaiss_1_1IndexHNSWPQ_1ac8c54c9715e5fa2a44534d23581cf65b" kind="function"><name>IndexHNSWPQ</name></member>
-    <member refid="structfaiss_1_1IndexHNSWPQ_1a12e170ee06d954c267e5352b9b050bfd" kind="function"><name>IndexHNSWPQ</name></member>
+    <member refid="structfaiss_1_1IndexHNSWPQ_1a233ba94f8e3a81bde718b3d035840e13" kind="function"><name>IndexHNSWPQ</name></member>
     <member refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409" kind="function"><name>search</name></member>
@@ -4794,7 +4794,7 @@
   </compound>
   <compound refid="structfaiss_1_1IndexNSGPQ" kind="struct"><name>faiss::IndexNSGPQ</name>
     <member refid="structfaiss_1_1IndexNSGPQ_1a0196d670a1dc73d9de668b61700880b9" kind="function"><name>IndexNSGPQ</name></member>
-    <member refid="structfaiss_1_1IndexNSGPQ_1abc6d53e8fae2dc277a49cbe6c0cdf48c" kind="function"><name>IndexNSGPQ</name></member>
+    <member refid="structfaiss_1_1IndexNSGPQ_1abaf1e3e304625736081796d09642ba6f" kind="function"><name>IndexNSGPQ</name></member>
     <member refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexNSG_1a5f8d4dc0ef239c5d6d29252c728dd9fa" kind="function"><name>build</name></member>
     <member refid="structfaiss_1_1IndexNSG_1a9fc38a1c373f96d845364143ff933207" kind="function"><name>add</name></member>

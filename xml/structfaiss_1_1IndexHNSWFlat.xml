@@ -1113,6 +1113,7 @@
         <definition>bool faiss::IndexHNSW::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1126,6 +1127,7 @@
         <definition>Index* faiss::IndexHNSW::storage</definition>
         <argsstring></argsstring>
         <name>storage</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1139,6 +1141,7 @@
         <definition>ReconstructFromNeighbors* faiss::IndexHNSW::reconstruct_from_neighbors</definition>
         <argsstring></argsstring>
         <name>reconstruct_from_neighbors</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
