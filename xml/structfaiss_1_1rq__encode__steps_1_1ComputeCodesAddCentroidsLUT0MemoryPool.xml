@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ab7427d6c8636e77f38f417700c6d0dbe" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="141" column="17" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a6ff9cdeb7def5ffdf9435052001c4810" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool::norms</definition>
+        <argsstring></argsstring>
+        <name>norms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="142" column="17" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="142" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ad44a0ec162e4d39aa0653992e5ae8467" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool::distances</definition>
+        <argsstring></argsstring>
+        <name>distances</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="143" column="17" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="143" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1aa74f47631f9adb1cb6e38426b61f6f54" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool::residuals</definition>
+        <argsstring></argsstring>
+        <name>residuals</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="144" column="17" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a14731c17c25fef62129cd6599a993fd3" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" kindref="compound">RefineBeamMemoryPool</ref></type>
+        <definition>RefineBeamMemoryPool faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool::refine_beam_pool</definition>
+        <argsstring></argsstring>
+        <name>refine_beam_pool</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="145" column="26" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::rq_encode_steps::RefineBeamMemoryPool</label>
+        <link refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool"/>
+      </node>
+      <node id="1">
+        <label>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</label>
+        <link refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>refine_beam_pool</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/residual_quantizer_encode_steps.h" line="140" column="1" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="140" bodyend="146"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ab7427d6c8636e77f38f417700c6d0dbe" prot="public" virt="non-virtual"><scope>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ad44a0ec162e4d39aa0653992e5ae8467" prot="public" virt="non-virtual"><scope>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</scope><name>distances</name></member>
+      <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a6ff9cdeb7def5ffdf9435052001c4810" prot="public" virt="non-virtual"><scope>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</scope><name>norms</name></member>
+      <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a14731c17c25fef62129cd6599a993fd3" prot="public" virt="non-virtual"><scope>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</scope><name>refine_beam_pool</name></member>
+      <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1aa74f47631f9adb1cb6e38426b61f6f54" prot="public" virt="non-virtual"><scope>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</scope><name>residuals</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

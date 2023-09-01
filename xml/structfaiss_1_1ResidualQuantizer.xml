@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="59" column="5" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="59" bodyend="74"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="61" column="5" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="61" bodyend="76"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -223,11 +223,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>dot products of all codebook vectors with each other size total_codebook_size * total_codebook_size </para>
+<para>dot products of all codebook entries with the previous codebooks size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResidualQuantizer.h" line="155" column="17" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="155" bodyend="-1"/>
+        <location file="faiss/impl/ResidualQuantizer.h" line="153" column="17" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="153" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -235,13 +235,13 @@
         <argsstring></argsstring>
         <name>cent_norms</name>
         <briefdescription>
-<para>norms of all vectors </para>
+<para>norms of all codebook entries (size total_codebook_size) </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResidualQuantizer.h" line="157" column="17" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/impl/ResidualQuantizer.h" line="155" column="17" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="155" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AdditiveQuantizer_1a4aeef9f31288a7c28c02a2582616a660" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -443,7 +443,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="146" column="19" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="146" bodyend="-1"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="148" column="19" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -458,7 +458,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="149" column="11" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="149" bodyend="-1"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="151" column="11" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AdditiveQuantizer_1a093437a71a2fd301cf10f2f156f39249" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -472,7 +472,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="149" column="21" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="149" bodyend="-1"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="151" column="21" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -973,12 +973,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Cross products used in codebook tables</para>
-<para>These are used to keep trak of norms of centroids. </para>
+<para>Cross products used in codebook tables used for beam_LUT = 1 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResidualQuantizer.h" line="151" column="10"/>
+        <location file="faiss/impl/ResidualQuantizer.h" line="149" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -1014,7 +1013,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="52" column="14"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="53" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -1032,7 +1031,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="55" column="11"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="57" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a9fa7f67e95b30ca682017ce0389f80ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1046,7 +1045,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="84" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="86" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1abef163b7b94ef867c727ab3344853637" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1067,7 +1066,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="87" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="89" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1aa75999838c16331a2a2b437cc6283291" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1112,7 +1111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="89" column="10" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="89" bodyend="92"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="91" column="10" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="91" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1ab3f0bb8418ad4ad36e0ae38a1a596684" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1195,7 +1194,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="115" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="117" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a851fda9f520d3a358abbf0bffe34135f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1241,7 +1240,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="128" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="130" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a586e5004af97df05082f7771ea432f97" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1291,7 +1290,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="135" column="18"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="137" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a1858e45563fcde12a822a59054ca171c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1324,7 +1323,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="152" column="11"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="154" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a7a89007bac4f05e55a073ebfd798ff2c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1346,7 +1345,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="163" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="165" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1ad6ef68786fb519e41de5a1d0a3e7d55e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1417,7 +1416,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="173" column="18"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="175" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a6224c75b472ef7b2113c78665eee3604" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1451,7 +1450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="181" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="183" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a506a17e599f7b6fd98074867da0af6cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1479,7 +1478,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="192" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="194" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a3fe455f9e50561dccad93982658bbefd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1517,7 +1516,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AdditiveQuantizer.h" line="195" column="10"/>
+        <location file="faiss/impl/AdditiveQuantizer.h" line="197" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -1613,7 +1612,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResidualQuantizer.h" line="27" column="1" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="27" bodyend="158"/>
+    <location file="faiss/impl/ResidualQuantizer.h" line="27" column="1" bodyfile="faiss/impl/ResidualQuantizer.h" bodystart="27" bodyend="156"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AdditiveQuantizer_1ae76396a513113650fb2f579cf9899607" prot="public" virt="non-virtual"><scope>faiss::ResidualQuantizer</scope><name>AdditiveQuantizer</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a5355970d244b03a9e39efce7b440a153" prot="public" virt="non-virtual"><scope>faiss::ResidualQuantizer</scope><name>AdditiveQuantizer</name></member>

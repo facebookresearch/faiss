@@ -260,6 +260,7 @@
     <innernamespace refid="namespacefaiss_1_1nndescent">faiss::nndescent</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
       <sectiondef kind="enum">
       <memberdef kind="enum" id="namespacefaiss_1afd12191c638da74760ff397cf319752c" prot="public" static="no" strong="no">
@@ -2387,7 +2388,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResidualQuantizer.h" line="179" column="6" declfile="faiss/impl/ResidualQuantizer.h" declline="179" declcolumn="6"/>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="41" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="41" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abbf2bb1faef7c8072b82a7db323397a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2462,11 +2463,69 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Encode a set of vectors using their dot products with the codebooks </para>
+<para>Encode a set of vectors using their dot products with the codebooks</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors in the codebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>nb of vectors to encode </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>beam_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input beam size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_cross_norms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>inner product of this codebook with the m previously encoded codebooks </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_offsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>offsets into codebook_cross_norms for each previous codebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query_cp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dot products of query vectors with ??? </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cent_norms_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>norms of centroids </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResidualQuantizer.h" line="198" column="6" declfile="faiss/impl/ResidualQuantizer.h" declline="198" declcolumn="6"/>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="69" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="69" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

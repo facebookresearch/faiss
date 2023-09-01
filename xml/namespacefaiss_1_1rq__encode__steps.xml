@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1rq__encode__steps" kind="namespace" language="C++">
+    <compoundname>faiss::rq_encode_steps</compoundname>
+    <innerclass refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" prot="public">faiss::rq_encode_steps::RefineBeamMemoryPool</innerclass>
+    <innerclass refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool" prot="public">faiss::rq_encode_steps::RefineBeamLUTMemoryPool</innerclass>
+    <innerclass refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool" prot="public">faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</innerclass>
+    <innerclass refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool" prot="public">faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT1MemoryPool</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="residual__quantizer__encode__steps_8h_1a8f562c038b63180c6cb8c11bd900dd5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rq_encode_steps::refine_beam_mp</definition>
+        <argsstring>(const ResidualQuantizer &amp;rq, size_t n, size_t beam_size, const float *x, int out_beam_size, int32_t *out_codes, float *out_residuals, float *out_distances, RefineBeamMemoryPool &amp;pool)</argsstring>
+        <name>refine_beam_mp</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref> &amp;</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>beam_size</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>out_beam_size</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>out_codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out_residuals</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out_distances</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" kindref="compound">RefineBeamMemoryPool</ref> &amp;</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="109" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="109" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="residual__quantizer__encode__steps_8h_1a01317fc0e8e8b2cf21dbc89e4a9c7541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rq_encode_steps::refine_beam_LUT_mp</definition>
+        <argsstring>(const ResidualQuantizer &amp;rq, size_t n, const float *query_norms, const float *query_cp, int out_beam_size, int32_t *out_codes, float *out_distances, RefineBeamLUTMemoryPool &amp;pool)</argsstring>
+        <name>refine_beam_LUT_mp</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref> &amp;</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>query_norms</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>query_cp</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>out_beam_size</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>out_codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out_distances</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool" kindref="compound">RefineBeamLUTMemoryPool</ref> &amp;</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="129" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="129" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="residual__quantizer__encode__steps_8h_1a849d1402b1da35080e87e2b7c7ef4ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rq_encode_steps::compute_codes_add_centroids_mp_lut0</definition>
+        <argsstring>(const ResidualQuantizer &amp;rq, const float *x, uint8_t *codes_out, size_t n, const float *centroids, ComputeCodesAddCentroidsLUT0MemoryPool &amp;pool)</argsstring>
+        <name>compute_codes_add_centroids_mp_lut0</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref> &amp;</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes_out</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool" kindref="compound">ComputeCodesAddCentroidsLUT0MemoryPool</ref> &amp;</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="148" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="148" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="residual__quantizer__encode__steps_8h_1a0799cc440d949c45026006770194c0f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rq_encode_steps::compute_codes_add_centroids_mp_lut1</definition>
+        <argsstring>(const ResidualQuantizer &amp;rq, const float *x, uint8_t *codes_out, size_t n, const float *centroids, ComputeCodesAddCentroidsLUT1MemoryPool &amp;pool)</argsstring>
+        <name>compute_codes_add_centroids_mp_lut1</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref> &amp;</type>
+          <declname>rq</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes_out</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool" kindref="compound">ComputeCodesAddCentroidsLUT1MemoryPool</ref> &amp;</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/residual_quantizer_encode_steps.h" line="166" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="166" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/residual_quantizer_encode_steps.h" line="97" column="1"/>
+  </compounddef>
+</doxygen>

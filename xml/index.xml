@@ -490,6 +490,21 @@
     <member refid="structfaiss_1_1CombinerRangeKNN_1adbefea1de2c511a05d0980eaa7134fca" kind="function"><name>compute_sizes</name></member>
     <member refid="structfaiss_1_1CombinerRangeKNN_1ae4dc62c36a66b7ebfc3076f2a35a911f" kind="function"><name>write_result</name></member>
   </compound>
+  <compound refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool" kind="struct"><name>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</name>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ab7427d6c8636e77f38f417700c6d0dbe" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a6ff9cdeb7def5ffdf9435052001c4810" kind="variable"><name>norms</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1ad44a0ec162e4d39aa0653992e5ae8467" kind="variable"><name>distances</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1aa74f47631f9adb1cb6e38426b61f6f54" kind="variable"><name>residuals</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool_1a14731c17c25fef62129cd6599a993fd3" kind="variable"><name>refine_beam_pool</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool" kind="struct"><name>faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT1MemoryPool</name>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1a29070301ca8decb14eaf5059ccad5adb" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1aad2ae7baabbf0e6c69c885658ee9d287" kind="variable"><name>distances</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1a22a9aa6c490fa26658ce8a8726bb2278" kind="variable"><name>query_norms</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1a0e506f4ed48930c9633f67b5102126e3" kind="variable"><name>query_cp</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1aa5eda2857a1851244ee7b48c8c1741a6" kind="variable"><name>residuals</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool_1a2c8e4f9d0554e4374c63152d9d8114f9" kind="variable"><name>refine_beam_lut_pool</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1CpuTimer" kind="class"><name>faiss::gpu::CpuTimer</name>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" kind="variable"><name>start_</name></member>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kind="function"><name>CpuTimer</name></member>
@@ -7048,6 +7063,19 @@
     <member refid="structfaiss_1_1ReconstructFromNeighbors_1a50275f0f56de60400cee11b039c98339" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1ReconstructFromNeighbors_1a6c6a4664893430278c7da1f0606d4adf" kind="function"><name>get_neighbor_table</name></member>
   </compound>
+  <compound refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool" kind="struct"><name>faiss::rq_encode_steps::RefineBeamLUTMemoryPool</name>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool_1ab0832c6ec89568ade16f6f6c1a1f05f5" kind="variable"><name>new_codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool_1ae0dc4b3e8df9adf2058deb7baa215ea6" kind="variable"><name>new_distances</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool_1acd177fce42538ae6039eb47631440491" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool_1a3f0d27d49ac0ba3b83cc4a0f711d320b" kind="variable"><name>distances</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" kind="struct"><name>faiss::rq_encode_steps::RefineBeamMemoryPool</name>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1abe4edc133235749c6fa9242027614b92" kind="variable"><name>new_codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1a18c98526d39b5f70a05be2aa56bab86c" kind="variable"><name>new_residuals</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1a948c9bf805df111ba78e2194d490e1e2" kind="variable"><name>residuals</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1a03a42ed86563dbd69e11a036c116c1d2" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1a9e62e31d59298921f79b8f7b96363633" kind="variable"><name>distances</name></member>
+  </compound>
   <compound refid="structfaiss_1_1RemapDimensionsTransform" kind="struct"><name>faiss::RemapDimensionsTransform</name>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1a09202a195ff5f75f83e68792751a637f" kind="variable"><name>map</name></member>
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
@@ -8583,13 +8611,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d137" kind="namespace"><name>faiss::@137</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
+  <compound refid="namespacefaiss_1_1_0d138" kind="namespace"><name>faiss::@138</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d154" kind="namespace"><name>faiss::@154</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d155" kind="namespace"><name>faiss::@155</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d156" kind="namespace"><name>faiss::@156</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -8773,9 +8801,15 @@
     <member refid="namespacefaiss_1_1quantize__lut_1aa7e6fdcb7243e623e4b160308f761ac4" kind="function"><name>aq_quantize_LUT_and_bias</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1ab93e886d01cd9809d0c7ae3b7203f92a" kind="function"><name>aq_estimate_norm_scale</name></member>
   </compound>
+  <compound refid="namespacefaiss_1_1rq__encode__steps" kind="namespace"><name>faiss::rq_encode_steps</name>
+    <member refid="residual__quantizer__encode__steps_8h_1a8f562c038b63180c6cb8c11bd900dd5c" kind="function"><name>refine_beam_mp</name></member>
+    <member refid="residual__quantizer__encode__steps_8h_1a01317fc0e8e8b2cf21dbc89e4a9c7541" kind="function"><name>refine_beam_LUT_mp</name></member>
+    <member refid="residual__quantizer__encode__steps_8h_1a849d1402b1da35080e87e2b7c7ef4ac3" kind="function"><name>compute_codes_add_centroids_mp_lut0</name></member>
+    <member refid="residual__quantizer__encode__steps_8h_1a0799cc440d949c45026006770194c0f2" kind="function"><name>compute_codes_add_centroids_mp_lut1</name></member>
+  </compound>
   <compound refid="namespacefaiss_1_1simd__result__handlers" kind="namespace"><name>faiss::simd_result_handlers</name>
   </compound>
-  <compound refid="namespacefaiss_1_1simd__result__handlers_1_1_0d71" kind="namespace"><name>faiss::simd_result_handlers::@71</name>
+  <compound refid="namespacefaiss_1_1simd__result__handlers_1_1_0d72" kind="namespace"><name>faiss::simd_result_handlers::@72</name>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -9067,6 +9101,8 @@
   <compound refid="ProductQuantizer_8h" kind="file"><name>ProductQuantizer.h</name>
   </compound>
   <compound refid="Quantizer_8h" kind="file"><name>Quantizer.h</name>
+  </compound>
+  <compound refid="residual__quantizer__encode__steps_8h" kind="file"><name>residual_quantizer_encode_steps.h</name>
   </compound>
   <compound refid="ResidualQuantizer_8h" kind="file"><name>ResidualQuantizer.h</name>
   </compound>
