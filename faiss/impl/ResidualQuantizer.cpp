@@ -493,29 +493,36 @@ void ResidualQuantizer::refine_beam(
  *******************************************************************/
 
 void ResidualQuantizer::compute_codebook_tables() {
-    codebook_cross_products.resize(total_codebook_size * total_codebook_size);
     cent_norms.resize(total_codebook_size);
-    // stricly speaking we could use ssyrk
-    {
-        FINTEGER ni = total_codebook_size;
+    fvec_norms_L2sqr(
+            cent_norms.data(), codebooks.data(), d, total_codebook_size);
+    size_t cross_table_size = 0;
+    for (int m = 0; m < M; m++) {
+        size_t K = (size_t)1 << nbits[m];
+        cross_table_size += K * codebook_offsets[m];
+    }
+    codebook_cross_products.resize(cross_table_size);
+    size_t ofs = 0;
+    for (int m = 1; m < M; m++) {
+        FINTEGER ki = (size_t)1 << nbits[m];
+        FINTEGER kk = codebook_offsets[m];
         FINTEGER di = d;
         float zero = 0, one = 1;
+        assert(ofs + ki * kk <= cross_table_size);
         sgemm_("Transposed",
                "Not transposed",
-               &ni,
-               &ni,
+               &ki,
+               &kk,
                &di,
                &one,
-               codebooks.data(),
+               codebooks.data() + d * kk,
                &di,
                codebooks.data(),
                &di,
                &zero,
-               codebook_cross_products.data(),
-               &ni);
-    }
-    for (size_t i = 0; i < total_codebook_size; i++) {
-        cent_norms[i] = codebook_cross_products[i + i * total_codebook_size];
+               codebook_cross_products.data() + ofs,
+               &ki);
+        ofs += ki * kk;
     }
 }
 

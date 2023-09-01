@@ -17,6 +17,7 @@ from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
 faiss.omp_set_num_threads(4)
 
+
 def pairwise_distances(a, b):
     anorms = (a ** 2).sum(1)
     bnorms = (b ** 2).sum(1)
@@ -291,6 +292,7 @@ class TestResidualQuantizer(unittest.TestCase):
             br3 = faiss.BitstringReader(faiss.swig_ptr(codes3[i]), rq3.code_size)
             self.assertEqual(br.read(rq3.tot_bits), br3.read(rq3.tot_bits))
 
+
 ###########################################################
 # Test index, index factory sa_encode / sa_decode
 ###########################################################
@@ -308,6 +310,7 @@ def unpack_codes(rq, packed_codes):
         for j, nbi in enumerate(nbits):
             codes[i, j] = br.read(nbi)
     return codes
+
 
 def retrain_AQ_codebook(index, xt):
     """ reference implementation of codebook retraining """
@@ -337,7 +340,6 @@ def retrain_AQ_codebook(index, xt):
         B, residuals, rank, singvals = np.linalg.lstsq(C, xt, rcond=None)
     else:
         import scipy.linalg
-        import pdb; pdb.set_trace()
         B, residuals, rank, singvals = scipy.linalg.lstsq(C, xt, )
 
     MSE = ((C @ B - xt) ** 2).sum() / n
@@ -437,7 +439,6 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         self.assertEqual(
             index.rq.search_type,
             faiss.AdditiveQuantizer.ST_norm_qint8)
-
 
     def test_search_decompress(self):
         ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
@@ -646,7 +647,9 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         quantizer.set_beam_factor(2.0)
         self.assertNotEqual(quantizer.rq.codebook_cross_products.size(), 0)
         quantizer3 = faiss.deserialize_index(
-            faiss.serialize_index(quantizer), faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE)
+            faiss.serialize_index(quantizer),
+            faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE
+        )
         self.assertEqual(quantizer3.rq.codebook_cross_products.size(), 0)
         CD3, CI3 = quantizer3.search(ds.get_queries(), 10)
 
@@ -934,9 +937,9 @@ class TestIVFResidualQuantizer(unittest.TestCase):
 
 
 def precomp_codebooks(codebooks):
-
+    M = len(codebooks)
     codebook_cross_prods = [
-        [c1 @ c2.T for c1 in codebooks] for c2 in codebooks
+        [codebooks[m1] @ codebooks[m].T for m1 in range(m)] for m in range(M)
     ]
     cent_norms = [
         (c ** 2).sum(1)
@@ -946,7 +949,7 @@ def precomp_codebooks(codebooks):
 
 
 ############################################################
-# Reference imelementation of table-based beam search
+# Reference imelementation of table-based beam search (use_beam_LUT=1)
 ############################################################
 
 def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,
@@ -1097,27 +1100,28 @@ class TestCrossCodebookComputations(unittest.TestCase):
         precomp = precomp_codebooks(codebooks)
         codebook_cross_prods_ref, cent_norms_ref = precomp
 
-        # check C++ precomp tables
-        codebook_cross_prods_ref = np.hstack([
-            np.vstack(c) for c in codebook_cross_prods_ref])
-
-        rq.compute_codebook_tables()
-        codebook_cross_prods = faiss.vector_to_array(
-            rq.codebook_cross_products)
-        codebook_cross_prods = codebook_cross_prods.reshape(
-            rq.total_codebook_size, rq.total_codebook_size)
-        cent_norms = faiss.vector_to_array(rq.cent_norms)
-
-        np.testing.assert_array_almost_equal(
-            codebook_cross_prods, codebook_cross_prods_ref, decimal=5)
-        np.testing.assert_array_almost_equal(
-            np.hstack(cent_norms_ref), cent_norms, decimal=5)
-
         # validate that the python tab-based encoding works
         xb = ds.get_database()
         ref_codes, _, _ = beam_search_encoding_ref(codebooks, xb, 7)
         new_codes, _ = beam_search_encoding_tab(codebooks, xb, 7, precomp)
         np.testing.assert_array_equal(ref_codes, new_codes)
+
+        # check C++ precomp tables
+        rq.compute_codebook_tables()
+        codebook_cross_prods = faiss.vector_to_array(
+            rq.codebook_cross_products)
+        ofs = 0
+        for m in range(1, rq.M):
+            py_table = np.vstack(codebook_cross_prods_ref[m])
+            kk = rq.codebook_offsets.at(m)
+            K = 1 << rq.nbits.at(m)
+            cpp_table = codebook_cross_prods[ofs:ofs + K * kk].reshape(kk, K)
+            ofs += kk * K
+            np.testing.assert_allclose(py_table, cpp_table, rtol=1e-4)
+
+        cent_norms = faiss.vector_to_array(rq.cent_norms)
+        np.testing.assert_array_almost_equal(
+            np.hstack(cent_norms_ref), cent_norms, decimal=5)
 
         # validate the C++ beam_search_encode_step_tab function
         beam_search_encoding_tab(codebooks, xb, 7, precomp, implem="ref cpp")
