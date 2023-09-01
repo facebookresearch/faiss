@@ -144,9 +144,7 @@ struct ResidualQuantizer : AdditiveQuantizer {
      */
     size_t memory_per_point(int beam_size = -1) const;
 
-    /** Cross products used in codebook tables
-     *
-     * These are used to keep trak of norms of centroids.
+    /** Cross products used in codebook tables used for beam_LUT = 1
      */
     void compute_codebook_tables();
 
@@ -194,6 +192,15 @@ void beam_search_encode_step(
 
 /** Encode a set of vectors using their dot products with the codebooks
  *
+ * @param K           number of vectors in the codebook
+ * @param n           nb of vectors to encode
+ * @param beam_size   input beam size
+ * @param codebook_cross_norms inner product of this codebook with the m
+ *                             previously encoded codebooks
+ * @param codebook_offsets     offsets into codebook_cross_norms for each
+ *                             previous codebook
+ * @param query_cp    dot products of query vectors with ???
+ * @param cent_norms_i  norms of centroids
  */
 void beam_search_encode_step_tab(
         size_t K,
