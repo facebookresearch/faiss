@@ -50,12 +50,10 @@ struct AdditiveQuantizer : Quantizer {
     uint64_t encode_norm(float norm) const;
 
     /// encode norm by non-uniform scalar quantization
-    uint32_t encode_qcint(
-            float x) const;
+    uint32_t encode_qcint(float x) const;
 
     /// decode norm by non-uniform scalar quantization
-    float decode_qcint(uint32_t c)
-            const;
+    float decode_qcint(uint32_t c) const;
 
     /// Encodes how search is performed and how vectors are encoded
     enum Search_type_t {
