@@ -12,7 +12,7 @@
 #include <stdarg.h> /* va_list, va_start, va_arg, va_end */
 
 #include <faiss/utils/utils.h>
-#include <inttypes.h>
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 
