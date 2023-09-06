@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// quiet the noise
-// clang-format off
-
 #include <faiss/IndexAdditiveQuantizer.h>
 
 #include <algorithm>
@@ -21,7 +18,6 @@
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 
-
 namespace faiss {
 
 /**************************************************************************************
@@ -29,14 +25,12 @@ namespace faiss {
  **************************************************************************************/
 
 IndexAdditiveQuantizer::IndexAdditiveQuantizer(
-            idx_t d,
-            AdditiveQuantizer* aq,
-            MetricType metric):
-        IndexFlatCodes(aq->code_size, d, metric), aq(aq)
-{
+        idx_t d,
+        AdditiveQuantizer* aq,
+        MetricType metric)
+        : IndexFlatCodes(aq->code_size, d, metric), aq(aq) {
     FAISS_THROW_IF_NOT(metric == METRIC_INNER_PRODUCT || metric == METRIC_L2);
 }
-
 
 namespace {
 
@@ -45,21 +39,22 @@ namespace {
  ************************************************************/
 
 template <class VectorDistance>
-struct AQDistanceComputerDecompress: FlatCodesDistanceComputer {
+struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
     std::vector<float> tmp;
-    const AdditiveQuantizer & aq;
+    const AdditiveQuantizer& aq;
     VectorDistance vd;
     size_t d;
 
-    AQDistanceComputerDecompress(const IndexAdditiveQuantizer &iaq, VectorDistance vd):
-        FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-        tmp(iaq.d * 2),
-        aq(*iaq.aq),
-        vd(vd),
-        d(iaq.d)
-        {}
+    AQDistanceComputerDecompress(
+            const IndexAdditiveQuantizer& iaq,
+            VectorDistance vd)
+            : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
+              tmp(iaq.d * 2),
+              aq(*iaq.aq),
+              vd(vd),
+              d(iaq.d) {}
 
-    const float *q;
+    const float* q;
     void set_query(const float* x) final {
         q = x;
     }
@@ -70,7 +65,7 @@ struct AQDistanceComputerDecompress: FlatCodesDistanceComputer {
         return vd(tmp.data(), tmp.data() + d);
     }
 
-    float distance_to_code(const uint8_t *code) final {
+    float distance_to_code(const uint8_t* code) final {
         aq.decode(code, tmp.data(), 1);
         return vd(q, tmp.data());
     }
@@ -78,19 +73,17 @@ struct AQDistanceComputerDecompress: FlatCodesDistanceComputer {
     virtual ~AQDistanceComputerDecompress() {}
 };
 
-
-template<bool is_IP, AdditiveQuantizer::Search_type_t st>
-struct AQDistanceComputerLUT: FlatCodesDistanceComputer {
+template <bool is_IP, AdditiveQuantizer::Search_type_t st>
+struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
     std::vector<float> LUT;
-    const AdditiveQuantizer & aq;
+    const AdditiveQuantizer& aq;
     size_t d;
 
-    explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer &iaq):
-        FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-        LUT(iaq.aq->total_codebook_size + iaq.d * 2),
-        aq(*iaq.aq),
-        d(iaq.d)
-        {}
+    explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer& iaq)
+            : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
+              LUT(iaq.aq->total_codebook_size + iaq.d * 2),
+              aq(*iaq.aq),
+              d(iaq.d) {}
 
     float bias;
     void set_query(const float* x) final {
@@ -104,25 +97,22 @@ struct AQDistanceComputerLUT: FlatCodesDistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
-        float *tmp = LUT.data();
+        float* tmp = LUT.data();
         aq.decode(codes + i * d, tmp, 1);
         aq.decode(codes + j * d, tmp + d, 1);
         return fvec_L2sqr(tmp, tmp + d, d);
     }
 
-    float distance_to_code(const uint8_t *code) final {
+    float distance_to_code(const uint8_t* code) final {
         return bias + aq.compute_1_distance_LUT<is_IP, st>(code, LUT.data());
     }
 
     virtual ~AQDistanceComputerLUT() {}
 };
 
-
-
 /************************************************************
  * scanning implementation for search
  ************************************************************/
-
 
 template <class VectorDistance, class ResultHandler>
 void search_with_decompress(
@@ -133,11 +123,11 @@ void search_with_decompress(
     const uint8_t* codes = ir.codes.data();
     size_t ntotal = ir.ntotal;
     size_t code_size = ir.code_size;
-    const AdditiveQuantizer *aq = ir.aq;
+    const AdditiveQuantizer* aq = ir.aq;
 
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
-#pragma omp parallel for if(res.nq > 100)
+#pragma omp parallel for if (res.nq > 100)
     for (int64_t q = 0; q < res.nq; q++) {
         SingleResultHandler resi(res);
         resi.begin(q);
@@ -152,13 +142,12 @@ void search_with_decompress(
     }
 }
 
-template<bool is_IP, AdditiveQuantizer::Search_type_t st, class ResultHandler>
+template <bool is_IP, AdditiveQuantizer::Search_type_t st, class ResultHandler>
 void search_with_LUT(
         const IndexAdditiveQuantizer& ir,
         const float* xq,
-        ResultHandler& res)
-{
-    const AdditiveQuantizer & aq = *ir.aq;
+        ResultHandler& res) {
+    const AdditiveQuantizer& aq = *ir.aq;
     const uint8_t* codes = ir.codes.data();
     size_t ntotal = ir.ntotal;
     size_t code_size = aq.code_size;
@@ -166,38 +155,34 @@ void search_with_LUT(
     size_t d = ir.d;
 
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
-    std::unique_ptr<float []> LUT(new float[nq * aq.total_codebook_size]);
+    std::unique_ptr<float[]> LUT(new float[nq * aq.total_codebook_size]);
 
     aq.compute_LUT(nq, xq, LUT.get());
 
-#pragma omp parallel for if(nq > 100)
+#pragma omp parallel for if (nq > 100)
     for (int64_t q = 0; q < nq; q++) {
         SingleResultHandler resi(res);
         resi.begin(q);
         std::vector<float> tmp(aq.d);
-        const float *LUT_q = LUT.get() + aq.total_codebook_size * q;
+        const float* LUT_q = LUT.get() + aq.total_codebook_size * q;
         float bias = 0;
-        if (!is_IP) { // the LUT function returns ||y||^2 - 2 * <x, y>, need to add ||x||^2
+        if (!is_IP) { // the LUT function returns ||y||^2 - 2 * <x, y>, need to
+                      // add ||x||^2
             bias = fvec_norm_L2sqr(xq + q * d, d);
         }
         for (size_t i = 0; i < ntotal; i++) {
             float dis = aq.compute_1_distance_LUT<is_IP, st>(
-                codes + i * code_size,
-                LUT_q
-            );
+                    codes + i * code_size, LUT_q);
             resi.add_result(dis + bias, i);
         }
         resi.end();
     }
-
 }
-
 
 } // anonymous namespace
 
-
-FlatCodesDistanceComputer * IndexAdditiveQuantizer::get_FlatCodesDistanceComputer() const {
-
+FlatCodesDistanceComputer* IndexAdditiveQuantizer::
+        get_FlatCodesDistanceComputer() const {
     if (aq->search_type == AdditiveQuantizer::ST_decompress) {
         if (metric_type == METRIC_L2) {
             using VD = VectorDistance<METRIC_L2>;
@@ -212,33 +197,35 @@ FlatCodesDistanceComputer * IndexAdditiveQuantizer::get_FlatCodesDistanceCompute
         }
     } else {
         if (metric_type == METRIC_INNER_PRODUCT) {
-            return new AQDistanceComputerLUT<true, AdditiveQuantizer::ST_LUT_nonorm>(*this);
+            return new AQDistanceComputerLUT<
+                    true,
+                    AdditiveQuantizer::ST_LUT_nonorm>(*this);
         } else {
-            switch(aq->search_type) {
-#define DISPATCH(st) \
-            case AdditiveQuantizer::st: \
-                return new AQDistanceComputerLUT<false, AdditiveQuantizer::st> (*this);\
-                break;
-            DISPATCH(ST_norm_float)
-            DISPATCH(ST_LUT_nonorm)
-            DISPATCH(ST_norm_qint8)
-            DISPATCH(ST_norm_qint4)
-            DISPATCH(ST_norm_cqint4)
-            case AdditiveQuantizer::ST_norm_cqint8:
-            case AdditiveQuantizer::ST_norm_lsq2x4:
-            case AdditiveQuantizer::ST_norm_rq2x4:
-                return new AQDistanceComputerLUT<false, AdditiveQuantizer::ST_norm_cqint8> (*this);\
-                break;
+            switch (aq->search_type) {
+#define DISPATCH(st)                                                           \
+    case AdditiveQuantizer::st:                                                \
+        return new AQDistanceComputerLUT<false, AdditiveQuantizer::st>(*this); \
+        break;
+                DISPATCH(ST_norm_float)
+                DISPATCH(ST_LUT_nonorm)
+                DISPATCH(ST_norm_qint8)
+                DISPATCH(ST_norm_qint4)
+                DISPATCH(ST_norm_cqint4)
+                case AdditiveQuantizer::ST_norm_cqint8:
+                case AdditiveQuantizer::ST_norm_lsq2x4:
+                case AdditiveQuantizer::ST_norm_rq2x4:
+                    return new AQDistanceComputerLUT<
+                            false,
+                            AdditiveQuantizer::ST_norm_cqint8>(*this);
+                    break;
 #undef DISPATCH
-            default:
-                FAISS_THROW_FMT("search type %d not supported", aq->search_type);
+                default:
+                    FAISS_THROW_FMT(
+                            "search type %d not supported", aq->search_type);
             }
         }
     }
 }
-
-
-
 
 void IndexAdditiveQuantizer::search(
         idx_t n,
@@ -247,8 +234,8 @@ void IndexAdditiveQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-
-    FAISS_THROW_IF_NOT_MSG(!params, "search params not supported for this index");
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
 
     if (aq->search_type == AdditiveQuantizer::ST_decompress) {
         if (metric_type == METRIC_L2) {
@@ -264,44 +251,45 @@ void IndexAdditiveQuantizer::search(
         }
     } else {
         if (metric_type == METRIC_INNER_PRODUCT) {
-            HeapResultHandler<CMin<float, idx_t> > rh(n, distances, labels, k);
-            search_with_LUT<true, AdditiveQuantizer::ST_LUT_nonorm> (*this, x, rh);
+            HeapResultHandler<CMin<float, idx_t>> rh(n, distances, labels, k);
+            search_with_LUT<true, AdditiveQuantizer::ST_LUT_nonorm>(
+                    *this, x, rh);
         } else {
-            HeapResultHandler<CMax<float, idx_t> > rh(n, distances, labels, k);
-            switch(aq->search_type) {
-#define DISPATCH(st) \
-            case AdditiveQuantizer::st: \
-                search_with_LUT<false, AdditiveQuantizer::st> (*this, x, rh);\
-                break;
-            DISPATCH(ST_norm_float)
-            DISPATCH(ST_LUT_nonorm)
-            DISPATCH(ST_norm_qint8)
-            DISPATCH(ST_norm_qint4)
-            DISPATCH(ST_norm_cqint4)
-            case AdditiveQuantizer::ST_norm_cqint8:
-            case AdditiveQuantizer::ST_norm_lsq2x4:
-            case AdditiveQuantizer::ST_norm_rq2x4:
-                search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint8> (*this, x, rh);
-                break;
+            HeapResultHandler<CMax<float, idx_t>> rh(n, distances, labels, k);
+            switch (aq->search_type) {
+#define DISPATCH(st)                                                 \
+    case AdditiveQuantizer::st:                                      \
+        search_with_LUT<false, AdditiveQuantizer::st>(*this, x, rh); \
+        break;
+                DISPATCH(ST_norm_float)
+                DISPATCH(ST_LUT_nonorm)
+                DISPATCH(ST_norm_qint8)
+                DISPATCH(ST_norm_qint4)
+                DISPATCH(ST_norm_cqint4)
+                case AdditiveQuantizer::ST_norm_cqint8:
+                case AdditiveQuantizer::ST_norm_lsq2x4:
+                case AdditiveQuantizer::ST_norm_rq2x4:
+                    search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint8>(
+                            *this, x, rh);
+                    break;
 #undef DISPATCH
-            default:
-                FAISS_THROW_FMT("search type %d not supported", aq->search_type);
+                default:
+                    FAISS_THROW_FMT(
+                            "search type %d not supported", aq->search_type);
             }
         }
-
     }
 }
 
-void IndexAdditiveQuantizer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
+void IndexAdditiveQuantizer::sa_encode(idx_t n, const float* x, uint8_t* bytes)
+        const {
     return aq->compute_codes(x, bytes, n);
 }
 
-void IndexAdditiveQuantizer::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
+void IndexAdditiveQuantizer::sa_decode(idx_t n, const uint8_t* bytes, float* x)
+        const {
     return aq->decode(bytes, x, n);
 }
-
-
-
 
 /**************************************************************************************
  * IndexResidualQuantizer
@@ -313,8 +301,11 @@ IndexResidualQuantizer::IndexResidualQuantizer(
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type)
-        : IndexResidualQuantizer(d, std::vector<size_t>(M, nbits), metric, search_type) {
-}
+        : IndexResidualQuantizer(
+                  d,
+                  std::vector<size_t>(M, nbits),
+                  metric,
+                  search_type) {}
 
 IndexResidualQuantizer::IndexResidualQuantizer(
         int d,
@@ -326,13 +317,13 @@ IndexResidualQuantizer::IndexResidualQuantizer(
     is_trained = false;
 }
 
-IndexResidualQuantizer::IndexResidualQuantizer() : IndexResidualQuantizer(0, 0, 0) {}
+IndexResidualQuantizer::IndexResidualQuantizer()
+        : IndexResidualQuantizer(0, 0, 0) {}
 
 void IndexResidualQuantizer::train(idx_t n, const float* x) {
     rq.train(n, x);
     is_trained = true;
 }
-
 
 /**************************************************************************************
  * IndexLocalSearchQuantizer
@@ -344,31 +335,33 @@ IndexLocalSearchQuantizer::IndexLocalSearchQuantizer(
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type)
-        : IndexAdditiveQuantizer(d, &lsq, metric), lsq(d, M, nbits, search_type) {
+        : IndexAdditiveQuantizer(d, &lsq, metric),
+          lsq(d, M, nbits, search_type) {
     code_size = lsq.code_size;
     is_trained = false;
 }
 
-IndexLocalSearchQuantizer::IndexLocalSearchQuantizer() : IndexLocalSearchQuantizer(0, 0, 0) {}
+IndexLocalSearchQuantizer::IndexLocalSearchQuantizer()
+        : IndexLocalSearchQuantizer(0, 0, 0) {}
 
 void IndexLocalSearchQuantizer::train(idx_t n, const float* x) {
     lsq.train(n, x);
     is_trained = true;
 }
 
-
 /**************************************************************************************
  * IndexProductResidualQuantizer
  **************************************************************************************/
 
 IndexProductResidualQuantizer::IndexProductResidualQuantizer(
-        int d,        ///< dimensionality of the input vectors
+        int d,          ///< dimensionality of the input vectors
         size_t nsplits, ///< number of residual quantizers
-        size_t Msub,     ///< number of subquantizers per RQ
-        size_t nbits, ///< number of bit per subvector index
+        size_t Msub,    ///< number of subquantizers per RQ
+        size_t nbits,   ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type)
-        : IndexAdditiveQuantizer(d, &prq, metric), prq(d, nsplits, Msub, nbits, search_type) {
+        : IndexAdditiveQuantizer(d, &prq, metric),
+          prq(d, nsplits, Msub, nbits, search_type) {
     code_size = prq.code_size;
     is_trained = false;
 }
@@ -381,19 +374,19 @@ void IndexProductResidualQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-
 /**************************************************************************************
  * IndexProductLocalSearchQuantizer
  **************************************************************************************/
 
 IndexProductLocalSearchQuantizer::IndexProductLocalSearchQuantizer(
-        int d,        ///< dimensionality of the input vectors
+        int d,          ///< dimensionality of the input vectors
         size_t nsplits, ///< number of local search quantizers
-        size_t Msub,     ///< number of subquantizers per LSQ
-        size_t nbits, ///< number of bit per subvector index
+        size_t Msub,    ///< number of subquantizers per LSQ
+        size_t nbits,   ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type)
-        : IndexAdditiveQuantizer(d, &plsq, metric), plsq(d, nsplits, Msub, nbits, search_type) {
+        : IndexAdditiveQuantizer(d, &plsq, metric),
+          plsq(d, nsplits, Msub, nbits, search_type) {
     code_size = plsq.code_size;
     is_trained = false;
 }
@@ -406,17 +399,15 @@ void IndexProductLocalSearchQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-
 /**************************************************************************************
  * AdditiveCoarseQuantizer
  **************************************************************************************/
 
 AdditiveCoarseQuantizer::AdditiveCoarseQuantizer(
-            idx_t d,
-            AdditiveQuantizer* aq,
-            MetricType metric):
-        Index(d, metric), aq(aq)
-{}
+        idx_t d,
+        AdditiveQuantizer* aq,
+        MetricType metric)
+        : Index(d, metric), aq(aq) {}
 
 void AdditiveCoarseQuantizer::add(idx_t, const float*) {
     FAISS_THROW_MSG("not applicable");
@@ -430,17 +421,16 @@ void AdditiveCoarseQuantizer::reset() {
     FAISS_THROW_MSG("not applicable");
 }
 
-
 void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
     if (verbose) {
-        printf("AdditiveCoarseQuantizer::train: training on %zd vectors\n", size_t(n));
+        printf("AdditiveCoarseQuantizer::train: training on %zd vectors\n",
+               size_t(n));
     }
     size_t norms_size = sizeof(float) << aq->tot_bits;
 
-    FAISS_THROW_IF_NOT_MSG (
-        norms_size <= aq->max_mem_distances,
-        "the RCQ norms matrix will become too large, please reduce the number of quantization steps"
-    );
+    FAISS_THROW_IF_NOT_MSG(
+            norms_size <= aq->max_mem_distances,
+            "the RCQ norms matrix will become too large, please reduce the number of quantization steps");
 
     aq->train(n, x);
     is_trained = true;
@@ -448,7 +438,8 @@ void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
 
     if (metric_type == METRIC_L2) {
         if (verbose) {
-            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n", size_t(ntotal));
+            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n",
+                   size_t(ntotal));
         }
         // this is not necessary for the residualcoarsequantizer when
         // using beam search. We'll see if the memory overhead is too high
@@ -463,16 +454,15 @@ void AdditiveCoarseQuantizer::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters * params) const {
-
-    FAISS_THROW_IF_NOT_MSG(!params, "search params not supported for this index");
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->knn_centroids_inner_product(n, x, k, distances, labels);
     } else if (metric_type == METRIC_L2) {
         FAISS_THROW_IF_NOT(centroid_norms.size() == ntotal);
-        aq->knn_centroids_L2(
-                n, x, k, distances, labels, centroid_norms.data());
+        aq->knn_centroids_L2(n, x, k, distances, labels, centroid_norms.data());
     }
 }
 
@@ -481,7 +471,7 @@ void AdditiveCoarseQuantizer::search(
  **************************************************************************************/
 
 ResidualCoarseQuantizer::ResidualCoarseQuantizer(
-        int d,        ///< dimensionality of the input vectors
+        int d, ///< dimensionality of the input vectors
         const std::vector<size_t>& nbits,
         MetricType metric)
         : AdditiveCoarseQuantizer(d, &rq, metric), rq(d, nbits) {
@@ -496,21 +486,30 @@ ResidualCoarseQuantizer::ResidualCoarseQuantizer(
         MetricType metric)
         : ResidualCoarseQuantizer(d, std::vector<size_t>(M, nbits), metric) {}
 
-ResidualCoarseQuantizer::ResidualCoarseQuantizer(): ResidualCoarseQuantizer(0, 0, 0) {}
-
-
+ResidualCoarseQuantizer::ResidualCoarseQuantizer()
+        : ResidualCoarseQuantizer(0, 0, 0) {}
 
 void ResidualCoarseQuantizer::set_beam_factor(float new_beam_factor) {
     beam_factor = new_beam_factor;
     if (new_beam_factor > 0) {
         FAISS_THROW_IF_NOT(new_beam_factor >= 1.0);
-        return;
-    } else if (metric_type == METRIC_L2 && ntotal != centroid_norms.size()) {
-        if (verbose) {
-            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n", size_t(ntotal));
+        if (rq.codebook_cross_products.size() == 0) {
+            rq.compute_codebook_tables();
         }
-        centroid_norms.resize(ntotal);
-        aq->compute_centroid_norms(centroid_norms.data());
+        return;
+    } else {
+        // new_beam_factor = -1: exhaustive computation.
+        // Does not use the cross_products
+        rq.codebook_cross_products.resize(0);
+        // but the centroid norms are necessary!
+        if (metric_type == METRIC_L2 && ntotal != centroid_norms.size()) {
+            if (verbose) {
+                printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n",
+                       size_t(ntotal));
+            }
+            centroid_norms.resize(ntotal);
+            aq->compute_centroid_norms(centroid_norms.data());
+        }
     }
 }
 
@@ -520,13 +519,15 @@ void ResidualCoarseQuantizer::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters * params_in
-        ) const {
-
+        const SearchParameters* params_in) const {
     float beam_factor = this->beam_factor;
     if (params_in) {
-        auto params = dynamic_cast<const SearchParametersResidualCoarseQuantizer*>(params_in);
-        FAISS_THROW_IF_NOT_MSG(params, "need SearchParametersResidualCoarseQuantizer parameters");
+        auto params =
+                dynamic_cast<const SearchParametersResidualCoarseQuantizer*>(
+                        params_in);
+        FAISS_THROW_IF_NOT_MSG(
+                params,
+                "need SearchParametersResidualCoarseQuantizer parameters");
         beam_factor = params->beam_factor;
     }
 
@@ -571,6 +572,7 @@ void ResidualCoarseQuantizer::search(
     rq.refine_beam(
             n, 1, x, beam_size, codes.data(), nullptr, beam_distances.data());
 
+    // pack int32 table
 #pragma omp parallel for if (n > 4000)
     for (idx_t i = 0; i < n; i++) {
         memcpy(distances + i * k,
@@ -590,14 +592,14 @@ void ResidualCoarseQuantizer::search(
     }
 }
 
-void ResidualCoarseQuantizer::initialize_from(const ResidualCoarseQuantizer &other) {
+void ResidualCoarseQuantizer::initialize_from(
+        const ResidualCoarseQuantizer& other) {
     FAISS_THROW_IF_NOT(rq.M <= other.rq.M);
     rq.initialize_from(other.rq);
     set_beam_factor(other.beam_factor);
     is_trained = other.is_trained;
     ntotal = (idx_t)1 << aq->tot_bits;
 }
-
 
 /**************************************************************************************
  * LocalSearchCoarseQuantizer
@@ -613,12 +615,8 @@ LocalSearchCoarseQuantizer::LocalSearchCoarseQuantizer(
     is_trained = false;
 }
 
-
 LocalSearchCoarseQuantizer::LocalSearchCoarseQuantizer() {
     aq = &lsq;
 }
-
-
-
 
 } // namespace faiss

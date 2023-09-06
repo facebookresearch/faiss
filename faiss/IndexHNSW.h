@@ -74,10 +74,10 @@ struct IndexHNSW : Index {
     HNSW hnsw;
 
     // the sequential storage
-    bool own_fields;
-    Index* storage;
+    bool own_fields = false;
+    Index* storage = nullptr;
 
-    ReconstructFromNeighbors* reconstruct_from_neighbors;
+    ReconstructFromNeighbors* reconstruct_from_neighbors = nullptr;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
@@ -152,7 +152,7 @@ struct IndexHNSWFlat : IndexHNSW {
  */
 struct IndexHNSWPQ : IndexHNSW {
     IndexHNSWPQ();
-    IndexHNSWPQ(int d, int pq_m, int M);
+    IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits = 8);
     void train(idx_t n, const float* x) override;
 };
 
