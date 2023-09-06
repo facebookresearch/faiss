@@ -73,6 +73,9 @@ RaftIVFFlat::RaftIVFFlat(
                   interleavedLayout,
                   indicesOptions,
                   space) {
+    FAISS_THROW_IF_NOT_MSG(
+            indicesOptions == INDICES_64_BIT,
+            "only INDICES_64_BIT is supported for RAFT index");
     reset();
 }
 
@@ -159,6 +162,8 @@ idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
+    /// TODO: We probably don't want to ignore the coarse quantizer here
+
     idx_t n_rows = vecs.getSize(0);
 
     const raft::device_resources& raft_handle =
@@ -206,8 +211,6 @@ idx_t RaftIVFFlat::addVectors(
                         indices.data(), n_rows, (idx_t)1),
                 raft::make_const_mdspan(gather_indices.view()));
     }
-
-    /// TODO: We probably don't want to ignore the coarse quantizer here
 
     FAISS_ASSERT(raft_knn_index.has_value());
     raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(

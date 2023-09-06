@@ -30,6 +30,7 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
+#include "faiss/gpu/GpuIndicesOptions.h"
 
 // FIXME: figure out a better way to test fp16
 constexpr float kF16MaxRelErr = 0.3f;
@@ -160,7 +161,7 @@ void addTest(
 
         faiss::gpu::GpuIndexIVFFlatConfig config;
         config.device = opt.device;
-        config.indicesOptions = opt.indicesOpt;
+        config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.use_raft = use_raft;
 
@@ -196,7 +197,7 @@ void copyToTest(bool useFloat16CoarseQuantizer, bool use_raft) {
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
-    config.indicesOptions = opt.indicesOpt;
+    config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
     config.use_raft = use_raft;
 
@@ -256,7 +257,7 @@ void copyFromTest(bool useFloat16CoarseQuantizer, bool use_raft) {
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
-    config.indicesOptions = opt.indicesOpt;
+    config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
     config.use_raft = use_raft;
 
@@ -331,6 +332,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
 }
@@ -341,6 +343,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
 }
@@ -353,6 +356,7 @@ TEST(TestGpuIndexIVFFlat, LargeBatch) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
 }
@@ -365,6 +369,7 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Query_L2) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, true);
 #endif
 }
@@ -375,6 +380,7 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Query_IP) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, true);
 #endif
 }
@@ -391,6 +397,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2_64) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
 }
@@ -402,6 +409,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP_64) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
 }
@@ -413,6 +421,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2_128) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
 }
@@ -424,6 +433,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP_128) {
 
 #if defined USE_NVIDIA_RAFT
     opt.use_raft = true;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
 }
@@ -510,6 +520,7 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
 
 #if defined USE_NVIDIA_RAFT
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
 
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
@@ -579,6 +590,7 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
 
 #if defined USE_NVIDIA_RAFT
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     std::fill(distances.begin(), distances.end(), 0);
     std::fill(indices.begin(), indices.end(), 0);
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
@@ -647,6 +659,7 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
 
 #if defined USE_NVIDIA_RAFT
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.nprobe = opt.nprobe;
@@ -723,6 +736,7 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
 
 #if defined USE_NVIDIA_RAFT
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.copyFrom(&cpuIndex);
@@ -800,6 +814,7 @@ TEST(TestGpuIndexIVFFlat, LongIVFList) {
 
 #if defined USE_NVIDIA_RAFT
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
     raftGpuIndex.train(numTrain, trainVecs.data());
