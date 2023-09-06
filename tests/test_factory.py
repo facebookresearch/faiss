@@ -82,6 +82,9 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "HNSW32,PQ4np")
         indexpq = faiss.downcast_index(index.storage)
         assert not indexpq.do_polysemous_training
+        index = faiss.index_factory(12, "HNSW32,PQ4x12np")
+        indexpq = faiss.downcast_index(index.storage)
+        self.assertEqual(indexpq.pq.nbits, 12)
 
     def test_factory_NSG(self):
         index = faiss.index_factory(12, "NSG64")
@@ -96,6 +99,12 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "NSG64,Flat")
         assert isinstance(index, faiss.IndexNSGFlat)
         assert index.nsg.R == 64
+
+        index = faiss.index_factory(12, "NSG64,PQ3x10")
+        assert isinstance(index, faiss.IndexNSGPQ)
+        assert index.nsg.R == 64
+        indexpq = faiss.downcast_index(index.storage)
+        self.assertEqual(indexpq.pq.nbits, 10)
 
         index = faiss.index_factory(12, "IVF65536_NSG64,Flat")
         index_nsg = faiss.downcast_index(index.quantizer)

@@ -440,11 +440,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match("Flat|")) {
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {
@@ -490,11 +492,12 @@ IndexNSG* parse_IndexNSG(
     if (match("Flat|")) {
         return new IndexNSGFlat(d, nsg_R, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {

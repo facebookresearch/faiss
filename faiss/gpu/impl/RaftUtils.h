@@ -36,8 +36,7 @@ inline raft::distance::DistanceType faiss_to_raft(
         case MetricType::METRIC_INNER_PRODUCT:
             return raft::distance::DistanceType::InnerProduct;
         case MetricType::METRIC_L2:
-            return exactDistance ? raft::distance::DistanceType::L2Unexpanded
-                                 : raft::distance::DistanceType::L2Expanded;
+            return raft::distance::DistanceType::L2Expanded;
         case MetricType::METRIC_L1:
             return raft::distance::DistanceType::L1;
         case MetricType::METRIC_Linf:
