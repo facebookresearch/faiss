@@ -92,12 +92,6 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
     /// debugging purposes.
     virtual std::vector<idx_t> getListIndices(idx_t listId) const;
 
-    /// Sets the number of list probes per query
-    void setNumProbes(int nprobe);
-
-    /// Returns our current number of list probes per query
-    int getNumProbes() const;
-
     void search_preassigned(
             idx_t n,
             const float* x,

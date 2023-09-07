@@ -161,7 +161,8 @@ void addTest(
 
         faiss::gpu::GpuIndexIVFFlatConfig config;
         config.device = opt.device;
-        config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+        config.indicesOptions =
+                use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.use_raft = use_raft;
 
@@ -197,7 +198,8 @@ void copyToTest(bool useFloat16CoarseQuantizer, bool use_raft) {
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
-    config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+    config.indicesOptions =
+            use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
     config.use_raft = use_raft;
 
@@ -257,7 +259,8 @@ void copyFromTest(bool useFloat16CoarseQuantizer, bool use_raft) {
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
-    config.indicesOptions = use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+    config.indicesOptions =
+            use_raft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
     config.use_raft = use_raft;
 
