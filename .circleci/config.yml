@@ -170,8 +170,8 @@ jobs:
                 command: |
                   sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
-                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      -c pytorch -c rapidsai -c nvidia/label/tst
+                  conda build faiss-gpu-raft --variants '{ "cuda-version": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      -c pytorch -c rapidsai -c nvidia/label/tst -c nvidia
       - when:
           condition:
             and:
@@ -185,8 +185,8 @@ jobs:
                 command: |
                   sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
-                  conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      --user pytorch --label <<parameters.label>> -c pytorch -c rapidsai -c nvidia/label/tst
+                  conda build faiss-gpu-raft --variants '{ "cuda-version": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      --user pytorch --label <<parameters.label>> -c pytorch -c rapidsai -c nvidia/label/tst -c nvidia
 
   build_cmake:
     parameters:
