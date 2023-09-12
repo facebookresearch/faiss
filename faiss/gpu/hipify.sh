@@ -35,12 +35,16 @@ done
 
 # replace header include statements "<faiss/gpu/" with "<faiss/gpu-rocm"
 # replace thrust::cuda::par with thrust::hip::par
+# adjust header path location for hipblas.h to avoid unnecessary deprecation warnings
+# adjust header path location for hiprand_kernel.h to avoid unnecessary deprecation warnings
 for ext in hip cuh h cpp
 do
     for src in $(find ./gpu-rocm -name "*.$ext.tmp")
     do
         sed -i 's@#include <faiss/gpu/@#include <faiss/gpu-rocm/@' $src
         sed -i 's@thrust::cuda::par@thrust::hip::par@' $src
+        sed -i 's@#include <hipblas.h>@#include <hipblas/hipblas.h>@' $src
+        sed -i 's@#include <hiprand_kernel.h>@#include <hiprand/hiprand_kernel.h>@' $src
     done
 done
 

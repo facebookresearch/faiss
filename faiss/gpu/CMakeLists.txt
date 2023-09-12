@@ -82,10 +82,6 @@ set(FAISS_GPU_SRC
   utils/warpselect/WarpSelectFloatT2048.cu
 )
 
-if (USE_ROCM)
-  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
-endif()
-
 set(FAISS_GPU_HEADERS
   GpuAutoTune.h
   GpuCloner.h
@@ -201,6 +197,12 @@ function(generate_ivf_interleaved_code)
     "64|2048|8"
   )
 
+  if(USE_ROCM)
+    set(CU_OR_HIP "hip")
+  else()
+    set(CU_OR_HIP "cu")
+  endif()
+
   # Traverse through the Cartesian product of X and Y
   foreach(sub_codec ${SUB_CODEC_TYPE})
   foreach(metric_type ${SUB_METRIC_TYPE})
@@ -214,10 +216,10 @@ function(generate_ivf_interleaved_code)
     set(filename "template_${sub_codec}_${metric_type}_${sub_threads}_${sub_num_warp_q}_${sub_num_thread_q}")
     # Remove illegal characters from filename
     string(REGEX REPLACE "[^A-Za-z0-9_]" "" filename ${filename})
-    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.cu")
+    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.${CU_OR_HIP}")
 
     # Read the template file
-    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.cu" template_content)
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.${CU_OR_HIP}" template_content)
 
     # Replace the placeholders
     string(REPLACE "SUB_CODEC_TYPE" "${sub_codec}" template_content "${template_content}")
@@ -248,6 +250,10 @@ if(FAISS_ENABLE_RAFT)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+endif()
+
+if (USE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
