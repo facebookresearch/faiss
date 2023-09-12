@@ -34,6 +34,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
@@ -385,6 +386,8 @@ static void write_ivf_header(const IndexIVF* ivf, IOWriter* f) {
     write_index_header(ivf, f);
     WRITE1(ivf->nlist);
     WRITE1(ivf->nprobe);
+    // subclasses write by_residual (some of them support only one setting of
+    // by_residual).
     write_index(ivf->quantizer, f);
     write_direct_map(&ivf->direct_map, f);
 }
@@ -700,7 +703,22 @@ void write_index(const Index* idx, IOWriter* f) {
             WRITEVECTOR(ivfpqr->refine_codes);
             WRITE1(ivfpqr->k_factor);
         }
-
+    } else if (
+            auto* indep =
+                    dynamic_cast<const IndexIVFIndependentQuantizer*>(idx)) {
+        uint32_t h = fourcc("IwIQ");
+        WRITE1(h);
+        write_index_header(indep, f);
+        write_index(indep->quantizer, f);
+        bool has_vt = indep->vt != nullptr;
+        WRITE1(has_vt);
+        if (has_vt) {
+            write_VectorTransform(indep->vt, f);
+        }
+        write_index(indep->index_ivf, f);
+        if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
+            WRITE1(index_ivfpq->use_precomputed_table);
+        }
     } else if (
             const IndexPreTransform* ixpt =
                     dynamic_cast<const IndexPreTransform*>(idx)) {

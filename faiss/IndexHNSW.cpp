@@ -98,7 +98,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 };
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (storage->metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();
@@ -250,18 +250,10 @@ void hnsw_add_vertices(
  **************************************************************/
 
 IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
-        : Index(d, metric),
-          hnsw(M),
-          own_fields(false),
-          storage(nullptr),
-          reconstruct_from_neighbors(nullptr) {}
+        : Index(d, metric), hnsw(M) {}
 
 IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type),
-          hnsw(M),
-          own_fields(false),
-          storage(storage),
-          reconstruct_from_neighbors(nullptr) {}
+        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {}
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {
@@ -312,7 +304,7 @@ void IndexHNSW::search(
             DistanceComputer* dis = storage_distance_computer(storage);
             ScopeDeleter1<DistanceComputer> del(dis);
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder)
+#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 idx_t* idxi = labels + i * k;
                 float* simi = distances + i * k;
@@ -346,7 +338,7 @@ void IndexHNSW::search(
         InterruptCallback::check();
     }
 
-    if (metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(metric_type)) {
         // we need to revert the negated distances
         for (size_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
@@ -614,6 +606,14 @@ void IndexHNSW::link_singletons() {
     }
 }
 
+void IndexHNSW::permute_entries(const idx_t* perm) {
+    auto flat_storage = dynamic_cast<IndexFlatCodes*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_storage, "don't know how to permute this index");
+    flat_storage->permute_entries(perm);
+    hnsw.permute_entries(perm);
+}
+
 /**************************************************************
  * ReconstructFromNeighbors implementation
  **************************************************************/
@@ -864,7 +864,10 @@ IndexHNSWFlat::IndexHNSWFlat() {
 }
 
 IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
-        : IndexHNSW(new IndexFlat(d, metric), M) {
+        : IndexHNSW(
+                  (metric == METRIC_L2) ? new IndexFlatL2(d)
+                                        : new IndexFlat(d, metric),
+                  M) {
     own_fields = true;
     is_trained = true;
 }
@@ -875,8 +878,8 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
 
 IndexHNSWPQ::IndexHNSWPQ() {}
 
-IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M)
-        : IndexHNSW(new IndexPQ(d, pq_m, 8), M) {
+IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits)
+        : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits), M) {
     own_fields = true;
     is_trained = false;
 }
@@ -896,7 +899,7 @@ IndexHNSWSQ::IndexHNSWSQ(
         int M,
         MetricType metric)
         : IndexHNSW(new IndexScalarQuantizer(d, qtype, metric), M) {
-    is_trained = false;
+    is_trained = this->storage->is_trained;
     own_fields = true;
 }
 

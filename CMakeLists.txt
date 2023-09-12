@@ -4,14 +4,52 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-# HIP added to cmake 3.21
-cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+# =============================================================================
+# Copyright (c) 2023, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+# =============================================================================
+
+cmake_minimum_required(VERSION 3.23.1 FATAL_ERROR)
+
+set(FAISS_LANGUAGES CXX)
+
+if(FAISS_ENABLE_GPU)
+  # if ROCm install detected, assume ROCm/HIP is GPU device
+  if (EXISTS /opt/rocm)
+    set(USE_ROCM TRUE)
+    list(APPEND FAISS_LANGUAGES HIP)
+  else()
+    list(APPEND FAISS_LANGUAGES CUDA)
+  endif()
+endif()
+
+if(FAISS_ENABLE_RAFT)
+include(cmake/thirdparty/fetch_rapids.cmake)
+include(rapids-cmake)
+include(rapids-cpm)
+include(rapids-cuda)
+include(rapids-export)
+include(rapids-find)
+
+rapids_cuda_init_architectures(faiss)
+rapids_cuda_init_architectures(pyfaiss)
+rapids_cuda_init_architectures(faiss_c_library)
+endif()
 
 project(faiss
-  VERSION 1.7.3
+  VERSION 1.7.4
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
-  LANGUAGES CXX)
+  LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,19 +59,22 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Valid values are "generic", "avx2".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
+option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 
 if(FAISS_ENABLE_GPU)
-    # if ROCm install detected, assume ROCm/HIP is GPU device
-  if (EXISTS /opt/rocm)
-    set(USE_ROCM TRUE)
+  if(USE_ROCM)
     enable_language(HIP)
     add_definitions(-DUSE_ROCM)
   else ()
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
     enable_language(CUDA)
   endif()
+endif()
+
+if(FAISS_ENABLE_RAFT)
+  find_package(raft COMPONENTS compiled distributed)
 endif()
 
 add_subdirectory(faiss)

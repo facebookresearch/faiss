@@ -54,7 +54,9 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
     // built from an IndexIVFPQ
     explicit IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs = 32);
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
+
+    idx_t train_encoder_num_vectors() const override;
 
     /// build precomputed table, possibly updating use_precomputed_table
     void precompute_table();

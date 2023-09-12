@@ -171,23 +171,23 @@ int test_search_and_return_centroids(const char* index_key) {
  * Test entry points
  *************************************************************/
 
-TEST(test_search_centroid, IVFFlat) {
+TEST(testSearchCentroid, IVFFlat) {
     bool ok = test_search_centroid("IVF32,Flat");
     EXPECT_TRUE(ok);
 }
 
-TEST(test_search_centroid, PCAIVFFlat) {
+TEST(testSearchCentroid, PCAIVFFlat) {
     bool ok = test_search_centroid("PCA16,IVF32,Flat");
     EXPECT_TRUE(ok);
 }
 
-TEST(test_search_and_return_centroids, IVFFlat) {
+TEST(testSearchAndReturnCentroids, IVFFlat) {
     int err = test_search_and_return_centroids("IVF32,Flat");
     EXPECT_NE(err, 1);
     EXPECT_NE(err, 2);
 }
 
-TEST(test_search_and_return_centroids, PCAIVFFlat) {
+TEST(testSearchAndReturnCentroids, PCAIVFFlat) {
     int err = test_search_and_return_centroids("PCA16,IVF32,Flat");
     EXPECT_NE(err, 1);
     EXPECT_NE(err, 2);

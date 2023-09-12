@@ -21,6 +21,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -28,28 +29,14 @@ namespace faiss {
 IndexBinaryIVF::IndexBinaryIVF(IndexBinary* quantizer, size_t d, size_t nlist)
         : IndexBinary(d),
           invlists(new ArrayInvertedLists(nlist, code_size)),
-          own_invlists(true),
-          nprobe(1),
-          max_codes(0),
           quantizer(quantizer),
-          nlist(nlist),
-          own_fields(false),
-          clustering_index(nullptr) {
+          nlist(nlist) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
-
     cp.niter = 10;
 }
 
-IndexBinaryIVF::IndexBinaryIVF()
-        : invlists(nullptr),
-          own_invlists(false),
-          nprobe(1),
-          max_codes(0),
-          quantizer(nullptr),
-          nlist(0),
-          own_fields(false),
-          clustering_index(nullptr) {}
+IndexBinaryIVF::IndexBinaryIVF() {}
 
 void IndexBinaryIVF::add(idx_t n, const uint8_t* x) {
     add_with_ids(n, x, nullptr);
@@ -174,11 +161,11 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
 
 void IndexBinaryIVF::search_and_reconstruct(
         idx_t n,
-        const uint8_t* x,
+        const uint8_t* __restrict x,
         idx_t k,
-        int32_t* distances,
-        idx_t* labels,
-        uint8_t* recons,
+        int32_t* __restrict distances,
+        idx_t* __restrict labels,
+        uint8_t* __restrict recons,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             !params, "search params not supported for this index");
@@ -344,10 +331,10 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
 
     size_t scan_codes(
             size_t n,
-            const uint8_t* codes,
-            const idx_t* ids,
-            int32_t* simi,
-            idx_t* idxi,
+            const uint8_t* __restrict codes,
+            const idx_t* __restrict ids,
+            int32_t* __restrict simi,
+            idx_t* __restrict idxi,
             size_t k) const override {
         using C = CMax<int32_t, idx_t>;
 
@@ -366,8 +353,8 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
 
     void scan_codes_range(
             size_t n,
-            const uint8_t* codes,
-            const idx_t* ids,
+            const uint8_t* __restrict codes,
+            const idx_t* __restrict ids,
             int radius,
             RangeQueryResult& result) const override {
         size_t nup = 0;
@@ -383,20 +370,20 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
 };
 
 void search_knn_hamming_heap(
-        const IndexBinaryIVF& ivf,
+        const IndexBinaryIVF* ivf,
         size_t n,
-        const uint8_t* x,
+        const uint8_t* __restrict x,
         idx_t k,
-        const idx_t* keys,
-        const int32_t* coarse_dis,
-        int32_t* distances,
-        idx_t* labels,
+        const idx_t* __restrict keys,
+        const int32_t* __restrict coarse_dis,
+        int32_t* __restrict distances,
+        idx_t* __restrict labels,
         bool store_pairs,
         const IVFSearchParameters* params) {
-    idx_t nprobe = params ? params->nprobe : ivf.nprobe;
-    nprobe = std::min((idx_t)ivf.nlist, nprobe);
-    idx_t max_codes = params ? params->max_codes : ivf.max_codes;
-    MetricType metric_type = ivf.metric_type;
+    idx_t nprobe = params ? params->nprobe : ivf->nprobe;
+    nprobe = std::min((idx_t)ivf->nlist, nprobe);
+    idx_t max_codes = params ? params->max_codes : ivf->max_codes;
+    MetricType metric_type = ivf->metric_type;
 
     // almost verbatim copy from IndexIVF::search_preassigned
 
@@ -407,11 +394,11 @@ void search_knn_hamming_heap(
 #pragma omp parallel if (n > 1) reduction(+ : nlistv, ndis, nheap)
     {
         std::unique_ptr<BinaryInvertedListScanner> scanner(
-                ivf.get_InvertedListScanner(store_pairs));
+                ivf->get_InvertedListScanner(store_pairs));
 
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
-            const uint8_t* xi = x + i * ivf.code_size;
+            const uint8_t* xi = x + i * ivf->code_size;
             scanner->set_query(xi);
 
             const idx_t* keysi = keys + i * nprobe;
@@ -433,23 +420,24 @@ void search_knn_hamming_heap(
                     continue;
                 }
                 FAISS_THROW_IF_NOT_FMT(
-                        key < (idx_t)ivf.nlist,
+                        key < (idx_t)ivf->nlist,
                         "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
                         key,
                         ik,
-                        ivf.nlist);
+                        ivf->nlist);
 
                 scanner->set_list(key, coarse_dis[i * nprobe + ik]);
 
                 nlistv++;
 
-                size_t list_size = ivf.invlists->list_size(key);
-                InvertedLists::ScopedCodes scodes(ivf.invlists, key);
+                size_t list_size = ivf->invlists->list_size(key);
+                InvertedLists::ScopedCodes scodes(ivf->invlists, key);
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
                 const idx_t* ids = nullptr;
 
                 if (!store_pairs) {
-                    sids.reset(new InvertedLists::ScopedIds(ivf.invlists, key));
+                    sids.reset(
+                            new InvertedLists::ScopedIds(ivf->invlists, key));
                     ids = sids->get();
                 }
 
@@ -479,29 +467,29 @@ void search_knn_hamming_heap(
 
 template <class HammingComputer, bool store_pairs>
 void search_knn_hamming_count(
-        const IndexBinaryIVF& ivf,
+        const IndexBinaryIVF* ivf,
         size_t nx,
-        const uint8_t* x,
-        const idx_t* keys,
+        const uint8_t* __restrict x,
+        const idx_t* __restrict keys,
         int k,
-        int32_t* distances,
-        idx_t* labels,
+        int32_t* __restrict distances,
+        idx_t* __restrict labels,
         const IVFSearchParameters* params) {
-    const int nBuckets = ivf.d + 1;
+    const int nBuckets = ivf->d + 1;
     std::vector<int> all_counters(nx * nBuckets, 0);
     std::unique_ptr<idx_t[]> all_ids_per_dis(new idx_t[nx * nBuckets * k]);
 
-    idx_t nprobe = params ? params->nprobe : ivf.nprobe;
-    nprobe = std::min((idx_t)ivf.nlist, nprobe);
-    idx_t max_codes = params ? params->max_codes : ivf.max_codes;
+    idx_t nprobe = params ? params->nprobe : ivf->nprobe;
+    nprobe = std::min((idx_t)ivf->nlist, nprobe);
+    idx_t max_codes = params ? params->max_codes : ivf->max_codes;
 
     std::vector<HCounterState<HammingComputer>> cs;
     for (size_t i = 0; i < nx; ++i) {
         cs.push_back(HCounterState<HammingComputer>(
                 all_counters.data() + i * nBuckets,
                 all_ids_per_dis.get() + i * nBuckets * k,
-                x + i * ivf.code_size,
-                ivf.d,
+                x + i * ivf->code_size,
+                ivf->d,
                 k));
     }
 
@@ -521,27 +509,28 @@ void search_knn_hamming_count(
                 continue;
             }
             FAISS_THROW_IF_NOT_FMT(
-                    key < (idx_t)ivf.nlist,
+                    key < (idx_t)ivf->nlist,
                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
                     key,
                     ik,
-                    ivf.nlist);
+                    ivf->nlist);
 
             nlistv++;
-            size_t list_size = ivf.invlists->list_size(key);
-            InvertedLists::ScopedCodes scodes(ivf.invlists, key);
+            size_t list_size = ivf->invlists->list_size(key);
+            InvertedLists::ScopedCodes scodes(ivf->invlists, key);
             const uint8_t* list_vecs = scodes.get();
             const idx_t* ids =
-                    store_pairs ? nullptr : ivf.invlists->get_ids(key);
+                    store_pairs ? nullptr : ivf->invlists->get_ids(key);
 
             for (size_t j = 0; j < list_size; j++) {
-                const uint8_t* yj = list_vecs + ivf.code_size * j;
+                const uint8_t* yj = list_vecs + ivf->code_size * j;
 
                 idx_t id = store_pairs ? (key << 32 | j) : ids[j];
                 csi.update_counter(yj, id);
             }
-            if (ids)
-                ivf.invlists->release_ids(key, ids);
+            if (ids) {
+                ivf->invlists->release_ids(key, ids);
+            }
 
             nscan += list_size;
             if (max_codes && nscan >= max_codes)
@@ -569,98 +558,257 @@ void search_knn_hamming_count(
     indexIVF_stats.ndis += ndis;
 }
 
-template <bool store_pairs>
-void search_knn_hamming_count_1(
-        const IndexBinaryIVF& ivf,
-        size_t nx,
-        const uint8_t* x,
-        const idx_t* keys,
-        int k,
-        int32_t* distances,
-        idx_t* labels,
+/* Manages NQ queries at a time, stores results */
+template <class HammingComputer, int NQ, int K>
+struct BlockSearch {
+    HammingComputer hcs[NQ];
+    // heaps to update for each query
+    int32_t* distances[NQ];
+    idx_t* labels[NQ];
+    // curent top of heap
+    int32_t heap_tops[NQ];
+
+    BlockSearch(
+            size_t code_size,
+            const uint8_t* __restrict x,
+            const int32_t* __restrict keys,
+            int32_t* __restrict all_distances,
+            idx_t* __restrict all_labels) {
+        for (idx_t q = 0; q < NQ; q++) {
+            idx_t qno = keys[q];
+            hcs[q] = HammingComputer(x + qno * code_size, code_size);
+            distances[q] = all_distances + qno * K;
+            labels[q] = all_labels + qno * K;
+            heap_tops[q] = distances[q][0];
+        }
+    }
+
+    void add_bcode(const uint8_t* bcode, idx_t id) {
+        using C = CMax<int32_t, idx_t>;
+        for (int q = 0; q < NQ; q++) {
+            int dis = hcs[q].hamming(bcode);
+            if (dis < heap_tops[q]) {
+                heap_replace_top<C>(K, distances[q], labels[q], dis, id);
+                heap_tops[q] = distances[q][0];
+            }
+        }
+    }
+};
+
+template <class HammingComputer, int NQ>
+struct BlockSearchVariableK {
+    int k;
+    HammingComputer hcs[NQ];
+    // heaps to update for each query
+    int32_t* distances[NQ];
+    idx_t* labels[NQ];
+    // curent top of heap
+    int32_t heap_tops[NQ];
+
+    BlockSearchVariableK(
+            size_t code_size,
+            int k,
+            const uint8_t* __restrict x,
+            const int32_t* __restrict keys,
+            int32_t* __restrict all_distances,
+            idx_t* __restrict all_labels)
+            : k(k) {
+        for (idx_t q = 0; q < NQ; q++) {
+            idx_t qno = keys[q];
+            hcs[q] = HammingComputer(x + qno * code_size, code_size);
+            distances[q] = all_distances + qno * k;
+            labels[q] = all_labels + qno * k;
+            heap_tops[q] = distances[q][0];
+        }
+    }
+
+    void add_bcode(const uint8_t* bcode, idx_t id) {
+        using C = CMax<int32_t, idx_t>;
+        for (int q = 0; q < NQ; q++) {
+            int dis = hcs[q].hamming(bcode);
+            if (dis < heap_tops[q]) {
+                heap_replace_top<C>(k, distances[q], labels[q], dis, id);
+                heap_tops[q] = distances[q][0];
+            }
+        }
+    }
+};
+
+template <class HammingComputer>
+void search_knn_hamming_per_invlist(
+        const IndexBinaryIVF* ivf,
+        size_t n,
+        const uint8_t* __restrict x,
+        idx_t k,
+        const idx_t* __restrict keys_in,
+        const int32_t* __restrict coarse_dis,
+        int32_t* __restrict distances,
+        idx_t* __restrict labels,
+        bool store_pairs,
         const IVFSearchParameters* params) {
-    switch (ivf.code_size) {
-#define HANDLE_CS(cs)                                               \
-    case cs:                                                        \
-        search_knn_hamming_count<HammingComputer##cs, store_pairs>( \
-                ivf, nx, x, keys, k, distances, labels, params);    \
-        break;
-        HANDLE_CS(4);
-        HANDLE_CS(8);
-        HANDLE_CS(16);
-        HANDLE_CS(20);
-        HANDLE_CS(32);
-        HANDLE_CS(64);
-#undef HANDLE_CS
-        default:
-            search_knn_hamming_count<HammingComputerDefault, store_pairs>(
-                    ivf, nx, x, keys, k, distances, labels, params);
-            break;
+    idx_t nprobe = params ? params->nprobe : ivf->nprobe;
+    nprobe = std::min((idx_t)ivf->nlist, nprobe);
+    idx_t max_codes = params ? params->max_codes : ivf->max_codes;
+    FAISS_THROW_IF_NOT(max_codes == 0);
+    FAISS_THROW_IF_NOT(!store_pairs);
+    MetricType metric_type = ivf->metric_type;
+
+    // reorder buckets
+    std::vector<int64_t> lims(n + 1);
+    int32_t* keys = new int32_t[n * nprobe];
+    std::unique_ptr<int32_t[]> delete_keys(keys);
+    for (idx_t i = 0; i < n * nprobe; i++) {
+        keys[i] = keys_in[i];
+    }
+    matrix_bucket_sort_inplace(n, nprobe, keys, ivf->nlist, lims.data(), 0);
+
+    using C = CMax<int32_t, idx_t>;
+    heap_heapify<C>(n * k, distances, labels);
+    const size_t code_size = ivf->code_size;
+
+    for (idx_t l = 0; l < ivf->nlist; l++) {
+        idx_t l0 = lims[l], nq = lims[l + 1] - l0;
+
+        InvertedLists::ScopedCodes scodes(ivf->invlists, l);
+        InvertedLists::ScopedIds sidx(ivf->invlists, l);
+        idx_t nb = ivf->invlists->list_size(l);
+        const uint8_t* bcodes = scodes.get();
+        const idx_t* ids = sidx.get();
+
+        idx_t i = 0;
+
+        // process as much as possible by blocks
+        constexpr int BS = 4;
+
+        if (k == 1) {
+            for (; i + BS <= nq; i += BS) {
+                BlockSearch<HammingComputer, BS, 1> bc(
+                        code_size, x, keys + l0 + i, distances, labels);
+                for (idx_t j = 0; j < nb; j++) {
+                    bc.add_bcode(bcodes + j * code_size, ids[j]);
+                }
+            }
+        } else if (k == 2) {
+            for (; i + BS <= nq; i += BS) {
+                BlockSearch<HammingComputer, BS, 2> bc(
+                        code_size, x, keys + l0 + i, distances, labels);
+                for (idx_t j = 0; j < nb; j++) {
+                    bc.add_bcode(bcodes + j * code_size, ids[j]);
+                }
+            }
+        } else if (k == 4) {
+            for (; i + BS <= nq; i += BS) {
+                BlockSearch<HammingComputer, BS, 4> bc(
+                        code_size, x, keys + l0 + i, distances, labels);
+                for (idx_t j = 0; j < nb; j++) {
+                    bc.add_bcode(bcodes + j * code_size, ids[j]);
+                }
+            }
+        } else {
+            for (; i + BS <= nq; i += BS) {
+                BlockSearchVariableK<HammingComputer, BS> bc(
+                        code_size, k, x, keys + l0 + i, distances, labels);
+                for (idx_t j = 0; j < nb; j++) {
+                    bc.add_bcode(bcodes + j * code_size, ids[j]);
+                }
+            }
+        }
+
+        // leftovers
+        for (; i < nq; i++) {
+            idx_t qno = keys[l0 + i];
+            HammingComputer hc(x + qno * code_size, code_size);
+            idx_t* __restrict idxi = labels + qno * k;
+            int32_t* __restrict simi = distances + qno * k;
+            int32_t simi0 = simi[0];
+            for (idx_t j = 0; j < nb; j++) {
+                int dis = hc.hamming(bcodes + j * code_size);
+
+                if (dis < simi0) {
+                    idx_t id = store_pairs ? lo_build(l, j) : ids[j];
+                    heap_replace_top<C>(k, simi, idxi, dis, id);
+                    simi0 = simi[0];
+                }
+            }
+        }
+    }
+    for (idx_t i = 0; i < n; i++) {
+        heap_reorder<C>(k, distances + i * k, labels + i * k);
     }
 }
 
-} // namespace
+struct Run_search_knn_hamming_per_invlist {
+    using T = void;
+
+    template <class HammingComputer, class... Types>
+    void f(Types... args) {
+        search_knn_hamming_per_invlist<HammingComputer>(args...);
+    }
+};
+
+template <bool store_pairs>
+struct Run_search_knn_hamming_count {
+    using T = void;
+
+    template <class HammingComputer, class... Types>
+    void f(Types... args) {
+        search_knn_hamming_count<HammingComputer, store_pairs>(args...);
+    }
+};
+
+struct BuildScanner {
+    using T = BinaryInvertedListScanner*;
+
+    template <class HammingComputer>
+    T f(size_t code_size, bool store_pairs) {
+        return new IVFBinaryScannerL2<HammingComputer>(code_size, store_pairs);
+    }
+};
+
+} // anonymous namespace
 
 BinaryInvertedListScanner* IndexBinaryIVF::get_InvertedListScanner(
         bool store_pairs) const {
-#define HC(name) return new IVFBinaryScannerL2<name>(code_size, store_pairs)
-    switch (code_size) {
-        case 4:
-            HC(HammingComputer4);
-        case 8:
-            HC(HammingComputer8);
-        case 16:
-            HC(HammingComputer16);
-        case 20:
-            HC(HammingComputer20);
-        case 32:
-            HC(HammingComputer32);
-        case 64:
-            HC(HammingComputer64);
-        default:
-            HC(HammingComputerDefault);
-    }
-#undef HC
+    BuildScanner bs;
+    return dispatch_HammingComputer(code_size, bs, code_size, store_pairs);
 }
 
 void IndexBinaryIVF::search_preassigned(
         idx_t n,
         const uint8_t* x,
         idx_t k,
-        const idx_t* idx,
-        const int32_t* coarse_dis,
-        int32_t* distances,
-        idx_t* labels,
+        const idx_t* cidx,
+        const int32_t* cdis,
+        int32_t* dis,
+        idx_t* idx,
         bool store_pairs,
         const IVFSearchParameters* params) const {
-    if (use_heap) {
+    if (per_invlist_search) {
+        Run_search_knn_hamming_per_invlist r;
+        // clang-format off
+        dispatch_HammingComputer(
+                code_size, r, this, n, x, k,
+                cidx, cdis, dis, idx, store_pairs, params);
+        // clang-format on
+    } else if (use_heap) {
         search_knn_hamming_heap(
-                *this,
-                n,
-                x,
-                k,
-                idx,
-                coarse_dis,
-                distances,
-                labels,
-                store_pairs,
-                params);
-    } else {
-        if (store_pairs) {
-            search_knn_hamming_count_1<true>(
-                    *this, n, x, idx, k, distances, labels, params);
-        } else {
-            search_knn_hamming_count_1<false>(
-                    *this, n, x, idx, k, distances, labels, params);
-        }
+                this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
+    } else if (store_pairs) { // !use_heap && store_pairs
+        Run_search_knn_hamming_count<true> r;
+        dispatch_HammingComputer(
+                code_size, r, this, n, x, cidx, k, dis, idx, params);
+    } else { // !use_heap && !store_pairs
+        Run_search_knn_hamming_count<false> r;
+        dispatch_HammingComputer(
+                code_size, r, this, n, x, cidx, k, dis, idx, params);
     }
 }
 
 void IndexBinaryIVF::range_search(
         idx_t n,
-        const uint8_t* x,
+        const uint8_t* __restrict x,
         int radius,
-        RangeSearchResult* res,
+        RangeSearchResult* __restrict res,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             !params, "search params not supported for this index");
@@ -682,11 +830,11 @@ void IndexBinaryIVF::range_search(
 
 void IndexBinaryIVF::range_search_preassigned(
         idx_t n,
-        const uint8_t* x,
+        const uint8_t* __restrict x,
         int radius,
-        const idx_t* assign,
-        const int32_t* centroid_dis,
-        RangeSearchResult* res) const {
+        const idx_t* __restrict assign,
+        const int32_t* __restrict centroid_dis,
+        RangeSearchResult* __restrict res) const {
     const size_t nprobe = std::min(nlist, this->nprobe);
     bool store_pairs = false;
     size_t nlistv = 0, ndis = 0;

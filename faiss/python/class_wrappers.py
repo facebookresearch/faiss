@@ -495,7 +495,7 @@ def handle_Index(the_class):
             Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
         """
         if ni == -1:
-            ni = self.ntotal
+            ni = self.ntotal - n0
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -532,7 +532,7 @@ def handle_Index(the_class):
         Returns
         -------
         lims: array_like
-            Startring index of the results for each query vector, size n+1.
+            Starting index of the results for each query vector, size n+1.
         D : array_like
             Distances of the nearest neighbors, shape `lims[n]`. The distances for
             query i are in `D[lims[i]:lims[i+1]]`.
@@ -544,6 +544,7 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype='float32')
+        thresh = float(thresh)
 
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res, params)
@@ -618,6 +619,64 @@ def handle_Index(the_class):
         )
         return D, I
 
+    def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
+        """Search vectors that are within a distance of the query vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        thresh : float
+            Threshold to select neighbors. All elements within this radius are returned,
+            except for maximum inner product indexes, where the elements above the
+            threshold are returned
+        Iq : array_like, optional
+            Nearest centroids, size (n, nprobe)
+        Dq : array_like, optional
+            Distance array to the centroids, size (n, nprobe)
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
+
+
+        Returns
+        -------
+        lims: array_like
+            Starting index of the results for each query vector, size n+1.
+        D : array_like
+            Distances of the nearest neighbors, shape `lims[n]`. The distances for
+            query i are in `D[lims[i]:lims[i+1]]`.
+        I : array_like
+            Labels of nearest neighbors, shape `lims[n]`. The labels for query i
+            are in `I[lims[i]:lims[i+1]]`.
+
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+
+        Iq = np.ascontiguousarray(Iq, dtype='int64')
+        assert params is None, "params not supported"
+        assert Iq.shape == (n, self.nprobe)
+
+        if Dq is not None:
+            Dq = np.ascontiguousarray(Dq, dtype='float32')
+            assert Dq.shape == Iq.shape
+
+        thresh = float(thresh)
+        res = RangeSearchResult(n)
+        self.range_search_preassigned_c(
+            n, swig_ptr(x), thresh,
+            swig_ptr(Iq), swig_ptr(Dq),
+            res
+        )
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
     def replacement_sa_encode(self, x, codes=None):
         n, d = x.shape
         assert d == self.d
@@ -654,6 +713,12 @@ def handle_Index(the_class):
             ids = swig_ptr(ids)
         self.add_sa_codes_c(n, swig_ptr(codes), ids)
 
+    def replacement_permute_entries(self, perm):
+        n, = perm.shape
+        assert n == self.ntotal
+        perm = np.ascontiguousarray(perm, dtype='int64')
+        self.permute_entries_c(faiss.swig_ptr(perm))
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'assign', replacement_assign)
@@ -669,11 +734,17 @@ def handle_Index(the_class):
                    ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
+
+    # these ones are IVF-specific
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)
+    replace_method(the_class, 'range_search_preassigned',
+                   replacement_range_search_preassigned, ignore_missing=True)
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
     replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
+                   ignore_missing=True)
+    replace_method(the_class, 'permute_entries', replacement_permute_entries,
                    ignore_missing=True)
 
     # get/set state for pickle
@@ -696,32 +767,43 @@ def handle_IndexBinary(the_class):
     def replacement_add(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
         x = _check_dtype_uint8(x)
         ids = np.ascontiguousarray(ids, dtype='int64')
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.train_c(n, swig_ptr(x))
 
     def replacement_reconstruct(self, key):
-        x = np.empty(self.d // 8, dtype=np.uint8)
+        x = np.empty(self.code_size, dtype=np.uint8)
         self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
+        if ni == -1:
+            ni = self.ntotal - n0
+        if x is None:
+            x = np.empty((ni, self.code_size), dtype=np.uint8)
+        else:
+            assert x.shape == (ni, self.code_size)
+
+        self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
 
     def replacement_search(self, x, k):
         x = _check_dtype_uint8(x)
         n, d = x.shape
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
         labels = np.empty((n, k), dtype=np.int64)
@@ -733,7 +815,7 @@ def handle_IndexBinary(the_class):
     def replacement_search_preassigned(self, x, k, Iq, Dq):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
 
         D = np.empty((n, k), dtype=np.int32)
@@ -758,9 +840,36 @@ def handle_IndexBinary(the_class):
     def replacement_range_search(self, x, thresh):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res)
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
+    def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d == self.code_size
+
+        Iq = np.ascontiguousarray(Iq, dtype='int64')
+        assert params is None, "params not supported"
+        assert Iq.shape == (n, self.nprobe)
+
+        if Dq is not None:
+            Dq = np.ascontiguousarray(Dq, dtype='int32')
+            assert Dq.shape == Iq.shape
+
+        thresh = int(thresh)
+        res = RangeSearchResult(n)
+        self.range_search_preassigned_c(
+            n, swig_ptr(x), thresh,
+            swig_ptr(Iq), swig_ptr(Dq),
+            res
+        )
         # get pointers and copy them
         lims = rev_swig_ptr(res.lims, n + 1).copy()
         nd = int(lims[-1])
@@ -783,9 +892,12 @@ def handle_IndexBinary(the_class):
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)
+    replace_method(the_class, 'range_search_preassigned',
+                   replacement_range_search_preassigned, ignore_missing=True)
 
 
 def handle_VectorTransform(the_class):
@@ -929,7 +1041,7 @@ def handle_MapLong2Long(the_class):
 
     def replacement_map_add(self, keys, vals):
         n, = keys.shape
-        assert (n,) == keys.shape
+        assert (n,) == vals.shape
         self.add_c(n, swig_ptr(keys), swig_ptr(vals))
 
     def replacement_map_search_multiple(self, keys):
@@ -954,6 +1066,28 @@ def add_to_referenced_objects(self, ref):
     else:
         self.referenced_objects.append(ref)
 
+class RememberSwigOwnership:
+    """
+    SWIG's seattr transfers ownership of SWIG wrapped objects to the class
+    (btw this seems to contradict https://www.swig.org/Doc1.3/Python.html#Python_nn22
+    31.4.2)
+    This interferes with how we manage ownership: with the referenced_objects
+    table. Therefore, we reset the thisown field in this context manager.
+    """
+
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __enter__(self):
+        if hasattr(self.obj, "thisown"):
+            self.old_thisown = self.obj.thisown
+        else:
+            self.old_thisown = None
+
+    def __exit__(self, *ignored):
+        if self.old_thisown is not None:
+            self.obj.thisown = self.old_thisown
+
 
 def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
@@ -968,8 +1102,9 @@ def handle_SearchParameters(the_class):
         self.original_init()
         for k, v in args.items():
             assert hasattr(self, k)
-            setattr(self, k, v)
-            if inspect.isclass(v):
+            with RememberSwigOwnership(v):
+                setattr(self, k, v)
+            if type(v) not in (int, float, bool, str):
                 add_to_referenced_objects(self, v)
 
     the_class.__init__ = replacement_init
@@ -990,3 +1125,21 @@ def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):
         self.original_init(*args)
 
     the_class.__init__ = replacement_init
+
+
+def handle_CodeSet(the_class):
+
+    def replacement_insert(self, codes, inserted=None):
+        n, d = codes.shape
+        assert d == self.d
+        codes = np.ascontiguousarray(codes, dtype=np.uint8)
+
+        if inserted is None:
+            inserted = np.empty(n, dtype=bool)
+        else:
+            assert inserted.shape == (n, )
+
+        self.insert_c(n, swig_ptr(codes), swig_ptr(inserted))
+        return inserted
+
+    replace_method(the_class, 'insert', replacement_insert)

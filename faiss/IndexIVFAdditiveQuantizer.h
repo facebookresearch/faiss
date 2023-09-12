@@ -26,7 +26,6 @@ namespace faiss {
 struct IndexIVFAdditiveQuantizer : IndexIVF {
     // the quantizer
     AdditiveQuantizer* aq;
-    bool by_residual = true;
     int use_precomputed_table = 0; // for future use
 
     using Search_type_t = AdditiveQuantizer::Search_type_t;
@@ -40,7 +39,9 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
 
     explicit IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq);
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
+
+    idx_t train_encoder_num_vectors() const override;
 
     void encode_vectors(
             idx_t n,

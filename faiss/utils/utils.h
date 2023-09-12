@@ -17,7 +17,9 @@
 #define FAISS_utils_h
 
 #include <stdint.h>
+#include <set>
 #include <string>
+#include <vector>
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
@@ -121,7 +123,19 @@ int ivec_hist(size_t n, const int* v, int vmax, int* hist);
 void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist);
 
 /// compute a checksum on a table.
-size_t ivec_checksum(size_t n, const int32_t* a);
+uint64_t ivec_checksum(size_t n, const int32_t* a);
+
+/// compute a checksum on a table.
+uint64_t bvec_checksum(size_t n, const uint8_t* a);
+
+/** compute checksums for the rows of a matrix
+ *
+ * @param n   number of rows
+ * @param d   size per row
+ * @param a   matrix to handle, size n * d
+ * @param cs  output checksums, size n
+ */
+void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs);
 
 /** random subsamples a set of vectors if there are too many of them
  *
@@ -162,6 +176,48 @@ uint64_t hash_bytes(const uint8_t* bytes, int64_t n);
 
 /** Whether OpenMP annotations were respected. */
 bool check_openmp();
+
+/** This class is used to combine range and knn search results
+ * in contrib.exhaustive_search.range_search_gpu */
+
+template <typename T>
+struct CombinerRangeKNN {
+    int64_t nq;    /// nb of queries
+    size_t k;      /// number of neighbors for the knn search part
+    T r2;          /// range search radius
+    bool keep_max; /// whether to keep max values instead of min.
+
+    CombinerRangeKNN(int64_t nq, size_t k, T r2, bool keep_max)
+            : nq(nq), k(k), r2(r2), keep_max(keep_max) {}
+
+    /// Knn search results
+    const int64_t* I = nullptr; /// size nq * k
+    const T* D = nullptr;       /// size nq * k
+
+    /// optional: range search results (ignored if mask is NULL)
+    const bool* mask =
+            nullptr; /// mask for where knn results are valid, size nq
+    // range search results for remaining entries nrange = sum(mask)
+    const int64_t* lim_remain = nullptr; /// size nrange + 1
+    const T* D_remain = nullptr;         /// size lim_remain[nrange]
+    const int64_t* I_remain = nullptr;   /// size lim_remain[nrange]
+
+    const int64_t* L_res = nullptr; /// size nq + 1
+    // Phase 1: compute sizes into limits array (of size nq + 1)
+    void compute_sizes(int64_t* L_res);
+
+    /// Phase 2: caller allocates D_res and I_res (size L_res[nq])
+    /// Phase 3: fill in D_res and I_res
+    void write_result(T* D_res, int64_t* I_res);
+};
+
+struct CodeSet {
+    size_t d;
+    std::set<std::vector<uint8_t>> s;
+
+    explicit CodeSet(size_t d) : d(d) {}
+    void insert(size_t n, const uint8_t* codes, bool* inserted);
+};
 
 } // namespace faiss
 

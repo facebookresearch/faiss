@@ -57,7 +57,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 } // namespace
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (storage->metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();
@@ -138,9 +138,6 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
 NSG::NSG(int R) : R(R), rng(0x0903) {
     L = R + 32;
     C = R + 100;
-    search_L = 16;
-    ntotal = 0;
-    is_built = false;
     srand(0x1998);
 }
 

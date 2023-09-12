@@ -30,6 +30,29 @@ struct DistanceComputer {
     /// compute distance of vector i to current query
     virtual float operator()(idx_t i) = 0;
 
+    /// compute distances of current query to 4 stored vectors.
+    /// certain DistanceComputer implementations may benefit
+    /// heavily from this.
+    virtual void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) {
+        // compute first, assign next
+        const float d0 = this->operator()(idx0);
+        const float d1 = this->operator()(idx1);
+        const float d2 = this->operator()(idx2);
+        const float d3 = this->operator()(idx3);
+        dis0 = d0;
+        dis1 = d1;
+        dis2 = d2;
+        dis3 = d3;
+    }
+
     /// compute distance between two stored vectors
     virtual float symmetric_dis(idx_t i, idx_t j) = 0;
 
@@ -49,7 +72,7 @@ struct FlatCodesDistanceComputer : DistanceComputer {
 
     FlatCodesDistanceComputer() : codes(nullptr), code_size(0) {}
 
-    float operator()(idx_t i) final {
+    float operator()(idx_t i) override {
         return distance_to_code(codes + i * code_size);
     }
 

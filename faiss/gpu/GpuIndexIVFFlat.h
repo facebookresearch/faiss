@@ -21,11 +21,9 @@ class IVFFlat;
 class GpuIndexFlat;
 
 struct GpuIndexIVFFlatConfig : public GpuIndexIVFConfig {
-    inline GpuIndexIVFFlatConfig() : interleavedLayout(true) {}
-
     /// Use the alternative memory layout for the IVF lists
     /// (currently the default)
-    bool interleavedLayout;
+    bool interleavedLayout = true;
 };
 
 /// Wrapper around the GPU implementation that looks like
@@ -44,7 +42,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     GpuIndexIVFFlat(
             GpuResourcesProvider* provider,
             int dims,
-            int nlist,
+            idx_t nlist,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
@@ -54,7 +52,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
             GpuResourcesProvider* provider,
             Index* coarseQuantizer,
             int dims,
-            int nlist,
+            idx_t nlist,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 

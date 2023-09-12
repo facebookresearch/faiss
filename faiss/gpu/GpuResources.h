@@ -4,15 +4,35 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <faiss/impl/FaissAssert.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
+
+#if defined USE_NVIDIA_RAFT
+#include <raft/core/device_resources.hpp>
+#endif
 
 namespace faiss {
 namespace gpu {
@@ -82,11 +102,7 @@ std::string memorySpaceToString(MemorySpace s);
 
 /// Information on what/where an allocation is
 struct AllocInfo {
-    inline AllocInfo()
-            : type(AllocType::Other),
-              device(0),
-              space(MemorySpace::Device),
-              stream(nullptr) {}
+    inline AllocInfo() {}
 
     inline AllocInfo(AllocType at, int dev, MemorySpace sp, cudaStream_t st)
             : type(at), device(dev), space(sp), stream(st) {}
@@ -95,13 +111,13 @@ struct AllocInfo {
     std::string toString() const;
 
     /// The internal category of the allocation
-    AllocType type;
+    AllocType type = AllocType::Other;
 
     /// The device on which the allocation is happening
-    int device;
+    int device = 0;
 
     /// The memory space of the allocation
-    MemorySpace space;
+    MemorySpace space = MemorySpace::Device;
 
     /// The stream on which new work on the memory will be ordered (e.g., if a
     /// piece of memory cached and to be returned for this call was last used on
@@ -111,7 +127,7 @@ struct AllocInfo {
     ///
     /// The memory manager guarantees that the returned memory is free to use
     /// without data races on this stream specified.
-    cudaStream_t stream;
+    cudaStream_t stream = nullptr;
 };
 
 /// Create an AllocInfo for the current device with MemorySpace::Device
@@ -125,7 +141,7 @@ AllocInfo makeSpaceAlloc(AllocType at, MemorySpace sp, cudaStream_t st);
 
 /// Information on what/where an allocation is, along with how big it should be
 struct AllocRequest : public AllocInfo {
-    inline AllocRequest() : AllocInfo(), size(0) {}
+    inline AllocRequest() {}
 
     inline AllocRequest(const AllocInfo& info, size_t sz)
             : AllocInfo(info), size(sz) {}
@@ -142,7 +158,7 @@ struct AllocRequest : public AllocInfo {
     std::string toString() const;
 
     /// The size in bytes of the allocation
-    size_t size;
+    size_t size = 0;
 };
 
 /// A RAII object that manages a temporary memory request
@@ -189,6 +205,13 @@ class GpuResources {
     /// Returns the stream that we order all computation on for the
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
+
+#if defined USE_NVIDIA_RAFT
+    /// Returns the raft handle for the given device which can be used to
+    /// make calls to other raft primitives.
+    virtual raft::device_resources& getRaftHandle(int device) = 0;
+    raft::device_resources& getRaftHandleCurrentDevice();
+#endif
 
     /// Overrides the default stream for a device to the user-supplied stream.
     /// The resources object does not own this stream (i.e., it will not destroy

@@ -107,16 +107,14 @@ def randn(n, seed=12345):
 def checksum(a):
     """ compute a checksum for quick-and-dirty comparisons of arrays """
     a = a.view('uint8')
-    n = a.size
-    n4 = n & ~3
-    cs = ivec_checksum(int(n4 / 4), swig_ptr(a[:n4].view('int32')))
-    for i in range(n4, n):
-        cs += x[i] * 33657
+    if a.ndim == 1:
+        return bvec_checksum(a.size, swig_ptr(a))
+    n, d = a.shape
+    cs = np.zeros(n, dtype='uint64')
+    bvecs_checksum(n, d, swig_ptr(a), swig_ptr(cs))
     return cs
 
-
 rand_smooth_vectors_c = rand_smooth_vectors
-
 
 def rand_smooth_vectors(n, d, seed=1234):
     res = np.empty((n, d), dtype='float32')
@@ -198,7 +196,7 @@ def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
     lims : array_like
         cumulative sum of bucket sizes (size vmax + 1)
     """
-    assert tab.dtype == 'int32'
+    assert tab.dtype == 'int32' or tab.dtype == 'int64'
     nrow, ncol = tab.shape
     if nbucket is None:
         nbucket = int(tab.max() + 1)
@@ -298,6 +296,34 @@ def merge_knn_results(Dall, Iall, keep_max=False):
     return Dnew, Inew
 
 ######################################################
+# Efficient ID to ID map
+######################################################
+
+class MapInt64ToInt64:
+
+    def __init__(self, capacity):
+        self.log2_capacity = int(np.log2(capacity))
+        assert capacity == 2 ** self.log2_capacity, "need power of 2 capacity"
+        self.capacity = capacity
+        self.tab = np.empty((capacity, 2), dtype='int64')
+        faiss.hashtable_int64_to_int64_init(self.log2_capacity, swig_ptr(self.tab))
+
+    def add(self, keys, vals):
+        n, = keys.shape
+        assert vals.shape == (n,)
+        faiss.hashtable_int64_to_int64_add(
+            self.log2_capacity, swig_ptr(self.tab),
+            n, swig_ptr(keys), swig_ptr(vals))
+
+    def lookup(self, keys):
+        n, = keys.shape
+        vals = np.empty((n,), dtype='int64')
+        faiss.hashtable_int64_to_int64_lookup(
+            self.log2_capacity, swig_ptr(self.tab),
+            n, swig_ptr(keys), swig_ptr(vals))
+        return vals
+
+######################################################
 # KNN function
 ######################################################
 
@@ -309,10 +335,10 @@ def knn(xq, xb, k, metric=METRIC_L2):
     Parameters
     ----------
     xq : array_like
-        Query vectors, shape (nq, d) where d is appropriate for the index.
+        Query vectors, shape (nq, d) where the dimension d is that same as xb
         `dtype` must be float32.
     xb : array_like
-        Database vectors, shape (nb, d) where d is appropriate for the index.
+        Database vectors, shape (nb, d) where dimension d is the same as xq
         `dtype` must be float32.
     k : int
         Number of nearest neighbors.
@@ -347,6 +373,56 @@ def knn(xq, xb, k, metric=METRIC_L2):
         )
     else:
         raise NotImplementedError("only L2 and INNER_PRODUCT are supported")
+    return D, I
+
+def knn_hamming(xq, xb, k, variant="hc"):
+    """
+    Compute the k nearest neighbors of a set of vectors without constructing an index.
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    k : int
+        Number of nearest neighbors.
+    variant : string
+        Function variant to use, either "mc" (counter) or "hc" (heap)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
+    # other variant is "mc"
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+    D = np.empty((nq, k), dtype='int32')
+    I = np.empty((nq, k), dtype='int64')
+
+    if variant == "hc":
+        heap = faiss.int_maxheap_array_t()
+        heap.k = k
+        heap.nh = nq
+        heap.ids = faiss.swig_ptr(I)
+        heap.val = faiss.swig_ptr(D)
+        faiss.hammings_knn_hc(
+            heap, faiss.swig_ptr(xq), faiss.swig_ptr(xb), nb,
+            d, 1
+        )
+    elif variant == "mc":
+        faiss.hammings_knn_mc(
+            faiss.swig_ptr(xq), faiss.swig_ptr(xb), nq, nb, k, d,
+            faiss.swig_ptr(D), faiss.swig_ptr(I)
+        )
+    else:
+        raise NotImplementedError
     return D, I
 
 
@@ -394,7 +470,7 @@ class Kmeans:
          including niter=25, verbose=False, spherical = False
         """
         self.d = d
-        self.k = k
+        self.reset(k)
         self.gpu = False
         if "progressive_dim_steps" in kwargs:
             self.cp = ProgressiveDimClusteringParameters()
@@ -409,7 +485,32 @@ class Kmeans:
                 # if this raises an exception, it means that it is a non-existent field
                 getattr(self.cp, k)
                 setattr(self.cp, k, v)
+        self.set_index()
+
+    def set_index(self):
+        d = self.d
+        if self.cp.__class__ == ClusteringParameters:
+            if self.cp.spherical:
+                self.index = IndexFlatIP(d)
+            else:
+                self.index = IndexFlatL2(d)
+            if self.gpu:
+                self.index = faiss.index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+        else:
+            if self.gpu:
+                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
+            else:
+                fac = ProgressiveDimIndexFactory()
+            self.fac = fac
+
+    def reset(self, k=None):
+        """ prepare k-means object to perform a new clustering, possibly
+        with another number of centroids """
+        if k is not None:
+            self.k = int(k)
         self.centroids = None
+        self.obj = None
+        self.iteration_stats = None
 
     def train(self, x, weights=None, init_centroids=None):
         """ Perform k-means clustering.
@@ -448,12 +549,6 @@ class Kmeans:
                 nc, d2 = init_centroids.shape
                 assert d2 == d
                 faiss.copy_array_to_vector(init_centroids.ravel(), clus.centroids)
-            if self.cp.spherical:
-                self.index = IndexFlatIP(d)
-            else:
-                self.index = IndexFlatL2(d)
-            if self.gpu:
-                self.index = faiss.index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
             clus.train(x, self.index, weights)
         else:
             # not supported for progressive dim
@@ -461,11 +556,7 @@ class Kmeans:
             assert init_centroids is None
             assert not self.cp.spherical
             clus = ProgressiveDimClustering(d, self.k, self.cp)
-            if self.gpu:
-                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
-            else:
-                fac = ProgressiveDimIndexFactory()
-            clus.train(n, swig_ptr(x), fac)
+            clus.train(n, swig_ptr(x), self.fac)
 
         centroids = faiss.vector_float_to_array(clus.centroids)
 

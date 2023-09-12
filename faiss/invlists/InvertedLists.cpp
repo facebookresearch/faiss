@@ -10,20 +10,30 @@
 #include <faiss/invlists/InvertedLists.h>
 
 #include <cstdio>
+#include <memory>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
 
+InvertedListsIterator::~InvertedListsIterator() {}
+
 /*****************************************
  * InvertedLists implementation
  ******************************************/
 
 InvertedLists::InvertedLists(size_t nlist, size_t code_size)
-        : nlist(nlist), code_size(code_size) {}
+        : nlist(nlist), code_size(code_size), use_iterator(false) {}
 
 InvertedLists::~InvertedLists() {}
+
+bool InvertedLists::is_empty(size_t list_no) const {
+    return use_iterator
+            ? !std::unique_ptr<InvertedListsIterator>(get_iterator(list_no))
+                       ->is_available()
+            : list_size(list_no) == 0;
+}
 
 idx_t InvertedLists::get_single_id(size_t list_no, size_t offset) const {
     assert(offset < list_size(list_no));
@@ -64,6 +74,10 @@ void InvertedLists::reset() {
     for (size_t i = 0; i < nlist; i++) {
         resize(i, 0);
     }
+}
+
+InvertedListsIterator* InvertedLists::get_iterator(size_t /*list_no*/) const {
+    FAISS_THROW_MSG("get_iterator is not supported");
 }
 
 void InvertedLists::merge_from(InvertedLists* oivf, size_t add_id) {
@@ -200,7 +214,9 @@ void InvertedLists::print_stats() const {
     }
     for (size_t i = 0; i < sizes.size(); i++) {
         if (sizes[i]) {
-            printf("list size in < %d: %d instances\n", 1 << i, sizes[i]);
+            printf("list size in < %zu: %d instances\n",
+                   static_cast<size_t>(1) << i,
+                   sizes[i]);
         }
     }
 }
@@ -269,6 +285,20 @@ void ArrayInvertedLists::update_entries(
     assert(n_entry + offset <= ids[list_no].size());
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
     memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
+}
+
+void ArrayInvertedLists::permute_invlists(const idx_t* map) {
+    std::vector<std::vector<uint8_t>> new_codes(nlist);
+    std::vector<std::vector<idx_t>> new_ids(nlist);
+
+    for (size_t i = 0; i < nlist; i++) {
+        size_t o = map[i];
+        FAISS_THROW_IF_NOT(o < nlist);
+        std::swap(new_codes[i], codes[o]);
+        std::swap(new_ids[i], ids[o]);
+    }
+    std::swap(codes, new_codes);
+    std::swap(ids, new_ids);
 }
 
 ArrayInvertedLists::~ArrayInvertedLists() {}

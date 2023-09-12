@@ -103,4 +103,15 @@ CodePacker* IndexFlatCodes::get_CodePacker() const {
     return new CodePackerFlat(code_size);
 }
 
+void IndexFlatCodes::permute_entries(const idx_t* perm) {
+    std::vector<uint8_t> new_codes(codes.size());
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        memcpy(new_codes.data() + i * code_size,
+               codes.data() + perm[i] * code_size,
+               code_size);
+    }
+    std::swap(codes, new_codes);
+}
+
 } // namespace faiss

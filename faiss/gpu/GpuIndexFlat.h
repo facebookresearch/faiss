@@ -24,15 +24,13 @@ namespace gpu {
 class FlatIndex;
 
 struct GpuIndexFlatConfig : public GpuIndexConfig {
-    inline GpuIndexFlatConfig() : useFloat16(false) {}
-
     /// Whether or not data is stored as float16
-    bool useFloat16;
+    bool ALIGNED(8) useFloat16 = false;
 
     /// Deprecated: no longer used
     /// Previously used to indicate whether internal storage of vectors is
     /// transposed
-    bool storeTransposed;
+    bool storeTransposed = false;
 };
 
 /// Wrapper around the GPU implementation that looks like
@@ -115,16 +113,18 @@ class GpuIndexFlat : public GpuIndex {
     }
 
    protected:
+    void resetIndex_(int dims);
+
     /// Flat index does not require IDs as there is no storage available for
     /// them
     bool addImplRequiresIDs_() const override;
 
     /// Called from GpuIndex for add
-    void addImpl_(int n, const float* x, const idx_t* ids) override;
+    void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
-            int n,
+            idx_t n,
             const float* x,
             int k,
             float* distances,

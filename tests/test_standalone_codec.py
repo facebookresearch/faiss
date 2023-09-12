@@ -300,15 +300,15 @@ class TestBitstring(unittest.TestCase):
         for i in range(nbyte):
             self.assertTrue(((bignum >> (i * 8)) & 255) == bs[i])
 
-        for i in range(nbyte):
-            print(bin(bs[i] + 256)[3:], end=' ')
-        print()
+        #for i in range(nbyte):
+        #    print(bin(bs[i] + 256)[3:], end=' ')
+        # print()
 
         br = faiss.BitstringReader(swig_ptr(bs), nbyte)
 
         for nbit, xref in ctrl:
             xnew = br.read(nbit)
-            print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
+            # print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
 
 

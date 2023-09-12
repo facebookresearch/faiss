@@ -74,18 +74,15 @@ struct Codec8bit {
     }
 
 #ifdef __AVX2__
-    static __m256 decode_8_components(const uint8_t* code, int i) {
-        uint64_t c8 = *(uint64_t*)(code + i);
-        __m128i c4lo = _mm_cvtepu8_epi32(_mm_set1_epi32(c8));
-        __m128i c4hi = _mm_cvtepu8_epi32(_mm_set1_epi32(c8 >> 32));
-        // __m256i i8 = _mm256_set_m128i(c4lo, c4hi);
-        __m256i i8 = _mm256_castsi128_si256(c4lo);
-        i8 = _mm256_insertf128_si256(i8, c4hi, 1);
-        __m256 f8 = _mm256_cvtepi32_ps(i8);
-        __m256 half = _mm256_set1_ps(0.5f);
-        f8 = _mm256_add_ps(f8, half);
-        __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return _mm256_mul_ps(f8, one_255);
+    static inline __m256 decode_8_components(const uint8_t* code, int i) {
+        const uint64_t c8 = *(uint64_t*)(code + i);
+
+        const __m128i i8 = _mm_set1_epi64x(c8);
+        const __m256i i32 = _mm256_cvtepu8_epi32(i8);
+        const __m256 f8 = _mm256_cvtepi32_ps(i32);
+        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
+        const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
+        return _mm256_fmadd_ps(f8, one_255, half_one_255);
     }
 #endif
 };
@@ -486,7 +483,7 @@ void train_Uniform(
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        // TODO just do a qucikselect
+        // TODO just do a quickselect
         std::sort(x_copy.begin(), x_copy.end());
         int o = int(rs_arg * n);
         if (o < 0)
@@ -1047,12 +1044,11 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
+        : Quantizer(d), qtype(qtype) {
     set_derived_sizes();
 }
 
-ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
+ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1113,32 +1109,6 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_8bit_direct:
             // no training necessary
             break;
-    }
-}
-
-void ScalarQuantizer::train_residual(
-        size_t n,
-        const float* x,
-        Index* quantizer,
-        bool by_residual,
-        bool verbose) {
-    const float* x_in = x;
-
-    // 100k points more than enough
-    x = fvecs_maybe_subsample(d, (size_t*)&n, 100000, x, verbose, 1234);
-
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
-
-    if (by_residual) {
-        std::vector<idx_t> idx(n);
-        quantizer->assign(n, x, idx.data());
-
-        std::vector<float> residuals(n * d);
-        quantizer->compute_residual_n(n, x, residuals.data(), idx.data());
-
-        train(n, residuals.data());
-    } else {
-        train(n, x);
     }
 }
 

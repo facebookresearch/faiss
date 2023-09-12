@@ -43,6 +43,8 @@ IndexIVFFastScan::IndexIVFFastScan(
         size_t code_size,
         MetricType metric)
         : IndexIVF(quantizer, d, nlist, code_size, metric) {
+    // unlike other indexes, we prefer no residuals for performance reasons.
+    by_residual = false;
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
 }
 
@@ -50,6 +52,7 @@ IndexIVFFastScan::IndexIVFFastScan() {
     bbs = 0;
     M2 = 0;
     is_trained = false;
+    by_residual = false;
 }
 
 void IndexIVFFastScan::init_fastscan(

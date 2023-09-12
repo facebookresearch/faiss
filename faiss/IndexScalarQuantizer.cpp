@@ -122,21 +122,28 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
         size_t nlist,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric,
-        bool encode_residual)
-        : IndexIVF(quantizer, d, nlist, 0, metric),
-          sq(d, qtype),
-          by_residual(encode_residual) {
+        bool by_residual)
+        : IndexIVF(quantizer, d, nlist, 0, metric), sq(d, qtype) {
     code_size = sq.code_size;
+    this->by_residual = by_residual;
     // was not known at construction time
     invlists->code_size = code_size;
     is_trained = false;
 }
 
-IndexIVFScalarQuantizer::IndexIVFScalarQuantizer()
-        : IndexIVF(), by_residual(true) {}
+IndexIVFScalarQuantizer::IndexIVFScalarQuantizer() : IndexIVF() {
+    by_residual = true;
+}
 
-void IndexIVFScalarQuantizer::train_residual(idx_t n, const float* x) {
-    sq.train_residual(n, x, quantizer, by_residual, verbose);
+void IndexIVFScalarQuantizer::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
+    sq.train(n, x);
+}
+
+idx_t IndexIVFScalarQuantizer::train_encoder_num_vectors() const {
+    return 100000;
 }
 
 void IndexIVFScalarQuantizer::encode_vectors(

@@ -256,6 +256,14 @@ class TestMatrixStats(unittest.TestCase):
         print(comments)
         assert 'vectors are normalized' in comments
 
+    def test_hash(self):
+        cc = []
+        for _ in range(2):
+            rs = np.random.RandomState(123)
+            m = rs.rand(40, 20).astype('float32')
+            cc.append(faiss.MatrixStats(m).hash_value)
+        self.assertTrue(cc[0] == cc[1])
+
 
 class TestScalarQuantizer(unittest.TestCase):
 
@@ -542,6 +550,23 @@ class TestNNDescentKNNG(unittest.TestCase):
         print('Metric: {}, knng accuracy: {}'.format(metric_names[metric], recall))
         assert recall > 0.99
 
+    def test_small_nndescent(self):
+        """ building a too small graph used to crash, make sure it raises
+        an exception instead.
+        TODO: build the exact knn graph for small cases
+        """
+        d = 32
+        K = 10
+        index = faiss.IndexNNDescentFlat(d, K, faiss.METRIC_L2)
+        index.nndescent.S = 10
+        index.nndescent.R = 32
+        index.nndescent.L = K + 20
+        index.nndescent.iter = 5
+        index.verbose = True
+
+        xb = np.zeros((78, d), dtype='float32')
+        self.assertRaises(RuntimeError, index.add, xb)
+
 
 class TestResultHeap(unittest.TestCase):
 
@@ -615,9 +640,10 @@ class TestBucketSort(unittest.TestCase):
         self.do_test_bucket_sort(4)
 
     def do_test_bucket_sort_inplace(
-            self, nt, nrow=500, ncol=20, nbucket=300, repro=False):
+            self, nt, nrow=500, ncol=20, nbucket=300, repro=False,
+            dtype='int32'):
         rs = np.random.RandomState(123)
-        tab = rs.randint(nbucket, size=(nrow, ncol), dtype='int32')
+        tab = rs.randint(nbucket, size=(nrow, ncol), dtype=dtype)
 
         tab2 = tab.copy()
         faiss.cvar.bucket_sort_verbose
@@ -646,6 +672,11 @@ class TestBucketSort(unittest.TestCase):
     def test_bucket_sort_inplace_parallel_fewbucket(self):
         self.do_test_bucket_sort_inplace(4, nbucket=5)
 
+    def test_bucket_sort_inplace_int64(self):
+        self.do_test_bucket_sort_inplace(0, dtype='int64')
+
+    def test_bucket_sort_inplace_parallel_int64(self):
+        self.do_test_bucket_sort_inplace(4, dtype='int64')
 
 class TestMergeKNNResults(unittest.TestCase):
 
@@ -687,3 +718,35 @@ class TestMergeKNNResults(unittest.TestCase):
 
     def test_max_float(self):
         self.do_test(ismax=True, dtype='float32')
+
+
+class TestMapInt64ToInt64(unittest.TestCase):
+
+    def do_test(self, capacity, n):
+        """ test that we are able to lookup """
+        rs = np.random.RandomState(123)
+        # make sure we have unique values
+        keys = np.unique(rs.choice(2 ** 29, size=n).astype("int64"))
+        rs.shuffle(keys)
+        n = keys.size
+        vals = rs.choice(2 ** 30, size=n).astype('int64')
+        tab = faiss.MapInt64ToInt64(capacity)
+        tab.add(keys, vals)
+
+        # lookup and check
+        vals2 = tab.lookup(keys)
+        np.testing.assert_array_equal(vals, vals2)
+
+        # make a few keys that we know are not there
+        mask = rs.rand(n) < 0.3
+        keys[mask] = rs.choice(2 ** 29, size=n)[mask] + 2 ** 29
+        vals2 = tab.lookup(keys)
+        np.testing.assert_array_equal(-1, vals2[mask])
+        np.testing.assert_array_equal(vals[~mask], vals2[~mask])
+
+    def test_small(self):
+        self.do_test(16384, 10000)
+
+    def xx_test_large(self):
+        # don't run by default because it's slow
+        self.do_test(2 ** 21, 10 ** 6)

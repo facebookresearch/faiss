@@ -36,6 +36,34 @@ float fvec_L1(const float* x, const float* y, size_t d);
 /// infinity distance
 float fvec_Linf(const float* x, const float* y, size_t d);
 
+/// Special version of inner product that computes 4 distances
+/// between x and yi, which is performance oriented.
+void fvec_inner_product_batch_4(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3);
+
+/// Special version of L2sqr that computes 4 distances
+/// between x and yi, which is performance oriented.
+void fvec_L2sqr_batch_4(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3);
+
 /** Compute pairwise distances between sets of vectors
  *
  * @param d     dimension of the vectors
@@ -71,6 +99,17 @@ void fvec_L2sqr_ny(
         const float* x,
         const float* y,
         size_t d,
+        size_t ny);
+
+/* compute ny square L2 distance between x and a set of transposed contiguous
+   y vectors. squared lengths of y should be provided as well */
+void fvec_L2sqr_ny_transposed(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
         size_t ny);
 
 /* compute ny square L2 distance between x and a set of contiguous y vectors

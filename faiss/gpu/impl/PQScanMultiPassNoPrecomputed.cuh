@@ -34,8 +34,8 @@ void runPQScanMultiPassNoPrecomputed(
         DeviceVector<void*>& listCodes,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        DeviceVector<int>& listLengths,
-        int maxListLength,
+        DeviceVector<idx_t>& listLengths,
+        idx_t maxListLength,
         int k,
         faiss::MetricType metric,
         // output

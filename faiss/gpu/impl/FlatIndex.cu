@@ -4,6 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/Distance.cuh>
@@ -47,7 +62,7 @@ bool FlatIndex::getUseFloat16() const {
 }
 
 /// Returns the number of vectors we contain
-int FlatIndex::getSize() const {
+idx_t FlatIndex::getSize() const {
     if (useFloat16_) {
         return vectorsHalf_.getSize(0);
     } else {
@@ -99,7 +114,7 @@ void FlatIndex::query(
         faiss::MetricType metric,
         float metricArg,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
@@ -140,7 +155,7 @@ void FlatIndex::query(
         faiss::MetricType metric,
         float metricArg,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
     FAISS_ASSERT(useFloat16_);
 
@@ -213,7 +228,7 @@ void FlatIndex::reconstruct(
     }
 }
 
-void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
+void FlatIndex::add(const float* data, idx_t numVecs, cudaStream_t stream) {
     if (numVecs == 0) {
         return;
     }
@@ -250,11 +265,11 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 
     if (useFloat16_) {
         DeviceTensor<half, 2, true> vectors16(
-                (half*)rawData16_.data(), {(int)num_, dim_});
+                (half*)rawData16_.data(), {num_, dim_});
         vectorsHalf_ = std::move(vectors16);
     } else {
         DeviceTensor<float, 2, true> vectors32(
-                (float*)rawData32_.data(), {(int)num_, dim_});
+                (float*)rawData32_.data(), {num_, dim_});
         vectors_ = std::move(vectors32);
     }
 
@@ -263,14 +278,14 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
         DeviceTensor<float, 1, true> norms(
                 resources_,
                 makeSpaceAlloc(AllocType::FlatData, space_, stream),
-                {(int)num_});
+                {num_});
         runL2Norm(vectorsHalf_, true, norms, true, stream);
         norms_ = std::move(norms);
     } else {
         DeviceTensor<float, 1, true> norms(
                 resources_,
                 makeSpaceAlloc(AllocType::FlatData, space_, stream),
-                {(int)num_});
+                {num_});
         runL2Norm(vectors_, true, norms, true, stream);
         norms_ = std::move(norms);
     }

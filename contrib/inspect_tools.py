@@ -68,6 +68,20 @@ def get_LinearTransform_matrix(pca):
     return A, b
 
 
+def make_LinearTransform_matrix(A, b=None):
+    """ make a linear transform from a matrix and a bias term (optional)"""
+    d_out, d_in = A.shape
+    if b is not None:
+        assert b.shape == (d_out, )
+    lt = faiss.LinearTransform(d_in, d_out, b is not None)
+    faiss.copy_array_to_vector(A.ravel(), lt.A)
+    if b is not None:
+        faiss.copy_array_to_vector(b, lt.b)
+    lt.is_trained = True
+    lt.set_is_orthonormal()
+    return lt
+
+
 def get_additive_quantizer_codebooks(aq):
     """ return to codebooks of an additive quantizer """
     codebooks = faiss.vector_to_array(aq.codebooks).reshape(-1, aq.d)
@@ -82,3 +96,16 @@ def get_flat_data(index):
     """ copy and return the data matrix in an IndexFlat """
     xb = faiss.vector_to_array(index.codes).view("float32")
     return xb.reshape(index.ntotal, index.d)
+
+
+def get_NSG_neighbors(nsg):
+    """ get the neighbor list for the vectors stored in the NSG structure, as
+    a N-by-K matrix of indices """
+    graph = nsg.get_final_graph()
+    neighbors = np.zeros((graph.N, graph.K), dtype='int32')
+    faiss.memcpy(
+        faiss.swig_ptr(neighbors),
+        graph.data,
+        neighbors.nbytes
+    )
+    return neighbors

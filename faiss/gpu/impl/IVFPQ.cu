@@ -37,7 +37,7 @@ namespace gpu {
 IVFPQ::IVFPQ(
         GpuResources* resources,
         int dim,
-        int nlist,
+        idx_t nlist,
         faiss::MetricType metric,
         float metricArg,
         int numSubQuantizers,
@@ -131,11 +131,11 @@ void IVFPQ::appendVectors_(
         Tensor<float, 2, true>& ivfCentroidResiduals,
         Tensor<idx_t, 1, true>& indices,
         Tensor<idx_t, 1, true>& uniqueLists,
-        Tensor<int, 1, true>& vectorsByUniqueList,
-        Tensor<int, 1, true>& uniqueListVectorStart,
-        Tensor<int, 1, true>& uniqueListStartOffset,
+        Tensor<idx_t, 1, true>& vectorsByUniqueList,
+        Tensor<idx_t, 1, true>& uniqueListVectorStart,
+        Tensor<idx_t, 1, true>& uniqueListStartOffset,
         Tensor<idx_t, 1, true>& listIds,
-        Tensor<int, 1, true>& listOffset,
+        Tensor<idx_t, 1, true>& listOffset,
         cudaStream_t stream) {
     //
     // Determine the encodings of the vectors
@@ -182,7 +182,7 @@ void IVFPQ::appendVectors_(
                 resources_,
                 makeTempAlloc(AllocType::Other, stream),
                 {numSubQuantizers_, ivfCentroidResiduals.getSize(0), 1});
-        DeviceTensor<int, 3, true> closestSubQIndex(
+        DeviceTensor<idx_t, 3, true> closestSubQIndex(
                 resources_,
                 makeTempAlloc(AllocType::Other, stream),
                 {numSubQuantizers_, ivfCentroidResiduals.getSize(0), 1});
@@ -210,9 +210,9 @@ void IVFPQ::appendVectors_(
                     true);
         }
 
-        // The L2 distance function only returns int32 indices. As we are
+        // The L2 distance function only returns idx_t indices. As we are
         // restricted to <= 8 bits per code, convert to uint8
-        auto closestSubQIndex8 = convertTensorTemporary<int, uint8_t, 3>(
+        auto closestSubQIndex8 = convertTensorTemporary<idx_t, uint8_t, 3>(
                 resources_, stream, closestSubQIndex);
 
         // Now, we have the nearest sub-q centroid for each slice of the
@@ -256,19 +256,19 @@ void IVFPQ::appendVectors_(
     }
 }
 
-size_t IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
+size_t IVFPQ::getGpuVectorsEncodingSize_(idx_t numVecs) const {
     if (interleavedLayout_) {
         // bits per PQ code
-        int bits = bitsPerSubQuantizer_;
+        idx_t bits = bitsPerSubQuantizer_;
 
         // bytes to encode a block of 32 vectors (single PQ code)
-        int bytesPerDimBlock = bits * 32 / 8;
+        idx_t bytesPerDimBlock = bits * 32 / 8;
 
         // bytes to fully encode 32 vectors
-        int bytesPerBlock = bytesPerDimBlock * numSubQuantizers_;
+        idx_t bytesPerBlock = bytesPerDimBlock * numSubQuantizers_;
 
         // number of blocks of 32 vectors we have
-        int numBlocks = utils::divUp(numVecs, 32);
+        idx_t numBlocks = utils::divUp(numVecs, idx_t(32));
 
         // total size to encode numVecs
         return bytesPerBlock * numBlocks;
@@ -277,17 +277,17 @@ size_t IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
     }
 }
 
-size_t IVFPQ::getCpuVectorsEncodingSize_(int numVecs) const {
+size_t IVFPQ::getCpuVectorsEncodingSize_(idx_t numVecs) const {
     size_t sizePerVector =
             utils::divUp(numSubQuantizers_ * bitsPerSubQuantizer_, 8);
 
-    return (size_t)numVecs * sizePerVector;
+    return numVecs * sizePerVector;
 }
 
 // Convert the CPU layout to the GPU layout
 std::vector<uint8_t> IVFPQ::translateCodesToGpu_(
         std::vector<uint8_t> codes,
-        size_t numVecs) const {
+        idx_t numVecs) const {
     if (!interleavedLayout_) {
         return codes;
     }
@@ -301,7 +301,7 @@ std::vector<uint8_t> IVFPQ::translateCodesToGpu_(
 // Conver the GPU layout to the CPU layout
 std::vector<uint8_t> IVFPQ::translateCodesFromGpu_(
         std::vector<uint8_t> codes,
-        size_t numVecs) const {
+        idx_t numVecs) const {
     if (!interleavedLayout_) {
         return codes;
     }
@@ -498,7 +498,7 @@ void IVFPQ::search(
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
     auto stream = resources_->getDefaultStreamCurrentDevice();
-    nprobe = std::min(nprobe, (int)getNumLists());
+    nprobe = int(std::min(idx_t(nprobe), getNumLists()));
 
     FAISS_ASSERT(queries.getSize(1) == dim_);
     FAISS_ASSERT(outDistances.getSize(0) == queries.getSize(0));

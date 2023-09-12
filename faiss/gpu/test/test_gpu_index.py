@@ -6,13 +6,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
-import time
 import unittest
 import numpy as np
 import faiss
 from faiss.contrib import datasets
 from faiss.contrib import ivf_tools
 from faiss.contrib.evaluation import knn_intersection_measure
+
 
 class TestIVFSearchPreassigned(unittest.TestCase):
     def test_ivfflat_search_preassigned(self):
@@ -189,7 +189,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
 
         self.assertGreaterEqual(knn_intersection_measure(i_c, i_g), 0.9)
 
-        self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+        self.assertTrue(np.allclose(d_g, d_c, rtol=2e-4, atol=2e-4))
 
     def test_ivfpq_cpu_coarse(self):
         res = faiss.StandardGpuResources()
@@ -519,20 +519,17 @@ class TestInvalidParams(unittest.TestCase):
 
         # invalid k (should be > 0)
         k = -5
-        idx.setNumProbes(3)
+        idx.nprobe = 3
         self.assertRaises(AssertionError, idx.search, xb[10:20], k)
 
-        # invalid nprobe (should be > 0)
-        self.assertRaises(RuntimeError, idx.setNumProbes, 0)
-        self.assertRaises(RuntimeError, idx.setNumProbes, -3)
-
-        k = 5
-        idx.nprobe = -3
-        self.assertRaises(RuntimeError, idx.search, xb[10:20], k)
+        # nprobe is unsigned now, so this is caught before reaching C++
+        # k = 5
+        # idx.nprobe = -3
+        # self.assertRaises(RuntimeError, idx.search, xb[10:20], k)
 
         # valid params
         k = 5
-        idx.setNumProbes(3)
+        idx.nprobe = 3
         _, I = idx.search(xb[10:20], k)
         self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
 

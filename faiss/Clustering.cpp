@@ -27,20 +27,6 @@
 
 namespace faiss {
 
-ClusteringParameters::ClusteringParameters()
-        : niter(25),
-          nredo(1),
-          verbose(false),
-          spherical(false),
-          int_centroids(false),
-          update_index(false),
-          frozen_centroids(false),
-          min_points_per_centroid(39),
-          max_points_per_centroid(256),
-          seed(1234),
-          decode_block_size(32768) {}
-// 39 corresponds to 10000 / 256 -> to avoid warnings on PQ tests with randu10k
-
 Clustering::Clustering(int d, int k) : d(d), k(k) {}
 
 Clustering::Clustering(int d, int k, const ClusteringParameters& cp)
@@ -372,7 +358,7 @@ void Clustering::train_encoded(
     std::unique_ptr<float[]> dis(new float[nx]);
 
     // remember best iteration for redo
-    bool lower_is_better = index.metric_type != METRIC_INNER_PRODUCT;
+    bool lower_is_better = !is_similarity_metric(index.metric_type);
     float best_obj = lower_is_better ? HUGE_VALF : -HUGE_VALF;
     std::vector<ClusteringIterationStats> best_iteration_stats;
     std::vector<float> best_centroids;

@@ -82,6 +82,29 @@ int faiss_IDSelectorBatch_new(
         size_t n,
         const idx_t* indices);
 
+FAISS_DECLARE_CLASS(IDSelectorNot)
+int faiss_IDSelectorNot_new(
+        FaissIDSelectorNot** p_sel,
+        const FaissIDSelector* sel);
+
+FAISS_DECLARE_CLASS(IDSelectorAnd)
+int faiss_IDSelectorAnd_new(
+        FaissIDSelectorAnd** p_sel,
+        const FaissIDSelector* lhs_sel,
+        const FaissIDSelector* rhs_sel);
+
+FAISS_DECLARE_CLASS(IDSelectorOr)
+int faiss_IDSelectorOr_new(
+        FaissIDSelectorOr** p_sel,
+        const FaissIDSelector* lhs_sel,
+        const FaissIDSelector* rhs_sel);
+
+FAISS_DECLARE_CLASS(IDSelectorXOr)
+int faiss_IDSelectorXOr_new(
+        FaissIDSelectorXOr** p_sel,
+        const FaissIDSelector* lhs_sel,
+        const FaissIDSelector* rhs_sel);
+
 // Below are structures used only by Index implementations
 
 /** List of temporary buffers used to store results before they are

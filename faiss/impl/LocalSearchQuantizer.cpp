@@ -160,23 +160,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(
         Search_type_t search_type)
         : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
     K = (1 << nbits);
-
-    train_iters = 25;
-    train_ils_iters = 8;
-    icm_iters = 4;
-
-    encode_ils_iters = 16;
-
-    p = 0.5f;
-    lambd = 1e-2f;
-
-    chunk_size = 10000;
-    nperts = 4;
-
-    random_seed = 0x12345;
     std::srand(random_seed);
-
-    icm_encoder_factory = nullptr;
 }
 
 LocalSearchQuantizer::~LocalSearchQuantizer() {

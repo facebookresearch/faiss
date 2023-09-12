@@ -20,13 +20,10 @@ namespace gpu {
 int getMaxKSelection();
 
 // Validate the k parameter for search
-void validateKSelect(idx_t k);
+void validateKSelect(int k);
 
 // Validate the nprobe parameter for search
-void validateNProbe(idx_t nprobe);
-
-/// Validate the n (number of vectors) parameter for add, search, reconstruct
-void validateNumVectors(idx_t n);
+void validateNProbe(size_t nprobe);
 
 } // namespace gpu
 } // namespace faiss

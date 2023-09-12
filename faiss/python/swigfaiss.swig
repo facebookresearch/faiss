@@ -76,6 +76,7 @@ typedef uint64_t size_t;
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFIndependentQuantizer.h>
 
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
@@ -90,6 +91,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
@@ -122,6 +124,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
+
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -134,9 +137,11 @@ typedef uint64_t size_t;
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
+#include <faiss/impl/residual_quantizer_encode_steps.h>
+
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
-#include  <faiss/impl/CodePacker.h>
+#include <faiss/impl/CodePacker.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -147,6 +152,7 @@ typedef uint64_t size_t;
 #include <faiss/Clustering.h>
 
 #include <faiss/utils/hamming.h>
+#include <faiss/utils/hamming_distance/common.h>
 
 #include <faiss/AutoTune.h>
 #include <faiss/MatrixStats.h>
@@ -248,6 +254,7 @@ namespace std {
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 %template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
 
+
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
 #endif // !SWIGWIN
@@ -276,6 +283,7 @@ namespace std {
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>
+%include <faiss/utils/hamming_distance/common.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -420,6 +428,9 @@ void gpu_sync_all_devices()
 // order matters because includes are not recursive
 
 %include  <faiss/utils/utils.h>
+%template(CombinerRangeKNNfloat) faiss::CombinerRangeKNN<float>;
+%template(CombinerRangeKNNint16) faiss::CombinerRangeKNN<int16_t>;
+
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
@@ -445,6 +456,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/Quantizer.h>
 %include  <faiss/impl/ProductQuantizer.h>
 %include  <faiss/impl/AdditiveQuantizer.h>
+%include  <faiss/impl/residual_quantizer_encode_steps.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
@@ -484,7 +496,20 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexNNDescent.h>
 
 %include  <faiss/IndexIVFFlat.h>
+
+%warnfilter(509) faiss::nsg::Graph< int >::at(int,int);
+
 %include  <faiss/impl/NSG.h>
+
+%template(NSG_Graph_int) faiss::nsg::Graph<int>;
+
+// not using %shared_ptr to avoid mem leaks
+%extend faiss::NSG {
+    faiss::nsg::Graph<int>* get_final_graph() {
+        return $self->final_graph.get();
+    }
+}
+
 %include  <faiss/IndexNSG.h>
 
 #ifndef SWIGWIN
@@ -506,6 +531,8 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexPQFastScan.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+%include  <faiss/IndexIVFIndependentQuantizer.h>
+
 %include  <faiss/IndexIVFPQFastScan.h>
 %include  <faiss/utils/quantize_lut.h>
 
@@ -523,17 +550,13 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexShards.h>
 %template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
 %template(IndexBinaryShards) faiss::IndexShardsTemplate<faiss::IndexBinary>;
+%include  <faiss/IndexShardsIVF.h>
 
 %include  <faiss/IndexReplicas.h>
 %template(IndexReplicas) faiss::IndexReplicasTemplate<faiss::Index>;
 %template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
 
 %include  <faiss/MetaIndexes.h>
-%include  <faiss/IndexIDMap.h>
-%template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
-%template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
-%template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
-%template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
 %include  <faiss/IndexRowwiseMinMax.h>
 
@@ -548,7 +571,14 @@ void gpu_sync_all_devices()
 %include <faiss/impl/AuxIndexStructures.h>
 %include <faiss/impl/IDSelector.h>
 
-%include <faiss/utils/approx_topk/approx_topk.h>
+%include  <faiss/IndexIDMap.h>
+%template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
+%template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
+%template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
+%template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
+
+
+%include <faiss/utils/approx_topk/mode.h>
 
 #ifdef GPU_WRAPPER
 
@@ -624,6 +654,7 @@ void gpu_sync_all_devices()
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
+%newobject clone_binary_index;
 %newobject clone_Quantizer;
 %newobject clone_VectorTransform;
 
@@ -631,8 +662,10 @@ void gpu_sync_all_devices()
 %typemap(out) faiss::Index * {
     DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFPQFastScan )
@@ -649,6 +682,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
+    DOWNCAST ( IndexFlatIP )
+    DOWNCAST ( IndexFlatL2 )
     DOWNCAST ( IndexFlat )
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
@@ -699,6 +734,7 @@ void gpu_sync_all_devices()
         assert(false);
     }
 }
+
 
 %typemap(out) faiss::IndexBinary * {
     DOWNCAST2 ( IndexBinaryReplicas, IndexReplicasTemplateT_faiss__IndexBinary_t )
@@ -847,14 +883,138 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 #endif
 
 
+/*******************************************************************
+ * How should the template objects appear in the scripting language?
+ *******************************************************************/
 
-// Python-specific: do not release GIL any more, as functions below
-// use the Python/C API
+// answer: the same as the C++ typedefs, but we still have to redefine them
+
+%template() faiss::CMin<float, int64_t>;
+%template() faiss::CMin<int, int64_t>;
+%template() faiss::CMax<float, int64_t>;
+%template() faiss::CMax<int, int64_t>;
+
+%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
+%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
+%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
+%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
+
+%template(CMin_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
+%template(CMax_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
+
+%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
+%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
+%template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+
+// SWIG seems to have some trouble resolving function template types here, so
+// declare explicitly
+
+%define INSTANTIATE_uint16_partition_fuzzy(C, id_t)
+
+%inline %{
+
+uint16_t C ## _uint16_partition_fuzzy(
+        uint16_t *vals, id_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::C<unsigned short, id_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+%}
+
+%enddef
+
+INSTANTIATE_uint16_partition_fuzzy(CMin, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMin, int)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int)
+
+// Same for merge_knn_results
+
+// same define as explicit instanciation in Heap.cpp
+%define INSTANTIATE_merge_knn_results(C, distance_t)
+
+%inline %{
+void merge_knn_results_ ## C(
+    size_t n, size_t k, int nshard,
+    const distance_t *all_distances, const faiss::idx_t *all_labels,
+    distance_t *distances, faiss::idx_t *labels)
+{
+    faiss::merge_knn_results<faiss::idx_t, faiss::C<distance_t, int>>(
+        n, k, nshard, all_distances, all_labels, distances, labels);
+}
+%}
+
+%enddef
+
+INSTANTIATE_merge_knn_results(CMin, float);
+INSTANTIATE_merge_knn_results(CMax, float);
+INSTANTIATE_merge_knn_results(CMin, int32_t);
+INSTANTIATE_merge_knn_results(CMax, int32_t);
+
+
+
+%inline %{
+
+/*******************************************************************
+ * numpy misses a hash table implementation, hence this class. It
+ * represents not found values as -1 like in the Index implementation
+ *******************************************************************/
+
+
+struct MapLong2Long {
+    std::unordered_map<int64_t, int64_t> map;
+
+    void add(size_t n, const int64_t *keys, const int64_t *vals) {
+        map.reserve(map.size() + n);
+        for (size_t i = 0; i < n; i++) {
+            map[keys[i]] = vals[i];
+        }
+    }
+
+    int64_t search(int64_t key) const {
+        auto ptr = map.find(key);
+        if (ptr == map.end()) {
+            return -1;
+        } else {
+            return ptr->second;
+        }
+    }
+
+    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
+        for (size_t i = 0; i < n; i++) {
+            vals[i] = search(keys[i]);
+        }
+    }
+};
+
+%}
+
+
+/*******************************************************************
+ * Expose a few basic functions
+ *******************************************************************/
+
+
+void omp_set_num_threads (int num_threads);
+int omp_get_max_threads ();
+void *memcpy(void *dest, const void *src, size_t n);
+
+
+
+
+/*******************************************************************
+ * Python-specific: do not release GIL any more, as functions below
+ * use the Python/C API
+ *******************************************************************/
+
 #ifdef SWIGPYTHON
 %exception;
 #endif
-
-
 
 
 
@@ -911,6 +1071,9 @@ PyObject *swig_ptr (PyObject *a)
     }
     if(PyArray_TYPE(ao) == NPY_INT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_BOOL) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_bool, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
 #ifdef SWIGWORDSIZE64
@@ -989,90 +1152,6 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 
 /*******************************************************************
- * How should the template objects appear in the scripting language?
- *******************************************************************/
-
-// answer: the same as the C++ typedefs, but we still have to redefine them
-
-%template() faiss::CMin<float, int64_t>;
-%template() faiss::CMin<int, int64_t>;
-%template() faiss::CMax<float, int64_t>;
-%template() faiss::CMax<int, int64_t>;
-
-%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
-%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
-%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
-%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
-
-%template(CMin_float_partition_fuzzy)
-    faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
-%template(CMax_float_partition_fuzzy)
-    faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
-
-%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
-%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
-%template(AlignedTableFloat32) faiss::AlignedTable<float>;
-
-
-// SWIG seems to have some trouble resolving function template types here, so
-// declare explicitly
-
-%define INSTANTIATE_uint16_partition_fuzzy(C, id_t)
-
-%inline %{
-
-uint16_t C ## _uint16_partition_fuzzy(
-        uint16_t *vals, id_t *ids, size_t n,
-        size_t q_min, size_t q_max, size_t * q_out)
-{
-    return faiss::partition_fuzzy<faiss::C<unsigned short, id_t> >(
-        vals, ids, n, q_min, q_max, q_out);
-}
-
-%}
-
-%enddef
-
-INSTANTIATE_uint16_partition_fuzzy(CMin, int64_t)
-INSTANTIATE_uint16_partition_fuzzy(CMax, int64_t)
-INSTANTIATE_uint16_partition_fuzzy(CMin, int)
-INSTANTIATE_uint16_partition_fuzzy(CMax, int)
-
-// Same for merge_knn_results
-
-// same define as explicit instanciation in Heap.cpp
-%define INSTANTIATE_merge_knn_results(C, distance_t)
-
-%inline %{
-void merge_knn_results_ ## C(
-    size_t n, size_t k, int nshard,
-    const distance_t *all_distances, const faiss::idx_t *all_labels,
-    distance_t *distances, faiss::idx_t *labels)
-{
-    faiss::merge_knn_results<faiss::idx_t, faiss::C<distance_t, int>>(
-        n, k, nshard, all_distances, all_labels, distances, labels);
-}
-%}
-
-%enddef
-
-INSTANTIATE_merge_knn_results(CMin, float);
-INSTANTIATE_merge_knn_results(CMax, float);
-INSTANTIATE_merge_knn_results(CMin, int32_t);
-INSTANTIATE_merge_knn_results(CMax, int32_t);
-
-
-/*******************************************************************
- * Expose a few basic functions
- *******************************************************************/
-
-
-void omp_set_num_threads (int num_threads);
-int omp_get_max_threads ();
-void *memcpy(void *dest, const void *src, size_t n);
-
-
-/*******************************************************************
  * For Faiss/Pytorch interop via pointers encoded as longs
  *******************************************************************/
 
@@ -1100,42 +1179,6 @@ void * cast_integer_to_void_ptr (int64_t x) {
 %}
 
 
-/*******************************************************************
- * Range search interface
- *******************************************************************/
-
-
-%inline %{
-
-// numpy misses a hash table implementation, hence this class. It
-// represents not found values as -1 like in the Index implementation
-
-struct MapLong2Long {
-    std::unordered_map<int64_t, int64_t> map;
-
-    void add(size_t n, const int64_t *keys, const int64_t *vals) {
-        map.reserve(map.size() + n);
-        for (size_t i = 0; i < n; i++) {
-            map[keys[i]] = vals[i];
-        }
-    }
-
-    int64_t search(int64_t key) {
-        if (map.count(key) == 0) {
-            return -1;
-        } else {
-            return map[key];
-        }
-    }
-
-    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
-        for (size_t i = 0; i < n; i++) {
-            vals[i] = search(keys[i]);
-        }
-    }
-};
-
-%}
 
 
 

@@ -9,6 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/impl/IDSelector.h>
 
 #include <unordered_map>
 #include <vector>
@@ -21,8 +22,8 @@ struct IndexIDMapTemplate : IndexT {
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 
-    IndexT* index;   ///! the sub-index
-    bool own_fields; ///! whether pointers are deleted in destructo
+    IndexT* index = nullptr; ///! the sub-index
+    bool own_fields = false; ///! whether pointers are deleted in destructo
     std::vector<idx_t> id_map;
 
     explicit IndexIDMapTemplate(IndexT* index);
@@ -101,5 +102,26 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
 using IndexIDMap2 = IndexIDMap2Template<Index>;
 using IndexBinaryIDMap2 = IndexIDMap2Template<IndexBinary>;
+
+// IDSelector that translates the ids using an IDMap
+struct IDSelectorTranslated : IDSelector {
+    const std::vector<int64_t>& id_map;
+    const IDSelector* sel;
+
+    IDSelectorTranslated(
+            const std::vector<int64_t>& id_map,
+            const IDSelector* sel)
+            : id_map(id_map), sel(sel) {}
+
+    IDSelectorTranslated(IndexBinaryIDMap& index_idmap, const IDSelector* sel)
+            : id_map(index_idmap.id_map), sel(sel) {}
+
+    IDSelectorTranslated(IndexIDMap& index_idmap, const IDSelector* sel)
+            : id_map(index_idmap.id_map), sel(sel) {}
+
+    bool is_member(idx_t id) const override {
+        return sel->is_member(id_map[id]);
+    }
+};
 
 } // namespace faiss

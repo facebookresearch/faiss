@@ -4,8 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
+
+#if defined USE_NVIDIA_RAFT
+#include <raft/core/device_resources.hpp>
+#include <rmm/mr/device/cuda_memory_resource.hpp>
+#include <rmm/mr/device/managed_memory_resource.hpp>
+#include <rmm/mr/host/pinned_memory_resource.hpp>
+#endif
 
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -58,6 +80,12 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// this stream upon exit from an index or other Faiss GPU call.
     cudaStream_t getDefaultStream(int device) override;
 
+#if defined USE_NVIDIA_RAFT
+    /// Returns the raft handle for the given device which can be used to
+    /// make calls to other raft primitives.
+    raft::device_resources& getRaftHandle(int device) override;
+#endif
+
     /// Called to change the work ordering streams to the null stream
     /// for all devices
     void setDefaultNullStreamAllDevices();
@@ -92,7 +120,7 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     cudaStream_t getAsyncCopyStream(int device) override;
 
-   private:
+   protected:
     /// Have GPU resources been initialized for this device yet?
     bool isInitialized(int device) const;
 
@@ -100,7 +128,7 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// memory size
     static size_t getDefaultTempMemForGPU(int device, size_t requested);
 
-   private:
+   protected:
     /// Set of currently outstanding memory allocations per device
     /// device -> (alloc request, allocated ptr)
     std::unordered_map<int, std::unordered_map<void*, AllocRequest>> allocs_;
@@ -123,6 +151,30 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     /// cuBLAS handle for each device
     std::unordered_map<int, cublasHandle_t> blasHandles_;
+
+#if defined USE_NVIDIA_RAFT
+    /// raft handle for each device
+    std::unordered_map<int, raft::device_resources> raftHandles_;
+
+    /**
+     * FIXME: Integrating these in a separate code path for now. Ultimately,
+     * it would be nice if we use a simple memory resource abstraction
+     * in FAISS so we could plug in whether to use RMM's memory resources
+     * or the default.
+     *
+     * There's enough duplicated logic that it doesn't *seem* to make sense
+     * to create a subclass only for the RMM memory resources.
+     */
+
+    // cuda_memory_resource
+    std::unique_ptr<rmm::mr::device_memory_resource> cmr;
+
+    // managed_memory_resource
+    std::unique_ptr<rmm::mr::device_memory_resource> mmr;
+
+    // pinned_memory_resource
+    std::unique_ptr<rmm::mr::host_memory_resource> pmr;
+#endif
 
     /// Pinned memory allocation for use with this GPU
     void* pinnedMemAlloc_;
@@ -183,9 +235,14 @@ class StandardGpuResources : public GpuResourcesProvider {
     /// Export a description of memory used for Python
     std::map<int, std::map<std::string, std::pair<int, size_t>>> getMemoryInfo()
             const;
-
     /// Returns the current default stream
     cudaStream_t getDefaultStream(int device);
+
+#if defined USE_NVIDIA_RAFT
+    /// Returns the raft handle for the given device which can be used to
+    /// make calls to other raft primitives.
+    raft::device_resources& getRaftHandle(int device);
+#endif
 
     /// Returns the current amount of temp memory available
     size_t getTempMemoryAvailable(int device) const;

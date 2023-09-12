@@ -40,9 +40,9 @@ struct GpuScalarQuantizer : public ScalarQuantizer {
               gpuTrained(DeviceTensor<float, 1, true>(
                       res,
                       makeDevAlloc(AllocType::Quantizer, 0),
-                      {(int)sq.trained.size()})) {
+                      {(idx_t)sq.trained.size()})) {
         HostTensor<float, 1, true> cpuTrained(
-                (float*)sq.trained.data(), {(int)sq.trained.size()});
+                (float*)sq.trained.data(), {(idx_t)sq.trained.size()});
 
         auto stream = res->getDefaultStreamCurrentDevice();
         gpuTrained.copyFrom(cpuTrained, stream);
@@ -81,21 +81,24 @@ struct CodecFloat {
     }
     inline __device__ void initKernel(float* smem, int dim) {}
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         float* p = (float*)&((uint8_t*)data)[vec * bytesPerVec];
         out[0] = p[d];
     }
 
-    inline __device__ float decodePartial(void* data, int vec, int d, int subD)
-            const {
+    inline __device__ float decodePartial(
+            void* data,
+            idx_t vec,
+            int d,
+            int subD) const {
         // doesn't need implementing (kDimPerIter == 1)
         return 0.0f;
     }
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         float* p = (float*)&((uint8_t*)data)[vec * bytesPerVec];
@@ -104,7 +107,7 @@ struct CodecFloat {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining,
             float v[kDimPerIter]) const {
@@ -148,21 +151,24 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
     }
     inline __device__ void initKernel(float* smem, int dim) {}
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         half* p = (half*)&((uint8_t*)data)[vec * bytesPerVec];
         out[0] = Convert<half, float>()(p[d]);
     }
 
-    inline __device__ float decodePartial(void* data, int vec, int d, int subD)
-            const {
+    inline __device__ float decodePartial(
+            void* data,
+            idx_t vec,
+            int d,
+            int subD) const {
         // doesn't need implementing (kDimPerIter == 1)
         return 0.0f;
     }
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         half* p = (half*)&((uint8_t*)data)[vec * bytesPerVec];
@@ -171,7 +177,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining,
             float v[kDimPerIter]) const {
@@ -247,7 +253,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
         return vmin + (float)v * vdiff;
     }
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         MemT* p = (MemT*)&((uint8_t*)data)[vec * bytesPerVec];
         MemT pv = p[d];
@@ -270,8 +276,11 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
         }
     }
 
-    inline __device__ float decodePartial(void* data, int vec, int d, int subD)
-            const {
+    inline __device__ float decodePartial(
+            void* data,
+            idx_t vec,
+            int d,
+            int subD) const {
         if (DimMultiple > 1) {
             // should not be called
             assert(false);
@@ -289,7 +298,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         MemT* p = (MemT*)&((uint8_t*)data)[vec * bytesPerVec];
@@ -311,7 +320,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining,
             float v[kDimPerIter]) const {
@@ -383,7 +392,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
         return smemVmin[realDim] + (float)v * smemVdiff[realDim];
     }
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         MemT* p = (MemT*)&((uint8_t*)data)[vec * bytesPerVec];
         MemT pv = p[d];
@@ -407,8 +416,11 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
         }
     }
 
-    inline __device__ float decodePartial(void* data, int vec, int d, int subD)
-            const {
+    inline __device__ float decodePartial(
+            void* data,
+            idx_t vec,
+            int d,
+            int subD) const {
         if (DimMultiple > 1) {
             // should not be called
             assert(false);
@@ -426,7 +438,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         MemT* p = (MemT*)&((uint8_t*)data)[vec * bytesPerVec];
@@ -449,7 +461,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining,
             float v[kDimPerIter]) const {
@@ -499,21 +511,24 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1> {
     }
     inline __device__ void initKernel(float* smem, int dim) {}
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
         out[0] = (float)p[d];
     }
 
-    inline __device__ float decodePartial(void* data, int vec, int d, int subD)
-            const {
+    inline __device__ float decodePartial(
+            void* data,
+            idx_t vec,
+            int d,
+            int subD) const {
         // doesn't need implementing (kDimPerIter == 1)
         return 0.0f;
     }
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
@@ -522,7 +537,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining,
             float v[kDimPerIter]) const {
@@ -651,7 +666,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
         return vmin + (float)v * vdiff;
     }
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
         uint8_t pv = p[d];
@@ -662,7 +677,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
 
     inline __device__ float decodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int subD /* unused */) const {
         // We can only be called for a single input
@@ -680,7 +695,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
@@ -689,7 +704,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining, /* unused */
             float v[kDimPerIter]) const {
@@ -755,7 +770,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
         return smemVmin[realDim] + (float)v * smemVdiff[realDim];
     }
 
-    inline __device__ void decode(void* data, int vec, int d, float* out)
+    inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
         uint8_t pv = p[d];
@@ -767,7 +782,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
 
     inline __device__ float decodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int subD /* unused */) const {
         // We can only be called for a single input
@@ -786,7 +801,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
 
     inline __device__ void encode(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             float v[kDimPerIter]) const {
         uint8_t* p = &((uint8_t*)data)[vec * bytesPerVec];
@@ -797,7 +812,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
 
     inline __device__ void encodePartial(
             void* data,
-            int vec,
+            idx_t vec,
             int d,
             int remaining, /* unused */
             float v[kDimPerIter]) const {
