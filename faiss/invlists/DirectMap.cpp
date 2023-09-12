@@ -199,7 +199,7 @@ size_t DirectMap::remove_ids(const IDSelector& sel, InvertedLists* invlists) {
                             last_id,
                             ScopedCodes(invlists, list_no, last).get());
                     // update hash entry for last element
-                    hashtable[last_id] = list_no << 32 | offset;
+                    hashtable[last_id] = lo_build(list_no, offset);
                 }
                 invlists->resize(list_no, last);
                 nremove++;
