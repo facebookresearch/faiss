@@ -46,8 +46,8 @@ IndexIVFFlat::IndexIVFFlat() {
 void IndexIVFFlat::add_core(
         idx_t n,
         const float* x,
-        const int64_t* xids,
-        const int64_t* coarse_idx) {
+        const idx_t* xids,
+        const idx_t* coarse_idx) {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
     FAISS_THROW_IF_NOT(!by_residual);
