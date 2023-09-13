@@ -191,7 +191,7 @@ void runPass2SelectLists(
     do {                                          \
         if (k == 1) {                             \
             RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
-        } else if (k <= 32) {                     \
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) { \
             RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
         } else if (k <= 64) {                     \
             RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \
@@ -214,7 +214,7 @@ void runPass2SelectLists(
     do {                                          \
         if (k == 1) {                             \
             RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
-        } else if (k <= 32) {                     \
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) { \
             RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
         } else if (k <= 64) {                     \
             RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \

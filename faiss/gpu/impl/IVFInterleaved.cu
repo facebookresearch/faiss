@@ -152,7 +152,7 @@ void runIVFInterleavedScan2(
 
     if (k == 1) {
         IVF_SCAN_2(128, 1, 1);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         IVF_SCAN_2(128, 32, 2);
     } else if (k <= 64) {
         IVF_SCAN_2(128, 64, 3);
@@ -211,7 +211,7 @@ void runIVFInterleavedScan(
 
     if (k == 1) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 1, 1>);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 32, 2>);
     } else if (k <= 64) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 64, 3>);

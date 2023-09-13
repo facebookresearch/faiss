@@ -201,7 +201,7 @@ void runBinaryDistanceAnySize(
     if (k == 1) {
         binaryDistanceAnySize<1, 1, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         binaryDistanceAnySize<32, 2, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
     } else if (k <= 64) {
@@ -242,7 +242,7 @@ void runBinaryDistanceLimitSize(
     if (k == 1) {
         binaryDistanceLimitSize<1, 1, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         binaryDistanceLimitSize<32, 2, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
     } else if (k <= 64) {

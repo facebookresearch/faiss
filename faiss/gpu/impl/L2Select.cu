@@ -241,7 +241,7 @@ void runL2SelectMin(
     } while (false)
 
         // block size 128 for everything <= 1024
-        if (k <= 32) {
+        if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
             RUN_L2_SELECT(128, 32, 2);
         } else if (k <= 64) {
             RUN_L2_SELECT(128, 64, 3);

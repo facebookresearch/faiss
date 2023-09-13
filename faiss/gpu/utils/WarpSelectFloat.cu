@@ -55,7 +55,7 @@ void runWarpSelect(
     if (dir) {
         if (k == 1) {
             WARP_SELECT_CALL(float, true, 1);
-        } else if (k <= 32) {
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
             WARP_SELECT_CALL(float, true, 32);
         } else if (k <= 64) {
             WARP_SELECT_CALL(float, true, 64);
@@ -75,7 +75,7 @@ void runWarpSelect(
     } else {
         if (k == 1) {
             WARP_SELECT_CALL(float, false, 1);
-        } else if (k <= 32) {
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
             WARP_SELECT_CALL(float, false, 32);
         } else if (k <= 64) {
             WARP_SELECT_CALL(float, false, 64);
