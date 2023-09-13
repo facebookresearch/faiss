@@ -29,6 +29,7 @@ __launch_bounds__(kWarps* kLanes) __global__ void binaryDistanceAnySize(
         Tensor<int, 2, true> outK,
         Tensor<idx_t, 2, true> outV,
         int k) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     // A matrix tile (query, k)
     __shared__ BinaryType queryTile[kWarps][kLanes + 1]; // avoid bank conflict
 
@@ -102,6 +103,7 @@ __launch_bounds__(kWarps* kLanes) __global__ void binaryDistanceAnySize(
     if (warpQuery < query.getSize(0)) {
         heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
     }
+  }
 }
 
 // Version of the kernel that avoids a loop over the reduction dimension, and
@@ -117,6 +119,7 @@ __global__ void __launch_bounds__(kWarps* kLanes) binaryDistanceLimitSize(
         Tensor<int, 2, true> outK,
         Tensor<idx_t, 2, true> outV,
         int k) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     // A matrix tile (query, k)
     __shared__ BinaryType queryTile[kWarps][kLanes + 1]; // avoid bank conflict
 
@@ -185,6 +188,7 @@ __global__ void __launch_bounds__(kWarps* kLanes) binaryDistanceLimitSize(
     if (warpQuery < query.getSize(0)) {
         heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
     }
+  }
 }
 
 template <typename BinaryType>

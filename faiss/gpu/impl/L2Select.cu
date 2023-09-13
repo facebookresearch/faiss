@@ -141,6 +141,7 @@ __global__ void l2SelectMinK(
         Tensor<idx_t, 2, true> outIndices,
         int k,
         T initK) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     // Each block handles a single row of the distances (results)
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
@@ -181,6 +182,7 @@ __global__ void l2SelectMinK(
         outDistances[row][i] = smemK[i];
         outIndices[row][i] = idx_t(smemV[i]);
     }
+  }
 }
 
 template <typename T>

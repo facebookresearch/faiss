@@ -17,16 +17,6 @@
             int k,                                          \
             cudaStream_t stream)
 
-#define WARP_SELECT_IMPL_DUMMY(TYPE, DIR, WARP_Q, THREAD_Q)                    \
-    void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_(                           \
-            Tensor<TYPE, 2, true>& in,                                         \
-            Tensor<TYPE, 2, true>& outK,                                       \
-            Tensor<int, 2, true>& outV,                                        \
-            bool dir,                                                          \
-            int k,                                                             \
-            cudaStream_t stream) {                                             \
-    }
-
 #define WARP_SELECT_IMPL(TYPE, DIR, WARP_Q, THREAD_Q)                          \
     void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_(                           \
             Tensor<TYPE, 2, true>& in,                                         \
@@ -35,6 +25,7 @@
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
+      if constexpr((WARP_Q == 1 && THREAD_Q == 1) || WARP_Q >= kWarpSize) {    \
         constexpr int kWarpSelectNumThreads = 128;                             \
         auto grid = dim3(utils::divUp(                                         \
                 in.getSize(0), (kWarpSelectNumThreads / kWarpSize)));          \
@@ -49,6 +40,7 @@
         warpSelect<TYPE, idx_t, DIR, WARP_Q, THREAD_Q, kWarpSelectNumThreads>  \
                 <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k); \
         CUDA_TEST_ERROR();                                                     \
+      }                                                                        \
     }
 
 #define WARP_SELECT_CALL(TYPE, DIR, WARP_Q) \

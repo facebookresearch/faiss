@@ -62,6 +62,7 @@ __global__ void pass2SelectLists(
         IndicesOptions opt,
         Tensor<float, 2, true> outDistances,
         Tensor<idx_t, 2, true> outIndices) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
@@ -149,6 +150,7 @@ __global__ void pass2SelectLists(
 
         outIndices[queryId][i] = index;
     }
+  }
 }
 
 void runPass2SelectLists(

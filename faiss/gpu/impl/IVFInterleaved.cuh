@@ -49,6 +49,7 @@ __global__ void ivfInterleavedScan(
         Tensor<float, 3, true> distanceOut,
         Tensor<idx_t, 3, true> indicesOut,
         const bool Residual) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     extern __shared__ float smem[];
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
@@ -211,6 +212,7 @@ __global__ void ivfInterleavedScan(
             indicesOutBase[i] = smemV[i];
         }
     }
+  }
 }
 
 //

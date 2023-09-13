@@ -34,6 +34,7 @@ __global__ void pass1SelectLists(
         int k,
         Tensor<float, 3, true> heapDistances,
         Tensor<idx_t, 3, true> heapIndices) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
@@ -92,6 +93,7 @@ __global__ void pass1SelectLists(
             heapIndices[queryId][sliceId][i] = idx_t(smemV[i]);
         }
     }
+  }
 }
 
 void runPass1SelectLists(

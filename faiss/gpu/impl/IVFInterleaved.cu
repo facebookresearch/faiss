@@ -26,6 +26,7 @@ __global__ void ivfInterleavedScan2(
         bool dir,
         Tensor<float, 2, true> distanceOut,
         Tensor<idx_t, 2, true> indicesOut) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     int queryId = blockIdx.x;
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
@@ -124,6 +125,7 @@ __global__ void ivfInterleavedScan2(
 
         indicesOut[queryId][i] = index;
     }
+  }
 }
 
 void runIVFInterleavedScan2(

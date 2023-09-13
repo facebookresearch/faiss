@@ -10,22 +10,8 @@
 namespace faiss {
 namespace gpu {
 
-#if defined(USE_ROCM)
-// #if __AMDGCN_WAVEFRONT_SIZE == 32u
-// BLOCK_SELECT_IMPL(float, true, 32, 2);
-// BLOCK_SELECT_IMPL(float, false, 32, 2);
-// #else
-// BLOCK_SELECT_IMPL_DUMMY(float, true, 32, 2);
-// BLOCK_SELECT_IMPL_DUMMY(float, false, 32, 2);
-// #endif
-
-// Assume Navi 2x/3x, for now.
 BLOCK_SELECT_IMPL(float, true, 32, 2);
 BLOCK_SELECT_IMPL(float, false, 32, 2);
-#else
-BLOCK_SELECT_IMPL(float, true, 32, 2);
-BLOCK_SELECT_IMPL(float, false, 32, 2);
-#endif
 
 } // namespace gpu
 } // namespace faiss
