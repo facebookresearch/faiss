@@ -164,7 +164,12 @@ template <typename K, typename V, bool Dir, typename Comp, bool Low>
 struct BitonicMergeStep<K, V, 1, Dir, Comp, Low, true> {
     static inline __device__ void merge(K k[1], V v[1]) {
         // Use warp shuffles
-        warpBitonicMergeLE16<K, V, 16, Dir, Comp, true>(k[0], v[0]);
+        if constexpr(kWarpSize == 32) {
+            warpBitonicMergeLE16<K, V, 16, Dir, Comp, true>(k[0], v[0]);
+        }
+        else {
+            warpBitonicMergeLE16<K, V, 32, Dir, Comp, true>(k[0], v[0]);
+        }
     }
 };
 
