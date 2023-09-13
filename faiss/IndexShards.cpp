@@ -147,7 +147,7 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
                 "request them to be shifted");
         FAISS_THROW_IF_NOT_MSG(
                 this->ntotal == 0,
-                "when adding to IndexShards with sucessive_ids, "
+                "when adding to IndexShards with successive_ids, "
                 "only add() in a single pass is supported");
     }
 

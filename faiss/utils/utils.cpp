@@ -430,8 +430,8 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     }
 }
 
-uint64_t ivec_checksum(size_t n, const int32_t* asigned) {
-    const uint32_t* a = reinterpret_cast<const uint32_t*>(asigned);
+uint64_t ivec_checksum(size_t n, const int32_t* assigned) {
+    const uint32_t* a = reinterpret_cast<const uint32_t*>(assigned);
     uint64_t cs = 112909;
     while (n--) {
         cs = cs * 65713 + a[n] * 1686049;

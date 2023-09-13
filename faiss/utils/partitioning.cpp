@@ -882,7 +882,7 @@ static const simd32uint8 shifts = simd32uint8::create<
 // 2-bit accumulator: we can add only up to 3 elements
 // on output we return 2*4-bit results
 // preproc returns either an index in 0..7 or 0xffff
-// that yeilds a 0 when used in the table look-up
+// that yields a 0 when used in the table look-up
 template <int N, class Preproc>
 void compute_accu2(
         const uint16_t*& data,
