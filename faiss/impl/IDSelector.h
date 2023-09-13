@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 
 /** IDSelector is intended to define a subset of vectors to handle (for removal
  * or as subset to search) */
