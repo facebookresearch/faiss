@@ -89,8 +89,7 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-#if defined USE_NVIDIA_RAFT
-
+#ifdef USE_NVIDIA_RAFT
     if (flatConfig_.use_raft) {
         data_.reset(new RaftFlatIndex(
                 resources_.get(),

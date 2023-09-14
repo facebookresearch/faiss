@@ -30,7 +30,7 @@
 #include <utility>
 #include <vector>
 
-#if defined USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
 #endif
 
@@ -206,7 +206,7 @@ class GpuResources {
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
 
-#if defined USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
     virtual raft::device_resources& getRaftHandle(int device) = 0;
