@@ -7,8 +7,8 @@
 
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 
-#include <limits.h>
 #include <cassert>
+#include <climits>
 #include <memory>
 
 #include <omp.h>
@@ -83,7 +83,7 @@ IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
     pq4_pack_codes(orig_codes, ntotal, M, ntotal2, bbs, M2, codes.get());
 }
 
-IndexAdditiveQuantizerFastScan::~IndexAdditiveQuantizerFastScan() {}
+IndexAdditiveQuantizerFastScan::~IndexAdditiveQuantizerFastScan() = default;
 
 void IndexAdditiveQuantizerFastScan::train(idx_t n, const float* x_in) {
     if (is_trained) {

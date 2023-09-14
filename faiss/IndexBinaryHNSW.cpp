@@ -20,9 +20,9 @@
 #include <queue>
 #include <unordered_set>
 
-#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cstdint>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
