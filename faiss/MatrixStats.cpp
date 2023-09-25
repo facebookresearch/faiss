@@ -9,7 +9,7 @@
 
 #include <faiss/MatrixStats.h>
 
-#include <stdarg.h> /* va_list, va_start, va_arg, va_end */
+#include <cstdarg> /* va_list, va_start, va_arg, va_end */
 
 #include <faiss/utils/utils.h>
 #include <cinttypes>

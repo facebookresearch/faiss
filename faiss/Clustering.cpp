@@ -217,7 +217,7 @@ int split_clusters(
     for (size_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
             size_t cj;
-            for (cj = 0; 1; cj = (cj + 1) % k) {
+            for (cj = 0; true; cj = (cj + 1) % k) {
                 /* probability to pick this cluster for split */
                 float p = (hassign[cj] - 1.0) / (float)(n - k);
                 float r = rng.rand_float();

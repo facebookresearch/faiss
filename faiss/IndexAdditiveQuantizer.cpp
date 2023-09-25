@@ -70,7 +70,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
         return vd(q, tmp.data());
     }
 
-    virtual ~AQDistanceComputerDecompress() {}
+    virtual ~AQDistanceComputerDecompress() = default;
 };
 
 template <bool is_IP, AdditiveQuantizer::Search_type_t st>
@@ -107,7 +107,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
         return bias + aq.compute_1_distance_LUT<is_IP, st>(code, LUT.data());
     }
 
-    virtual ~AQDistanceComputerLUT() {}
+    virtual ~AQDistanceComputerLUT() = default;
 };
 
 /************************************************************
