@@ -11,6 +11,7 @@
 
 #include <omp.h>
 #include <cstdint>
+#include <memory>
 #include <mutex>
 
 #include <algorithm>
@@ -45,7 +46,7 @@ Level1Quantizer::Level1Quantizer(Index* quantizer, size_t nlist)
     cp.niter = 10;
 }
 
-Level1Quantizer::Level1Quantizer() {}
+Level1Quantizer::Level1Quantizer() = default;
 
 Level1Quantizer::~Level1Quantizer() {
     if (own_fields) {
@@ -172,7 +173,7 @@ IndexIVF::IndexIVF(
     }
 }
 
-IndexIVF::IndexIVF() {}
+IndexIVF::IndexIVF() = default;
 
 void IndexIVF::add(idx_t n, const float* x) {
     add_with_ids(n, x, nullptr);
@@ -539,7 +540,8 @@ void IndexIVF::search_preassigned(
                     const idx_t* ids = nullptr;
 
                     if (!store_pairs) {
-                        sids.reset(new InvertedLists::ScopedIds(invlists, key));
+                        sids = std::make_unique<InvertedLists::ScopedIds>(
+                                invlists, key);
                         ids = sids->get();
                     }
 

@@ -9,8 +9,8 @@
 
 #include <faiss/IndexIDMap.h>
 
-#include <stdint.h>
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 

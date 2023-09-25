@@ -82,7 +82,7 @@ void IndexIVFFastScan::init_code_packer() {
     bil->packer = get_CodePacker();
 }
 
-IndexIVFFastScan::~IndexIVFFastScan() {}
+IndexIVFFastScan::~IndexIVFFastScan() = default;
 
 /*********************************************************
  * Code management functions

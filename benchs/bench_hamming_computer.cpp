@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <vector>
 
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
@@ -24,7 +24,7 @@ struct HammingComputerM8 {
     const uint64_t* a;
     int n;
 
-    HammingComputerM8() {}
+    HammingComputerM8() = default;
 
     HammingComputerM8(const uint8_t* a8, int code_size) {
         set(a8, code_size);
@@ -53,7 +53,7 @@ struct HammingComputerM4 {
     const uint32_t* a;
     int n;
 
-    HammingComputerM4() {}
+    HammingComputerM4() = default;
 
     HammingComputerM4(const uint8_t* a4, int code_size) {
         set(a4, code_size);
