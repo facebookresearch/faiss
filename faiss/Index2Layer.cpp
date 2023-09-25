@@ -10,10 +10,10 @@
 #include <faiss/Index2Layer.h>
 
 #include <faiss/impl/platform_macros.h>
-#include <stdint.h>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 
 #ifdef __SSE3__
@@ -60,7 +60,7 @@ Index2Layer::Index2Layer() {
     code_size = code_size_1 = code_size_2 = 0;
 }
 
-Index2Layer::~Index2Layer() {}
+Index2Layer::~Index2Layer() = default;
 
 void Index2Layer::train(idx_t n, const float* x) {
     if (verbose) {

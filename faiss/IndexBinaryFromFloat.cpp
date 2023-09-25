@@ -16,7 +16,7 @@
 
 namespace faiss {
 
-IndexBinaryFromFloat::IndexBinaryFromFloat() {}
+IndexBinaryFromFloat::IndexBinaryFromFloat() = default;
 
 IndexBinaryFromFloat::IndexBinaryFromFloat(Index* index)
         : IndexBinary(index->d), index(index), own_fields(false) {

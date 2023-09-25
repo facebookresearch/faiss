@@ -9,10 +9,10 @@
 
 #include <faiss/IndexIVFPQ.h>
 
-#include <stdint.h>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 
 #include <algorithm>

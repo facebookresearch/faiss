@@ -25,6 +25,7 @@
 #include <rmm/mr/device/cuda_memory_resource.hpp>
 #include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
+#include <memory>
 
 #endif
 
@@ -221,11 +222,11 @@ void StandardGpuResourcesImpl::setTempMemory(size_t size) {
             p.second.reset();
 
             // Allocate new
-            p.second = std::unique_ptr<StackDeviceMemory>(new StackDeviceMemory(
+            p.second = std::make_unique<StackDeviceMemory>(
                     this,
                     p.first,
                     // adjust for this specific device
-                    getDefaultTempMemForGPU(device, tempMemSize_)));
+                    getDefaultTempMemForGPU(device, tempMemSize_));
         }
     }
 }
@@ -355,13 +356,13 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
             device);
 
     // Create streams
-    cudaStream_t defaultStream = 0;
+    cudaStream_t defaultStream = nullptr;
     CUDA_VERIFY(
             cudaStreamCreateWithFlags(&defaultStream, cudaStreamNonBlocking));
 
     defaultStreams_[device] = defaultStream;
 
-    cudaStream_t asyncCopyStream = 0;
+    cudaStream_t asyncCopyStream = nullptr;
     CUDA_VERIFY(
             cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
 
@@ -369,7 +370,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     std::vector<cudaStream_t> deviceStreams;
     for (int j = 0; j < kNumStreams; ++j) {
-        cudaStream_t stream = 0;
+        cudaStream_t stream = nullptr;
         CUDA_VERIFY(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 
         deviceStreams.push_back(stream);
@@ -378,7 +379,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     alternateStreams_[device] = std::move(deviceStreams);
 
     // Create cuBLAS handle
-    cublasHandle_t blasHandle = 0;
+    cublasHandle_t blasHandle = nullptr;
     auto blasStatus = cublasCreate(&blasHandle);
     FAISS_ASSERT(blasStatus == CUBLAS_STATUS_SUCCESS);
     blasHandles_[device] = blasHandle;
@@ -396,11 +397,11 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     allocs_[device] = std::unordered_map<void*, AllocRequest>();
 
     FAISS_ASSERT(tempMemory_.count(device) == 0);
-    auto mem = std::unique_ptr<StackDeviceMemory>(new StackDeviceMemory(
+    auto mem = std::make_unique<StackDeviceMemory>(
             this,
             device,
             // adjust for this specific device
-            getDefaultTempMemForGPU(device, tempMemSize_)));
+            getDefaultTempMemForGPU(device, tempMemSize_));
 
     tempMemory_.emplace(device, std::move(mem));
 }
@@ -431,7 +432,7 @@ raft::device_resources& StandardGpuResourcesImpl::getRaftHandle(int device) {
     if (it == raftHandles_.end()) {
         // Make sure we are using the stream the user may have already assigned
         // to the current GpuResources
-        raftHandles_.emplace(std::make_pair(device, getDefaultStream(device)));
+        raftHandles_.emplace(device, getDefaultStream(device));
 
         // Initialize cublas handle
         raftHandles_[device].get_cublas_handle();
@@ -651,7 +652,7 @@ StandardGpuResourcesImpl::getMemoryInfo() const {
 StandardGpuResources::StandardGpuResources()
         : res_(new StandardGpuResourcesImpl) {}
 
-StandardGpuResources::~StandardGpuResources() {}
+StandardGpuResources::~StandardGpuResources() = default;
 
 std::shared_ptr<GpuResources> StandardGpuResources::getResources() {
     return res_;

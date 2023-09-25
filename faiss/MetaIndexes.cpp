@@ -9,8 +9,8 @@
 
 #include <faiss/MetaIndexes.h>
 
-#include <stdint.h>
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 
@@ -238,6 +238,6 @@ void IndexRandom::reset() {
     ntotal = 0;
 }
 
-IndexRandom::~IndexRandom() {}
+IndexRandom::~IndexRandom() = default;
 
 } // namespace faiss

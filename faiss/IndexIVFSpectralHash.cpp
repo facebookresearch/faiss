@@ -9,8 +9,8 @@
 
 #include <faiss/IndexIVFSpectralHash.h>
 
-#include <stdint.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 
 #include <faiss/IndexLSH.h>

@@ -7,8 +7,8 @@
 
 #include <faiss/IndexFastScan.h>
 
-#include <limits.h>
 #include <cassert>
+#include <climits>
 #include <memory>
 
 #include <omp.h>

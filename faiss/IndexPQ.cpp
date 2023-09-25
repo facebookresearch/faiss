@@ -630,7 +630,7 @@ struct SemiSortedArray {
     int N;
 
     // type of the heap: CMax = sort ascending
-    typedef CMax<T, int> HC;
+    using HC = CMax<T, int>;
     std::vector<int> perm;
 
     int k; // k elements are sorted
@@ -724,7 +724,7 @@ struct MinSumK {
      * We use a heap to maintain a queue of sums, with the associated
      * terms involved in the sum.
      */
-    typedef CMin<T, int64_t> HC;
+    using HC = CMin<T, int64_t>;
     size_t heap_capacity, heap_size;
     T* bh_val;
     int64_t* bh_ids;
