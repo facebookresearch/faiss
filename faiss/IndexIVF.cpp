@@ -376,7 +376,7 @@ void IndexIVF::search(
             indexIVF_stats.add(stats[slice]);
         }
     } else {
-        // handle paralellization at level below (or don't run in parallel at
+        // handle parallelization at level below (or don't run in parallel at
         // all)
         sub_search_func(n, x, distances, labels, &indexIVF_stats);
     }
