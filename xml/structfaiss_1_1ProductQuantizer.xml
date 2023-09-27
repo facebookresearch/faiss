@@ -26,7 +26,7 @@
         <enumvalue id="structfaiss_1_1ProductQuantizer_1a3a41c6286095e731be744548d9535a35aa1aefc6c08f0ca974de9f59d9557aa0d" prot="public">
           <name>Train_shared</name>
           <briefdescription>
-<para>share dictionary accross PQ segments </para>
+<para>share dictionary across PQ segments </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
