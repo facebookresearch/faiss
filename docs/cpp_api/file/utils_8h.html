@@ -369,33 +369,6 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss9fvec_maddE6size_tPKffPKfPf">
-<span id="_CPPv3N5faiss9fvec_maddE6size_tPKffPKfPf"></span><span id="_CPPv2N5faiss9fvec_maddE6size_tPKffPKfPf"></span><span id="faiss::fvec_madd__s.floatCP.float.floatCP.floatP"></span><span class="target" id="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_madd</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bf</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9fvec_maddE6size_tPKffPKfPf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>compute c := a + bf * b for a, b and c tables</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – size of the tables </p></li>
-<li><p><strong>a</strong> – size n </p></li>
-<li><p><strong>b</strong> – size n </p></li>
-<li><p><strong>c</strong> – restult table, size n </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf">
-<span id="_CPPv3N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf"></span><span id="_CPPv2N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf"></span><span id="faiss::fvec_madd_and_argmin__s.floatCP.float.floatCP.floatP"></span><span class="target" id="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_madd_and_argmin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bf</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>same as fvec_madd, also return index of the min of the result table </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>index of the min of table c </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10reflectionEPKfPf6size_t6size_t6size_t">
 <span id="_CPPv3N5faiss10reflectionEPKfPf6size_t6size_t6size_t"></span><span id="_CPPv2N5faiss10reflectionEPKfPf6size_t6size_t6size_t"></span><span id="faiss::reflection__floatCP.floatP.s.s.s"></span><span class="target" id="namespacefaiss_1ab7c6da3d6915a010d5d3074d93878ce9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflection</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">u</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10reflectionEPKfPf6size_t6size_t6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
