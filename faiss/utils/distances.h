@@ -434,4 +434,27 @@ void compute_PQ_dis_tables_dsub2(
  * Templatized versions of distance functions
  ***************************************************************************/
 
+/***************************************************************************
+ * Misc  matrix and vector manipulation functions
+ ***************************************************************************/
+
+/** compute c := a + bf * b for a, b and c tables
+ *
+ * @param n   size of the tables
+ * @param a   size n
+ * @param b   size n
+ * @param c   restult table, size n
+ */
+void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
+
+/** same as fvec_madd, also return index of the min of the result table
+ * @return    index of the min of table c
+ */
+int fvec_madd_and_argmin(
+        size_t n,
+        const float* a,
+        float bf,
+        const float* b,
+        float* c);
+
 } // namespace faiss
