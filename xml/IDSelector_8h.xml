@@ -4,24 +4,21 @@
     <compoundname>IDSelector.h</compoundname>
     <includes local="no">unordered_set</includes>
     <includes local="no">vector</includes>
-    <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
     <includedby refid="IndexIDMap_8h" local="no">faiss/IndexIDMap.h</includedby>
     <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
     <incdepgraph>
-      <node id="6">
+      <node id="5">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
       </node>
-      <node id="7">
+      <node id="6">
         <label>cstdint</label>
-      </node>
-      <node id="10">
-        <label>string</label>
       </node>
       <node id="2">
         <label>unordered_set</label>
@@ -36,36 +33,16 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>typeinfo</label>
-      </node>
-      <node id="8">
+      <node id="7">
         <label>cstdio</label>
       </node>
       <node id="3">
         <label>vector</label>
       </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
       <node id="4">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -265,7 +242,7 @@
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_set&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="15"><highlight class="comment">/**<sp/>IDSelector<sp/>is<sp/>intended<sp/>to<sp/>define<sp/>a<sp/>subset<sp/>of<sp/>vectors<sp/>to<sp/>handle<sp/>(for<sp/>removal</highlight></codeline>
 <codeline lineno="16"><highlight class="comment"><sp/>*<sp/>or<sp/>as<sp/>subset<sp/>to<sp/>search)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
