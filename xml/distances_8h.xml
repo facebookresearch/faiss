@@ -540,7 +540,30 @@
 <codeline lineno="434"><highlight class="comment"><sp/>*<sp/>Templatized<sp/>versions<sp/>of<sp/>distance<sp/>functions</highlight></codeline>
 <codeline lineno="435"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="436"><highlight class="normal"></highlight></codeline>
-<codeline lineno="437"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="437"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="438"><highlight class="comment"><sp/>*<sp/>Misc<sp/><sp/>matrix<sp/>and<sp/>vector<sp/>manipulation<sp/>functions</highlight></codeline>
+<codeline lineno="439"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="440"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="441"><highlight class="comment">/**<sp/>compute<sp/>c<sp/>:=<sp/>a<sp/>+<sp/>bf<sp/>*<sp/>b<sp/>for<sp/>a,<sp/>b<sp/>and<sp/>c<sp/>tables</highlight></codeline>
+<codeline lineno="442"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="443"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/>size<sp/>of<sp/>the<sp/>tables</highlight></codeline>
+<codeline lineno="444"><highlight class="comment"><sp/>*<sp/>@param<sp/>a<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="445"><highlight class="comment"><sp/>*<sp/>@param<sp/>b<sp/><sp/><sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="446"><highlight class="comment"><sp/>*<sp/>@param<sp/>c<sp/><sp/><sp/>restult<sp/>table,<sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="447"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="448" refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kindref="member">fvec_madd</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="450"><highlight class="comment">/**<sp/>same<sp/>as<sp/>fvec_madd,<sp/>also<sp/>return<sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>the<sp/>result<sp/>table</highlight></codeline>
+<codeline lineno="451"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/>index<sp/>of<sp/>the<sp/>min<sp/>of<sp/>table<sp/>c</highlight></codeline>
+<codeline lineno="452"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="453" refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kindref="member">fvec_madd_and_argmin</ref>(</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>a,</highlight></codeline>
+<codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>bf,</highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>b,</highlight></codeline>
+<codeline lineno="458"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>c);</highlight></codeline>
+<codeline lineno="459"><highlight class="normal"></highlight></codeline>
+<codeline lineno="460"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/distances.h"/>
   </compounddef>
