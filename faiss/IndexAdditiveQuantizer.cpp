@@ -560,7 +560,12 @@ void ResidualCoarseQuantizer::search(
         }
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
-            search(i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k, params_in);
+            search(i1 - i0,
+                   x + i0 * d,
+                   k,
+                   distances + i0 * k,
+                   labels + i0 * k,
+                   params_in);
             InterruptCallback::check();
         }
         return;
