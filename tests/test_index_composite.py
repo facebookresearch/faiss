@@ -17,7 +17,7 @@ import platform
 from common_faiss_tests import get_dataset_2
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.inspect_tools import make_LinearTransform_matrix
-
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 class TestRemoveFastScan(unittest.TestCase):
     def do_test(self, ntotal, removed):
@@ -430,12 +430,6 @@ class TestRareIO(unittest.TestCase):
 
 class TestIVFFlatDedup(unittest.TestCase):
 
-    def normalize_res(self, D, I):
-        dmax = D[-1]
-        res = [(d, i) for d, i in zip(D, I) if d < dmax]
-        res.sort()
-        return res
-
     def test_dedup(self):
         d = 10
         nb = 1000
@@ -471,10 +465,7 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dref, Iref = index_ref.search(xq, 20)
         Dnew, Inew = index_new.search(xq, 20)
 
-        for i in range(nq):
-            ref = self.normalize_res(Dref[i], Iref[i])
-            new = self.normalize_res(Dnew[i], Inew[i])
-            assert ref == new
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
         # test I/O
         fd, tmpfile = tempfile.mkstemp()
@@ -487,10 +478,7 @@ class TestIVFFlatDedup(unittest.TestCase):
                 os.unlink(tmpfile)
         Dst, Ist = index_st.search(xq, 20)
 
-        for i in range(nq):
-            new = self.normalize_res(Dnew[i], Inew[i])
-            st = self.normalize_res(Dst[i], Ist[i])
-            assert st == new
+        check_ref_knn_with_draws(Dnew, Inew, Dst, Ist)
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
@@ -501,10 +489,7 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dref, Iref = index_ref.search(xq, 20)
         Dnew, Inew = index_new.search(xq, 20)
 
-        for i in range(nq):
-            ref = self.normalize_res(Dref[i], Iref[i])
-            new = self.normalize_res(Dnew[i], Inew[i])
-            assert ref == new
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
 
 class TestSerialize(unittest.TestCase):
