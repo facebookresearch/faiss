@@ -85,7 +85,7 @@ void pairwise_L2sqr(
         int64_t ldb = -1,
         int64_t ldd = -1);
 
-/* compute the inner product between nx vectors x and one y */
+/* compute ny inner product between x vectors x and a set of contiguous y vectors */
 void fvec_inner_products_ny(
         float* ip, /* output inner product */
         const float* x,
