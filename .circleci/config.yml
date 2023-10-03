@@ -350,7 +350,7 @@ workflows:
           exec: linux-x86_64-gpu
           label: main
           cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
             tags:
@@ -363,7 +363,7 @@ workflows:
           label: main
           raft: "ON"
           cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
             tags:
@@ -415,7 +415,7 @@ workflows:
           name: Linux x86_64 GPU nightlies (CUDA 11.4)
           exec: linux-x86_64-gpu
           cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
       - build_conda:
@@ -423,7 +423,7 @@ workflows:
           exec: linux-x86_64-gpu
           raft: "ON"
           cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
       - build_conda:
