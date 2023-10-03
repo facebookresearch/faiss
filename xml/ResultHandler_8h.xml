@@ -615,7 +615,7 @@
 <codeline lineno="446" refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" kindref="member">begin</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>current_idx)<sp/>{</highlight></codeline>
 <codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;current_idx<sp/>=<sp/>current_idx;</highlight></codeline>
 <codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_dis<sp/>=<sp/>HUGE_VALF;</highlight></codeline>
-<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_idx<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_idx<sp/>=<sp/>-1;</highlight></codeline>
 <codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="451"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="452"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>add<sp/>one<sp/>result<sp/>for<sp/>query<sp/>i</highlight></codeline>
