@@ -576,7 +576,7 @@ float kmeans_clustering(
         const float* x,
         float* centroids) {
     Clustering clus(d, k);
-    clus.verbose = d * n * k > (1L << 30);
+    clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
     IndexFlatL2 index(d);
     clus.train(n, x, index);

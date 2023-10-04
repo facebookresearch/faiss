@@ -230,7 +230,7 @@ bool InterruptCallback::is_interrupted() {
 
 size_t InterruptCallback::get_period_hint(size_t flops) {
     if (!instance.get()) {
-        return 1L << 30; // never check
+        return (size_t)1 << 30; // never check
     }
     // for 10M flops, it is reasonable to check once every 10 iterations
     return std::max((size_t)10 * 10 * 1000 * 1000 / (flops + 1), (size_t)1);

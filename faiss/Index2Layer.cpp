@@ -47,7 +47,7 @@ Index2Layer::Index2Layer(
           pq(quantizer->d, M, nbit) {
     is_trained = false;
     for (int nbyte = 0; nbyte < 7; nbyte++) {
-        if ((1L << (8 * nbyte)) >= nlist) {
+        if (((size_t)1 << (8 * nbyte)) >= nlist) {
             code_size_1 = nbyte;
             break;
         }
@@ -179,7 +179,7 @@ struct DistanceXPQ4 : Distance2Level {
     float operator()(idx_t i) override {
 #ifdef __SSE3__
         const uint8_t* code = storage.codes.data() + i * storage.code_size;
-        long key = 0;
+        idx_t key = 0;
         memcpy(&key, code, storage.code_size_1);
         code += storage.code_size_1;
 
@@ -225,7 +225,7 @@ struct Distance2xXPQ4 : Distance2Level {
 
     float operator()(idx_t i) override {
         const uint8_t* code = storage.codes.data() + i * storage.code_size;
-        long key01 = 0;
+        int64_t key01 = 0;
         memcpy(&key01, code, storage.code_size_1);
         code += storage.code_size_1;
 #ifdef __SSE3__
@@ -237,7 +237,7 @@ struct Distance2xXPQ4 : Distance2Level {
         __m128 accu = _mm_setzero_ps();
 
         for (int mi_m = 0; mi_m < 2; mi_m++) {
-            long l1_idx = key01 & ((1L << mi_nbits) - 1);
+            int64_t l1_idx = key01 & (((int64_t)1 << mi_nbits) - 1);
             const __m128* pq_l1 = pq_l1_t + M_2 * l1_idx;
 
             for (int m = 0; m < M_2; m++) {

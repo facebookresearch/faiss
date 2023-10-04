@@ -818,7 +818,7 @@ struct MinSumK {
             // enqueue followers
             int64_t ii = ti;
             for (int m = 0; m < M; m++) {
-                int64_t n = ii & ((1L << nbit) - 1);
+                int64_t n = ii & (((int64_t)1 << nbit) - 1);
                 ii >>= nbit;
                 if (n + 1 >= N)
                     continue;
@@ -842,7 +842,7 @@ struct MinSumK {
             }
             int64_t ti = 0;
             for (int m = 0; m < M; m++) {
-                int64_t n = ii & ((1L << nbit) - 1);
+                int64_t n = ii & (((int64_t)1 << nbit) - 1);
                 ti += int64_t(ssx[m].get_ord(n)) << (nbit * m);
                 ii >>= nbit;
             }
@@ -966,7 +966,7 @@ void MultiIndexQuantizer::search(
 void MultiIndexQuantizer::reconstruct(idx_t key, float* recons) const {
     int64_t jj = key;
     for (int m = 0; m < pq.M; m++) {
-        int64_t n = jj & ((1L << pq.nbits) - 1);
+        int64_t n = jj & (((int64_t)1 << pq.nbits) - 1);
         jj >>= pq.nbits;
         memcpy(recons, pq.get_centroids(m, n), sizeof(recons[0]) * pq.dsub);
         recons += pq.dsub;
@@ -1098,7 +1098,7 @@ void MultiIndexQuantizer2::search(
 
                 const idx_t* idmap0 = sub_ids.data() + i * k2;
                 int64_t ld_idmap = k2 * n;
-                int64_t mask1 = ksub - 1L;
+                int64_t mask1 = ksub - (int64_t)1;
 
                 for (int k = 0; k < K; k++) {
                     const idx_t* idmap = idmap0;
