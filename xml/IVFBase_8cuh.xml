@@ -54,7 +54,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Clear<sp/>out<sp/>all<sp/>inverted<sp/>lists,<sp/>but<sp/>retain<sp/>the<sp/>coarse<sp/>quantizer</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>and<sp/>the<sp/>product<sp/>quantizer<sp/>info</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>reset();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>reset();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>number<sp/>of<sp/>dimensions<sp/>we<sp/>are<sp/>indexing</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>getDim()<sp/>const;</highlight></codeline>
@@ -68,29 +68,30 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>debugging<sp/>purposes,<sp/>return<sp/>the<sp/>list<sp/>length<sp/>of<sp/>a<sp/>particular</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>getListLength(idx_t<sp/>listId)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>idx_t<sp/>getListLength(idx_t<sp/>listId)<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>list<sp/>indices<sp/>of<sp/>a<sp/>particular<sp/>list<sp/>back<sp/>to<sp/>the<sp/>CPU</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/>getListIndices(idx_t<sp/>listId)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>std::vector&lt;idx_t&gt;<sp/>getListIndices(idx_t<sp/>listId)<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Return<sp/>the<sp/>encoded<sp/>vectors<sp/>of<sp/>a<sp/>particular<sp/>list<sp/>back<sp/>to<sp/>the<sp/>CPU</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>getListVectorData(idx_t<sp/>listId,<sp/>bool<sp/>gpuFormat)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>std::vector&lt;uint8_t&gt;<sp/>getListVectorData(idx_t<sp/>listId,<sp/>bool<sp/>gpuFormat)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>all<sp/>inverted<sp/>lists<sp/>from<sp/>a<sp/>CPU<sp/>representation<sp/>to<sp/>ourselves</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>copyInvertedListsFrom(const<sp/>InvertedLists*<sp/>ivf);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>copyInvertedListsFrom(const<sp/>InvertedLists*<sp/>ivf);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>all<sp/>inverted<sp/>lists<sp/>from<sp/>ourselves<sp/>to<sp/>a<sp/>CPU<sp/>representation</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>copyInvertedListsTo(InvertedLists*<sp/>ivf);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>copyInvertedListsTo(InvertedLists*<sp/>ivf);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Update<sp/>our<sp/>coarse<sp/>quantizer<sp/>with<sp/>this<sp/>quantizer<sp/>instance;<sp/>may<sp/>be<sp/>a<sp/>CPU</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>or<sp/>GPU<sp/>quantizer</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>updateQuantizer(Index*<sp/>quantizer);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>updateQuantizer(Index*<sp/>quantizer);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Classify<sp/>and<sp/>encode/add<sp/>vectors<sp/>to<sp/>our<sp/>IVF<sp/>lists.</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>input<sp/>data<sp/>must<sp/>be<sp/>on<sp/>our<sp/>current<sp/>device.</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>vectors<sp/>successfully<sp/>added.<sp/>Vectors<sp/>may</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>not<sp/>be<sp/>able<sp/>to<sp/>be<sp/>added<sp/>because<sp/>they<sp/>contain<sp/>NaNs.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>addVectors(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>idx_t<sp/>addVectors(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Index*<sp/>coarseQuantizer,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices);</highlight></codeline>
@@ -120,7 +121,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Adds<sp/>a<sp/>set<sp/>of<sp/>codes<sp/>and<sp/>indices<sp/>to<sp/>a<sp/>list,<sp/>with<sp/>the<sp/>representation</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>coming<sp/>from<sp/>the<sp/>CPU<sp/>equivalent</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>addEncodedVectorsToList_(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>addEncodedVectorsToList_(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>listId,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>resident<sp/>on<sp/>the<sp/>host</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>void*<sp/>codes,</highlight></codeline>
