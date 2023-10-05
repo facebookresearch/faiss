@@ -74,9 +74,35 @@ RaftIVFFlat::RaftIVFFlat(
                   indicesOptions,
                   space) {
     reset();
+
+    raft::neighbors::ivf_flat::index_params pams;
+    pams.add_data_on_build = false;
+
+    pams.n_lists = nlist;
+
+    switch (metric) {
+        case faiss::METRIC_L2:
+            pams.metric = raft::distance::DistanceType::L2Expanded;
+            break;
+        case faiss::METRIC_INNER_PRODUCT:
+            pams.metric = raft::distance::DistanceType::InnerProduct;
+            break;
+        default:
+            FAISS_THROW_MSG("Metric is not supported.");
+    }
+
+    const raft::device_resources& raft_handle =
+            res->getRaftHandleCurrentDevice();
+
+    raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim));
 }
 
 RaftIVFFlat::~RaftIVFFlat() {}
+
+void RaftIVFFlat::reserveMemory(idx_t numVecs) {
+    if (numVecs > 0) {
+    }
+}
 
 /// Find the approximate k nearest neighbors for `queries` against
 /// our database
@@ -333,31 +359,9 @@ void RaftIVFFlat::searchPreassigned(
 void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     idx_t quantizer_ntotal = quantizer->ntotal;
 
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
+    auto stream = resources_->getDefaultStreamCurrentDevice();
 
     auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
-
-    raft::logger::get().set_level(RAFT_LEVEL_TRACE);
-
-    raft::neighbors::ivf_flat::index_params pams;
-    pams.add_data_on_build = false;
-
-    pams.n_lists = this->numLists_;
-
-    switch (this->metric_) {
-        case faiss::METRIC_L2:
-            pams.metric = raft::distance::DistanceType::L2Expanded;
-            break;
-        case faiss::METRIC_INNER_PRODUCT:
-            pams.metric = raft::distance::DistanceType::InnerProduct;
-            break;
-        default:
-            FAISS_THROW_MSG("Metric is not supported.");
-    }
-
-    raft_knn_index.emplace(raft_handle, pams, (uint32_t)this->dim_);
 
     cudaMemsetAsync(
             raft_knn_index.value().list_sizes().data_handle(),

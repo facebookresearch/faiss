@@ -141,6 +141,11 @@ void GpuIndexIVFFlat::set_index_(
 }
 
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "Pre-allocation of IVF lists is not supported with RAFT enabled.");
+    }
+
     DeviceScope scope(config_.device);
 
     reserveMemoryVecs_ = numVecs;
@@ -290,11 +295,79 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     updateQuantizer();
 
     if (reserveMemoryVecs_) {
-        index_->reserveMemory(reserveMemoryVecs_);
+        if (config_.use_raft) {
+            FAISS_THROW_MSG(
+                    "Pre-allocation of IVF lists is not supported with RAFT enabled.");
+        } else
+            index_->reserveMemory(reserveMemoryVecs_);
     }
 
     this->is_trained = true;
 }
+
+void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
+    DeviceScope scope(config_.device);
+
+    if (n == 0) {
+        // nothing to do
+        return;
+    }
+
+    if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
+        if (this->verbose) {
+            printf("IVF quantizer does not need training.\n");
+        }
+
+        return;
+    }
+
+    if (this->verbose) {
+        printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
+    }
+
+    quantizer->reset();
+
+#if defined USE_NVIDIA_RAFT
+
+    if (config_.use_raft) {
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+
+        raft::neighbors::ivf_flat::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = metric_type == faiss::METRIC_L2
+                ? raft::distance::DistanceType::L2Expanded
+                : raft::distance::DistanceType::InnerProduct;
+        raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_trainset_fraction = 1.0;
+        raft_idx_params.kmeans_n_iters = cp.niter;
+        raft_idx_params.adaptive_centers = !cp.frozen_centroids;
+
+        auto raft_index = raft::neighbors::ivf_flat::build(
+                raft_handle, raft_idx_params, x, n, (idx_t)d);
+
+        raft_handle.sync_stream();
+
+        quantizer->train(nlist, raft_index.centers().data_handle());
+        quantizer->add(nlist, raft_index.centers().data_handle());
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        // leverage the CPU-side k-means code, which works for the GPU
+        // flat index as well
+        Clustering clus(this->d, nlist, this->cp);
+        clus.verbose = verbose;
+        clus.train(n, x, *quantizer);
+    }
+    quantizer->is_trained = true;
+    FAISS_ASSERT(quantizer->ntotal == nlist);
+}
+
 
 } // namespace gpu
 } // namespace faiss

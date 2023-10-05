@@ -127,7 +127,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Copy our lists as well
     // The product quantizer must have data in it
     FAISS_ASSERT(index->pq.centroids.size() > 0);
-    index_.reset(new IVFPQ(
+    set_index_(
             resources_.get(),
             this->d,
             this->nlist,
@@ -140,7 +140,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
             ivfpqConfig_.interleavedLayout,
             (float*)index->pq.centroids.data(),
             ivfpqConfig_.indicesOptions,
-            config_.memorySpace));
+            config_.memorySpace);
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
 
     // Doesn't make sense to reserve memory here
@@ -203,6 +203,11 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 }
 
 void GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "Pre-allocation of IVF lists is not supported with RAFT enabled.");
+    }
+
     DeviceScope scope(config_.device);
 
     reserveMemoryVecs_ = numVecs;
@@ -322,29 +327,6 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
         // use the currently assigned clustering index
         pq.train(n, residuals.data());
     }
-
-    index_.reset(new IVFPQ(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            metric_type,
-            metric_arg,
-            subQuantizers_,
-            bitsPerCode_,
-            ivfpqConfig_.useFloat16LookupTables,
-            ivfpqConfig_.useMMCodeDistance,
-            ivfpqConfig_.interleavedLayout,
-            pq.centroids.data(),
-            ivfpqConfig_.indicesOptions,
-            config_.memorySpace));
-    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
-    updateQuantizer();
-
-    if (reserveMemoryVecs_) {
-        index_->reserveMemory(reserveMemoryVecs_);
-    }
-
-    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 }
 
 void GpuIndexIVFPQ::train(idx_t n, const float* x) {
@@ -361,20 +343,140 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
-    auto hostData = toHost<float, 2>(
-            (float*)x,
-            resources_->getDefaultStream(config_.device),
-            {n, this->d});
+#if defined USE_NVIDIA_RAFT
+    if (config_.use_raft) {
+        // No need to copy the data to host
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
 
-    trainQuantizer_(n, hostData.data());
-    trainResidualQuantizer_(n, hostData.data());
+        raft::neighbors::ivf_pq::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = metric_type == faiss::METRIC_L2
+                ? raft::distance::DistanceType::L2Expanded
+                : raft::distance::DistanceType::InnerProduct;
+        raft_idx_params.kmeans_n_iters = cp.niter;
+        raft_idx_params.kmeans_trainset_fraction = 1.0;
+        raft_idx_params.pq_bits = bitsPerCode_;
+        raft_idx_params.pq_dim = subQuantizers_;
+        raft_idx_params.conservative_memory_allocation = true;
+        raft_idx_params.add_data_on_build = false;
+
+        auto raft_index = raft::neighbors::ivf_pq::build(
+                raft_handle, raft_idx_params, x, n, (idx_t)d);
+
+        raft_handle.sync_stream();
+
+        quantizer->train(nlist, raft_index.centers().data_handle());
+        quantizer->add(nlist, raft_index.centers().data_handle());
+
+        IndexFlatL2 index(dsub);
+            clus.train(n, xslice, assign_index ? *assign_index : index);
+            raft::copy(pq.get_centroids(0, 0), pq.raft_index.pq_centers().data_handle(), subQuantizers_ * dsub * utils::pow2(bitsPerCode_));
+            // set_params(clus.centroids.data(), m);
+
+{
+  return detail::build(handle, params, dataset, n_rows, dim);
+}
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        // FIXME: GPUize more of this
+        // First, make sure that the data is resident on the CPU, if it is not
+        // on the CPU, as we depend upon parts of the CPU code
+        auto hostData = toHost<float, 2>(
+                (float*)x,
+                resources_->getDefaultStream(config_.device),
+                {n, this->d});
+
+        trainQuantizer_(n, hostData.data());
+        trainResidualQuantizer_(n, hostData.data());
+    }
+    set_index_(
+            resources_.get(),
+            this->d,
+            this->nlist,
+            metric_type,
+            metric_arg,
+            subQuantizers_,
+            bitsPerCode_,
+            ivfpqConfig_.useFloat16LookupTables,
+            ivfpqConfig_.useMMCodeDistance,
+            ivfpqConfig_.interleavedLayout,
+            pq.centroids.data(),
+            ivfpqConfig_.indicesOptions,
+            config_.memorySpace);
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+    updateQuantizer();
+
+    if (reserveMemoryVecs_) {
+        index_->reserveMemory(reserveMemoryVecs_);
+    }
+
+    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 
     FAISS_ASSERT(index_);
 
     this->is_trained = true;
+}
+
+void GpuIndexIVFPQ::set_index_(
+        GpuResources* resources,
+        int dim,
+        idx_t nlist,
+        faiss::MetricType metric,
+        float metricArg,
+        int numSubQuantizers,
+        int bitsPerSubQuantizer,
+        bool useFloat16LookupTables,
+        bool useMMCodeDistance,
+        bool interleavedLayout,
+        float* pqCentroidData,
+        IndicesOptions indicesOptions,
+        MemorySpace space) {
+#if defined USE_NVIDIA_RAFT
+    if (config_.use_raft) {
+        index_.reset(new RaftIVFPQ(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                numSubQuantizers,
+                bitsPerSubQuantizer,
+                useFloat16LookupTables,
+                useMMCodeDistance,
+                interleavedLayout,
+                pqCentroidData,
+                indicesOptions,
+                space));
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        index_.reset(new IVFPQ(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                numSubQuantizers,
+                bitsPerSubQuantizer,
+                useFloat16LookupTables,
+                useMMCodeDistance,
+                interleavedLayout,
+                pqCentroidData,
+                indicesOptions,
+                space));
+    }
 }
 
 void GpuIndexIVFPQ::verifyPQSettings_() const {
@@ -385,17 +487,33 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
 
     // up to a single byte per code
     if (ivfpqConfig_.interleavedLayout) {
-        FAISS_THROW_IF_NOT_FMT(
-                bitsPerCode_ == 4 || bitsPerCode_ == 5 || bitsPerCode_ == 6 ||
-                        bitsPerCode_ == 8,
-                "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
-                bitsPerCode_);
-
+        if (!config_.use_raft) {
+            FAISS_THROW_IF_NOT_FMT(
+                    bitsPerCode_ == 4 || bitsPerCode_ == 5 ||
+                            bitsPerCode_ == 6 || bitsPerCode_ == 8,
+                    "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
+                    bitsPerCode_);
+        } else {
+            FAISS_THROW_IF_NOT_FMT(
+                    bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
+                    "Bits per code must be within closed range [4,8] (passed %d)",
+                    bitsPerCode_);
+            FAISS_THROW_IF_NOT_FMT((bitsPerCode_ * subQuantizers_) % 8 == 0,
+                 "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
+                 bitsPerCode_,
+                 subQuantizers_,
+                 bitsPerCode_ * subQuantizers_);
+        }
     } else {
-        FAISS_THROW_IF_NOT_FMT(
-                bitsPerCode_ == 8,
-                "Bits per code must be 8 (passed %d)",
-                bitsPerCode_);
+        if (config_.use_raft) {
+            FAISS_THROW_MSG(
+                    "RAFT requires interleaved layout to be set to true");
+        } else {
+            FAISS_THROW_IF_NOT_FMT(
+                    bitsPerCode_ == 8,
+                    "Bits per code must be 8 (passed %d)",
+                    bitsPerCode_);
+        }
     }
 
     // Sub-quantizers must evenly divide dimensions available
