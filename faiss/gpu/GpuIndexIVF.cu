@@ -16,11 +16,6 @@
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
-#endif
-
 namespace faiss {
 namespace gpu {
 

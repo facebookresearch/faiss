@@ -446,7 +446,7 @@ struct SingleBestResultHandler {
         void begin(const size_t current_idx) {
             this->current_idx = current_idx;
             min_dis = HUGE_VALF;
-            min_idx = 0;
+            min_idx = -1;
         }
 
         /// add one result for query i

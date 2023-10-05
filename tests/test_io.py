@@ -80,7 +80,7 @@ class TestCallbacks(unittest.TestCase):
             faiss.vector_to_array(index2.codes)
         )
 
-        # This is not a callable function: shoudl raise an exception
+        # This is not a callable function: should raise an exception
         writer = faiss.PyCallbackIOWriter("blabla")
         self.assertRaises(
             Exception,

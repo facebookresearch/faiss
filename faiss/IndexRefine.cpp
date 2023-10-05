@@ -62,7 +62,7 @@ void IndexRefine::reset() {
 
 namespace {
 
-typedef faiss::idx_t idx_t;
+using idx_t = faiss::idx_t;
 
 template <class C>
 static void reorder_2_heaps(

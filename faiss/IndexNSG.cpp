@@ -286,7 +286,7 @@ IndexNSGFlat::IndexNSGFlat(int d, int R, MetricType metric)
  * IndexNSGPQ implementation
  **************************************************************/
 
-IndexNSGPQ::IndexNSGPQ() {}
+IndexNSGPQ::IndexNSGPQ() = default;
 
 IndexNSGPQ::IndexNSGPQ(int d, int pq_m, int M, int pq_nbits)
         : IndexNSG(new IndexPQ(d, pq_m, pq_nbits), M) {
@@ -313,6 +313,6 @@ IndexNSGSQ::IndexNSGSQ(
     own_fields = true;
 }
 
-IndexNSGSQ::IndexNSGSQ() {}
+IndexNSGSQ::IndexNSGSQ() = default;
 
 } // namespace faiss

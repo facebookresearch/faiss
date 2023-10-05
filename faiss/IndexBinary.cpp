@@ -20,7 +20,7 @@ IndexBinary::IndexBinary(idx_t d, MetricType metric)
     FAISS_THROW_IF_NOT(d % 8 == 0);
 }
 
-IndexBinary::~IndexBinary() {}
+IndexBinary::~IndexBinary() = default;
 
 void IndexBinary::train(idx_t, const uint8_t*) {
     // Does nothing by default.

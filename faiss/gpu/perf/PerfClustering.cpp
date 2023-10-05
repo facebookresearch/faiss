@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
     cudaProfilerStop();
 
-    auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
+    auto seed = FLAGS_seed != -1 ? FLAGS_seed : time(nullptr);
     printf("using seed %ld\n", seed);
 
     std::vector<float> vecs((size_t)FLAGS_num * FLAGS_dim);

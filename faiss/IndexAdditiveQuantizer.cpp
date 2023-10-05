@@ -70,7 +70,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
         return vd(q, tmp.data());
     }
 
-    virtual ~AQDistanceComputerDecompress() {}
+    virtual ~AQDistanceComputerDecompress() = default;
 };
 
 template <bool is_IP, AdditiveQuantizer::Search_type_t st>
@@ -107,7 +107,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
         return bias + aq.compute_1_distance_LUT<is_IP, st>(code, LUT.data());
     }
 
-    virtual ~AQDistanceComputerLUT() {}
+    virtual ~AQDistanceComputerLUT() = default;
 };
 
 /************************************************************
@@ -560,7 +560,12 @@ void ResidualCoarseQuantizer::search(
         }
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
-            search(i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k);
+            search(i1 - i0,
+                   x + i0 * d,
+                   k,
+                   distances + i0 * k,
+                   labels + i0 * k,
+                   params_in);
             InterruptCallback::check();
         }
         return;

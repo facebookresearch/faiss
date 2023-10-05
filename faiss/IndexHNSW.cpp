@@ -20,9 +20,9 @@
 #include <queue>
 #include <unordered_set>
 
-#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cstdint>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
@@ -876,7 +876,7 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
  * IndexHNSWPQ implementation
  **************************************************************/
 
-IndexHNSWPQ::IndexHNSWPQ() {}
+IndexHNSWPQ::IndexHNSWPQ() = default;
 
 IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits)
         : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits), M) {
@@ -903,7 +903,7 @@ IndexHNSWSQ::IndexHNSWSQ(
     own_fields = true;
 }
 
-IndexHNSWSQ::IndexHNSWSQ() {}
+IndexHNSWSQ::IndexHNSWSQ() = default;
 
 /**************************************************************
  * IndexHNSW2Level implementation
@@ -919,7 +919,7 @@ IndexHNSW2Level::IndexHNSW2Level(
     is_trained = false;
 }
 
-IndexHNSW2Level::IndexHNSW2Level() {}
+IndexHNSW2Level::IndexHNSW2Level() = default;
 
 namespace {
 

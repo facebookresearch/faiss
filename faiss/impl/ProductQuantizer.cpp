@@ -405,7 +405,7 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         for (int64_t i = 0; i < n; i++)
             compute_code(x + i * d, codes + i * code_size);
 
-    } else { // worthwile to use BLAS
+    } else { // worthwhile to use BLAS
         float* dis_tables = new float[n * ksub * M];
         ScopeDeleter<float> del(dis_tables);
         compute_distance_tables(n, x, dis_tables);
