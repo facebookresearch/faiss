@@ -45,7 +45,7 @@ class IVFBase {
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
-    void reset();
+    virtual void reset();
 
     /// Return the number of dimensions we are indexing
     idx_t getDim() const;
@@ -59,29 +59,30 @@ class IVFBase {
 
     /// For debugging purposes, return the list length of a particular
     /// list
-    idx_t getListLength(idx_t listId) const;
+    virtual idx_t getListLength(idx_t listId) const;
 
     /// Return the list indices of a particular list back to the CPU
-    std::vector<idx_t> getListIndices(idx_t listId) const;
+    virtual std::vector<idx_t> getListIndices(idx_t listId) const;
 
     /// Return the encoded vectors of a particular list back to the CPU
-    std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat) const;
+    virtual std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
+            const;
 
     /// Copy all inverted lists from a CPU representation to ourselves
-    void copyInvertedListsFrom(const InvertedLists* ivf);
+    virtual void copyInvertedListsFrom(const InvertedLists* ivf);
 
     /// Copy all inverted lists from ourselves to a CPU representation
-    void copyInvertedListsTo(InvertedLists* ivf);
+    virtual void copyInvertedListsTo(InvertedLists* ivf);
 
     /// Update our coarse quantizer with this quantizer instance; may be a CPU
     /// or GPU quantizer
-    void updateQuantizer(Index* quantizer);
+    virtual void updateQuantizer(Index* quantizer);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
     /// Returns the number of vectors successfully added. Vectors may
     /// not be able to be added because they contain NaNs.
-    idx_t addVectors(
+    virtual idx_t addVectors(
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices);
@@ -111,7 +112,7 @@ class IVFBase {
    protected:
     /// Adds a set of codes and indices to a list, with the representation
     /// coming from the CPU equivalent
-    void addEncodedVectorsToList_(
+    virtual void addEncodedVectorsToList_(
             idx_t listId,
             // resident on the host
             const void* codes,

@@ -749,7 +749,6 @@ void testSearchAndReconstruct(bool use_raft) {
         }
     }
 }
-
 TEST(TestGpuIndexFlat, SearchAndReconstruct) {
     testSearchAndReconstruct(false);
 }
