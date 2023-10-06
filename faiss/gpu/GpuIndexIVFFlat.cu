@@ -107,6 +107,12 @@ void GpuIndexIVFFlat::set_index_(
 #if defined USE_NVIDIA_RAFT
 
     if (config_.use_raft) {
+         FAISS_THROW_IF_NOT_MSG(
+            ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
+            "RAFT only supports INDICES_64_BIT");
+        FAISS_THROW_IF_NOT_MSG(
+            ivfFlatConfig_.interleavedLayout,
+            "RAFT requires interleavedLayout to be true");
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,
@@ -141,12 +147,12 @@ void GpuIndexIVFFlat::set_index_(
 }
 
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
+    DeviceScope scope(config_.device);
+
     if (config_.use_raft) {
         FAISS_THROW_MSG(
                 "Pre-allocation of IVF lists is not supported with RAFT enabled.");
     }
-
-    DeviceScope scope(config_.device);
 
     reserveMemoryVecs_ = numVecs;
     if (index_) {
@@ -259,8 +265,29 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
 #if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
-        // No need to copy the data to host
-        trainQuantizer_(n, x);
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+
+        raft::neighbors::ivf_flat::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = faiss_to_raft(metric_type, false);
+        raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_trainset_fraction =
+                static_cast<double>(cp.max_points_per_centroid * nlist) /
+                static_cast<double>(n);
+        raft_idx_params.kmeans_n_iters = cp.niter;
+
+        auto raft_index = raft::neighbors::ivf_flat::build(
+                raft_handle, raft_idx_params, x, n, (idx_t)d);
+
+        raft_handle.sync_stream();
+        
+        auto raftIndex_ = static_pointer_cast<IVFFlat, RaftIVFFlat>(index_);
+        raftIndex_->setIndex(std::make_optional<raft::neighbors::ivf_flat::index>(
+                raft_index));
+
+        quantizer->train(nlist, raft_index.centers().data_handle());
+        quantizer->add(nlist, raft_index.centers().data_handle());
     } else
 #else
     if (config_.use_raft) {
@@ -367,7 +394,6 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
     quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }
-
 
 } // namespace gpu
 } // namespace faiss

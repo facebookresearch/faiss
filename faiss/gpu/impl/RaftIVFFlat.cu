@@ -99,9 +99,9 @@ RaftIVFFlat::RaftIVFFlat(
 
 RaftIVFFlat::~RaftIVFFlat() {}
 
-void RaftIVFFlat::reserveMemory(idx_t numVecs) {
-    if (numVecs > 0) {
-    }
+void RaftIVFFlat::setIndex(
+        std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>& idx) {
+    raft_knn_index.emplace(idx.value());
 }
 
 /// Find the approximate k nearest neighbors for `queries` against
@@ -113,7 +113,8 @@ void RaftIVFFlat::search(
         int k,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices) {
-    // TODO: We probably don't want to ignore the coarse quantizer here...
+    /// NB: The coarse quantizer is ignored here. The user is assumed to have
+    /// called updateQuantizer() to modify the RAFT index if the quantizer was modified externally
 
     uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
@@ -185,6 +186,9 @@ idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
+    /// NB: The coarse quantizer is ignored here. The user is assumed to have
+    /// called updateQuantizer() to modify the RAFT index if the quantizer was modified externally
+
     idx_t n_rows = vecs.getSize(0);
 
     const raft::device_resources& raft_handle =
@@ -232,8 +236,6 @@ idx_t RaftIVFFlat::addVectors(
                         indices.data(), n_rows, (idx_t)1),
                 raft::make_const_mdspan(gather_indices.view()));
     }
-
-    /// TODO: We probably don't want to ignore the coarse quantizer here
 
     FAISS_ASSERT(raft_knn_index.has_value());
     raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
@@ -301,7 +303,7 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(
         idx_t listId,
         bool gpuFormat) const {
     if (gpuFormat) {
-        FAISS_THROW_MSG("gpuFormat is not suppported for raft indices");
+        FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
     }
     FAISS_ASSERT(raft_knn_index.has_value());
 
@@ -357,12 +359,15 @@ void RaftIVFFlat::searchPreassigned(
 }
 
 void RaftIVFFlat::updateQuantizer(Index* quantizer) {
-    idx_t quantizer_ntotal = quantizer->ntotal;
+    FAISS_THROW_IF_NOT(quantizer->is_trained);
+
+    // Must match our basic IVF parameters
+    FAISS_THROW_IF_NOT(quantizer->d == getDim());
+    FAISS_THROW_IF_NOT(quantizer->ntotal == getNumLists());
 
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
-    auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
-
+    /// Reset the RAFT index
     cudaMemsetAsync(
             raft_knn_index.value().list_sizes().data_handle(),
             0,
@@ -379,15 +384,52 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             raft_knn_index.value().inds_ptrs().size() * sizeof(idx_t*),
             stream);
 
-    /// Copy (reconstructed) centroids over, rather than re-training
-    std::vector<float> buf_host(total_elems);
-    quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
+    size_t total_elems = quantizer->ntotal * quantizer->d;
 
-    raft::update_device(
-            raft_knn_index.value().centers().data_handle(),
-            buf_host.data(),
-            total_elems,
-            stream);
+    // If the index instance is a GpuIndexFlat, then we can use direct access to
+    // the centroids within.
+    auto gpuQ = dynamic_cast<GpuIndexFlat*>(quantizer);
+    if (gpuQ) {
+        auto gpuData = gpuQ->getGpuData();
+
+        if (gpuData->getUseFloat16()) {
+            // The FlatIndex keeps its data in float16; we need to reconstruct
+            // as float32 and store locally
+            DeviceTensor<float, 2, true> centroids(
+                    resources_,
+                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
+                    {getNumLists(), getDim()});
+
+            gpuData->reconstruct(0, gpuData->getSize(), centroids);
+
+            raft::update_device(
+                    raft_knn_index.value().centers().data_handle(),
+                    centroids.data(),
+                    total_elems,
+                    stream);
+        } else {
+            /// No reconstruct needed since the centers are already in float32
+            auto centroids = gpuData->getVectorsFloat32Ref();
+
+            raft::update_device(
+                    raft_knn_index.value().centers().data_handle(),
+                    centroids.data(),
+                    total_elems,
+                    stream);
+        }
+    } else {
+        // Otherwise, we need to reconstruct all vectors from the index and copy
+        // them to the GPU, in order to have access as needed for residual
+        // computation
+        auto vecs = std::vector<float>(getNumLists() * getDim());
+        quantizer->reconstruct_n(0, quantizer->ntotal, vecs.data());
+
+        raft::update_device(
+                raft_knn_index.value().centers().data_handle(),
+                vecs.data(),
+                total_elems,
+                stream);
+    }
 }
 
 void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {

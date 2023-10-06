@@ -151,11 +151,10 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
                 opt.getPctMaxDiffN());
 
 #if defined USE_NVIDIA_RAFT
-    config.use_raft = true;
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
-            &res, &cpuIndex, config);
+        config.use_raft = true;
+        faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
 
-    faiss::gpu::compareIndices(
+        faiss::gpu::compareIndices(
                 cpuIndex,
                 raftGpuIndex,
                 opt.numQuery,
@@ -219,11 +218,10 @@ TEST(TestGpuIndexIVFPQ, LargeBatch) {
                 opt.getPctMaxDiffN());
 
 #if defined USE_NVIDIA_RAFT
-    config.use_raft = true;
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
-            &res, &cpuIndex, config);
+        config.use_raft = true;
+        faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
 
-    faiss::gpu::compareIndices(
+        faiss::gpu::compareIndices(
                 cpuIndex,
                 raftGpuIndex,
                 opt.numQuery,
@@ -390,6 +388,22 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+
+        #if defined USE_NVIDIA_RAFT
+        config.use_raft = true;
+        faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
+
+        faiss::gpu::compareIndices(
+                cpuIndex,
+                raftGpuIndex,
+                opt.numQuery,
+                opt.dim,
+                opt.k,
+                opt.toString(),
+                opt.getCompareEpsilon(),
+                opt.getPctMaxDiff1(),
+                opt.getPctMaxDiffN());
+#endif
     }
 }
 
@@ -481,6 +495,25 @@ TEST(TestGpuIndexIVFPQ, Add_L2) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+
+        #if defined USE_NVIDIA_RAFT
+        config.use_raft = true;
+        faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
+        raftGpuIndex.nprobe = opt.nprobe;
+
+        raftGpuIndex.add(opt.numAdd, addVecs.data());
+
+        faiss::gpu::compareIndices(
+                cpuIndex,
+                raftGpuIndex,
+                opt.numQuery,
+                opt.dim,
+                opt.k,
+                opt.toString(),
+                opt.getCompareEpsilon(),
+                opt.getPctMaxDiff1(),
+                opt.getPctMaxDiffN());
+#endif
     }
 }
 
@@ -529,6 +562,25 @@ TEST(TestGpuIndexIVFPQ, Add_IP) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+        
+               #if defined USE_NVIDIA_RAFT
+        config.use_raft = true;
+        faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
+        raftGpuIndex.nprobe = opt.nprobe;
+
+        raftGpuIndex.add(opt.numAdd, addVecs.data());
+
+        faiss::gpu::compareIndices(
+                cpuIndex,
+                raftGpuIndex,
+                opt.numQuery,
+                opt.dim,
+                opt.k,
+                opt.toString(),
+                opt.getCompareEpsilon(),
+                opt.getPctMaxDiff1(),
+                opt.getPctMaxDiffN());
+#endif
     }
 }
 
