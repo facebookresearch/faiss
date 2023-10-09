@@ -21,6 +21,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_if.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -125,6 +126,8 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 namespace {
 
+/*
+// Baseline implementation that is kept for the reference.
 template <MetricType metric, class C, bool use_sel>
 struct IVFFlatScanner : InvertedListScanner {
     size_t d;
@@ -137,7 +140,7 @@ struct IVFFlatScanner : InvertedListScanner {
         this->xi = query;
     }
 
-    void set_list(idx_t list_no, float /* coarse_dis */) override {
+    void set_list(idx_t list_no, float coarse_dis) override {
         this->list_no = list_no;
     }
 
@@ -194,6 +197,101 @@ struct IVFFlatScanner : InvertedListScanner {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 res.add(dis, id);
             }
+        }
+    }
+};
+*/
+
+template <MetricType metric, class C, bool use_sel>
+struct IVFFlatScanner : InvertedListScanner {
+    size_t d;
+
+    IVFFlatScanner(size_t d, bool store_pairs, const IDSelector* sel)
+            : InvertedListScanner(store_pairs, sel), d(d) {}
+
+    const float* xi;
+    void set_query(const float* query) override {
+        this->xi = query;
+    }
+
+    void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
+    }
+
+    float distance_to_code(const uint8_t* code) const override {
+        const float* yj = (float*)code;
+        float dis = metric == METRIC_INNER_PRODUCT
+                ? fvec_inner_product(xi, yj, d)
+                : fvec_L2sqr(xi, yj, d);
+        return dis;
+    }
+
+    size_t scan_codes(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            size_t k) const override {
+        const float* list_vecs = (const float*)codes;
+        size_t nup = 0;
+
+        // the lambda that filters acceptable elements.
+        auto filter = 
+            [&](const size_t j) { return (!use_sel || sel->is_member(ids[j])); };
+
+        // the lambda that applies a filtered element.
+        auto apply = 
+            [&](const float dis, const size_t j) {
+                if (C::cmp(simi[0], dis)) {
+                    const int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    heap_replace_top<C>(k, simi, idxi, dis, id);
+                    nup++;
+                }
+            };
+
+        // compute distances
+        if constexpr (metric == METRIC_INNER_PRODUCT) {
+            fvec_inner_products_ny_if(
+                xi, list_vecs, d, list_size, filter, apply);
+        }
+        else {
+            fvec_L2sqr_ny_if(
+                xi, list_vecs, d, list_size, filter, apply);
+        }
+
+        return nup;
+    }
+
+    void scan_codes_range(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float radius,
+            RangeQueryResult& res) const override {
+        const float* list_vecs = (const float*)codes;
+
+        // the lambda that filters acceptable elements.
+        auto filter = 
+            [&](const size_t j) { return (!use_sel || sel->is_member(ids[j])); };
+
+        // the lambda that applies a filtered element.
+        auto apply = 
+            [&](const float dis, const size_t j) {
+                if (C::cmp(radius, dis)) {
+                    int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    res.add(dis, id);
+                }
+            };
+
+        // compute distances
+        if constexpr (metric == METRIC_INNER_PRODUCT) {
+            fvec_inner_products_ny_if(
+                xi, list_vecs, d, list_size, filter, apply);
+        }
+        else {
+            fvec_L2sqr_ny_if(
+                xi, list_vecs, d, list_size, filter, apply);
         }
     }
 };

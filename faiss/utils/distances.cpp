@@ -26,6 +26,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 
+#include <faiss/utils/distances_if.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 
 #ifndef FINTEGER
@@ -102,7 +103,23 @@ void fvec_renorm_L2(size_t d, size_t nx, float* __restrict x) {
 
 namespace {
 
+// Helpers are used in search functions to help specialize various
+// performance-related use cases, such as adding some extra
+// support for a particular kind of IDSelector classes. This
+// may be useful if the lion's share of samples are filtered out.
+
+struct IDSelectorHelper {
+    const IDSelector* sel;
+
+    inline bool is_member(const size_t idx) const {
+        return sel->is_member(idx);
+    }
+};
+
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
+
+/*
+/// Baseline implementation of exhaustive_inner_product_seq
 template <class ResultHandler, bool use_sel = false>
 void exhaustive_inner_product_seq(
         const float* x,
@@ -138,7 +155,77 @@ void exhaustive_inner_product_seq(
         }
     }
 }
+*/
 
+// An improved implementation that
+// 1. helps the branch predictor,
+// 2. computes distances for 4 elements per loop
+template <class ResultHandler, class SelectorHelper>
+void exhaustive_inner_product_seq(
+        const float* __restrict x,
+        const float* __restrict y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        ResultHandler& res,
+        const SelectorHelper selector) {
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            resi.begin(i);
+
+            // the lambda that filters acceptable elements.
+            auto filter = [&selector](const size_t j) { 
+                return selector.is_member(j); 
+            };
+
+            // the lambda that applies a filtered element.
+            auto apply = [&resi](const float ip, const size_t j) {
+                resi.add_result(ip, j);
+            };
+
+            // compute distances
+            fvec_inner_products_ny_if(x_i, y, d, ny, filter, apply);
+
+            resi.end();
+        }
+    }
+}
+
+template <class ResultHandler>
+void exhaustive_inner_product_seq(
+        const float* __restrict x,
+        const float* __restrict y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        ResultHandler& res,
+        const IDSelector* __restrict sel = nullptr) {
+    // add different specialized cases here via introducing
+    //   helpers which are converted into templates.
+
+    if (sel != nullptr) {
+        // default Faiss case if sel is defined
+        IDSelectorHelper ids_helper{sel};
+        exhaustive_inner_product_seq<ResultHandler, IDSelectorHelper>(
+            x, y, d, nx, ny, res, ids_helper);
+        return;
+    }
+
+    // default case if no filter is needed or if it is empty
+    IDSelectorAll helper;
+    exhaustive_inner_product_seq<ResultHandler, IDSelectorAll>(
+        x, y, d, nx, ny, res, helper);
+}
+
+/*
+// Baseline implementation of exhaustive_L2sqr_seq
 template <class ResultHandler, bool use_sel = false>
 void exhaustive_L2sqr_seq(
         const float* x,
@@ -171,6 +258,74 @@ void exhaustive_L2sqr_seq(
             resi.end();
         }
     }
+}
+*/
+
+// An improved implementation that
+// 1. helps the branch predictor,
+// 2. computes distances for 4 elements per loop
+template <class ResultHandler, class SelectorHelper>
+void exhaustive_L2sqr_seq(
+        const float* __restrict x,
+        const float* __restrict y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        ResultHandler& res,
+        const SelectorHelper selector) {
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            resi.begin(i);
+
+            // the lambda that filters acceptable elements.
+            auto filter = [&selector](const size_t j) { 
+                return selector.is_member(j); 
+            };
+
+            // the lambda that applies a filtered element.
+            auto apply = [&resi](const float dis, const size_t j) {
+                resi.add_result(dis, j);
+            };
+
+            // compute distances
+            fvec_L2sqr_ny_if(x_i, y, d, ny, filter, apply);
+
+            resi.end();
+        }
+    }
+}
+
+template <class ResultHandler>
+void exhaustive_L2sqr_seq(
+        const float* __restrict x,
+        const float* __restrict y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        ResultHandler& res,
+        const IDSelector* __restrict sel = nullptr) {
+    // add different specialized cases here via introducing
+    //   helpers which are converted into templates.
+
+    if (sel != nullptr) {
+        // default Faiss case if sel is defined
+        IDSelectorHelper ids_helper{sel};
+        exhaustive_L2sqr_seq<ResultHandler, IDSelectorHelper>(
+            x, y, d, nx, ny, res, ids_helper);
+        return;
+    }
+
+    // default case if no filter is needed or if it is empty
+    IDSelectorAll helper;
+    exhaustive_L2sqr_seq<ResultHandler, IDSelectorAll>(
+        x, y, d, nx, ny, res, helper);
 }
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
@@ -583,7 +738,7 @@ void knn_L2sqr_select(
         const float* y_norm2,
         const IDSelector* sel) {
     if (sel) {
-        exhaustive_L2sqr_seq<ResultHandler, true>(x, y, d, nx, ny, res, sel);
+        exhaustive_L2sqr_seq(x, y, d, nx, ny, res, sel);
     } else if (nx < distance_compute_blas_threshold) {
         exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
     } else {
@@ -629,7 +784,7 @@ void knn_inner_product(
         using RH = HeapResultHandler<CMin<float, int64_t>>;
         RH res(nx, val, ids, k);
         if (sel) {
-            exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, res, sel);
+            exhaustive_inner_product_seq(x, y, d, nx, ny, res, sel);
         } else if (nx < distance_compute_blas_threshold) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
@@ -639,9 +794,9 @@ void knn_inner_product(
         using RH = ReservoirResultHandler<CMin<float, int64_t>>;
         RH res(nx, val, ids, k);
         if (sel) {
-            exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, res, sel);
+            exhaustive_inner_product_seq(x, y, d, nx, ny, res, sel);
         } else if (nx < distance_compute_blas_threshold) {
-            exhaustive_inner_product_seq(x, y, d, nx, ny, res, nullptr);
+            exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
         }
@@ -738,7 +893,7 @@ void range_search_L2sqr(
     using RH = RangeSearchResultHandler<CMax<float, int64_t>>;
     RH resh(res, radius);
     if (sel) {
-        exhaustive_L2sqr_seq<RH, true>(x, y, d, nx, ny, resh, sel);
+        exhaustive_L2sqr_seq(x, y, d, nx, ny, resh, sel);
     } else if (nx < distance_compute_blas_threshold) {
         exhaustive_L2sqr_seq(x, y, d, nx, ny, resh, sel);
     } else {
@@ -758,7 +913,7 @@ void range_search_inner_product(
     using RH = RangeSearchResultHandler<CMin<float, int64_t>>;
     RH resh(res, radius);
     if (sel) {
-        exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, resh, sel);
+        exhaustive_inner_product_seq(x, y, d, nx, ny, resh, sel);
     } else if (nx < distance_compute_blas_threshold) {
         exhaustive_inner_product_seq(x, y, d, nx, ny, resh);
     } else {
@@ -785,11 +940,32 @@ void fvec_inner_products_by_idx(
         const int64_t* __restrict idsj = ids + j * ny;
         const float* xj = x + j * d;
         float* __restrict ipj = ip + j * ny;
-        for (size_t i = 0; i < ny; i++) {
-            if (idsj[i] < 0)
-                continue;
-            ipj[i] = fvec_inner_product(xj, y + d * idsj[i], d);
-        }
+
+        // // baseline version
+        // for (size_t i = 0; i < ny; i++) {
+        //     if (idsj[i] < 0)
+        //         continue;
+        //     ipj[i] = fvec_inner_product(xj, y + d * idsj[i], d);
+        // }
+
+        // the lambda that filters acceptable elements.
+        auto filter = [=](const size_t i) { return (idsj[i] >= 0); };
+        
+        // the lambda that applies a filtered element.
+        auto apply = [=](const float dis, const int64_t i) {
+            ipj[i] = dis;
+        };
+
+        // compute distances
+        fvec_inner_products_ny_by_idx_if(
+            xj,
+            y,
+            idsj,
+            d,
+            ny,
+            filter,
+            apply
+        );
     }
 }
 
@@ -808,11 +984,32 @@ void fvec_L2sqr_by_idx(
         const int64_t* __restrict idsj = ids + j * ny;
         const float* xj = x + j * d;
         float* __restrict disj = dis + j * ny;
-        for (size_t i = 0; i < ny; i++) {
-            if (idsj[i] < 0)
-                continue;
-            disj[i] = fvec_L2sqr(xj, y + d * idsj[i], d);
-        }
+
+        // // baseline version
+        // for (size_t i = 0; i < ny; i++) {
+        //     if (idsj[i] < 0)
+        //         continue;
+        //     disj[i] = fvec_L2sqr(xj, y + d * idsj[i], d);
+        // }
+
+        // the lambda that filters acceptable elements.
+        auto filter = [=](const size_t i) { return (idsj[i] >= 0); };
+
+        // the lambda that applies a filtered element.
+        auto apply = [=](const float dis, const int64_t i) {
+            disj[i] = dis;
+        };
+
+        // compute distances
+        fvec_L2sqr_ny_by_idx_if(
+            xj,
+            y,
+            idsj,
+            d,
+            ny,
+            filter,
+            apply
+        );
     }
 }
 
