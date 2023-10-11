@@ -135,7 +135,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
    protected:
     /// Initialize appropriate index
-    void GpuIndexIVFPQ::set_index_(
+    void setIndex_(
             GpuResources* resources,
             int dim,
             idx_t nlist,

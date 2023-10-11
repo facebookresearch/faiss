@@ -446,13 +446,12 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
 
     quantizer->reset();
 
-    {
-        // leverage the CPU-side k-means code, which works for the GPU
-        // flat index as well
-        Clustering clus(this->d, nlist, this->cp);
-        clus.verbose = verbose;
-        clus.train(n, x, *quantizer);
-    }
+    // leverage the CPU-side k-means code, which works for the GPU
+    // flat index as well
+    Clustering clus(this->d, nlist, this->cp);
+    clus.verbose = verbose;
+    clus.train(n, x, *quantizer);
+
     quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }

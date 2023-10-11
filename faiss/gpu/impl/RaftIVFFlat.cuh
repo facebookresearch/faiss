@@ -106,8 +106,7 @@ class RaftIVFFlat : public IVFFlat {
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    /// Filter out matrix rows containing NaN values
-    void validRowIndices_(Tensor<float, 2, true>& vecs, bool* nan_flag);
+    void setRaftIndex(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>& idx);
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation

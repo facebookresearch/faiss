@@ -45,6 +45,7 @@ IVFPQ::IVFPQ(
         bool useFloat16LookupTables,
         bool useMMCodeDistance,
         bool interleavedLayout,
+        bool allocPtrs,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space)
@@ -56,6 +57,7 @@ IVFPQ::IVFPQ(
                   // we use IVF cell residuals for encoding vectors
                   true,
                   interleavedLayout,
+                  allocPtrs,
                   indicesOptions,
                   space),
           numSubQuantizers_(numSubQuantizers),

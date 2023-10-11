@@ -28,6 +28,7 @@ class IVFPQ : public IVFBase {
           bool useFloat16LookupTables,
           bool useMMCodeDistance,
           bool interleavedLayout,
+          bool allocPtrs,
           float* pqCentroidData,
           IndicesOptions indicesOptions,
           MemorySpace space);
@@ -134,7 +135,7 @@ class IVFPQ : public IVFBase {
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices);
 
-   private:
+   protected:
     /// Number of sub-quantizers per vector
     const int numSubQuantizers_;
 

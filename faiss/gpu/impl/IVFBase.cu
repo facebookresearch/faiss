@@ -36,6 +36,7 @@ IVFBase::IVFBase(
         float metricArg,
         bool useResidual,
         bool interleavedLayout,
+        bool allocPtrs,
         IndicesOptions indicesOptions,
         MemorySpace space)
         : resources_(resources),
@@ -46,8 +47,9 @@ IVFBase::IVFBase(
           useResidual_(useResidual),
           interleavedLayout_(interleavedLayout),
           indicesOptions_(indicesOptions),
-          space_(space),
-          deviceListDataPointers_(
+          space_(space) {
+    if (allocPtrs) {
+    deviceListDataPointers_(
                   resources,
                   AllocInfo(
                           AllocType::IVFLists,
@@ -68,8 +70,9 @@ IVFBase::IVFBase(
                           getCurrentDevice(),
                           space,
                           resources->getDefaultStreamCurrentDevice())),
-          maxListLength_(0) {
+          maxListLength_(0)
     reset();
+    }
 }
 
 IVFBase::~IVFBase() {}

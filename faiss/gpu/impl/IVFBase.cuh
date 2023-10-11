@@ -35,6 +35,7 @@ class IVFBase {
             float metricArg,
             bool interleavedLayout,
             bool useResidual,
+            bool allocPtrs,
             IndicesOptions indicesOptions,
             MemorySpace space);
 
@@ -206,7 +207,7 @@ class IVFBase {
     const idx_t numLists_;
 
     /// Do we need to also compute residuals when processing vectors?
-    bool useResidual_;
+    bool idual_;
 
     /// Coarse quantizer centroids available on GPU
     DeviceTensor<float, 2, true> ivfCentroids_;

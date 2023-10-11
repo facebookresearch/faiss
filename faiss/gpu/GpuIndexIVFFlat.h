@@ -91,7 +91,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     void trainQuantizer_(idx_t n, const float* x) override;
 
     /// Initialize appropriate index
-    void set_index_(
+    void setIndex_(
             GpuResources* resources,
             int dim,
             int nlist,

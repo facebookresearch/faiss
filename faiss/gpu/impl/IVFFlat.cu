@@ -37,6 +37,7 @@ IVFFlat::IVFFlat(
         bool useResidual,
         faiss::ScalarQuantizer* scalarQ,
         bool interleavedLayout,
+        bool allocPtrs,
         IndicesOptions indicesOptions,
         MemorySpace space)
         : IVFBase(res,
@@ -45,6 +46,7 @@ IVFFlat::IVFFlat(
                   metric,
                   metricArg,
                   useResidual,
+                  allocPtrs,
                   interleavedLayout,
                   indicesOptions,
                   space),

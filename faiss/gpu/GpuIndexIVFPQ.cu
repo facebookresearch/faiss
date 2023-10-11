@@ -16,6 +16,13 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #include <limits>
+#include <memory>
+
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftIVFPQ.cuh>
+#include <faiss/gpu/impl/RaftUtils.h>
+#include <raft/neighbors/ivf_pq.cuh>
+#endif
 
 namespace faiss {
 namespace gpu {
@@ -127,7 +134,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Copy our lists as well
     // The product quantizer must have data in it
     FAISS_ASSERT(index->pq.centroids.size() > 0);
-    set_index_(
+    setIndex_(
             resources_.get(),
             this->d,
             this->nlist,
@@ -348,35 +355,34 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         // No need to copy the data to host
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
-
+        
         raft::neighbors::ivf_pq::index_params raft_idx_params;
         raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = metric_type == faiss::METRIC_L2
-                ? raft::distance::DistanceType::L2Expanded
-                : raft::distance::DistanceType::InnerProduct;
+        raft_idx_params.metric = faiss_to_raft(metric_type, false);
+        raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_trainset_fraction =
+                static_cast<double>(cp.max_points_per_centroid * nlist) /
+                static_cast<double>(n);
         raft_idx_params.kmeans_n_iters = cp.niter;
-        raft_idx_params.kmeans_trainset_fraction = 1.0;
         raft_idx_params.pq_bits = bitsPerCode_;
         raft_idx_params.pq_dim = subQuantizers_;
         raft_idx_params.conservative_memory_allocation = true;
         raft_idx_params.add_data_on_build = false;
 
-        auto raft_index = raft::neighbors::ivf_pq::build(
-                raft_handle, raft_idx_params, x, n, (idx_t)d);
+        auto raftIndex_ = std::static_pointer_cast<RaftIVFPQ, IVFPQ>(index_);
 
-        raft_handle.sync_stream();
+        std::optional<raft::neighbors::ivf_pq::index<idx_t>> raft_knn_index;
 
-        quantizer->train(nlist, raft_index.centers().data_handle());
-        quantizer->add(nlist, raft_index.centers().data_handle());
+        raft_knn_index.emplace(raft::neighbors::ivf_pq::build<float, idx_t>(
+                raft_handle, raft_idx_params, x, n, (idx_t)d));
 
-        IndexFlatL2 index(dsub);
-            clus.train(n, xslice, assign_index ? *assign_index : index);
-            raft::copy(pq.get_centroids(0, 0), pq.raft_index.pq_centers().data_handle(), subQuantizers_ * dsub * utils::pow2(bitsPerCode_));
+        raftIndex_->setRaftIndex(raft_knn_index);
+
+        quantizer->train(nlist, raft_knn_index.value().centers().data_handle());
+        quantizer->add(nlist, raft_knn_index.value().centers().data_handle());
+
+        raft::copy(pq.get_centroids(0, 0), raft_knn_index.value().pq_centers().data_handle(), subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_), resources_->getDefaultStream(config_.device));
             // set_params(clus.centroids.data(), m);
-
-{
-  return detail::build(handle, params, dataset, n_rows, dim);
-}
     } else
 #else
     if (config_.use_raft) {
@@ -396,7 +402,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         trainQuantizer_(n, hostData.data());
         trainResidualQuantizer_(n, hostData.data());
     }
-    set_index_(
+    setIndex_(
             resources_.get(),
             this->d,
             this->nlist,
@@ -424,7 +430,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     this->is_trained = true;
 }
 
-void GpuIndexIVFPQ::set_index_(
+void GpuIndexIVFPQ::setIndex_(
         GpuResources* resources,
         int dim,
         idx_t nlist,

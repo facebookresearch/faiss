@@ -17,6 +17,8 @@
 
 #include <optional>
 
+namespace faiss {
+namespace gpu {
 /// Implementing class for IVFPQ on the GPU
 class RaftIVFPQ : public IVFPQ {
    public:
@@ -83,20 +85,21 @@ class RaftIVFPQ : public IVFPQ {
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
+    void setRaftIndex(std::optional<raft::neighbors::ivf_pq::index<idx_t>>& idx);
+
+    /// Classify and encode/add vectors to our IVF lists.
+    /// The input data must be on our current device.
+    /// Returns the number of vectors successfully added. Vectors may
+    /// not be able to be added because they contain NaNs.
+    idx_t addVectors(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& vecs,
+            Tensor<idx_t, 1, true>& indices) override;
+
    protected:
     /// Returns the encoding size for a PQ-encoded IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
-
-    /// Translate to our preferred GPU encoding
-    std::vector<uint8_t> translateCodesToGpu_(
-            std::vector<uint8_t> codes,
-            idx_t numVecs) const override;
-
-    /// Translate from our preferred GPU encoding
-    std::vector<uint8_t> translateCodesFromGpu_(
-            std::vector<uint8_t> codes,
-            idx_t numVecs) const override;
 
     /// Encode the vectors that we're adding and append to our IVF lists
     void appendVectors_(
@@ -110,17 +113,6 @@ class RaftIVFPQ : public IVFPQ {
             Tensor<idx_t, 1, true>& listIds,
             Tensor<idx_t, 1, true>& listOffset,
             cudaStream_t stream) override;
-
-    /// Shared IVF search implementation, used by both search and
-    /// searchPreassigned
-    void searchImpl_(
-            Tensor<float, 2, true>& queries,
-            Tensor<float, 2, true>& coarseDistances,
-            Tensor<idx_t, 2, true>& coarseIndices,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices,
-            bool storePairs);
 
     /// Sets the current product quantizer centroids; the data can be
     /// resident on either the host or the device. It will be transposed
@@ -151,27 +143,6 @@ class RaftIVFPQ : public IVFPQ {
             Tensor<idx_t, 2, true>& outIndices);
 
    private:
-    /// Number of sub-quantizers per vector
-    const int numSubQuantizers_;
-
-    /// Number of bits per sub-quantizer
-    const int bitsPerSubQuantizer_;
-
-    /// Number of per sub-quantizer codes (2^bits)
-    const int numSubQuantizerCodes_;
-
-    /// Number of dimensions per each sub-quantizer
-    const int dimPerSubQuantizer_;
-
-    /// Do we maintain precomputed terms and lookup tables in float16
-    /// form?
-    const bool useFloat16LookupTables_;
-
-    /// For usage without precomputed codes, do we force usage of the
-    /// general-purpose MM code distance computation? This is for testing
-    /// purposes.
-    const bool useMMCodeDistance_;
-
     /// On the GPU, we prefer different PQ centroid data layouts for
     /// different purposes.
     ///
@@ -192,7 +163,7 @@ class RaftIVFPQ : public IVFPQ {
     /// Precomputed term 2 in half form
     DeviceTensor<half, 3, true> precomputedCodeHalf_;
 
-    std::optional<raft::neighbors::ivf_pq::index<float, idx_t>>
+    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
         raft_knn_index{std::nullopt};
 };
 
@@ -211,5 +182,5 @@ struct RaftIVFPQCodePackerInterleaved : CodePacker {
     int numSubQuantizers_;
 };
 
-// } // namespace gpu
-// } // namespace faiss
+} // namespace gpu
+} // namespace faiss

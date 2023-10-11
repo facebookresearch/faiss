@@ -238,11 +238,13 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
+          impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh
-          impl/RaftFlatIndex.cuh)
+          impl/RaftIVFPQ.cuh)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
-	  impl/RaftIVFFlat.cu)
+	  impl/RaftIVFFlat.cu
+    impl/RaftIVFPQ.cu)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)

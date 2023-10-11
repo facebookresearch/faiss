@@ -23,8 +23,13 @@
 #pragma once
 
 #include <faiss/MetricType.h>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/HostTensor.cuh>
+
 #include <raft/core/error.hpp>
+#include <raft/core/device_mdspan.hpp>
 #include <raft/distance/distance_types.hpp>
+#include <raft/linalg/map.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -52,6 +57,30 @@ inline raft::distance::DistanceType faiss_to_raft(
         default:
             RAFT_FAIL("Distance type not supported");
     }
+}
+
+/// Filter out matrix rows containing NaN values
+void validRowIndices(
+    GpuResources* resources,
+        Tensor<float, 2, true>& vecs,
+        bool* nan_flag) {
+    raft::device_resources& raft_handle =
+            resources->getRaftHandleCurrentDevice();
+    idx_t n_rows = vecs.getSize(0);
+    idx_t dim = vecs.getSize(1);
+
+    thrust::fill_n(raft_handle.get_thrust_policy(), nan_flag, n_rows, true);
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view<bool, idx_t>(nan_flag, n_rows),
+            [vecs = vecs.data(), dim] __device__(idx_t i) {
+                for (idx_t col = 0; col < dim; col++) {
+                    if (!isfinite(vecs[i * dim + col])) {
+                        return false;
+                    }
+                }
+                return true;
+            });
 }
 } // namespace gpu
 } // namespace faiss
