@@ -26,10 +26,6 @@ struct IndexPQ : IndexFlatCodes {
     ProductQuantizer pq;
 
     /** Constructor.
-     *
-     * @param d      dimensionality of the input vectors
-     * @param M      number of subquantizers
-     * @param nbits  number of bit per subvector index
      */
     IndexPQ(int d,        ///< dimensionality of the input vectors
             size_t M,     ///< number of subquantizers
