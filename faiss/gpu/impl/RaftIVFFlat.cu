@@ -77,6 +77,9 @@ RaftIVFFlat::RaftIVFFlat(
                   false,
                   indicesOptions,
                   space) {
+    FAISS_THROW_IF_NOT_MSG(
+            indicesOptions == INDICES_64_BIT,
+            "only INDICES_64_BIT is supported for RAFT index");
     raft::neighbors::ivf_flat::index_params pams;
     pams.add_data_on_build = false;
 
@@ -100,6 +103,10 @@ RaftIVFFlat::RaftIVFFlat(
 }
 
 RaftIVFFlat::~RaftIVFFlat() {}
+
+void RaftIVFFlat::reset() {
+    raft_knn_index.reset();
+}
 
 /// Directly modify the raft index
 void RaftIVFFlat::setRaftIndex(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>& idx) {
@@ -250,10 +257,6 @@ idx_t RaftIVFFlat::addVectors(
             raft_knn_index.value()));
 
     return n_rows_valid;
-}
-
-void RaftIVFFlat::reset() {
-    raft_knn_index.reset();
 }
 
 idx_t RaftIVFFlat::getListLength(idx_t listId) const {
@@ -523,7 +526,7 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     }
 
     // The GPU might have a different layout of the memory
-    size_t gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
+    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
 
     // We only have int32 length representations on the GPU per each
     // list; the length is in sizeof(char)

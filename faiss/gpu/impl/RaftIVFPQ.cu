@@ -77,6 +77,7 @@ RaftIVFPQ::RaftIVFPQ(
                 useMMCodeDistance,
                 interleavedLayout,
                 // skip ptr allocations in base class (handled by RAFT internally)
+                false,
                 pqCentroidData,
                 indicesOptions,
                 space) {
@@ -108,6 +109,98 @@ void RaftIVFPQ::reset() {
 }
 
 RaftIVFPQ::~RaftIVFPQ() {}
+
+idx_t RaftIVFFlat::getListLength(idx_t listId) const {
+    FAISS_ASSERT(raft_knn_index.has_value());
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+
+    uint32_t size;
+    raft::update_host(
+            &size,
+            raft_knn_index.value().list_sizes().data_handle() + listId,
+            1,
+            raft_handle.get_stream());
+    raft_handle.sync_stream();
+
+    return static_cast<int>(size);
+}
+
+/// Return the list indices of a particular list back to the CPU
+std::vector<idx_t> RaftIVFPQ::getListIndices(idx_t listId) const {
+    FAISS_ASSERT(raft_knn_index.has_value());
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
+
+    idx_t listSize = getListLength(listId);
+
+    std::vector<idx_t> vec(listSize);
+
+    // fetch the list indices ptr on host
+    idx_t* list_indices_ptr;
+
+    // fetch the list indices ptr on host
+    raft::update_host(
+            &list_indices_ptr,
+            raft_knn_index.value().inds_ptrs().data_handle() + listId,
+            1,
+            stream);
+    raft_handle.sync_stream();
+
+    raft::update_host(vec.data(), list_indices_ptr, listSize, stream);
+    raft_handle.sync_stream();
+
+    return vec;
+}
+
+/// Return the encoded vectors of a particular list back to the CPU
+std::vector<uint8_t> RaftIVFPQ::getListVectorData(
+        idx_t listId,
+        bool gpuFormat) const {
+    if (gpuFormat) {
+        FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
+    }
+    FAISS_ASSERT(raft_knn_index.has_value());
+
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
+
+    idx_t listSize = getListLength(listId);
+
+    // the interleaved block can be slightly larger than the list size (it's
+    // rounded up)
+    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(listSize);
+    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(listSize);
+
+    std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+    std::vector<uint8_t> flat_codes(cpuListSizeInBytes);
+
+    float* list_data_ptr;
+
+    // fetch the list data ptr on host
+    raft::update_host(
+            &list_data_ptr,
+            raft_knn_index.value().data_ptrs().data_handle() + listId,
+            1,
+            stream);
+    raft_handle.sync_stream();
+
+    raft::update_host(
+            interleaved_codes.data(),
+            reinterpret_cast<uint8_t*>(list_data_ptr),
+            gpuListSizeInBytes,
+            stream);
+    raft_handle.sync_stream();
+
+    RaftIVFPQCodePackerInterleaved packer(
+            (size_t)listSize, numSubQuantizers_, bitsPerSubQuantizer_);
+    packer.unpack_all(interleaved_codes.data(), flat_codes.data());
+
+    return packNonInterleaved(
+            std::move(flat_codes), numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
+}
 
 /// Find the approximate k nearest neighbors for `queries` against
 /// our database
@@ -339,7 +432,8 @@ void RaftIVFPQ::addEncodedVectorsToList_(
     }
 
     // The GPU might have a different layout of the memory
-    size_t gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
+    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
+    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(numVecs);
 
     // We only have int32 length representations on the GPU per each
     // list; the length is in sizeof(char)

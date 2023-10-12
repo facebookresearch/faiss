@@ -107,7 +107,11 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
 
     // Clear out our old data
     index_.reset();
-    baseIndex_.reset();
+
+    // no need to do base class ptr allocations if RAFT is not enabled
+    if (!config_.reset) {
+        baseIndex_.reset();
+    }
 
     pq = index->pq;
     subQuantizers_ = index->pq.M;

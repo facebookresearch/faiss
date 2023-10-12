@@ -96,60 +96,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
 
 GpuIndexIVFFlat::~GpuIndexIVFFlat() {}
 
-void GpuIndexIVFFlat::setIndex_(
-        GpuResources* resources,
-        int dim,
-        int nlist,
-        faiss::MetricType metric,
-        float metricArg,
-        bool useResidual,
-        /// Optional ScalarQuantizer
-        faiss::ScalarQuantizer* scalarQ,
-        bool interleavedLayout,
-        IndicesOptions indicesOptions,
-        MemorySpace space) {
-#if defined USE_NVIDIA_RAFT
-
-    if (config_.use_raft) {
-         FAISS_THROW_IF_NOT_MSG(
-            ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
-            "RAFT only supports INDICES_64_BIT");
-        FAISS_THROW_IF_NOT_MSG(
-            ivfFlatConfig_.interleavedLayout,
-            "RAFT requires interleavedLayout to be true");
-        index_.reset(new RaftIVFFlat(
-                resources,
-                dim,
-                nlist,
-                metric,
-                metricArg,
-                useResidual,
-                scalarQ,
-                interleavedLayout,
-                indicesOptions,
-                space));
-    } else
-#else
-    if (config_.use_raft) {
-        FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
-#endif
-    {
-        index_.reset(new IVFFlat(
-                resources,
-                dim,
-                nlist,
-                metric,
-                metricArg,
-                useResidual,
-                scalarQ,
-                interleavedLayout,
-                indicesOptions,
-                space));
-    }
-}
-
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
     DeviceScope scope(config_.device);
 
@@ -172,7 +118,11 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
     // Clear out our old data
     index_.reset();
-    baseIndex_.reset();
+
+    // no need to do base class ptr allocations if RAFT is not enabled
+    if (!config_.use_raft) {
+        baseIndex_.reset();
+    }
 
     // The other index might not be trained
     if (!index->is_trained) {
@@ -334,6 +284,60 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     }
 
     this->is_trained = true;
+}
+
+void GpuIndexIVFFlat::setIndex_(
+        GpuResources* resources,
+        int dim,
+        int nlist,
+        faiss::MetricType metric,
+        float metricArg,
+        bool useResidual,
+        /// Optional ScalarQuantizer
+        faiss::ScalarQuantizer* scalarQ,
+        bool interleavedLayout,
+        IndicesOptions indicesOptions,
+        MemorySpace space) {
+#if defined USE_NVIDIA_RAFT
+
+    if (config_.use_raft) {
+         FAISS_THROW_IF_NOT_MSG(
+            ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
+            "RAFT only supports INDICES_64_BIT");
+        FAISS_THROW_IF_NOT_MSG(
+            ivfFlatConfig_.interleavedLayout,
+            "RAFT requires interleavedLayout to be true");
+        index_.reset(new RaftIVFFlat(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
+    } else
+#else
+    if (config_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        index_.reset(new IVFFlat(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
+    }
 }
 
 } // namespace gpu
