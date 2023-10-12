@@ -85,8 +85,8 @@ struct IndexFlatL2 : IndexFlat {
     std::vector<float> cached_l2norms;
 
     /**
-    * @param d dimensionality of the input vectors
-    */
+     * @param d dimensionality of the input vectors
+     */
     explicit IndexFlatL2(idx_t d) : IndexFlat(d, METRIC_L2) {}
     IndexFlatL2() {}
 
