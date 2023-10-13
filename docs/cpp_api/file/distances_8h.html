@@ -512,12 +512,36 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss26fvec_inner_products_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t">
 <span id="_CPPv3N5faiss26fvec_inner_products_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t"></span><span id="_CPPv2N5faiss26fvec_inner_products_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t"></span><span id="faiss::fvec_inner_products_by_idx__floatP.floatCP.floatCP.int64_tCP.s.s.s"></span><span class="target" id="namespacefaiss_1a3ccc8ec4f2a74c6154befe048fe83f13"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_inner_products_by_idx</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ip</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss26fvec_inner_products_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>compute the inner product between x and a subset y of ny vectors defined by ids</p>
+<p>ip(i, j) = inner_product(x(i, :), y(ids(i, j), :))</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> – output array, size nx * ny </p></li>
+<li><p><strong>x</strong> – first-term vector, size nx * d </p></li>
+<li><p><strong>y</strong> – second-term vector, size (max(ids) + 1) * d </p></li>
+<li><p><strong>ids</strong> – ids to sample from y, size nx * ny </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17fvec_L2sqr_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t">
 <span id="_CPPv3N5faiss17fvec_L2sqr_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t"></span><span id="_CPPv2N5faiss17fvec_L2sqr_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t"></span><span id="faiss::fvec_L2sqr_by_idx__floatP.floatCP.floatCP.int64_tCP.s.s.s"></span><span class="target" id="namespacefaiss_1a470eea056c32c67ac13bb4791394b0b8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_L2sqr_by_idx</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dis</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17fvec_L2sqr_by_idxEPfPKfPKfPK7int64_t6size_t6size_t6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>compute the squared L2 distances between x and a subset y of ny vectors defined by ids</p>
+<p>dis(i, j) = inner_product(x(i, :), y(ids(i, j), :))</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dis</strong> – output array, size nx * ny </p></li>
+<li><p><strong>x</strong> – first-term vector, size nx * d </p></li>
+<li><p><strong>y</strong> – second-term vector, size (max(ids) + 1) * d </p></li>
+<li><p><strong>ids</strong> – ids to sample from y, size nx * ny </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22pairwise_indexed_L2sqrE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf">
@@ -539,7 +563,19 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss30pairwise_indexed_inner_productE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf">
 <span id="_CPPv3N5faiss30pairwise_indexed_inner_productE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf"></span><span id="_CPPv2N5faiss30pairwise_indexed_inner_productE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf"></span><span id="faiss::pairwise_indexed_inner_product__s.s.floatCP.int64_tCP.floatCP.int64_tCP.floatP"></span><span class="target" id="namespacefaiss_1a687edf56ab386203fcd992572c539f99"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pairwise_indexed_inner_product</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ix</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">iy</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss30pairwise_indexed_inner_productE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>compute dis[j] = inner_product(x[ix[j]], y[iy[j]]) forall j=0..n-1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – size (max(ix) + 1, d) </p></li>
+<li><p><strong>y</strong> – size (max(iy) + 1, d) </p></li>
+<li><p><strong>ix</strong> – size n </p></li>
+<li><p><strong>iy</strong> – size n </p></li>
+<li><p><strong>dis</strong> – size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_tPK10IDSelector">
