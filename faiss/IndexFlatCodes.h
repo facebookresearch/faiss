@@ -34,13 +34,6 @@ struct IndexFlatCodes : Index {
 
     void reset() override;
 
-    /** Reconstruct vectors i0 to i0 + ni - 1
-     *
-     * this function may not be defined for some indexes
-     * @param i0          index of the first vector in the sequence
-     * @param ni          number of vectors in the sequence
-     * @param recons      reconstucted vector (size ni * d)
-     */
     void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
