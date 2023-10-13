@@ -198,8 +198,16 @@ void fvec_sub(size_t d, const float* a, const float* b, float* c);
  * Compute a subset of  distances
  ***************************************************************************/
 
-/* compute the inner product between x and a subset y of ny vectors,
-  whose indices are given by idy.  */
+/** compute the inner product between x and a subset y of ny vectors defined by
+ * ids
+ *
+ * ip(i, j) = inner_product(x(i, :), y(ids(i, j), :))
+ *
+ * @param ip    output array, size nx * ny
+ * @param x     first-term vector, size nx * d
+ * @param y     second-term vector, size (max(ids) + 1) * d
+ * @param ids   ids to sample from y, size nx * ny
+ */
 void fvec_inner_products_by_idx(
         float* ip,
         const float* x,
@@ -209,7 +217,16 @@ void fvec_inner_products_by_idx(
         size_t nx,
         size_t ny);
 
-/* same but for a subset in y indexed by idsy (ny vectors in total) */
+/** compute the squared L2 distances between x and a subset y of ny vectors
+ * defined by ids
+ *
+ * dis(i, j) = inner_product(x(i, :), y(ids(i, j), :))
+ *
+ * @param dis   output array, size nx * ny
+ * @param x     first-term vector, size nx * d
+ * @param y     second-term vector, size (max(ids) + 1) * d
+ * @param ids   ids to sample from y, size nx * ny
+ */
 void fvec_L2sqr_by_idx(
         float* dis,
         const float* x,
@@ -236,7 +253,14 @@ void pairwise_indexed_L2sqr(
         const int64_t* iy,
         float* dis);
 
-/* same for inner product */
+/** compute dis[j] = inner_product(x[ix[j]], y[iy[j]]) forall j=0..n-1
+ *
+ * @param x  size (max(ix) + 1, d)
+ * @param y  size (max(iy) + 1, d)
+ * @param ix size n
+ * @param iy size n
+ * @param dis size n
+ */
 void pairwise_indexed_inner_product(
         size_t d,
         size_t n,
