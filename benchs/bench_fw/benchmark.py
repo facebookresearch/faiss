@@ -9,7 +9,7 @@ from operator import itemgetter
 from statistics import median, mean
 from time import perf_counter
 from typing import Any, List, Optional
-from descriptors import DatasetDescriptor, IndexDescriptor
+from .descriptors import DatasetDescriptor, IndexDescriptor
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu

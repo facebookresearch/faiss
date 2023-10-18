@@ -10,7 +10,7 @@ import faiss  # @manual=//faiss/python:pyfaiss_gpu
 
 import numpy as np
 
-from descriptors import DatasetDescriptor, IndexDescriptor
+from .descriptors import DatasetDescriptor, IndexDescriptor
 
 logger = logging.getLogger(__name__)
 
