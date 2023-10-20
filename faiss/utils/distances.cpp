@@ -786,9 +786,11 @@ void fvec_inner_products_by_idx(
         const float* xj = x + j * d;
         float* __restrict ipj = ip + j * ny;
         for (size_t i = 0; i < ny; i++) {
-            if (idsj[i] < 0)
-                continue;
-            ipj[i] = fvec_inner_product(xj, y + d * idsj[i], d);
+            if (idsj[i] < 0) {
+                ipj[i] = -INFINITY;
+            } else {
+                ipj[i] = fvec_inner_product(xj, y + d * idsj[i], d);
+            }
         }
     }
 }
@@ -809,9 +811,11 @@ void fvec_L2sqr_by_idx(
         const float* xj = x + j * d;
         float* __restrict disj = dis + j * ny;
         for (size_t i = 0; i < ny; i++) {
-            if (idsj[i] < 0)
-                continue;
-            disj[i] = fvec_L2sqr(xj, y + d * idsj[i], d);
+            if (idsj[i] < 0) {
+                disj[i] = INFINITY;
+            } else {
+                disj[i] = fvec_L2sqr(xj, y + d * idsj[i], d);
+            }
         }
     }
 }
@@ -828,6 +832,8 @@ void pairwise_indexed_L2sqr(
     for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_L2sqr(x + d * ix[j], y + d * iy[j], d);
+        } else {
+            dis[j] = INFINITY;
         }
     }
 }
@@ -844,6 +850,8 @@ void pairwise_indexed_inner_product(
     for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_inner_product(x + d * ix[j], y + d * iy[j], d);
+        } else {
+            dis[j] = -INFINITY;
         }
     }
 }

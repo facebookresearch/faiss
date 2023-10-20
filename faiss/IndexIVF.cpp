@@ -698,12 +698,13 @@ void IndexIVF::search_preassigned(
         }
     }
 
-    if (ivf_stats) {
-        ivf_stats->nq += n;
-        ivf_stats->nlist += nlistv;
-        ivf_stats->ndis += ndis;
-        ivf_stats->nheap_updates += nheap;
+    if (ivf_stats == nullptr) {
+        ivf_stats = &indexIVF_stats;
     }
+    ivf_stats->nq += n;
+    ivf_stats->nlist += nlistv;
+    ivf_stats->ndis += ndis;
+    ivf_stats->nheap_updates += nheap;
 }
 
 void IndexIVF::range_search(
@@ -893,11 +894,12 @@ void IndexIVF::range_search_preassigned(
         }
     }
 
-    if (stats) {
-        stats->nq += nx;
-        stats->nlist += nlistv;
-        stats->ndis += ndis;
+    if (stats == nullptr) {
+        stats = &indexIVF_stats;
     }
+    stats->nq += nx;
+    stats->nlist += nlistv;
+    stats->ndis += ndis;
 }
 
 InvertedListScanner* IndexIVF::get_InvertedListScanner(
