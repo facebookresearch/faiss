@@ -447,9 +447,8 @@ void IndexIVF::search_preassigned(
 
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
-        InvertedListScanner* scanner =
-                get_InvertedListScanner(store_pairs, sel);
-        ScopeDeleter1<InvertedListScanner> del(scanner);
+        std::unique_ptr<InvertedListScanner> scanner(
+                get_InvertedListScanner(store_pairs, sel));
 
         /*****************************************************
          * Depending on parallel_mode, there are two possible ways
@@ -977,14 +976,12 @@ void IndexIVF::search_and_reconstruct(
             std::min(nlist, params ? params->nprobe : this->nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
-    idx_t* idx = new idx_t[n * nprobe];
-    ScopeDeleter<idx_t> del(idx);
-    float* coarse_dis = new float[n * nprobe];
-    ScopeDeleter<float> del2(coarse_dis);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
-    quantizer->search(n, x, nprobe, coarse_dis, idx);
+    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx, n * nprobe);
+    invlists->prefetch_lists(idx.get(), n * nprobe);
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -992,8 +989,8 @@ void IndexIVF::search_and_reconstruct(
             n,
             x,
             k,
-            idx,
-            coarse_dis,
+            idx.get(),
+            coarse_dis.get(),
             distances,
             labels,
             true /* store_pairs */,

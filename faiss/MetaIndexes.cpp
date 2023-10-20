@@ -70,22 +70,21 @@ void IndexSplitVectors::search(
             sum_d == d, "not enough indexes compared to # dimensions");
 
     int64_t nshard = sub_indexes.size();
-    float* all_distances = new float[nshard * k * n];
-    idx_t* all_labels = new idx_t[nshard * k * n];
-    ScopeDeleter<float> del(all_distances);
-    ScopeDeleter<idx_t> del2(all_labels);
+
+    std::unique_ptr<float[]> all_distances(new float[nshard * k * n]);
+    std::unique_ptr<idx_t[]> all_labels(new idx_t[nshard * k * n]);
 
     auto query_func = [n,
                        x,
                        k,
                        distances,
                        labels,
-                       all_distances,
-                       all_labels,
+                       &all_distances,
+                       &all_labels,
                        this](int no) {
         const IndexSplitVectors* index = this;
-        float* distances1 = no == 0 ? distances : all_distances + no * k * n;
-        idx_t* labels1 = no == 0 ? labels : all_labels + no * k * n;
+        float* distances1 = no == 0 ? distances : all_distances.get() + no * k * n;
+        idx_t* labels1 = no == 0 ? labels : all_labels.get() + no * k * n;
         if (index->verbose)
             printf("begin query shard %d on %" PRId64 " points\n", no, n);
         const Index* sub_index = index->sub_indexes[no];
@@ -93,11 +92,11 @@ void IndexSplitVectors::search(
         idx_t ofs = 0;
         for (int i = 0; i < no; i++)
             ofs += index->sub_indexes[i]->d;
-        float* sub_x = new float[sub_d * n];
-        ScopeDeleter<float> del1(sub_x);
+
+        std::unique_ptr<float[]> sub_x(new float[sub_d * n]);
         for (idx_t i = 0; i < n; i++)
-            memcpy(sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof(sub_x));
-        sub_index->search(n, sub_x, k, distances1, labels1);
+            memcpy(sub_x.get() + i * sub_d, x + ofs + i * d, sub_d * sizeof(sub_x));
+        sub_index->search(n, sub_x.get(), k, distances1, labels1);
         if (index->verbose)
             printf("end query shard %d\n", no);
     };
@@ -125,8 +124,8 @@ void IndexSplitVectors::search(
     int64_t factor = 1;
     for (int i = 0; i < nshard; i++) {
         if (i > 0) { // results of 0 are already in the table
-            const float* distances_i = all_distances + i * k * n;
-            const idx_t* labels_i = all_labels + i * k * n;
+            const float* distances_i = all_distances.get() + i * k * n;
+            const idx_t* labels_i = all_labels.get() + i * k * n;
             for (int64_t j = 0; j < n; j++) {
                 if (labels[j] >= 0 && labels_i[j] >= 0) {
                     labels[j] += labels_i[j] * factor;

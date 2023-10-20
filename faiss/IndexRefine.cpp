@@ -104,14 +104,14 @@ void IndexRefine::search(
     idx_t k_base = idx_t(k * k_factor);
     idx_t* base_labels = labels;
     float* base_distances = distances;
-    ScopeDeleter<idx_t> del1;
-    ScopeDeleter<float> del2;
+    std::unique_ptr<idx_t[]> del1;
+    std::unique_ptr<float[]> del2;
 
     if (k != k_base) {
         base_labels = new idx_t[n * k_base];
-        del1.set(base_labels);
+        del1.reset(base_labels);
         base_distances = new float[n * k_base];
-        del2.set(base_distances);
+        del2.reset(base_distances);
     }
 
     base_index->search(n, x, k_base, base_distances, base_labels);
@@ -233,14 +233,14 @@ void IndexRefineFlat::search(
     idx_t k_base = idx_t(k * k_factor);
     idx_t* base_labels = labels;
     float* base_distances = distances;
-    ScopeDeleter<idx_t> del1;
-    ScopeDeleter<float> del2;
+    std::unique_ptr<idx_t[]> del1;
+    std::unique_ptr<float[]> del2;
 
     if (k != k_base) {
         base_labels = new idx_t[n * k_base];
-        del1.set(base_labels);
+        del1.reset(base_labels);
         base_distances = new float[n * k_base];
-        del2.set(base_distances);
+        del2.reset(base_distances);
     }
 
     base_index->search(n, x, k_base, base_distances, base_labels);

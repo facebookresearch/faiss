@@ -151,4 +151,11 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #endif
 
+#if defined(_MSC_VER) && defined(_MSVC_LANG)
+static_assert(_MSVC_LANG >= 201703L, "C++17 is expected");
+#else
+// make sure that at least C++17 is used
+static_assert(__cplusplus >= 201703L, "C++17 is expected");
+#endif
+
 // clang-format on

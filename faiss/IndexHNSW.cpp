@@ -192,9 +192,8 @@ void hnsw_add_vertices(
             {
                 VisitedTable vt(ntotal);
 
-                DistanceComputer* dis =
-                        storage_distance_computer(index_hnsw.storage);
-                ScopeDeleter1<DistanceComputer> del(dis);
+                std::unique_ptr<DistanceComputer> dis(
+                        storage_distance_computer(index_hnsw.storage));
                 int prev_display =
                         verbose && omp_get_thread_num() == 0 ? 0 : -1;
                 size_t counter = 0;
@@ -301,8 +300,8 @@ void IndexHNSW::search(
         {
             VisitedTable vt(ntotal);
 
-            DistanceComputer* dis = storage_distance_computer(storage);
-            ScopeDeleter1<DistanceComputer> del(dis);
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(storage));
 
 #pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
@@ -373,8 +372,8 @@ void IndexHNSW::reconstruct(idx_t key, float* recons) const {
 void IndexHNSW::shrink_level_0_neighbors(int new_size) {
 #pragma omp parallel
     {
-        DistanceComputer* dis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del(dis);
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
 
 #pragma omp for
         for (idx_t i = 0; i < ntotal; i++) {
@@ -507,8 +506,8 @@ void IndexHNSW::init_level_0_from_entry_points(
     {
         VisitedTable vt(ntotal);
 
-        DistanceComputer* dis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del(dis);
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
         std::vector<float> vec(storage->d);
 
 #pragma omp for schedule(dynamic)
@@ -543,8 +542,8 @@ void IndexHNSW::reorder_links() {
         std::vector<float> distances(M);
         std::vector<size_t> order(M);
         std::vector<storage_idx_t> tmp(M);
-        DistanceComputer* dis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del(dis);
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
 
 #pragma omp for
         for (storage_idx_t i = 0; i < ntotal; i++) {
@@ -795,12 +794,11 @@ void ReconstructFromNeighbors::estimate_code(
         storage_idx_t i,
         uint8_t* code) const {
     // fill in tmp table with the neighbor values
-    float* tmp1 = new float[d * (M + 1) + (d * k)];
-    float* tmp2 = tmp1 + d * (M + 1);
-    ScopeDeleter<float> del(tmp1);
+    std::unique_ptr<float[]> tmp1(new float[d * (M + 1) + (d * k)]);
+    float* tmp2 = tmp1.get() + d * (M + 1);
 
     // collect coordinates of base
-    get_neighbor_table(i, tmp1);
+    get_neighbor_table(i, tmp1.get());
 
     for (size_t sq = 0; sq < nsq; sq++) {
         int d0 = sq * dsub;
@@ -816,7 +814,7 @@ void ReconstructFromNeighbors::estimate_code(
                    &ki,
                    &m1,
                    &one,
-                   tmp1 + d0,
+                   tmp1.get() + d0,
                    &di,
                    codebook.data() + sq * (m1 * k),
                    &m1,
@@ -1033,8 +1031,8 @@ void IndexHNSW2Level::search(
 #pragma omp parallel
         {
             VisitedTable vt(ntotal);
-            DistanceComputer* dis = storage_distance_computer(storage);
-            ScopeDeleter1<DistanceComputer> del(dis);
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(storage));
 
             int candidates_size = hnsw.upper_beam;
             MinimaxHeap candidates(candidates_size);

@@ -326,14 +326,14 @@ void search_with_parameters(
         double* ms_per_stage) {
     FAISS_THROW_IF_NOT(params);
     const float* prev_x = x;
-    ScopeDeleter<float> del;
+    std::unique_ptr<const float[]> del;
 
     double t0 = getmillisecs();
 
     if (auto ip = dynamic_cast<const IndexPreTransform*>(index)) {
         x = ip->apply_chain(n, x);
         if (x != prev_x) {
-            del.set(x);
+            del.reset(x);
         }
         index = ip->index;
     }
@@ -376,14 +376,14 @@ void range_search_with_parameters(
         double* ms_per_stage) {
     FAISS_THROW_IF_NOT(params);
     const float* prev_x = x;
-    ScopeDeleter<float> del;
+    std::unique_ptr<const float[]> del;
 
     double t0 = getmillisecs();
 
     if (auto ip = dynamic_cast<const IndexPreTransform*>(index)) {
         x = ip->apply_chain(n, x);
         if (x != prev_x) {
-            del.set(x);
+            del.reset(x);
         }
         index = ip->index;
     }
