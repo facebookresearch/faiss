@@ -1,12 +1,13 @@
 # (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+from contextlib import contextmanager
 import json
 import logging
-import time
 from dataclasses import dataclass
 from multiprocessing.pool import ThreadPool
 from operator import itemgetter
 from statistics import median, mean
+from time import perf_counter
 from typing import Any, List, Optional
 from .descriptors import DatasetDescriptor, IndexDescriptor
 
@@ -24,6 +25,15 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def timer(name) -> float:
+    logger.info(f"Measuring {name}")
+    t1 = t2 = perf_counter()
+    yield lambda: t2 - t1
+    t2 = perf_counter()
+    logger.info(f"Time for {name}: {t2 - t1:.3f} seconds")
 
 
 def refine_distances_knn(
@@ -77,7 +87,7 @@ def range_search_pr_curve(
     tbl = np.vstack(
         [dist_ann, metric_score, cum_score, precision, recall, unique_key]
     )
-    group_by_dist_max_cum_score = np.empty(len(dist_ann), np.bool)
+    group_by_dist_max_cum_score = np.empty(len(dist_ann), bool)
     group_by_dist_max_cum_score[-1] = True
     group_by_dist_max_cum_score[:-1] = dist_ann[1:] != dist_ann[:-1]
     tbl = tbl[:, group_by_dist_max_cum_score]
@@ -161,11 +171,13 @@ def optimizer(codec, search, cost_metric, perf_metric):
         op.add_operating_point(key, perf, cost)
 
 
-def distance_ratio_measure(R, D_GT, metric):
+def distance_ratio_measure(I, R, D_GT, metric):
+    sum_of_R = np.sum(np.where(I >= 0, R, 0))
+    sum_of_D_GT = np.sum(np.where(I >= 0, D_GT, 0))
     if metric == faiss.METRIC_INNER_PRODUCT:
-        return (np.sum(R) / np.sum(D_GT)).item()
+        return (sum_of_R / sum_of_D_GT).item()
     elif metric == faiss.METRIC_L2:
-        return (np.sum(D_GT) / np.sum(R)).item()
+        return (sum_of_D_GT / sum_of_R).item()
     else:
         raise RuntimeError(f"unknown metric {metric}")
 
@@ -188,7 +200,7 @@ def get_range_search_metric_function(range_metric, D, R):
         assert R is not None
         assert D.shape == R.shape
     if isinstance(range_metric, list):
-        aradius, ascore = [], []
+        aradius, ascore, aradius_from, aradius_to = [], [], [], []
         radius_to = 0
         for rsd in range_metric:
             assert isinstance(rsd, list)
@@ -212,6 +224,8 @@ def get_range_search_metric_function(range_metric, D, R):
             )
             aradius.append(real_radius)
             ascore.append(score)
+            aradius_from.append(radius_from)
+            aradius_to.append(radius_to)
 
         def sigmoid(x, a, b, c):
             return a / (1 + np.exp(b * x - c))
@@ -229,6 +243,7 @@ def get_range_search_metric_function(range_metric, D, R):
             cutoff,
             lambda x: np.where(x < cutoff, sigmoid(x, *popt), 0),
             popt.tolist(),
+            list(zip(aradius, ascore, aradius_from, aradius_to, strict=True))
         )
     else:
         # Assuming that the range_metric is a float,
@@ -244,7 +259,7 @@ def get_range_search_metric_function(range_metric, D, R):
             f"range_search_metric_function {range_metric=} {real_range=}"
         )
         assert isinstance(real_range, float)
-        return real_range * 2, lambda x: np.where(x < real_range, 1, 0), []
+        return real_range * 2, lambda x: np.where(x < real_range, 1, 0), [], []
 
 
 @dataclass
@@ -312,9 +327,9 @@ class Benchmark:
             assert len(range_metric) > 0
             ri = len(range_metric[0]) - 1
             m_radius = (
-                max(range_metric, key=itemgetter(ri))[ri]
+                max(rm[ri] for rm in range_metric)
                 if self.distance_metric_type == faiss.METRIC_L2
-                else min(range_metric, key=itemgetter(ri))[ri]
+                else min(rm[ri] for rm in range_metric)
             )
         else:
             m_radius = range_metric
@@ -329,13 +344,14 @@ class Benchmark:
             gt_radius,
             range_search_metric_function,
             coefficients,
+            coefficients_training_data,
         ) = get_range_search_metric_function(
             range_metric,
             D if not flat else None,
             R if not flat else None,
         )
         logger.info("range_search_reference: end")
-        return gt_radius, range_search_metric_function, coefficients
+        return gt_radius, range_search_metric_function, coefficients, coefficients_training_data
 
     def estimate_range(self, index_desc, parameters, range_scoring_radius):
         D, I, R, P = self.knn_search(
@@ -397,16 +413,12 @@ class Benchmark:
                 )
                 # QD = QD[:, :index.nprobe]
                 # QI = QI[:, :index.nprobe]
-                logger.info("Timing range_search_preassigned")
                 faiss.cvar.indexIVF_stats.reset()
-                t0 = time.time()
-                lims, D, I = index.range_search_preassigned(xq, radius, QI, QD)
-                t = time.time() - t0
+                with timer("range_search_preassigned") as t:
+                    lims, D, I = index.range_search_preassigned(xq, radius, QI, QD)
             else:
-                logger.info("Timing range_search")
-                t0 = time.time()
-                lims, D, I = index.range_search(xq, radius)
-                t = time.time() - t0
+                with timer("range_search") as t:
+                    lims, D, I = index.range_search(xq, radius)
             if flat:
                 R = D
             else:
@@ -415,7 +427,7 @@ class Benchmark:
                     lims, D, I, xq, xb, self.distance_metric_type
                 )
             P = {
-                "time": t,
+                "time": t(),
                 "radius": radius,
                 "count": lims[-1].item(),
                 "parameters": parameters,
@@ -560,16 +572,12 @@ class Benchmark:
                 )
                 # QD = QD[:, :index.nprobe]
                 # QI = QI[:, :index.nprobe]
-                logger.info("Timing knn search_preassigned")
                 faiss.cvar.indexIVF_stats.reset()
-                t0 = time.time()
-                D, I = index.search_preassigned(xq, k, QI, QD)
-                t = time.time() - t0
+                with timer("knn search_preassigned") as t:
+                    D, I = index.search_preassigned(xq, k, QI, QD)
             else:
-                logger.info("Timing knn search")
-                t0 = time.time()
-                D, I = index.search(xq, k)
-                t = time.time() - t0
+                with timer("knn search") as t:
+                    D, I = index.search(xq, k)
             if flat or level > 0:
                 R = D
             else:
@@ -578,7 +586,7 @@ class Benchmark:
                     D, I, xq, xb, self.distance_metric_type
                 )
             P = {
-                "time": t,
+                "time": t(),
                 "parameters": parameters,
                 "index": index_desc.factory,
                 "level": level,
@@ -646,7 +654,7 @@ class Benchmark:
                         I, self.gt_knn_I
                     ),
                     "distance_ratio": distance_ratio_measure(
-                        R, self.gt_knn_D, self.distance_metric_type
+                        I, R, self.gt_knn_D, self.distance_metric_type
                     ),
                 }
                 results["experiments"][key] = metrics
@@ -691,8 +699,12 @@ class Benchmark:
                     gt_radius,
                     range_search_metric_function,
                     coefficients,
+                    coefficients_training_data,
                 ) = self.range_search_reference(index_desc, range_metric)
-                results["metrics"][metric_key] = coefficients
+                results["metrics"][metric_key] = {
+                    "coefficients": coefficients,
+                    "training_data": coefficients_training_data,
+                }
                 gt_rsm = self.range_ground_truth(
                     gt_radius, range_search_metric_function
                 )
