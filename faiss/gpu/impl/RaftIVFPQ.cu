@@ -21,10 +21,13 @@
  */
 
 #include <raft/core/device_mdspan.hpp>
+#include <raft/core/temporary_device_buffer.hpp>
 #include <raft/neighbors/ivf_pq_codepacker.hpp>
 #include <raft/neighbors/ivf_pq.cuh>
+#include <raft/neighbors/ivf_pq_helpers.cuh>
 
 #include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/InterleavedCodes.h>
 #include <faiss/gpu/impl/RaftUtils.h>
@@ -76,12 +79,11 @@ RaftIVFPQ::RaftIVFPQ(
                 useFloat16LookupTables,
                 useMMCodeDistance,
                 interleavedLayout,
-                // skip ptr allocations in base class (handled by RAFT internally)
-                false,
+                // skip ptr allocations in base class (handled by RAFT
+                // internally) false,
                 pqCentroidData,
                 indicesOptions,
                 space) {
-
     const raft::device_resources& raft_handle =
             resources->getRaftHandleCurrentDevice();
 
@@ -102,6 +104,8 @@ RaftIVFPQ::RaftIVFPQ(
     pams.pq_bits = bitsPerSubQuantizer;
     pams.pq_dim = numSubQuantizers_;
     raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim));
+
+    setPQCentroids_(pqCentroidData);
 }
 
 void RaftIVFPQ::reset() {
@@ -110,7 +114,23 @@ void RaftIVFPQ::reset() {
 
 RaftIVFPQ::~RaftIVFPQ() {}
 
-idx_t RaftIVFFlat::getListLength(idx_t listId) const {
+void RaftIVFPQ::reserveMemory(idx_t numVecs) {
+    fprintf(stderr,
+            "WARN: NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.");
+}
+
+void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
+    fprintf(stderr,
+            "WARN: NOP. Precompute codes is not supported with RAFT enabled.");
+}
+
+size_t RaftIVFPQ::reclaimMemory() {
+    fprintf(stderr,
+            "WARN: NOP. reclaimMemory is not supported with RAFT enabled.");
+    return 0;
+}
+
+idx_t RaftIVFPQ::getListLength(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -124,6 +144,68 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
     raft_handle.sync_stream();
 
     return static_cast<int>(size);
+}
+
+void RaftIVFPQ::updateQuantizer(Index* quantizer) {
+    printf("updateQuantizer from RaftIVFPQ was called\n");
+    FAISS_THROW_IF_NOT(quantizer->is_trained);
+
+    // Must match our basic IVF parameters
+    FAISS_THROW_IF_NOT(quantizer->d == getDim());
+    FAISS_THROW_IF_NOT(quantizer->ntotal == getNumLists());
+
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+
+    raft::neighbors::ivf_pq::helpers::make_rotation_matrix(
+            raft_handle, &(raft_knn_index.value()), false);
+
+    // If the index instance is a GpuIndexFlat, then we can use direct access to
+    // the centroids within.
+    auto gpuQ = dynamic_cast<GpuIndexFlat*>(quantizer);
+
+    if (gpuQ) {
+        auto gpuData = gpuQ->getGpuData();
+
+        if (gpuData->getUseFloat16()) {
+            DeviceTensor<float, 2, true> centroids(
+                    resources_,
+                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
+                    {getNumLists(), getDim()});
+
+            // The FlatIndex keeps its data in float16; we need to reconstruct
+            // as float32 and store locally
+            gpuData->reconstruct(0, gpuData->getSize(), centroids);
+
+            raft::neighbors::ivf_pq::helpers::set_centers(
+                    raft_handle, &(raft_knn_index.value()), centroids.data());
+        } else {
+            /// No reconstruct needed since the centers are already in float32
+            // The FlatIndex keeps its data in float32, so we can merely
+            // reference it
+            auto centroids = gpuData->getVectorsFloat32Ref();
+
+            raft::neighbors::ivf_pq::helpers::set_centers(
+                    raft_handle, &(raft_knn_index.value()), centroids.data());
+        }
+    } else {
+        DeviceTensor<float, 2, true> centroids(
+                resources_,
+                makeSpaceAlloc(AllocType::FlatData, space_, stream),
+                {getNumLists(), getDim()});
+
+        // Otherwise, we need to reconstruct all vectors from the index and copy
+        // them to the GPU, in order to have access as needed for residual
+        // computation
+        auto vecs = std::vector<float>(getNumLists() * getDim());
+        quantizer->reconstruct_n(0, quantizer->ntotal, vecs.data());
+
+        centroids.copyFrom(vecs, stream);
+
+        raft::neighbors::ivf_pq::helpers::set_centers(
+                raft_handle, &(raft_knn_index.value()), centroids.data());
+    }
 }
 
 /// Return the list indices of a particular list back to the CPU
@@ -143,7 +225,9 @@ std::vector<idx_t> RaftIVFPQ::getListIndices(idx_t listId) const {
     // fetch the list indices ptr on host
     raft::update_host(
             &list_indices_ptr,
-            raft_knn_index.value().inds_ptrs().data_handle() + listId,
+            const_cast<idx_t**>(
+                    raft_knn_index.value().inds_ptrs().data_handle()) +
+                    listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -154,12 +238,31 @@ std::vector<idx_t> RaftIVFPQ::getListIndices(idx_t listId) const {
     return vec;
 }
 
+/// Performs search when we are already given the IVF cells to look at
+/// (GpuIndexIVF::search_preassigned implementation)
+void RaftIVFPQ::searchPreassigned(
+        Index* coarseQuantizer,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& ivfDistances,
+        Tensor<idx_t, 2, true>& ivfAssignments,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        bool storePairs) {
+    // TODO: Fill this in!
+}
+
+size_t RaftIVFPQ::getGpuListEncodingSize_(idx_t listId) const {
+    return raft::neighbors::ivf_pq::helpers::get_list_size_in_bytes(
+            &(raft_knn_index.value()), static_cast<uint32_t>(listId));
+}
+
 /// Return the encoded vectors of a particular list back to the CPU
-std::vector<uint8_t> RaftIVFPQ::getListVectorData(
-        idx_t listId,
-        bool gpuFormat) const {
+std::vector<uint8_t> RaftIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
+        const {
     if (gpuFormat) {
-        FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
+        FAISS_THROW_MSG(
+                "gpuFormat should be false for RAFT indices. Unpacked codes are flat.");
     }
     FAISS_ASSERT(raft_knn_index.has_value());
 
@@ -171,35 +274,49 @@ std::vector<uint8_t> RaftIVFPQ::getListVectorData(
 
     // the interleaved block can be slightly larger than the list size (it's
     // rounded up)
-    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(listSize);
+    auto gpuListSizeInBytes = getGpuListEncodingSize_(listId);
     auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(listSize);
 
-    std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+//     std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
     std::vector<uint8_t> flat_codes(cpuListSizeInBytes);
 
-    float* list_data_ptr;
+    uint8_t* list_data_ptr;
 
-    // fetch the list data ptr on host
-    raft::update_host(
-            &list_data_ptr,
-            raft_knn_index.value().data_ptrs().data_handle() + listId,
-            1,
-            stream);
+//     // fetch the list data ptr on host
+//     raft::update_host(
+//             &list_data_ptr,
+//             const_cast<uint8_t**>(
+//                     raft_knn_index.value().data_ptrs().data_handle()) +
+//                     listId,
+//             1,
+//             stream);
+//     raft_handle.sync_stream();
+
+//     raft::update_host(
+//             interleaved_codes.data(),
+//             list_data_ptr,
+//             gpuListSizeInBytes,
+//             stream);
+//     raft_handle.sync_stream();
+
+    //     RaftIVFPQCodePackerInterleaved packer(
+    //             (size_t)listSize, numSubQuantizers_, bitsPerSubQuantizer_);
+    //     packer.unpack_all(interleaved_codes.data(), flat_codes.data());
+
+    auto codes = raft::make_device_matrix<uint8_t, uint32_t>(
+            raft_handle, listSize, numSubQuantizers_);
+
+    raft::neighbors::ivf_pq::helpers::unpack_list_data(
+            raft_handle, raft_knn_index.value(), codes.view(), listId, 0);
+
+    raft::update_host(flat_codes.data(), codes.data_handle(), cpuListSizeInBytes, stream);
     raft_handle.sync_stream();
-
-    raft::update_host(
-            interleaved_codes.data(),
-            reinterpret_cast<uint8_t*>(list_data_ptr),
-            gpuListSizeInBytes,
-            stream);
-    raft_handle.sync_stream();
-
-    RaftIVFPQCodePackerInterleaved packer(
-            (size_t)listSize, numSubQuantizers_, bitsPerSubQuantizer_);
-    packer.unpack_all(interleaved_codes.data(), flat_codes.data());
 
     return packNonInterleaved(
-            std::move(flat_codes), numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
+            std::move(flat_codes),
+            listSize,
+            numSubQuantizers_,
+            bitsPerSubQuantizer_);
 }
 
 /// Find the approximate k nearest neighbors for `queries` against
@@ -214,6 +331,8 @@ void RaftIVFPQ::search(
     uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
     uint32_t k_ = k;
+
+    printf("inside RaftIVFPQ's search\n");
 
     // Device is already set in GpuIndex::search
     FAISS_ASSERT(raft_knn_index.has_value());
@@ -233,6 +352,17 @@ void RaftIVFPQ::search(
     auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
             outDistances.data(), (idx_t)numQueries, (idx_t)k_);
 
+    raft::print_host_vector(
+            "accum_sorted_sizes",
+            raft_knn_index.value().accum_sorted_sizes().data_handle(),
+            raft_knn_index.value().n_lists(),
+            std::cout);
+    raft::print_device_vector(
+            "raft_list_sizes",
+            raft_knn_index.value().list_sizes().data_handle(),
+            raft_knn_index.value().n_lists(),
+            std::cout);
+
     raft::neighbors::ivf_pq::search<float, idx_t>(
             raft_handle,
             pams,
@@ -240,11 +370,18 @@ void RaftIVFPQ::search(
             queries_view,
             out_inds_view,
             out_dists_view);
+    raft_handle.sync_stream();
 
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-    validRowIndices(resources_, queries, nan_flag.data_handle());
+    thrust::fill_n(
+            raft_handle.get_thrust_policy(),
+            nan_flag.data_handle(),
+            numQueries,
+            true);
+
+    //     validRowIndices(resources_, queries, nan_flag.data_handle());
 
     raft::linalg::map_offset(
             raft_handle,
@@ -285,7 +422,12 @@ idx_t RaftIVFPQ::addVectors(
     /// Remove NaN values
     auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-    validRowIndices(resources_, vecs, nan_flag.data_handle());
+    //     validRowIndices(resources_, vecs, nan_flag.data_handle());
+    thrust::fill_n(
+            raft_handle.get_thrust_policy(),
+            nan_flag.data_handle(),
+            n_rows,
+            true);
 
     idx_t n_rows_valid = thrust::reduce(
             raft_handle.get_thrust_policy(),
@@ -339,10 +481,11 @@ idx_t RaftIVFPQ::addVectors(
 }
 
 void RaftIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
+    printf("inside RaftIVFPQ copyInvertedListsFrom\n");
     size_t nlist = ivf ? ivf->nlist : 0;
     size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
 
-    raft::device_resources& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     std::vector<uint32_t> list_sizes_(nlist);
@@ -354,8 +497,10 @@ void RaftIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     auto& raft_lists = raft_knn_index.value().lists();
 
     // conservative memory alloc for cloning cpu inverted lists
-    raft::neighbors::ivf_pq::list_spec<uint32_t, idx_t> raft_list_spec{static_cast<uint32_t>(numSubQuantizers_), 
-            static_cast<uint32_t>(bitsPerSubQuantizer_), true};
+    raft::neighbors::ivf_pq::list_spec<uint32_t, idx_t> raft_list_spec{
+            static_cast<uint32_t>(numSubQuantizers_),
+            static_cast<uint32_t>(bitsPerSubQuantizer_),
+            true};
 
     for (size_t i = 0; i < nlist; ++i) {
         size_t listSize = ivf->list_size(i);
@@ -371,21 +516,15 @@ void RaftIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
         // store the list size
         list_sizes_[i] = static_cast<uint32_t>(listSize);
 
+        // This RAFT list must currently be empty
+        FAISS_ASSERT(getListLength(i) == 0);
+
         raft::neighbors::ivf::resize_list(
                 raft_handle,
                 raft_lists[i],
                 raft_list_spec,
-                (uint32_t)listSize,
-                (uint32_t)0);
-    }
-
-    // Update the pointers and the sizes
-    raft_knn_index.value().recompute_internal_state(raft_handle);
-
-    for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
-        addEncodedVectorsToList_(
-                i, ivf->get_codes(i), ivf->get_ids(i), listSize);
+                static_cast<uint32_t>(listSize),
+                static_cast<uint32_t>(0));
     }
 
     raft::update_device(
@@ -394,17 +533,14 @@ void RaftIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
             nlist,
             raft_handle.get_stream());
 
-    // Precompute the centers vector norms for L2Expanded distance
-    if (this->metric_ == faiss::METRIC_L2) {
-        raft_knn_index.value().allocate_center_norms(raft_handle);
-        raft::linalg::rowNorm(
-                raft_knn_index.value().center_norms().value().data_handle(),
-                raft_knn_index.value().centers().data_handle(),
-                raft_knn_index.value().dim(),
-                (uint32_t)nlist,
-                raft::linalg::L2Norm,
-                true,
-                raft_handle.get_stream());
+    //     Update the pointers and the sizes
+    raft::neighbors::ivf_pq::helpers::recompute_internal_state(
+            raft_handle, &(raft_knn_index.value()));
+
+    for (size_t i = 0; i < nlist; ++i) {
+        size_t listSize = ivf->list_size(i);
+        addEncodedVectorsToList_(
+                i, ivf->get_codes(i), ivf->get_ids(i), listSize);
     }
 }
 
@@ -419,12 +555,8 @@ void RaftIVFPQ::addEncodedVectorsToList_(
         const idx_t* indices,
         idx_t numVecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
-
-    // This list must already exist
-    FAISS_ASSERT(raft_knn_index.has_value());
-
-    // This list must currently be empty
-    FAISS_ASSERT(getListLength(listId) == 0);
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
 
     // If there's nothing to add, then there's nothing we have to do
     if (numVecs == 0) {
@@ -432,7 +564,7 @@ void RaftIVFPQ::addEncodedVectorsToList_(
     }
 
     // The GPU might have a different layout of the memory
-    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
+    auto gpuListSizeInBytes = getGpuListEncodingSize_(listId);
     auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(numVecs);
 
     // We only have int32 length representations on the GPU per each
@@ -444,33 +576,73 @@ void RaftIVFPQ::addEncodedVectorsToList_(
         // Translate the codes as needed to our preferred form
         std::vector<uint8_t> codesV(cpuListSizeInBytes);
         std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
-        up = unpackNonInterleaved(
-            std::move(codesV), numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
 
-        RaftIVFPQCodePackerInterleaved packer(
-            (size_t)numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
+        std::vector<uint8_t> up = unpackNonInterleaved(
+                std::move(codesV),
+                numVecs,
+                numSubQuantizers_,
+                bitsPerSubQuantizer_);
 
-        packer.pack_all(
-            reinterpret_cast<const uint8_t*>(up.data()), interleaved_codes.data());
+        for (int i = 0; i < numVecs * numSubQuantizers_; i++) {
+            printf("%d ", int(up[i]));
+        }
+
+        // RaftIVFPQCodePackerInterleaved packer(
+        //         (size_t)numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
+
+        // packer.pack_all(
+        //         reinterpret_cast<const uint8_t*>(up.data()),
+        //         interleaved_codes.data());
+
+        auto codes = raft::make_device_matrix<uint8_t, uint32_t>(
+                raft_handle, numVecs, numSubQuantizers_);
+        raft::update_device(codes.data_handle(), up.data(), up.size(), stream);
+
+        printf("Flat codes updated\n");
+        raft::neighbors::ivf_pq::helpers::pack_list_data(
+                raft_handle,
+                &(raft_knn_index.value()),
+                codes.view(),
+                listId,
+                0);
+
+        raft::update_host(
+                interleaved_codes.data(),
+                raft_knn_index.value().lists()[listId]->data.data_handle(),
+                gpuListSizeInBytes,
+                stream);
+        raft_handle.sync_stream();
+
+        printf("\n now printing interleaved_codes\n");
+
+        // raft::print_device_vector("interleaved_codes",
+        // raft_knn_index.value().lists()[listId]->data.data_handle(), 32 *
+        // bitsPerSubQuantizer_, std::cout);
+
+        // if (listId == 0) {
+        //     for (int i = 0; i < 32 * numSubQuantizers_; i++) {
+        //         printf("%d ", int(interleaved_codes[i]));
+        //     }
+        // }
+        // raft::print_host_vector("interleaved_codes",
+        // interleaved_codes.data(), 10, std::cout);
     }
 
-    float* list_data_ptr;
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
+    uint8_t* list_data_ptr;
 
     /// fetch the list data ptr on host
-    raft::update_host(
-            &list_data_ptr,
-            raft_knn_index.value().data_ptrs().data_handle() + listId,
-            1,
-            stream);
-    raft_handle.sync_stream();
+    //     raft::update_host(
+    //             &list_data_ptr,
+    //             raft_knn_index.value().data_ptrs().data_handle() + listId,
+    //             1,
+    //             stream);
+    //     raft_handle.sync_stream();
 
-    raft::update_device(
-            reinterpret_cast<uint8_t*>(list_data_ptr),
-            interleaved_codes.data(),
-            gpuListSizeInBytes,
-            stream);
+    //     raft::update_device(
+    //             list_data_ptr,
+    //             interleaved_codes.data(),
+    //             gpuListSizeInBytes,
+    //             stream);
 
     /// Handle the indices as well
     idx_t* list_indices_ptr;
@@ -486,13 +658,31 @@ void RaftIVFPQ::addEncodedVectorsToList_(
     raft::update_device(list_indices_ptr, indices, numVecs, stream);
 }
 
+void RaftIVFPQ::setPQCentroids_(float* data) {
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+
+    auto data_buf = raft::make_temporary_device_buffer<float>(
+            raft_handle,
+            data,
+            raft::make_extents<uint32_t>(
+                    numSubQuantizers_,
+                    numSubQuantizerCodes_,
+                    dimPerSubQuantizer_));
+
+    raft::neighbors::ivf_pq::helpers::set_pq_centers(
+            raft_handle,
+            &(raft_knn_index.value()),
+            data_buf.view().data_handle());
+}
+
 RaftIVFPQCodePackerInterleaved::RaftIVFPQCodePackerInterleaved(
         size_t list_size,
         int numSubQuantizers,
         int bitsPerSubQuantizer) {
-    this->numSubQuantizers_ = numSubQuantizers;
     this->bitsPerSubQuantizer_ = bitsPerSubQuantizer;
     nvec = list_size;
+    code_size = numSubQuantizers;
 }
 
 void RaftIVFPQCodePackerInterleaved::pack_1(
@@ -504,35 +694,35 @@ void RaftIVFPQCodePackerInterleaved::pack_1(
             raft::neighbors::ivf_pq::codepacker::pack_1<4>(
                     flat_code,
                     block,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 5:
             raft::neighbors::ivf_pq::codepacker::pack_1<5>(
                     flat_code,
                     block,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 6:
             raft::neighbors::ivf_pq::codepacker::pack_1<6>(
                     flat_code,
                     block,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 7:
             raft::neighbors::ivf_pq::codepacker::pack_1<7>(
                     flat_code,
                     block,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 8:
             raft::neighbors::ivf_pq::codepacker::pack_1<8>(
                     flat_code,
                     block,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         default:
@@ -551,35 +741,35 @@ void RaftIVFPQCodePackerInterleaved::unpack_1(
             raft::neighbors::ivf_pq::codepacker::unpack_1<4>(
                     block,
                     flat_code,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 5:
             raft::neighbors::ivf_pq::codepacker::unpack_1<5>(
                     block,
                     flat_code,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 6:
             raft::neighbors::ivf_pq::codepacker::unpack_1<6>(
                     block,
                     flat_code,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 7:
             raft::neighbors::ivf_pq::codepacker::unpack_1<7>(
                     block,
                     flat_code,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         case 8:
             raft::neighbors::ivf_pq::codepacker::unpack_1<8>(
                     block,
                     flat_code,
-                    static_cast<uint32_t>(numSubQuantizers_),
+                    static_cast<uint32_t>(code_size),
                     static_cast<uint32_t>(offset));
             break;
         default:

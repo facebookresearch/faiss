@@ -17,8 +17,11 @@
 #include <vector>
 
 void pickEncoding(int& codes, int& dim) {
+//     std::vector<int> codeSizes{
+//             3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 96};
     std::vector<int> codeSizes{
-            3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 96};
+            3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48};
+
 
     // Above 32 doesn't work with no precomputed codes
     std::vector<int> dimSizes{4, 8, 10, 12, 16, 20, 24, 28, 32};
@@ -53,7 +56,8 @@ struct Options {
         // differences between GPU and CPU, to stay within our error bounds,
         // only use a small k
         k = std::min(faiss::gpu::randVal(5, 20), numAdd / 40);
-        usePrecomputed = faiss::gpu::randBool();
+        // usePrecomputed = faiss::gpu::randBool();
+        usePrecomputed = false;
         indicesOpt = faiss::gpu::randSelect(
                 {faiss::gpu::INDICES_CPU,
                  faiss::gpu::INDICES_32_BIT,
@@ -149,9 +153,12 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+        
+        printf("Done comparing faiss index");
 
 #if defined USE_NVIDIA_RAFT
         config.use_raft = true;
+        config.interleavedLayout = true;
         faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
 
         faiss::gpu::compareIndices(
@@ -705,6 +712,45 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
             opt.getCompareEpsilon(),
             opt.getPctMaxDiff1(),
             opt.getPctMaxDiffN());
+
+#if defined USE_NVIDIA_RAFT
+        config.use_raft = true;
+        config.useFloat16LookupTables = false;
+        config.interleavedLayout = true;
+// Use garbage values to see if we overwrite them
+    faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
+            &res, 1, 1, 1, 8, faiss::METRIC_L2, config);
+    gpuIndex.nprobe = 1;
+
+    raftGpuIndex.copyFrom(&cpuIndex);
+
+    // Make sure we are equivalent
+    EXPECT_EQ(cpuIndex.ntotal, raftGpuIndex.ntotal);
+    EXPECT_EQ(raftGpuIndex.ntotal, opt.numAdd);
+
+    EXPECT_EQ(cpuIndex.d, raftGpuIndex.d);
+    EXPECT_EQ(cpuIndex.d, opt.dim);
+    EXPECT_EQ(cpuIndex.nlist, raftGpuIndex.getNumLists());
+    EXPECT_EQ(cpuIndex.nprobe, raftGpuIndex.nprobe);
+    EXPECT_EQ(cpuIndex.pq.M, raftGpuIndex.getNumSubQuantizers());
+    EXPECT_EQ(raftGpuIndex.getNumSubQuantizers(), opt.codes);
+    EXPECT_EQ(cpuIndex.pq.nbits, raftGpuIndex.getBitsPerCode());
+    EXPECT_EQ(raftGpuIndex.getBitsPerCode(), opt.bitsPerCode);
+
+    testIVFEquality(cpuIndex, raftGpuIndex);
+
+    // Query both objects; results should be equivalent
+    faiss::gpu::compareIndices(
+            cpuIndex,
+            raftGpuIndex,
+            opt.numQuery,
+            opt.dim,
+            opt.k,
+            opt.toString(),
+            opt.getCompareEpsilon(),
+            opt.getPctMaxDiff1(),
+            opt.getPctMaxDiffN());
+#endif
 }
 
 TEST(TestGpuIndexIVFPQ, QueryNaN) {

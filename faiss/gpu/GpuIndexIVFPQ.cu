@@ -19,8 +19,8 @@
 #include <memory>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <raft/neighbors/ivf_pq.cuh>
 #endif
 
@@ -109,9 +109,9 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     index_.reset();
 
     // no need to do base class ptr allocations if RAFT is not enabled
-    if (!config_.reset) {
+    // if (!config_.use_raft) {
         baseIndex_.reset();
-    }
+    // }
 
     pq = index->pq;
     subQuantizers_ = index->pq.M;
@@ -159,7 +159,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     updateQuantizer();
 
     index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
-
+    
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
 }
@@ -214,11 +214,6 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 }
 
 void GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
-    if (config_.use_raft) {
-        FAISS_THROW_MSG(
-                "Pre-allocation of IVF lists is not supported with RAFT enabled.");
-    }
-
     DeviceScope scope(config_.device);
 
     reserveMemoryVecs_ = numVecs;
@@ -359,7 +354,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         // No need to copy the data to host
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
-        
+
         raft::neighbors::ivf_pq::index_params raft_idx_params;
         raft_idx_params.n_lists = nlist;
         raft_idx_params.metric = faiss_to_raft(metric_type, false);
@@ -385,8 +380,11 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         quantizer->train(nlist, raft_knn_index.value().centers().data_handle());
         quantizer->add(nlist, raft_knn_index.value().centers().data_handle());
 
-        raft::copy(pq.get_centroids(0, 0), raft_knn_index.value().pq_centers().data_handle(), subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_), resources_->getDefaultStream(config_.device));
-            // set_params(clus.centroids.data(), m);
+        raft::copy(
+                pq.get_centroids(0, 0),
+                raft_knn_index.value().pq_centers().data_handle(),
+                subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_),
+                resources_->getDefaultStream(config_.device));
     } else
 #else
     if (config_.use_raft) {
@@ -508,11 +506,12 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
                     bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
                     "Bits per code must be within closed range [4,8] (passed %d)",
                     bitsPerCode_);
-            FAISS_THROW_IF_NOT_FMT((bitsPerCode_ * subQuantizers_) % 8 == 0,
-                 "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
-                 bitsPerCode_,
-                 subQuantizers_,
-                 bitsPerCode_ * subQuantizers_);
+            FAISS_THROW_IF_NOT_FMT(
+                    (bitsPerCode_ * subQuantizers_) % 8 == 0,
+                    "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
+                    bitsPerCode_,
+                    subQuantizers_,
+                    bitsPerCode_ * subQuantizers_);
         }
     } else {
         if (config_.use_raft) {

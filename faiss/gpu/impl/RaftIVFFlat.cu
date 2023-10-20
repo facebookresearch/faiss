@@ -74,7 +74,6 @@ RaftIVFFlat::RaftIVFFlat(
                   scalarQ,
                   interleavedLayout,
                   // skip ptr allocations in base class (handled by RAFT internally)
-                  false,
                   indicesOptions,
                   space) {
     FAISS_THROW_IF_NOT_MSG(
@@ -158,7 +157,7 @@ void RaftIVFFlat::search(
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-    validRowIndices(resources_, queries, nan_flag.data_handle());
+//     validRowIndices(resources_, queries, nan_flag.data_handle());
 
     raft::linalg::map_offset(
             raft_handle,
@@ -196,7 +195,7 @@ idx_t RaftIVFFlat::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to modify the RAFT index if the quantizer was modified externally
+    /// called updateQuantizer() to update the RAFT index if the quantizer was modified externally
 
     idx_t n_rows = vecs.getSize(0);
 
@@ -206,7 +205,7 @@ idx_t RaftIVFFlat::addVectors(
     /// Remove NaN values
     auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-    validRowIndices(resources_, vecs, nan_flag.data_handle());
+//     validRowIndices(resources_, vecs, nan_flag.data_handle());
 
     idx_t n_rows_valid = thrust::reduce(
             raft_handle.get_thrust_policy(),
@@ -372,6 +371,8 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     size_t total_elems = quantizer->ntotal * quantizer->d;
 
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
     auto gpuQ = dynamic_cast<GpuIndexFlat*>(quantizer);
@@ -451,6 +452,9 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
         // store the list size
         list_sizes_[i] = static_cast<uint32_t>(listSize);
 
+        // This RAFT list must currently be empty
+        FAISS_ASSERT(getListLength(i) == 0);
+
         raft::neighbors::ivf::resize_list(
                 raft_handle,
                 raft_lists[i],
@@ -513,12 +517,6 @@ void RaftIVFFlat::addEncodedVectorsToList_(
         const idx_t* indices,
         idx_t numVecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
-
-    // This list must already exist
-    FAISS_ASSERT(raft_knn_index.has_value());
-
-    // This list must currently be empty
-    FAISS_ASSERT(getListLength(listId) == 0);
 
     // If there's nothing to add, then there's nothing we have to do
     if (numVecs == 0) {

@@ -244,7 +244,8 @@ if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
 	  impl/RaftIVFFlat.cu
-    impl/RaftIVFPQ.cu)
+    impl/RaftIVFPQ.cu
+    impl/RaftUtils.h)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)

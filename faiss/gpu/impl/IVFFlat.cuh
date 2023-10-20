@@ -24,7 +24,6 @@ class IVFFlat : public IVFBase {
             /// Optional ScalarQuantizer
             faiss::ScalarQuantizer* scalarQ,
             bool interleavedLayout,
-            bool allocPtrs,
             IndicesOptions indicesOptions,
             MemorySpace space);
 

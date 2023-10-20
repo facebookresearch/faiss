@@ -36,7 +36,6 @@ IVFBase::IVFBase(
         float metricArg,
         bool useResidual,
         bool interleavedLayout,
-        bool allocPtrs,
         IndicesOptions indicesOptions,
         MemorySpace space)
         : resources_(resources),
@@ -47,8 +46,7 @@ IVFBase::IVFBase(
           useResidual_(useResidual),
           interleavedLayout_(interleavedLayout),
           indicesOptions_(indicesOptions),
-          space_(space) {
-    if (allocPtrs) {
+          space_(space),
     deviceListDataPointers_(
                   resources,
                   AllocInfo(
@@ -70,9 +68,8 @@ IVFBase::IVFBase(
                           getCurrentDevice(),
                           space,
                           resources->getDefaultStreamCurrentDevice())),
-          maxListLength_(0)
+          maxListLength_(0) {
     reset();
-    }
 }
 
 IVFBase::~IVFBase() {}
@@ -447,6 +444,7 @@ void IVFBase::addIndicesFromCpu_(
 }
 
 void IVFBase::updateQuantizer(Index* quantizer) {
+    printf("updateQuantizer from IVFBase was called\n");
     FAISS_THROW_IF_NOT(quantizer->is_trained);
 
     // Must match our basic IVF parameters

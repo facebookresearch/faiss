@@ -36,19 +36,23 @@ class RaftIVFPQ : public IVFPQ {
             float* pqCentroidData,
             IndicesOptions indicesOptions,
             MemorySpace space);
+    
+    ~RaftIVFPQ() override;
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
     void reset() override;
+    
+    /// Reserve GPU memory in our inverted lists for this number of vectors
+    void reserveMemory(idx_t numVecs) override;
 
-    /// Returns true if we support PQ in this size
-    static bool isSupportedPQCodeLength(int size);
-
-    ~RaftIVFPQ() override;
+    /// After adding vectors, one can call this to reclaim device memory
+    /// to exactly the amount needed. Returns space reclaimed in bytes
+    size_t reclaimMemory() override;
 
     /// Enable or disable pre-computed codes. The quantizer is needed to gather
     /// the IVF centroids for use
-    void setPrecomputedCodes(Index* coarseQuantizer, bool enable);
+    void setPrecomputedCodes(Index* coarseQuantizer, bool enable) override;
 
     /// Returns our set of sub-quantizers of the form
     /// (sub q)(code id)(sub dim)
@@ -96,23 +100,29 @@ class RaftIVFPQ : public IVFPQ {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
 
-   protected:
-    /// Returns the encoding size for a PQ-encoded IVF list
-    size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
-    size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
+    /// For debugging purposes, return the list length of a particular
+    /// list
+    idx_t getListLength(idx_t listId) const override;
 
-    /// Encode the vectors that we're adding and append to our IVF lists
-    void appendVectors_(
-            Tensor<float, 2, true>& vecs,
-            Tensor<float, 2, true>& ivfCentroidResiduals,
-            Tensor<idx_t, 1, true>& indices,
-            Tensor<idx_t, 1, true>& uniqueLists,
-            Tensor<idx_t, 1, true>& vectorsByUniqueList,
-            Tensor<idx_t, 1, true>& uniqueListVectorStart,
-            Tensor<idx_t, 1, true>& uniqueListStartOffset,
-            Tensor<idx_t, 1, true>& listIds,
-            Tensor<idx_t, 1, true>& listOffset,
-            cudaStream_t stream) override;
+    /// Return the list indices of a particular list back to the CPU
+    std::vector<idx_t> getListIndices(idx_t listId) const override;
+
+//     void updateQuantizer(Index* quantizer) override;
+
+   protected:
+    /// Adds a set of codes and indices to a list, with the representation
+    /// coming from the CPU equivalent
+    void addEncodedVectorsToList_(
+            idx_t listId,
+            // resident on the host
+            const void* codes,
+            // resident on the host
+            const idx_t* indices,
+            idx_t numVecs) override;
+
+    /// Returns the encoding size for a PQ-encoded IVF list
+    size_t getGpuListEncodingSize_(idx_t listId) const;
+//     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     /// Sets the current product quantizer centroids; the data can be
     /// resident on either the host or the device. It will be transposed
@@ -141,6 +151,8 @@ class RaftIVFPQ : public IVFPQ {
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices);
+    
+//     raft::neighbors::ivf_pq::index<idx_t> raft_knn_index_() const;
 
    private:
     /// On the GPU, we prefer different PQ centroid data layouts for

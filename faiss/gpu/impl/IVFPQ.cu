@@ -45,7 +45,6 @@ IVFPQ::IVFPQ(
         bool useFloat16LookupTables,
         bool useMMCodeDistance,
         bool interleavedLayout,
-        bool allocPtrs,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space)
@@ -57,7 +56,6 @@ IVFPQ::IVFPQ(
                   // we use IVF cell residuals for encoding vectors
                   true,
                   interleavedLayout,
-                  allocPtrs,
                   indicesOptions,
                   space),
           numSubQuantizers_(numSubQuantizers),
@@ -381,6 +379,7 @@ void IVFPQ::precomputeCodes_(Index* quantizer) {
     // Whether or not there is a CPU or GPU coarse quantizer, updateQuantizer()
     // should have been called to reconstruct as float32 the IVF centroids to
     // have the data available on the GPU
+    printf("ivfCentroids_.getSize(0) %d getNumLists() %d ivfCentroids_.getSize(1) %d getDim() %d", ivfCentroids_.getSize(0), getNumLists(), ivfCentroids_.getSize(1), getDim());
     FAISS_THROW_IF_NOT_MSG(
             ivfCentroids_.getSize(0) == getNumLists() &&
                     ivfCentroids_.getSize(1) == getDim(),

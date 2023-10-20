@@ -9,6 +9,7 @@
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
+#include <raft/util/cudart_utils.hpp>
 #include <time.h>
 #include <cmath>
 #include <set>
@@ -113,6 +114,10 @@ void compareIndices(
             k,
             testDistance.data(),
             testIndices.data());
+    
+    raft::print_host_vector("refIndices", refIndices.data(), numQuery * k, std::cout);
+    
+    raft::print_host_vector("testIndices", testIndices.data(), numQuery * k, std::cout);
 
     faiss::gpu::compareLists(
             refDistance.data(),
