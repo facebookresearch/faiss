@@ -167,7 +167,7 @@ set(FAISS_GPU_HEADERS
   utils/WarpShuffles.cuh
   utils/blockselect/BlockSelectImpl.cuh
   utils/warpselect/WarpSelectImpl.cuh
-  test/TestUtils.cpp
+  test/TestUtils.h
 )
 
 function(generate_ivf_interleaved_code)
