@@ -80,6 +80,7 @@ set(FAISS_GPU_SRC
   utils/warpselect/WarpSelectFloatT512.cu
   utils/warpselect/WarpSelectFloatT1024.cu
   utils/warpselect/WarpSelectFloatT2048.cu
+  test/TestUtils.cpp
 )
 
 set(FAISS_GPU_HEADERS
@@ -166,6 +167,7 @@ set(FAISS_GPU_HEADERS
   utils/WarpShuffles.cuh
   utils/blockselect/BlockSelectImpl.cuh
   utils/warpselect/WarpSelectImpl.cuh
+  test/TestUtils.cpp
 )
 
 function(generate_ivf_interleaved_code)

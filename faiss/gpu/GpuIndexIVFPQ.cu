@@ -110,7 +110,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
 
     // no need to do base class ptr allocations if RAFT is not enabled
     // if (!config_.use_raft) {
-        baseIndex_.reset();
+    baseIndex_.reset();
     // }
 
     pq = index->pq;
@@ -159,7 +159,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     updateQuantizer();
 
     index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
-    
+
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
 }
@@ -541,30 +541,32 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
             "is not supported",
             subQuantizers_);
 
-    // We must have enough shared memory on the current device to store
-    // our lookup distances
-    int lookupTableSize = sizeof(float);
-    if (ivfpqConfig_.useFloat16LookupTables) {
-        lookupTableSize = sizeof(half);
+    if(!config_.use_raft) {
+        // We must have enough shared memory on the current device to store
+        // our lookup distances
+        int lookupTableSize = sizeof(float);
+        if (ivfpqConfig_.useFloat16LookupTables) {
+            lookupTableSize = sizeof(half);
+        }
+
+        // 64 bytes per code is only supported with usage of float16, at 2^8
+        // codes per subquantizer
+        size_t requiredSmemSize =
+                lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
+        size_t smemPerBlock = getMaxSharedMemPerBlock(config_.device);
+
+        FAISS_THROW_IF_NOT_FMT(
+                requiredSmemSize <= getMaxSharedMemPerBlock(config_.device),
+                "Device %d has %zu bytes of shared memory, while "
+                "%d bits per code and %d sub-quantizers requires %zu "
+                "bytes. Consider useFloat16LookupTables and/or "
+                "reduce parameters",
+                config_.device,
+                smemPerBlock,
+                bitsPerCode_,
+                subQuantizers_,
+                requiredSmemSize);
     }
-
-    // 64 bytes per code is only supported with usage of float16, at 2^8
-    // codes per subquantizer
-    size_t requiredSmemSize =
-            lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
-    size_t smemPerBlock = getMaxSharedMemPerBlock(config_.device);
-
-    FAISS_THROW_IF_NOT_FMT(
-            requiredSmemSize <= getMaxSharedMemPerBlock(config_.device),
-            "Device %d has %zu bytes of shared memory, while "
-            "%d bits per code and %d sub-quantizers requires %zu "
-            "bytes. Consider useFloat16LookupTables and/or "
-            "reduce parameters",
-            config_.device,
-            smemPerBlock,
-            bitsPerCode_,
-            subQuantizers_,
-            requiredSmemSize);
 }
 
 } // namespace gpu

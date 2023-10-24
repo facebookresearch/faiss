@@ -103,6 +103,7 @@ RaftIVFPQ::RaftIVFPQ(
     pams.n_lists = nlist;
     pams.pq_bits = bitsPerSubQuantizer;
     pams.pq_dim = numSubQuantizers_;
+//     pams.internal_distance_dtype = useFloat16LookupTables ? CUDA_R_16F : CUDA_R_32F;
     raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim));
 
     setPQCentroids_(pqCentroidData);
@@ -309,7 +310,7 @@ std::vector<uint8_t> RaftIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
     raft::neighbors::ivf_pq::helpers::unpack_list_data(
             raft_handle, raft_knn_index.value(), codes.view(), listId, 0);
 
-    raft::update_host(flat_codes.data(), codes.data_handle(), cpuListSizeInBytes, stream);
+    raft::update_host(flat_codes.data(), codes.data_handle(), listSize * numSubQuantizers_, stream);
     raft_handle.sync_stream();
 
     return packNonInterleaved(
@@ -344,6 +345,7 @@ void RaftIVFPQ::search(
             resources_->getRaftHandleCurrentDevice();
     raft::neighbors::ivf_pq::search_params pams;
     pams.n_probes = nprobe;
+    pams.lut_dtype = useFloat16LookupTables_ ? CUDA_R_16F : CUDA_R_32F;
 
     auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
             queries.data(), (idx_t)numQueries, (idx_t)cols);
@@ -571,7 +573,7 @@ void RaftIVFPQ::addEncodedVectorsToList_(
     // list; the length is in sizeof(char)
     FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
 
-    std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
+//     std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
     {
         // Translate the codes as needed to our preferred form
         std::vector<uint8_t> codesV(cpuListSizeInBytes);
@@ -606,14 +608,14 @@ void RaftIVFPQ::addEncodedVectorsToList_(
                 listId,
                 0);
 
-        raft::update_host(
-                interleaved_codes.data(),
-                raft_knn_index.value().lists()[listId]->data.data_handle(),
-                gpuListSizeInBytes,
-                stream);
-        raft_handle.sync_stream();
+        // raft::update_host(
+        //         interleaved_codes.data(),
+        //         raft_knn_index.value().lists()[listId]->data.data_handle(),
+        //         gpuListSizeInBytes,
+        //         stream);
+        // raft_handle.sync_stream();
 
-        printf("\n now printing interleaved_codes\n");
+        // printf("\n now printing interleaved_codes\n");
 
         // raft::print_device_vector("interleaved_codes",
         // raft_knn_index.value().lists()[listId]->data.data_handle(), 32 *
@@ -628,7 +630,7 @@ void RaftIVFPQ::addEncodedVectorsToList_(
         // interleaved_codes.data(), 10, std::cout);
     }
 
-    uint8_t* list_data_ptr;
+//     uint8_t* list_data_ptr;
 
     /// fetch the list data ptr on host
     //     raft::update_host(

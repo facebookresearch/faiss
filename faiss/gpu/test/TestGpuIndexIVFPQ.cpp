@@ -17,11 +17,8 @@
 #include <vector>
 
 void pickEncoding(int& codes, int& dim) {
-//     std::vector<int> codeSizes{
-//             3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 96};
     std::vector<int> codeSizes{
-            3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48};
-
+            3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 96};
 
     // Above 32 doesn't work with no precomputed codes
     std::vector<int> dimSizes{4, 8, 10, 12, 16, 20, 24, 28, 32};
@@ -46,9 +43,13 @@ struct Options {
 
         pickEncoding(codes, dim);
 
-        // TODO: Change back to `faiss::gpu::randVal(3, 7)` when we officially
-        //   support non-multiple of 8 subcodes for IVFPQ.
+        printf("codes %d dim %d\n", codes, dim);
+
+        // TODO: Change back to `faiss::gpu::randVal(3, 7)` when we
+        // officially support non-multiple of 8 subcodes for IVFPQ.
         bitsPerCode = 8;
+
+        numAdd = faiss::gpu::randVal(2000, 5000);
         nprobe = std::min(faiss::gpu::randVal(40, 1000), numCentroids);
         numQuery = faiss::gpu::randVal(4, 8);
 
@@ -109,6 +110,8 @@ struct Options {
     faiss::gpu::IndicesOptions indicesOpt;
     bool useFloat16;
     int device;
+    bool interleavedLayout;
+    bool useRaft;
 };
 
 TEST(TestGpuIndexIVFPQ, Query_L2) {
@@ -125,7 +128,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
                 opt.dim,
                 opt.numCentroids,
                 opt.codes,
-                opt.bitsPerCode);
+                faiss::gpu::randVal(4, 8));
         cpuIndex.nprobe = opt.nprobe;
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numAdd, addVecs.data());
@@ -153,7 +156,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
-        
+
         printf("Done comparing faiss index");
 
 #if defined USE_NVIDIA_RAFT
@@ -182,7 +185,7 @@ TEST(TestGpuIndexIVFPQ, LargeBatch) {
 
         // override for large sizes
         opt.dim = 4;
-        opt.numQuery = 100000;
+        opt.numQuery = 4095;
         opt.codes = 2;
 
         std::vector<float> trainVecs =
@@ -226,6 +229,7 @@ TEST(TestGpuIndexIVFPQ, LargeBatch) {
 
 #if defined USE_NVIDIA_RAFT
         config.use_raft = true;
+        config.interleavedLayout = true;
         faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
 
         faiss::gpu::compareIndices(
@@ -396,8 +400,10 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
 
-        #if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAFT
         config.use_raft = true;
+        config.interleavedLayout = true;
+        // int bitsPerCode = faiss::gpu::randVal(4, 8);
         faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
 
         faiss::gpu::compareIndices(
@@ -503,7 +509,7 @@ TEST(TestGpuIndexIVFPQ, Add_L2) {
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
 
-        #if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAFT
         config.use_raft = true;
         faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
         raftGpuIndex.nprobe = opt.nprobe;
@@ -569,8 +575,8 @@ TEST(TestGpuIndexIVFPQ, Add_IP) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
-        
-               #if defined USE_NVIDIA_RAFT
+
+#if defined USE_NVIDIA_RAFT
         config.use_raft = true;
         faiss::gpu::GpuIndexIVFPQ raftGpuIndex(&res, &cpuIndex, config);
         raftGpuIndex.nprobe = opt.nprobe;
@@ -714,10 +720,10 @@ TEST(TestGpuIndexIVFPQ, CopyFrom) {
             opt.getPctMaxDiffN());
 
 #if defined USE_NVIDIA_RAFT
-        config.use_raft = true;
-        config.useFloat16LookupTables = false;
-        config.interleavedLayout = true;
-// Use garbage values to see if we overwrite them
+    config.use_raft = true;
+    config.useFloat16LookupTables = false;
+    config.interleavedLayout = true;
+    // Use garbage values to see if we overwrite them
     faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
             &res, 1, 1, 1, 8, faiss::METRIC_L2, config);
     gpuIndex.nprobe = 1;
