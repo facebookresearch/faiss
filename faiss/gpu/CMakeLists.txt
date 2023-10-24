@@ -80,7 +80,6 @@ set(FAISS_GPU_SRC
   utils/warpselect/WarpSelectFloatT512.cu
   utils/warpselect/WarpSelectFloatT1024.cu
   utils/warpselect/WarpSelectFloatT2048.cu
-  test/TestUtils.cpp
 )
 
 set(FAISS_GPU_HEADERS
@@ -167,7 +166,6 @@ set(FAISS_GPU_HEADERS
   utils/WarpShuffles.cuh
   utils/blockselect/BlockSelectImpl.cuh
   utils/warpselect/WarpSelectImpl.cuh
-  test/TestUtils.h
 )
 
 function(generate_ivf_interleaved_code)
@@ -242,12 +240,14 @@ if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
           impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh
-          impl/RaftIVFPQ.cuh)
+          impl/RaftIVFPQ.cuh
+          test/TestUtils.h)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
 	  impl/RaftIVFFlat.cu
     impl/RaftIVFPQ.cu
-    impl/RaftUtils.h)
+    impl/RaftUtils.h
+    test/TestUtils.cpp)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
