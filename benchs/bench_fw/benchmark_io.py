@@ -198,7 +198,7 @@ class BenchmarkIO:
     def get_dataset(self, dataset):
         if dataset not in self.cached_ds:
             self.cached_ds[dataset] = self.read_nparray(
-                os.path.join(self.path, dataset.name)
+                os.path.join(self.path, dataset.tablename)
             )
         return self.cached_ds[dataset]
 
@@ -207,9 +207,9 @@ class BenchmarkIO:
         filename: str,
     ):
         fn = self.download_file_from_blobstore(filename)
-        logger.info(f"Loading nparray from {fn}\n")
+        logger.info(f"Loading nparray from {fn}")
         nparray = np.load(fn)
-        logger.info(f"Loaded nparray {nparray.shape} from {fn}\n")
+        logger.info(f"Loaded nparray {nparray.shape} from {fn}")
         return nparray
 
     def write_nparray(
@@ -218,7 +218,7 @@ class BenchmarkIO:
         filename: str,
     ):
         fn = self.get_local_filename(filename)
-        logger.info(f"Saving nparray {nparray.shape} to {fn}\n")
+        logger.info(f"Saving nparray {nparray.shape} to {fn}")
         np.save(fn, nparray)
         self.upload_file_to_blobstore(filename)
 
@@ -227,10 +227,10 @@ class BenchmarkIO:
         filename: str,
     ):
         fn = self.download_file_from_blobstore(filename)
-        logger.info(f"Loading json {fn}\n")
+        logger.info(f"Loading json {fn}")
         with open(fn, "r") as fp:
             json_dict = json.load(fp)
-        logger.info(f"Loaded json {json_dict} from {fn}\n")
+        logger.info(f"Loaded json {json_dict} from {fn}")
         return json_dict
 
     def write_json(
@@ -240,7 +240,7 @@ class BenchmarkIO:
         overwrite: bool = False,
     ):
         fn = self.get_local_filename(filename)
-        logger.info(f"Saving json {json_dict} to {fn}\n")
+        logger.info(f"Saving json {json_dict} to {fn}")
         with open(fn, "w") as fp:
             json.dump(json_dict, fp)
         self.upload_file_to_blobstore(filename, overwrite=overwrite)
