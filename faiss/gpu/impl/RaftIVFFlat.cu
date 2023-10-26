@@ -36,7 +36,7 @@
 #include <faiss/gpu/impl/IVFFlatScan.cuh>
 #include <faiss/gpu/impl/IVFInterleaved.cuh>
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
@@ -107,7 +107,7 @@ void RaftIVFFlat::reset() {
     raft_knn_index.reset();
 }
 
-/// Directly modify the raft index
+/// Replace the raft index
 void RaftIVFFlat::setRaftIndex(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>& idx) {
     raft_knn_index = std::move(idx);
 }

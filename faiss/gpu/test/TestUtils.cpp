@@ -57,7 +57,12 @@ bool randBool() {
 std::vector<float> randVecs(size_t num, size_t dim) {
     std::vector<float> v(num * dim);
 
+    printf("inside randVecs s_seed %ld\n", s_seed);
+
     faiss::float_rand(v.data(), v.size(), s_seed);
+
+    raft::print_host_vector("randVecs", v.data(), 100, std::cout);
+
     // unfortunately we generate separate sets of vectors, and don't
     // want the same values
     ++s_seed;
@@ -114,10 +119,11 @@ void compareIndices(
             k,
             testDistance.data(),
             testIndices.data());
-    
+
     raft::print_host_vector("refDistances", refDistance.data(), 100, std::cout);
-    
-    raft::print_host_vector("testDistance", testDistance.data(), 100, std::cout);
+
+    raft::print_host_vector(
+            "testDistance", testDistance.data(), 100, std::cout);
 
     faiss::gpu::compareLists(
             refDistance.data(),

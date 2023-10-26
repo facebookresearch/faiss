@@ -31,7 +31,7 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/error.hpp>

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 

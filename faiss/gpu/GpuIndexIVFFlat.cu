@@ -20,7 +20,7 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <raft/neighbors/ivf_flat.cuh>
 #include <raft/neighbors/ivf_flat_types.hpp>
 #endif

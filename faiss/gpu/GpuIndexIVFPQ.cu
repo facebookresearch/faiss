@@ -19,7 +19,7 @@
 #include <memory>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <raft/neighbors/ivf_pq.cuh>
 #endif
@@ -109,9 +109,9 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     index_.reset();
 
     // no need to do base class ptr allocations if RAFT is not enabled
-    // if (!config_.use_raft) {
-    baseIndex_.reset();
-    // }
+    if (!config_.use_raft) {
+        baseIndex_.reset();
+    }
 
     pq = index->pq;
     subQuantizers_ = index->pq.M;
@@ -375,7 +375,8 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         raft_knn_index.emplace(raft::neighbors::ivf_pq::build<float, idx_t>(
                 raft_handle, raft_idx_params, x, n, (idx_t)d));
 
-        raftIndex_->setRaftIndex(raft_knn_index);
+        printf("Done building raft index");
+
 
         quantizer->train(nlist, raft_knn_index.value().centers().data_handle());
         quantizer->add(nlist, raft_knn_index.value().centers().data_handle());
@@ -385,6 +386,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 raft_knn_index.value().pq_centers().data_handle(),
                 subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_),
                 resources_->getDefaultStream(config_.device));
+        raftIndex_->setRaftIndex(raft_knn_index);
     } else
 #else
     if (config_.use_raft) {
