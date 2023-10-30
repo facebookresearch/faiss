@@ -349,6 +349,22 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
+    setIndex_(
+            resources_.get(),
+            this->d,
+            this->nlist,
+            metric_type,
+            metric_arg,
+            subQuantizers_,
+            bitsPerCode_,
+            ivfpqConfig_.useFloat16LookupTables,
+            ivfpqConfig_.useMMCodeDistance,
+            ivfpqConfig_.interleavedLayout,
+            pq.centroids.data(),
+            ivfpqConfig_.indicesOptions,
+            config_.memorySpace);
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+
 #if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
         // No need to copy the data to host
@@ -370,23 +386,29 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
         auto raftIndex_ = std::static_pointer_cast<RaftIVFPQ, IVFPQ>(index_);
 
-        std::optional<raft::neighbors::ivf_pq::index<idx_t>> raft_knn_index;
+        raftIndex_->setRaftIndex(x, n, d, raft_idx_params);
 
-        raft_knn_index.emplace(raft::neighbors::ivf_pq::build<float, idx_t>(
-                raft_handle, raft_idx_params, x, n, (idx_t)d));
+        // raft::neighbors::ivf_pq::index<idx_t> raft_ivfpq_index =
+        // raft::neighbors::ivf_pq::build<float, idx_t>(
+        //         raft_handle, raft_idx_params, x, n, (idx_t)d);
 
-        printf("Done building raft index");
-
-
-        quantizer->train(nlist, raft_knn_index.value().centers().data_handle());
-        quantizer->add(nlist, raft_knn_index.value().centers().data_handle());
+        quantizer->train(
+                nlist,
+                (raftIndex_->raft_knn_index).value().centers().data_handle());
+        quantizer->add(
+                nlist,
+                (raftIndex_->raft_knn_index).value().centers().data_handle());
 
         raft::copy(
                 pq.get_centroids(0, 0),
-                raft_knn_index.value().pq_centers().data_handle(),
+                (raftIndex_->raft_knn_index).value().pq_centers().data_handle(),
                 subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_),
                 resources_->getDefaultStream(config_.device));
-        raftIndex_->setRaftIndex(raft_knn_index);
+        raft_handle.sync_stream();
+        // (raftIndex_->raft_knn_index).emplace(raft::neighbors::ivf_pq::build<float,
+        // idx_t>(
+        //         raft_handle, raft_idx_params, x, n, (idx_t)d));
+        // raftIndex_->setRaftIndex(&raft_knn_index);
     } else
 #else
     if (config_.use_raft) {
@@ -405,23 +427,8 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
         trainQuantizer_(n, hostData.data());
         trainResidualQuantizer_(n, hostData.data());
+        updateQuantizer();
     }
-    setIndex_(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            metric_type,
-            metric_arg,
-            subQuantizers_,
-            bitsPerCode_,
-            ivfpqConfig_.useFloat16LookupTables,
-            ivfpqConfig_.useMMCodeDistance,
-            ivfpqConfig_.interleavedLayout,
-            pq.centroids.data(),
-            ivfpqConfig_.indicesOptions,
-            config_.memorySpace);
-    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
-    updateQuantizer();
 
     if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
@@ -543,7 +550,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
             "is not supported",
             subQuantizers_);
 
-    if(!config_.use_raft) {
+    if (!config_.use_raft) {
         // We must have enough shared memory on the current device to store
         // our lookup distances
         int lookupTableSize = sizeof(float);

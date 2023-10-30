@@ -89,7 +89,9 @@ class RaftIVFPQ : public IVFPQ {
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    void setRaftIndex(std::optional<raft::neighbors::ivf_pq::index<idx_t>>& idx);
+//     void setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>* idx);
+    void setRaftIndex(const float* x, int n, int d, raft::neighbors::ivf_pq::index_params& raft_idx_params);
+
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
@@ -107,7 +109,8 @@ class RaftIVFPQ : public IVFPQ {
     /// Return the list indices of a particular list back to the CPU
     std::vector<idx_t> getListIndices(idx_t listId) const override;
 
-//     void updateQuantizer(Index* quantizer) override;
+    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
+        raft_knn_index{std::nullopt};
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation
@@ -129,7 +132,7 @@ class RaftIVFPQ : public IVFPQ {
     /// into our preferred data layout
     /// Data must be a row-major, 3-d array of size
     /// (numSubQuantizers, numSubQuantizerCodes, dim / numSubQuantizers)
-    void setPQCentroids_(float* data);
+    void setPQCentroids_();
 
     /// Calculate precomputed residual distance information
     void precomputeCodes_(Index* quantizer);
@@ -175,8 +178,8 @@ class RaftIVFPQ : public IVFPQ {
     /// Precomputed term 2 in half form
     DeviceTensor<half, 3, true> precomputedCodeHalf_;
 
-    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
-        raft_knn_index{std::nullopt};
+//     std::optional<raft::neighbors::ivf_pq::index<idx_t>>
+//         raft_knn_index{std::nullopt};
 };
 
 struct RaftIVFPQCodePackerInterleaved : CodePacker {

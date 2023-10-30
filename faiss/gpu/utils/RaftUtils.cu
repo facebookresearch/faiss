@@ -20,8 +20,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
 #include <faiss/gpu/utils/RaftUtils.h>
 
 #include <raft/core/device_mdarray.hpp>
