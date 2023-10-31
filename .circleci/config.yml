@@ -235,6 +235,7 @@ jobs:
                   conda install -y -q cuda-nvcc=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 -c nvidia
       - when:
           condition:
+            and:
               - equal: [ "ON", << parameters.gpu >> ]
               - equal: [ "ON", << parameters.raft >> ]
           steps:
