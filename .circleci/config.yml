@@ -236,7 +236,7 @@ jobs:
             - run:
                 name: Install libraft
                 command: |
-                  conda install -y -q libraft cuda-version=11.4 -c rapidsai-nightly -c nvidia/label/cuda-11.4.4 -c pkgs/main -c conda-forge
+                  conda install -y -q libraft cuda-version=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
