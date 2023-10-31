@@ -44,16 +44,19 @@ outputs:
         - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
+        - cuda-nvcc {{ cudatoolkit }}
+        - cuda-cudart-dev {{ cudatoolkit }}
+        - libcublas-dev {{ cudatoolkit }}
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cudatoolkit {{ cudatoolkit }}
-        - libraft =23.08
+        - cuda-toolkit {{ cudatoolkit }}
+        - libraft =23.12
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
-        - libraft =23.08
+        - {{ pin_compatible('cuda-toolkit', max_pin='x') }}
+        - libraft =23.12
     test:
       requires:
         - conda-build

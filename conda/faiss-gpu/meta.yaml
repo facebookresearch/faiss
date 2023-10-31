@@ -44,6 +44,9 @@ outputs:
         - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
+        - cuda-nvcc {{ cudatoolkit }}
+        - cuda-cudart-dev {{ cudatoolkit }}
+        - libcublas-dev {{ cudatoolkit }}
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
