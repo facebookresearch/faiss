@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            # conda config --set solver libmamba
+            conda config --set solver libmamba
             # conda config --set verbosity 3
             conda update -y -q conda
             conda install -y -q conda-build
@@ -219,26 +219,30 @@ jobs:
       - run:
           name: Set up environment
           command: |
-            # conda config --set solver libmamba
+            conda config --set solver libmamba
             conda update -y -q conda
             conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - when:
           condition:
-            equal: [ "ON", << parameters.gpu >> ]
+            and:
+              - equal: [ "ON", << parameters.gpu >> ]
+              - equal: [ "OFF", << parameters.raft >> ]
           steps:
             - run:
-                name: Configure CUDA
+                name: Install CUDA
                 command: |
                   sudo update-alternatives --remove-all cuda
-                  conda install -y -q cuda-nvcc cuda-cudart-dev libcublas-dev cuda-toolkit -c nvidia/label/cuda-11.4.0
+                  conda install -y -q cuda-nvcc=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 -c nvidia
       - when:
           condition:
-            equal: [ "ON", << parameters.raft >> ]
+              - equal: [ "ON", << parameters.gpu >> ]
+              - equal: [ "ON", << parameters.raft >> ]
           steps:
             - run:
-                name: Install libraft
+                name: Install CUDA + libraft
                 command: |
-                  conda install -y -q libraft -c rapidsai-nightly -c nvidia/label/cuda-11.4.0 -c pkgs/main -c conda-forge
+                  sudo update-alternatives --remove-all cuda
+                  conda install -y -q cuda-nvcc=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 libraft -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m

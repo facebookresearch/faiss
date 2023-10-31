@@ -47,7 +47,6 @@ outputs:
         - cuda-nvcc {{ cudatoolkit }}
         - cuda-cudart-dev {{ cudatoolkit }}
         - libcublas-dev =11.5
-      host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - cuda-toolkit {{ cudatoolkit }}
