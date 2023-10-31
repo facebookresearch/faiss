@@ -285,7 +285,7 @@ jobs:
             - run:
                 name: Python tests (CPU + GPU)
                 command: |
-                  conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
+                  conda install -y -q pytorch pytorch-cuda=11 -c pytorch -c nvidia
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
                   cp tests/common_faiss_tests.py faiss/gpu/test
