@@ -232,7 +232,7 @@ jobs:
                 name: Install CUDA
                 command: |
                   sudo update-alternatives --remove-all cuda
-                  conda install -y -q cuda-nvcc=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 -c nvidia
+                  conda install -y -q cuda-nvcc cuda-cudart-dev libcublas-dev cuda-toolkit -c nvidia/label/nvidia/label/cuda-11.4.4
       - when:
           condition:
             and:
@@ -243,7 +243,7 @@ jobs:
                 name: Install CUDA + libraft
                 command: |
                   sudo update-alternatives --remove-all cuda
-                  conda install -y -q cuda-nvcc=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 libraft -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
+                  conda install -y -q cuda-nvcc=11.4 cuda-cudart=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 libraft -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m

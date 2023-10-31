@@ -45,6 +45,7 @@ outputs:
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
         - cuda-nvcc {{ cudatoolkit }}
+        - cuda-cudart {{ cudatoolkit }}
         - cuda-cudart-dev {{ cudatoolkit }}
         - libcublas-dev =11.5
         - mkl =2023  # [x86_64]
