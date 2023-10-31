@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda config --set solver libmamba
+            # conda config --set solver libmamba
             # conda config --set verbosity 3
             conda update -y -q conda
             conda install -y -q conda-build
@@ -219,7 +219,7 @@ jobs:
       - run:
           name: Set up environment
           command: |
-            conda config --set solver libmamba
+            # conda config --set solver libmamba
             conda update -y -q conda
             conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - when:
