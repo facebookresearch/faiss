@@ -138,7 +138,7 @@ jobs:
                 name: Conda build (GPU)
                 no_output_timeout: 60m
                 command: |
-                  sudo update-alternatives --remove-all cuda
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
                   conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                       -c pytorch -c nvidia
@@ -153,7 +153,7 @@ jobs:
                 name: Conda build (GPU) w/ anaconda upload
                 no_output_timeout: 60m
                 command: |
-                  sudo update-alternatives --remove-all cuda
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
                   conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                       --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
@@ -168,7 +168,7 @@ jobs:
                 name: Conda build (GPU w/ RAFT)
                 no_output_timeout: 60m
                 command: |
-                  sudo update-alternatives --remove-all cuda
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                       -c pytorch -c nvidia -c rapidsai-nightly -c conda-forge
@@ -183,7 +183,7 @@ jobs:
                 name: Conda build (GPU w/ RAFT) w/ anaconda upload
                 no_output_timeout: 60m
                 command: |
-                  sudo update-alternatives --remove-all cuda
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                       --user pytorch --label <<parameters.label>> -c pytorch -c nvidia -c rapidsai-nightly -c conda-forge
@@ -216,6 +216,13 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
             fi
+      - when:
+          condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Configure CUDA
+                command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
       - run:
           name: Set up environment
           command: |
@@ -224,26 +231,12 @@ jobs:
             conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - when:
           condition:
-            and:
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "OFF", << parameters.raft >> ]
+            equal: [ "ON", << parameters.raft >> ]
           steps:
             - run:
-                name: Install CUDA
+                name: Install libraft
                 command: |
-                  sudo update-alternatives --remove-all cuda
-                  conda install -y -q cuda-nvcc cuda-cudart-dev libcublas-dev cuda-toolkit -c nvidia/label/nvidia/label/cuda-11.4.4
-      - when:
-          condition:
-            and:
-              - equal: [ "ON", << parameters.gpu >> ]
-              - equal: [ "ON", << parameters.raft >> ]
-          steps:
-            - run:
-                name: Install CUDA + libraft
-                command: |
-                  sudo update-alternatives --remove-all cuda
-                  conda install -y -q cuda-nvcc=11.4 cuda-cudart=11.4 cuda-cudart-dev=11.4 libcublas-dev=11.5 cuda-toolkit=11.4 libraft -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
+                  conda install -y -q libraft cuda-version=11.4 -c rapidsai-nightly -c nvidia/label/cuda-11.4.4 -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
