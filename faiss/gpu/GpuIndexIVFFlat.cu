@@ -224,7 +224,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
         raft::neighbors::ivf_flat::index_params raft_idx_params;
         raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = faiss_to_raft(metric_type, false);
+        raft_idx_params.metric = metricFaissToRaft(metric_type, false);
         raft_idx_params.add_data_on_build = false;
         raft_idx_params.kmeans_trainset_fraction =
                 static_cast<double>(cp.max_points_per_centroid * nlist) /

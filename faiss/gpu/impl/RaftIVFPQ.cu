@@ -84,38 +84,6 @@ RaftIVFPQ::RaftIVFPQ(
                 pqCentroidData,
                 indicesOptions,
                 space) {
-//     const raft::device_resources& raft_handle =
-//             resources->getRaftHandleCurrentDevice();
-
-    // set the raft handle's workspace resource to managed memory. This is
-    // temporary until FAISS adopts RMM.
-//     if (space == MemorySpace::Unified) {
-//         rmm::mr::managed_memory_resource managed_memory;
-//         raft::resource::set_workspace_resource(
-//                 raft_handle,
-//                 std::shared_ptr<rmm::mr::device_memory_resource>{
-//                         &managed_memory});
-//     }
-
-//     raft::neighbors::ivf_pq::index_params pams;
-//     switch (metric) {
-//         case faiss::METRIC_L2:
-//             pams.metric = raft::distance::DistanceType::L2Expanded;
-//             break;
-//         case faiss::METRIC_INNER_PRODUCT:
-//             pams.metric = raft::distance::DistanceType::InnerProduct;
-//             break;
-//         default:
-//             FAISS_THROW_MSG("Metric is not supported.");
-//     }
-
-//     pams.codebook_kind = raft::neighbors::ivf_pq::codebook_gen::PER_SUBSPACE;
-//     pams.n_lists = nlist;
-//     pams.pq_bits = bitsPerSubQuantizer;
-//     pams.pq_dim = numSubQuantizers_;
-//     raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim));
-
-//     setPQCentroids_(pqCentroidData);
 }
 
 void RaftIVFPQ::reset() {
@@ -157,7 +125,6 @@ idx_t RaftIVFPQ::getListLength(idx_t listId) const {
 }
 
 void RaftIVFPQ::updateQuantizer(Index* quantizer) {
-    printf("updateQuantizer from RaftIVFPQ was called\n");
     FAISS_THROW_IF_NOT(quantizer->is_trained);
 
     // Must match our basic IVF parameters
@@ -168,10 +135,17 @@ void RaftIVFPQ::updateQuantizer(Index* quantizer) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-//     raft::neighbors::ivf_pq::helpers::make_rotation_matrix(
-//             raft_handle, &(raft_knn_index.value()), false);
+    raft::neighbors::ivf_pq::index_params pams;
+    pams.metric = metricFaissToRaft(metric_, false);
+    pams.codebook_kind = raft::neighbors::ivf_pq::codebook_gen::PER_SUBSPACE;
+    pams.n_lists = numLists_;
+    pams.pq_bits = bitsPerSubQuantizer_;
+    pams.pq_dim = numSubQuantizers_;
+    raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim_));
     
-    raft::neighbors::ivf_pq::helpers::prepare_index(raft_handle, raft_knn_index.value());
+    raft::neighbors::ivf_pq::helpers::reset_index(raft_handle, raft_knn_index.value());
+    raft::neighbors::ivf_pq::helpers::make_rotation_matrix(
+            raft_handle, &(raft_knn_index.value()), false);
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
@@ -419,7 +393,7 @@ idx_t RaftIVFPQ::addVectors(
             resources_->getRaftHandleCurrentDevice();
 
     idx_t n_rows_valid =
-            inplace_gather_filtered_rows(resources_, vecs, indices);
+            inplaceGatherFilteredRows(resources_, vecs, indices);
 
     raft_knn_index.emplace(raft::neighbors::ivf_pq::extend(
             raft_handle,
@@ -496,10 +470,9 @@ void RaftIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 }
 
-void RaftIVFPQ::setRaftIndex(const float* x, int n, int d, raft::neighbors::ivf_pq::index_params& raft_idx_params) {
-    auto raft_handle = resources_->getRaftHandleCurrentDevice();
-    raft_knn_index.emplace(raft::neighbors::ivf_pq::build<float, idx_t>(raft_handle, raft_idx_params, x, n, (idx_t)d));
-    raft_handle.sync_stream();
+void RaftIVFPQ::setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>&& idx) {
+    raft_knn_index.emplace(std::move(idx));
+    setBasePQCentroids_();
 }
 
 void RaftIVFPQ::addEncodedVectorsToList_(
@@ -594,26 +567,33 @@ void RaftIVFPQ::addEncodedVectorsToList_(
 }
 
 void RaftIVFPQ::setPQCentroids_() {
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
+    auto stream = resources_->getDefaultStreamCurrentDevice();
 
-//     auto data_buf = raft::make_temporary_device_buffer<float>(
-//             raft_handle,
-//             data,
-//             raft::make_extents<uint32_t>(
-//                     numSubQuantizers_,
-//                     numSubQuantizerCodes_,
-//                     dimPerSubQuantizer_));
-
-//     raft::neighbors::ivf_pq::helpers::set_pq_centers(
-//             raft_handle,
-//             &(raft_knn_index.value()),
-//             data_buf.view().data_handle());
     raft::copy(
         raft_knn_index.value().pq_centers().data_handle(),
         pqCentroidsInnermostCode_.data(),
-         numSubQuantizers_ * numSubQuantizerCodes_ * dimPerSubQuantizer_,
-        raft_handle.get_stream());
+        pqCentroidsInnermostCode_.numElements(),
+        stream);
+}
+
+void RaftIVFPQ::setBasePQCentroids_() {
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
+    raft::copy(
+        pqCentroidsInnermostCode_.data(),
+        raft_knn_index.value().pq_centers().data_handle(),
+       pqCentroidsInnermostCode_.numElements(),
+        stream);
+
+    DeviceTensor<float, 3, true> pqCentroidsMiddleCode(
+            resources_,
+            makeDevAlloc(AllocType::Quantizer, stream),
+            {numSubQuantizers_, numSubQuantizerCodes_, dimPerSubQuantizer_});
+
+    runTransposeAny(
+            pqCentroidsInnermostCode_, 1, 2, pqCentroidsMiddleCode, stream);
+
+    pqCentroidsMiddleCode_ = std::move(pqCentroidsMiddleCode);
 }
 
 RaftIVFPQCodePackerInterleaved::RaftIVFPQCodePackerInterleaved(

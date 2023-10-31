@@ -56,7 +56,7 @@ void validRowIndices(
             });
 }
 
-idx_t inplace_gather_filtered_rows(
+idx_t inplaceGatherFilteredRows(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {

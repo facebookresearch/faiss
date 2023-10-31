@@ -31,7 +31,7 @@
 namespace faiss {
 namespace gpu {
 
-inline raft::distance::DistanceType faiss_to_raft(
+inline raft::distance::DistanceType metricFaissToRaft(
         MetricType metric,
         bool exactDistance) {
     switch (metric) {
@@ -62,7 +62,7 @@ void validRowIndices(
         Tensor<float, 2, true>& vecs,
         bool* nan_flag);
 
-idx_t inplace_gather_filtered_rows(
+idx_t inplaceGatherFilteredRows(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices);

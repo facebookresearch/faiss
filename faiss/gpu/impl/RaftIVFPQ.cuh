@@ -89,9 +89,7 @@ class RaftIVFPQ : public IVFPQ {
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-//     void setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>* idx);
-    void setRaftIndex(const float* x, int n, int d, raft::neighbors::ivf_pq::index_params& raft_idx_params);
-
+    void setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>&& idx);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
@@ -108,9 +106,6 @@ class RaftIVFPQ : public IVFPQ {
 
     /// Return the list indices of a particular list back to the CPU
     std::vector<idx_t> getListIndices(idx_t listId) const override;
-
-    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
-        raft_knn_index{std::nullopt};
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation
@@ -154,32 +149,12 @@ class RaftIVFPQ : public IVFPQ {
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices);
+
+    void setBasePQCentroids_();
     
-//     raft::neighbors::ivf_pq::index<idx_t> raft_knn_index_() const;
-
    private:
-    /// On the GPU, we prefer different PQ centroid data layouts for
-    /// different purposes.
-    ///
-    /// (sub q)(sub dim)(code id)
-    DeviceTensor<float, 3, true> pqCentroidsInnermostCode_;
-
-    /// (sub q)(code id)(sub dim)
-    DeviceTensor<float, 3, true> pqCentroidsMiddleCode_;
-
-    /// Are precomputed codes enabled? (additional factoring and
-    /// precomputation of the residual distance, to reduce query-time work)
-    bool precomputedCodes_;
-
-    /// Precomputed term 2 in float form
-    /// (centroid id)(sub q)(code id)
-    DeviceTensor<float, 3, true> precomputedCode_;
-
-    /// Precomputed term 2 in half form
-    DeviceTensor<half, 3, true> precomputedCodeHalf_;
-
-//     std::optional<raft::neighbors::ivf_pq::index<idx_t>>
-//         raft_knn_index{std::nullopt};
+    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
+        raft_knn_index{std::nullopt};
 };
 
 struct RaftIVFPQCodePackerInterleaved : CodePacker {

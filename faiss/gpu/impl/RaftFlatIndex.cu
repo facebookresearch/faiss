@@ -90,7 +90,7 @@ void RaftFlatIndex::query(
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        DistanceType distance = faiss_to_raft(metric, exactDistance);
+        DistanceType distance = metricFaissToRaft(metric, exactDistance);
 
         std::vector<raft::device_matrix_view<const float, idx_t>> index_vec = {
                 index};
