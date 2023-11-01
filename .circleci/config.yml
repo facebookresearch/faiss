@@ -398,26 +398,26 @@ workflows:
             branches:
               ignore: /.*/
 
-  # nightly:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 0 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  #   jobs:
-  #     - build_conda:
-  #         name: Linux x86_64 nightlies
-  #         exec: linux-x86_64-cpu
-  #         label: nightly
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - build_conda:
+          name: Linux x86_64 nightlies
+          exec: linux-x86_64-cpu
+          label: nightly
       - build_conda:
           name: Linux x86_64 GPU nightlies (CUDA 11.4)
           exec: linux-x86_64-gpu
           cuda: "11.4"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-  #         label: nightly
+          label: nightly
       - build_conda:
           name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.4)
           exec: linux-x86_64-gpu
@@ -425,16 +425,16 @@ workflows:
           cuda: "11.4"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-      #    label: nightly
-      # - build_conda:
-      #     name: Windows x86_64 nightlies
-      #     exec: windows-x86_64-cpu
-      #     label: nightly
-      # - build_conda:
-      #     name: OSX arm64 nightlies
-      #     exec: macosx-arm64-cpu
-      #     label: nightly
-      # - build_conda:
-      #     name: Linux arm64 nightlies
-      #     exec: linux-arm64-cpu
-      #     label: nightly
+         label: nightly
+      - build_conda:
+          name: Windows x86_64 nightlies
+          exec: windows-x86_64-cpu
+          label: nightly
+      - build_conda:
+          name: OSX arm64 nightlies
+          exec: macosx-arm64-cpu
+          label: nightly
+      - build_conda:
+          name: Linux arm64 nightlies
+          exec: linux-arm64-cpu
+          label: nightly
