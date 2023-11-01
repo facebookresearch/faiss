@@ -56,8 +56,7 @@ struct Options {
         // differences between GPU and CPU, to stay within our error bounds,
         // only use a small k
         k = std::min(faiss::gpu::randVal(5, 20), numAdd / 40);
-        // usePrecomputed = faiss::gpu::randBool();
-        usePrecomputed = false;
+        usePrecomputed = faiss::gpu::randBool();
         indicesOpt = faiss::gpu::randSelect(
                 {faiss::gpu::INDICES_CPU,
                  faiss::gpu::INDICES_32_BIT,
@@ -404,9 +403,8 @@ TEST(TestGpuIndexIVFPQ, Add_IP) {
     }
 }
 
-TEST(TestGpuIndexIVFPQ, CopyTo) {
+void copyToTest(Options opt) {
     for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
@@ -417,16 +415,19 @@ TEST(TestGpuIndexIVFPQ, CopyTo) {
 
         faiss::gpu::GpuIndexIVFPQConfig config;
         config.device = opt.device;
-        config.usePrecomputedTables = (tries % 2 == 0);
+        config.usePrecomputedTables = false;
         config.indicesOptions = opt.indicesOpt;
         config.useFloat16LookupTables = opt.useFloat16;
+        config.interleavedLayout = opt.interleavedLayout;
+        config.use_raft = opt.useRaft;
+        opt.codes = 4;
 
         faiss::gpu::GpuIndexIVFPQ gpuIndex(
                 &res,
                 opt.dim,
                 opt.numCentroids,
                 opt.codes,
-                opt.bitsPerCode,
+                8,
                 faiss::METRIC_L2,
                 config);
         gpuIndex.nprobe = opt.nprobe;
@@ -453,10 +454,13 @@ TEST(TestGpuIndexIVFPQ, CopyTo) {
 
         testIVFEquality(cpuIndex, gpuIndex);
 
+        faiss::gpu::GpuIndexIVFPQ gpuIndex2(&res, &cpuIndex, config);
+        gpuIndex2.nprobe = opt.nprobe;
+
         // Query both objects; results should be equivalent
         faiss::gpu::compareIndices(
                 cpuIndex,
-                gpuIndex,
+                gpuIndex2,
                 opt.numQuery,
                 opt.dim,
                 opt.k,
@@ -465,6 +469,11 @@ TEST(TestGpuIndexIVFPQ, CopyTo) {
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
     }
+}
+
+TEST(TestGpuIndexIVFPQ, CopyTo) {
+    Options opt;
+    copyToTest(opt);
 }
 
 void copyFromTest(Options opt) {
@@ -741,6 +750,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.useRaft = true;
         opt.interleavedLayout = true;
+        opt.usePrecomputed = false;
         queryTest(opt, faiss::MetricType::METRIC_L2);
     }
 }
@@ -751,6 +761,7 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.useRaft = true;
         opt.interleavedLayout = true;
+        opt.usePrecomputed = false;
         queryTest(opt, faiss::MetricType::METRIC_INNER_PRODUCT);
     }
 }
@@ -766,6 +777,7 @@ TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
         opt.codes = 2;
         opt.useRaft = true;
         opt.interleavedLayout = true;
+        opt.usePrecomputed = false;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
 
         queryTest(opt, faiss::MetricType::METRIC_INNER_PRODUCT);
@@ -777,6 +789,7 @@ TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {
     opt.useRaft = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
+    opt.usePrecomputed = false;
     copyFromTest(opt);
 }
 
@@ -786,6 +799,7 @@ TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
         opt.useRaft = true;
         opt.interleavedLayout = true;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
+        opt.usePrecomputed = false;
         addTest(opt, faiss::METRIC_L2);
     }
 }
@@ -796,6 +810,7 @@ TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
         opt.useRaft = true;
         opt.interleavedLayout = true;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
+        opt.usePrecomputed = false;
         addTest(opt, faiss::METRIC_INNER_PRODUCT);
     }
 }
@@ -805,6 +820,7 @@ TEST(TestGpuIndexIVFPQ, QueryNaN_Raft) {
     opt.useRaft = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
+    opt.usePrecomputed = false;
     queryNaNTest(opt);
 }
 
@@ -813,6 +829,7 @@ TEST(TestGpuIndexIVFPQ, AddNaN_Raft) {
     opt.useRaft = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
+    opt.usePrecomputed = false;
     addNaNTest(opt);
 }
 
@@ -874,6 +891,15 @@ TEST(TestGpuIndexIVFPQ, Train_Raft) {
         //         opt.getPctMaxDiff1(),
         //         opt.getPctMaxDiffN());
     }
+}
+
+TEST(TestGpuIndexIVFPQ, CopyTo_Raft) {
+    Options opt;
+    opt.useRaft = true;
+    opt.interleavedLayout = true;
+    opt.bitsPerCode = 8;
+    opt.usePrecomputed = false;
+    copyToTest(opt);
 }
 #endif
 

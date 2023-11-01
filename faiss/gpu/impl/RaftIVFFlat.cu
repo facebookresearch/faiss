@@ -50,6 +50,7 @@
 #include <raft/core/handle.hpp>
 #include <raft/neighbors/ivf_flat_codepacker.hpp>
 #include <raft/neighbors/ivf_flat.cuh>
+#include <raft/neighbors/ivf_flat_helpers.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -79,26 +80,6 @@ RaftIVFFlat::RaftIVFFlat(
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == INDICES_64_BIT,
             "only INDICES_64_BIT is supported for RAFT index");
-    raft::neighbors::ivf_flat::index_params pams;
-    pams.add_data_on_build = false;
-
-    pams.n_lists = nlist;
-
-    switch (metric) {
-        case faiss::METRIC_L2:
-            pams.metric = raft::distance::DistanceType::L2Expanded;
-            break;
-        case faiss::METRIC_INNER_PRODUCT:
-            pams.metric = raft::distance::DistanceType::InnerProduct;
-            break;
-        default:
-            FAISS_THROW_MSG("Metric is not supported.");
-    }
-
-    const raft::device_resources& raft_handle =
-            res->getRaftHandleCurrentDevice();
-
-    raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim));
 }
 
 RaftIVFFlat::~RaftIVFFlat() {}
@@ -108,8 +89,8 @@ void RaftIVFFlat::reset() {
 }
 
 /// Replace the raft index
-void RaftIVFFlat::setRaftIndex(std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>& idx) {
-    raft_knn_index = std::move(idx);
+void RaftIVFFlat::setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx) {
+    raft_knn_index.emplace(std::move(idx));
 }
 
 /// Find the approximate k nearest neighbors for `queries` against
@@ -157,7 +138,7 @@ void RaftIVFFlat::search(
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-//     validRowIndices(resources_, queries, nan_flag.data_handle());
+    validRowIndices(resources_, queries, nan_flag.data_handle());
 
     raft::linalg::map_offset(
             raft_handle,
@@ -205,45 +186,7 @@ idx_t RaftIVFFlat::addVectors(
     /// Remove NaN values
     auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-//     validRowIndices(resources_, vecs, nan_flag.data_handle());
-
-    idx_t n_rows_valid = thrust::reduce(
-            raft_handle.get_thrust_policy(),
-            nan_flag.data_handle(),
-            nan_flag.data_handle() + n_rows,
-            0);
-
-    if (n_rows_valid < n_rows) {
-        auto gather_indices = raft::make_device_vector<idx_t, idx_t>(
-                raft_handle, n_rows_valid);
-
-        auto count = thrust::make_counting_iterator(0);
-
-        thrust::copy_if(
-                raft_handle.get_thrust_policy(),
-                count,
-                count + n_rows,
-                gather_indices.data_handle(),
-                [nan_flag = nan_flag.data_handle()] __device__(auto i) {
-                    return nan_flag[i];
-                });
-
-        raft::matrix::gather(
-                raft_handle,
-                raft::make_device_matrix_view<float, idx_t>(
-                        vecs.data(), n_rows, dim_),
-                raft::make_const_mdspan(gather_indices.view()),
-                (idx_t)16);
-
-        auto valid_indices = raft::make_device_vector<idx_t, idx_t>(
-                raft_handle, n_rows_valid);
-
-        raft::matrix::gather(
-                raft_handle,
-                raft::make_device_matrix_view<idx_t>(
-                        indices.data(), n_rows, (idx_t)1),
-                raft::make_const_mdspan(gather_indices.view()));
-    }
+    idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
     FAISS_ASSERT(raft_knn_index.has_value());
     raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
@@ -372,6 +315,17 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     size_t total_elems = quantizer->ntotal * quantizer->d;
 
     auto stream = resources_->getDefaultStreamCurrentDevice();
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+
+    raft::neighbors::ivf_flat::index_params pams;
+    pams.add_data_on_build = false;
+    pams.metric = metricFaissToRaft(metric_, false);
+    pams.n_lists = numLists_;
+    raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim_));
+
+    raft::neighbors::ivf_flat::helpers::reset_index(
+            raft_handle, raft_knn_index.value());
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.

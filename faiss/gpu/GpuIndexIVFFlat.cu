@@ -19,10 +19,9 @@
 #include <memory>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/RaftUtils.h>
+#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <raft/neighbors/ivf_flat.cuh>
-#include <raft/neighbors/ivf_flat_types.hpp>
 #endif
 
 namespace faiss {
@@ -219,6 +218,17 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
 #if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
+        setIndex_(
+            resources_.get(),
+            this->d,
+            this->nlist,
+            this->metric_type,
+            this->metric_arg,
+            false,   // no residual
+            nullptr, // no scalar quantizer
+            ivfFlatConfig_.interleavedLayout,
+            ivfFlatConfig_.indicesOptions,
+            config_.memorySpace);
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
@@ -231,17 +241,17 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
                 static_cast<double>(n);
         raft_idx_params.kmeans_n_iters = cp.niter;
 
-        auto raftIndex_ = std::static_pointer_cast<RaftIVFFlat, IVFFlat>(index_);
+        auto raftIndex_ =
+                std::static_pointer_cast<RaftIVFFlat, IVFFlat>(index_);
 
-        std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> raft_knn_index;
+        raft::neighbors::ivf_flat::index<float, idx_t> raft_ivfflat_index =
+                raft::neighbors::ivf_flat::build<float, idx_t>(
+                        raft_handle, raft_idx_params, x, n, (idx_t)d);
 
-        raft_knn_index.emplace(raft::neighbors::ivf_flat::build<float, idx_t>(
-                raft_handle, raft_idx_params, x, n, (idx_t)d));
+        quantizer->train(nlist, raft_ivfflat_index.centers().data_handle());
+        quantizer->add(nlist, raft_ivfflat_index.centers().data_handle());
 
-        raftIndex_->setRaftIndex(raft_knn_index);
-
-        quantizer->train(nlist, raft_knn_index.value().centers().data_handle());
-        quantizer->add(nlist, raft_knn_index.value().centers().data_handle());
+        raftIndex_->setRaftIndex(std::move(raft_ivfflat_index));
     } else
 #else
     if (config_.use_raft) {
@@ -258,10 +268,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
                 resources_->getDefaultStream(config_.device),
                 {n, this->d});
         trainQuantizer_(n, hostData.data());
-    }
 
-    // The quantizer is now trained; construct the IVF index
-    setIndex_(
+        setIndex_(
             resources_.get(),
             this->d,
             this->nlist,
@@ -272,8 +280,11 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
+        updateQuantizer();
+    }
+
+    // The quantizer is now trained; construct the IVF index
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-    updateQuantizer();
 
     if (reserveMemoryVecs_) {
         if (config_.use_raft) {
@@ -301,12 +312,12 @@ void GpuIndexIVFFlat::setIndex_(
 #if defined USE_NVIDIA_RAFT
 
     if (config_.use_raft) {
-         FAISS_THROW_IF_NOT_MSG(
-            ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
-            "RAFT only supports INDICES_64_BIT");
         FAISS_THROW_IF_NOT_MSG(
-            ivfFlatConfig_.interleavedLayout,
-            "RAFT requires interleavedLayout to be true");
+                ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
+                "RAFT only supports INDICES_64_BIT");
+        FAISS_THROW_IF_NOT_MSG(
+                ivfFlatConfig_.interleavedLayout,
+                "RAFT requires interleavedLayout to be true");
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,
