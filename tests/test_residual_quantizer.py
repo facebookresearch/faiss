@@ -1117,7 +1117,7 @@ class TestCrossCodebookComputations(unittest.TestCase):
             K = 1 << rq.nbits.at(m)
             cpp_table = codebook_cross_prods[ofs:ofs + K * kk].reshape(kk, K)
             ofs += kk * K
-            np.testing.assert_allclose(py_table, cpp_table, rtol=2e-4)
+            np.testing.assert_allclose(py_table, cpp_table, atol=1e-5)
 
         cent_norms = faiss.vector_to_array(rq.cent_norms)
         np.testing.assert_array_almost_equal(
