@@ -51,7 +51,7 @@ outputs:
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
+        - {{ pin_compatible('cudatoolkit', max_pin='x') }}
     test:
       requires:
         - conda-build
@@ -88,6 +88,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
+        - pytorch-cuda =11.8
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
