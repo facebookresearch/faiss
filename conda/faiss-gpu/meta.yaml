@@ -47,9 +47,11 @@ outputs:
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
+        - cudatoolkit {{ cudatoolkit }}
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
+        - {{ pin_compatible('cudatoolkit', max_pin='x') }}
     test:
       requires:
         - conda-build
