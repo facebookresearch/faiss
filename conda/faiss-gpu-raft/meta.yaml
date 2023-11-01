@@ -90,6 +90,8 @@ outputs:
         - numpy
         - scipy
         - pytorch
+        - pytorch-cuda =11.8
+        - cuda-version =11.8
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
