@@ -34,7 +34,6 @@ struct IndexFlatCodes : Index {
 
     void reset() override;
 
-    /// reconstruction using the codec interface
     void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
