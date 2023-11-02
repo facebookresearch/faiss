@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="67" column="5" bodyfile="faiss/IndexPQ.h" bodystart="67" bodyend="74"/>
+        <location file="faiss/IndexPQ.h" line="64" column="5" bodyfile="faiss/IndexPQ.h" bodystart="64" bodyend="71"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -119,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="61" column="10" bodyfile="faiss/IndexPQ.h" bodystart="61" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="58" column="10" bodyfile="faiss/IndexPQ.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a820cec27d1ef14bf59fb288b2e143b6a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1PolysemousTraining" kindref="compound">PolysemousTraining</ref></type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="64" column="24" bodyfile="faiss/IndexPQ.h" bodystart="64" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="61" column="24" bodyfile="faiss/IndexPQ.h" bodystart="61" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a3fa0f0c6216e34930ef9110600f89fbd" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe" kindref="member">Search_type_t</ref></type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="76" column="19" bodyfile="faiss/IndexPQ.h" bodystart="76" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="73" column="19" bodyfile="faiss/IndexPQ.h" bodystart="73" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a553682b74c5b8ccb1ba0c44e1729db2d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -159,7 +159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="80" column="10" bodyfile="faiss/IndexPQ.h" bodystart="80" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="77" column="10" bodyfile="faiss/IndexPQ.h" bodystart="77" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1aff455f2adff6064939494dad6e3017bc" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -173,7 +173,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="83" column="9" bodyfile="faiss/IndexPQ.h" bodystart="83" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="80" column="9" bodyfile="faiss/IndexPQ.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -296,20 +296,14 @@
         <param>
           <type>int</type>
           <declname>d</declname>
-          <briefdescription><para>dimensionality of the input vectors </para>
-</briefdescription>
         </param>
         <param>
           <type>size_t</type>
           <declname>M</declname>
-          <briefdescription><para>number of subquantizers </para>
-</briefdescription>
         </param>
         <param>
           <type>size_t</type>
           <declname>nbits</declname>
-          <briefdescription><para>number of bit per subvector index </para>
-</briefdescription>
         </param>
         <param>
           <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -362,7 +356,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="39" column="5"/>
+        <location file="faiss/IndexPQ.h" line="36" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a87898add5ab4d86ba901ca79778fc11e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -403,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="41" column="10"/>
+        <location file="faiss/IndexPQ.h" line="38" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a838c9186a476abd7321afc95d5412ab8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -443,6 +437,14 @@
 <para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -451,10 +453,10 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>labels</parametername>
+<parametername>k</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output labels of the NNs, size n*k </para>
+<para>number of extracted vectors </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -465,12 +467,20 @@
 <para>output pairwise distances, size n*k </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels of the NNs, size n*k </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="43" column="10"/>
+        <location file="faiss/IndexPQ.h" line="40" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -523,7 +533,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="52" column="10"/>
+        <location file="faiss/IndexPQ.h" line="49" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -576,7 +586,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="54" column="10"/>
+        <location file="faiss/IndexPQ.h" line="51" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -591,7 +601,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="56" column="31"/>
+        <location file="faiss/IndexPQ.h" line="53" column="31"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a17b53fc0ce348af3344a0291ae89304a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -632,7 +642,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="86" column="10"/>
+        <location file="faiss/IndexPQ.h" line="83" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -675,7 +685,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="99" column="10"/>
+        <location file="faiss/IndexPQ.h" line="96" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -727,7 +737,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="112" column="10"/>
+        <location file="faiss/IndexPQ.h" line="109" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -786,13 +796,39 @@
           <declname>recons</declname>
         </param>
         <briefdescription>
-<para>reconstruction using the codec interface </para>
         </briefdescription>
         <detaileddescription>
+<para>Reconstruct vectors i0 to i0 + ni - 1</para>
+<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>index of the first vector in the sequence </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ni</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors in the sequence </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recons</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reconstucted vector (size ni * d) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="38" column="10"/>
+        <location file="faiss/IndexFlatCodes.h" line="37" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1afe96eb3293cc5428f9077648b23fcc4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -833,7 +869,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="40" column="10"/>
+        <location file="faiss/IndexFlatCodes.h" line="39" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -848,7 +884,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="42" column="12"/>
+        <location file="faiss/IndexFlatCodes.h" line="41" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a6d033f2cbc377bb26948a5dfa6b5aa3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -867,7 +903,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="47" column="12"/>
+        <location file="faiss/IndexFlatCodes.h" line="46" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -883,7 +919,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="52" column="22" bodyfile="faiss/IndexFlatCodes.h" bodystart="52" bodyend="54"/>
+        <location file="faiss/IndexFlatCodes.h" line="51" column="22" bodyfile="faiss/IndexFlatCodes.h" bodystart="51" bodyend="53"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
@@ -896,7 +932,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="57" column="16"/>
+        <location file="faiss/IndexFlatCodes.h" line="56" column="16"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -915,7 +951,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="59" column="10"/>
+        <location file="faiss/IndexFlatCodes.h" line="58" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -939,7 +975,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="61" column="18"/>
+        <location file="faiss/IndexFlatCodes.h" line="60" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -956,7 +992,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlatCodes.h" line="64" column="10"/>
+        <location file="faiss/IndexFlatCodes.h" line="63" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -988,6 +1024,22 @@
 <para>The default implementation fails with an assertion, as it is not supported by all indexes.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>xids</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -999,7 +1051,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="113" column="18"/>
+        <location file="faiss/Index.h" line="116" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1039,6 +1091,14 @@
 <para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -1066,7 +1126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="142" column="18"/>
+        <location file="faiss/Index.h" line="148" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1097,6 +1157,14 @@
 <para>return the indexes of the k vectors closest to the query x.</para>
 <para>This function is identical as search but only return labels of neighbors. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -1111,12 +1179,20 @@
 <para>output labels of the NNs, size n*k </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of nearest neighbours </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="155" column="18"/>
+        <location file="faiss/Index.h" line="163" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1169,7 +1245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="181" column="18"/>
+        <location file="faiss/Index.h" line="189" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1215,6 +1291,46 @@
 <para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors to search, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of extracted vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output pairwise distances, size n*k </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels of the NNs, size n*k </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -1226,7 +1342,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="199" column="18"/>
+        <location file="faiss/Index.h" line="214" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1281,7 +1397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="219" column="18"/>
+        <location file="faiss/Index.h" line="234" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1348,7 +1464,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="235" column="18"/>
+        <location file="faiss/Index.h" line="250" column="18"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -1428,7 +1544,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPQ.h" line="24" column="1" bodyfile="faiss/IndexPQ.h" bodystart="24" bodyend="113"/>
+    <location file="faiss/IndexPQ.h" line="24" column="1" bodyfile="faiss/IndexPQ.h" bodystart="24" bodyend="110"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>add_with_ids</name></member>

@@ -787,7 +787,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="135" column="31" declfile="faiss/IndexPQ.h" declline="135" declcolumn="31"/>
+        <location file="faiss/IndexPQ.h" line="132" column="31" declfile="faiss/IndexPQ.h" declline="132" declcolumn="31"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a6c123717e777aef466043cae98fe8fd9" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -800,7 +800,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="167" column="22" declfile="faiss/IndexPQ.h" declline="167" declcolumn="22"/>
+        <location file="faiss/IndexPQ.h" line="164" column="22" declfile="faiss/IndexPQ.h" declline="164" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1aba7a634cdecea2a884b1cb7ee50cb4f3" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
