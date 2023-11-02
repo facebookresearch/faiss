@@ -453,7 +453,10 @@
 <p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input matrix, size n * d </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -503,7 +506,11 @@
 <p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -516,6 +523,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
 <li><p><strong>radius</strong> – search radius </p></li>
 <li><p><strong>result</strong> – result table </p></li>
@@ -532,8 +540,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
 <li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>k</strong> – number of nearest neighbours </p></li>
 </ul>
 </dd>
 </dl>
@@ -568,7 +578,11 @@
 <p>this function may not be defined for some indexes </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i0</strong> – index of the first vector in the sequence </p></li>
+<li><p><strong>ni</strong> – number of vectors in the sequence </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size ni * d) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -580,7 +594,14 @@
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>k</strong> – number of extracted vectors </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

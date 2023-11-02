@@ -474,9 +474,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
-<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>k</strong> – number of extracted vectors </p></li>
 <li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
 </ul>
 </dd>
 </dl>
@@ -533,7 +535,17 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss25IndexLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss25IndexLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexLocalSearchQuantizer::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a166582b8b10fc86e77ce8c48854496f8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>reconstruction using the codec interface </p>
+<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i0</strong> – index of the first vector in the sequence </p></li>
+<li><p><strong>ni</strong> – number of vectors in the sequence </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size ni * d) </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -599,7 +611,11 @@
 <p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -612,6 +628,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
 <li><p><strong>radius</strong> – search radius </p></li>
 <li><p><strong>result</strong> – result table </p></li>
@@ -628,8 +645,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
 <li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>k</strong> – number of nearest neighbours </p></li>
 </ul>
 </dd>
 </dl>
@@ -658,7 +677,14 @@
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>k</strong> – number of extracted vectors </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
