@@ -25,10 +25,10 @@
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
-      if constexpr((WARP_Q == 1 && THREAD_Q == 1) || WARP_Q >= kWarpSize) {    \
+        int warpSize = getWarpSizeCurrentDevice();                             \
         constexpr int kWarpSelectNumThreads = 128;                             \
         auto grid = dim3(utils::divUp(                                         \
-                in.getSize(0), (kWarpSelectNumThreads / kWarpSize)));          \
+                in.getSize(0), (kWarpSelectNumThreads / warpSize)));           \
         auto block = dim3(kWarpSelectNumThreads);                              \
                                                                                \
         FAISS_ASSERT(k <= WARP_Q);                                             \
@@ -40,7 +40,6 @@
         warpSelect<TYPE, idx_t, DIR, WARP_Q, THREAD_Q, kWarpSelectNumThreads>  \
                 <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k); \
         CUDA_TEST_ERROR();                                                     \
-      }                                                                        \
     }
 
 #define WARP_SELECT_CALL(TYPE, DIR, WARP_Q) \

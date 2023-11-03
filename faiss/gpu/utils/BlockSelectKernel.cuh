@@ -26,6 +26,7 @@ __global__ void blockSelect(
         K initK,
         IndexType initV,
         int k) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ K smemK[kNumWarps * NumWarpQ];
@@ -66,6 +67,7 @@ __global__ void blockSelect(
         outK[row][i] = smemK[i];
         outV[row][i] = smemV[i];
     }
+  }
 }
 
 template <
@@ -83,6 +85,7 @@ __global__ void blockSelectPair(
         K initK,
         IndexType initV,
         int k) {
+  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ K smemK[kNumWarps * NumWarpQ];
@@ -125,6 +128,7 @@ __global__ void blockSelectPair(
         outK[row][i] = smemK[i];
         outV[row][i] = smemV[i];
     }
+  }
 }
 
 void runBlockSelect(

@@ -36,7 +36,6 @@
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
-      if constexpr((WARP_Q == 1 && THREAD_Q == 1) || WARP_Q >= kWarpSize) {    \
         FAISS_ASSERT(in.getSize(0) == outK.getSize(0));                        \
         FAISS_ASSERT(in.getSize(0) == outV.getSize(0));                        \
         FAISS_ASSERT(outK.getSize(1) == k);                                    \
@@ -62,7 +61,6 @@
                 kBlockSelectNumThreads>                                        \
                 <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k); \
         CUDA_TEST_ERROR();                                                     \
-      }                                                                        \
     }                                                                          \
                                                                                \
     void runBlockSelectPair_##TYPE##_##DIR##_##WARP_Q##_(                      \
@@ -73,7 +71,6 @@
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
-      if constexpr((WARP_Q == 1 && THREAD_Q == 1) || WARP_Q >= kWarpSize) {    \
         FAISS_ASSERT(inK.isSameSize(inV));                                     \
         FAISS_ASSERT(outK.isSameSize(outV));                                   \
                                                                                \
@@ -97,7 +94,6 @@
                 kBlockSelectNumThreads><<<grid, block, 0, stream>>>(           \
                 inK, inV, outK, outV, kInit, vInit, k);                        \
         CUDA_TEST_ERROR();                                                     \
-      }                                                                        \
     }
 
 #define BLOCK_SELECT_CALL(TYPE, DIR, WARP_Q) \
