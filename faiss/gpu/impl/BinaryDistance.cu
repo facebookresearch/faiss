@@ -200,7 +200,7 @@ void runBinaryDistanceAnySize(
         int k,
         cudaStream_t stream) {
     dim3 grid(utils::divUp(query.getSize(0), kWarps));
-    dim3 block(kLanes, kWarps);
+    dim3 block(getWarpSizeCurrentDevice(), kWarps);
 
     if (k == 1) {
         binaryDistanceAnySize<1, 1, BinaryType>
@@ -241,7 +241,7 @@ void runBinaryDistanceLimitSize(
         int k,
         cudaStream_t stream) {
     dim3 grid(utils::divUp(query.getSize(0), kWarps));
-    dim3 block(kLanes, kWarps);
+    dim3 block(getWarpSizeCurrentDevice(), kWarps);
 
     if (k == 1) {
         binaryDistanceLimitSize<1, 1, BinaryType, ReductionLimit>
