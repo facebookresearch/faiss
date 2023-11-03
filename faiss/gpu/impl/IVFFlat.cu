@@ -57,14 +57,16 @@ size_t IVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
         // bits per scalar code
         idx_t bits = scalarQ_ ? scalarQ_->bits : 32 /* float */;
 
-        // bytes to encode a block of kWarpSize vectors (single dimension)
-        idx_t bytesPerDimBlock = bits * kWarpSize / 8;
+        int warpSize = getWarpSizeCurrentDevice();
 
-        // bytes to fully encode kWarpSize vectors
+        // bytes to encode a block of warpSize vectors (single dimension)
+        idx_t bytesPerDimBlock = bits * warpSize / 8;
+
+        // bytes to fully encode warpSize vectors
         idx_t bytesPerBlock = bytesPerDimBlock * dim_;
 
-        // number of blocks of kWarpSize vectors we have
-        idx_t numBlocks = utils::divUp(numVecs, kWarpSize);
+        // number of blocks of warpSize vectors we have
+        idx_t numBlocks = utils::divUp(numVecs, warpSize);
 
         // total size to encode numVecs
         return bytesPerBlock * numBlocks;

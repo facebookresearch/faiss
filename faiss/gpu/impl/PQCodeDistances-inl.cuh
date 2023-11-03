@@ -638,7 +638,8 @@ void runPQCodeDistances(
 
     // Reserve one block of threads for double buffering
     // FIXME: probably impractical for large # of dims?
-    auto loadingThreads = utils::roundUp(dimsPerSubQuantizer, kWarpSize);
+    int warpSize = getWarpSizeCurrentDevice();
+    auto loadingThreads = utils::roundUp(dimsPerSubQuantizer, warpSize);
     auto block = dim3(codesPerSubQuantizer + loadingThreads);
 
     auto smem = (3 * dimsPerSubQuantizer) * sizeof(float) +

@@ -244,6 +244,7 @@ void runL2Norm(
         // Row-major kernel
         ///
 
+        int warpSize = getWarpSizeCurrentDevice();
         if (input.template canCastResize<TVec>()) {
             // Can load using the vectorized type
             auto inputV = input.template castResize<TVec>();
@@ -256,7 +257,7 @@ void runL2Norm(
             auto block = dim3(numThreads);
 
             auto smem = sizeof(float) * rowTileSize *
-                    utils::divUp(numThreads, kWarpSize);
+                    utils::divUp(numThreads, warpSize);
 
             RUN_L2_ROW_MAJOR(T, TVec, inputV);
         } else {
@@ -270,7 +271,7 @@ void runL2Norm(
             auto block = dim3(numThreads);
 
             auto smem = sizeof(float) * rowTileSize *
-                    utils::divUp(numThreads, kWarpSize);
+                    utils::divUp(numThreads, warpSize);
 
             RUN_L2_ROW_MAJOR(T, T, input);
         }
