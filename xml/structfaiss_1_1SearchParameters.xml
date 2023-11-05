@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1SearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::SearchParameters</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1IndexRefineSearchParameters" prot="public" virt="non-virtual">faiss::IndexRefineSearchParameters</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersHNSW" prot="public" virt="non-virtual">faiss::SearchParametersHNSW</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPQ" prot="public" virt="non-virtual">faiss::SearchParametersPQ</derivedcompoundref>
@@ -48,19 +49,25 @@
 <para>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="5">
+      <node id="6">
         <label>faiss::SearchParametersPQ</label>
         <link refid="structfaiss_1_1SearchParametersPQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss::SearchParametersPreTransform</label>
         <link refid="structfaiss_1_1SearchParametersPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="2">
+        <label>faiss::IndexRefineSearchParameters</label>
+        <link refid="structfaiss_1_1IndexRefineSearchParameters"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::SearchParametersIVF</label>
         <link refid="structfaiss_1_1SearchParametersIVF"/>
         <childnode refid="1" relation="public-inheritance">
@@ -70,19 +77,19 @@
         <label>faiss::SearchParameters</label>
         <link refid="structfaiss_1_1SearchParameters"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss::SearchParametersHNSW</label>
         <link refid="structfaiss_1_1SearchParametersHNSW"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>
         <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
         <childnode refid="1" relation="public-inheritance">

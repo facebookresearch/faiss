@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="70" column="14"/>
+        <location file="faiss/IndexRefine.h" line="77" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefineFlat_1aebcb0b09b4e97fb24732a124e40eca2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="71" column="5"/>
+        <location file="faiss/IndexRefine.h" line="78" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefineFlat_1a4ab16fe00e23fcf887c147b58859771d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="73" column="5"/>
+        <location file="faiss/IndexRefine.h" line="80" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefineFlat_1a9efc4777b2e7cf1da646ed23368b7387" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="75" column="10"/>
+        <location file="faiss/IndexRefine.h" line="82" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="36" column="10"/>
+        <location file="faiss/IndexRefine.h" line="43" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -219,7 +219,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="38" column="10"/>
+        <location file="faiss/IndexRefine.h" line="45" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -234,7 +234,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="40" column="10"/>
+        <location file="faiss/IndexRefine.h" line="47" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -275,7 +275,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="51" column="10"/>
+        <location file="faiss/IndexRefine.h" line="58" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a4f4fa1a53bd9603ea000e556cbd6940f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -290,7 +290,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="55" column="12"/>
+        <location file="faiss/IndexRefine.h" line="62" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a8f7cc71fbded7eaf35bcccf41603085d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -343,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="57" column="10"/>
+        <location file="faiss/IndexRefine.h" line="64" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -370,7 +370,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="61" column="10"/>
+        <location file="faiss/IndexRefine.h" line="68" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1006,7 +1006,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="19" column="11" bodyfile="faiss/IndexRefine.h" bodystart="19" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="26" column="11" bodyfile="faiss/IndexRefine.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -1020,7 +1020,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="22" column="11" bodyfile="faiss/IndexRefine.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="29" column="11" bodyfile="faiss/IndexRefine.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1ae7f472c54df7253435355a4f65c3f479" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -1034,7 +1034,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="24" column="10" bodyfile="faiss/IndexRefine.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="31" column="10" bodyfile="faiss/IndexRefine.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a40b4d1cbf95190426fce28a63179e678" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -1048,7 +1048,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="25" column="10" bodyfile="faiss/IndexRefine.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="32" column="10" bodyfile="faiss/IndexRefine.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -1063,7 +1063,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="29" column="11" bodyfile="faiss/IndexRefine.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="36" column="11" bodyfile="faiss/IndexRefine.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -1223,7 +1223,7 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexRefine.h" line="69" column="1" bodyfile="faiss/IndexRefine.h" bodystart="69" bodyend="82"/>
+    <location file="faiss/IndexRefine.h" line="76" column="1" bodyfile="faiss/IndexRefine.h" bodystart="76" bodyend="89"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" virt="virtual"><scope>faiss::IndexRefineFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexRefineFlat</scope><name>add_with_ids</name></member>

@@ -175,6 +175,7 @@
     <innerclass refid="structfaiss_1_1IndexPQFastScan" prot="public">faiss::IndexPQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
     <innerclass refid="structfaiss_1_1IndexPreTransform" prot="public">faiss::IndexPreTransform</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRefineSearchParameters" prot="public">faiss::IndexRefineSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>

@@ -5386,6 +5386,12 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IndexRefineSearchParameters" kind="struct"><name>faiss::IndexRefineSearchParameters</name>
+    <member refid="structfaiss_1_1IndexRefineSearchParameters_1a546e8b6a6323db9f5450f55898a7ac28" kind="variable"><name>k_factor</name></member>
+    <member refid="structfaiss_1_1IndexRefineSearchParameters_1a1e39e4205481482e618310c1a5462240" kind="variable"><name>base_index_params</name></member>
+    <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1IndexRefineSearchParameters_1af0c3946ebcb6d92232fd703c51c4b540" kind="function"><name>~IndexRefineSearchParameters</name></member>
+  </compound>
   <compound refid="classfaiss_1_1IndexReplicasTemplate" kind="class"><name>faiss::IndexReplicasTemplate</name>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1aa2482e6d6245830bad1cd29551262793" kind="typedef"><name>component_t</name></member>
     <member refid="classfaiss_1_1IndexReplicasTemplate_1a33eb25784833dd8dbb24544d8043eec0" kind="typedef"><name>distance_t</name></member>

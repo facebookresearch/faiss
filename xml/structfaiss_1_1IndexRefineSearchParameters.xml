@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IndexRefineSearchParameters" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexRefineSearchParameters</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefineSearchParameters_1a546e8b6a6323db9f5450f55898a7ac28" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::IndexRefineSearchParameters::k_factor</definition>
+        <argsstring></argsstring>
+        <name>k_factor</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="15" column="11" bodyfile="faiss/IndexRefine.h" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefineSearchParameters_1a1e39e4205481482e618310c1a5462240" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+        <definition>SearchParameters* faiss::IndexRefineSearchParameters::base_index_params</definition>
+        <argsstring></argsstring>
+        <name>base_index_params</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="16" column="22" bodyfile="faiss/IndexRefine.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="54" column="16" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefineSearchParameters_1af0c3946ebcb6d92232fd703c51c4b540" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::IndexRefineSearchParameters::~IndexRefineSearchParameters</definition>
+        <argsstring>()=default</argsstring>
+        <name>~IndexRefineSearchParameters</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="18" column="13"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::IndexRefineSearchParameters</label>
+        <link refid="structfaiss_1_1IndexRefineSearchParameters"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::IndexRefineSearchParameters</label>
+        <link refid="structfaiss_1_1IndexRefineSearchParameters"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>base_index_params</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexRefine.h" line="14" column="1" bodyfile="faiss/IndexRefine.h" bodystart="14" bodyend="19"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IndexRefineSearchParameters_1a1e39e4205481482e618310c1a5462240" prot="public" virt="non-virtual"><scope>faiss::IndexRefineSearchParameters</scope><name>base_index_params</name></member>
+      <member refid="structfaiss_1_1IndexRefineSearchParameters_1a546e8b6a6323db9f5450f55898a7ac28" prot="public" virt="non-virtual"><scope>faiss::IndexRefineSearchParameters</scope><name>k_factor</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::IndexRefineSearchParameters</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1IndexRefineSearchParameters_1af0c3946ebcb6d92232fd703c51c4b540" prot="public" virt="virtual"><scope>faiss::IndexRefineSearchParameters</scope><name>~IndexRefineSearchParameters</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::IndexRefineSearchParameters</scope><name>~SearchParameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
