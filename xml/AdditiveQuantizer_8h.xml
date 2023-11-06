@@ -405,7 +405,7 @@
 <codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref>();</highlight></codeline>
 <codeline lineno="204"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="205"><highlight class="normal"></highlight></codeline>
-<codeline lineno="206"><highlight class="normal">};<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/AdditiveQuantizer.h"/>
   </compounddef>
