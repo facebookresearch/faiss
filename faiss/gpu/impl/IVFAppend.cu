@@ -397,9 +397,9 @@ __global__ void ivfInterleavedAppend(
     // update is in the high part of a byte.
     //
     // WarpPackedBits allows writing of arbitrary bit packed data in groups of
-    // kWarpSize, but we ensure that it only operates on the group of kWarpSize vectors. In
-    // order to do this we need to actually start updating vectors at the next
-    // lower multiple of kWarpSize from listVecStart.
+    // kWarpSize, but we ensure that it only operates on the group of kWarpSize
+    // vectors. In order to do this we need to actually start updating vectors
+    // at the next lower multiple of kWarpSize from listVecStart.
     auto alignedListVecStart = utils::roundDown(listVecStart, kWarpSize);
 
     // Each block of kWarpSize vectors fully encodes into this many bytes

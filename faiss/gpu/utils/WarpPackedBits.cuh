@@ -80,7 +80,7 @@ struct WarpPackedBits<uint8_t, 6> {
                 break;
         }
 
-        if (laneId < kWarpSize*3/4) {
+        if (laneId < kWarpSize * 3 / 4) {
             // There could be prior data
             out[laneId] |= vOut;
         }
@@ -89,7 +89,7 @@ struct WarpPackedBits<uint8_t, 6> {
     static inline __device__ uint8_t read(int laneId, uint8_t* in) {
         uint8_t v = 0;
 
-        if (laneId < kWarpSize*3/4) {
+        if (laneId < kWarpSize * 3 / 4) {
             v = in[laneId];
         }
 
@@ -254,7 +254,7 @@ struct WarpPackedBits<uint8_t, 4> {
 
         uint8_t vOut = (vLower & 0xf) | (vUpper << 4);
 
-        if (laneId < kWarpSize/2) {
+        if (laneId < kWarpSize / 2) {
             // There could be prior data
             out[laneId] |= vOut;
         }
@@ -263,7 +263,7 @@ struct WarpPackedBits<uint8_t, 4> {
     static inline __device__ uint8_t read(int laneId, uint8_t* in) {
         uint8_t v = 0;
 
-        if (laneId < kWarpSize/2) {
+        if (laneId < kWarpSize / 2) {
             v = in[laneId];
         }
 

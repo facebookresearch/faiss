@@ -150,7 +150,8 @@ TEST(TestCodePacking, InterleavedCodes_UnpackPack) {
                     for (int i = 0; i < blocks; ++i) {
                         for (int j = 0; j < dims; ++j) {
                             for (int k = 0; k < bytesPerDimBlock; ++k) {
-                                int loVec = i * warpSize + (k * 8) / bitsPerCode;
+                                int loVec =
+                                        i * warpSize + (k * 8) / bitsPerCode;
                                 int hiVec = loVec + 1;
                                 int hiVec2 = hiVec + 1;
 

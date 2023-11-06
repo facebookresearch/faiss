@@ -29,41 +29,136 @@ __launch_bounds__(kWarps* kLanes) __global__ void binaryDistanceAnySize(
         Tensor<int, 2, true> outK,
         Tensor<idx_t, 2, true> outV,
         int k) {
-  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
-    // A matrix tile (query, k)
-    __shared__ BinaryType queryTile[kWarps][kLanes + 1]; // avoid bank conflict
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        // A matrix tile (query, k)
+        __shared__ BinaryType
+                queryTile[kWarps][kLanes + 1]; // avoid bank conflict
 
-    // B matrix tile (vec, k)
-    __shared__ BinaryType vecTile[kLanes][kLanes + 1]; // avoid bank conflict
+        // B matrix tile (vec, k)
+        __shared__ BinaryType
+                vecTile[kLanes][kLanes + 1]; // avoid bank conflict
 
-    WarpSelect<
-            int,
-            idx_t,
-            false,
-            Comparator<int>,
-            NumWarpQ,
-            NumThreadQ,
-            kWarps * kLanes>
-            heap(kMaxDistance, -1, k);
+        WarpSelect<
+                int,
+                idx_t,
+                false,
+                Comparator<int>,
+                NumWarpQ,
+                NumThreadQ,
+                kWarps * kLanes>
+                heap(kMaxDistance, -1, k);
 
-    int warpId = threadIdx.y;
-    int laneId = threadIdx.x;
+        int warpId = threadIdx.y;
+        int laneId = threadIdx.x;
 
-    // Each warp handles a single query
-    idx_t warpQuery = idx_t(blockIdx.x) * kWarps + warpId;
-    bool queryInBounds = warpQuery < query.getSize(0);
+        // Each warp handles a single query
+        idx_t warpQuery = idx_t(blockIdx.x) * kWarps + warpId;
+        bool queryInBounds = warpQuery < query.getSize(0);
 
-    // Each warp loops through the entire chunk of vectors
-    for (idx_t blockVec = 0; blockVec < vecs.getSize(0); blockVec += kLanes) {
-        int threadDistance = 0;
+        // Each warp loops through the entire chunk of vectors
+        for (idx_t blockVec = 0; blockVec < vecs.getSize(0);
+             blockVec += kLanes) {
+            int threadDistance = 0;
 
-        // Reduction dimension
-        for (idx_t blockK = 0; blockK < vecs.getSize(1); blockK += kLanes) {
-            idx_t laneK = blockK + laneId;
-            bool kInBounds = laneK < vecs.getSize(1);
+            // Reduction dimension
+            for (idx_t blockK = 0; blockK < vecs.getSize(1); blockK += kLanes) {
+                idx_t laneK = blockK + laneId;
+                bool kInBounds = laneK < vecs.getSize(1);
 
-            queryTile[warpId][laneId] =
-                    queryInBounds && kInBounds ? query[warpQuery][laneK] : 0;
+                queryTile[warpId][laneId] = queryInBounds && kInBounds
+                        ? query[warpQuery][laneK]
+                        : 0;
+
+                // kWarps warps are responsible for loading 32 vecs
+#pragma unroll
+                for (int i = 0; i < kLanes / kWarps; ++i) {
+                    int warpVec = i * kWarps + warpId;
+                    idx_t vec = blockVec + warpVec;
+                    bool vecInBounds = vec < vecs.getSize(0);
+
+                    vecTile[warpVec][laneId] =
+                            vecInBounds && kInBounds ? vecs[vec][laneK] : 0;
+                }
+
+                __syncthreads();
+
+                // Compare distances
+#pragma unroll
+                for (int i = 0; i < kLanes; ++i) {
+                    threadDistance +=
+                            __popc(queryTile[warpId][i] ^ vecTile[laneId][i]);
+                }
+
+                __syncthreads();
+            }
+
+            // Lanes within a warp are different vec results against the same
+            // query Only submit distances which represent real (query, vec)
+            // pairs
+            bool valInBounds =
+                    queryInBounds && (blockVec + laneId < vecs.getSize(0));
+            threadDistance = valInBounds ? threadDistance : kMaxDistance;
+            idx_t id = valInBounds ? blockVec + laneId : idx_t(-1);
+
+            heap.add(threadDistance, id);
+        }
+
+        heap.reduce();
+
+        if (warpQuery < query.getSize(0)) {
+            heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
+        }
+    }
+}
+
+// Version of the kernel that avoids a loop over the reduction dimension, and
+// thus avoids reloading the query vectors
+template <
+        int NumWarpQ,
+        int NumThreadQ,
+        typename BinaryType,
+        int ReductionLimit = kLanes>
+__global__ void __launch_bounds__(kWarps* kLanes) binaryDistanceLimitSize(
+        const Tensor<BinaryType, 2, true> vecs,
+        const Tensor<BinaryType, 2, true> query,
+        Tensor<int, 2, true> outK,
+        Tensor<idx_t, 2, true> outV,
+        int k) {
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        // A matrix tile (query, k)
+        __shared__ BinaryType
+                queryTile[kWarps][kLanes + 1]; // avoid bank conflict
+
+        // B matrix tile (vec, k)
+        __shared__ BinaryType
+                vecTile[kLanes][kLanes + 1]; // avoid bank conflict
+
+        WarpSelect<
+                int,
+                idx_t,
+                false,
+                Comparator<int>,
+                NumWarpQ,
+                NumThreadQ,
+                kWarps * kLanes>
+                heap(kMaxDistance, -1, k);
+
+        int warpId = threadIdx.y;
+        int laneId = threadIdx.x;
+
+        // Each warp handles a single query
+        int laneK = laneId;
+        idx_t warpQuery = idx_t(blockIdx.x) * kWarps + warpId;
+        bool kInBounds = laneK < vecs.getSize(1);
+        bool queryInBounds = warpQuery < query.getSize(0);
+
+        queryTile[warpId][laneId] =
+                queryInBounds && kInBounds ? query[warpQuery][laneK] : 0;
+
+        // Each warp loops through the entire chunk of vectors
+        for (idx_t blockVec = 0; blockVec < vecs.getSize(0);
+             blockVec += kLanes) {
+            int threadDistance = 0;
 
             // kWarps warps are responsible for loading 32 vecs
 #pragma unroll
@@ -80,115 +175,30 @@ __launch_bounds__(kWarps* kLanes) __global__ void binaryDistanceAnySize(
 
             // Compare distances
 #pragma unroll
-            for (int i = 0; i < kLanes; ++i) {
+            for (int i = 0; i < ReductionLimit; ++i) {
                 threadDistance +=
                         __popc(queryTile[warpId][i] ^ vecTile[laneId][i]);
             }
 
             __syncthreads();
+
+            // Lanes within a warp are different vec results against the same
+            // query Only submit distances which represent real (query, vec)
+            // pairs
+            bool valInBounds =
+                    queryInBounds && (blockVec + laneId < vecs.getSize(0));
+            threadDistance = valInBounds ? threadDistance : kMaxDistance;
+            idx_t id = valInBounds ? blockVec + laneId : idx_t(-1);
+
+            heap.add(threadDistance, id);
         }
 
-        // Lanes within a warp are different vec results against the same query
-        // Only submit distances which represent real (query, vec) pairs
-        bool valInBounds =
-                queryInBounds && (blockVec + laneId < vecs.getSize(0));
-        threadDistance = valInBounds ? threadDistance : kMaxDistance;
-        idx_t id = valInBounds ? blockVec + laneId : idx_t(-1);
+        heap.reduce();
 
-        heap.add(threadDistance, id);
-    }
-
-    heap.reduce();
-
-    if (warpQuery < query.getSize(0)) {
-        heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
-    }
-  }
-}
-
-// Version of the kernel that avoids a loop over the reduction dimension, and
-// thus avoids reloading the query vectors
-template <
-        int NumWarpQ,
-        int NumThreadQ,
-        typename BinaryType,
-        int ReductionLimit = kLanes>
-__global__ void __launch_bounds__(kWarps* kLanes) binaryDistanceLimitSize(
-        const Tensor<BinaryType, 2, true> vecs,
-        const Tensor<BinaryType, 2, true> query,
-        Tensor<int, 2, true> outK,
-        Tensor<idx_t, 2, true> outV,
-        int k) {
-  if constexpr((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
-    // A matrix tile (query, k)
-    __shared__ BinaryType queryTile[kWarps][kLanes + 1]; // avoid bank conflict
-
-    // B matrix tile (vec, k)
-    __shared__ BinaryType vecTile[kLanes][kLanes + 1]; // avoid bank conflict
-
-    WarpSelect<
-            int,
-            idx_t,
-            false,
-            Comparator<int>,
-            NumWarpQ,
-            NumThreadQ,
-            kWarps * kLanes>
-            heap(kMaxDistance, -1, k);
-
-    int warpId = threadIdx.y;
-    int laneId = threadIdx.x;
-
-    // Each warp handles a single query
-    int laneK = laneId;
-    idx_t warpQuery = idx_t(blockIdx.x) * kWarps + warpId;
-    bool kInBounds = laneK < vecs.getSize(1);
-    bool queryInBounds = warpQuery < query.getSize(0);
-
-    queryTile[warpId][laneId] =
-            queryInBounds && kInBounds ? query[warpQuery][laneK] : 0;
-
-    // Each warp loops through the entire chunk of vectors
-    for (idx_t blockVec = 0; blockVec < vecs.getSize(0); blockVec += kLanes) {
-        int threadDistance = 0;
-
-        // kWarps warps are responsible for loading 32 vecs
-#pragma unroll
-        for (int i = 0; i < kLanes / kWarps; ++i) {
-            int warpVec = i * kWarps + warpId;
-            idx_t vec = blockVec + warpVec;
-            bool vecInBounds = vec < vecs.getSize(0);
-
-            vecTile[warpVec][laneId] =
-                    vecInBounds && kInBounds ? vecs[vec][laneK] : 0;
+        if (warpQuery < query.getSize(0)) {
+            heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
         }
-
-        __syncthreads();
-
-        // Compare distances
-#pragma unroll
-        for (int i = 0; i < ReductionLimit; ++i) {
-            threadDistance += __popc(queryTile[warpId][i] ^ vecTile[laneId][i]);
-        }
-
-        __syncthreads();
-
-        // Lanes within a warp are different vec results against the same query
-        // Only submit distances which represent real (query, vec) pairs
-        bool valInBounds =
-                queryInBounds && (blockVec + laneId < vecs.getSize(0));
-        threadDistance = valInBounds ? threadDistance : kMaxDistance;
-        idx_t id = valInBounds ? blockVec + laneId : idx_t(-1);
-
-        heap.add(threadDistance, id);
     }
-
-    heap.reduce();
-
-    if (warpQuery < query.getSize(0)) {
-        heap.writeOut(outK[warpQuery].data(), outV[warpQuery].data(), k);
-    }
-  }
 }
 
 template <typename BinaryType>
