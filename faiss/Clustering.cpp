@@ -250,7 +250,7 @@ int split_clusters(
     return nsplit;
 }
 
-} // namespace
+}; // namespace
 
 void Clustering::train_encoded(
         idx_t nx,
@@ -617,7 +617,7 @@ void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
     }
 }
 
-} // namespace
+}; // namespace
 
 void ProgressiveDimClustering::train(
         idx_t n,

@@ -155,4 +155,4 @@ struct ResidualQuantizer : AdditiveQuantizer {
     std::vector<float> cent_norms;
 };
 
-} // namespace faiss
+}; // namespace faiss

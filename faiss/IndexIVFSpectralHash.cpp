@@ -157,7 +157,7 @@ void binarize_with_freq(
     }
 }
 
-} // namespace
+}; // namespace
 
 void IndexIVFSpectralHash::encode_vectors(
         idx_t n,

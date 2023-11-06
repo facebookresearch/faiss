@@ -203,4 +203,4 @@ struct AdditiveQuantizer : Quantizer {
     virtual ~AdditiveQuantizer();
 };
 
-} // namespace faiss
+}; // namespace faiss

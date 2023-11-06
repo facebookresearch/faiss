@@ -437,7 +437,7 @@ idx_t translate_list_no(const SliceInvertedLists* sil, idx_t list_no) {
     return list_no + sil->i0;
 }
 
-} // namespace
+}; // namespace
 
 SliceInvertedLists::SliceInvertedLists(
         const InvertedLists* il,
@@ -522,7 +522,7 @@ idx_t sum_il_sizes(int nil, const InvertedLists** ils_in) {
     return tot;
 }
 
-} // namespace
+}; // namespace
 
 VStackInvertedLists::VStackInvertedLists(int nil, const InvertedLists** ils_in)
         : ReadOnlyInvertedLists(
