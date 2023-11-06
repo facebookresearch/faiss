@@ -47,9 +47,6 @@ inline __device__ unsigned int getByte(uint64_t v, int pos, int width) {
     return getBitfield(v, pos, width);
 }
 
-// template <int NumSubQuantizers>
-// struct LoadCode32 {};
-
 #ifdef USE_ROCM
 
 template <int NumSubQuantizers>
@@ -380,6 +377,9 @@ struct LoadCode32<96> {
 
 
 #else // USE_ROCM
+
+template <int NumSubQuantizers>
+struct LoadCode32 {};
 
 template <>
 struct LoadCode32<1> {

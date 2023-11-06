@@ -8,7 +8,9 @@
 #pragma once
 
 #include <cuda.h>
+#ifdef USE_ROCM
 #include <device_functions.h>
+#endif
 
 namespace faiss {
 namespace gpu {
