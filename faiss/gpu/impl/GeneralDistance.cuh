@@ -27,14 +27,14 @@
 // Kernels for non-L2 / inner product distances
 //
 
+namespace faiss {
+namespace gpu {
+
 // Initially kWarpSize was used for the x and y tile shape.
 // This works when kWarpSize is 32 but for kWarpSize 64,
 // this results in an invalid launch configuration of 64x64 block size.
 // 32 is a reasonable tile size for both kWarpSize options.
-#define TILE_SIZE 32
-
-namespace faiss {
-namespace gpu {
+constexpr int TILE_SIZE = 32;
 
 // Reduction tree operator
 template <typename DistanceOp, int N>
