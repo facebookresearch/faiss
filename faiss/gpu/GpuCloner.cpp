@@ -7,6 +7,7 @@
 
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/impl/FaissAssert.h>
+#include <memory>
 #include <typeinfo>
 
 #include <faiss/gpu/StandardGpuResources.h>
@@ -240,7 +241,7 @@ ToGpuClonerMultiple::ToGpuClonerMultiple(
         : GpuMultipleClonerOptions(options) {
     FAISS_THROW_IF_NOT(provider.size() == devices.size());
     for (size_t i = 0; i < provider.size(); i++) {
-        sub_cloners.push_back(ToGpuCloner(provider[i], devices[i], options));
+        sub_cloners.emplace_back(provider[i], devices[i], options);
     }
 }
 
@@ -309,8 +310,8 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             !dynamic_cast<const IndexFlat*>(quantizer)) {
             // then we flatten the coarse quantizer so that everything remains
             // on GPU
-            new_quantizer.reset(
-                    new IndexFlat(quantizer->d, quantizer->metric_type));
+            new_quantizer = std::make_unique<IndexFlat>(
+                    quantizer->d, quantizer->metric_type);
             std::vector<float> centroids(quantizer->d * quantizer->ntotal);
             quantizer->reconstruct_n(0, quantizer->ntotal, centroids.data());
             new_quantizer->add(quantizer->ntotal, centroids.data());

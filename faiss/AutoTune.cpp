@@ -334,7 +334,7 @@ ParameterRange& ParameterSpace::add_range(const std::string& name) {
             return pr;
         }
     }
-    parameter_ranges.push_back(ParameterRange());
+    parameter_ranges.emplace_back();
     parameter_ranges.back().name = name;
     return parameter_ranges.back();
 }

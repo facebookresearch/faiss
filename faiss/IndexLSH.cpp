@@ -56,7 +56,7 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
     }
 
     if (train_thresholds) {
-        if (xt == NULL) {
+        if (xt == nullptr) {
             xt = new float[nbits * n];
             memcpy(xt, x, sizeof(*x) * n * nbits);
         }

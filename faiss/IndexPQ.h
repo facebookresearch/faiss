@@ -31,10 +31,7 @@ struct IndexPQ : IndexFlatCodes {
      * @param M      number of subquantizers
      * @param nbits  number of bit per subvector index
      */
-    IndexPQ(int d,        ///< dimensionality of the input vectors
-            size_t M,     ///< number of subquantizers
-            size_t nbits, ///< number of bit per subvector index
-            MetricType metric = METRIC_L2);
+    IndexPQ(int d, size_t M, size_t nbits, MetricType metric = METRIC_L2);
 
     IndexPQ();
 

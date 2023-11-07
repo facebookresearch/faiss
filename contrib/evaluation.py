@@ -226,22 +226,40 @@ def range_PR_multiple_thresholds(
 # Functions that compare search results with a reference result.
 # They are intended for use in tests
 
-def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew):
-    """ test that knn search results are identical, raise if not """
-    np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+def _cluster_tables_with_tolerance(tab1, tab2, thr):
+    """ for two tables, cluster them by merging values closer than thr.
+    Returns the cluster ids for each table element """
+    tab = np.hstack([tab1, tab2])
+    tab.sort()
+    n = len(tab)
+    diffs = np.ones(n)
+    diffs[1:] = tab[1:] - tab[:-1]
+    unique_vals = tab[diffs > thr]
+    idx1 = np.searchsorted(unique_vals, tab1, side='right') - 1
+    idx2 = np.searchsorted(unique_vals, tab2, side='right') - 1
+    return idx1, idx2
+
+
+def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
+    """ test that knn search results are identical, with possible ties.
+    Raise if not. """
+    np.testing.assert_allclose(Dref, Dnew, rtol=rtol)
     # here we have to be careful because of draws
     testcase = unittest.TestCase()   # because it makes nice error messages
     for i in range(len(Iref)):
         if np.all(Iref[i] == Inew[i]): # easy case
             continue
-        # we can deduce nothing about the latest line
-        skip_dis = Dref[i, -1]
-        for dis in np.unique(Dref):
-            if dis == skip_dis:
-                continue
-            mask = Dref[i, :] == dis
-            testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
+        # otherwise collect elements per distance
+        r = rtol * Dref[i].max()
+
+        DrefC, DnewC = _cluster_tables_with_tolerance(Dref[i], Dnew[i], r)
+
+        for dis in np.unique(DrefC):
+            if dis == DrefC[-1]:
+                continue
+            mask = DrefC == dis
+            testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
 def check_ref_range_results(Lref, Dref, Iref,
                             Lnew, Dnew, Inew):

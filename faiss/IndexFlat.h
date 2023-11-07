@@ -18,7 +18,9 @@ namespace faiss {
 
 /** Index that stores the full vectors and performs exhaustive search */
 struct IndexFlat : IndexFlatCodes {
-    explicit IndexFlat(idx_t d, MetricType metric = METRIC_L2);
+    explicit IndexFlat(
+            idx_t d, ///< dimensionality of the input vectors
+            MetricType metric = METRIC_L2);
 
     void search(
             idx_t n,
@@ -82,6 +84,9 @@ struct IndexFlatL2 : IndexFlat {
     // and l2 norms.
     std::vector<float> cached_l2norms;
 
+    /**
+     * @param d dimensionality of the input vectors
+     */
     explicit IndexFlatL2(idx_t d) : IndexFlat(d, METRIC_L2) {}
     IndexFlatL2() {}
 

@@ -158,7 +158,7 @@ GpuMemoryReservation::~GpuMemoryReservation() {
 // GpuResources
 //
 
-GpuResources::~GpuResources() {}
+GpuResources::~GpuResources() = default;
 
 cublasHandle_t GpuResources::getBlasHandleCurrentDevice() {
     return getBlasHandle(getCurrentDevice());
@@ -203,7 +203,7 @@ size_t GpuResources::getTempMemoryAvailableCurrentDevice() const {
 // GpuResourcesProvider
 //
 
-GpuResourcesProvider::~GpuResourcesProvider() {}
+GpuResourcesProvider::~GpuResourcesProvider() = default;
 
 //
 // GpuResourcesProviderFromResourceInstance
@@ -213,7 +213,7 @@ GpuResourcesProviderFromInstance::GpuResourcesProviderFromInstance(
         std::shared_ptr<GpuResources> p)
         : res_(p) {}
 
-GpuResourcesProviderFromInstance::~GpuResourcesProviderFromInstance() {}
+GpuResourcesProviderFromInstance::~GpuResourcesProviderFromInstance() = default;
 
 std::shared_ptr<GpuResources> GpuResourcesProviderFromInstance::getResources() {
     return res_;

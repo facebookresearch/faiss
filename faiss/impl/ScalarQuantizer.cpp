@@ -1175,7 +1175,6 @@ template <class DCClass, int use_sel>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
     bool by_residual;
-    const IDSelector* sel;
 
     float accu0; /// added to all distances
 
@@ -1186,8 +1185,9 @@ struct IVFSQScannerIP : InvertedListScanner {
             bool store_pairs,
             const IDSelector* sel,
             bool by_residual)
-            : dc(d, trained), by_residual(by_residual), sel(sel), accu0(0) {
+            : dc(d, trained), by_residual(by_residual), accu0(0) {
         this->store_pairs = store_pairs;
+        this->sel = sel;
         this->code_size = code_size;
     }
 
@@ -1259,7 +1259,6 @@ struct IVFSQScannerL2 : InvertedListScanner {
 
     bool by_residual;
     const Index* quantizer;
-    const IDSelector* sel;
     const float* x; /// current query
 
     std::vector<float> tmp;
@@ -1275,10 +1274,10 @@ struct IVFSQScannerL2 : InvertedListScanner {
             : dc(d, trained),
               by_residual(by_residual),
               quantizer(quantizer),
-              sel(sel),
               x(nullptr),
               tmp(d) {
         this->store_pairs = store_pairs;
+        this->sel = sel;
         this->code_size = code_size;
     }
 

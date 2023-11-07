@@ -60,17 +60,17 @@ class IVFFlat : public IVFBase {
     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     /// Translate to our preferred GPU encoding
-    std::vector<uint8_t> translateCodesToGpu_(
+    virtual std::vector<uint8_t> translateCodesToGpu_(
             std::vector<uint8_t> codes,
             idx_t numVecs) const override;
 
     /// Translate from our preferred GPU encoding
-    std::vector<uint8_t> translateCodesFromGpu_(
+    virtual std::vector<uint8_t> translateCodesFromGpu_(
             std::vector<uint8_t> codes,
             idx_t numVecs) const override;
 
     /// Encode the vectors that we're adding and append to our IVF lists
-    void appendVectors_(
+    virtual void appendVectors_(
             Tensor<float, 2, true>& vecs,
             Tensor<float, 2, true>& ivfCentroidResiduals,
             Tensor<idx_t, 1, true>& indices,
@@ -84,7 +84,7 @@ class IVFFlat : public IVFBase {
 
     /// Shared IVF search implementation, used by both search and
     /// searchPreassigned
-    void searchImpl_(
+    virtual void searchImpl_(
             Tensor<float, 2, true>& queries,
             Tensor<float, 2, true>& coarseDistances,
             Tensor<idx_t, 2, true>& coarseIndices,

@@ -11,6 +11,7 @@
 
 #include <omp.h>
 #include <cstdint>
+#include <memory>
 #include <mutex>
 
 #include <algorithm>
@@ -45,7 +46,7 @@ Level1Quantizer::Level1Quantizer(Index* quantizer, size_t nlist)
     cp.niter = 10;
 }
 
-Level1Quantizer::Level1Quantizer() {}
+Level1Quantizer::Level1Quantizer() = default;
 
 Level1Quantizer::~Level1Quantizer() {
     if (own_fields) {
@@ -172,7 +173,7 @@ IndexIVF::IndexIVF(
     }
 }
 
-IndexIVF::IndexIVF() {}
+IndexIVF::IndexIVF() = default;
 
 void IndexIVF::add(idx_t n, const float* x) {
     add_with_ids(n, x, nullptr);
@@ -375,7 +376,7 @@ void IndexIVF::search(
             indexIVF_stats.add(stats[slice]);
         }
     } else {
-        // handle paralellization at level below (or don't run in parallel at
+        // handle parallelization at level below (or don't run in parallel at
         // all)
         sub_search_func(n, x, distances, labels, &indexIVF_stats);
     }
@@ -539,7 +540,8 @@ void IndexIVF::search_preassigned(
                     const idx_t* ids = nullptr;
 
                     if (!store_pairs) {
-                        sids.reset(new InvertedLists::ScopedIds(invlists, key));
+                        sids = std::make_unique<InvertedLists::ScopedIds>(
+                                invlists, key);
                         ids = sids->get();
                     }
 
@@ -696,12 +698,13 @@ void IndexIVF::search_preassigned(
         }
     }
 
-    if (ivf_stats) {
-        ivf_stats->nq += n;
-        ivf_stats->nlist += nlistv;
-        ivf_stats->ndis += ndis;
-        ivf_stats->nheap_updates += nheap;
+    if (ivf_stats == nullptr) {
+        ivf_stats = &indexIVF_stats;
     }
+    ivf_stats->nq += n;
+    ivf_stats->nlist += nlistv;
+    ivf_stats->ndis += ndis;
+    ivf_stats->nheap_updates += nheap;
 }
 
 void IndexIVF::range_search(
@@ -891,11 +894,12 @@ void IndexIVF::range_search_preassigned(
         }
     }
 
-    if (stats) {
-        stats->nq += nx;
-        stats->nlist += nlistv;
-        stats->ndis += ndis;
+    if (stats == nullptr) {
+        stats = &indexIVF_stats;
     }
+    stats->nq += nx;
+    stats->nlist += nlistv;
+    stats->ndis += ndis;
 }
 
 InvertedListScanner* IndexIVF::get_InvertedListScanner(

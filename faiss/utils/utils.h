@@ -49,25 +49,6 @@ uint64_t get_cycles();
  * Misc  matrix and vector manipulation functions
  ***************************************************************************/
 
-/** compute c := a + bf * b for a, b and c tables
- *
- * @param n   size of the tables
- * @param a   size n
- * @param b   size n
- * @param c   restult table, size n
- */
-void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
-
-/** same as fvec_madd, also return index of the min of the result table
- * @return    index of the min of table c
- */
-int fvec_madd_and_argmin(
-        size_t n,
-        const float* a,
-        float bf,
-        const float* b,
-        float* c);
-
 /* perform a reflection (not an efficient implementation, just for test ) */
 void reflection(const float* u, float* x, size_t n, size_t d, size_t nu);
 
