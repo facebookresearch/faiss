@@ -157,20 +157,20 @@ class RaftIVFPQ : public IVFPQ {
         raft_knn_index{std::nullopt};
 };
 
-struct RaftIVFPQCodePackerInterleaved : CodePacker {
-    RaftIVFPQCodePackerInterleaved(
-            size_t list_size,
-            int numSubQuantizers,
-            int bitsPerSubQuantizer);
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
+// struct RaftIVFPQCodePackerInterleaved : CodePacker {
+//     RaftIVFPQCodePackerInterleaved(
+//             size_t list_size,
+//             int numSubQuantizers,
+//             int bitsPerSubQuantizer);
+//     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
+//             const final;
+//     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
+//             const final;
 
-   protected:
-    int bitsPerSubQuantizer_;
-    int numSubQuantizers_;
-};
+//    protected:
+//     int bitsPerSubQuantizer_;
+//     int numSubQuantizers_;
+// };
 
 } // namespace gpu
 } // namespace faiss

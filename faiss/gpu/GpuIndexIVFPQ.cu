@@ -22,6 +22,7 @@
 #include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <raft/neighbors/ivf_pq.cuh>
+#include <raft/neighbors/ivf_pq_helpers.cuh>
 #endif
 
 namespace faiss {
@@ -380,7 +381,6 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
             raft::neighbors::ivf_pq::index_params raft_idx_params;
             raft_idx_params.n_lists = nlist;
             raft_idx_params.metric = metricFaissToRaft(metric_type, false);
-            raft_idx_params.add_data_on_build = false;
             raft_idx_params.kmeans_trainset_fraction =
                     static_cast<double>(cp.max_points_per_centroid * nlist) /
                     static_cast<double>(n);
@@ -396,9 +396,12 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
             raft::neighbors::ivf_pq::index<idx_t> raft_ivfpq_index =
                     raft::neighbors::ivf_pq::build<float, idx_t>(
                             raft_handle, raft_idx_params, x, n, (idx_t)d);
+            
+            auto raft_centers = raft::make_device_matrix<float>(raft_handle, raft_ivfpq_index.n_lists(), raft_ivfpq_index.dim());
+            raft::neighbors::ivf_pq::helpers::extract_centers(raft_handle, raft_ivfpq_index, raft_centers.data_handle());
 
-            quantizer->train(nlist, raft_ivfpq_index.centers().data_handle());
-            quantizer->add(nlist, raft_ivfpq_index.centers().data_handle());
+            quantizer->train(nlist, raft_centers.data_handle());
+            quantizer->add(nlist, raft_centers.data_handle());
 
             raft::copy(
                     pq.get_centroids(0, 0),
