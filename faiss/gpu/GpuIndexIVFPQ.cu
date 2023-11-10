@@ -353,7 +353,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 #if defined USE_NVIDIA_RAFT
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
-    if (config_.use_raft) {
+    if (config_.use_raft && !pq.assign_index) {
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
         setIndex_(
@@ -370,7 +370,6 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 pq.centroids.data(),
                 ivfpqConfig_.indicesOptions,
                 config_.memorySpace);
-        // if (!pq.assign_index) {
             // No need to copy the data to host
             const raft::device_resources& raft_handle =
                     resources_->getRaftHandleCurrentDevice();
@@ -407,7 +406,6 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                     resources_->getDefaultStream(config_.device));
             raft_handle.sync_stream();
             raftIndex_->setRaftIndex(std::move(raft_ivfpq_index));
-        // }
     } else
 #else
     if (config_.use_raft) {
