@@ -444,7 +444,6 @@ void IVFBase::addIndicesFromCpu_(
 }
 
 void IVFBase::updateQuantizer(Index* quantizer) {
-    printf("updateQuantizer from IVFBase was called\n");
     FAISS_THROW_IF_NOT(quantizer->is_trained);
 
     // Must match our basic IVF parameters

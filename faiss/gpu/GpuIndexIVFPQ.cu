@@ -207,8 +207,6 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
                 devPQCentroids,
                 index->pq.centroids.data(),
                 resources_->getDefaultStream(config_.device));
-        raft::print_host_vector(
-                "cpu pq_centroids", index->pq.centroids.data(), 20, std::cout);
 
         if (usePrecomputedTables_) {
             index->precompute_table();
@@ -356,7 +354,6 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
     if (config_.use_raft) {
-        printf("training raft index from inside GpuIndexIVFPQ's train function \n");
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
         setIndex_(
