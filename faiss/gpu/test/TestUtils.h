@@ -127,7 +127,7 @@ void testIVFEquality(A& cpuIndex, B& gpuIndex) {
                 cpuLists->list_size(i) * cpuLists->code_size);
 
         auto gpuCodes = gpuIndex.getListVectorData(i, false);
-        // EXPECT_EQ(cpuCodes, gpuCodes);
+        EXPECT_EQ(cpuCodes, gpuCodes);
 
         // Index equality
         std::vector<idx_t> cpuIndices(cpuLists->list_size(i));

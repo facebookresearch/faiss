@@ -109,5 +109,6 @@ idx_t inplaceGatherFilteredRows(
 
     return n_rows_valid;
 }
+
 } // namespace gpu
 } // namespace faiss

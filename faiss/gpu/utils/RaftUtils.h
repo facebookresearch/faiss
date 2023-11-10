@@ -23,8 +23,8 @@
 #pragma once
 
 #include <faiss/MetricType.h>
+#include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include "faiss/gpu/GpuResources.h"
 
 #include <raft/distance/distance_types.hpp>
 

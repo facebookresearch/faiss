@@ -114,16 +114,6 @@ void compareIndices(
             k,
             testDistance.data(),
             testIndices.data());
-    
-    raft::print_host_vector("refIndices", refIndices.data(), refIndices.size(), std::cout);
-
-    raft::print_host_vector(
-            "testIndices", testIndices.data(), testIndices.size(), std::cout);
-
-    raft::print_host_vector("refDistances", refDistance.data(), refDistance.size(), std::cout);
-
-    raft::print_host_vector(
-            "testDistance", testDistance.data(), testDistance.size(), std::cout);
 
     faiss::gpu::compareLists(
             refDistance.data(),

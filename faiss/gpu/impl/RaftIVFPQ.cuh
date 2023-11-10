@@ -1,21 +1,33 @@
-// /**
-//  * Copyright (c) Facebook, Inc. and its affiliates.
-//  *
-//  * This source code is licensed under the MIT license found in the
-//  * LICENSE file in the root directory of this source tree.
-//  */
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-// #pragma once
+#pragma once
 
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/impl/IVFPQ.cuh>
 
-#include <faiss/impl/CodePacker.h>
+#include <optional>
 
 #include <raft/neighbors/ivf_pq.cuh>
-
-#include <optional>
 
 namespace faiss {
 namespace gpu {
@@ -36,13 +48,13 @@ class RaftIVFPQ : public IVFPQ {
             float* pqCentroidData,
             IndicesOptions indicesOptions,
             MemorySpace space);
-    
+
     ~RaftIVFPQ() override;
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
     void reset() override;
-    
+
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
 
@@ -120,7 +132,7 @@ class RaftIVFPQ : public IVFPQ {
 
     /// Returns the encoding size for a PQ-encoded IVF list
     size_t getGpuListEncodingSize_(idx_t listId) const;
-//     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
+    //     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     /// Sets the current product quantizer centroids; the data can be
     /// resident on either the host or the device. It will be transposed
@@ -151,26 +163,11 @@ class RaftIVFPQ : public IVFPQ {
             Tensor<idx_t, 2, true>& outIndices);
 
     void setBasePQCentroids_();
-    
+
    private:
-    std::optional<raft::neighbors::ivf_pq::index<idx_t>>
-        raft_knn_index{std::nullopt};
+    std::optional<raft::neighbors::ivf_pq::index<idx_t>> raft_knn_index{
+            std::nullopt};
 };
-
-// struct RaftIVFPQCodePackerInterleaved : CodePacker {
-//     RaftIVFPQCodePackerInterleaved(
-//             size_t list_size,
-//             int numSubQuantizers,
-//             int bitsPerSubQuantizer);
-//     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-//             const final;
-//     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-//             const final;
-
-//    protected:
-//     int bitsPerSubQuantizer_;
-//     int numSubQuantizers_;
-// };
 
 } // namespace gpu
 } // namespace faiss
