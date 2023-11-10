@@ -47,7 +47,7 @@ IVFBase::IVFBase(
           interleavedLayout_(interleavedLayout),
           indicesOptions_(indicesOptions),
           space_(space),
-    deviceListDataPointers_(
+          deviceListDataPointers_(
                   resources,
                   AllocInfo(
                           AllocType::IVFLists,

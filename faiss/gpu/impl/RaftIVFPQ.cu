@@ -21,10 +21,10 @@
  */
 
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/impl/RaftIVFPQ.cuh>
-#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/utils/Transpose.cuh>
 #include <limits>
 #include <memory>
@@ -495,7 +495,10 @@ void RaftIVFPQ::addEncodedVectorsToList_(
         auto codes_d = raft::make_device_vector<uint8_t>(
                 raft_handle, static_cast<uint32_t>(bufferSize));
         raft::update_device(
-                codes_d.data_handle(), static_cast<const uint8_t*>(codes) + codesOffset, bufferSize, stream);
+                codes_d.data_handle(),
+                static_cast<const uint8_t*>(codes) + codesOffset,
+                bufferSize,
+                stream);
 
         raft::neighbors::ivf_pq::helpers::pack_compressed_list_data(
                 raft_handle,

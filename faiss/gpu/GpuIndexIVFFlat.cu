@@ -219,16 +219,16 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 #if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
         setIndex_(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            this->metric_type,
-            this->metric_arg,
-            false,   // no residual
-            nullptr, // no scalar quantizer
-            ivfFlatConfig_.interleavedLayout,
-            ivfFlatConfig_.indicesOptions,
-            config_.memorySpace);
+                resources_.get(),
+                this->d,
+                this->nlist,
+                this->metric_type,
+                this->metric_arg,
+                false,   // no residual
+                nullptr, // no scalar quantizer
+                ivfFlatConfig_.interleavedLayout,
+                ivfFlatConfig_.indicesOptions,
+                config_.memorySpace);
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
@@ -270,16 +270,16 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         trainQuantizer_(n, hostData.data());
 
         setIndex_(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            this->metric_type,
-            this->metric_arg,
-            false,   // no residual
-            nullptr, // no scalar quantizer
-            ivfFlatConfig_.interleavedLayout,
-            ivfFlatConfig_.indicesOptions,
-            config_.memorySpace);
+                resources_.get(),
+                this->d,
+                this->nlist,
+                this->metric_type,
+                this->metric_arg,
+                false,   // no residual
+                nullptr, // no scalar quantizer
+                ivfFlatConfig_.interleavedLayout,
+                ivfFlatConfig_.indicesOptions,
+                config_.memorySpace);
         updateQuantizer();
     }
 
