@@ -89,7 +89,7 @@ class IVFFlat : public IVFBase {
             Tensor<float, 2, true>& coarseDistances,
             Tensor<idx_t, 2, true>& coarseIndices,
             Tensor<float, 3, true>& ivfCentroids,
-        int k,
+            int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
             bool storePairs);
