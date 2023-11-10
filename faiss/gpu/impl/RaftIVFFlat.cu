@@ -23,31 +23,16 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
-#include <faiss/gpu/GpuResources.h>
-#include <faiss/gpu/impl/InterleavedCodes.h>
-#include <faiss/gpu/impl/RemapIndices.h>
-#include <faiss/gpu/utils/DeviceUtils.h>
-#include <thrust/host_vector.h>
-#include <faiss/gpu/impl/FlatIndex.cuh>
-#include <faiss/gpu/impl/IVFAppend.cuh>
-#include <faiss/gpu/impl/IVFFlat.cuh>
-#include <faiss/gpu/impl/IVFFlatScan.cuh>
-#include <faiss/gpu/impl/IVFInterleaved.cuh>
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/utils/ConversionOperators.cuh>
-#include <faiss/gpu/utils/CopyUtils.cuh>
-#include <faiss/gpu/utils/DeviceDefs.cuh>
-#include <faiss/gpu/utils/Float16.cuh>
-#include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
-#include <limits>
-#include <unordered_map>
 
-#include <raft/core/device_mdspan.hpp>
-#include <raft/core/handle.hpp>
+#include <limits>
+#include <memory>
+
 #include <raft/neighbors/ivf_flat_codepacker.hpp>
 #include <raft/neighbors/ivf_flat.cuh>
 #include <raft/neighbors/ivf_flat_helpers.cuh>
@@ -74,7 +59,8 @@ RaftIVFFlat::RaftIVFFlat(
                   useResidual,
                   scalarQ,
                   interleavedLayout,
-                  // skip ptr allocations in base class (handled by RAFT internally)
+                  // skip ptr allocations in base class (handled by RAFT
+                  // internally)
                   indicesOptions,
                   space) {
     FAISS_THROW_IF_NOT_MSG(
@@ -89,7 +75,8 @@ void RaftIVFFlat::reset() {
 }
 
 /// Replace the raft index
-void RaftIVFFlat::setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx) {
+void RaftIVFFlat::setRaftIndex(
+        raft::neighbors::ivf_flat::index<float, idx_t>&& idx) {
     raft_knn_index.emplace(std::move(idx));
 }
 
@@ -103,7 +90,8 @@ void RaftIVFFlat::search(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to modify the RAFT index if the quantizer was modified externally
+    /// called updateQuantizer() to modify the RAFT index if the quantizer was
+    /// modified externally
 
     uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
@@ -176,7 +164,8 @@ idx_t RaftIVFFlat::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to update the RAFT index if the quantizer was modified externally
+    /// called updateQuantizer() to update the RAFT index if the quantizer was
+    /// modified externally
 
     idx_t n_rows = vecs.getSize(0);
 
@@ -445,8 +434,6 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 raft_handle.get_stream());
     }
 }
-
-
 
 size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
     idx_t bits = 32 /* float */;
