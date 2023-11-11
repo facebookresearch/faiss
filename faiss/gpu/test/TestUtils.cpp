@@ -9,7 +9,6 @@
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
-#include <raft/util/cudart_utils.hpp>
 #include <time.h>
 #include <cmath>
 #include <set>
