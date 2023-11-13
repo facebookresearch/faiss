@@ -12,6 +12,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/utils/utils.h>
+#include <cstdio>
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
@@ -353,7 +354,11 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 #if defined USE_NVIDIA_RAFT
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
-    if (config_.use_raft && !pq.assign_index) {
+    if (config_.use_raft) {
+        if (pq.assign_index) {
+            fprintf(stderr,
+                    "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled");
+        }
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
         setIndex_(
