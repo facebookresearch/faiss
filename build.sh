@@ -36,7 +36,7 @@ cd $BUILD_DIR
 cmake \
  -DFAISS_ENABLE_GPU=ON \
  -DFAISS_ENABLE_RAFT=ON \
- -DFAISS_ENABLE_PYTHON=OFF \
+ -DFAISS_ENABLE_PYTHON=ON \
  -DBUILD_TESTING=ON \
  -DBUILD_SHARED_LIBS=OFF \
  -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -50,9 +50,5 @@ cmake \
  ${EXTRA_CMAKE_ARGS} \
  ../
 
-
-# make -C build -j12 faiss
 cmake  --build . -j12
-# make -C build -j12 swigfaiss
 # (cd build/faiss/python && python setup.py install)
-

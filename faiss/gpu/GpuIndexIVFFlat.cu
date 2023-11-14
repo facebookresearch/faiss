@@ -22,6 +22,7 @@
 #include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <raft/neighbors/ivf_flat.cuh>
+#include <raft/core/error.hpp>
 #endif
 
 namespace faiss {
@@ -250,6 +251,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
         quantizer->train(nlist, raft_ivfflat_index.centers().data_handle());
         quantizer->add(nlist, raft_ivfflat_index.centers().data_handle());
+        raft_handle.sync_stream();
 
         raftIndex_->setRaftIndex(std::move(raft_ivfflat_index));
     } else
