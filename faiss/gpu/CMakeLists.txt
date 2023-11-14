@@ -242,10 +242,30 @@ if(FAISS_ENABLE_RAFT)
           impl/RaftFlatIndex.cuh)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
-	  impl/RaftIVFFlat.cu)
+	        impl/RaftIVFFlat.cu)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+
+  # Mark all functions as hidden so that we don't generate
+  # global 'public' functions that also exist in libraft.so
+  #
+  # This ensures that faiss functions will call the local version
+  # inside libfaiss.so . This is needed to ensure that things
+  # like raft cublas resources are created and used within the same
+  # dynamic library + CUDA runtime context which are requirements
+  # for valid execution
+  #
+  # To still allow these classes to be used by consumers, the
+  # respective classes/types in the headers are explicitly marked
+  # as 'public' so they can be used by consumers
+  set_source_files_properties(
+    GpuDistance.cu
+    StandardGpuResources.cpp
+    impl/RaftFlatIndex.cu
+    impl/RaftIVFFlat.cu
+    TARGET_DIRECTORY faiss
+    PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.

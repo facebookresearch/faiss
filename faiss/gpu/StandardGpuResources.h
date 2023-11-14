@@ -37,6 +37,7 @@
 #include <unordered_map>
 #include <vector>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -260,3 +261,4 @@ class StandardGpuResources : public GpuResourcesProvider {
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop

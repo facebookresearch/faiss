@@ -32,6 +32,7 @@
 
 #include <optional>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -147,3 +148,4 @@ struct RaftIVFFlatCodePackerInterleaved : CodePacker {
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop
