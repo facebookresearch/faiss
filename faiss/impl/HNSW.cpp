@@ -897,6 +897,104 @@ HNSWStats HNSW::search(
     return stats;
 }
 
+HNSWStats HNSW::boundary_search(
+        DistanceComputer& qdis,
+        int k,
+        const float lower,
+        const float upper,
+        idx_t* I,
+        float* D,
+        VisitedTable& vt,
+        const SearchParametersHNSW* params) const {
+    HNSWStats stats;
+    if (entry_point == -1) {
+        return stats;
+    }
+    if (upper_beam == 1) {
+        //  greedy search on upper levels
+        storage_idx_t nearest = entry_point;
+        float d_nearest = qdis(nearest);
+
+        for (int level = max_level; level >= 1; level--) {
+            greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
+        }
+
+        int ef = std::max(efSearch, k);
+        if (search_bounded_queue) { // this is the most common branch
+            MinimaxHeap candidates(ef);
+
+            candidates.push(nearest, d_nearest);
+
+            search_from_candidates(
+                    *this, qdis, k, I, D, candidates, vt, stats, 0, 0, params);
+        } else {
+            std::priority_queue<Node> top_candidates =
+                    search_from_candidate_unbounded(
+                            *this,
+                            Node(d_nearest, nearest),
+                            qdis,
+                            ef,
+                            &vt,
+                            stats);
+
+            while (top_candidates.size() > k) {
+                top_candidates.pop();
+            }
+
+            int nres = 0;
+            while (!top_candidates.empty()) {
+                float d;
+                storage_idx_t label;
+                std::tie(d, label) = top_candidates.top();
+                faiss::maxheap_push(++nres, D, I, d, label);
+                top_candidates.pop();
+            }
+        }
+
+        vt.advance();
+
+    } else {
+        int candidates_size = upper_beam;
+        MinimaxHeap candidates(candidates_size);
+
+        std::vector<idx_t> I_to_next(candidates_size);
+        std::vector<float> D_to_next(candidates_size);
+
+        int nres = 1;
+        I_to_next[0] = entry_point;
+        D_to_next[0] = qdis(entry_point);
+
+        for (int level = max_level; level >= 0; level--) {
+            // copy I, D -> candidates
+
+            candidates.clear();
+
+            for (int i = 0; i < nres; i++) {
+                candidates.push(I_to_next[i], D_to_next[i]);
+            }
+
+            if (level == 0) {
+                nres = search_from_candidates(
+                        *this, qdis, k, I, D, candidates, vt, stats, 0);
+            } else {
+                nres = search_from_candidates(
+                        *this,
+                        qdis,
+                        candidates_size,
+                        I_to_next.data(),
+                        D_to_next.data(),
+                        candidates,
+                        vt,
+                        stats,
+                        level);
+            }
+            vt.advance();
+        }
+    }
+
+    return stats;
+}
+
 void HNSW::search_level_0(
         DistanceComputer& qdis,
         int k,

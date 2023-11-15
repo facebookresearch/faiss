@@ -200,6 +200,16 @@ struct HNSW {
             float* D,
             VisitedTable& vt,
             const SearchParametersHNSW* params = nullptr) const;
+    
+    HNSWStats boundary_search(
+            DistanceComputer& qdis,
+            int k,
+            const float lower,
+            const float upper,
+            idx_t* I,
+            float* D,
+            VisitedTable& vt,
+            const SearchParametersHNSW* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(

@@ -39,12 +39,12 @@ void IndexBinary::boundary_search(
         idx_t,
         const uint8_t*,
         idx_t,
-        const float,
-        const float,
+        const int32_t,
+        const int32_t,
         int32_t*,
         idx_t*,
         const SearchParameters*) const {
-    FAISS_THROW_MSG("range search not implemented");
+    FAISS_THROW_MSG("boundary search not implemented");
 }
 
 void IndexBinary::assign(idx_t n, const uint8_t* x, idx_t* labels, idx_t k)

@@ -89,6 +89,53 @@ void IndexScalarQuantizer::search(
     }
 }
 
+void IndexScalarQuantizer::boundary_search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const float lower,
+        const float upper,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    const IDSelector* sel = params ? params->sel : nullptr;
+
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(
+            metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT);
+
+#pragma omp parallel
+    {
+        InvertedListScanner* scanner =
+                sq.select_InvertedListScanner(metric_type, nullptr, true, sel);
+
+        ScopeDeleter1<InvertedListScanner> del(scanner);
+        scanner->list_no = 0; // directly the list number
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            float* D = distances + k * i;
+            idx_t* I = labels + k * i;
+            // re-order heap
+            if (metric_type == METRIC_L2) {
+                maxheap_heapify(k, D, I);
+            } else {
+                minheap_heapify(k, D, I);
+            }
+            scanner->set_query(x + i * d);
+            scanner->scan_codes_boundary(ntotal, lower, upper, codes.data(), nullptr, D, I, k);
+
+            // re-order heap
+            if (metric_type == METRIC_L2) {
+                maxheap_reorder(k, D, I);
+            } else {
+                minheap_reorder(k, D, I);
+            }
+        }
+    }
+}
+
 FlatCodesDistanceComputer* IndexScalarQuantizer::get_FlatCodesDistanceComputer()
         const {
     ScalarQuantizer::SQDistanceComputer* dc =

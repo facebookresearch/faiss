@@ -92,8 +92,8 @@ struct IndexBinary {
             idx_t n,
             const uint8_t* x,
             idx_t k,
-            const float lower,
-            const float upper,
+            const int32_t lower,
+            const int32_t upper,
             int32_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const;
