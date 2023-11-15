@@ -261,6 +261,22 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
+# Prepares a host linker script and enables host linker to support
+# very large device object files.
+# This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld"
+[=[
+SECTIONS
+{
+.nvFatBinSegment : { *(.nvFatBinSegment) }
+__nv_relfatbin : { *(__nv_relfatbin) }
+.nv_fatbin : { *(.nv_fatbin) }
+}
+]=]
+)
+target_link_options(faiss PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+target_link_options(faiss_avx2 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>  $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
