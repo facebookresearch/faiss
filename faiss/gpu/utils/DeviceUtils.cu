@@ -159,6 +159,15 @@ bool getTensorCoreSupportCurrentDevice() {
     return getTensorCoreSupport(getCurrentDevice());
 }
 
+int getWarpSize(int device) {
+    const auto& prop = getDeviceProperties(device);
+    return prop.warpSize;
+}
+
+int getWarpSizeCurrentDevice() {
+    return getWarpSize(getCurrentDevice());
+}
+
 size_t getFreeMemory(int device) {
     DeviceScope scope(device);
 

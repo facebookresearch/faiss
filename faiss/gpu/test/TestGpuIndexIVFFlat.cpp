@@ -23,6 +23,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -30,7 +31,6 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
-#include "faiss/gpu/GpuIndicesOptions.h"
 
 // FIXME: figure out a better way to test fp16
 constexpr float kF16MaxRelErr = 0.3f;

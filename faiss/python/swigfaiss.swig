@@ -297,6 +297,25 @@ void gpu_sync_all_devices();
 
 %{
 
+#ifdef USE_ROCM
+
+#include <faiss/gpu-rocm/StandardGpuResources.h>
+#include <faiss/gpu-rocm/GpuIndicesOptions.h>
+#include <faiss/gpu-rocm/GpuClonerOptions.h>
+#include <faiss/gpu-rocm/GpuIndex.h>
+#include <faiss/gpu-rocm/GpuIndexFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVF.h>
+#include <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+#include <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+#include <faiss/gpu-rocm/GpuAutoTune.h>
+#include <faiss/gpu-rocm/GpuCloner.h>
+#include <faiss/gpu-rocm/GpuDistance.h>
+#include <faiss/gpu-rocm/GpuIcmEncoder.h>
+
+#else // USE_ROCM
+
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuClonerOptions.h>
@@ -311,6 +330,8 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuDistance.h>
 #include <faiss/gpu/GpuIcmEncoder.h>
+
+#endif // USE_ROCM
 
 int get_num_gpus()
 {
@@ -344,21 +365,39 @@ void gpu_sync_all_devices()
 %ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
 %ignore faiss::gpu::AllocType;
 
+#ifdef USE_ROCM
+%include  <faiss/gpu-rocm/GpuResources.h>
+%include  <faiss/gpu-rocm/StandardGpuResources.h>
+typedef CUstream_st* hipStream_t;
+#else // USE_ROCM
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
-
 typedef CUstream_st* cudaStream_t;
+#endif // USE_ROCM
 
 %inline %{
 
 // interop between pytorch exposed cudaStream_t and faiss
+#ifdef USE_ROCM
+hipStream_t cast_integer_to_cudastream_t(int64_t x) {
+  return (hipStream_t) x;
+}
+#else // USE_ROCM
 cudaStream_t cast_integer_to_cudastream_t(int64_t x) {
   return (cudaStream_t) x;
 }
+#endif // USE_ROCM
 
+#ifdef USE_ROCM
+int64_t cast_cudastream_t_to_integer(hipStream_t x) {
+  return (int64_t) x;
+}
+#else // USE_ROCM
 int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
   return (int64_t) x;
 }
+#endif // USE_ROCM
+
 
 %}
 
@@ -546,6 +585,19 @@ void gpu_sync_all_devices()
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
 
+#ifdef USE_ROCM
+%include  <faiss/gpu-rocm/GpuIndicesOptions.h>
+%include  <faiss/gpu-rocm/GpuClonerOptions.h>
+%include  <faiss/gpu-rocm/GpuIndex.h>
+%include  <faiss/gpu-rocm/GpuIndexFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVF.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+%include  <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+%include  <faiss/gpu-rocm/GpuDistance.h>
+%include  <faiss/gpu-rocm/GpuIcmEncoder.h>
+#else // USE_ROCM
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
@@ -557,9 +609,10 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndexBinaryFlat.h>
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
+#endif // USE_ROCM
 
 
-#endif
+#endif // GPU_WRAPPER
 
 
 
@@ -792,7 +845,15 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 
 #ifdef GPU_WRAPPER
+#ifdef USE_ROCM
+%include  <faiss/gpu-rocm/GpuAutoTune.h>
 
+%newobject index_gpu_to_cpu;
+%newobject index_cpu_to_gpu;
+%newobject index_cpu_to_gpu_multiple;
+
+%include  <faiss/gpu-rocm/GpuCloner.h>
+#else // USE_ROCM
 %include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -801,7 +862,8 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %include  <faiss/gpu/GpuCloner.h>
 
-#endif
+#endif // USE_ROCM
+#endif // GPU_WRAPPER
 
 
 

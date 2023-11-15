@@ -141,45 +141,47 @@ __global__ void l2SelectMinK(
         Tensor<idx_t, 2, true> outIndices,
         int k,
         T initK) {
-    // Each block handles a single row of the distances (results)
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        // Each block handles a single row of the distances (results)
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    __shared__ T smemK[kNumWarps * NumWarpQ];
-    __shared__ IndexT smemV[kNumWarps * NumWarpQ];
+        __shared__ T smemK[kNumWarps * NumWarpQ];
+        __shared__ IndexT smemV[kNumWarps * NumWarpQ];
 
-    BlockSelect<
-            T,
-            IndexT,
-            false,
-            Comparator<T>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(initK, -1, smemK, smemV, k);
+        BlockSelect<
+                T,
+                IndexT,
+                false,
+                Comparator<T>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(initK, -1, smemK, smemV, k);
 
-    IndexT row = blockIdx.x;
+        IndexT row = blockIdx.x;
 
-    // Whole warps must participate in the selection
-    IndexT limit = utils::roundDown(productDistances.getSize(1), kWarpSize);
-    IndexT i = threadIdx.x;
+        // Whole warps must participate in the selection
+        IndexT limit = utils::roundDown(productDistances.getSize(1), kWarpSize);
+        IndexT i = threadIdx.x;
 
-    for (; i < limit; i += blockDim.x) {
-        T v = Math<T>::add(centroidDistances[i], productDistances[row][i]);
-        heap.add(v, IndexT(i));
-    }
+        for (; i < limit; i += blockDim.x) {
+            T v = Math<T>::add(centroidDistances[i], productDistances[row][i]);
+            heap.add(v, IndexT(i));
+        }
 
-    // Handle the remainder if any separately (warp is divergent)
-    if (i < productDistances.getSize(1)) {
-        T v = Math<T>::add(centroidDistances[i], productDistances[row][i]);
-        heap.addThreadQ(v, IndexT(i));
-    }
+        // Handle the remainder if any separately (warp is divergent)
+        if (i < productDistances.getSize(1)) {
+            T v = Math<T>::add(centroidDistances[i], productDistances[row][i]);
+            heap.addThreadQ(v, IndexT(i));
+        }
 
-    // Merge all final results
-    heap.reduce();
+        // Merge all final results
+        heap.reduce();
 
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        outDistances[row][i] = smemK[i];
-        outIndices[row][i] = idx_t(smemV[i]);
+        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            outDistances[row][i] = smemK[i];
+            outIndices[row][i] = idx_t(smemV[i]);
+        }
     }
 }
 
@@ -241,7 +243,7 @@ void runL2SelectMin(
     } while (false)
 
         // block size 128 for everything <= 1024
-        if (k <= 32) {
+        if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
             RUN_L2_SELECT(128, 32, 2);
         } else if (k <= 64) {
             RUN_L2_SELECT(128, 64, 3);

@@ -470,7 +470,7 @@ class SubTensor<TensorType, 0, PtrTraits> {
 
     /// Use the texture cache for reads
     __device__ inline typename TensorType::DataType ldg() const {
-#if __CUDA_ARCH__ >= 350
+#if __CUDA_ARCH__ >= 350 || defined(USE_ROCM)
         return __ldg(data_);
 #else
         return *data_;
@@ -480,7 +480,7 @@ class SubTensor<TensorType, 0, PtrTraits> {
     /// Use the texture cache for reads; cast as a particular type
     template <typename T>
     __device__ inline T ldgAs() const {
-#if __CUDA_ARCH__ >= 350
+#if __CUDA_ARCH__ >= 350 || defined(USE_ROCM)
         return __ldg(dataAs<T>());
 #else
         return as<T>();
@@ -606,7 +606,7 @@ class SubTensor {
 
     /// Use the texture cache for reads
     __device__ inline typename TensorType::DataType ldg() const {
-#if __CUDA_ARCH__ >= 350
+#if __CUDA_ARCH__ >= 350 || defined(USE_ROCM)
         return __ldg(data_);
 #else
         return *data_;
@@ -616,7 +616,7 @@ class SubTensor {
     /// Use the texture cache for reads; cast as a particular type
     template <typename T>
     __device__ inline T ldgAs() const {
-#if __CUDA_ARCH__ >= 350
+#if __CUDA_ARCH__ >= 350 || defined(USE_ROCM)
         return __ldg(dataAs<T>());
 #else
         return as<T>();

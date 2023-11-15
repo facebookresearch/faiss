@@ -23,6 +23,78 @@
 namespace faiss {
 namespace gpu {
 
+#ifdef USE_ROCM
+
+template <typename T>
+struct LoadStore {
+    static inline __device__ T load(void* p) {
+        return *((T*)p);
+    }
+
+    static inline __device__ void store(void* p, const T& v) {
+        *((T*)p) = v;
+    }
+};
+
+template <>
+struct LoadStore<Half4> {
+    static inline __device__ Half4 load(void* p) {
+        Half4 ret;
+        // Direct memory copy
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(p);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(&ret);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        return ret;
+    }
+
+    static inline __device__ void store(void* p, Half4& v) {
+        // TODO
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(&v);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(p);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+    }
+};
+
+template <>
+struct LoadStore<Half8> {
+    static inline __device__ Half8 load(void* p) {
+        Half8 ret;
+        // Direct memory copy
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(p);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(&ret);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        ou[4] = in[4];
+        ou[5] = in[5];
+        ou[6] = in[6];
+        ou[7] = in[7];
+        return ret;
+    }
+
+    static inline __device__ void store(void* p, Half8& v) {
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(&v);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(p);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        ou[4] = in[4];
+        ou[5] = in[5];
+        ou[6] = in[6];
+        ou[7] = in[7];
+    }
+};
+
+#else // USE_ROCM
+
 template <typename T>
 struct LoadStore {
     static inline __device__ T load(void* p) {
@@ -96,6 +168,8 @@ struct LoadStore<Half8> {
 #endif
     }
 };
+
+#endif // USE_ROCM
 
 } // namespace gpu
 } // namespace faiss

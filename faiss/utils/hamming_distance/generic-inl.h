@@ -166,9 +166,12 @@ struct HammingComputer20 {
     void set(const uint8_t* a8, int code_size) {
         assert(code_size == 20);
         const uint64_t* a = (uint64_t*)a8;
+        const uint32_t* b = (uint32_t*)a8;
         a0 = a[0];
         a1 = a[1];
-        a2 = a[2];
+        // can't read a[2] since it is uint64_t, not uint32_t
+        // results in AddressSanitizer failure reading past end of array
+        a2 = b[4];
     }
 
     inline int hamming(const uint8_t* b8) const {
