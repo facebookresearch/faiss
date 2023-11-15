@@ -559,10 +559,6 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>stream<sp/>=<sp/>res-&gt;getDefaultStreamCurrentDevice();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>idx_t<sp/>kMinQueryTileSize<sp/>=<sp/>8;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>idx_t<sp/>kMaxQueryTileSize<sp/>=<sp/>65536;<sp/>//<sp/>typical<sp/>max<sp/>gridDim.y</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>idx_t<sp/>kThrustMemSize<sp/>=<sp/>16384;</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>nprobe<sp/>=<sp/>coarseIndices.getSize(1);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>the<sp/>maximum<sp/>list<sp/>length<sp/>(in<sp/>terms<sp/>of<sp/>number<sp/>of<sp/>vectors)<sp/>times<sp/>nprobe</highlight></codeline>
@@ -575,39 +571,28 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Make<sp/>a<sp/>reservation<sp/>for<sp/>Thrust<sp/>to<sp/>do<sp/>its<sp/>dirty<sp/>work<sp/>(global<sp/>memory</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>cross-block<sp/>reduction<sp/>space);<sp/>hopefully<sp/>this<sp/>is<sp/>large<sp/>enough.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>idx_t<sp/>kThrustMemSize<sp/>=<sp/>16384;</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;char,<sp/>1,<sp/>true&gt;<sp/>thrustMem1(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),<sp/>{kThrustMemSize});</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;char,<sp/>1,<sp/>true&gt;<sp/>thrustMem2(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),<sp/>{kThrustMemSize});</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;char,<sp/>1,<sp/>true&gt;*<sp/>thrustMem[2]<sp/>=<sp/>{&amp;thrustMem1,<sp/>&amp;thrustMem2};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>much<sp/>temporary<sp/>storage<sp/>is<sp/>available?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>possible,<sp/>we&apos;d<sp/>like<sp/>to<sp/>fit<sp/>within<sp/>the<sp/>space<sp/>available.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>sizeAvailable<sp/>=<sp/>res-&gt;getTempMemoryAvailableCurrentDevice();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>much<sp/>temporary<sp/>memory<sp/>would<sp/>we<sp/>need<sp/>to<sp/>handle<sp/>a<sp/>single<sp/>query?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size_t<sp/>sizePerQuery<sp/>=<sp/>getIVFPQPerQueryTempMemory(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nprobe,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>maxListLength,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,<sp/>/*<sp/>no<sp/>precomputed<sp/>codes<sp/>*/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numSubQuantizers,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numSubQuantizerCodes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>run<sp/>two<sp/>passes<sp/>of<sp/>heap<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>This<sp/>is<sp/>the<sp/>size<sp/>of<sp/>the<sp/>first-level<sp/>heap<sp/>passes</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>idx_t<sp/>kNProbeSplit<sp/>=<sp/>8;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>pass2Chunks<sp/>=<sp/>std::min(nprobe,<sp/>kNProbeSplit);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>sizeForFirstSelectPass<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pass2Chunks<sp/>*<sp/>k<sp/>*<sp/>(sizeof(float)<sp/>+<sp/>sizeof(idx_t));</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>much<sp/>temporary<sp/>storage<sp/>we<sp/>need<sp/>per<sp/>each<sp/>query</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>sizePerQuery<sp/>=<sp/>2<sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>streams</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>((nprobe<sp/>*<sp/>sizeof(idx_t)<sp/>+<sp/>sizeof(idx_t))<sp/>+<sp/>//<sp/>prefixSumOffsets</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nprobe<sp/>*<sp/>maxListLength<sp/>*<sp/>sizeof(float)<sp/>+<sp/><sp/><sp/>//<sp/>allDistances</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>residual<sp/>distances</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nprobe<sp/>*<sp/>numSubQuantizers<sp/>*<sp/>numSubQuantizerCodes<sp/>*<sp/>sizeof(float)<sp/>+</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sizeForFirstSelectPass);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>queryTileSize<sp/>=<sp/>(sizeAvailable<sp/>/<sp/>sizePerQuery);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(queryTileSize<sp/>&lt;<sp/>kMinQueryTileSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileSize<sp/>=<sp/>kMinQueryTileSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>if<sp/>(queryTileSize<sp/>&gt;<sp/>kMaxQueryTileSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileSize<sp/>=<sp/>kMaxQueryTileSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>many<sp/>queries<sp/>do<sp/>we<sp/>wish<sp/>to<sp/>run<sp/>at<sp/>once?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>queryTileSize<sp/>=<sp/>getIVFQueryTileSize(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queries.getSize(0),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;getTempMemoryAvailableCurrentDevice(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sizePerQuery);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Temporary<sp/>memory<sp/>buffers</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Make<sp/>sure<sp/>there<sp/>is<sp/>space<sp/>prior<sp/>to<sp/>the<sp/>start<sp/>which<sp/>will<sp/>be<sp/>0,<sp/>and</highlight></codeline>
@@ -673,6 +658,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>1,<sp/>true&gt;*<sp/>allDistances[2]<sp/>=<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;allDistances1,<sp/>&amp;allDistances2};</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>pass2Chunks<sp/>=<sp/>getIVFKSelectionPass2Chunks(nprobe);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>3,<sp/>true&gt;<sp/>heapDistances1(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>makeTempAlloc(AllocType::Other,<sp/>stream),</highlight></codeline>

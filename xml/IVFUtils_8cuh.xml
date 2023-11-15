@@ -28,6 +28,39 @@
 <codeline></codeline>
 <codeline><highlight class="normal">class<sp/>GpuResources;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">///<sp/>For<sp/>the<sp/>final<sp/>k-selection<sp/>of<sp/>IVF<sp/>query<sp/>distances,<sp/>we<sp/>perform<sp/>two<sp/>passes.</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>The<sp/>first<sp/>pass<sp/>scans<sp/>some<sp/>number<sp/>of<sp/>per-IVF<sp/>list<sp/>distances<sp/>reducing<sp/>them<sp/>to</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>at<sp/>most<sp/>8,<sp/>then<sp/>a<sp/>second<sp/>pass<sp/>processes<sp/>these<sp/>&lt;=<sp/>8<sp/>to<sp/>the<sp/>single<sp/>final<sp/>list</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>of<sp/>NN<sp/>candidates</highlight></codeline>
+<codeline><highlight class="normal">size_t<sp/>getIVFKSelectionPass2Chunks(size_t<sp/>nprobe);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Function<sp/>to<sp/>determine<sp/>amount<sp/>of<sp/>temporary<sp/>space<sp/>that<sp/>we<sp/>allocate</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>for<sp/>storing<sp/>basic<sp/>IVF<sp/>list<sp/>scanning<sp/>distances<sp/>during<sp/>query,<sp/>based<sp/>on<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>memory<sp/>allocation<sp/>per<sp/>query.<sp/>This<sp/>is<sp/>the<sp/>memory<sp/>requirement<sp/>for</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>IVFFlat/IVFSQ<sp/>but<sp/>IVFPQ<sp/>will<sp/>add<sp/>some<sp/>additional<sp/>allocation<sp/>as<sp/>well<sp/>(see</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>getIVFPQPerQueryTempMemory)</highlight></codeline>
+<codeline><highlight class="normal">size_t<sp/>getIVFPerQueryTempMemory(size_t<sp/>k,<sp/>size_t<sp/>nprobe,<sp/>size_t<sp/>maxListLength);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Function<sp/>to<sp/>determine<sp/>amount<sp/>of<sp/>temporary<sp/>space<sp/>that<sp/>we<sp/>allocate</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>for<sp/>storing<sp/>basic<sp/>IVFPQ<sp/>list<sp/>scanning<sp/>distances<sp/>during<sp/>query,<sp/>based<sp/>on<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>memory<sp/>allocation<sp/>per<sp/>query.</highlight></codeline>
+<codeline><highlight class="normal">size_t<sp/>getIVFPQPerQueryTempMemory(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>nprobe,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>maxListLength,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>usePrecomputedCodes,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>numSubQuantizers,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>numSubQuantizerCodes);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">///<sp/>Based<sp/>on<sp/>the<sp/>amount<sp/>of<sp/>temporary<sp/>memory<sp/>needed<sp/>per<sp/>IVF<sp/>query<sp/>(determined<sp/>by</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>one<sp/>of<sp/>the<sp/>above<sp/>functions)<sp/>and<sp/>the<sp/>amount<sp/>of<sp/>current<sp/>temporary<sp/>memory</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>available,<sp/>determine<sp/>how<sp/>many<sp/>queries<sp/>we<sp/>will<sp/>run<sp/>concurrently<sp/>in<sp/>a<sp/>single</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>tile<sp/>so<sp/>as<sp/>to<sp/>stay<sp/>within<sp/>reasonable<sp/>temporary<sp/>memory<sp/>allocation<sp/>limits.</highlight></codeline>
+<codeline><highlight class="normal">size_t<sp/>getIVFQueryTileSize(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>numQueries,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>tempMemoryAvailable,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>sizePerQuery);</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Function<sp/>for<sp/>multi-pass<sp/>scanning<sp/>that<sp/>collects<sp/>the<sp/>length<sp/>of</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>intermediate<sp/>results<sp/>for<sp/>all<sp/>(query,<sp/>probe)<sp/>pair</highlight></codeline>
 <codeline><highlight class="normal">void<sp/>runCalcListOffsets(</highlight></codeline>
