@@ -419,6 +419,42 @@ void greedy_update_nearest(
     }
 }
 
+void greedy_update_nearest_boundary(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int level,
+        storage_idx_t& nearest,
+        float& d_nearest,
+        const float lower,
+        const float upper) {
+    for (;;) {
+        storage_idx_t prev_nearest = nearest;
+
+        size_t begin, end;
+        hnsw.neighbor_range(nearest, level, &begin, &end);
+        for (size_t i = begin; i < end; i++) {
+            storage_idx_t v = hnsw.neighbors[i];
+            if (v < 0)
+                break;
+            float dis = qdis(v);
+            bool keep = true;
+            if (dis < lower){
+                keep = false;
+            };
+            if (dis > upper){
+                keep = false;
+            };
+            if (dis < d_nearest && keep) {
+                nearest = v;
+                d_nearest = dis;
+            }
+        }
+        if (nearest == prev_nearest) {
+            return;
+        }
+    }
+}
+
 } // namespace
 
 /// Finds neighbors and builds links with them, starting from an entry
@@ -671,6 +707,179 @@ int search_from_candidates(
     return nres;
 }
 
+int search_from_candidates_boundary(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int k,
+        const float lower,
+        const float upper,
+        idx_t* I,
+        float* D,
+        MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in = 0,
+        const SearchParametersHNSW* params = nullptr) {
+    int nres = nres_in;
+    int ndis = 0;
+
+    // can be overridden by search params
+    bool do_dis_check = params ? params->check_relative_distance
+                               : hnsw.check_relative_distance;
+    int efSearch = params ? params->efSearch : hnsw.efSearch;
+    const IDSelector* sel = params ? params->sel : nullptr;
+
+    for (int i = 0; i < candidates.size(); i++) {
+        idx_t v1 = candidates.ids[i];
+        float d = candidates.dis[i];
+        FAISS_ASSERT(v1 >= 0);
+        if (!sel || sel->is_member(v1)) {
+            bool keep = true;
+            if (d < lower){
+                keep = false;
+            };
+            if (d > upper){
+                keep = false;
+            };
+            if (keep){
+                if (nres < k) {
+                    faiss::maxheap_push(++nres, D, I, d, v1);
+                } else if (d < D[0]) {
+                    faiss::maxheap_replace_top(nres, D, I, d, v1);
+                };
+            }
+        }
+        vt.set(v1);
+    }
+
+    int nstep = 0;
+
+    while (candidates.size() > 0) {
+        float d0 = 0;
+        int v0 = candidates.pop_min(&d0);
+
+        if (do_dis_check) {
+            // tricky stopping condition: there are more that ef
+            // distances that are processed already that are smaller
+            // than d0
+
+            int n_dis_below = candidates.count_below(d0);
+            if (n_dis_below >= efSearch) {
+                break;
+            }
+        }
+
+        size_t begin, end;
+        hnsw.neighbor_range(v0, level, &begin, &end);
+
+        // // baseline version
+        // for (size_t j = begin; j < end; j++) {
+        //     int v1 = hnsw.neighbors[j];
+        //     if (v1 < 0)
+        //         break;
+        //     if (vt.get(v1)) {
+        //         continue;
+        //     }
+        //     vt.set(v1);
+        //     ndis++;
+        //     float d = qdis(v1);
+        //     if (!sel || sel->is_member(v1)) {
+        //         if (nres < k) {
+        //             faiss::maxheap_push(++nres, D, I, d, v1);
+        //         } else if (d < D[0]) {
+        //             faiss::maxheap_replace_top(nres, D, I, d, v1);
+        //         }
+        //     }
+        //     candidates.push(v1, d);
+        // }
+
+        // the following version processes 4 neighbors at a time
+        size_t jmax = begin;
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0)
+                break;
+
+            prefetch_L2(vt.visited.data() + v1);
+            jmax += 1;
+        }
+
+        int counter = 0;
+        size_t saved_j[4];
+
+        ndis += jmax - begin;
+
+        auto add_to_heap = [&](const size_t idx, const float dis) {
+            if (!sel || sel->is_member(idx)) {
+                bool keep = true;
+                if (dis < lower){
+                    keep = false;
+                };
+                if (dis > upper){
+                    keep = false;
+                };
+                if (keep){
+                    if (nres < k) {
+                        faiss::maxheap_push(++nres, D, I, dis, idx);
+                    } else if (dis < D[0]) {
+                        faiss::maxheap_replace_top(nres, D, I, dis, idx);
+                    }
+                }
+            }
+            candidates.push(idx, dis);
+        };
+
+        for (size_t j = begin; j < jmax; j++) {
+            int v1 = hnsw.neighbors[j];
+
+            bool vget = vt.get(v1);
+            vt.set(v1);
+            saved_j[counter] = v1;
+            counter += vget ? 0 : 1;
+
+            if (counter == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        saved_j[0],
+                        saved_j[1],
+                        saved_j[2],
+                        saved_j[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    add_to_heap(saved_j[id4], dis[id4]);
+                }
+
+                counter = 0;
+            }
+        }
+
+        for (size_t icnt = 0; icnt < counter; icnt++) {
+            float dis = qdis(saved_j[icnt]);
+            add_to_heap(saved_j[icnt], dis);
+        }
+
+        nstep++;
+        if (!do_dis_check && nstep > efSearch) {
+            break;
+        }
+    }
+
+    if (level == 0) {
+        stats.n1++;
+        if (candidates.size() == 0) {
+            stats.n2++;
+        }
+        stats.n3 += ndis;
+    }
+
+    return nres;
+}
+
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         const HNSW& hnsw,
         const Node& node,
@@ -752,6 +961,145 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
 
                 if (top_candidates.size() > ef) {
                     top_candidates.pop();
+                }
+            }
+        };
+
+        for (size_t j = begin; j < jmax; j++) {
+            int v1 = hnsw.neighbors[j];
+
+            bool vget = vt->get(v1);
+            vt->set(v1);
+            saved_j[counter] = v1;
+            counter += vget ? 0 : 1;
+
+            if (counter == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        saved_j[0],
+                        saved_j[1],
+                        saved_j[2],
+                        saved_j[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    add_to_heap(saved_j[id4], dis[id4]);
+                }
+
+                counter = 0;
+            }
+        }
+
+        for (size_t icnt = 0; icnt < counter; icnt++) {
+            float dis = qdis(saved_j[icnt]);
+            add_to_heap(saved_j[icnt], dis);
+        }
+    }
+
+    ++stats.n1;
+    if (candidates.size() == 0) {
+        ++stats.n2;
+    }
+    stats.n3 += ndis;
+
+    return top_candidates;
+}
+
+std::priority_queue<HNSW::Node> search_from_candidate_unbounded_boundary(
+        const HNSW& hnsw,
+        const Node& node,
+        DistanceComputer& qdis,
+        int ef,
+        VisitedTable* vt,
+        HNSWStats& stats,
+        const float lower,
+        const float upper) {
+    int ndis = 0;
+    std::priority_queue<Node> top_candidates;
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
+
+    top_candidates.push(node);
+    candidates.push(node);
+
+    vt->set(node.second);
+
+    while (!candidates.empty()) {
+        float d0;
+        storage_idx_t v0;
+        std::tie(d0, v0) = candidates.top();
+
+        if (d0 > top_candidates.top().first) {
+            break;
+        }
+
+        candidates.pop();
+
+        size_t begin, end;
+        hnsw.neighbor_range(v0, 0, &begin, &end);
+
+        // // baseline version
+        // for (size_t j = begin; j < end; ++j) {
+        //     int v1 = hnsw.neighbors[j];
+        //
+        //     if (v1 < 0) {
+        //         break;
+        //     }
+        //     if (vt->get(v1)) {
+        //         continue;
+        //     }
+        //
+        //     vt->set(v1);
+        //
+        //     float d1 = qdis(v1);
+        //     ++ndis;
+        //
+        //     if (top_candidates.top().first > d1 ||
+        //         top_candidates.size() < ef) {
+        //         candidates.emplace(d1, v1);
+        //         top_candidates.emplace(d1, v1);
+        //
+        //         if (top_candidates.size() > ef) {
+        //             top_candidates.pop();
+        //         }
+        //     }
+        // }
+
+        // the following version processes 4 neighbors at a time
+        size_t jmax = begin;
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0)
+                break;
+
+            prefetch_L2(vt->visited.data() + v1);
+            jmax += 1;
+        }
+
+        int counter = 0;
+        size_t saved_j[4];
+
+        ndis += jmax - begin;
+
+        auto add_to_heap = [&](const size_t idx, const float dis) {
+            bool keep = true;
+            if (dis < lower){
+                keep = false;
+            };
+            if (dis > upper){
+                keep = false;
+            };
+            if (keep){
+                if (top_candidates.top().first > dis ||
+                    top_candidates.size() < ef) {
+                    candidates.emplace(dis, idx);
+                    top_candidates.emplace(dis, idx);
+
+                    if (top_candidates.size() > ef) {
+                        top_candidates.pop();
+                    }
                 }
             }
         };
@@ -916,7 +1264,7 @@ HNSWStats HNSW::boundary_search(
         float d_nearest = qdis(nearest);
 
         for (int level = max_level; level >= 1; level--) {
-            greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
+            greedy_update_nearest_boundary(*this, qdis, level, nearest, d_nearest, lower, upper);
         }
 
         int ef = std::max(efSearch, k);
@@ -925,17 +1273,19 @@ HNSWStats HNSW::boundary_search(
 
             candidates.push(nearest, d_nearest);
 
-            search_from_candidates(
-                    *this, qdis, k, I, D, candidates, vt, stats, 0, 0, params);
+            search_from_candidates_boundary(
+                    *this, qdis, k, lower, upper, I, D, candidates, vt, stats, 0, 0, params);
         } else {
             std::priority_queue<Node> top_candidates =
-                    search_from_candidate_unbounded(
+                    search_from_candidate_unbounded_boundary(
                             *this,
                             Node(d_nearest, nearest),
                             qdis,
                             ef,
                             &vt,
-                            stats);
+                            stats,
+                            lower,
+                            upper);
 
             while (top_candidates.size() > k) {
                 top_candidates.pop();
@@ -974,13 +1324,15 @@ HNSWStats HNSW::boundary_search(
             }
 
             if (level == 0) {
-                nres = search_from_candidates(
-                        *this, qdis, k, I, D, candidates, vt, stats, 0);
+                nres = search_from_candidates_boundary(
+                        *this, qdis, k, lower, upper, I, D, candidates, vt, stats, 0);
             } else {
-                nres = search_from_candidates(
+                nres = search_from_candidates_boundary(
                         *this,
                         qdis,
                         candidates_size,
+                        lower,
+                        upper,
                         I_to_next.data(),
                         D_to_next.data(),
                         candidates,

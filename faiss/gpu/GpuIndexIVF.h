@@ -103,6 +103,20 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
             bool store_pairs,
             const SearchParametersIVF* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
+    
+    void boundary_search_preassigned(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const float lower,
+            const float upper,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            bool store_pairs,
+            const SearchParametersIVF* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
 
     // not implemented for GPU
     void range_search_preassigned(

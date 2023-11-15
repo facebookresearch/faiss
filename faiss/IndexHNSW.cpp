@@ -392,6 +392,7 @@ void IndexHNSW::boundary_search(
 
                 maxheap_heapify(k, simi, idxi);
                 HNSWStats stats = hnsw.boundary_search(*dis, k, lower, upper, idxi, simi, vt, params);
+                // HNSWStats stats = hnsw.search(*dis, k, idxi, simi, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 n3 += stats.n3;

@@ -411,6 +411,22 @@ void GpuIndexIVF::search_preassigned(
     fromDevice<idx_t, 2>(outIndicesDevice, labels, stream);
 }
 
+void GpuIndexIVF::boundary_search_preassigned(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const float lower,
+        const float upper,
+        const idx_t* assign,
+        const float* centroid_dis,
+        float* distances,
+        idx_t* labels,
+        bool store_pairs,
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
+    FAISS_THROW_MSG("boundary search not implemented");
+}
+
 void GpuIndexIVF::range_search_preassigned(
         idx_t nx,
         const float* x,
