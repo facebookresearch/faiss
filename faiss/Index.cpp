@@ -33,6 +33,18 @@ void Index::range_search(
     FAISS_THROW_MSG("range search not implemented");
 }
 
+void Index::boundary_search(
+        idx_t,
+        const float* ,
+        idx_t,
+        const float,
+        const float,
+        float*,
+        idx_t*,
+        const SearchParameters* params) const {
+    FAISS_THROW_MSG("boundary search not implemented");
+}
+
 void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     std::vector<float> distances(n * k);
     search(n, x, k, distances.data(), labels);

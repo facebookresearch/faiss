@@ -92,7 +92,7 @@ struct HeapResultHandler {
 
     /// add results for query i0..i1 and j0..j1
     void add_results(size_t j0, size_t j1, const T* dis_tab) {
-#pragma omp parallel for
+    #pragma omp parallel for
         for (int64_t i = i0; i < i1; i++) {
             T* heap_dis = heap_dis_tab + i * k;
             TI* heap_ids = heap_ids_tab + i * k;
@@ -101,6 +101,31 @@ struct HeapResultHandler {
             for (size_t j = j0; j < j1; j++) {
                 T dis = dis_tab_i[j];
                 if (C::cmp(thresh, dis)) {
+                    heap_replace_top<C>(k, heap_dis, heap_ids, dis, j);
+                    thresh = heap_dis[0];
+                }
+            }
+        }
+    }
+
+    /// add results boundary for query i0..i1 and j0..j1
+    void add_results_boundary(size_t j0, size_t j1, const T* dis_tab, const T lower, const T upper) {
+    #pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
+            T* heap_dis = heap_dis_tab + i * k;
+            TI* heap_ids = heap_ids_tab + i * k;
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+            T thresh = heap_dis[0];
+            for (size_t j = j0; j < j1; j++) {
+                T dis = dis_tab_i[j];
+                bool keep = true;
+                if (dis < lower){
+                    keep = false;
+                };
+                if (dis > upper){
+                    keep = false;
+                };
+                if (C::cmp(thresh, dis) && keep) {
                     heap_replace_top<C>(k, heap_dis, heap_ids, dis, j);
                     thresh = heap_dis[0];
                 }
@@ -244,6 +269,19 @@ struct ReservoirResultHandler {
         void add_result(T dis, TI idx) {
             res1.add(dis, idx);
         }
+        /// add one result for query i
+        void add_result_boundary(T dis, TI idx, T lower, T upper) {
+            bool keep = true;
+            if (dis < lower){
+                keep = false;
+            };
+            if (dis > upper){
+                keep = false;
+            };
+            if (keep){
+                res1.add(dis, idx);
+            };
+        }
 
         /// series of results for query i is done
         void end() {
@@ -289,6 +327,29 @@ struct ReservoirResultHandler {
             for (size_t j = j0; j < j1; j++) {
                 T dis = dis_tab_i[j];
                 reservoir.add(dis, j);
+            }
+        }
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results_boundary(size_t j0, size_t j1, const T* dis_tab, const T lower, const T upper) {
+        // maybe parallel for
+#pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
+            ReservoirTopN<C>& reservoir = reservoirs[i - i0];
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+            for (size_t j = j0; j < j1; j++) {
+                T dis = dis_tab_i[j];
+                bool keep = true;
+                if (dis < lower){
+                    keep = false;
+                };
+                if (dis > upper){
+                    keep = false;
+                };
+                if (keep){
+                    reservoir.add(dis, j);
+                };
             }
         }
     }
@@ -369,7 +430,6 @@ struct RangeSearchResultHandler {
     }
 
     /// add results for query i0..i1 and j0..j1
-
     void add_results(size_t j0, size_t j1, const T* dis_tab) {
         RangeSearchPartialResult* pres;
         // there is one RangeSearchPartialResult structure per j0
@@ -398,6 +458,48 @@ struct RangeSearchResultHandler {
             for (size_t j = j0; j < j1; j++) {
                 float dis = *ip_line++;
                 if (C::cmp(radius, dis)) {
+                    qres.add(dis, j);
+                }
+            }
+        }
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results_boundary(size_t j0, size_t j1, const T* dis_tab, const T lower, const T upper) {
+        RangeSearchPartialResult* pres;
+        // there is one RangeSearchPartialResult structure per j0
+        // (= block of columns of the large distance matrix)
+        // it is a bit tricky to find the poper PartialResult structure
+        // because the inner loop is on db not on queries.
+
+        if (pr < j0s.size() && j0 == j0s[pr]) {
+            pres = partial_results[pr];
+            pr++;
+        } else if (j0 == 0 && j0s.size() > 0) {
+            pr = 0;
+            pres = partial_results[pr];
+            pr++;
+        } else { // did not find this j0
+            pres = new RangeSearchPartialResult(res);
+            partial_results.push_back(pres);
+            j0s.push_back(j0);
+            pr = partial_results.size();
+        }
+
+        for (size_t i = i0; i < i1; i++) {
+            const float* ip_line = dis_tab + (i - i0) * (j1 - j0);
+            RangeQueryResult& qres = pres->new_result(i);
+
+            for (size_t j = j0; j < j1; j++) {
+                float dis = *ip_line++;
+                bool keep = true;
+                if (dis < lower){
+                    keep = false;
+                };
+                if (dis > upper){
+                    keep = false;
+                };
+                if (C::cmp(radius, dis) && keep) {
                     qres.add(dis, j);
                 }
             }
@@ -457,6 +559,21 @@ struct SingleBestResultHandler {
             }
         }
 
+        /// add one result for query i with boundary check
+        void add_result_boundary(T dis, TI idx, const T lower, const T upper) {
+            bool keep = true;
+            if (dis < lower){
+                keep = false;
+            };
+            if (dis > upper){
+                keep = false;
+            };
+            if (C::cmp(min_dis, dis) && keep) {
+                min_dis = dis;
+                min_idx = idx;
+            }
+        }
+
         /// series of results for query i is done
         void end() {
             hr.dis_tab[current_idx] = min_dis;
@@ -495,11 +612,51 @@ struct SingleBestResultHandler {
         }
     }
 
+    void add_results_boundary(size_t j0, size_t j1, const T* dis_tab, const T lower, const T upper) {
+        for (int64_t i = i0; i < i1; i++) {
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+
+            auto& min_distance = this->dis_tab[i];
+            auto& min_index = this->ids_tab[i];
+
+            for (size_t j = j0; j < j1; j++) {
+                const T distance = dis_tab_i[j];
+                bool keep = true;
+                if (distance < lower){
+                    keep = false;
+                };
+                if (distance > upper){
+                    keep = false;
+                };
+                if (C::cmp(min_distance, distance) && keep) {
+                    min_distance = distance;
+                    min_index = j;
+                }
+            }
+        }
+    }
+
     void add_result(const size_t i, const T dis, const TI idx) {
         auto& min_distance = this->dis_tab[i];
         auto& min_index = this->ids_tab[i];
 
         if (C::cmp(min_distance, dis)) {
+            min_distance = dis;
+            min_index = idx;
+        }
+    }
+
+    void add_result_boundary(const size_t i, const T dis, const TI idx, const T lower, const T upper) {
+        auto& min_distance = this->dis_tab[i];
+        auto& min_index = this->ids_tab[i];
+        bool keep = true;
+        if (dis < lower){
+            keep = false;
+        };
+        if (dis > upper){
+            keep = false;
+        };
+        if (C::cmp(min_distance, dis) && keep) {
             min_distance = dis;
             min_index = idx;
         }

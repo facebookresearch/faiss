@@ -136,6 +136,29 @@ struct Index {
 
     /** query n vectors of dimension d to the index.
      *
+     * return at most k vectors. If there are not enough results for a
+     * query, the result array is padded with -1s.
+     *
+     * @param n           number of vectors
+     * @param x           input vectors to search, size n * d
+     * @param k           number of extracted vectors
+     * @param lower       lower value of distances
+     * @param upper       higher value of distances
+     * @param distances   output pairwise distances, size n*k
+     * @param labels      output labels of the NNs, size n*k
+     */
+    virtual void boundary_search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const float lower,
+            const float upper,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const;
+
+    /** query n vectors of dimension d to the index.
+     *
      * return all vectors with distance < radius. Note that many
      * indexes do not implement the range_search (only the k-NN search
      * is mandatory).

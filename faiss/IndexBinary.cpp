@@ -35,6 +35,18 @@ void IndexBinary::range_search(
     FAISS_THROW_MSG("range search not implemented");
 }
 
+void IndexBinary::boundary_search(
+        idx_t,
+        const uint8_t*,
+        idx_t,
+        const float,
+        const float,
+        int32_t*,
+        idx_t*,
+        const SearchParameters*) const {
+    FAISS_THROW_MSG("range search not implemented");
+}
+
 void IndexBinary::assign(idx_t n, const uint8_t* x, idx_t* labels, idx_t k)
         const {
     std::vector<int> distances(n * k);

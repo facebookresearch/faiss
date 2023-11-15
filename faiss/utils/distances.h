@@ -301,6 +301,17 @@ void knn_inner_product(
         float_minheap_array_t* res,
         const IDSelector* sel = nullptr);
 
+void knn_inner_product_boundary(
+        const float* x,
+        const float* y,
+        const float lower,
+        const float upper,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_minheap_array_t* res,
+        const IDSelector* sel = nullptr);
+
 /**  Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, for the inner product metric.
  *
@@ -320,6 +331,18 @@ void knn_inner_product(
         int64_t* indexes,
         const IDSelector* sel = nullptr);
 
+void knn_inner_product_boundary(
+        const float* x,
+        const float* y,
+        const float lower,
+        const float upper,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        const IDSelector* sel = nullptr);
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
  * @param x    query vectors, size nx * d
@@ -331,6 +354,17 @@ void knn_inner_product(
 void knn_L2sqr(
         const float* x,
         const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_maxheap_array_t* res,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+void knn_L2sqr_boundary(
+        const float* x,
+        const float* y,
+        const float lower,
+        const float upper,
         size_t d,
         size_t nx,
         size_t ny,
@@ -351,6 +385,20 @@ void knn_L2sqr(
 void knn_L2sqr(
         const float* x,
         const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
+void knn_L2sqr_boundary(
+        const float* x,
+        const float* y,
+        const float lower, 
+        const float upper,
         size_t d,
         size_t nx,
         size_t ny,
@@ -381,6 +429,19 @@ void knn_inner_products_by_idx(
         float* vals,
         int64_t* ids,
         int64_t ld_ids = -1);
+void knn_inner_products_by_idx_boundary(
+        const float* x,
+        const float* y,
+        const float lower,
+        const float upper,
+        const int64_t* subset,
+        size_t d,
+        size_t nx,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        int64_t ld_ids = -1);
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
@@ -395,6 +456,19 @@ void knn_inner_products_by_idx(
 void knn_L2sqr_by_idx(
         const float* x,
         const float* y,
+        const int64_t* subset,
+        size_t d,
+        size_t nx,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        int64_t ld_subset = -1);
+void knn_L2sqr_by_idx_boundary(
+        const float* x,
+        const float* y,
+        const float lower,
+        const float upper,
         const int64_t* subset,
         size_t d,
         size_t nx,
