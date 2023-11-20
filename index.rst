@@ -39,12 +39,12 @@ Faiss
 
 Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning.
 
-Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed by `Facebook AI Research <https://research.fb.com/category/facebook-ai-research-fair/>`_.
+Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed primarily at `FAIR <https://research.facebook.com//>`_, the fundamental AI research team of Meta.
 
 What is similarity search?
 --------------------------
 
-Given a set of vectors :math:`x_i` in dimension :math:`d`, Faiss build a data structure in RAM from it.
+Given a set of vectors :math:`x_i` in dimension :math:`d`, Faiss builds a data structure in RAM from it.
 After the structure is constructed, when given a new vector :math:`x` in dimension :math:`d` it performs efficiently the operation:
 
 .. math::
@@ -70,6 +70,10 @@ This is all what Faiss is about. It can also:
 - return all elements that are within a given radius of the query point (range search)
 
 - store the index on disk rather than in RAM.
+
+- index binary vectors rather than floating-point vectors
+
+- ignore a subset of index vectors according to a predicate on the vector ids.
 
 Install
 -------
@@ -108,6 +112,16 @@ Faiss is based on years of research. Most notably it implements:
 * The GPU implementation and fast k-selection is described in `“Billion-scale similarity search with GPUs” <https://arxiv.org/abs/1702.08734>`_, Johnson & al, ArXiv 1702.08734, 2017
 
 * The HNSW indexing method from `"Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs" <https://arxiv.org/abs/1603.09320>`_, Malkov & al., ArXiv 1603.09320, 2016
+
+* The in-register vector comparisons from `"Quicker ADC : Unlocking the Hidden Potential of Product Quantization with SIMD" <https://arxiv.org/abs/1812.09162>`_, André et al, PAMI'19, also used in ["Accelerating Large-Scale Inference with Anisotropic Vector Quantization" <https://arxiv.org/abs/1908.10396>`_, Guo, Sun et al, ICML'20.
+
+* The binary multi-index hashing method from `"Fast Search in Hamming Space with Multi-Index Hashing" <http://www.cs.toronto.edu/~norouzi/research/papers/multi_index_hashing.pdf>`_, Norouzi et al, CVPR’12.
+
+* The graph-based indexing method NSG from `"Fast Approximate Nearest Neighbor Search With The Navigating Spreading-out Graph"` <https://arxiv.org/abs/1707.00143>`_, Cong Fu et al, VLDB 2019.
+
+* The Local search quantization method from `"Revisiting additive quantization" <https://drive.google.com/file/d/1dDuv6fQozLQFS2AJoNNFGTH499QIp_vO/view>`_, Julieta Martinez, et al. ECCV 2016 and `"LSQ++: Lower running time and higher recall in multi-codebook quantization" <https://openaccess.thecvf.com/content_ECCV_2018/html/Julieta_Martinez_LSQ_lower_runtime_ECCV_2018_paper.html>`_, Julieta Martinez, et al. ECCV 2018.
+
+* The residual quantizer implementation from `"Improved Residual Vector Quantization for High-dimensional Approximate Nearest Neighbor Search" <https://arxiv.org/abs/1509.05195>`_, Shicong Liu et al, AAAI'15.
 
 A general paper about product quantization and related methods: `"A Survey of Product Quantization" <https://www.jstage.jst.go.jp/article/mta/6/1/6_2/_pdf>`_, Yusuke Matsui, Yusuke Uchida, Hervé Jégou,
 Shin’ichi Satoh, ITE transactions on MTA, 2018.
