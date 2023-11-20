@@ -99,10 +99,10 @@
 <section id="faiss">
 <h1>Faiss<a class="headerlink" href="#faiss" title="Permalink to this heading"></a></h1>
 <p>Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning.</p>
-<p>Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed by <a class="reference external" href="https://research.fb.com/category/facebook-ai-research-fair/">Facebook AI Research</a>.</p>
+<p>Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed primarily at <a class="reference external" href="https://research.facebook.com//">FAIR</a>, the fundamental AI research team of Meta.</p>
 <section id="what-is-similarity-search">
 <h2>What is similarity search?<a class="headerlink" href="#what-is-similarity-search" title="Permalink to this heading"></a></h2>
-<p>Given a set of vectors <span class="math notranslate nohighlight">\(x_i\)</span> in dimension <span class="math notranslate nohighlight">\(d\)</span>, Faiss build a data structure in RAM from it.
+<p>Given a set of vectors <span class="math notranslate nohighlight">\(x_i\)</span> in dimension <span class="math notranslate nohighlight">\(d\)</span>, Faiss builds a data structure in RAM from it.
 After the structure is constructed, when given a new vector <span class="math notranslate nohighlight">\(x\)</span> in dimension <span class="math notranslate nohighlight">\(d\)</span> it performs efficiently the operation:</p>
 <div class="math notranslate nohighlight">
 \[j = argmin_i \lVert x - x_i \rVert\]</div>
@@ -118,6 +118,8 @@ Note that the <span class="math notranslate nohighlight">\(x_i\)</span>’s are 
 <li><p>perform maximum inner product search <span class="math notranslate nohighlight">\(argmax_i \langle x, x_i \rangle\)</span> instead of minimum Euclidean search. There is also limited support for other distances (L1, Linf, etc.).</p></li>
 <li><p>return all elements that are within a given radius of the query point (range search)</p></li>
 <li><p>store the index on disk rather than in RAM.</p></li>
+<li><p>index binary vectors rather than floating-point vectors</p></li>
+<li><p>ignore a subset of index vectors according to a predicate on the vector ids.</p></li>
 </ul>
 </section>
 <section id="install">
@@ -144,6 +146,11 @@ Note that the <span class="math notranslate nohighlight">\(x_i\)</span>’s are 
 <li><p>The pre-filtering of product quantizer distances from <a class="reference external" href="http://link.springer.com/chapter/10.1007/978-3-319-46475-6_48">“Polysemous codes”</a>, Douze &amp; al., ECCV 2016. This technique performs a binary filtering stage before computing PQ distances.</p></li>
 <li><p>The GPU implementation and fast k-selection is described in <a class="reference external" href="https://arxiv.org/abs/1702.08734">“Billion-scale similarity search with GPUs”</a>, Johnson &amp; al, ArXiv 1702.08734, 2017</p></li>
 <li><p>The HNSW indexing method from <a class="reference external" href="https://arxiv.org/abs/1603.09320">“Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs”</a>, Malkov &amp; al., ArXiv 1603.09320, 2016</p></li>
+<li><p>The in-register vector comparisons from <a class="reference external" href="https://arxiv.org/abs/1812.09162">“Quicker ADC : Unlocking the Hidden Potential of Product Quantization with SIMD”</a>, André et al, PAMI’19, also used in [“Accelerating Large-Scale Inference with Anisotropic Vector Quantization” &lt;<a class="reference external" href="https://arxiv.org/abs/1908.10396">https://arxiv.org/abs/1908.10396</a>&gt;`_, Guo, Sun et al, ICML’20.</p></li>
+<li><p>The binary multi-index hashing method from <a class="reference external" href="http://www.cs.toronto.edu/~norouzi/research/papers/multi_index_hashing.pdf">“Fast Search in Hamming Space with Multi-Index Hashing”</a>, Norouzi et al, CVPR’12.</p></li>
+<li><p>The graph-based indexing method NSG from <cite>“Fast Approximate Nearest Neighbor Search With The Navigating Spreading-out Graph”</cite> &lt;<a class="reference external" href="https://arxiv.org/abs/1707.00143">https://arxiv.org/abs/1707.00143</a>&gt;`_, Cong Fu et al, VLDB 2019.</p></li>
+<li><p>The Local search quantization method from <a class="reference external" href="https://drive.google.com/file/d/1dDuv6fQozLQFS2AJoNNFGTH499QIp_vO/view">“Revisiting additive quantization”</a>, Julieta Martinez, et al. ECCV 2016 and <a class="reference external" href="https://openaccess.thecvf.com/content_ECCV_2018/html/Julieta_Martinez_LSQ_lower_runtime_ECCV_2018_paper.html">“LSQ++: Lower running time and higher recall in multi-codebook quantization”</a>, Julieta Martinez, et al. ECCV 2018.</p></li>
+<li><p>The residual quantizer implementation from <a class="reference external" href="https://arxiv.org/abs/1509.05195">“Improved Residual Vector Quantization for High-dimensional Approximate Nearest Neighbor Search”</a>, Shicong Liu et al, AAAI’15.</p></li>
 </ul>
 <p>A general paper about product quantization and related methods: <a class="reference external" href="https://www.jstage.jst.go.jp/article/mta/6/1/6_2/_pdf">“A Survey of Product Quantization”</a>, Yusuke Matsui, Yusuke Uchida, Hervé Jégou,
 Shin’ichi Satoh, ITE transactions on MTA, 2018.</p>
