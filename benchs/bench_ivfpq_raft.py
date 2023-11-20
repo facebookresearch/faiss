@@ -181,7 +181,7 @@ if args.bm_search:
                     index, addVecs, queryVecs, args.nprobe, args.k, False)
                 print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, RAFT enabled GPU search time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, raft_gpu_search_time))
-    
+
     print("=" * 40)
     print("Large RAFT Enabled Benchmarks")
     print("=" * 40)
