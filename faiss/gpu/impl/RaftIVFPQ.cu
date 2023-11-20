@@ -81,8 +81,6 @@ void RaftIVFPQ::reserveMemory(idx_t numVecs) {
 }
 
 void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
-    fprintf(stderr,
-            "WARN: setPrecomputedCodes is NOP. Precompute codes is not supported with RAFT enabled.\n");
 }
 
 size_t RaftIVFPQ::reclaimMemory() {
@@ -232,9 +230,8 @@ void RaftIVFPQ::searchPreassigned(
     // TODO: Fill this in!
 }
 
-size_t RaftIVFPQ::getGpuListEncodingSize_(idx_t listId) const {
-    return raft::neighbors::ivf_pq::helpers::get_list_size_in_bytes(
-            raft_knn_index.value(), static_cast<uint32_t>(listId));
+size_t RaftIVFPQ::getGpuListEncodingSize_(idx_t listId) {
+    return static_cast<size_t>(raft_knn_index.value().get_list_size_in_bytes(listId));
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
@@ -266,7 +263,7 @@ std::vector<uint8_t> RaftIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
         auto codes_d = raft::make_device_vector<uint8_t>(
                 raft_handle, static_cast<uint32_t>(bufferSize));
 
-        raft::neighbors::ivf_pq::helpers::unpack_compressed_list_data(
+        raft::neighbors::ivf_pq::helpers::unpack_contiguous_list_data(
                 raft_handle,
                 raft_knn_index.value(),
                 codes_d.data_handle(),
@@ -500,7 +497,7 @@ void RaftIVFPQ::addEncodedVectorsToList_(
                 bufferSize,
                 stream);
 
-        raft::neighbors::ivf_pq::helpers::pack_compressed_list_data(
+        raft::neighbors::ivf_pq::helpers::pack_contiguous_list_data(
                 raft_handle,
                 &(raft_knn_index.value()),
                 codes_d.data_handle(),

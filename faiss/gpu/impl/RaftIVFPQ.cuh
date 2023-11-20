@@ -131,7 +131,7 @@ class RaftIVFPQ : public IVFPQ {
             idx_t numVecs) override;
 
     /// Returns the encoding size for a PQ-encoded IVF list
-    size_t getGpuListEncodingSize_(idx_t listId) const;
+    size_t getGpuListEncodingSize_(idx_t listId);
     //     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     /// Sets the current product quantizer centroids; the data can be

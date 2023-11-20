@@ -314,7 +314,7 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim_));
 
     raft::neighbors::ivf_flat::helpers::reset_index(
-            raft_handle, raft_knn_index.value());
+            raft_handle, &raft_knn_index.value());
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.

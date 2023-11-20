@@ -402,7 +402,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 raft_ivfpq_index.n_lists(),
                 raft_ivfpq_index.dim());
         raft::neighbors::ivf_pq::helpers::extract_centers(
-                raft_handle, raft_ivfpq_index, raft_centers.data_handle());
+                raft_handle, raft_ivfpq_index, raft_centers.view());
 
         quantizer->train(nlist, raft_centers.data_handle());
         quantizer->add(nlist, raft_centers.data_handle());
