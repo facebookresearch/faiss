@@ -181,7 +181,7 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
     //
     index->by_residual = true;
     index->use_precomputed_table = 0;
-    index->code_size = subQuantizers_;
+    index->code_size = utils::divUp(subQuantizers_ * bitsPerCode_, 8);
     index->pq = faiss::ProductQuantizer(this->d, subQuantizers_, bitsPerCode_);
 
     index->do_polysemous_training = false;
