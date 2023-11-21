@@ -22,9 +22,9 @@
 
 #pragma once
 
+#include <faiss/impl/CodePacker.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
-#include <faiss/impl/CodePacker.h>
 
 #include <raft/neighbors/ivf_flat.cuh>
 

@@ -230,7 +230,8 @@ void RaftIVFPQ::searchPreassigned(
 }
 
 size_t RaftIVFPQ::getGpuListEncodingSize_(idx_t listId) {
-    return static_cast<size_t>(raft_knn_index.value().get_list_size_in_bytes(listId));
+    return static_cast<size_t>(
+            raft_knn_index.value().get_list_size_in_bytes(listId));
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
