@@ -23,9 +23,7 @@
 #pragma once
 
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
-
 #include <faiss/impl/CodePacker.h>
 
 #include <raft/neighbors/ivf_flat.cuh>
@@ -51,6 +49,9 @@ class RaftIVFFlat : public IVFFlat {
             MemorySpace space);
 
     ~RaftIVFFlat() override;
+
+    /// Reserve GPU memory in our inverted lists for this number of vectors
+    void reserveMemory(idx_t numVecs) override;
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
@@ -83,11 +84,7 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
 
-    /// Reserve GPU memory in our inverted lists for this number of vectors
-    //     void reserveMemory(idx_t numVecs) override;
-
-    /// Clear out all inverted lists, but retain the coarse quantizer
-    /// and the product quantizer info
+    /// Clear out the Raft index
     void reset() override;
 
     /// For debugging purposes, return the list length of a particular
@@ -101,14 +98,17 @@ class RaftIVFFlat : public IVFFlat {
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
+    /// Update our Raft index with this quantizer instance; may be a CPU
+    /// or GPU quantizer
     void updateQuantizer(Index* quantizer) override;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
-
+    
+    /// Replace the Raft index
     void setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx);
 
-   protected:
+   private:
     /// Adds a set of codes and indices to a list, with the representation
     /// coming from the CPU equivalent
     void addEncodedVectorsToList_(

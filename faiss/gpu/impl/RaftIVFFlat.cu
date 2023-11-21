@@ -30,12 +30,12 @@
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
-#include <limits>
-#include <memory>
-
 #include <raft/neighbors/ivf_flat_codepacker.hpp>
 #include <raft/neighbors/ivf_flat.cuh>
 #include <raft/neighbors/ivf_flat_helpers.cuh>
+
+#include <limits>
+#include <memory>
 
 namespace faiss {
 namespace gpu {
@@ -70,18 +70,20 @@ RaftIVFFlat::RaftIVFFlat(
 
 RaftIVFFlat::~RaftIVFFlat() {}
 
+void RaftIVFFlat::reserveMemory(idx_t numVecs) {
+    fprintf(stderr,
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.");
+}
+
 void RaftIVFFlat::reset() {
     raft_knn_index.reset();
 }
 
-/// Replace the raft index
 void RaftIVFFlat::setRaftIndex(
         raft::neighbors::ivf_flat::index<float, idx_t>&& idx) {
     raft_knn_index.emplace(std::move(idx));
 }
 
-/// Find the approximate k nearest neighbors for `queries` against
-/// our database
 void RaftIVFFlat::search(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& queries,
@@ -155,10 +157,6 @@ void RaftIVFFlat::search(
             });
 }
 
-/// Classify and encode/add vectors to our IVF lists.
-/// The input data must be on our current device.
-/// Returns the number of vectors successfully added. Vectors may
-/// not be able to be added because they contain NaNs.
 idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
@@ -167,17 +165,14 @@ idx_t RaftIVFFlat::addVectors(
     /// called updateQuantizer() to update the RAFT index if the quantizer was
     /// modified externally
 
-    idx_t n_rows = vecs.getSize(0);
+    FAISS_ASSERT(raft_knn_index.has_value());
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    /// Remove NaN values
-    auto nan_flag = raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
-
+    /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
-    FAISS_ASSERT(raft_knn_index.has_value());
     raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
             raft_handle,
             raft::make_device_matrix_view<const float, idx_t>(
@@ -207,7 +202,7 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
 }
 
 /// Return the list indices of a particular list back to the CPU
-std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
+std::vector<idx_t> RaftIVFPQ::getListIndices(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -220,10 +215,11 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     // fetch the list indices ptr on host
     idx_t* list_indices_ptr;
 
-    // fetch the list indices ptr on host
     raft::update_host(
             &list_indices_ptr,
-            raft_knn_index.value().inds_ptrs().data_handle() + listId,
+            const_cast<idx_t**>(
+                    raft_knn_index.value().inds_ptrs().data_handle()) +
+                    listId,
             1,
             stream);
     raft_handle.sync_stream();

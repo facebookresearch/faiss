@@ -25,9 +25,9 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFPQ.cuh>
 
-#include <optional>
-
 #include <raft/neighbors/ivf_pq.cuh>
+
+#include <optional>
 
 namespace faiss {
 namespace gpu {
@@ -51,12 +51,11 @@ class RaftIVFPQ : public IVFPQ {
 
     ~RaftIVFPQ() override;
 
-    /// Clear out all inverted lists, but retain the coarse quantizer
-    /// and the product quantizer info
-    void reset() override;
-
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
+
+    /// Clear out the RAFT index
+    void reset() override;
 
     /// After adding vectors, one can call this to reclaim device memory
     /// to exactly the amount needed. Returns space reclaimed in bytes
@@ -65,10 +64,6 @@ class RaftIVFPQ : public IVFPQ {
     /// Enable or disable pre-computed codes. The quantizer is needed to gather
     /// the IVF centroids for use
     void setPrecomputedCodes(Index* coarseQuantizer, bool enable) override;
-
-    /// Returns our set of sub-quantizers of the form
-    /// (sub q)(code id)(sub dim)
-    Tensor<float, 3, true> getPQCentroids();
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
@@ -96,11 +91,14 @@ class RaftIVFPQ : public IVFPQ {
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
+    /// Update our Raft index with this quantizer instance; may be a CPU
+    /// or GPU quantizer
     void updateQuantizer(Index* quantizer) override;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
+    /// Replace the Raft index
     void setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>&& idx);
 
     /// Classify and encode/add vectors to our IVF lists.
@@ -119,7 +117,7 @@ class RaftIVFPQ : public IVFPQ {
     /// Return the list indices of a particular list back to the CPU
     std::vector<idx_t> getListIndices(idx_t listId) const override;
 
-   protected:
+   private:
     /// Adds a set of codes and indices to a list, with the representation
     /// coming from the CPU equivalent
     void addEncodedVectorsToList_(
@@ -132,39 +130,16 @@ class RaftIVFPQ : public IVFPQ {
 
     /// Returns the encoding size for a PQ-encoded IVF list
     size_t getGpuListEncodingSize_(idx_t listId);
-    //     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
-    /// Sets the current product quantizer centroids; the data can be
-    /// resident on either the host or the device. It will be transposed
-    /// into our preferred data layout
-    /// Data must be a row-major, 3-d array of size
-    /// (numSubQuantizers, numSubQuantizerCodes, dim / numSubQuantizers)
+    /// Copy the PQ centroids to the Raft index. The data is already in the
+    /// preferred format with the transpose performed by the IVFPQ class helper.
     void setPQCentroids_();
 
-    /// Calculate precomputed residual distance information
-    void precomputeCodes_(Index* quantizer);
-
-    /// Runs kernels for scanning inverted lists with precomputed codes
-    void runPQPrecomputedCodes_(
-            Tensor<float, 2, true>& queries,
-            Tensor<float, 2, true>& coarseDistances,
-            Tensor<idx_t, 2, true>& coarseIndices,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices);
-
-    /// Runs kernels for scanning inverted lists without precomputed codes
-    void runPQNoPrecomputedCodes_(
-            Tensor<float, 2, true>& queries,
-            Tensor<float, 2, true>& coarseDistances,
-            Tensor<idx_t, 2, true>& coarseIndices,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices);
-
+    /// Update the product quantizer centroids buffer held in the IVFPQ class.
+    /// Used when the RAFT index was updated externally.
     void setBasePQCentroids_();
 
-   private:
+    /// optional around the Raft IVF-PQ index
     std::optional<raft::neighbors::ivf_pq::index<idx_t>> raft_knn_index{
             std::nullopt};
 };

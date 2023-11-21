@@ -23,14 +23,14 @@
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
-#include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
-#include <limits>
-#include <memory>
 
 #include <raft/neighbors/ivf_pq.cuh>
 #include <raft/neighbors/ivf_pq_helpers.cuh>
+
+#include <limits>
+#include <memory>
 
 namespace faiss {
 namespace gpu {
@@ -69,10 +69,6 @@ RaftIVFPQ::RaftIVFPQ(
             "only INDICES_64_BIT is supported for RAFT index");
 }
 
-void RaftIVFPQ::reset() {
-    raft_knn_index.reset();
-}
-
 RaftIVFPQ::~RaftIVFPQ() {}
 
 void RaftIVFPQ::reserveMemory(idx_t numVecs) {
@@ -80,7 +76,8 @@ void RaftIVFPQ::reserveMemory(idx_t numVecs) {
             "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.");
 }
 
-void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
+void RaftIVFPQ::reset() {
+    raft_knn_index.reset();
 }
 
 size_t RaftIVFPQ::reclaimMemory() {
@@ -88,6 +85,8 @@ size_t RaftIVFPQ::reclaimMemory() {
             "WARN: reclaimMemory is NOP. reclaimMemory is not supported with RAFT enabled.");
     return 0;
 }
+
+void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {}
 
 idx_t RaftIVFPQ::getListLength(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
@@ -253,7 +252,7 @@ std::vector<uint8_t> RaftIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
 
     std::vector<uint8_t> flat_codes(cpuListSizeInBytes);
 
-    idx_t maxBatchSize = 4096;
+    idx_t maxBatchSize = 65536;
     for (idx_t offset_b = 0; offset_b < listSize; offset_b += maxBatchSize) {
         uint32_t batchSize = min(maxBatchSize, listSize - offset_b);
         uint32_t bufferSize = getCpuVectorsEncodingSize_(batchSize);
@@ -359,11 +358,16 @@ idx_t RaftIVFPQ::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
+    /// NB: The coarse quantizer is ignored here. The user is assumed to have
+    /// called updateQuantizer() to update the RAFT index if the quantizer was
+    /// modified externally
+
     FAISS_ASSERT(raft_knn_index.has_value());
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
+    /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
     raft_knn_index.emplace(raft::neighbors::ivf_pq::extend(

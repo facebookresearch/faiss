@@ -33,19 +33,18 @@
 namespace faiss {
 namespace gpu {
 
-/// Filter out matrix rows containing NaN values
 void validRowIndices(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
-        bool* nan_flag) {
+        bool* validRows) {
     raft::device_resources& raft_handle = res->getRaftHandleCurrentDevice();
     idx_t n_rows = vecs.getSize(0);
     idx_t dim = vecs.getSize(1);
 
-    thrust::fill_n(raft_handle.get_thrust_policy(), nan_flag, n_rows, true);
+    thrust::fill_n(raft_handle.get_thrust_policy(), validRows, n_rows, true);
     raft::linalg::map_offset(
             raft_handle,
-            raft::make_device_vector_view<bool, idx_t>(nan_flag, n_rows),
+            raft::make_device_vector_view<bool, idx_t>(validRows, n_rows),
             [vecs = vecs.data(), dim] __device__(idx_t i) {
                 for (idx_t col = 0; col < dim; col++) {
                     if (!isfinite(vecs[i * dim + col])) {
@@ -64,15 +63,15 @@ idx_t inplaceGatherFilteredRows(
     idx_t n_rows = vecs.getSize(0);
     idx_t dim = vecs.getSize(1);
 
-    auto nan_filter =
+    auto valid_rows =
             raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-    validRowIndices(res, vecs, nan_filter.data_handle());
+    validRowIndices(res, vecs, valid_rows.data_handle());
 
     idx_t n_rows_valid = thrust::reduce(
             raft_handle.get_thrust_policy(),
-            nan_filter.data_handle(),
-            nan_filter.data_handle() + n_rows,
+            valid_rows.data_handle(),
+            valid_rows.data_handle() + n_rows,
             0);
 
     if (n_rows_valid < n_rows) {
@@ -86,8 +85,8 @@ idx_t inplaceGatherFilteredRows(
                 count,
                 count + n_rows,
                 gather_indices.data_handle(),
-                [nan_filter = nan_filter.data_handle()] __device__(auto i) {
-                    return nan_filter[i];
+                [valid_rows = valid_rows.data_handle()] __device__(auto i) {
+                    return valid_rows[i];
                 });
 
         raft::matrix::gather(

@@ -15,15 +15,13 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
-#include <limits>
-#include <memory>
-
 #if defined USE_NVIDIA_RAFT
 #include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <raft/neighbors/ivf_flat.cuh>
-#include <raft/core/error.hpp>
 #endif
+
+#include <limits>
 
 namespace faiss {
 namespace gpu {

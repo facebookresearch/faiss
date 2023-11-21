@@ -56,12 +56,15 @@ inline raft::distance::DistanceType metricFaissToRaft(
     }
 }
 
-/// Filter out matrix rows containing NaN values
+/// Identify matrix rows containing non NaN values. validRows[i] is false is row
+/// i contains a NaN value and true otherwise.
 void validRowIndices(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
-        bool* nan_flag);
+        bool* validRows);
 
+/// Filter out matrix rows containing NaN values. The vectors and indices are
+/// updated in-place.
 idx_t inplaceGatherFilteredRows(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
