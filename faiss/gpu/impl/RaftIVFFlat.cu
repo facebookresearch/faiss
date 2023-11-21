@@ -202,7 +202,7 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
 }
 
 /// Return the list indices of a particular list back to the CPU
-std::vector<idx_t> RaftIVFPQ::getListIndices(idx_t listId) const {
+std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
