@@ -104,7 +104,7 @@ class RaftIVFFlat : public IVFFlat {
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
-    
+
     /// Replace the Raft index
     void setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx);
 
