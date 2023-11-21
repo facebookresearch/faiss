@@ -251,7 +251,8 @@ std::vector<uint8_t> RaftIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
 
     auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(listSize);
 
-    std::vector<uint8_t> flat_codes(cpuListSizeInBytes, static_cast<uint8_t>(0));
+    std::vector<uint8_t> flat_codes(
+            cpuListSizeInBytes, static_cast<uint8_t>(0));
 
     idx_t maxBatchSize = 65536;
     for (idx_t offset_b = 0; offset_b < listSize; offset_b += maxBatchSize) {
