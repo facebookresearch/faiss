@@ -196,14 +196,15 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
 
 // Large batch sizes (>= 65536) should also work
 TEST(TestGpuIndexIVFPQ, LargeBatch) {
-    for (int tries = 0; tries < 2; ++tries) {
+    for (bool usePrecomputed : {false, true}) {
         Options opt;
 
         // override for large sizes
         opt.dim = 4;
         opt.numQuery = 100000;
         opt.codes = 2;
-        opt.usePrecomputed = (tries % 2 == 0);
+        opt.usePrecomputed = usePrecomputed;
+        opt.useFloat16 = false;
 
         queryTest(opt, faiss::MetricType::METRIC_L2);
     }
