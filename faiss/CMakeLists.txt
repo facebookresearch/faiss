@@ -54,6 +54,7 @@ set(FAISS_SRC
   impl/AuxIndexStructures.cpp
   impl/CodePacker.cpp
   impl/IDSelector.cpp
+  impl/IDDeduper.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
   impl/NSG.cpp
@@ -148,6 +149,7 @@ set(FAISS_HEADERS
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/IDSelector.h
+  impl/IDDeduper.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
   impl/FaissException.h

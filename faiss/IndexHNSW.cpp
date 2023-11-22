@@ -296,7 +296,6 @@ void IndexHNSW::search(
 
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
-
 #pragma omp parallel
         {
             VisitedTable vt(ntotal);

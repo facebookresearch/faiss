@@ -31,6 +31,7 @@
 
 #include <limits>
 
+#include <faiss/impl/IDDeduper.h>
 #include <faiss/utils/ordered_key_value.h>
 
 namespace faiss {
@@ -148,6 +149,175 @@ inline void heap_replace_top(
     bh_ids[i] = id;
 }
 
+template <class C>
+inline void up_heap_with_dedupe(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T val,
+        typename C::TI id,
+        std::unordered_map<typename C::TI, typename C::TI>* group_id_to_id,
+        std::unordered_map<typename C::TI, size_t>* group_id_to_index,
+        typename C::TI group_id,
+        size_t start_index) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    size_t i = start_index + 1, i_father;
+
+    while (i > 1) {
+        i_father = i >> 1;
+        if (!C::cmp2(val, bh_val[i_father], group_id, bh_ids[i_father])) {
+            /* the heap structure is ok */
+            break;
+        }
+        bh_val[i] = bh_val[i_father];
+        bh_ids[i] = bh_ids[i_father];
+        (*group_id_to_index)[bh_ids[i]] = i - 1;
+        i = i_father;
+    }
+    bh_val[i] = val;
+    bh_ids[i] = group_id;
+    (*group_id_to_id)[group_id] = id;
+    (*group_id_to_index)[group_id] = i - 1;
+}
+
+template <class C>
+inline void down_heap_with_dedupe(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T val,
+        typename C::TI id,
+        std::unordered_map<typename C::TI, typename C::TI>* group_id_to_id,
+        std::unordered_map<typename C::TI, size_t>* group_id_to_index,
+        typename C::TI group_id,
+        size_t start_index) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    size_t i = start_index + 1, i1, i2;
+
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k) {
+            break;
+        }
+
+        // Note that C::cmp2() is a bool function answering
+        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
+        // heap and same with the `<` sign for min heap.
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], group_id, bh_ids[i1])) {
+                break;
+            }
+            bh_val[i] = bh_val[i1];
+            bh_ids[i] = bh_ids[i1];
+            (*group_id_to_index)[bh_ids[i]] = i - 1;
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh_val[i2], group_id, bh_ids[i2])) {
+                break;
+            }
+            bh_val[i] = bh_val[i2];
+            bh_ids[i] = bh_ids[i2];
+            (*group_id_to_index)[bh_ids[i]] = i - 1;
+            i = i2;
+        }
+    }
+    bh_val[i] = val;
+    bh_ids[i] = group_id;
+    (*group_id_to_id)[group_id] = id;
+    (*group_id_to_index)[group_id] = i - 1;
+}
+
+/** heap_push with group id
+ */
+template <class C>
+inline void heap_push_with_dedupe(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T val,
+        typename C::TI id,
+        std::unordered_map<typename C::TI, typename C::TI>* group_id_to_id,
+        std::unordered_map<typename C::TI, size_t>* group_id_to_index,
+        typename C::TI group_id) {
+    up_heap_with_dedupe<C>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            id,
+            group_id_to_id,
+            group_id_to_index,
+            group_id,
+            k - 1);
+}
+
+/**
+ * heap_replace_top with with group id
+ */
+template <class C>
+inline void heap_replace_top_with_dedupe(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T val,
+        typename C::TI id,
+        std::unordered_map<typename C::TI, typename C::TI>* group_id_to_id,
+        std::unordered_map<typename C::TI, size_t>* group_id_to_index,
+        typename C::TI group_id) {
+    group_id_to_id->erase(bh_ids[0]);
+    group_id_to_index->erase(bh_ids[0]);
+    down_heap_with_dedupe<C>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            id,
+            group_id_to_id,
+            group_id_to_index,
+            group_id,
+            0);
+}
+
+/**
+ * heap_update with group id
+ */
+template <class C>
+inline void heap_update_with_dedupe(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T val,
+        typename C::TI id,
+        std::unordered_map<typename C::TI, typename C::TI>* group_id_to_id,
+        std::unordered_map<typename C::TI, size_t>* group_id_to_index,
+        typename C::TI group_id) {
+    size_t start_index = group_id_to_index->at(group_id);
+    up_heap_with_dedupe<C>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            id,
+            group_id_to_id,
+            group_id_to_index,
+            group_id,
+            start_index);
+    down_heap_with_dedupe<C>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            id,
+            group_id_to_id,
+            group_id_to_index,
+            group_id,
+            start_index);
+}
+
 /* Partial instanciation for heaps with TI = int64_t */
 
 template <typename T>
@@ -198,6 +368,69 @@ inline void maxheap_replace_top(
         T val,
         int64_t ids) {
     heap_replace_top<CMax<T, int64_t>>(k, bh_val, bh_ids, val, ids);
+}
+
+template <typename T>
+inline void maxheap_push_with_dedupe(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T val,
+        int64_t ids,
+        std::unordered_map<int64_t, int64_t>* group_id_to_id,
+        std::unordered_map<int64_t, size_t>* group_id_to_index,
+        int64_t group_id) {
+    heap_push_with_dedupe<CMax<T, int64_t>>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            ids,
+            group_id_to_id,
+            group_id_to_index,
+            group_id);
+}
+
+template <typename T>
+inline void maxheap_replace_top_with_dedupe(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T val,
+        int64_t ids,
+        std::unordered_map<int64_t, int64_t>* group_id_to_id,
+        std::unordered_map<int64_t, size_t>* group_id_to_index,
+        int64_t group_id) {
+    heap_replace_top_with_dedupe<CMax<T, int64_t>>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            ids,
+            group_id_to_id,
+            group_id_to_index,
+            group_id);
+}
+
+template <typename T>
+inline void maxheap_update_with_dedupe(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T val,
+        int64_t ids,
+        std::unordered_map<int64_t, int64_t>* group_id_to_id,
+        std::unordered_map<int64_t, size_t>* group_id_to_index,
+        int64_t group_id) {
+    heap_update_with_dedupe<CMax<T, int64_t>>(
+            k,
+            bh_val,
+            bh_ids,
+            val,
+            ids,
+            group_id_to_id,
+            group_id_to_index,
+            group_id);
 }
 
 /*******************************************************************

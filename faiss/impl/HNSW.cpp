@@ -538,16 +538,57 @@ int search_from_candidates(
                                : hnsw.check_relative_distance;
     int efSearch = params ? params->efSearch : hnsw.efSearch;
     const IDSelector* sel = params ? params->sel : nullptr;
+    const IDDeduper* dedup = params ? params->dedup : nullptr;
+    std::unordered_map<idx_t, idx_t> group_id_to_id;
+    std::unordered_map<idx_t, size_t> group_id_to_index;
 
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (nres < k) {
-                faiss::maxheap_push(++nres, D, I, d, v1);
-            } else if (d < D[0]) {
-                faiss::maxheap_replace_top(nres, D, I, d, v1);
+            if (dedup) {
+                idx_t group_id = dedup->group_id(v1);
+                if (group_id_to_index.find(group_id) ==
+                    group_id_to_index.end()) {
+                    if (nres < k) {
+                        faiss::maxheap_push_with_dedupe(
+                                ++nres,
+                                D,
+                                I,
+                                d,
+                                v1,
+                                &group_id_to_id,
+                                &group_id_to_index,
+                                group_id);
+                    } else if (d < D[0]) {
+                        faiss::maxheap_replace_top_with_dedupe(
+                                nres,
+                                D,
+                                I,
+                                d,
+                                v1,
+                                &group_id_to_id,
+                                &group_id_to_index,
+                                group_id);
+                    }
+                } else if (d < D[group_id_to_index.at(group_id)]) {
+                    faiss::maxheap_update_with_dedupe(
+                            nres,
+                            D,
+                            I,
+                            d,
+                            v1,
+                            &group_id_to_id,
+                            &group_id_to_index,
+                            group_id);
+                }
+            } else {
+                if (nres < k) {
+                    faiss::maxheap_push(++nres, D, I, d, v1);
+                } else if (d < D[0]) {
+                    faiss::maxheap_replace_top(nres, D, I, d, v1);
+                }
             }
         }
         vt.set(v1);
@@ -612,10 +653,48 @@ int search_from_candidates(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (!sel || sel->is_member(idx)) {
-                if (nres < k) {
-                    faiss::maxheap_push(++nres, D, I, dis, idx);
-                } else if (dis < D[0]) {
-                    faiss::maxheap_replace_top(nres, D, I, dis, idx);
+                if (dedup) {
+                    idx_t group_id = dedup->group_id(idx);
+                    if (group_id_to_index.find(group_id) ==
+                        group_id_to_index.end()) {
+                        if (nres < k) {
+                            faiss::maxheap_push_with_dedupe(
+                                    ++nres,
+                                    D,
+                                    I,
+                                    dis,
+                                    idx,
+                                    &group_id_to_id,
+                                    &group_id_to_index,
+                                    group_id);
+                        } else if (dis < D[0]) {
+                            faiss::maxheap_replace_top_with_dedupe(
+                                    nres,
+                                    D,
+                                    I,
+                                    dis,
+                                    idx,
+                                    &group_id_to_id,
+                                    &group_id_to_index,
+                                    group_id);
+                        }
+                    } else if (dis < D[group_id_to_index.at(group_id)]) {
+                        faiss::maxheap_update_with_dedupe(
+                                nres,
+                                D,
+                                I,
+                                dis,
+                                idx,
+                                &group_id_to_id,
+                                &group_id_to_index,
+                                group_id);
+                    }
+                } else {
+                    if (nres < k) {
+                        faiss::maxheap_push(++nres, D, I, dis, idx);
+                    } else if (dis < D[0]) {
+                        faiss::maxheap_replace_top(nres, D, I, dis, idx);
+                    }
                 }
             }
             candidates.push(idx, dis);
@@ -657,6 +736,13 @@ int search_from_candidates(
         nstep++;
         if (!do_dis_check && nstep > efSearch) {
             break;
+        }
+    }
+
+    // Convert group id to id before return
+    if (dedup) {
+        for (size_t icnt = 0; icnt < nres; icnt++) {
+            I[icnt] = group_id_to_id.at(I[icnt]);
         }
     }
 
