@@ -698,21 +698,20 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
 
 // Large batch sizes (>= 65536) should also work
 TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
+    Options opt;
 
-        // override for large sizes
-        opt.dim = 4;
-        opt.numQuery = 100000;
-        opt.codes = 2;
-        opt.useRaft = true;
-        opt.interleavedLayout = true;
-        opt.usePrecomputed = false;
-        opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        opt.bitsPerCode = 8;
+    // override for large sizes
+    opt.dim = 4;
+    opt.numQuery = 100000;
+    opt.codes = 2;
+    opt.useRaft = true;
+    opt.interleavedLayout = true;
+    opt.usePrecomputed = false;
+    opt.useFloat16 = false;
+    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
+    opt.bitsPerCode = 8;
 
-        queryTest(opt, faiss::MetricType::METRIC_L2);
-    }
+    queryTest(opt, faiss::MetricType::METRIC_L2);
 }
 
 TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {

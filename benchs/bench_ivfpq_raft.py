@@ -57,7 +57,7 @@ aa('--use_precomputed', default=True, type=bool, help='use precomputed codes')
 group = parser.add_argument_group('searching')
 
 aa('--k', default=50, type=int, help='nb of nearest neighbors')
-aa('--nprobe', default=50, help='nb of IVF lists to probe')
+aa('--nprobe', default=50, type=int, help='nb of IVF lists to probe')
 
 args = parser.parse_args()
 
@@ -159,10 +159,10 @@ if args.bm_search:
     print("=" * 40)
     print("GPU Search Benchmarks")
     print("=" * 40)
-    queryset_sizes = [5000, 10000, 100000]
-    n_train = 10000
-    n_add = 100000
-    search_bm_dims = [128, 256, 512]
+    queryset_sizes = [1, 10, 100, 1000]
+    n_train = 100000
+    n_add = 10000000
+    search_bm_dims = [128, 256, 512, 1024]
     for n_cols in search_bm_dims:
         M = n_cols // args.pq_len
         trainVecs = rs.rand(n_train, n_cols).astype('float32')
@@ -181,30 +181,3 @@ if args.bm_search:
                     index, addVecs, queryVecs, args.nprobe, args.k, False)
                 print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, RAFT enabled GPU search time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, raft_gpu_search_time))
-
-    print("=" * 40)
-    print("Large RAFT Enabled Benchmarks")
-    print("=" * 40)
-    # More RAFT enabled benchmarks for
-    # 1. larger number of queries
-    # 2. More number of subquantizers
-    # 3. Large k
-    # NB: classical FAISS GPU runs out of GPU memory quickly and does not scale for these cases
-    queryset_sizes = [500000, 1000000, 10000000]
-    n_train = 10000
-    n_add = 100000
-    large_search_bm_dims = [128, 256, 1024]
-    pq_len = 8
-    k = 100
-    for n_cols in large_search_bm_dims:
-        M = n_cols // pq_len
-        trainVecs = rs.rand(n_train, n_cols).astype('float32')
-        index = faiss.index_factory(n_cols, "IVF{},PQ{}x{}np".format(args.n_centroids, M, args.bits_per_code))
-        index.train(trainVecs)
-        addVecs = rs.rand(n_add, n_cols).astype('float32')
-        for n_rows in queryset_sizes:
-            queryVecs = rs.rand(n_rows, n_cols).astype('float32')
-            raft_gpu_search_time = bench_search_milliseconds(
-                index, addVecs, queryVecs, args.nprobe, k, True)
-            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, RAFT enabled GPU search time: %.3f milliseconds" % (
-                n_cols, args.n_centroids, M, args.bits_per_code, n_add, n_rows, args.nprobe, k, raft_gpu_search_time))
