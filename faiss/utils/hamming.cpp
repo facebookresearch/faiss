@@ -681,4 +681,88 @@ void generalized_hammings_knn_hc(
         ha->reorder();
 }
 
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size) {
+    FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const int32_t* in = unpacked + i * M;
+        uint8_t* out = packed + i * code_size;
+        BitstringWriter wr(out, code_size);
+        for (int j = 0; j < M; j++) {
+            wr.write(in[j], nbit);
+        }
+    }
+}
+
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbit,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size) {
+    int totbit = 0;
+    for (int j = 0; j < M; j++) {
+        totbit += nbit[j];
+    }
+    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const int32_t* in = unpacked + i * M;
+        uint8_t* out = packed + i * code_size;
+        BitstringWriter wr(out, code_size);
+        for (int j = 0; j < M; j++) {
+            wr.write(in[j], nbit[j]);
+        }
+    }
+}
+
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked) {
+    FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const uint8_t* in = packed + i * code_size;
+        int32_t* out = unpacked + i * M;
+        BitstringReader rd(in, code_size);
+        for (int j = 0; j < M; j++) {
+            out[j] = rd.read(nbit);
+        }
+    }
+}
+
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbit,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked) {
+    int totbit = 0;
+    for (int j = 0; j < M; j++) {
+        totbit += nbit[j];
+    }
+    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const uint8_t* in = packed + i * code_size;
+        int32_t* out = unpacked + i * M;
+        BitstringReader rd(in, code_size);
+        for (int j = 0; j < M; j++) {
+            out[j] = rd.read(nbit[j]);
+        }
+    }
+}
+
 } // namespace faiss

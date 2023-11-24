@@ -266,9 +266,9 @@ class LatticeTest(unittest.TestCase):
 
 
 class TestBitstring(unittest.TestCase):
-    """ Low-level bit string tests """
 
     def test_rw(self):
+        """ Low-level bit string tests """
         rs = np.random.RandomState(1234)
         nbyte = 1000
         sz = 0
@@ -310,6 +310,26 @@ class TestBitstring(unittest.TestCase):
             xnew = br.read(nbit)
             # print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
+
+    def test_arrays(self):
+        nbit = 5
+        M = 10
+        n = 20
+        rs = np.random.RandomState(123)
+        a = rs.randint(1<<nbit, size=(n, M), dtype='int32')
+        b = faiss.pack_bitstrings(a, nbit)
+        c = faiss.unpack_bitstrings(b, M, nbit)
+        np.testing.assert_array_equal(a, c)
+
+    def test_arrays_variable_size(self):
+        nbits = [10, 5, 3, 12, 6, 7, 4]
+        n = 20
+        rs = np.random.RandomState(123)
+        a = rs.randint(1<<16, size=(n, len(nbits)), dtype='int32')
+        a &= (1 << np.array(nbits)) - 1
+        b = faiss.pack_bitstrings(a, nbits)
+        c = faiss.unpack_bitstrings(b, nbits)
+        np.testing.assert_array_equal(a, c)
 
 
 class TestIVFTransfer(unittest.TestCase):

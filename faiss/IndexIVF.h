@@ -357,6 +357,24 @@ struct IndexIVF : Index, IndexIVFInterface {
             float* recons,
             const SearchParameters* params = nullptr) const override;
 
+    /** Similar to search, but also returns the codes corresponding to the
+     * stored vectors for the search results.
+     *
+     * @param codes      codes (n, k, code_size)
+     * @param include_listno
+     *                   include the list ids in the code (in this case add
+     *                   ceil(log8(nlist)) to the code size)
+     */
+    void search_and_return_codes(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            uint8_t* recons,
+            bool include_listno = false,
+            const SearchParameters* params = nullptr) const;
+
     /** Reconstruct a vector given the location in terms of (inv list index +
      * inv list offset) instead of the id.
      *
