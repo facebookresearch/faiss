@@ -710,7 +710,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="502" column="23" declfile="faiss/IndexIVF.h" declline="502" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="520" column="23" declfile="faiss/IndexIVF.h" declline="520" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -723,7 +723,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="520" column="32" declfile="faiss/IndexIVF.h" declline="520" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="538" column="32" declfile="faiss/IndexIVF.h" declline="538" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -6046,6 +6046,278 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="217" column="6" declfile="faiss/utils/hamming.h" declline="217" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab693555b4e075c52e578e508206ee975" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pack_bitstrings</definition>
+        <argsstring>(size_t n, size_t M, int nbit, const int32_t *unpacked, uint8_t *packed, size_t code_size)</argsstring>
+        <name>pack_bitstrings</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nbit</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>unpacked</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>packed</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pack a set of n codes of size M * nbit</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of codes to pack </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of elementary codes per code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nbit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bits per elementary code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unpacked</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input unpacked codes, size (n, M) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>packed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output packed codes, size (n, code_size) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>should be &gt;= ceil(M * nbit / 8) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="234" column="6" declfile="faiss/utils/hamming.h" declline="234" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af7eb09d1daf10d9f8917a059175c4f74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pack_bitstrings</definition>
+        <argsstring>(size_t n, size_t M, const int32_t *nbits, const int32_t *unpacked, uint8_t *packed, size_t code_size)</argsstring>
+        <name>pack_bitstrings</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>unpacked</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>packed</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pack a set of n codes of variable sizes</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nbit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bits per entry (size M) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="246" column="6" declfile="faiss/utils/hamming.h" declline="246" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a5310d0165a1a1f6a923d313549d9508c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::unpack_bitstrings</definition>
+        <argsstring>(size_t n, size_t M, int nbit, const uint8_t *packed, size_t code_size, int32_t *unpacked)</argsstring>
+        <name>unpack_bitstrings</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nbit</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>packed</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>unpacked</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Unpack a set of n codes of size M * nbit</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of codes to pack </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of elementary codes per code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nbit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bits per elementary code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unpacked</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input unpacked codes, size (n, M) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>packed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output packed codes, size (n, code_size) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>should be &gt;= ceil(M * nbit / 8) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="263" column="6" declfile="faiss/utils/hamming.h" declline="263" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4a3d77f3647685d4bea401f50928cd37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::unpack_bitstrings</definition>
+        <argsstring>(size_t n, size_t M, const int32_t *nbits, const uint8_t *packed, size_t code_size, int32_t *unpacked)</argsstring>
+        <name>unpack_bitstrings</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>const int32_t *</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>packed</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>unpacked</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Unpack a set of n codes of variable sizes</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nbit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bits per entry (size M) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming.h" line="275" column="6" declfile="faiss/utils/hamming.h" declline="275" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

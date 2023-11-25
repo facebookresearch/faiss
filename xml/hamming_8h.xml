@@ -358,12 +358,70 @@
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size,</highlight></codeline>
 <codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ordered<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"></highlight></codeline>
-<codeline lineno="225"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="226"><highlight class="normal"></highlight></codeline>
-<codeline lineno="227"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/hamming-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="228"><highlight class="normal"></highlight></codeline>
-<codeline lineno="229"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_hamming_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="225"><highlight class="comment">/**<sp/>Pack<sp/>a<sp/>set<sp/>of<sp/>n<sp/>codes<sp/>of<sp/>size<sp/>M<sp/>*<sp/>nbit</highlight></codeline>
+<codeline lineno="226"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="227"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>codes<sp/>to<sp/>pack</highlight></codeline>
+<codeline lineno="228"><highlight class="comment"><sp/>*<sp/>@param<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>elementary<sp/>codes<sp/>per<sp/>code</highlight></codeline>
+<codeline lineno="229"><highlight class="comment"><sp/>*<sp/>@param<sp/>nbit<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>elementary<sp/>code</highlight></codeline>
+<codeline lineno="230"><highlight class="comment"><sp/>*<sp/>@param<sp/>unpacked<sp/><sp/><sp/><sp/>input<sp/>unpacked<sp/>codes,<sp/>size<sp/>(n,<sp/>M)</highlight></codeline>
+<codeline lineno="231"><highlight class="comment"><sp/>*<sp/>@param<sp/>packed<sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>packed<sp/>codes,<sp/>size<sp/>(n,<sp/>code_size)</highlight></codeline>
+<codeline lineno="232"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_size<sp/><sp/><sp/>should<sp/>be<sp/>&gt;=<sp/>ceil(M<sp/>*<sp/>nbit<sp/>/<sp/>8)</highlight></codeline>
+<codeline lineno="233"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="234" refid="namespacefaiss_1ab693555b4e075c52e578e508206ee975" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ab693555b4e075c52e578e508206ee975" kindref="member">pack_bitstrings</ref>(</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nbit,</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>unpacked,</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>packed,</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="242"><highlight class="comment">/**<sp/>Pack<sp/>a<sp/>set<sp/>of<sp/>n<sp/>codes<sp/>of<sp/>variable<sp/>sizes</highlight></codeline>
+<codeline lineno="243"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/>*<sp/>@param<sp/>nbit<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>entry<sp/>(size<sp/>M)</highlight></codeline>
+<codeline lineno="245"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="246" refid="namespacefaiss_1af7eb09d1daf10d9f8917a059175c4f74" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ab693555b4e075c52e578e508206ee975" kindref="member">pack_bitstrings</ref>(</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>nbits,</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>unpacked,</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>packed,</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size);</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="254"><highlight class="comment">/**<sp/>Unpack<sp/>a<sp/>set<sp/>of<sp/>n<sp/>codes<sp/>of<sp/>size<sp/>M<sp/>*<sp/>nbit</highlight></codeline>
+<codeline lineno="255"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="256"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>codes<sp/>to<sp/>pack</highlight></codeline>
+<codeline lineno="257"><highlight class="comment"><sp/>*<sp/>@param<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>elementary<sp/>codes<sp/>per<sp/>code</highlight></codeline>
+<codeline lineno="258"><highlight class="comment"><sp/>*<sp/>@param<sp/>nbit<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>elementary<sp/>code</highlight></codeline>
+<codeline lineno="259"><highlight class="comment"><sp/>*<sp/>@param<sp/>unpacked<sp/><sp/><sp/><sp/>input<sp/>unpacked<sp/>codes,<sp/>size<sp/>(n,<sp/>M)</highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/>*<sp/>@param<sp/>packed<sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>packed<sp/>codes,<sp/>size<sp/>(n,<sp/>code_size)</highlight></codeline>
+<codeline lineno="261"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_size<sp/><sp/><sp/>should<sp/>be<sp/>&gt;=<sp/>ceil(M<sp/>*<sp/>nbit<sp/>/<sp/>8)</highlight></codeline>
+<codeline lineno="262"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="263" refid="namespacefaiss_1a5310d0165a1a1f6a923d313549d9508c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5310d0165a1a1f6a923d313549d9508c" kindref="member">unpack_bitstrings</ref>(</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nbit,</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>packed,</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size,</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>unpacked);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="271"><highlight class="comment">/**<sp/>Unpack<sp/>a<sp/>set<sp/>of<sp/>n<sp/>codes<sp/>of<sp/>variable<sp/>sizes</highlight></codeline>
+<codeline lineno="272"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="273"><highlight class="comment"><sp/>*<sp/>@param<sp/>nbit<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>entry<sp/>(size<sp/>M)</highlight></codeline>
+<codeline lineno="274"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="275" refid="namespacefaiss_1a4a3d77f3647685d4bea401f50928cd37" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5310d0165a1a1f6a923d313549d9508c" kindref="member">unpack_bitstrings</ref>(</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>nbits,</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>packed,</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_size,</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>unpacked);</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/hamming-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_hamming_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/hamming.h"/>
   </compounddef>
