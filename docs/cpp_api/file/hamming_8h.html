@@ -458,6 +458,64 @@
 <dd><p>generalized Hamming distances (= count number of code bytes that are the same) </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15pack_bitstringsE6size_t6size_tiPK7int32_tP7uint8_t6size_t">
+<span id="_CPPv3N5faiss15pack_bitstringsE6size_t6size_tiPK7int32_tP7uint8_t6size_t"></span><span id="_CPPv2N5faiss15pack_bitstringsE6size_t6size_tiPK7int32_tP7uint8_t6size_t"></span><span id="faiss::pack_bitstrings__s.s.i.int32_tCP.uint8_tP.s"></span><span class="target" id="namespacefaiss_1ab693555b4e075c52e578e508206ee975"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pack_bitstrings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbit</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unpacked</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">packed</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15pack_bitstringsE6size_t6size_tiPK7int32_tP7uint8_t6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Pack a set of n codes of size M * nbit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of codes to pack </p></li>
+<li><p><strong>M</strong> – number of elementary codes per code </p></li>
+<li><p><strong>nbit</strong> – number of bits per elementary code </p></li>
+<li><p><strong>unpacked</strong> – input unpacked codes, size (n, M) </p></li>
+<li><p><strong>packed</strong> – output packed codes, size (n, code_size) </p></li>
+<li><p><strong>code_size</strong> – should be &gt;= ceil(M * nbit / 8) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15pack_bitstringsE6size_t6size_tPK7int32_tPK7int32_tP7uint8_t6size_t">
+<span id="_CPPv3N5faiss15pack_bitstringsE6size_t6size_tPK7int32_tPK7int32_tP7uint8_t6size_t"></span><span id="_CPPv2N5faiss15pack_bitstringsE6size_t6size_tPK7int32_tPK7int32_tP7uint8_t6size_t"></span><span id="faiss::pack_bitstrings__s.s.int32_tCP.int32_tCP.uint8_tP.s"></span><span class="target" id="namespacefaiss_1af7eb09d1daf10d9f8917a059175c4f74"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pack_bitstrings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nbits</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unpacked</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">packed</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15pack_bitstringsE6size_t6size_tPK7int32_tPK7int32_tP7uint8_t6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Pack a set of n codes of variable sizes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nbit</strong> – number of bits per entry (size M) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17unpack_bitstringsE6size_t6size_tiPK7uint8_t6size_tP7int32_t">
+<span id="_CPPv3N5faiss17unpack_bitstringsE6size_t6size_tiPK7uint8_t6size_tP7int32_t"></span><span id="_CPPv2N5faiss17unpack_bitstringsE6size_t6size_tiPK7uint8_t6size_tP7int32_t"></span><span id="faiss::unpack_bitstrings__s.s.i.uint8_tCP.s.int32_tP"></span><span class="target" id="namespacefaiss_1a5310d0165a1a1f6a923d313549d9508c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unpack_bitstrings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbit</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">packed</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span>, <span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unpacked</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17unpack_bitstringsE6size_t6size_tiPK7uint8_t6size_tP7int32_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Unpack a set of n codes of size M * nbit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of codes to pack </p></li>
+<li><p><strong>M</strong> – number of elementary codes per code </p></li>
+<li><p><strong>nbit</strong> – number of bits per elementary code </p></li>
+<li><p><strong>unpacked</strong> – input unpacked codes, size (n, M) </p></li>
+<li><p><strong>packed</strong> – output packed codes, size (n, code_size) </p></li>
+<li><p><strong>code_size</strong> – should be &gt;= ceil(M * nbit / 8) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17unpack_bitstringsE6size_t6size_tPK7int32_tPK7uint8_t6size_tP7int32_t">
+<span id="_CPPv3N5faiss17unpack_bitstringsE6size_t6size_tPK7int32_tPK7uint8_t6size_tP7int32_t"></span><span id="_CPPv2N5faiss17unpack_bitstringsE6size_t6size_tPK7int32_tPK7uint8_t6size_tP7int32_t"></span><span id="faiss::unpack_bitstrings__s.s.int32_tCP.uint8_tCP.s.int32_tP"></span><span class="target" id="namespacefaiss_1a4a3d77f3647685d4bea401f50928cd37"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unpack_bitstrings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nbits</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">packed</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span>, <span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">unpacked</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17unpack_bitstringsE6size_t6size_tPK7int32_tPK7uint8_t6size_tP7int32_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Unpack a set of n codes of variable sizes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nbit</strong> – number of bits per entry (size M) </p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
