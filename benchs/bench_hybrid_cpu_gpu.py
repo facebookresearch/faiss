@@ -530,14 +530,7 @@ def main():
         raise RuntimeError()
 
     totex = op.num_experiments()
-    rs = np.random.RandomState(123)
-    if totex < args.n_autotune:
-        experiments = rs.permutation(totex - 2) + 1
-    else:
-        experiments = rs.randint(
-            totex - 2, size=args.n_autotune - 2, replace=False)
-
-    experiments = [0, totex - 1] + list(experiments)
+    experiments = op.sample_experiments()
     print(f"total nb experiments {totex}, running {len(experiments)}")
 
     print("perform search")

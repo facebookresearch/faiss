@@ -222,6 +222,64 @@ void generalized_hammings_knn_hc(
         size_t code_size,
         int ordered = true);
 
+/** Pack a set of n codes of size M * nbit
+ *
+ * @param n           number of codes to pack
+ * @param M           number of elementary codes per code
+ * @param nbit        number of bits per elementary code
+ * @param unpacked    input unpacked codes, size (n, M)
+ * @param packed      output packed codes, size (n, code_size)
+ * @param code_size   should be >= ceil(M * nbit / 8)
+ */
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size);
+
+/** Pack a set of n codes of variable sizes
+ *
+ * @param nbit       number of bits per entry (size M)
+ */
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbits,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size);
+
+/** Unpack a set of n codes of size M * nbit
+ *
+ * @param n           number of codes to pack
+ * @param M           number of elementary codes per code
+ * @param nbit        number of bits per elementary code
+ * @param unpacked    input unpacked codes, size (n, M)
+ * @param packed      output packed codes, size (n, code_size)
+ * @param code_size   should be >= ceil(M * nbit / 8)
+ */
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked);
+
+/** Unpack a set of n codes of variable sizes
+ *
+ * @param nbit       number of bits per entry (size M)
+ */
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbits,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked);
+
 } // namespace faiss
 
 #include <faiss/utils/hamming-inl.h>

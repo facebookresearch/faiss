@@ -402,6 +402,74 @@ def handle_Index(the_class):
         )
         return D, I, R
 
+    def replacement_search_and_return_codes(
+            self, x, k, *,
+            include_listnos=False, params=None, D=None, I=None, codes=None):
+        """Find the k nearest neighbors of the set of vectors x in the index,
+        and return the codes stored for these vectors
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
+        include_listnos : bool, optional
+            whether to include the list ids in the first bytes of each code
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the result.
+        codes : array_like, optional
+            codes array to store
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
+            the label is set to -1
+        R : array_like
+            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+
+        assert k > 0
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+
+        code_size_1 = self.code_size
+        if include_listnos:
+            code_size_1 += self.coarse_code_size()
+
+        if codes is None:
+            codes = np.empty((n, k, code_size_1), dtype=np.uint8)
+        else:
+            assert codes.shape == (n, k, code_size_1)
+
+        self.search_and_return_codes_c(
+            n, swig_ptr(x),
+            k, swig_ptr(D),
+            swig_ptr(I), swig_ptr(codes), include_listnos,
+            params
+        )
+        return D, I, codes
+
     def replacement_remove_ids(self, x):
         """Remove some ids from the index.
         This is a O(ntotal) operation by default, so could be expensive.
@@ -734,6 +802,8 @@ def handle_Index(the_class):
                    ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
+    replace_method(the_class, 'search_and_return_codes',
+                   replacement_search_and_return_codes, ignore_missing=True)
 
     # these ones are IVF-specific
     replace_method(the_class, 'search_preassigned',

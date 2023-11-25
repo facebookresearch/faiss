@@ -977,14 +977,12 @@ void IndexIVF::search_and_reconstruct(
             std::min(nlist, params ? params->nprobe : this->nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
-    idx_t* idx = new idx_t[n * nprobe];
-    ScopeDeleter<idx_t> del(idx);
-    float* coarse_dis = new float[n * nprobe];
-    ScopeDeleter<float> del2(coarse_dis);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
-    quantizer->search(n, x, nprobe, coarse_dis, idx);
+    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx, n * nprobe);
+    invlists->prefetch_lists(idx.get(), n * nprobe);
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -992,29 +990,94 @@ void IndexIVF::search_and_reconstruct(
             n,
             x,
             k,
-            idx,
-            coarse_dis,
+            idx.get(),
+            coarse_dis.get(),
             distances,
             labels,
             true /* store_pairs */,
             params);
-    for (idx_t i = 0; i < n; ++i) {
-        for (idx_t j = 0; j < k; ++j) {
-            idx_t ij = i * k + j;
-            idx_t key = labels[ij];
-            float* reconstructed = recons + ij * d;
-            if (key < 0) {
-                // Fill with NaNs
-                memset(reconstructed, -1, sizeof(*reconstructed) * d);
-            } else {
-                int list_no = lo_listno(key);
-                int offset = lo_offset(key);
+#pragma omp parallel for if (n * k > 1000)
+    for (idx_t ij = 0; ij < n * k; ij++) {
+        idx_t key = labels[ij];
+        float* reconstructed = recons + ij * d;
+        if (key < 0) {
+            // Fill with NaNs
+            memset(reconstructed, -1, sizeof(*reconstructed) * d);
+        } else {
+            int list_no = lo_listno(key);
+            int offset = lo_offset(key);
 
-                // Update label to the actual id
-                labels[ij] = invlists->get_single_id(list_no, offset);
+            // Update label to the actual id
+            labels[ij] = invlists->get_single_id(list_no, offset);
 
-                reconstruct_from_offset(list_no, offset, reconstructed);
+            reconstruct_from_offset(list_no, offset, reconstructed);
+        }
+    }
+}
+
+void IndexIVF::search_and_return_codes(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        uint8_t* codes,
+        bool include_listno,
+        const SearchParameters* params_in) const {
+    const IVFSearchParameters* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IVFSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
+    }
+    const size_t nprobe =
+            std::min(nlist, params ? params->nprobe : this->nprobe);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
+
+    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+
+    invlists->prefetch_lists(idx.get(), n * nprobe);
+
+    // search_preassigned() with `store_pairs` enabled to obtain the list_no
+    // and offset into `codes` for reconstruction
+    search_preassigned(
+            n,
+            x,
+            k,
+            idx.get(),
+            coarse_dis.get(),
+            distances,
+            labels,
+            true /* store_pairs */,
+            params);
+
+    size_t code_size_1 = code_size;
+    if (include_listno) {
+        code_size_1 += coarse_code_size();
+    }
+
+#pragma omp parallel for if (n * k > 1000)
+    for (idx_t ij = 0; ij < n * k; ij++) {
+        idx_t key = labels[ij];
+        uint8_t* code1 = codes + ij * code_size_1;
+
+        if (key < 0) {
+            // Fill with 0xff
+            memset(code1, -1, code_size_1);
+        } else {
+            int list_no = lo_listno(key);
+            int offset = lo_offset(key);
+            const uint8_t* cc = invlists->get_single_code(list_no, offset);
+
+            labels[ij] = invlists->get_single_id(list_no, offset);
+
+            if (include_listno) {
+                encode_listno(list_no, code1);
+                code1 += code_size_1 - code_size;
             }
+            memcpy(code1, cc, code_size);
         }
     }
 }
