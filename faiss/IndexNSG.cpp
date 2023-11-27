@@ -309,7 +309,7 @@ IndexNSGSQ::IndexNSGSQ(
         int M,
         MetricType metric)
         : IndexNSG(new IndexScalarQuantizer(d, qtype, metric), M) {
-    is_trained = false;
+    is_trained = this->storage->is_trained;
     own_fields = true;
 }
 
