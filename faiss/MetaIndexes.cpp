@@ -96,7 +96,7 @@ void IndexSplitVectors::search(
         float* sub_x = new float[sub_d * n];
         ScopeDeleter<float> del1(sub_x);
         for (idx_t i = 0; i < n; i++)
-            memcpy(sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof(sub_x));
+            memcpy(sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof(float));
         sub_index->search(n, sub_x, k, distances1, labels1);
         if (index->verbose)
             printf("end query shard %d\n", no);
