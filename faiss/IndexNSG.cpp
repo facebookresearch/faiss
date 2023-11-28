@@ -79,8 +79,8 @@ void IndexNSG::search(
         {
             VisitedTable vt(ntotal);
 
-            DistanceComputer* dis = storage_distance_computer(storage);
-            ScopeDeleter1<DistanceComputer> del(dis);
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(storage));
 
 #pragma omp for
             for (idx_t i = i0; i < i1; i++) {

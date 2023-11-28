@@ -14,6 +14,7 @@
 #include <cstring>
 
 #include <algorithm>
+#include <memory>
 
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
@@ -198,17 +199,16 @@ void IndexPQ::search(
 
     } else { // code-to-code distances
 
-        uint8_t* q_codes = new uint8_t[n * pq.code_size];
-        ScopeDeleter<uint8_t> del(q_codes);
+        std::unique_ptr<uint8_t[]> q_codes(new uint8_t[n * pq.code_size]);
 
         if (!encode_signs) {
-            pq.compute_codes(x, q_codes, n);
+            pq.compute_codes(x, q_codes.get(), n);
         } else {
             FAISS_THROW_IF_NOT(d == pq.nbits * pq.M);
-            memset(q_codes, 0, n * pq.code_size);
+            memset(q_codes.get(), 0, n * pq.code_size);
             for (size_t i = 0; i < n; i++) {
                 const float* xi = x + i * d;
-                uint8_t* code = q_codes + i * pq.code_size;
+                uint8_t* code = q_codes.get() + i * pq.code_size;
                 for (int j = 0; j < d; j++)
                     if (xi[j] > 0)
                         code[j >> 3] |= 1 << (j & 7);
@@ -219,19 +219,18 @@ void IndexPQ::search(
             float_maxheap_array_t res = {
                     size_t(n), size_t(k), labels, distances};
 
-            pq.search_sdc(q_codes, n, codes.data(), ntotal, &res, true);
+            pq.search_sdc(q_codes.get(), n, codes.data(), ntotal, &res, true);
 
         } else {
-            int* idistances = new int[n * k];
-            ScopeDeleter<int> del(idistances);
+            std::unique_ptr<int[]> idistances(new int[n * k]);
 
             int_maxheap_array_t res = {
-                    size_t(n), size_t(k), labels, idistances};
+                    size_t(n), size_t(k), labels, idistances.get()};
 
             if (search_type == ST_HE) {
                 hammings_knn_hc(
                         &res,
-                        q_codes,
+                        q_codes.get(),
                         codes.data(),
                         ntotal,
                         pq.code_size,
@@ -240,7 +239,7 @@ void IndexPQ::search(
             } else if (search_type == ST_generalized_HE) {
                 generalized_hammings_knn_hc(
                         &res,
-                        q_codes,
+                        q_codes.get(),
                         codes.data(),
                         ntotal,
                         pq.code_size,
@@ -333,22 +332,20 @@ void IndexPQ::search_core_polysemous(
     }
 
     // PQ distance tables
-    float* dis_tables = new float[n * pq.ksub * pq.M];
-    ScopeDeleter<float> del(dis_tables);
-    pq.compute_distance_tables(n, x, dis_tables);
+    std::unique_ptr<float[]> dis_tables(new float[n * pq.ksub * pq.M]);
+    pq.compute_distance_tables(n, x, dis_tables.get());
 
     // Hamming embedding queries
-    uint8_t* q_codes = new uint8_t[n * pq.code_size];
-    ScopeDeleter<uint8_t> del2(q_codes);
+    std::unique_ptr<uint8_t[]> q_codes(new uint8_t[n * pq.code_size]);
 
     if (false) {
-        pq.compute_codes(x, q_codes, n);
+        pq.compute_codes(x, q_codes.get(), n);
     } else {
 #pragma omp parallel for
         for (idx_t qi = 0; qi < n; qi++) {
             pq.compute_code_from_distance_table(
-                    dis_tables + qi * pq.M * pq.ksub,
-                    q_codes + qi * pq.code_size);
+                    dis_tables.get() + qi * pq.M * pq.ksub,
+                    q_codes.get() + qi * pq.code_size);
         }
     }
 
@@ -358,9 +355,9 @@ void IndexPQ::search_core_polysemous(
 
 #pragma omp parallel for reduction(+ : n_pass, bad_code_size)
     for (idx_t qi = 0; qi < n; qi++) {
-        const uint8_t* q_code = q_codes + qi * pq.code_size;
+        const uint8_t* q_code = q_codes.get() + qi * pq.code_size;
 
-        const float* dis_table_qi = dis_tables + qi * pq.M * pq.ksub;
+        const float* dis_table_qi = dis_tables.get() + qi * pq.M * pq.ksub;
 
         int64_t* heap_ids = labels + qi * k;
         float* heap_dis = distances + qi * k;
@@ -441,12 +438,11 @@ void IndexPQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 void IndexPQ::hamming_distance_table(idx_t n, const float* x, int32_t* dis)
         const {
-    uint8_t* q_codes = new uint8_t[n * pq.code_size];
-    ScopeDeleter<uint8_t> del(q_codes);
+    std::unique_ptr<uint8_t[]> q_codes(new uint8_t[n * pq.code_size]);
 
-    pq.compute_codes(x, q_codes, n);
+    pq.compute_codes(x, q_codes.get(), n);
 
-    hammings(q_codes, codes.data(), n, ntotal, pq.code_size, dis);
+    hammings(q_codes.get(), codes.data(), n, ntotal, pq.code_size, dis);
 }
 
 void IndexPQ::hamming_distance_histogram(
@@ -460,16 +456,15 @@ void IndexPQ::hamming_distance_histogram(
     FAISS_THROW_IF_NOT(pq.nbits == 8);
 
     // Hamming embedding queries
-    uint8_t* q_codes = new uint8_t[n * pq.code_size];
-    ScopeDeleter<uint8_t> del(q_codes);
-    pq.compute_codes(x, q_codes, n);
+    std::unique_ptr<uint8_t[]> q_codes(new uint8_t[n * pq.code_size]);
+    pq.compute_codes(x, q_codes.get(), n);
 
     uint8_t* b_codes;
-    ScopeDeleter<uint8_t> del_b_codes;
+    std::unique_ptr<uint8_t[]> del_b_codes;
 
     if (xb) {
         b_codes = new uint8_t[nb * pq.code_size];
-        del_b_codes.set(b_codes);
+        del_b_codes.reset(b_codes);
         pq.compute_codes(xb, b_codes, nb);
     } else {
         nb = ntotal;
@@ -482,8 +477,7 @@ void IndexPQ::hamming_distance_histogram(
 #pragma omp parallel
     {
         std::vector<int64_t> histi(nbits + 1);
-        hamdis_t* distances = new hamdis_t[nb * bs];
-        ScopeDeleter<hamdis_t> del(distances);
+        std::unique_ptr<hamdis_t[]> distances(new hamdis_t[nb * bs]);
 #pragma omp for
         for (idx_t q0 = 0; q0 < n; q0 += bs) {
             // printf ("dis stats: %zd/%zd\n", q0, n);
@@ -492,12 +486,12 @@ void IndexPQ::hamming_distance_histogram(
                 q1 = n;
 
             hammings(
-                    q_codes + q0 * pq.code_size,
+                    q_codes.get() + q0 * pq.code_size,
                     b_codes,
                     q1 - q0,
                     nb,
                     pq.code_size,
-                    distances);
+                    distances.get());
 
             for (size_t i = 0; i < nb * (q1 - q0); i++)
                 histi[distances[i]]++;
@@ -914,17 +908,16 @@ void MultiIndexQuantizer::search(
         return;
     }
 
-    float* dis_tables = new float[n * pq.ksub * pq.M];
-    ScopeDeleter<float> del(dis_tables);
+    std::unique_ptr<float[]> dis_tables(new float[n * pq.ksub * pq.M]);
 
-    pq.compute_distance_tables(n, x, dis_tables);
+    pq.compute_distance_tables(n, x, dis_tables.get());
 
     if (k == 1) {
         // simple version that just finds the min in each table
 
 #pragma omp parallel for
         for (int i = 0; i < n; i++) {
-            const float* dis_table = dis_tables + i * pq.ksub * pq.M;
+            const float* dis_table = dis_tables.get() + i * pq.ksub * pq.M;
             float dis = 0;
             idx_t label = 0;
 
@@ -954,7 +947,7 @@ void MultiIndexQuantizer::search(
                     k, pq.M, pq.nbits, pq.ksub);
 #pragma omp for
             for (int i = 0; i < n; i++) {
-                msk.run(dis_tables + i * pq.ksub * pq.M,
+                msk.run(dis_tables.get() + i * pq.ksub * pq.M,
                         pq.ksub,
                         distances + i * k,
                         labels + i * k);

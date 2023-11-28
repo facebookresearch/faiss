@@ -436,7 +436,7 @@ ProductQuantizer* read_ProductQuantizer(const char* fname) {
 
 ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     ProductQuantizer* pq = new ProductQuantizer();
-    ScopeDeleter1<ProductQuantizer> del(pq);
+    std::unique_ptr<ProductQuantizer> del(pq);
 
     read_ProductQuantizer(pq, reader);
     del.release();
@@ -595,7 +595,7 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(idxp->encode_signs);
             READ1(idxp->polysemous_ht);
         }
-        // Old versoins of PQ all had metric_type set to INNER_PRODUCT
+        // Old versions of PQ all had metric_type set to INNER_PRODUCT
         // when they were in fact using L2. Therefore, we force metric type
         // to L2 when the old format is detected
         if (h == fourcc("IxPQ") || h == fourcc("IxPo")) {
