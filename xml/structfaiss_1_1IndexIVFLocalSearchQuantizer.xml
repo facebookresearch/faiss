@@ -820,6 +820,7 @@
         <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const override</argsstring>
         <name>search_preassigned</name>
         <reimplements refid="structfaiss_1_1IndexIVFInterface_1a79e6f1be6c93c72138bf591551891374">search_preassigned</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a9eea401290ff9f9181483c9062195f6f">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a">search_preassigned</reimplementedby>
         <param>

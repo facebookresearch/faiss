@@ -156,6 +156,7 @@
         <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const =0</argsstring>
         <name>search_preassigned</name>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854">search_preassigned</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a9eea401290ff9f9181483c9062195f6f">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a">search_preassigned</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68">search_preassigned</reimplementedby>
