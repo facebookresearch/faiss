@@ -29,8 +29,6 @@
     <innerclass refid="structfaiss_1_1DistanceComputer" prot="public">faiss::DistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public">faiss::FlatCodesDistanceComputer</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
-    <innerclass refid="structfaiss_1_1ScopeDeleter" prot="public">faiss::ScopeDeleter</innerclass>
-    <innerclass refid="structfaiss_1_1ScopeDeleter1" prot="public">faiss::ScopeDeleter1</innerclass>
     <innerclass refid="structfaiss_1_1TransformedVectors" prot="public">faiss::TransformedVectors</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersHNSW" prot="public">faiss::SearchParametersHNSW</innerclass>
     <innerclass refid="structfaiss_1_1HNSW" prot="public">faiss::HNSW</innerclass>
@@ -1305,7 +1303,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="101" column="13" declfile="faiss/impl/FaissException.h" declline="101" declcolumn="13"/>
+        <location file="faiss/impl/FaissException.h" line="62" column="13" declfile="faiss/impl/FaissException.h" declline="62" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>

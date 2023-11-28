@@ -7371,22 +7371,6 @@
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1aaf6478daf36366fa07f1eb65065d942d" kind="function"><name>get</name></member>
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1ac14920da79e4e6b758501401e72c6115" kind="function"><name>~ScopedCodes</name></member>
   </compound>
-  <compound refid="structfaiss_1_1ScopeDeleter" kind="struct"><name>faiss::ScopeDeleter</name>
-    <member refid="structfaiss_1_1ScopeDeleter_1ab58657b2665c07391d0138fb95c17670" kind="variable"><name>ptr</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter_1a82df6a36681c43a361f55f6e8eb243e8" kind="function"><name>ScopeDeleter</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter_1a5f738ac8eaa8dcc84990378b0afb6148" kind="function"><name>release</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter_1a8355e3dc39db63942757728a97b25c4c" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter_1aff064728ea4f5acbfe5b286e037b0d01" kind="function"><name>swap</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter_1adcc12305c93ecf7c587e3dac51907515" kind="function"><name>~ScopeDeleter</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1ScopeDeleter1" kind="struct"><name>faiss::ScopeDeleter1</name>
-    <member refid="structfaiss_1_1ScopeDeleter1_1a89310af9c6c124db990add708ab075ff" kind="variable"><name>ptr</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter1_1a491e7c73feedc7fb903e9088fdeb263f" kind="function"><name>ScopeDeleter1</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter1_1aa76f1d2d54a1ea073655103425450049" kind="function"><name>release</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter1_1a8e721cf801d4244dad727481801c3c57" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter1_1a0e188652a54129a3dff37b995228e2bb" kind="function"><name>swap</name></member>
-    <member refid="structfaiss_1_1ScopeDeleter1_1a81d0d20118a295ca65e82411abb2ddc5" kind="function"><name>~ScopeDeleter1</name></member>
-  </compound>
   <compound refid="structfaiss_1_1InvertedLists_1_1ScopedIds" kind="struct"><name>faiss::InvertedLists::ScopedIds</name>
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1a070479c3744f3e7ce2733c51f57c3412" kind="variable"><name>il</name></member>
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1af6da06a0f3fa92945bce458853a82899" kind="variable"><name>ids</name></member>
