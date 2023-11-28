@@ -9101,6 +9101,7 @@
     <member refid="platform__macros_8h_1a42c3236f250a1cda84bbf4932470fe89" kind="define"><name>FAISS_API</name></member>
     <member refid="platform__macros_8h_1a8bf69ed1a28e4db9afeea26ef5d0358e" kind="define"><name>posix_memalign_free</name></member>
     <member refid="platform__macros_8h_1a8e7a3bf6003d72a62606f343c2db6245" kind="define"><name>ALIGNED</name></member>
+    <member refid="platform__macros_8h_1ad7d30d301b7cb834b0671c66350fdb57" kind="define"><name>FAISS_ALWAYS_INLINE</name></member>
     <member refid="platform__macros_8h_1ad7da871f62652973e7e79c5445bd31a4" kind="define"><name>FAISS_DEPRECATED</name></member>
     <member refid="platform__macros_8h_1a623b886a145661236460fb8c95129d83" kind="define"><name>FAISS_PRAGMA_IMPRECISE_LOOP</name></member>
     <member refid="platform__macros_8h_1a0d4be9896374a3068094c050b1fdcb07" kind="define"><name>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</name></member>
