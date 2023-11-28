@@ -149,6 +149,7 @@ struct AQInvertedListScanner : InvertedListScanner {
     const float* q;
     /// following codes come from this inverted list
     void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
         if (ia.metric_type == METRIC_L2 && ia.by_residual) {
             ia.quantizer->compute_residual(q0, tmp.data(), list_no);
             q = tmp.data();

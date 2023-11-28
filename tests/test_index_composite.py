@@ -14,7 +14,7 @@ import shutil
 import tempfile
 import platform
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, get_dataset
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.inspect_tools import make_LinearTransform_matrix
 from faiss.contrib.evaluation import check_ref_knn_with_draws
@@ -822,3 +822,158 @@ class TestIndependentQuantizer(unittest.TestCase):
 
         np.testing.assert_array_equal(Dnew, D2)
         np.testing.assert_array_equal(Inew, I2)
+
+
+
+class TestSearchAndReconstruct(unittest.TestCase):
+
+    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
+        n, d = xb.shape
+        assert xq.shape[1] == d
+        assert index.d == d
+
+        D_ref, I_ref = index.search(xq, k)
+        R_ref = index.reconstruct_n(0, n)
+        D, I, R = index.search_and_reconstruct(xq, k)
+
+        np.testing.assert_almost_equal(D, D_ref, decimal=5)
+        self.assertTrue((I == I_ref).all())
+        self.assertEqual(R.shape[:2], I.shape)
+        self.assertEqual(R.shape[2], d)
+
+        # (n, k, ..) -> (n * k, ..)
+        I_flat = I.reshape(-1)
+        R_flat = R.reshape(-1, d)
+        # Filter out -1s when not enough results
+        R_flat = R_flat[I_flat >= 0]
+        I_flat = I_flat[I_flat >= 0]
+
+        recons_ref_err = np.mean(np.linalg.norm(R_flat - R_ref[I_flat]))
+        self.assertLessEqual(recons_ref_err, 1e-6)
+
+        def norm1(x):
+            return np.sqrt((x ** 2).sum(axis=1))
+
+        recons_err = np.mean(norm1(R_flat - xb[I_flat]))
+
+        print('Reconstruction error = %.3f' % recons_err)
+        if eps is not None:
+            self.assertLessEqual(recons_err, eps)
+
+        return D, I, R
+
+    def test_IndexFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlat(quantizer, d, 32, faiss.METRIC_L2)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFPQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_MultiIndex(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "IMI2x5,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_IndexTransform(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "L2norm,PCA8,IVF32,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq)
+
+
+class TestSearchAndGetCodes(unittest.TestCase):
+
+    def do_test(self, factory_string):
+        ds = SyntheticDataset(32, 1000, 100, 10)
+
+        index = faiss.index_factory(ds.d, factory_string)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.nprobe
+        index.nprobe = 10
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        #print(index.search_and_return_codes)
+        D, I, codes = index.search_and_return_codes(
+            ds.get_queries(), 10, include_listnos=True)
+
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_array_equal(D, Dref)
+
+        # verify that we get the same distances when decompressing from
+        # returned codes (the codes are compatible with sa_decode)
+        for qi in range(ds.nq):
+            q = ds.get_queries()[qi]
+            xbi = index.sa_decode(codes[qi])
+            D2 = ((q - xbi) ** 2).sum(1)
+            np.testing.assert_allclose(D2, D[qi], rtol=1e-5)
+
+    def test_ivfpq(self):
+        self.do_test("IVF20,PQ4x4np")
+
+    def test_ivfsq(self):
+        self.do_test("IVF20,SQ8")
+
+    def test_ivfrq(self):
+        self.do_test("IVF20,RQ3x4")

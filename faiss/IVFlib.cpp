@@ -14,6 +14,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRefine.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
@@ -58,24 +59,29 @@ void check_compatible_for_merge(const Index* index0, const Index* index1) {
 }
 
 const IndexIVF* try_extract_index_ivf(const Index* index) {
-    if (auto* pt = dynamic_cast<const IndexPreTransform*>(index)) {
-        index = pt->index;
+    auto* ivf = dynamic_cast<const IndexIVF*>(index);
+    if (ivf != nullptr) {
+        return ivf;
     }
 
+    if (auto* pt = dynamic_cast<const IndexPreTransform*>(index)) {
+        return try_extract_index_ivf(pt->index);
+    }
     if (auto* idmap = dynamic_cast<const IndexIDMap*>(index)) {
-        index = idmap->index;
+        return try_extract_index_ivf(idmap->index);
     }
     if (auto* idmap = dynamic_cast<const IndexIDMap2*>(index)) {
-        index = idmap->index;
+        return try_extract_index_ivf(idmap->index);
     }
     if (auto* indep =
                 dynamic_cast<const IndexIVFIndependentQuantizer*>(index)) {
-        index = indep->index_ivf;
+        return try_extract_index_ivf(indep->index_ivf);
+    }
+    if (auto* refine = dynamic_cast<const IndexRefine*>(index)) {
+        return try_extract_index_ivf(refine->base_index);
     }
 
-    auto* ivf = dynamic_cast<const IndexIVF*>(index);
-
-    return ivf;
+    return nullptr;
 }
 
 IndexIVF* try_extract_index_ivf(Index* index) {
@@ -326,14 +332,14 @@ void search_with_parameters(
         double* ms_per_stage) {
     FAISS_THROW_IF_NOT(params);
     const float* prev_x = x;
-    ScopeDeleter<float> del;
+    std::unique_ptr<const float[]> del;
 
     double t0 = getmillisecs();
 
     if (auto ip = dynamic_cast<const IndexPreTransform*>(index)) {
         x = ip->apply_chain(n, x);
         if (x != prev_x) {
-            del.set(x);
+            del.reset(x);
         }
         index = ip->index;
     }
@@ -376,14 +382,14 @@ void range_search_with_parameters(
         double* ms_per_stage) {
     FAISS_THROW_IF_NOT(params);
     const float* prev_x = x;
-    ScopeDeleter<float> del;
+    std::unique_ptr<const float[]> del;
 
     double t0 = getmillisecs();
 
     if (auto ip = dynamic_cast<const IndexPreTransform*>(index)) {
         x = ip->apply_chain(n, x);
         if (x != prev_x) {
-            del.set(x);
+            del.reset(x);
         }
         index = ip->index;
     }

@@ -105,6 +105,18 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void search_preassigned(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
+
     /// will just fail
     void range_search(
             idx_t n,
@@ -122,6 +134,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             const Scaler& scaler) const;
 
     template <class C, class Scaler>
@@ -131,6 +145,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             const Scaler& scaler) const;
 
     template <class C, class Scaler>
@@ -140,6 +156,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             const Scaler& scaler) const;
 
     // implem 10 and 12 are not multithreaded internally, so
@@ -151,6 +169,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             int impl,
             size_t* ndis_out,
             size_t* nlist_out,
@@ -163,6 +183,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             int impl,
             size_t* ndis_out,
             size_t* nlist_out,
@@ -176,6 +198,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const idx_t* coarse_ids,
+            const float* coarse_dis,
             int impl,
             const Scaler& scaler) const;
 

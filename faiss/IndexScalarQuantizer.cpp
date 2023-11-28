@@ -60,10 +60,9 @@ void IndexScalarQuantizer::search(
 
 #pragma omp parallel
     {
-        InvertedListScanner* scanner =
-                sq.select_InvertedListScanner(metric_type, nullptr, true, sel);
+        std::unique_ptr<InvertedListScanner> scanner(
+                sq.select_InvertedListScanner(metric_type, nullptr, true, sel));
 
-        ScopeDeleter1<InvertedListScanner> del(scanner);
         scanner->list_no = 0; // directly the list number
 
 #pragma omp for

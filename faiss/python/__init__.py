@@ -22,7 +22,8 @@ from faiss.array_conversions import *
 from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
     lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
     ResultHeap, knn, Kmeans, checksum, matrix_bucket_sort_inplace, bucket_sort, \
-    merge_knn_results, MapInt64ToInt64, knn_hamming
+    merge_knn_results, MapInt64ToInt64, knn_hamming, \
+    pack_bitstrings, unpack_bitstrings
 
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
