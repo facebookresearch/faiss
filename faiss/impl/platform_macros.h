@@ -82,6 +82,8 @@ inline int __builtin_clzll(uint64_t x) {
 #define __F16C__ 1
 #endif
 
+#define FAISS_ALWAYS_INLINE __forceinline
+
 #else
 /*******************************************************
  * Linux and OSX
@@ -97,6 +99,8 @@ inline int __builtin_clzll(uint64_t x) {
 #else
 #define ALIGNED(x) __attribute__((aligned(x)))
 #endif
+
+#define FAISS_ALWAYS_INLINE __attribute__((always_inline)) inline
 
 #endif
 
