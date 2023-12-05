@@ -78,9 +78,6 @@ def compute_nlist(numVecs):
         nlist = numVecs / 1000
     return int(nlist)
 
-# def build_dataset(n_rows, n_cols, n_list):
-#     data, _ = sklearn.datasets.make_blobs(n_samples=n_rows, n_features=n_cols, centers=n_list, cluster_std=1, shuffle=True, random_state=1234, return_centers=False)
-#     return data
 
 # set the RMM pool memory resource for faster allocations
 mr = rmm.mr.PoolMemoryResource(rmm.mr.CudaMemoryResource(), initial_pool_size=2**30, maximum_pool_size=2**31)

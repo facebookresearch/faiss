@@ -354,6 +354,7 @@ void RaftIVFPQ::search(
                     return max_val;
                 return out_dists[i];
             });
+    raft_handle.sync_stream();
 }
 
 idx_t RaftIVFPQ::addVectors(
