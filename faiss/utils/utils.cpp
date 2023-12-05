@@ -116,6 +116,8 @@ std::string get_compile_options() {
 
 #ifdef __AVX2__
     options += "AVX2 ";
+#elif __AVX512F__
+    options += "AVX512";
 #elif defined(__aarch64__)
     options += "NEON ";
 #else

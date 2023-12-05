@@ -16,7 +16,7 @@
 
 #include <faiss/utils/Heap.h>
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 namespace faiss {
 

@@ -44,9 +44,11 @@ endmacro()
 # CMake's SWIG wrappers only allow tweaking certain settings at source level, so
 # we duplicate the source in order to override the module name.
 configure_file(swigfaiss.swig ${CMAKE_CURRENT_SOURCE_DIR}/swigfaiss_avx2.swig COPYONLY)
+configure_file(swigfaiss.swig ${CMAKE_CURRENT_SOURCE_DIR}/swigfaiss_avx512.swig COPYONLY)
 
 configure_swigfaiss(swigfaiss.swig)
 configure_swigfaiss(swigfaiss_avx2.swig)
+configure_swigfaiss(swigfaiss_avx512.swig)
 
 if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
@@ -54,10 +56,12 @@ if(TARGET faiss)
   foreach(h ${FAISS_HEADERS})
     list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
     list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
   foreach(h ${FAISS_GPU_HEADERS})
     list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
     list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
   endforeach()
 else()
   find_package(faiss REQUIRED)
@@ -82,14 +86,28 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
   set_target_properties(swigfaiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
+set_property(SOURCE swigfaiss_avx512.swig
+  PROPERTY SWIG_MODULE_NAME swigfaiss_avx512)
+swig_add_library(swigfaiss_avx512
+  TYPE SHARED
+  LANGUAGE python
+  SOURCES swigfaiss_avx512.swig
+)
+set_property(TARGET swigfaiss_avx512 PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx512")
+  set_target_properties(swigfaiss_avx512 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
+
 if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_avx512 PROPERTIES SUFFIX .so)
 else()
   # we need bigobj for the swig wrapper
   target_compile_options(swigfaiss PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
+  target_compile_options(swigfaiss_avx512 PRIVATE /bigobj)
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -99,6 +117,7 @@ if(FAISS_ENABLE_GPU)
   endif()
   target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
   target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+  target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 endif()
 
 find_package(OpenMP REQUIRED)
@@ -117,10 +136,18 @@ target_link_libraries(swigfaiss_avx2 PRIVATE
   OpenMP::OpenMP_CXX
 )
 
+target_link_libraries(swigfaiss_avx512 PRIVATE
+  faiss_avx512
+  Python::Module
+  Python::NumPy
+  OpenMP::OpenMP_CXX
+)
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
 target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx2 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+target_include_directories(swigfaiss_avx512 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
   COMPONENTS Development NumPy
@@ -140,6 +167,7 @@ target_include_directories(faiss_python_callbacks PRIVATE ${Python_INCLUDE_DIRS}
 
 target_link_libraries(swigfaiss PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx2 PRIVATE faiss_python_callbacks)
+target_link_libraries(swigfaiss_avx512 PRIVATE faiss_python_callbacks)
 
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)

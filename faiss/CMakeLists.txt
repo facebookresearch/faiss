@@ -244,11 +244,28 @@ else()
   add_compile_options(/bigobj)
 endif()
 
+add_library(faiss_avx512 ${FAISS_SRC})
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx512")
+  set_target_properties(faiss_avx512 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
+if(NOT WIN32)
+  # All modern CPUs support F, CD, VL, DQ, BW extensions.
+  # Ref: https://en.wikipedia.org/wiki/AVX512
+  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
+else()
+  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
+  # we need bigobj for the swig wrapper
+  add_compile_options(/bigobj)
+endif()
+
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_avx2 PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+# Handle `#include <faiss/foo.h>`.
+target_include_directories(faiss_avx512 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
 set_target_properties(faiss PROPERTIES
@@ -259,31 +276,41 @@ set_target_properties(faiss_avx2 PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
+set_target_properties(faiss_avx512 PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 
 if(WIN32)
   target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx2 PRIVATE FAISS_MAIN_LIB)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
 endif()
 
 target_compile_definitions(faiss PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
+target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
 
 find_package(OpenMP REQUIRED)
 target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
 
 find_package(MKL)
 if(MKL_FOUND)
   target_link_libraries(faiss PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${MKL_LIBRARIES})
+  target_link_libraries(faiss_avx512 PRIVATE ${MKL_LIBRARIES})
 else()
   find_package(BLAS REQUIRED)
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
+  target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
 
   find_package(LAPACK REQUIRED)
   target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
+  target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
 endif()
 
 install(TARGETS faiss
@@ -295,6 +322,13 @@ install(TARGETS faiss
 )
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
   install(TARGETS faiss_avx2
+    EXPORT faiss-targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+endif()
+if(FAISS_OPT_LEVEL STREQUAL "avx512")
+  install(TARGETS faiss_avx512
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

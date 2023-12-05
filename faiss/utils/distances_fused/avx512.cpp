@@ -9,7 +9,7 @@
 
 #include <faiss/utils/distances_fused/avx512.h>
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 #include <immintrin.h>
 

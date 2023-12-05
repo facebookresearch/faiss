@@ -27,7 +27,7 @@ bool exhaustive_L2sqr_fused_cmax(
         return true;
     }
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
     // avx512 kernel
     return exhaustive_L2sqr_fused_cmax_AVX512(x, y, d, nx, ny, res, y_norms);
 #elif defined(__AVX2__) || defined(__aarch64__)
