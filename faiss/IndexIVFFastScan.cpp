@@ -27,6 +27,7 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
+#include <fmt/core.h>
 
 namespace faiss {
 
@@ -109,12 +110,13 @@ void IndexIVFFastScan::add_with_ids(
                 }
                 size_t mem = get_mem_usage_kb() / (1 << 10);
 
-                printf("IndexIVFFastScan::add_with_ids %zd/%zd, time %.2f/%.2f, RSS %zdMB\n",
-                       size_t(i1),
-                       size_t(n),
-                       elapsed_time,
-                       total_time,
-                       mem);
+                fmt::print(
+                        "IndexIVFFastScan::add_with_ids {}/{}, time {:.2f}/{:.2f}, RSS {}MB\n",
+                        size_t(i1),
+                        size_t(n),
+                        elapsed_time,
+                        total_time,
+                        mem);
             }
             add_with_ids(i1 - i0, x + i0 * d, xids ? xids + i0 : nullptr);
         }

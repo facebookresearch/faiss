@@ -31,6 +31,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
+#include <fmt/core.h>
 
 namespace faiss {
 
@@ -51,17 +52,18 @@ void hnsw_add_vertices(
     size_t ntotal = n0 + n;
     double t0 = getmillisecs();
     if (verbose) {
-        printf("hnsw_add_vertices: adding %zd elements on top of %zd "
-               "(preset_levels=%d)\n",
-               n,
-               n0,
-               int(preset_levels));
+        fmt::print(
+                "hnsw_add_vertices: adding {} elements on top of {} "
+                "(preset_levels={})\n",
+                n,
+                n0,
+                int(preset_levels));
     }
 
     int max_level = hnsw.prepare_level_tab(n, preset_levels);
 
     if (verbose) {
-        printf("  max_level = %d\n", max_level);
+        fmt::print("  max_level = {}\n", max_level);
     }
 
     std::vector<omp_lock_t> locks(ntotal);
@@ -108,7 +110,8 @@ void hnsw_add_vertices(
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
-                printf("Adding %d elements at level %d\n", i1 - i0, pt_level);
+                fmt::print(
+                        "Adding {} elements at level {}\n", i1 - i0, pt_level);
             }
 
             // random permutation to get rid of dataset order bias
@@ -135,7 +138,7 @@ void hnsw_add_vertices(
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
-                        printf("  %d / %d\r", i - i0, i1 - i0);
+                        fmt::print("  {} / {}\r", i - i0, i1 - i0);
                         fflush(stdout);
                     }
                 }
@@ -145,7 +148,7 @@ void hnsw_add_vertices(
         FAISS_ASSERT(i1 == 0);
     }
     if (verbose) {
-        printf("Done in %.3f ms\n", getmillisecs() - t0);
+        fmt::print("Done in {:.3f} ms\n", getmillisecs() - t0);
     }
 
     for (int i = 0; i < ntotal; i++)

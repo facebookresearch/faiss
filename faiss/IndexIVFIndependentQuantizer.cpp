@@ -9,6 +9,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
+#include <fmt/core.h>
 
 namespace faiss {
 
@@ -113,7 +114,8 @@ void IndexIVFIndependentQuantizer::train(idx_t n, const float* x) {
     // train the VectorTransform
     if (vt && !vt->is_trained) {
         if (verbose) {
-            printf("IndexIVFIndependentQuantizer: train the VectorTransform\n");
+            fmt::print(
+                    "IndexIVFIndependentQuantizer: train the VectorTransform\n");
         }
         vt->train(n, x);
     }
@@ -121,14 +123,16 @@ void IndexIVFIndependentQuantizer::train(idx_t n, const float* x) {
     // get the centroids from the quantizer, transform them and
     // add them to the index_ivf's quantizer
     if (verbose) {
-        printf("IndexIVFIndependentQuantizer: extract the main quantizer centroids\n");
+        fmt::print(
+                "IndexIVFIndependentQuantizer: extract the main quantizer centroids\n");
     }
     std::vector<float> centroids(nlist * d);
     quantizer->reconstruct_n(0, nlist, centroids.data());
     VTransformedVectors tcent(vt, nlist, centroids.data());
 
     if (verbose) {
-        printf("IndexIVFIndependentQuantizer: add centroids to the secondary quantizer\n");
+        fmt::print(
+                "IndexIVFIndependentQuantizer: add centroids to the secondary quantizer\n");
     }
     if (!index_ivf->quantizer->is_trained) {
         index_ivf->quantizer->train(nlist, tcent.x);
@@ -148,7 +152,7 @@ void IndexIVFIndependentQuantizer::train(idx_t n, const float* x) {
     VTransformedVectors tv(vt, n, sv.x);
 
     if (verbose) {
-        printf("IndexIVFIndependentQuantizer: train encoder\n");
+        fmt::print("IndexIVFIndependentQuantizer: train encoder\n");
     }
 
     if (index_ivf->by_residual) {

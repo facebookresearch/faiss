@@ -22,6 +22,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
+#include <fmt/core.h>
 
 namespace faiss {
 
@@ -81,10 +82,11 @@ void IndexIVFFlat::add_core(
     }
 
     if (verbose) {
-        printf("IndexIVFFlat::add_core: added %" PRId64 " / %" PRId64
-               " vectors\n",
-               n_add,
-               n);
+        fmt::print(
+                "IndexIVFFlat::add_core: added %" PRId64 " / %" PRId64
+                " vectors\n",
+                n_add,
+                n);
     }
     ntotal += n;
 }
@@ -263,11 +265,12 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x) {
         }
     }
     if (verbose) {
-        printf("IndexIVFFlatDedup::train: train on %" PRId64
-               " points after dedup "
-               "(was %" PRId64 " points)\n",
-               n2,
-               n);
+        fmt::print(
+                "IndexIVFFlatDedup::train: train on %" PRId64
+                " points after dedup "
+                "(was %" PRId64 " points)\n",
+                n2,
+                n);
     }
     IndexIVFFlat::train(n2, x2.get());
 }
@@ -330,12 +333,13 @@ void IndexIVFFlatDedup::add_with_ids(
         }
     }
     if (verbose) {
-        printf("IndexIVFFlat::add_with_ids: added %" PRId64 " / %" PRId64
-               " vectors"
-               " (out of which %" PRId64 " are duplicates)\n",
-               n_add,
-               na,
-               n_dup);
+        fmt::print(
+                "IndexIVFFlat::add_with_ids: added %" PRId64 " / %" PRId64
+                " vectors"
+                " (out of which %" PRId64 " are duplicates)\n",
+                n_add,
+                na,
+                n_dup);
     }
     ntotal += n_add;
 }
