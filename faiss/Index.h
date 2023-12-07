@@ -38,11 +38,12 @@
 
 namespace faiss {
 
-/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h and
-/// impl/DistanceComputer.h
+/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h,
+/// impl/DistanceComputer.h, and impl/ResultCollectorFactory.h
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+struct ResultCollectorFactory;
 
 /** Parent class for the optional search paramenters.
  *
@@ -52,6 +53,7 @@ struct DistanceComputer;
 struct SearchParameters {
     /// if non-null, only these IDs will be considered during search.
     IDSelector* sel = nullptr;
+    ResultCollectorFactory* col = nullptr;
     /// make sure we can dynamic_cast this
     virtual ~SearchParameters() {}
 };

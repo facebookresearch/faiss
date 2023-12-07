@@ -14,6 +14,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/ResultCollectorFactory.h>
 #include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/platform_macros.h>
@@ -530,6 +531,15 @@ int search_from_candidates(
         int level,
         int nres_in = 0,
         const SearchParametersHNSW* params = nullptr) {
+    ResultCollectorFactory defaultFactory;
+    ResultCollectorFactory* collectorFactory;
+    if (params == nullptr || params->col == nullptr) {
+        collectorFactory = &defaultFactory;
+    } else {
+        collectorFactory = params->col;
+    }
+    ResultCollector* collector = collectorFactory->newCollector();
+
     int nres = nres_in;
     int ndis = 0;
 
@@ -544,11 +554,7 @@ int search_from_candidates(
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (nres < k) {
-                faiss::maxheap_push(++nres, D, I, d, v1);
-            } else if (d < D[0]) {
-                faiss::maxheap_replace_top(nres, D, I, d, v1);
-            }
+            collector->collect(k, nres, D, I, d, v1);
         }
         vt.set(v1);
     }
@@ -612,11 +618,7 @@ int search_from_candidates(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (!sel || sel->is_member(idx)) {
-                if (nres < k) {
-                    faiss::maxheap_push(++nres, D, I, dis, idx);
-                } else if (dis < D[0]) {
-                    faiss::maxheap_replace_top(nres, D, I, dis, idx);
-                }
+                collector->collect(k, nres, D, I, dis, idx);
             }
             candidates.push(idx, dis);
         };
@@ -659,6 +661,9 @@ int search_from_candidates(
             break;
         }
     }
+
+    collector->finalize(nres, I);
+    collectorFactory->deleteCollector(collector);
 
     if (level == 0) {
         stats.n1++;

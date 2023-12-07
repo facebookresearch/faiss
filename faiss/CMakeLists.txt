@@ -162,6 +162,8 @@ set(FAISS_HEADERS
   impl/ProductQuantizer.h
   impl/Quantizer.h
   impl/ResidualQuantizer.h
+  impl/ResultCollector.h
+  impl/ResultCollectorFactory.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
