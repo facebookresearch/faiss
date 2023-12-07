@@ -10,6 +10,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/ResultCollectorFactory.h>
 
 #include <unordered_map>
 #include <vector>
