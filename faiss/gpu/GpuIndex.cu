@@ -132,7 +132,7 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
     if (n > 0) {
         idx_t totalSize = n * this->d * sizeof(float);
 
-        if (totalSize > kAddPageSize || n > kAddVecSize) {
+        if (!config_.use_raft && (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
                     kAddPageSize / (this->d * sizeof(float));
@@ -236,7 +236,7 @@ void GpuIndex::search(
 
     bool usePaged = false;
 
-    if (getDeviceForAddress(x) == -1) {
+    if (!config.use_raft && getDeviceForAddress(x) == -1) {
         // It is possible that the user is querying for a vector set size
         // `x` that won't fit on the GPU.
         // In this case, we will have to handle paging of the data from CPU
