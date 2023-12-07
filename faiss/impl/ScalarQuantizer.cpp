@@ -397,6 +397,23 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 #endif
 
+#ifdef __aarch64__
+
+template <>
+struct QuantizerFP16<8> : QuantizerFP16<1> {
+    QuantizerFP16(size_t d, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE float32x4x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        uint16x4x2_t codei = vld2_u16((const uint16_t*)(code + 2 * i));
+        return vzipq_f32(
+                vcvt_f32_f16(vreinterpret_f16_u16(codei.val[0])),
+                vcvt_f32_f16(vreinterpret_f16_u16(codei.val[1])));
+    }
+};
+#endif
+
 /*******************************************************************
  * 8bit_direct quantizer
  *******************************************************************/
@@ -446,31 +463,31 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 #endif
 
-template <int SIMDWIDTH>
+template <int SIMDWIDTH, int SIMDWIDTH_DEFAULT>
 ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
     switch (qtype) {
         case ScalarQuantizer::QT_8bit:
-            return new QuantizerTemplate<Codec8bit, false, SIMDWIDTH>(
+            return new QuantizerTemplate<Codec8bit, false, SIMDWIDTH_DEFAULT>(
                     d, trained);
         case ScalarQuantizer::QT_6bit:
-            return new QuantizerTemplate<Codec6bit, false, SIMDWIDTH>(
+            return new QuantizerTemplate<Codec6bit, false, SIMDWIDTH_DEFAULT>(
                     d, trained);
         case ScalarQuantizer::QT_4bit:
-            return new QuantizerTemplate<Codec4bit, false, SIMDWIDTH>(
+            return new QuantizerTemplate<Codec4bit, false, SIMDWIDTH_DEFAULT>(
                     d, trained);
         case ScalarQuantizer::QT_8bit_uniform:
-            return new QuantizerTemplate<Codec8bit, true, SIMDWIDTH>(
+            return new QuantizerTemplate<Codec8bit, true, SIMDWIDTH_DEFAULT>(
                     d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
-            return new QuantizerTemplate<Codec4bit, true, SIMDWIDTH>(
+            return new QuantizerTemplate<Codec4bit, true, SIMDWIDTH_DEFAULT>(
                     d, trained);
         case ScalarQuantizer::QT_fp16:
             return new QuantizerFP16<SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_8bit_direct:
-            return new Quantizer8bitDirect<SIMDWIDTH>(d, trained);
+            return new Quantizer8bitDirect<SIMDWIDTH_DEFAULT>(d, trained);
     }
     FAISS_THROW_MSG("unknown qtype");
 }
@@ -728,6 +745,59 @@ struct SimilarityL2<8> {
 
 #endif
 
+#ifdef __aarch64__
+template <>
+struct SimilarityL2<8> {
+    static constexpr int simdwidth = 8;
+    static constexpr MetricType metric_type = METRIC_L2;
+
+    const float *y, *yi;
+    explicit SimilarityL2(const float* y) : y(y) {}
+    float32x4x2_t accu8;
+
+    FAISS_ALWAYS_INLINE void begin_8() {
+        accu8 = vzipq_f32(vdupq_n_f32(0.0f), vdupq_n_f32(0.0f));
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(float32x4x2_t x) {
+        float32x4x2_t yiv = vld1q_f32_x2(yi);
+        yi += 8;
+
+        float32x4_t sub0 = vsubq_f32(yiv.val[0], x.val[0]);
+        float32x4_t sub1 = vsubq_f32(yiv.val[1], x.val[1]);
+
+        float32x4_t accu8_0 = vaddq_f32(accu8.val[0], vmulq_f32(sub0, sub0));
+        float32x4_t accu8_1 = vaddq_f32(accu8.val[1], vmulq_f32(sub1, sub1));
+
+        float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
+        accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components_2(
+            float32x4x2_t x,
+            float32x4x2_t y) {
+        float32x4_t sub0 = vsubq_f32(y.val[0], x.val[0]);
+        float32x4_t sub1 = vsubq_f32(y.val[1], x.val[1]);
+
+        float32x4_t accu8_0 = vaddq_f32(accu8.val[0], vmulq_f32(sub0, sub0));
+        float32x4_t accu8_1 = vaddq_f32(accu8.val[1], vmulq_f32(sub1, sub1));
+
+        float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
+        accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        float32x4_t sum_0 = vpaddq_f32(accu8.val[0], accu8.val[0]);
+        float32x4_t sum_1 = vpaddq_f32(accu8.val[1], accu8.val[1]);
+
+        float32x4_t sum2_0 = vpaddq_f32(sum_0, sum_0);
+        float32x4_t sum2_1 = vpaddq_f32(sum_1, sum_1);
+        return vgetq_lane_f32(sum2_0, 0) + vgetq_lane_f32(sum2_1, 0);
+    }
+};
+#endif
+
 template <int SIMDWIDTH>
 struct SimilarityIP {};
 
@@ -797,6 +867,60 @@ struct SimilarityIP<8> {
         __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
+    }
+};
+#endif
+
+#ifdef __aarch64__
+
+template <>
+struct SimilarityIP<8> {
+    static constexpr int simdwidth = 8;
+    static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
+
+    const float *y, *yi;
+
+    explicit SimilarityIP(const float* y) : y(y) {}
+    float32x4x2_t accu8;
+
+    FAISS_ALWAYS_INLINE void begin_8() {
+        accu8 = vzipq_f32(vdupq_n_f32(0.0f), vdupq_n_f32(0.0f));
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(float32x4x2_t x) {
+        float32x4x2_t yiv = vld1q_f32_x2(yi);
+        yi += 8;
+
+        float32x4_t accu8_0 =
+                vaddq_f32(accu8.val[0], vmulq_f32(yiv.val[0], x.val[0]));
+        float32x4_t accu8_1 =
+                vaddq_f32(accu8.val[1], vmulq_f32(yiv.val[1], x.val[1]));
+        float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
+        accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components_2(
+            float32x4x2_t x1,
+            float32x4x2_t x2) {
+        float32x4_t accu8_0 =
+                vaddq_f32(accu8.val[0], vmulq_f32(x1.val[0], x2.val[0]));
+        float32x4_t accu8_1 =
+                vaddq_f32(accu8.val[1], vmulq_f32(x1.val[1], x2.val[1]));
+        float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
+        accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        float32x4x2_t sum_tmp = vzipq_f32(
+                vpaddq_f32(accu8.val[0], accu8.val[0]),
+                vpaddq_f32(accu8.val[1], accu8.val[1]));
+        float32x4x2_t sum = vuzpq_f32(sum_tmp.val[0], sum_tmp.val[1]);
+        float32x4x2_t sum2_tmp = vzipq_f32(
+                vpaddq_f32(sum.val[0], sum.val[0]),
+                vpaddq_f32(sum.val[1], sum.val[1]));
+        float32x4x2_t sum2 = vuzpq_f32(sum2_tmp.val[0], sum2_tmp.val[1]);
+        return vgetq_lane_f32(sum2.val[0], 0) + vgetq_lane_f32(sum2.val[1], 0);
     }
 };
 #endif
@@ -901,6 +1025,53 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
     }
 };
 
+#endif
+
+#ifdef __aarch64__
+
+template <class Quantizer, class Similarity>
+struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    Quantizer quant;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained) {}
+    float compute_distance(const float* x, const uint8_t* code) const {
+        Similarity sim(x);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            float32x4x2_t xi = quant.reconstruct_8_components(code, i);
+            sim.add_8_components(xi);
+        }
+        return sim.result_8();
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        Similarity sim(nullptr);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            float32x4x2_t x1 = quant.reconstruct_8_components(code1, i);
+            float32x4x2_t x2 = quant.reconstruct_8_components(code2, i);
+            sim.add_8_components_2(x1, x2);
+        }
+        return sim.result_8();
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_distance(q, code);
+    }
+};
 #endif
 
 /*******************************************************************
@@ -1024,42 +1195,43 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
  * specialization
  *******************************************************************/
 
-template <class Sim>
+template <class Sim, class Sim_default>
 SQDistanceComputer* select_distance_computer(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
     constexpr int SIMDWIDTH = Sim::simdwidth;
+    constexpr int SIMDWIDTH_DEFAULT = Sim_default::simdwidth;
     switch (qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return new DCTemplate<
-                    QuantizerTemplate<Codec8bit, true, SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+                    QuantizerTemplate<Codec8bit, true, SIMDWIDTH_DEFAULT>,
+                    Sim_default,
+                    SIMDWIDTH_DEFAULT>(d, trained);
 
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate<
-                    QuantizerTemplate<Codec4bit, true, SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+                    QuantizerTemplate<Codec4bit, true, SIMDWIDTH_DEFAULT>,
+                    Sim_default,
+                    SIMDWIDTH_DEFAULT>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec8bit, false, SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+                    QuantizerTemplate<Codec8bit, false, SIMDWIDTH_DEFAULT>,
+                    Sim_default,
+                    SIMDWIDTH_DEFAULT>(d, trained);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec6bit, false, SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+                    QuantizerTemplate<Codec6bit, false, SIMDWIDTH_DEFAULT>,
+                    Sim_default,
+                    SIMDWIDTH_DEFAULT>(d, trained);
 
         case ScalarQuantizer::QT_4bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec4bit, false, SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+                    QuantizerTemplate<Codec4bit, false, SIMDWIDTH_DEFAULT>,
+                    Sim_default,
+                    SIMDWIDTH_DEFAULT>(d, trained);
 
         case ScalarQuantizer::QT_fp16:
             return new DCTemplate<QuantizerFP16<SIMDWIDTH>, Sim, SIMDWIDTH>(
@@ -1067,12 +1239,13 @@ SQDistanceComputer* select_distance_computer(
 
         case ScalarQuantizer::QT_8bit_direct:
             if (d % 16 == 0) {
-                return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
+                return new DistanceComputerByte<Sim_default, SIMDWIDTH_DEFAULT>(
+                        d, trained);
             } else {
                 return new DCTemplate<
-                        Quantizer8bitDirect<SIMDWIDTH>,
-                        Sim,
-                        SIMDWIDTH>(d, trained);
+                        Quantizer8bitDirect<SIMDWIDTH_DEFAULT>,
+                        Sim_default,
+                        SIMDWIDTH_DEFAULT>(d, trained);
             }
     }
     FAISS_THROW_MSG("unknown qtype");
@@ -1155,13 +1328,14 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 }
 
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
-#ifdef USE_F16C
     if (d % 8 == 0) {
-        return select_quantizer_1<8>(qtype, d, trained);
-    } else
+#if defined(USE_F16C)
+        return select_quantizer_1<8, 8>(qtype, d, trained);
+#elif defined(__aarch64__)
+        return select_quantizer_1<8, 1>(qtype, d, trained);
 #endif
-    {
-        return select_quantizer_1<1>(qtype, d, trained);
+    } else {
+        return select_quantizer_1<1, 1>(qtype, d, trained);
     }
 }
 
@@ -1186,20 +1360,31 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-#ifdef USE_F16C
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
-        } else {
-            return select_distance_computer<SimilarityIP<8>>(qtype, d, trained);
-        }
-    } else
+#if defined(USE_F16C)
+            return select_distance_computer<SimilarityL2<8>, SimilarityL2<8>>(
+                    qtype, d, trained);
+#elif defined(__aarch64__)
+            return select_distance_computer<SimilarityL2<8>, SimilarityL2<1>>(
+                    qtype, d, trained);
 #endif
-    {
-        if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<1>>(qtype, d, trained);
         } else {
-            return select_distance_computer<SimilarityIP<1>>(qtype, d, trained);
+#if defined(USE_F16C)
+            return select_distance_computer<SimilarityIP<8>, SimilarityIP<8>>(
+                    qtype, d, trained);
+#elif defined(__aarch64__)
+            return select_distance_computer<SimilarityIP<8>, SimilarityIP<1>>(
+                    qtype, d, trained);
+#endif
+        }
+    } else {
+        if (metric == METRIC_L2) {
+            return select_distance_computer<SimilarityL2<1>, SimilarityL2<1>>(
+                    qtype, d, trained);
+        } else {
+            return select_distance_computer<SimilarityIP<1>, SimilarityIP<1>>(
+                    qtype, d, trained);
         }
     }
 }
