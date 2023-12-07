@@ -25,7 +25,6 @@
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
-#include <fmt/core.h>
 
 namespace faiss {
 
@@ -146,17 +145,16 @@ void IndexIVFAdditiveQuantizerFastScan::train_encoder(
     }
 
     if (verbose) {
-        fmt::print("training additive quantizer on {} vectors\n", int(n));
+        printf("training additive quantizer on %d vectors\n", int(n));
     }
 
     if (verbose) {
-        fmt::print(
-                "training {}x{} additive quantizer on "
-                "%" PRId64 " vectors in {}D\n",
-                aq->M,
-                ksub,
-                n,
-                d);
+        printf("training %zdx%zd additive quantizer on "
+               "%" PRId64 " vectors in %dD\n",
+               aq->M,
+               ksub,
+               n,
+               d);
     }
     aq->verbose = verbose;
     aq->train(n, x);
@@ -227,8 +225,8 @@ void IndexIVFAdditiveQuantizerFastScan::estimate_norm_scale(
     norm_scale = (int)std::roundf(std::max(scale, 1.0f));
 
     if (verbose) {
-        fmt::print("estimated norm scale: {:f}\n", scale);
-        fmt::print("rounded norm scale: {}\n", norm_scale);
+        printf("estimated norm scale: %lf\n", scale);
+        printf("rounded norm scale: %d\n", norm_scale);
     }
 }
 
