@@ -20,7 +20,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/platform_macros.h>
-#include <fmt/core.h>
 
 namespace faiss {
 
@@ -269,12 +268,12 @@ size_t IndexBinaryHash::hashtable_size() const {
 
 void IndexBinaryHash::display() const {
     for (auto it = invlists.begin(); it != invlists.end(); ++it) {
-        fmt::print("%" PRId64 ": [", it->first);
+        printf("%" PRId64 ": [", it->first);
         const std::vector<idx_t>& v = it->second.ids;
         for (auto x : v) {
-            fmt::print("%" PRId64 " ", x);
+            printf("%" PRId64 " ", x);
         }
-        fmt::print("]\n");
+        printf("]\n");
     }
 }
 

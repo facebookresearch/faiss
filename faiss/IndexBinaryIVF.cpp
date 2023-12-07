@@ -23,7 +23,6 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
-#include <fmt/core.h>
 
 namespace faiss {
 
@@ -88,11 +87,10 @@ void IndexBinaryIVF::add_core(
         n_add++;
     }
     if (verbose) {
-        fmt::print(
-                "IndexBinaryIVF::add_with_ids: added "
-                "%" PRId64 " / %" PRId64 " vectors\n",
-                n_add,
-                n);
+        printf("IndexBinaryIVF::add_with_ids: added "
+               "%" PRId64 " / %" PRId64 " vectors\n",
+               n_add,
+               n);
     }
     ntotal += n_add;
 }
@@ -235,17 +233,16 @@ size_t IndexBinaryIVF::remove_ids(const IDSelector& sel) {
 
 void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
     if (verbose) {
-        fmt::print("Training quantizer\n");
+        printf("Training quantizer\n");
     }
 
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
         if (verbose) {
-            fmt::print("IVF quantizer does not need training.\n");
+            printf("IVF quantizer does not need training.\n");
         }
     } else {
         if (verbose) {
-            fmt::print(
-                    "Training quantizer on %" PRId64 " vectors in {}D\n", n, d);
+            printf("Training quantizer on %" PRId64 " vectors in %dD\n", n, d);
         }
 
         Clustering clus(d, nlist, cp);
@@ -254,9 +251,8 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
         IndexFlatL2 index_tmp(d);
 
         if (clustering_index && verbose) {
-            fmt::print(
-                    "using clustering_index of dimension {} to do the clustering\n",
-                    clustering_index->d);
+            printf("using clustering_index of dimension %d to do the clustering\n",
+                   clustering_index->d);
         }
 
         // LSH codec that is able to convert the binary vectors to floats.
