@@ -28,7 +28,6 @@
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-#include <fmt/core.h>
 
 namespace faiss {
 
@@ -63,10 +62,10 @@ void Level1Quantizer::train_q1(
     size_t d = quantizer->d;
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
         if (verbose)
-            fmt::print("IVF quantizer does not need training.\n");
+            printf("IVF quantizer does not need training.\n");
     } else if (quantizer_trains_alone == 1) {
         if (verbose)
-            fmt::print("IVF quantizer trains alone...\n");
+            printf("IVF quantizer trains alone...\n");
         quantizer->train(n, x);
         quantizer->verbose = verbose;
         FAISS_THROW_IF_NOT_MSG(
@@ -74,8 +73,7 @@ void Level1Quantizer::train_q1(
                 "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
         if (verbose)
-            fmt::print(
-                    "Training level-1 quantizer on {} vectors in {}D\n", n, d);
+            printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
 
         Clustering clus(d, nlist, cp);
         quantizer->reset();
@@ -88,11 +86,10 @@ void Level1Quantizer::train_q1(
         quantizer->is_trained = true;
     } else if (quantizer_trains_alone == 2) {
         if (verbose) {
-            fmt::print(
-                    "Training L2 quantizer on {} vectors in {}D{}\n",
-                    n,
-                    d,
-                    clustering_index ? "(user provided index)" : "");
+            printf("Training L2 quantizer on %zd vectors in %zdD%s\n",
+                   n,
+                   d,
+                   clustering_index ? "(user provided index)" : "");
         }
         // also accept spherical centroids because in that case
         // L2 and IP are equivalent
@@ -108,11 +105,11 @@ void Level1Quantizer::train_q1(
             clus.train(n, x, *clustering_index);
         }
         if (verbose) {
-            fmt::print("Adding centroids to quantizer\n");
+            printf("Adding centroids to quantizer\n");
         }
         if (!quantizer->is_trained) {
             if (verbose) {
-                fmt::print("But training it first on centroids table...\n");
+                printf("But training it first on centroids table...\n");
             }
             quantizer->train(nlist, clus.centroids.data());
         }
@@ -213,10 +210,9 @@ void IndexIVF::add_core(
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
             if (verbose) {
-                fmt::print(
-                        "   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n",
-                        i0,
-                        i1);
+                printf("   IndexIVF::add_with_ids %" PRId64 ":%" PRId64 "\n",
+                       i0,
+                       i1);
             }
             add_core(
                     i1 - i0,
@@ -265,11 +261,10 @@ void IndexIVF::add_core(
     }
 
     if (verbose) {
-        fmt::print(
-                "    added {} / %" PRId64 " vectors ({} -1s)\n",
-                nadd,
-                n,
-                nminus1);
+        printf("    added %zd / %" PRId64 " vectors (%zd -1s)\n",
+               nadd,
+               n,
+               nminus1);
     }
 
     ntotal += n;
@@ -1133,13 +1128,13 @@ void IndexIVF::update_vectors(int n, const idx_t* new_ids, const float* x) {
 
 void IndexIVF::train(idx_t n, const float* x) {
     if (verbose) {
-        fmt::print("Training level-1 quantizer\n");
+        printf("Training level-1 quantizer\n");
     }
 
     train_q1(n, x, verbose, metric_type);
 
     if (verbose) {
-        fmt::print("Training IVF residual\n");
+        printf("Training IVF residual\n");
     }
 
     // optional subsampling
@@ -1176,7 +1171,7 @@ void IndexIVF::train_encoder(
         const idx_t* assign) {
     // does nothing by default
     if (verbose) {
-        fmt::print("IndexIVF: no residual training\n");
+        printf("IndexIVF: no residual training\n");
     }
 }
 

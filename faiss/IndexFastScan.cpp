@@ -26,7 +26,6 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/quantize_lut.h>
-#include <fmt/core.h>
 
 namespace faiss {
 
@@ -74,7 +73,7 @@ void IndexFastScan::add(idx_t n, const float* x) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
             if (verbose) {
-                fmt::print("IndexFastScan::add {}/{}\n", size_t(i1), size_t(n));
+                printf("IndexFastScan::add %zd/%zd\n", size_t(i1), size_t(n));
             }
             add(i1 - i0, x + i0 * d);
         }
