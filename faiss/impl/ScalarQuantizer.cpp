@@ -767,8 +767,8 @@ struct SimilarityL2<8> {
         float32x4_t sub0 = vsubq_f32(yiv.val[0], x.val[0]);
         float32x4_t sub1 = vsubq_f32(yiv.val[1], x.val[1]);
 
-        float32x4_t accu8_0 = vaddq_f32(accu8.val[0], vmulq_f32(sub0, sub0));
-        float32x4_t accu8_1 = vaddq_f32(accu8.val[1], vmulq_f32(sub1, sub1));
+        float32x4_t accu8_0 = vfmaq_f32(accu8.val[0], sub0, sub0);
+        float32x4_t accu8_1 = vfmaq_f32(accu8.val[1], sub1, sub1);
 
         float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
         accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
@@ -780,8 +780,8 @@ struct SimilarityL2<8> {
         float32x4_t sub0 = vsubq_f32(y.val[0], x.val[0]);
         float32x4_t sub1 = vsubq_f32(y.val[1], x.val[1]);
 
-        float32x4_t accu8_0 = vaddq_f32(accu8.val[0], vmulq_f32(sub0, sub0));
-        float32x4_t accu8_1 = vaddq_f32(accu8.val[1], vmulq_f32(sub1, sub1));
+        float32x4_t accu8_0 = vfmaq_f32(accu8.val[0], sub0, sub0);
+        float32x4_t accu8_1 = vfmaq_f32(accu8.val[1], sub1, sub1);
 
         float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
         accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
@@ -892,10 +892,8 @@ struct SimilarityIP<8> {
         float32x4x2_t yiv = vld1q_f32_x2(yi);
         yi += 8;
 
-        float32x4_t accu8_0 =
-                vaddq_f32(accu8.val[0], vmulq_f32(yiv.val[0], x.val[0]));
-        float32x4_t accu8_1 =
-                vaddq_f32(accu8.val[1], vmulq_f32(yiv.val[1], x.val[1]));
+        float32x4_t accu8_0 = vfmaq_f32(accu8.val[0], yiv.val[0], x.val[0]);
+        float32x4_t accu8_1 = vfmaq_f32(accu8.val[1], yiv.val[1], x.val[1]);
         float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
         accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
     }
@@ -903,10 +901,8 @@ struct SimilarityIP<8> {
     FAISS_ALWAYS_INLINE void add_8_components_2(
             float32x4x2_t x1,
             float32x4x2_t x2) {
-        float32x4_t accu8_0 =
-                vaddq_f32(accu8.val[0], vmulq_f32(x1.val[0], x2.val[0]));
-        float32x4_t accu8_1 =
-                vaddq_f32(accu8.val[1], vmulq_f32(x1.val[1], x2.val[1]));
+        float32x4_t accu8_0 = vfmaq_f32(accu8.val[0], x1.val[0], x2.val[0]);
+        float32x4_t accu8_1 = vfmaq_f32(accu8.val[1], x1.val[1], x2.val[1]);
         float32x4x2_t accu8_temp = vzipq_f32(accu8_0, accu8_1);
         accu8 = vuzpq_f32(accu8_temp.val[0], accu8_temp.val[1]);
     }
