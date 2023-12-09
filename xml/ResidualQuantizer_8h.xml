@@ -344,7 +344,7 @@
 <codeline lineno="155" refid="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" kindref="member">cent_norms</ref>;</highlight></codeline>
 <codeline lineno="156"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal">};<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/ResidualQuantizer.h"/>
   </compounddef>
