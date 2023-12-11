@@ -139,20 +139,20 @@ void IndexIVFPQ::add_core(
     add_core_o(n, x, xids, nullptr, coarse_idx);
 }
 
-static float* compute_residuals(
+static std::unique_ptr<float[]> compute_residuals(
         const Index* quantizer,
         idx_t n,
         const float* x,
         const idx_t* list_nos) {
     size_t d = quantizer->d;
-    float* residuals = new float[n * d];
+    std::unique_ptr<float[]> residuals(new float[n * d]);
     // TODO: parallelize?
     for (size_t i = 0; i < n; i++) {
         if (list_nos[i] < 0)
-            memset(residuals + i * d, 0, sizeof(*residuals) * d);
+            memset(residuals.get() + i * d, 0, sizeof(float) * d);
         else
             quantizer->compute_residual(
-                    x + i * d, residuals + i * d, list_nos[i]);
+                    x + i * d, residuals.get() + i * d, list_nos[i]);
     }
     return residuals;
 }
@@ -164,9 +164,9 @@ void IndexIVFPQ::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     if (by_residual) {
-        float* to_encode = compute_residuals(quantizer, n, x, list_nos);
-        ScopeDeleter<float> del(to_encode);
-        pq.compute_codes(to_encode, codes, n);
+        std::unique_ptr<float[]> to_encode =
+                compute_residuals(quantizer, n, x, list_nos);
+        pq.compute_codes(to_encode.get(), codes, n);
     } else {
         pq.compute_codes(x, codes, n);
     }
@@ -241,31 +241,30 @@ void IndexIVFPQ::add_core_o(
     FAISS_THROW_IF_NOT(is_trained);
     double t0 = getmillisecs();
     const idx_t* idx;
-    ScopeDeleter<idx_t> del_idx;
+    std::unique_ptr<idx_t[]> del_idx;
 
     if (precomputed_idx) {
         idx = precomputed_idx;
     } else {
         idx_t* idx0 = new idx_t[n];
-        del_idx.set(idx0);
+        del_idx.reset(idx0);
         quantizer->assign(n, x, idx0);
         idx = idx0;
     }
 
     double t1 = getmillisecs();
-    uint8_t* xcodes = new uint8_t[n * code_size];
-    ScopeDeleter<uint8_t> del_xcodes(xcodes);
+    std::unique_ptr<uint8_t[]> xcodes(new uint8_t[n * code_size]);
 
     const float* to_encode = nullptr;
-    ScopeDeleter<float> del_to_encode;
+    std::unique_ptr<const float[]> del_to_encode;
 
     if (by_residual) {
-        to_encode = compute_residuals(quantizer, n, x, idx);
-        del_to_encode.set(to_encode);
+        del_to_encode = compute_residuals(quantizer, n, x, idx);
+        to_encode = del_to_encode.get();
     } else {
         to_encode = x;
     }
-    pq.compute_codes(to_encode, xcodes, n);
+    pq.compute_codes(to_encode, xcodes.get(), n);
 
     double t2 = getmillisecs();
     // TODO: parallelize?
@@ -281,7 +280,7 @@ void IndexIVFPQ::add_core_o(
             continue;
         }
 
-        uint8_t* code = xcodes + i * code_size;
+        uint8_t* code = xcodes.get() + i * code_size;
         size_t offset = invlists->add_entry(key, id, code);
 
         if (residuals_2) {

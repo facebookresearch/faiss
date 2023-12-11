@@ -123,7 +123,7 @@ void parallel_merge(
     }
 }
 
-}; // namespace
+} // namespace
 
 void fvec_argsort(size_t n, const float* vals, size_t* perm) {
     for (size_t i = 0; i < n; i++) {

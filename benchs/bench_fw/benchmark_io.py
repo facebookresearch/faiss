@@ -1,7 +1,14 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+import hashlib
 import io
 import json
 import logging
 import os
+import pickle
 from dataclasses import dataclass
 from typing import Any, List, Optional
 from zipfile import ZipFile
@@ -9,10 +16,30 @@ from zipfile import ZipFile
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 
 import numpy as np
-
-from .descriptors import DatasetDescriptor, IndexDescriptor
+from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+    dataset_from_name,
+)
 
 logger = logging.getLogger(__name__)
+
+
+# merge RCQ coarse quantizer and ITQ encoder to one Faiss index
+def merge_rcq_itq(
+    # pyre-ignore[11]: `faiss.ResidualCoarseQuantizer` is not defined as a type
+    rcq_coarse_quantizer: faiss.ResidualCoarseQuantizer,
+    itq_encoder: faiss.IndexPreTransform,
+    # pyre-ignore[11]: `faiss.IndexIVFSpectralHash` is not defined as a type.
+) -> faiss.IndexIVFSpectralHash:
+    # pyre-ignore[16]: `faiss` has no attribute `IndexIVFSpectralHash`.
+    index = faiss.IndexIVFSpectralHash(
+        rcq_coarse_quantizer,
+        rcq_coarse_quantizer.d,
+        rcq_coarse_quantizer.ntotal,
+        itq_encoder.sa_code_size() * 8,
+        1000000,  # larger than the magnitude of the vectors
+    )
+    index.replace_vt(itq_encoder)
+    return index
 
 
 @dataclass
@@ -21,103 +48,13 @@ class BenchmarkIO:
 
     def __post_init__(self):
         self.cached_ds = {}
-        self.cached_codec_key = None
-
-    def get_filename_search(
-        self,
-        factory: str,
-        parameters: Optional[dict[str, int]],
-        level: int,
-        db_vectors: DatasetDescriptor,
-        query_vectors: DatasetDescriptor,
-        k: Optional[int] = None,
-        r: Optional[float] = None,
-        evaluation_name: Optional[str] = None,
-    ):
-        assert factory is not None
-        assert level is not None
-        assert self.distance_metric is not None
-        assert query_vectors is not None
-        assert self.distance_metric is not None
-        filename = f"{factory.lower().replace(',', '_')}."
-        if level > 0:
-            filename += f"l_{level}."
-        if db_vectors is not None:
-            filename += db_vectors.get_filename("d")
-        filename += query_vectors.get_filename("q")
-        filename += self.distance_metric.upper() + "."
-        if k is not None:
-            filename += f"k_{k}."
-        if r is not None:
-            filename += f"r_{int(r * 1000)}."
-        if parameters is not None:
-            for name, val in parameters.items():
-                if name != "noop":
-                    filename += f"{name}_{val}."
-        if evaluation_name is None:
-            filename += "zip"
-        else:
-            filename += evaluation_name
-        return filename
-
-    def get_filename_knn_search(
-        self,
-        factory: str,
-        parameters: Optional[dict[str, int]],
-        level: int,
-        db_vectors: DatasetDescriptor,
-        query_vectors: DatasetDescriptor,
-        k: int,
-    ):
-        assert k is not None
-        return self.get_filename_search(
-            factory=factory,
-            parameters=parameters,
-            level=level,
-            db_vectors=db_vectors,
-            query_vectors=query_vectors,
-            k=k,
-        )
-
-    def get_filename_range_search(
-        self,
-        factory: str,
-        parameters: Optional[dict[str, int]],
-        level: int,
-        db_vectors: DatasetDescriptor,
-        query_vectors: DatasetDescriptor,
-        r: float,
-    ):
-        assert r is not None
-        return self.get_filename_search(
-            factory=factory,
-            parameters=parameters,
-            level=level,
-            db_vectors=db_vectors,
-            query_vectors=query_vectors,
-            r=r,
-        )
-
-    def get_filename_evaluation_name(
-        self,
-        factory: str,
-        parameters: Optional[dict[str, int]],
-        level: int,
-        db_vectors: DatasetDescriptor,
-        query_vectors: DatasetDescriptor,
-        evaluation_name: str,
-    ):
-        assert evaluation_name is not None
-        return self.get_filename_search(
-            factory=factory,
-            parameters=parameters,
-            level=level,
-            db_vectors=db_vectors,
-            query_vectors=query_vectors,
-            evaluation_name=evaluation_name,
-        )
 
     def get_local_filename(self, filename):
+        if len(filename) > 184:
+            fn, ext = os.path.splitext(filename)
+            filename = (
+                fn[:184] + hashlib.sha256(filename.encode()).hexdigest() + ext
+            )
         return os.path.join(self.path, filename)
 
     def download_file_from_blobstore(
@@ -142,22 +79,6 @@ class BenchmarkIO:
         exists = os.path.exists(fn)
         logger.info(f"{filename} {exists=}")
         return exists
-
-    def get_codec(self, index_desc: IndexDescriptor, d: int):
-        if index_desc.factory == "Flat":
-            return faiss.IndexFlat(d, self.distance_metric_type)
-        else:
-            if self.cached_codec_key != index_desc.factory:
-                codec = faiss.read_index(
-                    self.get_local_filename(index_desc.path)
-                )
-                assert (
-                    codec.metric_type == self.distance_metric_type
-                ), f"{codec.metric_type=} != {self.distance_metric_type=}"
-                logger.info(f"Loaded codec from {index_desc.path}")
-                self.cached_codec_key = index_desc.factory
-                self.cached_codec = codec
-            return self.cached_codec
 
     def read_file(self, filename: str, keys: List[str]):
         fn = self.download_file_from_blobstore(filename)
@@ -196,19 +117,50 @@ class BenchmarkIO:
         self.upload_file_to_blobstore(filename, overwrite=overwrite)
 
     def get_dataset(self, dataset):
-        if dataset not in self.cached_ds:
-            self.cached_ds[dataset] = self.read_nparray(
-                os.path.join(self.path, dataset.tablename)
-            )
+        if dataset.namespace is not None and dataset.namespace[:4] == "std_":
+            if dataset.tablename not in self.cached_ds:
+                self.cached_ds[dataset.tablename] = dataset_from_name(
+                    dataset.tablename,
+                )
+            p = dataset.namespace[4]
+            if p == "t":
+                return self.cached_ds[dataset.tablename].get_train()
+            elif p == "d":
+                return self.cached_ds[dataset.tablename].get_database()
+            elif p == "q":
+                return self.cached_ds[dataset.tablename].get_queries()
+            else:
+                raise ValueError
+        elif dataset not in self.cached_ds:
+            if dataset.namespace == "syn":
+                d, seed = dataset.tablename.split("_")
+                d = int(d)
+                seed = int(seed)
+                n = dataset.num_vectors
+                # based on faiss.contrib.datasets.SyntheticDataset
+                d1 = 10
+                rs = np.random.RandomState(seed)
+                x = rs.normal(size=(n, d1))
+                x = np.dot(x, rs.rand(d1, d))
+                x = x * (rs.rand(d) * 4 + 0.1)
+                x = np.sin(x)
+                x = x.astype(np.float32)
+                self.cached_ds[dataset] = x
+            else:
+                self.cached_ds[dataset] = self.read_nparray(
+                    os.path.join(self.path, dataset.tablename),
+                    mmap_mode="r",
+                )[: dataset.num_vectors].copy()
         return self.cached_ds[dataset]
 
     def read_nparray(
         self,
         filename: str,
+        mmap_mode: Optional[str] = None,
     ):
         fn = self.download_file_from_blobstore(filename)
         logger.info(f"Loading nparray from {fn}")
-        nparray = np.load(fn)
+        nparray = np.load(fn, mmap_mode=mmap_mode)
         logger.info(f"Loaded nparray {nparray.shape} from {fn}")
         return nparray
 
@@ -244,3 +196,32 @@ class BenchmarkIO:
         with open(fn, "w") as fp:
             json.dump(json_dict, fp)
         self.upload_file_to_blobstore(filename, overwrite=overwrite)
+
+    def read_index(
+        self,
+        filename: str,
+        bucket: Optional[str] = None,
+        path: Optional[str] = None,
+    ):
+        fn = self.download_file_from_blobstore(filename, bucket, path)
+        logger.info(f"Loading index {fn}")
+        ext = os.path.splitext(fn)[1]
+        if ext in [".faiss", ".codec"]:
+            index = faiss.read_index(fn)
+        elif ext == ".pkl":
+            with open(fn, "rb") as model_file:
+                model = pickle.load(model_file)
+                rcq_coarse_quantizer, itq_encoder = model["model"]
+                index = merge_rcq_itq(rcq_coarse_quantizer, itq_encoder)
+        logger.info(f"Loaded index from {fn}")
+        return index
+
+    def write_index(
+        self,
+        index: faiss.Index,
+        filename: str,
+    ):
+        fn = self.get_local_filename(filename)
+        logger.info(f"Saving index to {fn}")
+        faiss.write_index(index, fn)
+        self.upload_file_to_blobstore(filename)

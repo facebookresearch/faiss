@@ -65,16 +65,22 @@ using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
  */
 
 struct Codec8bit {
-    static void encode_component(float x, uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE void encode_component(
+            float x,
+            uint8_t* code,
+            int i) {
         code[i] = (int)(255 * x);
     }
 
-    static float decode_component(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE float decode_component(
+            const uint8_t* code,
+            int i) {
         return (code[i] + 0.5f) / 255.0f;
     }
 
 #ifdef __AVX2__
-    static inline __m256 decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE __m256
+    decode_8_components(const uint8_t* code, int i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
 
         const __m128i i8 = _mm_set1_epi64x(c8);
@@ -88,16 +94,22 @@ struct Codec8bit {
 };
 
 struct Codec4bit {
-    static void encode_component(float x, uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE void encode_component(
+            float x,
+            uint8_t* code,
+            int i) {
         code[i / 2] |= (int)(x * 15.0) << ((i & 1) << 2);
     }
 
-    static float decode_component(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE float decode_component(
+            const uint8_t* code,
+            int i) {
         return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
     }
 
 #ifdef __AVX2__
-    static __m256 decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE __m256
+    decode_8_components(const uint8_t* code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
         uint32_t c4ev = c4 & mask;
@@ -120,7 +132,10 @@ struct Codec4bit {
 };
 
 struct Codec6bit {
-    static void encode_component(float x, uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE void encode_component(
+            float x,
+            uint8_t* code,
+            int i) {
         int bits = (int)(x * 63.0);
         code += (i >> 2) * 3;
         switch (i & 3) {
@@ -141,7 +156,9 @@ struct Codec6bit {
         }
     }
 
-    static float decode_component(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE float decode_component(
+            const uint8_t* code,
+            int i) {
         uint8_t bits;
         code += (i >> 2) * 3;
         switch (i & 3) {
@@ -167,7 +184,7 @@ struct Codec6bit {
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */
-    static __m256i load6(const uint16_t* code16) {
+    static FAISS_ALWAYS_INLINE __m256i load6(const uint16_t* code16) {
         const __m128i perm = _mm_set_epi8(
                 -1, 5, 5, 4, 4, 3, -1, 3, -1, 2, 2, 1, 1, 0, -1, 0);
         const __m256i shifts = _mm256_set_epi32(2, 4, 6, 0, 2, 4, 6, 0);
@@ -186,15 +203,28 @@ struct Codec6bit {
         return c5;
     }
 
-    static __m256 decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE __m256
+    decode_8_components(const uint8_t* code, int i) {
+        // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
+        // // for the reference, maybe, it becomes used oned day.
+        // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
+        // const uint32_t* data32 = (const uint32_t*)data16;
+        // const uint64_t val = *data32 + ((uint64_t)data16[2] << 32);
+        // const uint64_t vext = _pdep_u64(val, 0x3F3F3F3F3F3F3F3FULL);
+        // const __m128i i8 = _mm_set1_epi64x(vext);
+        // const __m256i i32 = _mm256_cvtepi8_epi32(i8);
+        // const __m256 f8 = _mm256_cvtepi32_ps(i32);
+        // const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
+        // const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
+        // return _mm256_fmadd_ps(f8, one_255, half_one_255);
+
         __m256i i8 = load6((const uint16_t*)(code + (i >> 2) * 3));
         __m256 f8 = _mm256_cvtepi32_ps(i8);
         // this could also be done with bit manipulations but it is
         // not obviously faster
-        __m256 half = _mm256_set1_ps(0.5f);
-        f8 = _mm256_add_ps(f8, half);
-        __m256 one_63 = _mm256_set1_ps(1.f / 63.f);
-        return _mm256_mul_ps(f8, one_63);
+        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
+        const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
+        return _mm256_fmadd_ps(f8, one_255, half_one_255);
     }
 
 #endif
@@ -239,7 +269,8 @@ struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    float reconstruct_component(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
         float xi = Codec::decode_component(code, i);
         return vmin + xi * vdiff;
     }
@@ -252,11 +283,11 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
             : QuantizerTemplate<Codec, true, 1>(d, trained) {}
 
-    __m256 reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
         __m256 xi = Codec::decode_8_components(code, i);
-        return _mm256_add_ps(
-                _mm256_set1_ps(this->vmin),
-                _mm256_mul_ps(xi, _mm256_set1_ps(this->vdiff)));
+        return _mm256_fmadd_ps(
+                xi, _mm256_set1_ps(this->vdiff), _mm256_set1_ps(this->vmin));
     }
 };
 
@@ -293,7 +324,8 @@ struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    float reconstruct_component(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
         float xi = Codec::decode_component(code, i);
         return vmin[i] + xi * vdiff[i];
     }
@@ -306,11 +338,13 @@ struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
             : QuantizerTemplate<Codec, false, 1>(d, trained) {}
 
-    __m256 reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
         __m256 xi = Codec::decode_8_components(code, i);
-        return _mm256_add_ps(
-                _mm256_loadu_ps(this->vmin + i),
-                _mm256_mul_ps(xi, _mm256_loadu_ps(this->vdiff + i)));
+        return _mm256_fmadd_ps(
+                xi,
+                _mm256_loadu_ps(this->vdiff + i),
+                _mm256_loadu_ps(this->vmin + i));
     }
 };
 
@@ -341,7 +375,8 @@ struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    float reconstruct_component(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
         return decode_fp16(((uint16_t*)code)[i]);
     }
 };
@@ -353,7 +388,8 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
             : QuantizerFP16<1>(d, trained) {}
 
-    __m256 reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
         __m128i codei = _mm_loadu_si128((const __m128i*)(code + 2 * i));
         return _mm256_cvtph_ps(codei);
     }
@@ -387,7 +423,8 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
         }
     }
 
-    float reconstruct_component(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
         return code[i];
     }
 };
@@ -399,7 +436,8 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
             : Quantizer8bitDirect<1>(d, trained) {}
 
-    __m256 reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
         __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
         __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
         return _mm256_cvtepi32_ps(y8);                      // 8 * float32
@@ -629,22 +667,22 @@ struct SimilarityL2<1> {
 
     float accu;
 
-    void begin() {
+    FAISS_ALWAYS_INLINE void begin() {
         accu = 0;
         yi = y;
     }
 
-    void add_component(float x) {
+    FAISS_ALWAYS_INLINE void add_component(float x) {
         float tmp = *yi++ - x;
         accu += tmp * tmp;
     }
 
-    void add_component_2(float x1, float x2) {
+    FAISS_ALWAYS_INLINE void add_component_2(float x1, float x2) {
         float tmp = x1 - x2;
         accu += tmp * tmp;
     }
 
-    float result() {
+    FAISS_ALWAYS_INLINE float result() {
         return accu;
     }
 };
@@ -660,29 +698,31 @@ struct SimilarityL2<8> {
     explicit SimilarityL2(const float* y) : y(y) {}
     __m256 accu8;
 
-    void begin_8() {
+    FAISS_ALWAYS_INLINE void begin_8() {
         accu8 = _mm256_setzero_ps();
         yi = y;
     }
 
-    void add_8_components(__m256 x) {
+    FAISS_ALWAYS_INLINE void add_8_components(__m256 x) {
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
         __m256 tmp = _mm256_sub_ps(yiv, x);
-        accu8 = _mm256_add_ps(accu8, _mm256_mul_ps(tmp, tmp));
+        accu8 = _mm256_fmadd_ps(tmp, tmp, accu8);
     }
 
-    void add_8_components_2(__m256 x, __m256 y) {
+    FAISS_ALWAYS_INLINE void add_8_components_2(__m256 x, __m256 y) {
         __m256 tmp = _mm256_sub_ps(y, x);
-        accu8 = _mm256_add_ps(accu8, _mm256_mul_ps(tmp, tmp));
+        accu8 = _mm256_fmadd_ps(tmp, tmp, accu8);
     }
 
-    float result_8() {
-        __m256 sum = _mm256_hadd_ps(accu8, accu8);
-        __m256 sum2 = _mm256_hadd_ps(sum, sum);
-        // now add the 0th and 4th component
-        return _mm_cvtss_f32(_mm256_castps256_ps128(sum2)) +
-                _mm_cvtss_f32(_mm256_extractf128_ps(sum2, 1));
+    FAISS_ALWAYS_INLINE float result_8() {
+        const __m128 sum = _mm_add_ps(
+                _mm256_castps256_ps128(accu8), _mm256_extractf128_ps(accu8, 1));
+        const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
+        const __m128 v1 = _mm_add_ps(sum, v0);
+        __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
+        const __m128 v3 = _mm_add_ps(v1, v2);
+        return _mm_cvtss_f32(v3);
     }
 };
 
@@ -701,20 +741,20 @@ struct SimilarityIP<1> {
 
     explicit SimilarityIP(const float* y) : y(y) {}
 
-    void begin() {
+    FAISS_ALWAYS_INLINE void begin() {
         accu = 0;
         yi = y;
     }
 
-    void add_component(float x) {
+    FAISS_ALWAYS_INLINE void add_component(float x) {
         accu += *yi++ * x;
     }
 
-    void add_component_2(float x1, float x2) {
+    FAISS_ALWAYS_INLINE void add_component_2(float x1, float x2) {
         accu += x1 * x2;
     }
 
-    float result() {
+    FAISS_ALWAYS_INLINE float result() {
         return accu;
     }
 };
@@ -734,27 +774,29 @@ struct SimilarityIP<8> {
 
     __m256 accu8;
 
-    void begin_8() {
+    FAISS_ALWAYS_INLINE void begin_8() {
         accu8 = _mm256_setzero_ps();
         yi = y;
     }
 
-    void add_8_components(__m256 x) {
+    FAISS_ALWAYS_INLINE void add_8_components(__m256 x) {
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
-        accu8 = _mm256_add_ps(accu8, _mm256_mul_ps(yiv, x));
+        accu8 = _mm256_fmadd_ps(yiv, x, accu8);
     }
 
-    void add_8_components_2(__m256 x1, __m256 x2) {
-        accu8 = _mm256_add_ps(accu8, _mm256_mul_ps(x1, x2));
+    FAISS_ALWAYS_INLINE void add_8_components_2(__m256 x1, __m256 x2) {
+        accu8 = _mm256_fmadd_ps(x1, x2, accu8);
     }
 
-    float result_8() {
-        __m256 sum = _mm256_hadd_ps(accu8, accu8);
-        __m256 sum2 = _mm256_hadd_ps(sum, sum);
-        // now add the 0th and 4th component
-        return _mm_cvtss_f32(_mm256_castps256_ps128(sum2)) +
-                _mm_cvtss_f32(_mm256_extractf128_ps(sum2, 1));
+    FAISS_ALWAYS_INLINE float result_8() {
+        const __m128 sum = _mm_add_ps(
+                _mm256_castps256_ps128(accu8), _mm256_extractf128_ps(accu8, 1));
+        const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
+        const __m128 v1 = _mm_add_ps(sum, v0);
+        __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
+        const __m128 v3 = _mm_add_ps(v1, v2);
+        return _mm_cvtss_f32(v3);
     }
 };
 #endif

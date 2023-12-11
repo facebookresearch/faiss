@@ -12,11 +12,11 @@
 #include <omp.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-
-#include <algorithm>
+#include <memory>
 
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -882,14 +882,13 @@ void PolysemousTraining::optimize_ranking(
 
         double t0 = getmillisecs();
 
-        PermutationObjective* obj = new RankingScore2(
+        std::unique_ptr<PermutationObjective> obj(new RankingScore2(
                 nbits,
                 nq,
                 nb,
                 codes.data(),
                 codes.data() + nq,
-                gt_distances.data());
-        ScopeDeleter1<PermutationObjective> del(obj);
+                gt_distances.data()));
 
         if (verbose > 0) {
             printf("   m=%d, nq=%zd, nb=%zd, initialize RankingScore "
@@ -900,7 +899,7 @@ void PolysemousTraining::optimize_ranking(
                    getmillisecs() - t0);
         }
 
-        SimulatedAnnealingOptimizer optim(obj, *this);
+        SimulatedAnnealingOptimizer optim(obj.get(), *this);
 
         if (log_pattern.size()) {
             char fname[256];
