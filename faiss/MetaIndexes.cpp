@@ -96,7 +96,7 @@ void IndexSplitVectors::search(
                 for (idx_t i = 0; i < n; i++)
                     memcpy(sub_x.get() + i * sub_d,
                            x + ofs + i * d,
-                           sub_d * sizeof(sub_x));
+                           sub_d * sizeof(float));
                 sub_index->search(n, sub_x.get(), k, distances1, labels1);
                 if (index->verbose)
                     printf("end query shard %d\n", no);
