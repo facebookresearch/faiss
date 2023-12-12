@@ -167,10 +167,10 @@ class StandardGpuResourcesImpl : public GpuResources {
      */
 
     // cuda_memory_resource
-    std::unique_ptr<rmm::mr::device_memory_resource> cmr;
+    std::shared_ptr<rmm::mr::device_memory_resource> cmr;
 
     // managed_memory_resource
-    std::unique_ptr<rmm::mr::device_memory_resource> mmr;
+    std::shared_ptr<rmm::mr::device_memory_resource> mmr;
 
     // pinned_memory_resource
     std::unique_ptr<rmm::mr::host_memory_resource> pmr;

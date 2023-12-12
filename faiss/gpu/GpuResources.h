@@ -32,6 +32,7 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
+#include <rmm/mr/device/device_memory_resource.hpp>
 #endif
 
 namespace faiss {
@@ -128,6 +129,10 @@ struct AllocInfo {
     /// The memory manager guarantees that the returned memory is free to use
     /// without data races on this stream specified.
     cudaStream_t stream = nullptr;
+
+#if defined USE_NVIDIA_RAFT
+    std::shared_ptr<rmm::mr::device_memory_resource> mr = nullptr;
+#endif
 };
 
 /// Create an AllocInfo for the current device with MemorySpace::Device
