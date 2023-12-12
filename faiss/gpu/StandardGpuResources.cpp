@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+#include <rmm/mr/device/device_memory_resource.hpp>
+#include <rmm/mr/device/per_device_resource.hpp>
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
 #include <rmm/mr/device/cuda_memory_resource.hpp>
@@ -478,8 +480,6 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
     void* p = nullptr;
 
     if (adjReq.space == MemorySpace::Temporary) {
-        // If we don't have enough space in our temporary memory manager, we
-        // need to allocate this request separately
         auto& tempMem = tempMemory_[adjReq.device];
 
         if (adjReq.size > tempMem->getSizeAvailable()) {
@@ -500,22 +500,35 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
         // Otherwise, we can handle this locally
         p = tempMemory_[adjReq.device]->allocMemory(adjReq.stream, adjReq.size);
-
+        // }
     } else if (adjReq.space == MemorySpace::Device) {
 #if defined USE_NVIDIA_RAFT
         try {
-            p = cmr->allocate(adjReq.size, adjReq.stream);
+            rmm::mr::device_memory_resource* current_mr =
+                    rmm::mr::get_per_device_resource(
+                            rmm::cuda_device_id{adjReq.device});
+            // if current rmm resource is a device-only resource, use it for
+            // allocation
+            if (dynamic_cast<rmm::mr::cuda_memory_resource*>(current_mr) ||
+                dynamic_cast<rmm::mr::pool_memory_resource<
+                        rmm::mr::cuda_memory_resource>*>(current_mr)) {
+                p = current_mr->allocate(adjReq.size, adjReq.stream);
+            } else {
+                cmr->allocate(adjReq.size, adjReq.stream);
+            }
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
         }
 #else
+        // if rmm resource does not support device-only allocation, fall-back to
+        // FAISS impl
         auto err = cudaMalloc(&p, adjReq.size);
 
         // Throw if we fail to allocate
         if (err != cudaSuccess) {
             // FIXME: as of CUDA 11, a memory allocation error appears to be
-            // presented via cudaGetLastError as well, and needs to be cleared.
-            // Just call the function to clear it
+            // presented via cudaGetLastError as well, and needs to be
+            // cleared. Just call the function to clear it
             cudaGetLastError();
 
             std::stringstream ss;
@@ -593,13 +606,27 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
 
     if (req.space == MemorySpace::Temporary) {
         tempMemory_[device]->deallocMemory(device, req.stream, req.size, p);
-
     } else if (
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_RAFT
         if (req.space == MemorySpace::Device) {
-            cmr->deallocate(p, req.size, req.stream);
+            // the assumption is that the current rmm resource was not changed
+            // during the lifetime of this object
+            rmm::mr::device_memory_resource* current_mr =
+                    rmm::mr::get_per_device_resource(
+                            rmm::cuda_device_id{device});
+            // if current rmm resource is a device-only resource, use it for
+            // deallocation
+            if (dynamic_cast<rmm::mr::cuda_memory_resource*>(current_mr) ||
+                dynamic_cast<rmm::mr::pool_memory_resource<
+                        rmm::mr::cuda_memory_resource>*>(current_mr)) {
+                current_mr->deallocate(p, req.size, req.stream);
+            }
+            // else the allocation was done using the cuda memory resource
+            else {
+                cmr->deallocate(p, req.size, req.stream);
+            }
         } else if (req.space == MemorySpace::Unified) {
             mmr->deallocate(p, req.size, req.stream);
         }
