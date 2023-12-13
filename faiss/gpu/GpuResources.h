@@ -129,10 +129,6 @@ struct AllocInfo {
     /// The memory manager guarantees that the returned memory is free to use
     /// without data races on this stream specified.
     cudaStream_t stream = nullptr;
-
-#if defined USE_NVIDIA_RAFT
-    std::shared_ptr<rmm::mr::device_memory_resource> mr = nullptr;
-#endif
 };
 
 /// Create an AllocInfo for the current device with MemorySpace::Device
@@ -164,6 +160,10 @@ struct AllocRequest : public AllocInfo {
 
     /// The size in bytes of the allocation
     size_t size = 0;
+
+#if defined USE_NVIDIA_RAFT
+    rmm::mr::device_memory_resource* mr = nullptr;
+#endif
 };
 
 /// A RAII object that manages a temporary memory request

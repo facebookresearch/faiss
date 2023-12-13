@@ -24,8 +24,6 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device/cuda_memory_resource.hpp>
-#include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
 #endif
 

@@ -22,8 +22,6 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device/cuda_memory_resource.hpp>
-#include <rmm/mr/device/device_memory_resource.hpp>
 #include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/device/per_device_resource.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
@@ -507,9 +505,6 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
             p = current_mr->allocate_async(adjReq.size, adjReq.stream);
             adjReq.mr = current_mr;
-            printf("allocated %zu bytes using current_mr at pointer %p\n",
-                   adjReq.size,
-                   p);
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
         }
@@ -545,9 +540,6 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // device.
             p = mmr->allocate_async(adjReq.size, adjReq.stream);
             adjReq.mr = mmr;
-            printf("Managed memory allocation attempted. allocated %zu bytes using mmr at pointer %p\n",
-                   adjReq.size,
-                   p);
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
         }
@@ -590,8 +582,6 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
     FAISS_ASSERT(isInitialized(device));
 
-    printf("attempting to deallocate %p\n", p);
-
     if (!p) {
         return;
     }
@@ -608,17 +598,11 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
 
     if (req.space == MemorySpace::Temporary) {
         tempMemory_[device]->deallocMemory(device, req.stream, req.size, p);
-        printf("deallocated %zu bytes from FAISS temporary memory at pointer %p\n",
-               req.size,
-               p);
     } else if (
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_RAFT
-        req.mr->deallocate(p, req.size, req.stream);
-        printf("deallocated %zu bytes from RMM mr at pointer %p\n",
-               req.size,
-               p);
+        req.mr->deallocate_async(p, req.size, req.stream);
 #else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(
@@ -632,12 +616,7 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
         FAISS_ASSERT_FMT(false, "unknown MemorySpace %d", (int)req.space);
     }
 
-    printf("attempting to erase 'it' for %p\n", p);
-    auto it2 = a.find(p);
-    printf("%p %p %p\n", it, it2, a.end());
-    // it->second.mr.reset();
     a.erase(it);
-    printf("erased 'it' for %p\n", p);
 }
 
 size_t StandardGpuResourcesImpl::getTempMemoryAvailable(int device) const {
