@@ -4,11 +4,11 @@
 
 import argparse
 from typing import Dict
-from demos.offline_ivf.utils import (
+from utils import (
     load_config,
     add_group_args,
 )
-from demos.offline_ivf.offline_ivf import OfflineIVF
+from offline_ivf import OfflineIVF
 import faiss
 from typing import List,Callable, Dict
 import submitit

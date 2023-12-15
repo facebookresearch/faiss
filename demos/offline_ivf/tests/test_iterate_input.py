@@ -4,11 +4,11 @@
 
 import numpy as np
 import unittest
-from typing import List, Tuple
-from utils import check_non_increasing_rows, load_config
-from demos.offline_ivf.tests.testing_utils import TestDataCreator
+from typing import List
+from utils import load_config
+from tests.testing_utils import TestDataCreator
 import tempfile
-from demos.offline_ivf.dataset import create_dataset_from_oivf_config
+from dataset import create_dataset_from_oivf_config
 
 DIMENSION: int = 768
 SMALL_FILE_SIZES: List[int] = [100, 210, 450]

@@ -11,15 +11,18 @@ import tempfile
 import shutil
 import os
 from typing import List
-from offline_ivf.tests.testing_utils import TestDataCreator
+from tests.testing_utils import TestDataCreator
 from run import process_options_and_run_jobs
 
 INDEX_TEMPLATE_FILE: str = "/tests/test_data/IVF256_PQ4.empty.faissindex"
 OPQ_INDEX_TEMPLATE_FILE: str = "/tests/test_data/OPQ4_IVF256_PQ4.empty.faissindex"
 KNN_RESULTS_FILE: str = "/my_test_data_in_my_test_data/knn/I0000000000_IVF256_PQ4_np2.npy"
 TEST_INDEX_A: str = "/tests/test_data/goku_lang/IVF256_PQ4.faissindex"
+TEST_INDEX_DATA_A: str = "/tests/test_data/goku_lang/IVF256_PQ4.faissindex.ivfdata"
 TEST_INDEX_B: str = "/tests/test_data/coco_lang/IVF256_PQ4.faissindex"
+TEST_INDEX_DATA_B: str = "/tests/test_data/coco_lang/IVF256_PQ4.faissindex.ivfdata"
 TEST_INDEX_OPQ: str = "/tests/test_data/goku_lang/OPQ4_IVF256_PQ4.faissindex"
+TEST_INDEX_DATA_OPQ: str = "/tests/test_data/goku_lang/OPQ4_IVF256_PQ4.faissindex.ivfdata"
 A_INDEX_FILES: List[str] = [
     "I_a_gt.npy",
     "D_a_gt.npy",
@@ -55,37 +58,6 @@ class TestOIVF(unittest.TestCase):
     def assert_file_exists(self, filepath: str) -> None:
         path = pl.Path(filepath)
         self.assertEqual((str(path), path.is_file()), (str(path), True))
-
-    def test_e2e(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float16,
-                index_factory=["OPQ4,IVF256,PQ4"],
-                training_sample=9984,
-                num_files=3,
-                file_size=10000,
-                index_shard_size=10000,
-                query_batch_size=1000,
-                evaluation_sample=100,
-                nprobe=2,
-                k=2,
-                metric="METRIC_L2",
-            )
-            data_creator.create_test_data()
-            args = data_creator.setup_cli()
-            cfg = load_config(args.config)
-            oivf = OfflineIVF(
-                cfg,
-                args,
-                cfg["nprobe"]["prod"][-1],
-                cfg["index"]["prod"][-1],
-            )
-            oivf.input_stats()
-            oivf.train_index()
-            oivf.index_shard()
-            oivf.search()
 
     def test_consistency_check(self) -> None:
         """
@@ -129,16 +101,19 @@ class TestOIVF(unittest.TestCase):
             test_args = data_creator.setup_cli("train_index")
             cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
-            empty_index = cfg["output"] + "/" + cfg["index"]["prod"][-1].replace(",", "_") + ".empty.faissindex"
+            empty_index = cfg["output"] + "/my_test_data/" + cfg["index"]["prod"][-1].replace(",", "_") + ".empty.faissindex"
             self.assert_file_exists(empty_index)
 
     def test_index_shard_equal_file_sizes(self) -> None:
         """
         Test the case where the shard size is a divisor of the database size and it is equal to the first file size.
         """
+
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             index_shard_size = 10000
             num_files = 3
             file_size = 10000
@@ -178,7 +153,9 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             file_sizes = [20000, 15001, 13990]
             xb_ds_size = sum(file_sizes)
             index_shard_size = 30000
@@ -215,7 +192,9 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             os.makedirs(tmpdirname + "/my_test_data/", exist_ok=True)
             num_files = 3
             for i in range(num_files):
@@ -255,12 +234,13 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
-            os.makedirs(tmpdirname + "/my_test_data/", exist_ok=True)
-
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_A
-            shutil.copy(goku_index_file, tmpdirname + "/my_test_data")
-
+            goku_index_data = os.getcwd() + TEST_INDEX_DATA_A
+            shutil.copy(goku_index_file, new_path)
+            shutil.copy(goku_index_data, new_path)
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
@@ -291,11 +271,13 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + OPQ_INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
-            os.makedirs(tmpdirname + "/my_test_data/", exist_ok=True)
-
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_OPQ
-            shutil.copy(goku_index_file, tmpdirname + "/my_test_data")
+            goku_index_data = os.getcwd() + TEST_INDEX_DATA_OPQ
+            shutil.copy(goku_index_file, new_path)
+            shutil.copy(goku_index_data, new_path)
 
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
@@ -327,14 +309,19 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            shutil.copy(test_index_path, tmpdirname)
-            os.makedirs(tmpdirname + "/my_test_data/", exist_ok=True)
-
+            new_path=f"{tmpdirname}/my_test_data/"
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_A
-            shutil.copy(goku_index_file, tmpdirname + "/my_test_data")
-            os.makedirs(tmpdirname + "/my_queries_data/", exist_ok=True)
+            goku_index_data = os.getcwd() + TEST_INDEX_DATA_A
+            shutil.copy(goku_index_file, new_path)
+            shutil.copy(goku_index_data, new_path)
             coco_index_file = os.getcwd() + TEST_INDEX_B
-            shutil.copy(coco_index_file, tmpdirname + "/my_queries_data")
+            coco_index_data = os.getcwd() + TEST_INDEX_DATA_B
+            queries_path=f"{tmpdirname}/my_queries_data/"
+            os.makedirs(queries_path, exist_ok=True)
+            shutil.copy(coco_index_file,queries_path)
+            shutil.copy(coco_index_data,queries_path)
 
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,

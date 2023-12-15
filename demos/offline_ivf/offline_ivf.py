@@ -12,8 +12,8 @@ from faiss.contrib.ondisk import merge_ondisk
 from faiss.contrib.big_batch_search import big_batch_search
 from faiss.contrib.exhaustive_search import knn_ground_truth
 from faiss.contrib.evaluation import knn_intersection_measure
-from demos.offline_ivf.utils import get_intersection_cardinality_frequencies, margin, faiss_sanity_check, is_pretransform_index
-from demos.offline_ivf.dataset import create_dataset_from_oivf_config
+from utils import get_intersection_cardinality_frequencies, margin, faiss_sanity_check, is_pretransform_index
+from dataset import create_dataset_from_oivf_config
 
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)-8s %(threadName)-12s %(message)s',
@@ -28,7 +28,7 @@ SMALL_DATA_SAMPLE: int = 10000
 
 class OfflineIVF:
     def __init__(self, cfg, args, nprobe, index_factory_str):
-        # faiss_sanity_check()
+        #faiss_sanity_check()
         self.input_d = cfg["d"]
         self.dt = cfg["datasets"][args.xb]["files"][0][
             "dtype"
@@ -620,7 +620,6 @@ class OfflineIVF:
 
             try:  # TODO: modify shape for pretransform case
                 with open(Ifn, "xb") as f, open(Dfn, "xb") as g:
-                    logging.info(Ifn, Dfn)
                     xq_i = np.empty(shape=(self.xq_bs, self.input_d), dtype=np.float16)
                     q_assign = np.empty((self.xq_bs, self.nprobe), dtype=np.int32)
                     j = 0

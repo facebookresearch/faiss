@@ -6,8 +6,6 @@ import numpy as np
 import os
 from typing import Any, Dict, List
 import yaml
-import time
-from math import sqrt, floor
 import faiss
 from faiss.contrib.datasets import SyntheticDataset
 
