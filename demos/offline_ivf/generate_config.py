@@ -7,10 +7,11 @@ import os
 import yaml
 
 # with ssnpp sharded data
-root= "/checkpoint/marialomeli/ssnpp_data"
+root = "/checkpoint/marialomeli/ssnpp_data"
 file_names = [f"ssnpp_{i:010}.npy" for i in range(20)]
 d = 256
 dt = np.dtype(np.uint8)
+
 
 def read_embeddings(fp):
     fl = os.path.getsize(fp)
@@ -24,6 +25,7 @@ def read_embeddings(fp):
         assert vecs.dtype == dt
         return ("npy", vecs)
 
+
 cfg = {}
 files = []
 size = 0
@@ -31,7 +33,9 @@ for fn in file_names:
     fp = f"{root}/{fn}"
     assert os.path.exists(fp), f"{fp} is missing"
     ft, xb = read_embeddings(fp)
-    files.append({"name": fn, "size": xb.shape[0], "dtype": dt.name, "format": ft})
+    files.append(
+        {"name": fn, "size": xb.shape[0], "dtype": dt.name, "format": ft}
+    )
     size += xb.shape[0]
 
 cfg["size"] = size

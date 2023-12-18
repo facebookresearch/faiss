@@ -3,14 +3,13 @@
 # LICENSE file in the root directory of this source tree.
 
 import argparse
-from typing import Dict
 from utils import (
     load_config,
     add_group_args,
 )
 from offline_ivf import OfflineIVF
 import faiss
-from typing import List,Callable, Dict
+from typing import List, Callable, Dict
 import submitit
 
 
@@ -28,7 +27,12 @@ def join_lists_in_dict(poss: List[str]) -> List[str]:
         return poss["prod"]
 
 
-def main(args: argparse.Namespace, cfg: Dict[str, str], nprobe: int, index_factory_str: str) -> None:
+def main(
+    args: argparse.Namespace,
+    cfg: Dict[str, str],
+    nprobe: int,
+    index_factory_str: str,
+) -> None:
     oivf = OfflineIVF(cfg, args, nprobe, index_factory_str)
     eval(f"oivf.{args.command}()")
 
@@ -51,14 +55,21 @@ def process_options_and_run_jobs(args: argparse.Namespace) -> None:
                 for nprobe in all_nprobes:
                     launch_job(main, args, cfg, nprobe, index_factory_str)
         else:
-            launch_job(main, args, cfg, nprobes["prod"][-1], index_strings["prod"][-1])
+            launch_job(
+                main, args, cfg, nprobes["prod"][-1], index_strings["prod"][-1]
+            )
     else:
         if args.cluster_run:
             all_index_strings = join_lists_in_dict(index_strings)
             for index_factory_str in all_index_strings:
-                launch_job(main, args, cfg, nprobes["prod"][-1], index_factory_str)
+                launch_job(
+                    main, args, cfg, nprobes["prod"][-1], index_factory_str
+                )
         else:
-            launch_job(main, args, cfg, nprobes["prod"][-1], index_strings["prod"][-1])
+            launch_job(
+                main, args, cfg, nprobes["prod"][-1], index_strings["prod"][-1]
+            )
+
 
 def launch_job(
     func: Callable,
@@ -68,7 +79,7 @@ def launch_job(
     index_str: str,
 ) -> None:
     """
-   Launches an array of slurm jobs to the cluster using the submitit library.
+    Launches an array of slurm jobs to the cluster using the submitit library.
     """
 
     if args.cluster_run:
@@ -85,7 +96,7 @@ def launch_job(
             slurm_time=70 * 60,
         )
         if args.slurm_constraint:
-             executor.update_parameters(slurm_constraint=args.slurm_constrain)
+            executor.update_parameters(slurm_constraint=args.slurm_constrain)
 
         job = executor.submit(func, args, cfg, n_probe, index_str)
         print(f"Job id: {job.job_id}")
@@ -98,9 +109,21 @@ if __name__ == "__main__":
     group = parser.add_argument_group("general")
 
     add_group_args(group, "--command", required=True, help="command to run")
-    add_group_args(group, "--config", required=True, help="config yaml with the dataset specs")
-    add_group_args(group, "--nt", type=int, default=96, help="nb search threads")
-    add_group_args(group, "--no_residuals", action="store_false", help="set index.by_residual to False during train index.")
+    add_group_args(
+        group,
+        "--config",
+        required=True,
+        help="config yaml with the dataset specs",
+    )
+    add_group_args(
+        group, "--nt", type=int, default=96, help="nb search threads"
+    )
+    add_group_args(
+        group,
+        "--no_residuals",
+        action="store_false",
+        help="set index.by_residual to False during train index.",
+    )
 
     group = parser.add_argument_group("slurm_job")
 
@@ -113,7 +136,7 @@ if __name__ == "__main__":
     add_group_args(
         group,
         "--job_name",
-         type=str,
+        type=str,
         default="oivf",
         help="cluster job name",
     )
@@ -169,7 +192,19 @@ if __name__ == "__main__":
         type=str,
         default="learnlab",
         help="specify which partition to use if ran on cluster with job arrays",
-        choices=["learnfair", "devlab", "scavenge", "learnlab", "nllb", "seamless", "seamless_medium", "learnaccel","onellm_low","learn","scavenge"],
+        choices=[
+            "learnfair",
+            "devlab",
+            "scavenge",
+            "learnlab",
+            "nllb",
+            "seamless",
+            "seamless_medium",
+            "learnaccel",
+            "onellm_low",
+            "learn",
+            "scavenge",
+        ],
     )
 
     group = parser.add_argument_group("dataset")

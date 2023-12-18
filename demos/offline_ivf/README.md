@@ -41,9 +41,9 @@ Create a conda env:
 `python run.py  --command search --config config_ssnpp.yaml --xb ssnpp_1B  --cluster_run --partition <PARTITION-NAME>`
 
 
-Remarks about the `search` command:
+Remarks about the `search` command: it is assumed that the database vectors are the query vectors when performing the search step.
 a. If the query vectors are different than the database vectors, it should be passed in the xq argument
-b. A new dataset needs to be prepared (following steps 1-3) before passing it to the query vectors argument `–xq`
+b. A new dataset needs to be prepared (step 1) before passing it to the query vectors argument `–xq`
 
 `python run.py --command search --config config_ssnpp.yaml --xb ssnpp_1B --xq <QUERIES_DATASET_NAME>`
 

@@ -4,15 +4,17 @@
 
 import numpy as np
 import os
-from typing import Any, Dict, List
+from typing import Dict
 import yaml
 import faiss
 from faiss.contrib.datasets import SyntheticDataset
+
 
 def load_config(config):
     assert os.path.exists(config)
     with open(config, "r") as f:
         return yaml.safe_load(f)
+
 
 def faiss_sanity_check():
     ds = SyntheticDataset(256, 0, 100, 100)
@@ -26,6 +28,7 @@ def faiss_sanity_check():
     D_gpu, I_gpu = index_gpu.search(xq, 10)
     assert np.all(I_cpu == I_gpu), "faiss sanity check failed"
     assert np.all(np.isclose(D_cpu, D_gpu)), "faiss sanity check failed"
+
 
 def margin(sample, idx_a, idx_b, D_a_b, D_a, D_b, k, k_extract, threshold):
     """
@@ -63,10 +66,14 @@ def margin(sample, idx_a, idx_b, D_a_b, D_a, D_b, k, k_extract, threshold):
     print(margin[above_threshold])
     return margin
 
+
 def add_group_args(group, *args, **kwargs):
     return group.add_argument(*args, **kwargs)
 
-def get_intersection_cardinality_frequencies(I: np.ndarray, I_gt: np.ndarray) -> Dict[int, int]:
+
+def get_intersection_cardinality_frequencies(
+    I: np.ndarray, I_gt: np.ndarray
+) -> Dict[int, int]:
     """
     Computes the frequencies for the cardinalities of the intersection of neighbour indices.
     """
@@ -76,6 +83,7 @@ def get_intersection_cardinality_frequencies(I: np.ndarray, I_gt: np.ndarray) ->
         res.append(len(np.intersect1d(I[ell, :], I_gt[ell, :])))
     values, counts = np.unique(res, return_counts=True)
     return dict(zip(values, counts))
+
 
 def is_pretransform_index(index):
     if index.__class__ == faiss.IndexPreTransform:

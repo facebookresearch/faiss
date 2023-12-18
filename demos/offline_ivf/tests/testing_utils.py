@@ -7,7 +7,15 @@ import yaml
 import numpy as np
 from typing import Dict, List, Optional
 
-OIVF_TEST_ARGS: List[str] = ["--config", "--xb", "--xq", "--command", "--cluster_run","--no_residuals"]
+OIVF_TEST_ARGS: List[str] = [
+    "--config",
+    "--xb",
+    "--xq",
+    "--command",
+    "--cluster_run",
+    "--no_residuals",
+]
+
 
 def get_test_parser(args) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
@@ -155,7 +163,9 @@ class TestDataCreator:
         filenames = []
         for i, file_size in enumerate(self.file_sizes):
             # np.random.seed(i)
-            db_vectors = np.random.random((file_size, self.dimension)).astype(self.data_type)
+            db_vectors = np.random.random((file_size, self.dimension)).astype(
+                self.data_type
+            )
             filename = name_of_file + f"{i:02}" + ".npy"
             filenames.append(filename)
             np.save(self.tempdir + "/" + filename, db_vectors)

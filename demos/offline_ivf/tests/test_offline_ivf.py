@@ -15,14 +15,24 @@ from tests.testing_utils import TestDataCreator
 from run import process_options_and_run_jobs
 
 INDEX_TEMPLATE_FILE: str = "/tests/test_data/IVF256_PQ4.empty.faissindex"
-OPQ_INDEX_TEMPLATE_FILE: str = "/tests/test_data/OPQ4_IVF256_PQ4.empty.faissindex"
-KNN_RESULTS_FILE: str = "/my_test_data_in_my_test_data/knn/I0000000000_IVF256_PQ4_np2.npy"
+OPQ_INDEX_TEMPLATE_FILE: str = (
+    "/tests/test_data/OPQ4_IVF256_PQ4.empty.faissindex"
+)
+KNN_RESULTS_FILE: str = (
+    "/my_test_data_in_my_test_data/knn/I0000000000_IVF256_PQ4_np2.npy"
+)
 TEST_INDEX_A: str = "/tests/test_data/goku_lang/IVF256_PQ4.faissindex"
-TEST_INDEX_DATA_A: str = "/tests/test_data/goku_lang/IVF256_PQ4.faissindex.ivfdata"
+TEST_INDEX_DATA_A: str = (
+    "/tests/test_data/goku_lang/IVF256_PQ4.faissindex.ivfdata"
+)
 TEST_INDEX_B: str = "/tests/test_data/coco_lang/IVF256_PQ4.faissindex"
-TEST_INDEX_DATA_B: str = "/tests/test_data/coco_lang/IVF256_PQ4.faissindex.ivfdata"
+TEST_INDEX_DATA_B: str = (
+    "/tests/test_data/coco_lang/IVF256_PQ4.faissindex.ivfdata"
+)
 TEST_INDEX_OPQ: str = "/tests/test_data/goku_lang/OPQ4_IVF256_PQ4.faissindex"
-TEST_INDEX_DATA_OPQ: str = "/tests/test_data/goku_lang/OPQ4_IVF256_PQ4.faissindex.ivfdata"
+TEST_INDEX_DATA_OPQ: str = (
+    "/tests/test_data/goku_lang/OPQ4_IVF256_PQ4.faissindex.ivfdata"
+)
 A_INDEX_FILES: List[str] = [
     "I_a_gt.npy",
     "D_a_gt.npy",
@@ -51,10 +61,12 @@ B_INDEX_FILES: List[str] = [
     "idx_b_ann_IVF256_PQ4_np2.npy",
 ]
 
+
 class TestOIVF(unittest.TestCase):
     """
     Unit tests for OIVF. Some of these unit tests first copy the required test data objects and puts them in the tempdir created by the context manager.
     """
+
     def assert_file_exists(self, filepath: str) -> None:
         path = pl.Path(filepath)
         self.assertEqual((str(path), path.is_file()), (str(path), True))
@@ -78,7 +90,9 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("consistency_check")
-            self.assertRaises(AssertionError, process_options_and_run_jobs, test_args)
+            self.assertRaises(
+                AssertionError, process_options_and_run_jobs, test_args
+            )
 
     def test_train_index(self) -> None:
         """
@@ -101,7 +115,12 @@ class TestOIVF(unittest.TestCase):
             test_args = data_creator.setup_cli("train_index")
             cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
-            empty_index = cfg["output"] + "/my_test_data/" + cfg["index"]["prod"][-1].replace(",", "_") + ".empty.faissindex"
+            empty_index = (
+                cfg["output"]
+                + "/my_test_data/"
+                + cfg["index"]["prod"][-1].replace(",", "_")
+                + ".empty.faissindex"
+            )
             self.assert_file_exists(empty_index)
 
     def test_index_shard_equal_file_sizes(self) -> None:
@@ -111,7 +130,7 @@ class TestOIVF(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             index_shard_size = 10000
@@ -143,7 +162,10 @@ class TestOIVF(unittest.TestCase):
             print(f"number of shards:{num_shards}")
             for i in range(num_shards):
                 index_shard_file = (
-                    cfg["output"] + "/my_test_data/" + cfg["index"]["prod"][-1].replace(",", "_") + f".shard_{i}"
+                    cfg["output"]
+                    + "/my_test_data/"
+                    + cfg["index"]["prod"][-1].replace(",", "_")
+                    + f".shard_{i}"
                 )
                 self.assert_file_exists(index_shard_file)
 
@@ -153,7 +175,7 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             file_sizes = [20000, 15001, 13990]
@@ -182,7 +204,10 @@ class TestOIVF(unittest.TestCase):
             print(f"number of shards:{num_shards}")
             for i in range(num_shards):
                 index_shard_file = (
-                    cfg["output"] + "/my_test_data/" + cfg["index"]["prod"][-1].replace(",", "_") + f".shard_{i}"
+                    cfg["output"]
+                    + "/my_test_data/"
+                    + cfg["index"]["prod"][-1].replace(",", "_")
+                    + f".shard_{i}"
                 )
                 self.assert_file_exists(index_shard_file)
 
@@ -192,13 +217,16 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             os.makedirs(tmpdirname + "/my_test_data/", exist_ok=True)
             num_files = 3
             for i in range(num_files):
-                test_index_shard = os.getcwd() + f"/tests/test_data/goku_lang/IVF256_PQ4.shard_{i}"
+                test_index_shard = (
+                    os.getcwd()
+                    + f"/tests/test_data/goku_lang/IVF256_PQ4.shard_{i}"
+                )
                 shutil.copy(test_index_shard, tmpdirname + "/my_test_data/")
             file_size = 10000
             query_batch_size = 10000
@@ -234,7 +262,7 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_A
@@ -271,7 +299,7 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + OPQ_INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_OPQ
@@ -309,7 +337,7 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             test_index_path = os.getcwd() + INDEX_TEMPLATE_FILE
-            new_path=f"{tmpdirname}/my_test_data/"
+            new_path = f"{tmpdirname}/my_test_data/"
             os.makedirs(new_path, exist_ok=True)
             shutil.copy(test_index_path, new_path)
             goku_index_file = os.getcwd() + TEST_INDEX_A
@@ -318,10 +346,10 @@ class TestOIVF(unittest.TestCase):
             shutil.copy(goku_index_data, new_path)
             coco_index_file = os.getcwd() + TEST_INDEX_B
             coco_index_data = os.getcwd() + TEST_INDEX_DATA_B
-            queries_path=f"{tmpdirname}/my_queries_data/"
+            queries_path = f"{tmpdirname}/my_queries_data/"
             os.makedirs(queries_path, exist_ok=True)
-            shutil.copy(coco_index_file,queries_path)
-            shutil.copy(coco_index_data,queries_path)
+            shutil.copy(coco_index_file, queries_path)
+            shutil.copy(coco_index_data, queries_path)
 
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
@@ -381,16 +409,29 @@ class TestOIVF(unittest.TestCase):
             process_options_and_run_jobs(test_args)
 
             common_path = tmpdirname + "/my_queries_data_in_my_test_data/knn/"
-            I_groundtruth_files = ["I0000000000_IVF256_PQ4_np2.npy", "I0000040000_IVF256_PQ4_np2.npy"]
+            I_groundtruth_files = [
+                "I0000000000_IVF256_PQ4_np2.npy",
+                "I0000040000_IVF256_PQ4_np2.npy",
+            ]
             first_file_gt = I_groundtruth_files.pop(0)
             I_groundtruth = np.load(common_path + first_file_gt)
             for batched_file in I_groundtruth_files:
-                I_groundtruth = np.vstack([I_groundtruth, np.load(common_path + batched_file)])
+                I_groundtruth = np.vstack(
+                    [I_groundtruth, np.load(common_path + batched_file)]
+                )
             split_files = sorted(
-                ["mm5_p5.x2y.002.idx.npy", "mm5_p5.x2y.003.idx.npy", "mm5_p5.x2y.000.idx.npy", "mm5_p5.x2y.001.idx.npy"]
+                [
+                    "mm5_p5.x2y.002.idx.npy",
+                    "mm5_p5.x2y.003.idx.npy",
+                    "mm5_p5.x2y.000.idx.npy",
+                    "mm5_p5.x2y.001.idx.npy",
+                ]
             )
             first_file = split_files.pop(0)
-            output_path = common_path + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
+            output_path = (
+                common_path
+                + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
+            )
 
             I_all_splits = np.load(output_path + first_file)
             for filename in split_files:
@@ -442,9 +483,16 @@ class TestOIVF(unittest.TestCase):
             first_file_gt = I_groundtruth_files.pop(0)
             I_groundtruth = np.load(common_path + first_file_gt)
             for batched_file in I_groundtruth_files:
-                I_groundtruth = np.vstack([I_groundtruth, np.load(common_path + batched_file)])
-            split_files = sorted(["mm5_p5.x2y.000.dist.npy", "mm5_p5.x2y.001.dist.npy"])
-            output_path = common_path + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
+                I_groundtruth = np.vstack(
+                    [I_groundtruth, np.load(common_path + batched_file)]
+                )
+            split_files = sorted(
+                ["mm5_p5.x2y.000.dist.npy", "mm5_p5.x2y.001.dist.npy"]
+            )
+            output_path = (
+                common_path
+                + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
+            )
             first_file = split_files.pop(0)
             I_all_splits = np.load(output_path + first_file)
             for filename in split_files:
@@ -483,11 +531,15 @@ class TestOIVF(unittest.TestCase):
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("search")
             process_options_and_run_jobs(test_args)
-            #Corrupts the last file
+            # Corrupts the last file
             common_path = tmpdirname + "/my_queries_data_in_my_test_data/knn/"
-            D_corrupt_file = np.empty((0,k),dtype=np.float32)
-            np.save(common_path+"D_approx0000015000_IVF256_PQ4_np2.npy",D_corrupt_file)
+            D_corrupt_file = np.empty((0, k), dtype=np.float32)
+            np.save(
+                common_path + "D_approx0000015000_IVF256_PQ4_np2.npy",
+                D_corrupt_file,
+            )
             test_args = data_creator.setup_cli("split_files")
 
-            self.assertRaises(AssertionError,process_options_and_run_jobs, test_args)
-
+            self.assertRaises(
+                AssertionError, process_options_and_run_jobs, test_args
+            )

@@ -17,10 +17,12 @@ TEST_BATCH_SIZE: int = 500
 SMALL_SAMPLE_SIZE: int = 1000
 NUM_FILES: int = 3
 
+
 class TestUtilsMethods(unittest.TestCase):
     """
     Unit tests for iterate and decreasing_matrix methods.
     """
+
     def test_iterate_input_file_smaller_than_batch(self):
         """
         Tests when batch size is larger than the file size.
@@ -35,14 +37,18 @@ class TestUtilsMethods(unittest.TestCase):
             data_creator.create_test_data()
             args = data_creator.setup_cli()
             cfg = load_config(args.config)
-            db_iterator = create_dataset_from_oivf_config(cfg, args.xb).iterate(0, TEST_BATCH_SIZE, np.float32)
+            db_iterator = create_dataset_from_oivf_config(
+                cfg, args.xb
+            ).iterate(0, TEST_BATCH_SIZE, np.float32)
 
             for i in range(len(SMALL_FILE_SIZES) - 1):
                 vecs = next(db_iterator)
                 if i != 1:
                     self.assertEqual(vecs.shape[0], TEST_BATCH_SIZE)
                 else:
-                    self.assertEqual(vecs.shape[0], sum(SMALL_FILE_SIZES) - TEST_BATCH_SIZE)
+                    self.assertEqual(
+                        vecs.shape[0], sum(SMALL_FILE_SIZES) - TEST_BATCH_SIZE
+                    )
 
     def test_iterate_input_file_larger_than_batch(self):
         """
@@ -58,14 +64,19 @@ class TestUtilsMethods(unittest.TestCase):
             data_creator.create_test_data()
             args = data_creator.setup_cli()
             cfg = load_config(args.config)
-            db_iterator = create_dataset_from_oivf_config(cfg, args.xb).iterate(0, TEST_BATCH_SIZE, np.float32)
+            db_iterator = create_dataset_from_oivf_config(
+                cfg, args.xb
+            ).iterate(0, TEST_BATCH_SIZE, np.float32)
 
             for i in range(len(LARGE_FILE_SIZES) - 1):
                 vecs = next(db_iterator)
                 if i != 9:
                     self.assertEqual(vecs.shape[0], TEST_BATCH_SIZE)
                 else:
-                    self.assertEqual(vecs.shape[0], sum(LARGE_FILE_SIZES) - TEST_BATCH_SIZE * 9)
+                    self.assertEqual(
+                        vecs.shape[0],
+                        sum(LARGE_FILE_SIZES) - TEST_BATCH_SIZE * 9,
+                    )
 
     def test_get_vs_iterate(self) -> None:
         """
@@ -85,7 +96,9 @@ class TestUtilsMethods(unittest.TestCase):
             cfg = load_config(args.config)
             ds = create_dataset_from_oivf_config(cfg, args.xb)
             vecs_by_iterator = np.vstack(list(ds.iterate(0, 317, np.float32)))
-            self.assertEqual(vecs_by_iterator.shape[0], SMALL_SAMPLE_SIZE * NUM_FILES)
+            self.assertEqual(
+                vecs_by_iterator.shape[0], SMALL_SAMPLE_SIZE * NUM_FILES
+            )
             vecs_by_get = ds.get(list(range(vecs_by_iterator.shape[0])))
             self.assertTrue(np.all(vecs_by_iterator == vecs_by_get))
 
@@ -107,8 +120,13 @@ class TestUtilsMethods(unittest.TestCase):
             cfg = load_config(args.config)
             ds = create_dataset_from_oivf_config(cfg, args.xb)
             vecs_by_iterator = np.vstack(list(ds.iterate(0, 317, np.float32)))
-            self.assertEqual(vecs_by_iterator.shape[0], SMALL_SAMPLE_SIZE * NUM_FILES)
+            self.assertEqual(
+                vecs_by_iterator.shape[0], SMALL_SAMPLE_SIZE * NUM_FILES
+            )
             vecs_chunk = np.vstack(
-                [next(ds.iterate(i, 543, np.float32)) for i in range(0, SMALL_SAMPLE_SIZE * NUM_FILES, 543)]
+                [
+                    next(ds.iterate(i, 543, np.float32))
+                    for i in range(0, SMALL_SAMPLE_SIZE * NUM_FILES, 543)
+                ]
             )
             self.assertTrue(np.all(vecs_by_iterator == vecs_chunk))
