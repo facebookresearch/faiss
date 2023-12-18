@@ -128,10 +128,7 @@ class OfflineIVF:
 
         self.xq_bs = cfg["query_batch_size"]
         if "metric" in cfg:
-            try:
-                self.metric = eval(f'faiss.{cfg["metric"]}')
-            except:
-                assert False, f"Metric {cfg['metric']} is not supported."
+            self.metric = eval(f'faiss.{cfg["metric"]}')
         else:
             self.metric = faiss.METRIC_L2
 
@@ -663,7 +660,7 @@ class OfflineIVF:
                 vectorsMemoryLimit=self.knn_vectors_memory_limit,
                 queriesMemoryLimit=self.knn_queries_memory_limit,
             )
-        except:
+        except Exception:
             logging.info(f"knn_function failed: {xq.shape}, {xb.shape}")
             raise
 
