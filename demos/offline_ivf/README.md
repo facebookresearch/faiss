@@ -2,8 +2,6 @@
 # Offline IVF
 
 This folder contains the code for the offline ivf algorithm powered by faiss big batch search.
-![oivf_new](https://github.com/fairinternal/faiss_improvements/assets/4427136/ff96b614-66dd-42cc-968d-4864bf081be6)
-
 
 Create a conda env:
 

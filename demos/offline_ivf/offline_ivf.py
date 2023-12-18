@@ -41,7 +41,7 @@ class OfflineIVF:
         output_dir = cfg["output"]
         assert os.path.exists(output_dir)
         self.index_factory = index_factory_str
-        assert self.index_factory != None
+        assert self.index_factory is not None
         self.index_factory_fn = self.index_factory.replace(",", "_")
         self.index_template_file = (
             f"{output_dir}/{args.xb}/{self.index_factory_fn}.empty.faissindex"
@@ -160,7 +160,7 @@ class OfflineIVF:
 
     def dedupe(self):
         logging.info(self.deduper)
-        if self.deduper == None:
+        if self.deduper is None:
             logging.info("No deduper configured")
             return
         codecs = []
@@ -415,17 +415,17 @@ class OfflineIVF:
         assert D.shape == (sample, self.k), f"{D_file} shape mismatch"
         return (D, I)
 
-    def _index_search(self, index_shard_prefix, nshards, xq, nprobe):
-        assert nprobe != None
-        logging.info(f"open sharded index: {index_shard_prefix}, {nshards}")
-        index = self._open_sharded_index(index_shard_prefix, nshards)
+    def _index_search(self, index_shard_prefix, xq, nprobe):
+        assert nprobe is not None
+        logging.info(f"open sharded index: {index_shard_prefix}, {self.nshards}")
+        index = self._open_sharded_index(index_shard_prefix)
         index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
         logging.info(f"setting nprobe to {nprobe}")
         index_ivf.nprobe = nprobe
         return index.search(xq, self.k)
 
     def _index_nonsharded_search(self, index_file, xq, nprobe):
-        assert nprobe != None
+        assert nprobe is not None
         logging.info(f"index {index_file}")
         assert os.path.exists(index_file), f"file {index_file} does not exist "
         index = faiss.read_index(index_file, faiss.IO_FLAG_ONDISK_SAME_DIR)
@@ -751,10 +751,10 @@ class OfflineIVF:
                         ),
                         file=sys.stdout,
                     ):
-                        xq_i[j : j + xq_i_j.shape[0]] = xq_i_j
+                        xq_i[j:j + xq_i_j.shape[0]] = xq_i_j
                         (
                             _,
-                            q_assign[j : j + xq_i_j.shape[0]],
+                            q_assign[j:j + xq_i_j.shape[0]],
                         ) = quantizer.search(xq_i_j, self.nprobe)
                         j += xq_i_j.shape[0]
                         assert j <= xq_i.shape[0]
@@ -811,10 +811,9 @@ class OfflineIVF:
             self.index_shards[fn] = index_shard
         return index_shard
 
-    def _open_sharded_index(self, index_shard_prefix=None, nshards=None):
-        if index_shard_prefix == None:
+    def _open_sharded_index(self, index_shard_prefix=None):
+        if index_shard_prefix is None:
             index_shard_prefix = self.index_shard_prefix
-            nshards = self.nshards
         if index_shard_prefix in self.index:
             return self.index[index_shard_prefix]
         assert os.path.exists(
