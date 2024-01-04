@@ -4,7 +4,12 @@
 # LICENSE file in the root directory of this source tree.
 
 from dataclasses import dataclass
+import logging
 from typing import Any, Dict, List, Optional
+
+import faiss  # @manual=//faiss/python:pyfaiss_gpu
+from .utils import timer
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -33,6 +38,10 @@ class IndexDescriptor:
     #    [radius2_from, radius2_to) -> score2
     range_metrics: Optional[Dict[str, Any]] = None
     radius: Optional[float] = None
+    training_size: Optional[int] = None
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 @dataclass
@@ -85,3 +94,21 @@ class DatasetDescriptor:
             filename += f"_{self.num_vectors}"
         filename += "."
         return filename
+
+    def k_means(self, io, k, dry_run):
+        logger.info(f"k_means {k} {self}")
+        kmeans_vectors = DatasetDescriptor(
+            tablename=f"{self.get_filename()}kmeans_{k}.npy"
+        )
+        meta_filename = kmeans_vectors.tablename + ".json"
+        if not io.file_exist(kmeans_vectors.tablename) or not io.file_exist(meta_filename):
+            if dry_run:
+                return None, None, kmeans_vectors.tablename
+            x = io.get_dataset(self)
+            kmeans = faiss.Kmeans(d=x.shape[1], k=k, gpu=True)
+            _, t, _ = timer("k_means", lambda: kmeans.train(x))
+            io.write_nparray(kmeans.centroids, kmeans_vectors.tablename)
+            io.write_json({"k_means_time": t}, meta_filename)
+        else:
+            t = io.read_json(meta_filename)["k_means_time"]
+        return kmeans_vectors, t, None
