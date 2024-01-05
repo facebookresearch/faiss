@@ -78,6 +78,7 @@ outputs:
       run:
         - python {{ python }}
         - numpy >=1.19,<2
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
