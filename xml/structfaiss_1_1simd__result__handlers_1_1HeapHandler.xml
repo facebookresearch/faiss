@@ -279,18 +279,18 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="316" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="316" bodyend="337"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac986d29b1b1253b8f9f03c44f3486509" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::set_block_origin</definition>
-        <argsstring>(size_t i0, size_t j0)</argsstring>
+        <argsstring>(size_t i0_2, size_t j0_2)</argsstring>
         <name>set_block_origin</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>j0</declname>
+          <declname>j0_2</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -424,7 +424,7 @@
       <member refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a41a837ec51ed5f4e5e7a3695a8fd03cb" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>nq</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>q_map</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac986d29b1b1253b8f9f03c44f3486509" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>set_block_origin</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a826599a28cdb21613809bffd223128d8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>SIMDResultHandler</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a85e527b03ac85f7f45a73b9453433a5c" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>T</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a23abc38e0c0857182c02f20ee97d269e" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::HeapHandler</scope><name>TI</name></member>

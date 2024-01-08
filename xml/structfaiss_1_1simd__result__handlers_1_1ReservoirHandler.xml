@@ -288,18 +288,18 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="480" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="480" bodyend="526"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac986d29b1b1253b8f9f03c44f3486509" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::set_block_origin</definition>
-        <argsstring>(size_t i0, size_t j0)</argsstring>
+        <argsstring>(size_t i0_2, size_t j0_2)</argsstring>
         <name>set_block_origin</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>j0</declname>
+          <declname>j0_2</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -433,7 +433,7 @@
       <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>q_map</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1ad136f3a43541d2b04583d85f288e885f" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>ReservoirHandler</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1abf40bf6e6bbef180f91500ebaa1ace25" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>reservoirs</name></member>
-      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac986d29b1b1253b8f9f03c44f3486509" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>set_block_origin</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a826599a28cdb21613809bffd223128d8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>SIMDResultHandler</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1af9e6d615a4db258600af3951cb557bd0" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>T</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a952c02f0a27adf4c4e22b677c66a9100" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::ReservoirHandler</scope><name>TI</name></member>
