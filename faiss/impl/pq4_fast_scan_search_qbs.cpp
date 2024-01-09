@@ -123,7 +123,7 @@ void accumulate_q_4step(
     constexpr int Q4 = (QBS >> 12) & 15;
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         FixedStorageHandler<SQ, 2> res2;
         const uint8_t* LUT = LUT0;
         kernel_accumulate_block<Q1>(nsq, codes, LUT, res2, scaler);
@@ -156,7 +156,7 @@ void kernel_accumulate_block_loop(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         res.set_block_origin(0, j0);
         kernel_accumulate_block<NQ, ResultHandler>(
                 nsq, codes + j0 * nsq / 2, LUT, res, scaler);
@@ -243,7 +243,7 @@ void pq4_accumulate_loop_qbs(
 
     // default implementation where qbs is not known at compile time
 
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         const uint8_t* LUT = LUT0;
         int qi = qbs;
         int i0 = 0;

@@ -1199,6 +1199,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
               precompute_mode(precompute_mode),
               sel(sel) {
         this->store_pairs = store_pairs;
+        this->keep_max = is_similarity_metric(METRIC_TYPE);
     }
 
     void set_query(const float* query) override {

@@ -125,7 +125,7 @@ void accumulate_fixed_blocks(
         ResultHandler& res,
         const Scaler& scaler) {
     constexpr int bbs = 32 * BB;
-    for (int64_t j0 = 0; j0 < nb; j0 += bbs) {
+    for (size_t j0 = 0; j0 < nb; j0 += bbs) {
         FixedStorageHandler<NQ, 2 * BB> res2;
         kernel_accumulate_block<NQ, BB>(nsq, codes, LUT, res2, scaler);
         res.set_block_origin(0, j0);

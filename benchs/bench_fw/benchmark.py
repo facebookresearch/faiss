@@ -4,18 +4,17 @@
 # LICENSE file in the root directory of this source tree.
 
 import logging
+from copy import copy
 from dataclasses import dataclass
 from operator import itemgetter
 from statistics import median, mean
 from typing import Any, Dict, List, Optional
 
+from .utils import dict_merge
 from .index import Index, IndexFromCodec, IndexFromFactory
 from .descriptors import DatasetDescriptor, IndexDescriptor
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
-from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
-    knn_intersection_measure,
-)
 
 import numpy as np
 
@@ -90,26 +89,18 @@ def optimizer(op, search, cost_metric, perf_metric):
             continue
 
         logger.info(f"{cno=:4d} {str(parameters):50}: RUN")
-        cost, perf = search(
+        cost, perf, requires = search(
             parameters,
             cost_metric,
             perf_metric,
         )
+        if requires is not None:
+            return requires
         logger.info(
             f"{cno=:4d} {str(parameters):50}: DONE, {cost=:.3f} {perf=:.3f}"
         )
         op.add_operating_point(key, perf, cost)
-
-
-def distance_ratio_measure(I, R, D_GT, metric):
-    sum_of_R = np.sum(np.where(I >= 0, R, 0))
-    sum_of_D_GT = np.sum(np.where(I >= 0, D_GT, 0))
-    if metric == faiss.METRIC_INNER_PRODUCT:
-        return (sum_of_R / sum_of_D_GT).item()
-    elif metric == faiss.METRIC_L2:
-        return (sum_of_D_GT / sum_of_R).item()
-    else:
-        raise RuntimeError(f"unknown metric {metric}")
+    return None
 
 
 # range_metric possible values:
@@ -194,6 +185,7 @@ def get_range_search_metric_function(range_metric, D, R):
 
 @dataclass
 class Benchmark:
+    num_threads: int
     training_vectors: Optional[DatasetDescriptor] = None
     database_vectors: Optional[DatasetDescriptor] = None
     query_vectors: Optional[DatasetDescriptor] = None
@@ -233,7 +225,8 @@ class Benchmark:
         else:
             m_radius = range_metric
 
-        lims, D, I, R, P = self.range_search(
+        lims, D, I, R, P, _ = self.range_search(
+            False,
             index,
             parameters,
             radius=m_radius,
@@ -258,7 +251,8 @@ class Benchmark:
         )
 
     def estimate_range(self, index, parameters, range_scoring_radius):
-        D, I, R, P = index.knn_search(
+        D, I, R, P, _ = index.knn_search(
+            False,
             parameters,
             self.query_vectors,
             self.k,
@@ -275,10 +269,13 @@ class Benchmark:
 
     def range_search(
         self,
+        dry_run,
         index: Index,
         search_parameters: Optional[Dict[str, int]],
         radius: Optional[float] = None,
         gt_radius: Optional[float] = None,
+        range_search_metric_function = None,
+        gt_rsm = None,
     ):
         logger.info("range_search: begin")
         if radius is None:
@@ -293,16 +290,32 @@ class Benchmark:
                 )
             )
         logger.info(f"Radius={radius}")
-        return index.range_search(
+        lims, D, I, R, P, requires = index.range_search(
+            dry_run=dry_run,
             search_parameters=search_parameters,
             query_vectors=self.query_vectors,
             radius=radius,
         )
+        if requires is not None:
+            return None, None, None, None, None, requires
+        if range_search_metric_function is not None:
+            range_search_metric = range_search_metric_function(R)
+            range_search_pr = range_search_pr_curve(
+                D, range_search_metric, gt_rsm
+            )
+            range_score_sum = np.sum(range_search_metric).item()
+            P |= {
+                "range_score_sum": range_score_sum,
+                "range_score_max_recall": range_score_sum / gt_rsm,
+                "range_search_pr": range_search_pr,
+            }
+        return lims, D, I, R, P, requires
 
     def range_ground_truth(self, gt_radius, range_search_metric_function):
         logger.info("range_ground_truth: begin")
         flat_desc = self.get_index_desc("Flat")
-        lims, D, I, R, P = self.range_search(
+        lims, D, I, R, P, _ = self.range_search(
+            False,
             flat_desc.index,
             search_parameters=None,
             radius=gt_radius,
@@ -311,8 +324,97 @@ class Benchmark:
         logger.info("range_ground_truth: end")
         return gt_rsm
 
+    def knn_ground_truth(self):
+        logger.info("knn_ground_truth: begin")
+        flat_desc = self.get_index_desc("Flat")
+        self.build_index_wrapper(flat_desc)
+        self.gt_knn_D, self.gt_knn_I, _, _, requires = flat_desc.index.knn_search(
+            dry_run=False,
+            search_parameters=None,
+            query_vectors=self.query_vectors,
+            k=self.k,
+        )
+        assert requires is None
+        logger.info("knn_ground_truth: end")
+
+    def search_benchmark(
+        self, 
+        name,
+        search_func,
+        key_func,
+        cost_metrics,
+        perf_metrics,
+        results: Dict[str, Any], 
+        index: Index,
+    ):
+        index_name = index.get_index_name()
+        logger.info(f"{name}_benchmark: begin {index_name}")
+
+        def experiment(parameters, cost_metric, perf_metric):
+            nonlocal results
+            key = key_func(parameters)
+            if key in results["experiments"]:
+                metrics = results["experiments"][key]
+            else:
+                metrics, requires = search_func(parameters)
+                if requires is not None:
+                    return None, None, requires
+                results["experiments"][key] = metrics
+            return metrics[cost_metric], metrics[perf_metric], None
+
+        for cost_metric in cost_metrics:
+            for perf_metric in perf_metrics:
+                op = index.get_operating_points()
+                requires = optimizer(
+                    op,
+                    experiment,
+                    cost_metric,
+                    perf_metric,
+                )
+                if requires is not None:
+                    break
+        logger.info(f"{name}_benchmark: end")
+        return results, requires
+
+    def knn_search_benchmark(self, dry_run, results: Dict[str, Any], index: Index):
+        return self.search_benchmark(
+            name="knn_search",
+            search_func=lambda parameters: index.knn_search(
+                    dry_run, parameters, self.query_vectors, self.k, self.gt_knn_I, self.gt_knn_D,
+            )[3:],
+            key_func=lambda parameters: index.get_knn_search_name(
+                search_parameters=parameters,
+                query_vectors=self.query_vectors,
+                k=self.k,
+                reconstruct=False,
+            ),
+            cost_metrics=["time"],
+            perf_metrics=["knn_intersection", "distance_ratio"],
+            results=results,
+            index=index,
+        )
+
+    def reconstruct_benchmark(self, dry_run, results: Dict[str, Any], index: Index):
+        return self.search_benchmark(
+            name="reconstruct",
+            search_func=lambda parameters: index.reconstruct(
+                    dry_run, parameters, self.query_vectors, self.k, self.gt_knn_I,
+            ),
+            key_func=lambda parameters: index.get_knn_search_name(
+                search_parameters=parameters,
+                query_vectors=self.query_vectors,
+                k=self.k,
+                reconstruct=True,
+            ),
+            cost_metrics=["encode_time"],
+            perf_metrics=["sym_recall"],
+            results=results,
+            index=index,
+        )
+
     def range_search_benchmark(
         self,
+        dry_run,
         results: Dict[str, Any],
         index: Index,
         metric_key: str,
@@ -321,156 +423,178 @@ class Benchmark:
         range_search_metric_function,
         gt_rsm: float,
     ):
-        logger.info(f"range_search_benchmark: begin {index.get_index_name()}")
-
-        def experiment(parameters, cost_metric, perf_metric):
-            nonlocal results
-            key = index.get_range_search_name(
+        return self.search_benchmark(
+            name="range_search",
+            search_func=lambda parameters: self.range_search(
+                dry_run=dry_run, 
+                index=index, 
+                search_parameters=parameters, 
+                radius=radius,
+                gt_radius=gt_radius,
+                range_search_metric_function=range_search_metric_function, 
+                gt_rsm=gt_rsm,
+            )[4:],
+            key_func=lambda parameters: index.get_range_search_name(
                 search_parameters=parameters,
                 query_vectors=self.query_vectors,
                 radius=radius,
-            )
-            key += metric_key
-            if key in results["experiments"]:
-                metrics = results["experiments"][key]
-            else:
-                lims, D, I, R, P = self.range_search(
-                    index,
-                    parameters,
-                    radius=radius,
-                    gt_radius=gt_radius,
-                )
-                range_search_metric = range_search_metric_function(R)
-                range_search_pr = range_search_pr_curve(
-                    D, range_search_metric, gt_rsm
-                )
-                range_score_sum = np.sum(range_search_metric).item()
-                metrics = P | {
-                    "range_score_sum": range_score_sum,
-                    "range_score_max_recall": range_score_sum / gt_rsm,
-                    "range_search_pr": range_search_pr,
-                }
-                results["experiments"][key] = metrics
-            return metrics[cost_metric], metrics[perf_metric]
-
-        for cost_metric in ["time"]:
-            for perf_metric in ["range_score_max_recall"]:
-                op = index.get_operating_points()
-                optimizer(
-                    op,
-                    experiment,
-                    cost_metric,
-                    perf_metric,
-                )
-        logger.info("range_search_benchmark: end")
-        return results
-
-    def knn_ground_truth(self):
-        logger.info("knn_ground_truth: begin")
-        flat_desc = self.get_index_desc("Flat")
-        self.gt_knn_D, self.gt_knn_I, _, _ = flat_desc.index.knn_search(
-            search_parameters=None,
-            query_vectors=self.query_vectors,
-            k=self.k,
+            ) + metric_key,
+            cost_metrics=["time"],
+            perf_metrics=["range_score_max_recall"],
+            results=results,
+            index=index,
         )
-        logger.info("knn_ground_truth: end")
 
-    def knn_search_benchmark(self, results: Dict[str, Any], index: Index):
-        index_name = index.get_index_name()
-        logger.info(f"knn_search_benchmark: begin {index_name}")
-
-        def experiment(parameters, cost_metric, perf_metric):
-            nonlocal results
-            key = index.get_knn_search_name(
-                parameters,
-                self.query_vectors,
-                self.k,
+    def build_index_wrapper(self, index_desc: IndexDescriptor):
+        if hasattr(index_desc, 'index'):
+            return
+        if index_desc.factory is not None:
+            training_vectors = copy(self.training_vectors)
+            training_vectors.num_vectors = index_desc.training_size
+            index = IndexFromFactory(
+                num_threads=self.num_threads,
+                d=self.d,
+                metric=self.distance_metric,
+                database_vectors=self.database_vectors,
+                search_params=index_desc.search_params,
+                construction_params=index_desc.construction_params,
+                factory=index_desc.factory,
+                training_vectors=training_vectors,
             )
-            key += "knn"
-            if key in results["experiments"]:
-                metrics = results["experiments"][key]
+        else:
+            index = IndexFromCodec(
+                num_threads=self.num_threads,
+                d=self.d,
+                metric=self.distance_metric,
+                database_vectors=self.database_vectors,
+                search_params=index_desc.search_params,
+                construction_params=index_desc.construction_params,
+                path=index_desc.path,
+                bucket=index_desc.bucket,
+            )
+        index.set_io(self.io)
+        index_desc.index = index
+
+    def clone_one(self, index_desc):
+        benchmark = Benchmark(
+            num_threads=self.num_threads,
+            training_vectors=self.training_vectors,
+            database_vectors=self.database_vectors,
+            query_vectors=self.query_vectors,
+            index_descs = [self.get_index_desc("Flat"), index_desc],
+            range_ref_index_desc=self.range_ref_index_desc,
+            k=self.k,
+            distance_metric=self.distance_metric,
+        )
+        benchmark.set_io(self.io)
+        return benchmark
+
+    def benchmark_one(self, dry_run, results: Dict[str, Any], index_desc: IndexDescriptor, train, reconstruct, knn, range):
+        faiss.omp_set_num_threads(self.num_threads)
+        if not dry_run:
+            self.knn_ground_truth()
+        self.build_index_wrapper(index_desc)
+        meta, requires = index_desc.index.fetch_meta(dry_run=dry_run)
+        if requires is not None:
+            return results, (requires if train else None)
+        results["indices"][index_desc.index.get_codec_name()] = meta
+
+        # results, requires = self.reconstruct_benchmark(
+        #     dry_run=True,
+        #     results=results,
+        #     index=index_desc.index,
+        # )
+        # if reconstruct and requires is not None:
+        #     if dry_run:
+        #         return results, requires
+        #     else:
+        #         results, requires = self.reconstruct_benchmark(
+        #             dry_run=False,
+        #             results=results,
+        #             index=index_desc.index,
+        #         )
+        #         assert requires is None
+
+        results, requires = self.knn_search_benchmark(
+            dry_run=True,
+            results=results,
+            index=index_desc.index,
+        )
+        if knn and requires is not None:
+            if dry_run:
+                return results, requires
             else:
-                D, I, R, P = index.knn_search(
-                    parameters, self.query_vectors, self.k
+                results, requires = self.knn_search_benchmark(
+                    dry_run=False,
+                    results=results,
+                    index=index_desc.index,
                 )
-                metrics = P | {
-                    "knn_intersection": knn_intersection_measure(
-                        I, self.gt_knn_I
-                    ),
-                    "distance_ratio": distance_ratio_measure(
-                        I, R, self.gt_knn_D, self.distance_metric_type
-                    ),
-                }
-                results["experiments"][key] = metrics
-            return metrics[cost_metric], metrics[perf_metric]
+                assert requires is None
 
-        for cost_metric in ["time"]:
-            for perf_metric in ["knn_intersection", "distance_ratio"]:
-                op = index.get_operating_points()
-                optimizer(
-                    op,
-                    experiment,
-                    cost_metric,
-                    perf_metric,
-                )
-        logger.info("knn_search_benchmark: end")
-        return results
+        if self.range_ref_index_desc is None or not index_desc.index.supports_range_search():
+            return results, None
+        
+        ref_index_desc = self.get_index_desc(self.range_ref_index_desc)
+        if ref_index_desc is None:
+            raise ValueError(
+                f"Unknown range index {self.range_ref_index_desc}"
+            )
+        if ref_index_desc.range_metrics is None:
+            raise ValueError(
+                f"Range index {ref_index_desc.factory} has no radius_score"
+            )
+        for metric_key, range_metric in ref_index_desc.range_metrics.items():
+            (
+                gt_radius,
+                range_search_metric_function,
+                coefficients,
+                coefficients_training_data,
+            ) = self.range_search_reference(
+                ref_index_desc.index, ref_index_desc.search_params, range_metric
+            )
+            gt_rsm = self.range_ground_truth(
+                gt_radius, range_search_metric_function
+            )
+            results, requires = self.range_search_benchmark(
+                dry_run=True,
+                results=results,
+                index=index_desc.index,
+                metric_key=metric_key,
+                radius=index_desc.radius,
+                gt_radius=gt_radius,
+                range_search_metric_function=range_search_metric_function,
+                gt_rsm=gt_rsm,
+            )
+            if range and requires is not None:
+                if dry_run:
+                    return results, requires
+                else:
+                    results, requires = self.range_search_benchmark(
+                        dry_run=False,
+                        results=results,
+                        index=index_desc.index,
+                        metric_key=metric_key,
+                        radius=index_desc.radius,
+                        gt_radius=gt_radius,
+                        range_search_metric_function=range_search_metric_function,
+                        gt_rsm=gt_rsm,
+                    )
+                    assert requires is None
 
-    def train(self, results):
+        return results, None
+
+    def benchmark(self, result_file=None, local=False, train=False, reconstruct=False, knn=False, range=False):
+        logger.info("begin evaluate")
+
+        faiss.omp_set_num_threads(self.num_threads)
+        results = {"indices": {}, "experiments": {}}
         xq = self.io.get_dataset(self.query_vectors)
         self.d = xq.shape[1]
         if self.get_index_desc("Flat") is None:
             self.index_descs.append(IndexDescriptor(factory="Flat"))
-        for index_desc in self.index_descs:
-            if index_desc.factory is not None:
-                index = IndexFromFactory(
-                    d=self.d,
-                    metric=self.distance_metric,
-                    database_vectors=self.database_vectors,
-                    search_params=index_desc.search_params,
-                    construction_params=index_desc.construction_params,
-                    factory=index_desc.factory,
-                    training_vectors=self.training_vectors,
-                )
-                index.set_io(self.io)
-                index.train()
-                index_desc.index = index
-                results["indices"][index.get_codec_name()] = {
-                    "code_size": index.get_code_size()
-                }
-            else:
-                index = IndexFromCodec(
-                    d=self.d,
-                    metric=self.distance_metric,
-                    database_vectors=self.database_vectors,
-                    search_params=index_desc.search_params,
-                    construction_params=index_desc.construction_params,
-                    path=index_desc.path,
-                    bucket=index_desc.bucket,
-                )
-                index.set_io(self.io)
-                index_desc.index = index
-                results["indices"][index.get_codec_name()] = {
-                    "code_size": index.get_code_size()
-                }
-        return results
 
-    def benchmark(self, result_file=None):
-        logger.info("begin evaluate")
-
-        faiss.omp_set_num_threads(24)
-        results = {"indices": {}, "experiments": {}}
-        results = self.train(results)
-
-        # knn search
         self.knn_ground_truth()
-        for index_desc in self.index_descs:
-            results = self.knn_search_benchmark(
-                results=results,
-                index=index_desc.index,
-            )
 
-        # range search
         if self.range_ref_index_desc is not None:
             index_desc = self.get_index_desc(self.range_ref_index_desc)
             if index_desc is None:
@@ -498,19 +622,63 @@ class Benchmark:
                 gt_rsm = self.range_ground_truth(
                     gt_radius, range_search_metric_function
                 )
-                for index_desc in self.index_descs:
-                    if not index_desc.index.supports_range_search():
-                        continue
-                    results = self.range_search_benchmark(
-                        results=results,
-                        index=index_desc.index,
-                        metric_key=metric_key,
-                        radius=index_desc.radius,
-                        gt_radius=gt_radius,
-                        range_search_metric_function=range_search_metric_function,
-                        gt_rsm=gt_rsm,
-                    )
+
+        self.index_descs = list(dict.fromkeys(self.index_descs))
+
+        todo = self.index_descs
+        for index_desc in self.index_descs:
+            index_desc.requires = None
+
+        queued = set()
+        while todo:
+            current_todo = []
+            next_todo = []
+            for index_desc in todo:
+                results, requires = self.benchmark_one(
+                    dry_run=True,
+                    results=results,
+                    index_desc=index_desc,
+                    train=train,
+                    reconstruct=reconstruct,
+                    knn=knn,
+                    range=range,
+                )
+                if requires is None:
+                    continue
+                if requires in queued:
+                    if index_desc.requires != requires:
+                        index_desc.requires = requires
+                        next_todo.append(index_desc)
+                else:
+                    queued.add(requires)
+                    index_desc.requires = requires
+                    current_todo.append(index_desc)
+
+            if current_todo:
+                results_one = {"indices": {}, "experiments": {}}
+                params = [(self.clone_one(index_desc), results_one, index_desc, train, reconstruct, knn, range) for index_desc in current_todo]
+                for result in self.io.launch_jobs(run_benchmark_one, params, local=local):
+                    dict_merge(results, result)
+
+            todo = next_todo        
+
         if result_file is not None:
             self.io.write_json(results, result_file, overwrite=True)
         logger.info("end evaluate")
         return results
+
+def run_benchmark_one(params):
+    logger.info(params)
+    benchmark, results, index_desc, train, reconstruct, knn, range = params
+    results, requires = benchmark.benchmark_one(
+        dry_run=False,
+        results=results,
+        index_desc=index_desc,
+        train=train,
+        reconstruct=reconstruct,
+        knn=knn,
+        range=range,
+    )
+    assert requires is None
+    assert results is not None
+    return results

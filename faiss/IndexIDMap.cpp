@@ -266,7 +266,7 @@ void IndexIDMap2Template<IndexT>::reconstruct(
         typename IndexT::component_t* recons) const {
     try {
         this->index->reconstruct(rev_map.at(key), recons);
-    } catch (const std::out_of_range& e) {
+    } catch (const std::out_of_range&) {
         FAISS_THROW_FMT("key %" PRId64 " not found", key);
     }
 }
