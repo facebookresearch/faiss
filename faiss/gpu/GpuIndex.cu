@@ -236,7 +236,7 @@ void GpuIndex::search(
 
     bool usePaged = false;
 
-    if (!config.use_raft && getDeviceForAddress(x) == -1) {
+    if (!config_.use_raft && getDeviceForAddress(x) == -1) {
         // It is possible that the user is querying for a vector set size
         // `x` that won't fit on the GPU.
         // In this case, we will have to handle paging of the data from CPU
