@@ -129,18 +129,18 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="433" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="433" bodyend="434"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1afb94d2bece0a3f9b67d18e56b07ca806" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1a8de4ac3ce5047323e9b3940cee3faa6f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::SingleBestResultHandler&lt; C &gt;::begin_multiple</definition>
-        <argsstring>(size_t i0, size_t i1)</argsstring>
+        <argsstring>(size_t i0_2, size_t i1_2)</argsstring>
         <name>begin_multiple</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>i1</declname>
+          <declname>i1_2</declname>
         </param>
         <briefdescription>
 <para>begin </para>
@@ -151,10 +151,10 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="470" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="470" bodyend="477"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1a131abfe736b59787f6ecfdd904b56d30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::SingleBestResultHandler&lt; C &gt;::add_results</definition>
-        <argsstring>(size_t j0, size_t j1, const T *dis_tab)</argsstring>
+        <argsstring>(size_t j0, size_t j1, const T *dis_tab_2)</argsstring>
         <name>add_results</name>
         <param>
           <type>size_t</type>
@@ -166,7 +166,7 @@
         </param>
         <param>
           <type>const T *</type>
-          <declname>dis_tab</declname>
+          <declname>dis_tab_2</declname>
         </param>
         <briefdescription>
 <para>add results for query i0..i1 and j0..j1 </para>
@@ -224,8 +224,8 @@
     <location file="faiss/impl/ResultHandler.h" line="423" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="423" bodyend="510"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SingleBestResultHandler_1af8ce16ee76496cf6d88c31d28b38fa13" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>add_result</name></member>
-      <member refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1SingleBestResultHandler_1afb94d2bece0a3f9b67d18e56b07ca806" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1SingleBestResultHandler_1a131abfe736b59787f6ecfdd904b56d30" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1SingleBestResultHandler_1a8de4ac3ce5047323e9b3940cee3faa6f" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1a6991ce99f2d09662140d7bcc350fb4fd" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>dis_tab</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>end_multiple</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1a0236914ecf3495af1726ac295d191ad8" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler</scope><name>i0</name></member>

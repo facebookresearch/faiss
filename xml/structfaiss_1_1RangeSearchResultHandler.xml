@@ -152,18 +152,18 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="318" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="318" bodyend="319"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RangeSearchResultHandler_1a434ac5e298311235064017995ddf79bd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchResultHandler_1a8e1a5d564e17707da11f459e65155df3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::RangeSearchResultHandler&lt; C &gt;::begin_multiple</definition>
-        <argsstring>(size_t i0, size_t i1)</argsstring>
+        <argsstring>(size_t i0_2, size_t i1_2)</argsstring>
         <name>begin_multiple</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>i1</declname>
+          <declname>i1_2</declname>
         </param>
         <briefdescription>
 <para>begin </para>
@@ -247,7 +247,7 @@
     <location file="faiss/impl/ResultHandler.h" line="311" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="311" bodyend="414"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RangeSearchResultHandler_1a7c46ef731c3bf5c1bd59f4e808fefdb4" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1RangeSearchResultHandler_1a434ac5e298311235064017995ddf79bd" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1RangeSearchResultHandler_1a8e1a5d564e17707da11f459e65155df3" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1RangeSearchResultHandler_1aad807c4350be105808b4c3dcd2e0fc22" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>end_multiple</name></member>
       <member refid="structfaiss_1_1RangeSearchResultHandler_1aeaddbb9e865394421cc98838d81406e5" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>i0</name></member>
       <member refid="structfaiss_1_1RangeSearchResultHandler_1a7b55d3c3dc4c45f2cf90944b44c23948" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResultHandler</scope><name>i1</name></member>

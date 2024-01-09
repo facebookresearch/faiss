@@ -146,18 +146,18 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="35" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="35" bodyend="39"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapResultHandler_1a2fa17fd25eff46715a1b3b88dfc4eedd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapResultHandler_1a66a74df00c131f5bd50487b340c6b335" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::HeapResultHandler&lt; C &gt;::begin_multiple</definition>
-        <argsstring>(size_t i0, size_t i1)</argsstring>
+        <argsstring>(size_t i0_2, size_t i1_2)</argsstring>
         <name>begin_multiple</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>i1</declname>
+          <declname>i1_2</declname>
         </param>
         <briefdescription>
 <para>begin </para>
@@ -216,7 +216,7 @@
     <location file="faiss/impl/ResultHandler.h" line="25" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="25" bodyend="118"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HeapResultHandler_1a175725b38f325f77e02869162c882f35" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1HeapResultHandler_1a2fa17fd25eff46715a1b3b88dfc4eedd" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1HeapResultHandler_1a66a74df00c131f5bd50487b340c6b335" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1HeapResultHandler_1afe9de0572722bf758792cc308837f19a" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>end_multiple</name></member>
       <member refid="structfaiss_1_1HeapResultHandler_1ae1d478162b68bf1098d6c06e198a5eaf" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>heap_dis_tab</name></member>
       <member refid="structfaiss_1_1HeapResultHandler_1aa498c2bd1ebe22876788fed7644094b4" prot="public" virt="non-virtual"><scope>faiss::HeapResultHandler</scope><name>heap_ids_tab</name></member>

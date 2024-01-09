@@ -1636,7 +1636,7 @@
     <member refid="structfaiss_1_1HeapResultHandler_1a2e3601371cfac20a0ae5849e63f45885" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1HeapResultHandler_1ad9961c05ac842cf5082452ecdf615aed" kind="variable"><name>i1</name></member>
     <member refid="structfaiss_1_1HeapResultHandler_1a44b2fb8dbbdeed1e24098a0b942e0e3b" kind="function"><name>HeapResultHandler</name></member>
-    <member refid="structfaiss_1_1HeapResultHandler_1a2fa17fd25eff46715a1b3b88dfc4eedd" kind="function"><name>begin_multiple</name></member>
+    <member refid="structfaiss_1_1HeapResultHandler_1a66a74df00c131f5bd50487b340c6b335" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1HeapResultHandler_1a175725b38f325f77e02869162c882f35" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1HeapResultHandler_1afe9de0572722bf758792cc308837f19a" kind="function"><name>end_multiple</name></member>
   </compound>
@@ -7029,7 +7029,7 @@
     <member refid="structfaiss_1_1RangeSearchResultHandler_1ab6d7e380882862095bec7476ed452911" kind="variable"><name>j0s</name></member>
     <member refid="structfaiss_1_1RangeSearchResultHandler_1a87e0d7e1db2aca54bd173eadb211f123" kind="variable"><name>pr</name></member>
     <member refid="structfaiss_1_1RangeSearchResultHandler_1a79831dfe51d555aaae50e96b91e5e1d8" kind="function"><name>RangeSearchResultHandler</name></member>
-    <member refid="structfaiss_1_1RangeSearchResultHandler_1a434ac5e298311235064017995ddf79bd" kind="function"><name>begin_multiple</name></member>
+    <member refid="structfaiss_1_1RangeSearchResultHandler_1a8e1a5d564e17707da11f459e65155df3" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1RangeSearchResultHandler_1a7c46ef731c3bf5c1bd59f4e808fefdb4" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1RangeSearchResultHandler_1aad807c4350be105808b4c3dcd2e0fc22" kind="function"><name>end_multiple</name></member>
     <member refid="structfaiss_1_1RangeSearchResultHandler_1a9a016278fbad2c9f704db8671116a95b" kind="function"><name>~RangeSearchResultHandler</name></member>
@@ -7181,7 +7181,7 @@
     <member refid="structfaiss_1_1ReservoirResultHandler_1adb52e6cb81d3686ac4c68b2d0aca8930" kind="variable"><name>reservoir_ids</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1aab94bb46177cd8123463fc58803a954a" kind="variable"><name>reservoirs</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1a906953d6d83d03ec0d9b61d64c9a5cdb" kind="function"><name>ReservoirResultHandler</name></member>
-    <member refid="structfaiss_1_1ReservoirResultHandler_1ae2002e159553889c15336094af9f1fbb" kind="function"><name>begin_multiple</name></member>
+    <member refid="structfaiss_1_1ReservoirResultHandler_1aeac49111142e01330a49acacb19b7c86" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1a80aac2409af5a29d1a33123454bf8eaf" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1a3d76099781de68bfe494b0ceb39d8d49" kind="function"><name>end_multiple</name></member>
   </compound>
@@ -7822,8 +7822,8 @@
     <member refid="structfaiss_1_1SingleBestResultHandler_1a0236914ecf3495af1726ac295d191ad8" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1a12ad28a97b7daa13c4ae0b994f3bd99d" kind="variable"><name>i1</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1a3e550c78ab9192f992d37edac1f76667" kind="function"><name>SingleBestResultHandler</name></member>
-    <member refid="structfaiss_1_1SingleBestResultHandler_1afb94d2bece0a3f9b67d18e56b07ca806" kind="function"><name>begin_multiple</name></member>
-    <member refid="structfaiss_1_1SingleBestResultHandler_1abb6fa2c0633c14fb14e4d36a90305d72" kind="function"><name>add_results</name></member>
+    <member refid="structfaiss_1_1SingleBestResultHandler_1a8de4ac3ce5047323e9b3940cee3faa6f" kind="function"><name>begin_multiple</name></member>
+    <member refid="structfaiss_1_1SingleBestResultHandler_1a131abfe736b59787f6ecfdd904b56d30" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1af8ce16ee76496cf6d88c31d28b38fa13" kind="function"><name>add_result</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1a40705916cd65477044ed53079e43b97c" kind="function"><name>end_multiple</name></member>
   </compound>
@@ -7855,7 +7855,7 @@
     <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1adb17135248e9619ab47fbfcf6ba931aa" kind="variable"><name>res1</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a73147ffe2649988aabc73746bbe52cc2" kind="variable"><name>i</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a07043e077f51ac49d03bc469b8c8daf9" kind="function"><name>SingleResultHandler</name></member>
-    <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a2cf964c0de200b1ff4199f0d8ebcfc02" kind="function"><name>begin</name></member>
+    <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1af2c6308d01b109060eb6dccdbb19b389" kind="function"><name>begin</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a01709f88f10519d75aad56244a1f43ef" kind="function"><name>add_result</name></member>
     <member refid="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1ab37190d9eea955a68425dbe2d7f0d462" kind="function"><name>end</name></member>
   </compound>
@@ -7884,7 +7884,7 @@
     <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a620b83077cc40eef32895b59aa70363f" kind="variable"><name>min_idx</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a7396320be3edebd9047645143de29b11" kind="variable"><name>current_idx</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1adea5f22b93b3eecd31deb1c8cad34ee2" kind="function"><name>SingleResultHandler</name></member>
-    <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" kind="function"><name>begin</name></member>
+    <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1ad309ac7261d9279942208ce08b0aed7b" kind="function"><name>begin</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a8e2c620920a10e511756a58c876437d2" kind="function"><name>add_result</name></member>
     <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a7dd9242a6538709fae405a954fcd3bce" kind="function"><name>end</name></member>
   </compound>

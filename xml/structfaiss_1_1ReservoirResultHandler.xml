@@ -198,18 +198,18 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="201" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="201" bodyend="212"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ReservoirResultHandler_1ae2002e159553889c15336094af9f1fbb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ReservoirResultHandler_1aeac49111142e01330a49acacb19b7c86" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ReservoirResultHandler&lt; C &gt;::begin_multiple</definition>
-        <argsstring>(size_t i0, size_t i1)</argsstring>
+        <argsstring>(size_t i0_2, size_t i1_2)</argsstring>
         <name>begin_multiple</name>
         <param>
           <type>size_t</type>
-          <declname>i0</declname>
+          <declname>i0_2</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>i1</declname>
+          <declname>i1_2</declname>
         </param>
         <briefdescription>
 <para>begin </para>
@@ -268,7 +268,7 @@
     <location file="faiss/impl/ResultHandler.h" line="190" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="190" bodyend="304"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ReservoirResultHandler_1a80aac2409af5a29d1a33123454bf8eaf" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1ReservoirResultHandler_1ae2002e159553889c15336094af9f1fbb" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1ReservoirResultHandler_1aeac49111142e01330a49acacb19b7c86" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1ReservoirResultHandler_1aa0bc3249209f747be0f52d3437e83b36" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>capacity</name></member>
       <member refid="structfaiss_1_1ReservoirResultHandler_1a3d76099781de68bfe494b0ceb39d8d49" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>end_multiple</name></member>
       <member refid="structfaiss_1_1ReservoirResultHandler_1ad9472200868597ca5b7d1797f6aec860" prot="public" virt="non-virtual"><scope>faiss::ReservoirResultHandler</scope><name>heap_dis_tab</name></member>

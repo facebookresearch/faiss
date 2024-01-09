@@ -75,14 +75,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="443" column="9" bodyfile="faiss/impl/ResultHandler.h" bodystart="443" bodyend="443"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1ad309ac7261d9279942208ce08b0aed7b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::SingleBestResultHandler&lt; C &gt;::SingleResultHandler::begin</definition>
-        <argsstring>(const size_t current_idx)</argsstring>
+        <argsstring>(const size_t current_idx_2)</argsstring>
         <name>begin</name>
         <param>
           <type>const size_t</type>
-          <declname>current_idx</declname>
+          <declname>current_idx_2</declname>
         </param>
         <briefdescription>
 <para>begin results for query # i </para>
@@ -150,7 +150,7 @@
     <location file="faiss/impl/ResultHandler.h" line="436" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="436" bodyend="465"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a8e2c620920a10e511756a58c876437d2" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>add_result</name></member>
-      <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aae9c9960fa0f9794ae69ef2beb9009e7" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1ad309ac7261d9279942208ce08b0aed7b" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a7396320be3edebd9047645143de29b11" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>current_idx</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1a7dd9242a6538709fae405a954fcd3bce" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>end</name></member>
       <member refid="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler_1aee1414aedfc60f8902e544d64565c304" prot="public" virt="non-virtual"><scope>faiss::SingleBestResultHandler::SingleResultHandler</scope><name>hr</name></member>
