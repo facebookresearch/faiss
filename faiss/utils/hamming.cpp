@@ -271,10 +271,10 @@ void hammings_knn_mc(
         HCounterState<HammingComputer>& csi = cs[i];
 
         int nres = 0;
-        for (int b = 0; b < nBuckets && nres < k; b++) {
-            for (int l = 0; l < csi.counters[b] && nres < k; l++) {
-                labels[i * k + nres] = csi.ids_per_dis[b * k + l];
-                distances[i * k + nres] = b;
+        for (int b_2 = 0; b_2 < nBuckets && nres < k; b_2++) {
+            for (int l = 0; l < csi.counters[b_2] && nres < k; l++) {
+                labels[i * k + nres] = csi.ids_per_dis[b_2 * k + l];
+                distances[i * k + nres] = b_2;
                 nres++;
             }
         }
