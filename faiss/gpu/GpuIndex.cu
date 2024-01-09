@@ -64,7 +64,7 @@ GpuIndex::GpuIndex(
                     (config_.memorySpace == MemorySpace::Unified &&
                      getFullUnifiedMemSupport(config_.device)),
             "Device %d does not support full CUDA 8 Unified Memory (CC 6.0+)",
-            config.device);
+            config_.device);
 
     metric_arg = metricArg;
 

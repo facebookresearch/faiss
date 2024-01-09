@@ -33,7 +33,7 @@
 namespace faiss {
 namespace gpu {
 
-void validRowIndices(
+idx_t validRowIndices(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
         bool* validRows) {
@@ -53,6 +53,13 @@ void validRowIndices(
                 }
                 return true;
             });
+    idx_t n_rows_valid = thrust::reduce(
+            raft_handle.get_thrust_policy(),
+            validRows,
+            validRows + n_rows,
+            0);
+    
+    return n_rows_valid;
 }
 
 idx_t inplaceGatherFilteredRows(
@@ -66,13 +73,7 @@ idx_t inplaceGatherFilteredRows(
     auto valid_rows =
             raft::make_device_vector<bool, idx_t>(raft_handle, n_rows);
 
-    validRowIndices(res, vecs, valid_rows.data_handle());
-
-    idx_t n_rows_valid = thrust::reduce(
-            raft_handle.get_thrust_policy(),
-            valid_rows.data_handle(),
-            valid_rows.data_handle() + n_rows,
-            0);
+    idx_t n_rows_valid = validRowIndices(res, vecs, valid_rows.data_handle());
 
     if (n_rows_valid < n_rows) {
         auto gather_indices = raft::make_device_vector<idx_t, idx_t>(

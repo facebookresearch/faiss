@@ -387,7 +387,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         raft_idx_params.kmeans_n_iters = cp.niter;
         raft_idx_params.pq_bits = bitsPerCode_;
         raft_idx_params.pq_dim = subQuantizers_;
-        raft_idx_params.conservative_memory_allocation = true;
+        raft_idx_params.conservative_memory_allocation = false;
         raft_idx_params.add_data_on_build = false;
 
         auto raftIndex_ = std::static_pointer_cast<RaftIVFPQ, IVFPQ>(index_);
@@ -409,8 +409,8 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         raft::copy(
                 pq.get_centroids(0, 0),
                 raft_ivfpq_index.pq_centers().data_handle(),
-                subQuantizers_ * pq.dsub * utils::pow2(bitsPerCode_),
-                resources_->getDefaultStream(config_.device));
+                raft_ivfpq_index.pq_centers().size(),
+                raft_handle.get_stream());
         raft_handle.sync_stream();
         raftIndex_->setRaftIndex(std::move(raft_ivfpq_index));
     } else
@@ -554,14 +554,6 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
         }
     }
 
-    // Sub-quantizers must evenly divide dimensions available
-    FAISS_THROW_IF_NOT_FMT(
-            this->d % subQuantizers_ == 0,
-            "Number of sub-quantizers (%d) must be an "
-            "even divisor of the number of dimensions (%d)",
-            subQuantizers_,
-            this->d);
-
     // The number of bytes per encoded vector must be one we support
     FAISS_THROW_IF_NOT_FMT(
             ivfpqConfig_.interleavedLayout ||
@@ -571,6 +563,14 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
             subQuantizers_);
 
     if (!config_.use_raft) {
+        // Sub-quantizers must evenly divide dimensions available
+        FAISS_THROW_IF_NOT_FMT(
+                this->d % subQuantizers_ == 0,
+                "Number of sub-quantizers (%d) must be an "
+                "even divisor of the number of dimensions (%d)",
+                subQuantizers_,
+                this->d);
+
         // We must have enough shared memory on the current device to store
         // our lookup distances
         int lookupTableSize = sizeof(float);

@@ -73,10 +73,15 @@ void GpuIndexIVF::init_() {
         cp.spherical = true;
     }
 
-    // here we set a low # iterations because this is typically used
-    // for large clusterings
-    // (copying IndexIVF.cpp's Level1Quantizer
-    cp.niter = 10;
+    if (!config_.use_raft) {
+        // here we set a low # iterations because this is typically used
+        // for large clusterings
+        // (copying IndexIVF.cpp's Level1Quantizer
+        cp.niter = 10;
+    } else {
+        // set the number of iterations to RAFT's default for IVF methods
+        cp.niter = 20;
+    }
     cp.verbose = verbose;
 
     if (quantizer) {
@@ -420,8 +425,11 @@ void GpuIndexIVF::range_search_preassigned(
 }
 
 bool GpuIndexIVF::addImplRequiresIDs_() const {
-    // All IVF indices have storage for IDs
-    return true;
+    if (!config_.use_raft) {
+        // All IVF indices have storage for IDs
+        return true;
+    }
+    return this->ntotal != 0;
 }
 
 void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
