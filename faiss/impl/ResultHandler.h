@@ -82,10 +82,10 @@ struct HeapResultHandler {
     size_t i0, i1;
 
     /// begin
-    void begin_multiple(size_t i0, size_t i1) {
-        this->i0 = i0;
-        this->i1 = i1;
-        for (size_t i = i0; i < i1; i++) {
+    void begin_multiple(size_t i0_2, size_t i1_2) {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
+        for (size_t i = i0_2; i < i1_2; i++) {
             heap_heapify<C>(k, heap_dis_tab + i * k, heap_ids_tab + i * k);
         }
     }
@@ -231,13 +231,13 @@ struct ReservoirResultHandler {
         size_t i;
 
         /// begin results for query # i
-        void begin(size_t i) {
+        void begin(size_t i_2) {
             res1 = ReservoirTopN<C>(
                     hr.k,
                     hr.capacity,
                     reservoir_dis.data(),
                     reservoir_ids.data());
-            this->i = i;
+            this->i = i_2;
         }
 
         /// add one result for query i
@@ -264,18 +264,18 @@ struct ReservoirResultHandler {
     std::vector<ReservoirTopN<C>> reservoirs;
 
     /// begin
-    void begin_multiple(size_t i0, size_t i1) {
-        this->i0 = i0;
-        this->i1 = i1;
-        reservoir_dis.resize((i1 - i0) * capacity);
-        reservoir_ids.resize((i1 - i0) * capacity);
+    void begin_multiple(size_t i0_2, size_t i1_2) {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
+        reservoir_dis.resize((i1_2 - i0_2) * capacity);
+        reservoir_ids.resize((i1_2 - i0_2) * capacity);
         reservoirs.clear();
-        for (size_t i = i0; i < i1; i++) {
+        for (size_t i = i0_2; i < i1_2; i++) {
             reservoirs.emplace_back(
                     k,
                     capacity,
-                    reservoir_dis.data() + (i - i0) * capacity,
-                    reservoir_ids.data() + (i - i0) * capacity);
+                    reservoir_dis.data() + (i - i0_2) * capacity,
+                    reservoir_ids.data() + (i - i0_2) * capacity);
         }
     }
 
@@ -363,9 +363,9 @@ struct RangeSearchResultHandler {
     int pr = 0;
 
     /// begin
-    void begin_multiple(size_t i0, size_t i1) {
-        this->i0 = i0;
-        this->i1 = i1;
+    void begin_multiple(size_t i0_2, size_t i1_2) {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
     }
 
     /// add results for query i0..i1 and j0..j1
@@ -443,8 +443,8 @@ struct SingleBestResultHandler {
         SingleResultHandler(SingleBestResultHandler& hr) : hr(hr) {}
 
         /// begin results for query # i
-        void begin(const size_t current_idx) {
-            this->current_idx = current_idx;
+        void begin(const size_t current_idx_2) {
+            this->current_idx = current_idx_2;
             min_dis = HUGE_VALF;
             min_idx = -1;
         }
@@ -467,19 +467,19 @@ struct SingleBestResultHandler {
     size_t i0, i1;
 
     /// begin
-    void begin_multiple(size_t i0, size_t i1) {
-        this->i0 = i0;
-        this->i1 = i1;
+    void begin_multiple(size_t i0_2, size_t i1_2) {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
 
-        for (size_t i = i0; i < i1; i++) {
+        for (size_t i = i0_2; i < i1_2; i++) {
             this->dis_tab[i] = HUGE_VALF;
         }
     }
 
     /// add results for query i0..i1 and j0..j1
-    void add_results(size_t j0, size_t j1, const T* dis_tab) {
+    void add_results(size_t j0, size_t j1, const T* dis_tab_2) {
         for (int64_t i = i0; i < i1; i++) {
-            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+            const T* dis_tab_i = dis_tab_2 + (j1 - j0) * (i - i0) - j0;
 
             auto& min_distance = this->dis_tab[i];
             auto& min_index = this->ids_tab[i];

@@ -710,8 +710,8 @@ struct SimilarityL2<8> {
         accu8 = _mm256_fmadd_ps(tmp, tmp, accu8);
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components_2(__m256 x, __m256 y) {
-        __m256 tmp = _mm256_sub_ps(y, x);
+    FAISS_ALWAYS_INLINE void add_8_components_2(__m256 x, __m256 y_2) {
+        __m256 tmp = _mm256_sub_ps(y_2, x);
         accu8 = _mm256_fmadd_ps(tmp, tmp, accu8);
     }
 
