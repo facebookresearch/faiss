@@ -10,7 +10,7 @@ set -e
 # Build swigfaiss.so/swigfaiss_avx2.so/swigfaiss_avx512
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
-      -DFAISS_OPT_LEVEL=avx2 \
+      -DFAISS_OPT_LEVEL=avx512 \
       -DFAISS_ENABLE_GPU=OFF \
       -DOpenMP_CXX_FLAGS=-fopenmp=libiomp5 \
       -DOpenMP_CXX_LIB_NAMES=libiomp5 \
