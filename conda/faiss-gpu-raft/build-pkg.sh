@@ -7,7 +7,7 @@
 set -e
 
 
-# Build swigfaiss.so/swigfaiss_avx2.so.
+# Build swigfaiss.so/swigfaiss_avx2.so/swigfaiss_avx512.so
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
       -DFAISS_OPT_LEVEL=avx2 \
@@ -17,7 +17,7 @@ cmake -B _build_python_${PY_VER} \
       -DPython_EXECUTABLE=$PYTHON \
       faiss/python
 
-make -C _build_python_${PY_VER} -j$(nproc) swigfaiss swigfaiss_avx2
+make -C _build_python_${PY_VER} -j$(nproc) swigfaiss swigfaiss_avx2 swigfaiss_avx512
 
 # Build actual python module.
 cd _build_python_${PY_VER}/
