@@ -8762,13 +8762,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d138" kind="namespace"><name>faiss::@138</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d154" kind="namespace"><name>faiss::@154</name>
+  <compound refid="namespacefaiss_1_1_0d139" kind="namespace"><name>faiss::@139</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d155" kind="namespace"><name>faiss::@155</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d156" kind="namespace"><name>faiss::@156</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d157" kind="namespace"><name>faiss::@157</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -9405,6 +9405,8 @@
   <compound refid="extra__distances-inl_8h" kind="file"><name>extra_distances-inl.h</name>
   </compound>
   <compound refid="extra__distances_8h" kind="file"><name>extra_distances.h</name>
+  </compound>
+  <compound refid="fp16-arm_8h" kind="file"><name>fp16-arm.h</name>
   </compound>
   <compound refid="fp16-fp16c_8h" kind="file"><name>fp16-fp16c.h</name>
   </compound>

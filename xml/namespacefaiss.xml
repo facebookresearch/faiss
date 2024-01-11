@@ -5348,7 +5348,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/fp16-fp16c.h" line="15" column="17" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="15" bodyend="20"/>
+        <location file="faiss/utils/fp16-arm.h" line="15" column="17" bodyfile="faiss/utils/fp16-arm.h" bodystart="15" bodyend="20"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac3f112424a7957effd27187654d90986" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -5365,7 +5365,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/fp16-fp16c.h" line="22" column="14" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="22" bodyend="26"/>
+        <location file="faiss/utils/fp16-arm.h" line="22" column="14" bodyfile="faiss/utils/fp16-arm.h" bodystart="22" bodyend="27"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
