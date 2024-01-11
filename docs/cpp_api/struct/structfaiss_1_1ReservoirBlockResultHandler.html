@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct faiss::ReservoirResultHandler::SingleResultHandler &mdash; Faiss  documentation</title>
+  <title>Struct faiss::ReservoirBlockResultHandler &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1ReservoirBlockResultHandler.html" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::ReservoirTopN" href="structfaiss_1_1ReservoirTopN.html" />
-    <link rel="prev" title="Struct faiss::ReservoirResultHandler" href="structfaiss_1_1ReservoirResultHandler.html" /> 
+    <link rel="next" title="Struct faiss::ReservoirBlockResultHandler::SingleResultHandler" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html" />
+    <link rel="prev" title="Struct faiss::ReproduceDistancesObjective" href="structfaiss_1_1ReproduceDistancesObjective.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockResultHandler.html">Struct faiss::BlockResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList.html">Struct faiss::BufferList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList_1_1Buffer.html">Struct faiss::BufferList::Buffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOReader.html">Struct faiss::BufferedIOReader</a></li>
@@ -117,8 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler.html">Struct faiss::HeapResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler.html">Struct faiss::HeapBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets.html">Struct faiss::HeapWithBuckets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16.html">Struct faiss::HeapWithBucketsForHamming16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
@@ -172,6 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized.html">Struct faiss::IndexIVFFastScan::CoarseQuantized</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFIndependentQuantizer.html">Struct faiss::IndexIVFIndependentQuantizer</a></li>
@@ -275,21 +277,23 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeQueryResult.html">Struct faiss::RangeQueryResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler.html">Struct faiss::RangeSearchBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchPartialResult.html">Struct faiss::RangeSearchPartialResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResult.html">Struct faiss::RangeSearchResult</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler.html">Struct faiss::RangeSearchResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeat.html">Struct faiss::Repeat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeats.html">Struct faiss::Repeats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReproduceDistancesObjective.html">Struct faiss::ReproduceDistancesObjective</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler.html">Struct faiss::ReservoirResultHandler</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::ReservoirResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::ReservoirBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirTopN.html">Struct faiss::ReservoirTopN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualQuantizer.html">Struct faiss::ResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResultHandler.html">Struct faiss::ResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandler.html">Struct faiss::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html">Struct faiss::SIMDResultHandlerToFloat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer.html">Struct faiss::ScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer.html">Struct faiss::ScalarQuantizer::SQDistanceComputer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQuantizer.html">Struct faiss::ScalarQuantizer::SQuantizer</a></li>
@@ -301,10 +305,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler.html">Struct faiss::SingleBestResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler.html">Struct faiss::SingleBestResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
@@ -370,11 +374,12 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html">Struct faiss::simd_result_handlers::DummyResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html">Struct faiss::simd_result_handlers::FixedStorageHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1HeapHandler.html">Struct faiss::simd_result_handlers::HeapHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler.html">Struct faiss::simd_result_handlers::PartialRangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler.html">Struct faiss::simd_result_handlers::RangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet.html">Struct faiss::simd_result_handlers::RangeHandler::Triplet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler.html">Struct faiss::simd_result_handlers::ReservoirHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN.html">Struct faiss::simd_result_handlers::ReservoirTopN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler.html">Struct faiss::simd_result_handlers::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare.html">Struct faiss::simd_result_handlers::ResultHandlerCompare</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler.html">Struct faiss::simd_result_handlers::SingleResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result.html">Struct faiss::simd_result_handlers::SingleResultHandler::Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html">Struct faiss::simd_result_handlers::StoreResultHandler</a></li>
 </ul>
 </li>
@@ -395,9 +400,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
-      <li class="breadcrumb-item active">Struct faiss::ReservoirResultHandler::SingleResultHandler</li>
+      <li class="breadcrumb-item active">Struct faiss::ReservoirBlockResultHandler</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/cpp_api/struct/structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1ReservoirBlockResultHandler.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -405,65 +410,224 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-faiss-reservoirresulthandler-singleresulthandler">
-<h1>Struct faiss::ReservoirResultHandler::SingleResultHandler<a class="headerlink" href="#struct-faiss-reservoirresulthandler-singleresulthandler" title="Permalink to this heading"></a></h1>
+  <section id="struct-faiss-reservoirblockresulthandler">
+<h1>Struct faiss::ReservoirBlockResultHandler<a class="headerlink" href="#struct-faiss-reservoirblockresulthandler" title="Permalink to this heading"></a></h1>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandlerE">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandlerE"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandlerE"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandlerE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE">
+<span id="_CPPv3I0EN5faiss27ReservoirBlockResultHandlerE"></span><span id="_CPPv2I0EN5faiss27ReservoirBlockResultHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirBlockResultHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss18BlockResultHandlerE" title="faiss::BlockResultHandler"><span class="n"><span class="pre">BlockResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler1TE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler1TE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler1TE"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1aad28f6205a34cb96f6b45fc8117291fc"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler2TIE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler2TIE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler2TIE"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1ae75968edc7c0f1eae52616f2e0c9ce7c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler19SingleResultHandlerER22ReservoirResultHandler">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler19SingleResultHandlerER22ReservoirResultHandler"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler19SingleResultHandlerER22ReservoirResultHandler"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::SingleResultHandler__ReservoirResultHandlerR"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a07043e077f51ac49d03bc469b8c8daf9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ReservoirResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler19SingleResultHandlerER22ReservoirResultHandler" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler27ReservoirBlockResultHandlerE6size_tP1TP2TI6size_t">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler27ReservoirBlockResultHandlerE6size_tP1TP2TI6size_t"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler27ReservoirBlockResultHandlerE6size_tP1TP2TI6size_t"></span><span id="faiss::ReservoirBlockResultHandler::ReservoirBlockResultHandler__s.TP.TIP.s"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1ab40249847e88ab5c9b514e5991300cd8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirBlockResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nq</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler1TE" title="faiss::ReservoirBlockResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_dis_tab</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_ids_tab</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler5beginE6size_t">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler5beginE6size_t"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler5beginE6size_t"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::begin__s"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1af2c6308d01b109060eb6dccdbb19b389"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler5beginE6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>begin results for query # i </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler14begin_multipleE6size_t6size_t">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler14begin_multipleE6size_t6size_t"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler14begin_multipleE6size_t6size_t"></span><span id="faiss::ReservoirBlockResultHandler::begin_multiple__s.s"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a476d712ab91b0eaf66986bb6ff3e2a2f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin_multiple</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0_2</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i1_2</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>begin </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler10add_resultE1T2TI">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::add_result__T.TI"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a01709f88f10519d75aad56244a1f43ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_result</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dis</span></span>, <span class="n"><span class="pre">TI</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler10add_resultE1T2TI" title="Permalink to this definition"></a><br /></dt>
-<dd><p>add one result for query i </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPK1T">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPK1T"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPK1T"></span><span id="faiss::ReservoirBlockResultHandler::add_results__s.s.TCP"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1afd0e8eec3f749481370f9e4e58e757da"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_results</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler1TE" title="faiss::ReservoirBlockResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dis_tab</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>add results for query i0..i1 and j0..j1 </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler3endEv">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler3endEv"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler3endEv"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::end"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1ab37190d9eea955a68425dbe2d7f0d462"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler3endEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>series of results for query i is done </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler12end_multipleEv">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler12end_multipleEv"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler12end_multipleEv"></span><span id="faiss::ReservoirBlockResultHandler::end_multiple"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a69f72c11d4157d8294b192341a905534"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end_multiple</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><br /></dt>
+<dd><p>series of results for queries i0..i1 is done </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPKN1C1TE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPKN1C1TE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler11add_resultsE6size_t6size_tPKN1C1TE"></span><span id="faiss::ReservoirBlockResultHandler::add_results__s.s.C::TCP"></span><span class="target" id="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_results</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span>, <span class="n"><span class="pre">size_t</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">*</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler2hrE">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler2hrE"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler2hrE"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::hr__ReservoirResultHandlerR"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a5459f5fd3bdf5c8694c958d503c01ddf"></span><span class="n"><span class="pre">ReservoirResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hr</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler2hrE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler12heap_dis_tabE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler12heap_dis_tabE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler12heap_dis_tabE"></span><span id="faiss::ReservoirBlockResultHandler::heap_dis_tab__TP"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a1a26ad7793cd4e9069afbf73935e3a91"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler1TE" title="faiss::ReservoirBlockResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_dis_tab</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_disE">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_disE"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_disE"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::reservoir_dis__std::vector:T:"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a09cade486607073c362622aa2e899819"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_dis</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_disE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler12heap_ids_tabE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler12heap_ids_tabE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler12heap_ids_tabE"></span><span id="faiss::ReservoirBlockResultHandler::heap_ids_tab__TIP"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1af19dc7231aaefa47cc0ef9e7bd34ace9"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_ids_tab</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_idsE">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_idsE"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_idsE"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::reservoir_ids__std::vector:TI:"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a8d45244df1f1156b9e5aa273de8ccd4b"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TI</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_ids</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler13reservoir_idsE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler1kE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler1kE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler1kE"></span><span id="faiss::ReservoirBlockResultHandler::k__int64_t"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a4f12999d24ae9bb7affdee06132e6649"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler4res1E">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler4res1E"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler4res1E"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::res1__ReservoirTopN:C:"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1adb17135248e9619ab47fbfcf6ba931aa"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ReservoirTopNE" title="faiss::ReservoirTopN"><span class="n"><span class="pre">ReservoirTopN</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">res1</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler4res1E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler8capacityE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler8capacityE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler8capacityE"></span><span id="faiss::ReservoirBlockResultHandler::capacity__s"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a34123799b1fc7d64482c1a06e77733f2"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler1iE">
-<span id="_CPPv3N5faiss22ReservoirResultHandler19SingleResultHandler1iE"></span><span id="_CPPv2N5faiss22ReservoirResultHandler19SingleResultHandler1iE"></span><span id="faiss::ReservoirResultHandler::SingleResultHandler::i__s"></span><span class="target" id="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler_1a73147ffe2649988aabc73746bbe52cc2"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22ReservoirResultHandler19SingleResultHandler1iE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler13reservoir_disE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler13reservoir_disE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler13reservoir_disE"></span><span id="faiss::ReservoirBlockResultHandler::reservoir_dis__std::vector:T:"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1ad8d20fb6e4cf02875fd7abc1a60b213a"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler1TE" title="faiss::ReservoirBlockResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_dis</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler13reservoir_idsE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler13reservoir_idsE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler13reservoir_idsE"></span><span id="faiss::ReservoirBlockResultHandler::reservoir_ids__std::vector:TI:"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1acda221cc0d179f86494ab5472a18102b"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_ids</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler10reservoirsE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler10reservoirsE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler10reservoirsE"></span><span id="faiss::ReservoirBlockResultHandler::reservoirs__std::vector:ReservoirTopN:C::"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1a00a2023a6698163aa26160cc11fc7df7"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ReservoirTopNE" title="faiss::ReservoirTopN"><span class="n"><span class="pre">ReservoirTopN</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoirs</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler2nqE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler2nqE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler2nqE"></span><span id="faiss::ReservoirBlockResultHandler::nq__s"></span><span class="target" id="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nq</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler2i0E">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler2i0E"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler2i0E"></span><span id="faiss::ReservoirBlockResultHandler::i0__s"></span><span class="target" id="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler2i1E">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler2i1E"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler2i1E"></span><span id="faiss::ReservoirBlockResultHandler::i1__s"></span><span class="target" id="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandlerE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandlerE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandlerE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ReservoirTopNE" title="faiss::ReservoirTopN"><span class="n"><span class="pre">ReservoirTopN</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1aa69a045c4e21d83e1105c3c6bfdf1e65"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a1177b732a5a783a10e2bcf9a575558ca"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler19SingleResultHandlerER27ReservoirBlockResultHandler">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler19SingleResultHandlerER27ReservoirBlockResultHandler"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler19SingleResultHandlerER27ReservoirBlockResultHandler"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::SingleResultHandler__ReservoirBlockResultHandlerR"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1af68834a693f52479a28fabbaa7585471"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler"><span class="n"><span class="pre">ReservoirBlockResultHandler</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hr</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler5beginE6size_t">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler5beginE6size_t"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler5beginE6size_t"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::begin__s"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a6f93ae7c6aad24241e383459c39673de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">qno</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>begin results for query # i </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler3endEv">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler3endEv"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler3endEv"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::end"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a6fe4729f1f7cc619f3bf628d1d2d04a4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>series of results for query qno is done </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler10add_resultE1T2TI">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::add_result__T.TI"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler3addE1T2TI">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler3addE1T2TI"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler3addE1T2TI"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::add__T.TI"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler12shrink_fuzzyEv">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler12shrink_fuzzyEv"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler12shrink_fuzzyEv"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::shrink_fuzzy"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a245c853afda40ce193a7f39944bb82c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink_fuzzy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler6shrinkEv">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler6shrinkEv"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler6shrinkEv"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::shrink"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1ac2089937fa4314560faec451e42f471d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss27ReservoirBlockResultHandler19SingleResultHandler9to_resultEP1TP2TI">
+<span id="_CPPv3NK5faiss27ReservoirBlockResultHandler19SingleResultHandler9to_resultEP1TP2TI"></span><span id="_CPPv2NK5faiss27ReservoirBlockResultHandler19SingleResultHandler9to_resultEP1TP2TI"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::to_result__TP.TIPC"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a7a14b612f7b55a1034d9ff85568b1d68"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_dis</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_ids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2hrE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler2hrE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler2hrE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::hr__ReservoirBlockResultHandlerR"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a550bcf9e2a6231aef725a151d9abb2f3"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler"><span class="n"><span class="pre">ReservoirBlockResultHandler</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hr</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_disE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_disE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_disE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::reservoir_dis__std::vector:T:"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1aa7fd34d7b32e2b1bbe8ceda527ec7e45"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_dis</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_idsE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_idsE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler13reservoir_idsE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::reservoir_ids__std::vector:TI:"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a4f444511d9b3621765a68633b4cf1219"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoir_ids</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler3qnoE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler3qnoE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler3qnoE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::qno__s"></span><span class="target" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a31a7fa3bdb831ca777e15380d25154ab"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">qno</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler4valsE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler4valsE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler4valsE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::vals__TP"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1ada9e507ee559be6ff0280dabfd04c6d6"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1TE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">vals</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler3idsE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler3idsE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler3idsE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::ids__TIP"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1abfb7e50f5e60feb25eee99e1abe3698a"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler2TIE" title="faiss::ReservoirBlockResultHandler::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ids</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1iE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler1iE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler1iE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::i__s"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a251b7eaf31199ab93b7d421d9451a76c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler1nE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler1nE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler1nE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::n__s"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1ab1c6355a289cd09717c65372f2864ad1"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler8capacityE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler8capacityE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler8capacityE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::capacity__s"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1af1917705e1d452fde77df5433e197c47"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss27ReservoirBlockResultHandler19SingleResultHandler9thresholdE">
+<span id="_CPPv3N5faiss27ReservoirBlockResultHandler19SingleResultHandler9thresholdE"></span><span id="_CPPv2N5faiss27ReservoirBlockResultHandler19SingleResultHandler9thresholdE"></span><span id="faiss::ReservoirBlockResultHandler::SingleResultHandler::threshold__C::T"></span><span class="target" id="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss27ReservoirBlockResultHandlerE" title="faiss::ReservoirBlockResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threshold</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -472,8 +636,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1ReservoirResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::ReservoirResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="structfaiss_1_1ReservoirTopN.html" class="btn btn-neutral float-right" title="Struct faiss::ReservoirTopN" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1ReproduceDistancesObjective.html" class="btn btn-neutral float-left" title="Struct faiss::ReproduceDistancesObjective" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html" class="btn btn-neutral float-right" title="Struct faiss::ReservoirBlockResultHandler::SingleResultHandler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

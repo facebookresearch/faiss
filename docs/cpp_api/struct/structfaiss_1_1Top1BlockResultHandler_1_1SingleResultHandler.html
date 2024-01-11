@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct faiss::ReconstructFromNeighbors &mdash; Faiss  documentation</title>
+  <title>Struct faiss::Top1BlockResultHandler::SingleResultHandler &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1ReconstructFromNeighbors.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::RemapDimensionsTransform" href="structfaiss_1_1RemapDimensionsTransform.html" />
-    <link rel="prev" title="Struct faiss::ReadOnlyInvertedLists" href="structfaiss_1_1ReadOnlyInvertedLists.html" /> 
+    <link rel="next" title="Struct faiss::TransformedVectors" href="structfaiss_1_1TransformedVectors.html" />
+    <link rel="prev" title="Struct faiss::Top1BlockResultHandler" href="structfaiss_1_1Top1BlockResultHandler.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockResultHandler.html">Struct faiss::BlockResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList.html">Struct faiss::BufferList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList_1_1Buffer.html">Struct faiss::BufferList::Buffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOReader.html">Struct faiss::BufferedIOReader</a></li>
@@ -117,8 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler.html">Struct faiss::HeapResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler.html">Struct faiss::HeapBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets.html">Struct faiss::HeapWithBuckets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16.html">Struct faiss::HeapWithBucketsForHamming16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
@@ -172,6 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized.html">Struct faiss::IndexIVFFastScan::CoarseQuantized</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFIndependentQuantizer.html">Struct faiss::IndexIVFIndependentQuantizer</a></li>
@@ -275,21 +277,23 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeQueryResult.html">Struct faiss::RangeQueryResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler.html">Struct faiss::RangeSearchBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchPartialResult.html">Struct faiss::RangeSearchPartialResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResult.html">Struct faiss::RangeSearchResult</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler.html">Struct faiss::RangeSearchResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeat.html">Struct faiss::Repeat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeats.html">Struct faiss::Repeats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReproduceDistancesObjective.html">Struct faiss::ReproduceDistancesObjective</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler.html">Struct faiss::ReservoirResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler.html">Struct faiss::ReservoirBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirTopN.html">Struct faiss::ReservoirTopN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualQuantizer.html">Struct faiss::ResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResultHandler.html">Struct faiss::ResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandler.html">Struct faiss::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html">Struct faiss::SIMDResultHandlerToFloat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer.html">Struct faiss::ScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer.html">Struct faiss::ScalarQuantizer::SQDistanceComputer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQuantizer.html">Struct faiss::ScalarQuantizer::SQuantizer</a></li>
@@ -301,10 +305,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler.html">Struct faiss::SingleBestResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler.html">Struct faiss::SingleBestResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
@@ -370,11 +374,12 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html">Struct faiss::simd_result_handlers::DummyResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html">Struct faiss::simd_result_handlers::FixedStorageHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1HeapHandler.html">Struct faiss::simd_result_handlers::HeapHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler.html">Struct faiss::simd_result_handlers::PartialRangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler.html">Struct faiss::simd_result_handlers::RangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet.html">Struct faiss::simd_result_handlers::RangeHandler::Triplet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler.html">Struct faiss::simd_result_handlers::ReservoirHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN.html">Struct faiss::simd_result_handlers::ReservoirTopN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler.html">Struct faiss::simd_result_handlers::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare.html">Struct faiss::simd_result_handlers::ResultHandlerCompare</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler.html">Struct faiss::simd_result_handlers::SingleResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result.html">Struct faiss::simd_result_handlers::SingleResultHandler::Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html">Struct faiss::simd_result_handlers::StoreResultHandler</a></li>
 </ul>
 </li>
@@ -395,9 +400,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
-      <li class="breadcrumb-item active">Struct faiss::ReconstructFromNeighbors</li>
+      <li class="breadcrumb-item active">Struct faiss::Top1BlockResultHandler::SingleResultHandler</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/cpp_api/struct/structfaiss_1_1ReconstructFromNeighbors.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -405,116 +410,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-faiss-reconstructfromneighbors">
-<h1>Struct faiss::ReconstructFromNeighbors<a class="headerlink" href="#struct-faiss-reconstructfromneighbors" title="Permalink to this heading"></a></h1>
+  <section id="struct-faiss-top1blockresulthandler-singleresulthandler">
+<h1>Struct faiss::Top1BlockResultHandler::SingleResultHandler<a class="headerlink" href="#struct-faiss-top1blockresulthandler-singleresulthandler" title="Permalink to this heading"></a></h1>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighborsE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighborsE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighborsE"></span><span id="faiss::ReconstructFromNeighbors"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReconstructFromNeighbors</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandlerE">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandlerE"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandlerE"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ResultHandlerE" title="faiss::ResultHandler"><span class="n"><span class="pre">ResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandlerE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors13storage_idx_tE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors13storage_idx_tE"></span><span id="faiss::ReconstructFromNeighbors::storage_idx_t"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a799355a749bf0e6632e7d2deeb0e7a0f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="../file/HNSW_8h.html#_CPPv4N5faiss4HNSWE" title="faiss::HNSW"><span class="n"><span class="pre">HNSW</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/HNSW_8h.html#_CPPv4N5faiss4HNSW13storage_idx_tE" title="faiss::HNSW::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">storage_idx_t</span></span></span><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors24ReconstructFromNeighborsERK9IndexHNSW6size_t6size_t">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors24ReconstructFromNeighborsERK9IndexHNSW6size_t6size_t"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors24ReconstructFromNeighborsERK9IndexHNSW6size_t6size_t"></span><span id="faiss::ReconstructFromNeighbors::ReconstructFromNeighbors__IndexHNSWCR.s.s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a8c02da3c304ddf56e8bc4e51bebc07ad"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReconstructFromNeighbors</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss9IndexHNSWE" title="faiss::IndexHNSW"><span class="n"><span class="pre">IndexHNSW</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">256</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nsq</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler19SingleResultHandlerER22Top1BlockResultHandler">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler19SingleResultHandlerER22Top1BlockResultHandler"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler19SingleResultHandlerER22Top1BlockResultHandler"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::SingleResultHandler__Top1BlockResultHandlerR"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a92d668dbefd4145d780b38120c7485ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Top1BlockResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler19SingleResultHandlerER22Top1BlockResultHandler" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors9add_codesE6size_tPKf">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors9add_codesE6size_tPKf"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors9add_codesE6size_tPKf"></span><span id="faiss::ReconstructFromNeighbors::add_codes__s.floatCP"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a454b7a5f7437a257df7404f5778fc833"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_codes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>codes must be added in the correct order and the <a class="reference internal" href="structfaiss_1_1IndexHNSW.html#structfaiss_1_1IndexHNSW"><span class="std std-ref">IndexHNSW</span></a> must be populated and sorted </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler5beginEK6size_t">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler5beginEK6size_t"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler5beginEK6size_t"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::begin__sC"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a2fd9d6de3769b1816d7da8b56a1f7a8a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">current_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler5beginEK6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>begin results for query # i </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss24ReconstructFromNeighbors17compute_distancesE6size_tPK5idx_tPKfPf">
-<span id="_CPPv3NK5faiss24ReconstructFromNeighbors17compute_distancesE6size_tPK5idx_tPKfPf"></span><span id="_CPPv2NK5faiss24ReconstructFromNeighbors17compute_distancesE6size_tPK5idx_tPKfPf"></span><span id="faiss::ReconstructFromNeighbors::compute_distances__s.idx_tCP.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1ad4ba74fb24c09e638acccb6d92052e2d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_distances</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">shortlist</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">query</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss24ReconstructFromNeighbors13estimate_codeEPKf13storage_idx_tP7uint8_t">
-<span id="_CPPv3NK5faiss24ReconstructFromNeighbors13estimate_codeEPKf13storage_idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss24ReconstructFromNeighbors13estimate_codeEPKf13storage_idx_tP7uint8_t"></span><span id="faiss::ReconstructFromNeighbors::estimate_code__floatCP.storage_idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a4b4b324ee73095e95c6692a75556f330"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estimate_code</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE" title="faiss::ReconstructFromNeighbors::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>called by add_codes </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler10add_resultE1T2TI">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::add_result__T.TI"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a10eaa9a99e97f7670d7b2b705f1f0287"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_result</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dis</span></span>, <span class="n"><span class="pre">TI</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler10add_resultE1T2TI" title="Permalink to this definition"></a><br /></dt>
+<dd><p>add one result for query i </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss24ReconstructFromNeighbors11reconstructE13storage_idx_tPfPf">
-<span id="_CPPv3NK5faiss24ReconstructFromNeighbors11reconstructE13storage_idx_tPfPf"></span><span id="_CPPv2NK5faiss24ReconstructFromNeighbors11reconstructE13storage_idx_tPfPf"></span><span id="faiss::ReconstructFromNeighbors::reconstruct__storage_idx_t.floatP.floatPC"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1ae96899a06bd54901f856081d72adef5a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE" title="faiss::ReconstructFromNeighbors::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tmp</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>called by compute_distances </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss24ReconstructFromNeighbors13reconstruct_nE13storage_idx_t13storage_idx_tPf">
-<span id="_CPPv3NK5faiss24ReconstructFromNeighbors13reconstruct_nE13storage_idx_t13storage_idx_tPf"></span><span id="_CPPv2NK5faiss24ReconstructFromNeighbors13reconstruct_nE13storage_idx_t13storage_idx_tPf"></span><span id="faiss::ReconstructFromNeighbors::reconstruct_n__storage_idx_t.storage_idx_t.floatPC"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a50275f0f56de60400cee11b039c98339"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE" title="faiss::ReconstructFromNeighbors::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n0</span></span>, <a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE" title="faiss::ReconstructFromNeighbors::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss24ReconstructFromNeighbors18get_neighbor_tableE13storage_idx_tPf">
-<span id="_CPPv3NK5faiss24ReconstructFromNeighbors18get_neighbor_tableE13storage_idx_tPf"></span><span id="_CPPv2NK5faiss24ReconstructFromNeighbors18get_neighbor_tableE13storage_idx_tPf"></span><span id="faiss::ReconstructFromNeighbors::get_neighbor_table__storage_idx_t.floatPC"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a6c6a4664893430278c7da1f0606d4adf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_neighbor_table</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss24ReconstructFromNeighbors13storage_idx_tE" title="faiss::ReconstructFromNeighbors::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>get the M+1 -by-d table for neighbor coordinates for vector i </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler3endEv">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler3endEv"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler3endEv"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::end"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a4c5dc996378cdf43840f3af8e5024415"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler3endEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>series of results for query i is done </p>
 </dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors5indexE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors5indexE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors5indexE"></span><span id="faiss::ReconstructFromNeighbors::index__IndexHNSWCR"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a14034b43a0743e94ff70fab84fb7a66e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss9IndexHNSWE" title="faiss::IndexHNSW"><span class="n"><span class="pre">IndexHNSW</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">index</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler2hrE">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler2hrE"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler2hrE"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::hr__Top1BlockResultHandlerR"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a6780f07c33fbcae965b7115ccaa04e59"></span><span class="n"><span class="pre">Top1BlockResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hr</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler2hrE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors1ME">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors1ME"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors1ME"></span><span id="faiss::ReconstructFromNeighbors::M__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1aa5a61e87d73f40064dd83c22ab94c3cc"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler7min_idxE">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler7min_idxE"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler7min_idxE"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::min_idx__TI"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a544f2d68121e1db82a53dff8ecdf88a2"></span><span class="n"><span class="pre">TI</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_idx</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler7min_idxE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors1kE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors1kE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors1kE"></span><span id="faiss::ReconstructFromNeighbors::k__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a6a2ce9a449053820ce88aff51139805c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler11current_idxE">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler11current_idxE"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler11current_idxE"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::current_idx__s"></span><span class="target" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a9e380bc3382c6565f6ea7cd614c67a66"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_idx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler11current_idxE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors3nsqE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors3nsqE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors3nsqE"></span><span id="faiss::ReconstructFromNeighbors::nsq__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a9d469402cdcfdfcf45b56e8406259d8b"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nsq</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors9code_sizeE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors9code_sizeE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors9code_sizeE"></span><span id="faiss::ReconstructFromNeighbors::code_size__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1aeae1c3969821123277b203a185362a4a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors9k_reorderE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors9k_reorderE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors9k_reorderE"></span><span id="faiss::ReconstructFromNeighbors::k_reorder__i"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a6e5003517c06696a00f3e5c6b4bc18f1"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k_reorder</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors8codebookE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors8codebookE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors8codebookE"></span><span id="faiss::ReconstructFromNeighbors::codebook__std::vector:float:"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1ad7302ca13df0e8df9860ff649277c037"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors5codesE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors5codesE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors5codesE"></span><span id="faiss::ReconstructFromNeighbors::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1af9cf27d32e77ed1768ec3de7485e56ee"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors6ntotalE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors6ntotalE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors6ntotalE"></span><span id="faiss::ReconstructFromNeighbors::ntotal__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a4ed30d9a18a0d68c84a14ded6b91eba3"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors1dE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors1dE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors1dE"></span><span id="faiss::ReconstructFromNeighbors::d__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1aef8405a7dd11023f29f9a759ca900e5d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ReconstructFromNeighbors4dsubE">
-<span id="_CPPv3N5faiss24ReconstructFromNeighbors4dsubE"></span><span id="_CPPv2N5faiss24ReconstructFromNeighbors4dsubE"></span><span id="faiss::ReconstructFromNeighbors::dsub__s"></span><span class="target" id="structfaiss_1_1ReconstructFromNeighbors_1a108b1d722af230240f7092b3fc371a12"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dsub</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler9thresholdE">
+<span id="_CPPv3N5faiss22Top1BlockResultHandler19SingleResultHandler9thresholdE"></span><span id="_CPPv2N5faiss22Top1BlockResultHandler19SingleResultHandler9thresholdE"></span><span id="faiss::Top1BlockResultHandler::SingleResultHandler::threshold__C::T"></span><span class="target" id="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643"></span><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threshold</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss22Top1BlockResultHandler19SingleResultHandler9thresholdE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -526,8 +472,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1ReadOnlyInvertedLists.html" class="btn btn-neutral float-left" title="Struct faiss::ReadOnlyInvertedLists" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="structfaiss_1_1RemapDimensionsTransform.html" class="btn btn-neutral float-right" title="Struct faiss::RemapDimensionsTransform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1Top1BlockResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::Top1BlockResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1TransformedVectors.html" class="btn btn-neutral float-right" title="Struct faiss::TransformedVectors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

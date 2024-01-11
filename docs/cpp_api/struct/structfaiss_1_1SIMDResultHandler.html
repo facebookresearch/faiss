@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct faiss::HeapResultHandler::SingleResultHandler &mdash; Faiss  documentation</title>
+  <title>Struct faiss::SIMDResultHandler &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1HeapResultHandler_1_1SingleResultHandler.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1SIMDResultHandler.html" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::HeapWithBuckets" href="structfaiss_1_1HeapWithBuckets.html" />
-    <link rel="prev" title="Struct faiss::HeapResultHandler" href="structfaiss_1_1HeapResultHandler.html" /> 
+    <link rel="next" title="Struct faiss::SIMDResultHandlerToFloat" href="structfaiss_1_1SIMDResultHandlerToFloat.html" />
+    <link rel="prev" title="Struct faiss::ResultHandler" href="structfaiss_1_1ResultHandler.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockResultHandler.html">Struct faiss::BlockResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList.html">Struct faiss::BufferList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList_1_1Buffer.html">Struct faiss::BufferList::Buffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOReader.html">Struct faiss::BufferedIOReader</a></li>
@@ -117,8 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler.html">Struct faiss::HeapResultHandler</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::HeapResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler.html">Struct faiss::HeapBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets.html">Struct faiss::HeapWithBuckets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16.html">Struct faiss::HeapWithBucketsForHamming16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
@@ -172,6 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized.html">Struct faiss::IndexIVFFastScan::CoarseQuantized</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFIndependentQuantizer.html">Struct faiss::IndexIVFIndependentQuantizer</a></li>
@@ -275,21 +277,23 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeQueryResult.html">Struct faiss::RangeQueryResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler.html">Struct faiss::RangeSearchBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchPartialResult.html">Struct faiss::RangeSearchPartialResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResult.html">Struct faiss::RangeSearchResult</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler.html">Struct faiss::RangeSearchResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeat.html">Struct faiss::Repeat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeats.html">Struct faiss::Repeats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReproduceDistancesObjective.html">Struct faiss::ReproduceDistancesObjective</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler.html">Struct faiss::ReservoirResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler.html">Struct faiss::ReservoirBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirTopN.html">Struct faiss::ReservoirTopN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualQuantizer.html">Struct faiss::ResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResultHandler.html">Struct faiss::ResultHandler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html">Struct faiss::SIMDResultHandlerToFloat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer.html">Struct faiss::ScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer.html">Struct faiss::ScalarQuantizer::SQDistanceComputer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQuantizer.html">Struct faiss::ScalarQuantizer::SQuantizer</a></li>
@@ -301,10 +305,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler.html">Struct faiss::SingleBestResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler.html">Struct faiss::SingleBestResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
@@ -370,11 +374,12 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html">Struct faiss::simd_result_handlers::DummyResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html">Struct faiss::simd_result_handlers::FixedStorageHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1HeapHandler.html">Struct faiss::simd_result_handlers::HeapHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler.html">Struct faiss::simd_result_handlers::PartialRangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler.html">Struct faiss::simd_result_handlers::RangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet.html">Struct faiss::simd_result_handlers::RangeHandler::Triplet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler.html">Struct faiss::simd_result_handlers::ReservoirHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN.html">Struct faiss::simd_result_handlers::ReservoirTopN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler.html">Struct faiss::simd_result_handlers::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare.html">Struct faiss::simd_result_handlers::ResultHandlerCompare</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler.html">Struct faiss::simd_result_handlers::SingleResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result.html">Struct faiss::simd_result_handlers::SingleResultHandler::Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html">Struct faiss::simd_result_handlers::StoreResultHandler</a></li>
 </ul>
 </li>
@@ -395,9 +400,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
-      <li class="breadcrumb-item active">Struct faiss::HeapResultHandler::SingleResultHandler</li>
+      <li class="breadcrumb-item active">Struct faiss::SIMDResultHandler</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/cpp_api/struct/structfaiss_1_1HeapResultHandler_1_1SingleResultHandler.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1SIMDResultHandler.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -405,62 +410,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-faiss-heapresulthandler-singleresulthandler">
-<h1>Struct faiss::HeapResultHandler::SingleResultHandler<a class="headerlink" href="#struct-faiss-heapresulthandler-singleresulthandler" title="Permalink to this heading"></a></h1>
+  <section id="struct-faiss-simdresulthandler">
+<h1>Struct faiss::SIMDResultHandler<a class="headerlink" href="#struct-faiss-simdresulthandler" title="Permalink to this heading"></a></h1>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandlerE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandlerE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandlerE"></span><span id="faiss::HeapResultHandler::SingleResultHandler"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandlerE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandlerE">
+<span id="_CPPv3N5faiss17SIMDResultHandlerE"></span><span id="_CPPv2N5faiss17SIMDResultHandlerE"></span><span id="faiss::SIMDResultHandler"></span><span class="target" id="structfaiss_1_1SIMDResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIMDResultHandler</span></span></span><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html#structfaiss_1_1SIMDResultHandlerToFloat"><span class="std std-ref">faiss::SIMDResultHandlerToFloat</span></a>, <a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html#structfaiss_1_1simd__result__handlers_1_1DummyResultHandler"><span class="std std-ref">faiss::simd_result_handlers::DummyResultHandler</span></a>, <a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html#structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"><span class="std std-ref">faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;</span></a>, <a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html#structfaiss_1_1simd__result__handlers_1_1StoreResultHandler"><span class="std std-ref">faiss::simd_result_handlers::StoreResultHandler</span></a></p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler19SingleResultHandlerER17HeapResultHandler">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler19SingleResultHandlerER17HeapResultHandler"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler19SingleResultHandlerER17HeapResultHandler"></span><span id="faiss::HeapResultHandler::SingleResultHandler::SingleResultHandler__HeapResultHandlerR"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1abae72e919ff75ff8ab9c781374814243"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">HeapResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler19SingleResultHandlerER17HeapResultHandler" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss17SIMDResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss17SIMDResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::SIMDResultHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1aa32e37a5068c5e4627b11bc3db6e95d8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>called when 32 distances are computed and provided in two <a class="reference internal" href="structfaiss_1_1simd16uint16.html#structfaiss_1_1simd16uint16"><span class="std std-ref">simd16uint16</span></a>. (q, b) indicate which entry it is in the block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss17SIMDResultHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss17SIMDResultHandler16set_block_originE6size_t6size_t"></span><span id="faiss::SIMDResultHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>set the sub-matrix that is being computed </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandlerD0Ev">
+<span id="_CPPv3N5faiss17SIMDResultHandlerD0Ev"></span><span id="_CPPv2N5faiss17SIMDResultHandlerD0Ev"></span><span id="faiss::SIMDResultHandler::~SIMDResultHandler"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1ad4a58b63990a088da138ee73e76c86f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SIMDResultHandler</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler5beginE6size_t">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler5beginE6size_t"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler5beginE6size_t"></span><span id="faiss::HeapResultHandler::SingleResultHandler::begin__s"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a279e07930a93a896a4f82cb2ea61dabb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler5beginE6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>begin results for query # i </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler10add_resultE1T2TI">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler10add_resultE1T2TI"></span><span id="faiss::HeapResultHandler::SingleResultHandler::add_result__T.TI"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a20a18d9bfd04f179d3a6e99f50797cc0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_result</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dis</span></span>, <span class="n"><span class="pre">TI</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler10add_resultE1T2TI" title="Permalink to this definition"></a><br /></dt>
-<dd><p>add one result for query i </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler3endEv">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler3endEv"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler3endEv"></span><span id="faiss::HeapResultHandler::SingleResultHandler::end"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a8906e8dfaf7464cd341e1e1003b4ed71"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler3endEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>series of results for query i is done </p>
-</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler2hrE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler2hrE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler2hrE"></span><span id="faiss::HeapResultHandler::SingleResultHandler::hr__HeapResultHandlerR"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a35a50a45f2125a1db75bb879f330e99e"></span><span class="n"><span class="pre">HeapResultHandler</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hr</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler2hrE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandler7is_CMaxE">
+<span id="_CPPv3N5faiss17SIMDResultHandler7is_CMaxE"></span><span id="_CPPv2N5faiss17SIMDResultHandler7is_CMaxE"></span><span id="faiss::SIMDResultHandler::is_CMax__b"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_CMax</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler1kE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler1kE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler1kE"></span><span id="faiss::HeapResultHandler::SingleResultHandler::k__s"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a78d14aea02ab906f95f2fa187c5497ad"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler1kE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandler10sizeof_idsE">
+<span id="_CPPv3N5faiss17SIMDResultHandler10sizeof_idsE"></span><span id="_CPPv2N5faiss17SIMDResultHandler10sizeof_idsE"></span><span id="faiss::SIMDResultHandler::sizeof_ids__uint8_t"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478"></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sizeof_ids</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler8heap_disE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler8heap_disE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler8heap_disE"></span><span id="faiss::HeapResultHandler::SingleResultHandler::heap_dis__TP"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1a5b900d736a370ab96a11e605ccf3bef2"></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_dis</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler8heap_disE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler8heap_idsE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler8heap_idsE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler8heap_idsE"></span><span id="faiss::HeapResultHandler::SingleResultHandler::heap_ids__TIP"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1ad9dd8d18eefef4cc5227db7ed8aab641"></span><span class="n"><span class="pre">TI</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_ids</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler8heap_idsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17HeapResultHandler19SingleResultHandler6threshE">
-<span id="_CPPv3N5faiss17HeapResultHandler19SingleResultHandler6threshE"></span><span id="_CPPv2N5faiss17HeapResultHandler19SingleResultHandler6threshE"></span><span id="faiss::HeapResultHandler::SingleResultHandler::thresh__T"></span><span class="target" id="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler_1adffe61b639fd3f0c06a98d2736af827a"></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thresh</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17HeapResultHandler19SingleResultHandler6threshE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17SIMDResultHandler11with_fieldsE">
+<span id="_CPPv3N5faiss17SIMDResultHandler11with_fieldsE"></span><span id="_CPPv2N5faiss17SIMDResultHandler11with_fieldsE"></span><span id="faiss::SIMDResultHandler::with_fields__b"></span><span class="target" id="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">with_fields</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -472,8 +462,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1HeapResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::HeapResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="structfaiss_1_1HeapWithBuckets.html" class="btn btn-neutral float-right" title="Struct faiss::HeapWithBuckets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1ResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::ResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1SIMDResultHandlerToFloat.html" class="btn btn-neutral float-right" title="Struct faiss::SIMDResultHandlerToFloat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

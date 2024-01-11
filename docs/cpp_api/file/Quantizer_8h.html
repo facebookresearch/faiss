@@ -327,11 +327,6 @@
 <p>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</p>
-<p>The SIMDResultHandler object is intended to be templated and inlined. Methods:<ul class="simple">
-<li><p>handle(): called when 32 distances are computed and provided in two <a class="reference internal" href="../struct/structfaiss_1_1simd16uint16.html#structfaiss_1_1simd16uint16"><span class="std std-ref">simd16uint16</span></a>. (q, b) indicate which entry it is in the block.</p></li>
-<li><p>set_block_origin(): set the sub-matrix that is being computed</p></li>
-</ul>
-</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
 <p>x[ i * d + j ]</p>
 <p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
@@ -351,7 +346,7 @@
 <span id="_CPPv3N5faiss9QuantizerE"></span><span id="_CPPv2N5faiss9QuantizerE"></span><span id="faiss::Quantizer"></span><span class="target" id="structfaiss_1_1Quantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss9QuantizerE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;Quantizer.h&gt;</em></div>
-<p>Product <a class="reference internal" href="../struct/structfaiss_1_1Quantizer.html#structfaiss_1_1Quantizer"><span class="std std-ref">Quantizer</span></a>. Implemented only for METRIC_L2 </p>
+<p>General interface for quantizer objects </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1AdditiveQuantizer.html#structfaiss_1_1AdditiveQuantizer"><span class="std std-ref">faiss::AdditiveQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1ProductQuantizer.html#structfaiss_1_1ProductQuantizer"><span class="std std-ref">faiss::ProductQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1ScalarQuantizer.html#structfaiss_1_1ScalarQuantizer"><span class="std std-ref">faiss::ScalarQuantizer</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>

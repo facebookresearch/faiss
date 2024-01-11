@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Struct faiss::ResidualCoarseQuantizer" href="structfaiss_1_1ResidualCoarseQuantizer.html" />
-    <link rel="prev" title="Struct faiss::ReservoirResultHandler::SingleResultHandler" href="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html" /> 
+    <link rel="prev" title="Struct faiss::ReservoirBlockResultHandler::SingleResultHandler" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockResultHandler.html">Struct faiss::BlockResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList.html">Struct faiss::BufferList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList_1_1Buffer.html">Struct faiss::BufferList::Buffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOReader.html">Struct faiss::BufferedIOReader</a></li>
@@ -117,8 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler.html">Struct faiss::HeapResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler.html">Struct faiss::HeapBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets.html">Struct faiss::HeapWithBuckets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16.html">Struct faiss::HeapWithBucketsForHamming16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
@@ -172,6 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized.html">Struct faiss::IndexIVFFastScan::CoarseQuantized</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFIndependentQuantizer.html">Struct faiss::IndexIVFIndependentQuantizer</a></li>
@@ -275,21 +277,23 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeQueryResult.html">Struct faiss::RangeQueryResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler.html">Struct faiss::RangeSearchBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchPartialResult.html">Struct faiss::RangeSearchPartialResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResult.html">Struct faiss::RangeSearchResult</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler.html">Struct faiss::RangeSearchResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeat.html">Struct faiss::Repeat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeats.html">Struct faiss::Repeats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReproduceDistancesObjective.html">Struct faiss::ReproduceDistancesObjective</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler.html">Struct faiss::ReservoirResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler.html">Struct faiss::ReservoirBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirBlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::ReservoirTopN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualQuantizer.html">Struct faiss::ResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResultHandler.html">Struct faiss::ResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandler.html">Struct faiss::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html">Struct faiss::SIMDResultHandlerToFloat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer.html">Struct faiss::ScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer.html">Struct faiss::ScalarQuantizer::SQDistanceComputer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQuantizer.html">Struct faiss::ScalarQuantizer::SQuantizer</a></li>
@@ -301,10 +305,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler.html">Struct faiss::SingleBestResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler.html">Struct faiss::SingleBestResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
@@ -370,11 +374,12 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html">Struct faiss::simd_result_handlers::DummyResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html">Struct faiss::simd_result_handlers::FixedStorageHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1HeapHandler.html">Struct faiss::simd_result_handlers::HeapHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler.html">Struct faiss::simd_result_handlers::PartialRangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler.html">Struct faiss::simd_result_handlers::RangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet.html">Struct faiss::simd_result_handlers::RangeHandler::Triplet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler.html">Struct faiss::simd_result_handlers::ReservoirHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN.html">Struct faiss::simd_result_handlers::ReservoirTopN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler.html">Struct faiss::simd_result_handlers::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare.html">Struct faiss::simd_result_handlers::ResultHandlerCompare</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler.html">Struct faiss::simd_result_handlers::SingleResultHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result.html">Struct faiss::simd_result_handlers::SingleResultHandler::Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html">Struct faiss::simd_result_handlers::StoreResultHandler</a></li>
 </ul>
 </li>
@@ -409,8 +414,9 @@
 <h1>Struct faiss::ReservoirTopN<a class="headerlink" href="#struct-faiss-reservoirtopn" title="Permalink to this heading"></a></h1>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss13ReservoirTopNE">
-<span id="_CPPv3I0EN5faiss13ReservoirTopNE"></span><span id="_CPPv2I0EN5faiss13ReservoirTopNE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1ReservoirTopN"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirTopN</span></span></span><br /></dt>
+<span id="_CPPv3I0EN5faiss13ReservoirTopNE"></span><span id="_CPPv2I0EN5faiss13ReservoirTopNE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1ReservoirTopN"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirTopN</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ResultHandlerE" title="faiss::ResultHandler"><span class="n"><span class="pre">ResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ReservoirTopNE" title="faiss::ReservoirTopN::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd><p>Reservoir for a single query. </p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html#structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"><span class="std std-ref">faiss::ReservoirBlockResultHandler&lt; C &gt;::SingleResultHandler</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -437,6 +443,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13ReservoirTopN10add_resultE1T2TI">
+<span id="_CPPv3N5faiss13ReservoirTopN10add_resultE1T2TI"></span><span id="_CPPv2N5faiss13ReservoirTopN10add_resultE1T2TI"></span><span id="faiss::ReservoirTopN::add_result__T.TI"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss13ReservoirTopN1TE" title="faiss::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss13ReservoirTopN2TIE" title="faiss::ReservoirTopN::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13ReservoirTopN3addE1T2TI">
 <span id="_CPPv3N5faiss13ReservoirTopN3addE1T2TI"></span><span id="_CPPv2N5faiss13ReservoirTopN3addE1T2TI"></span><span id="faiss::ReservoirTopN::add__T.TI"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss13ReservoirTopN1TE" title="faiss::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss13ReservoirTopN2TIE" title="faiss::ReservoirTopN::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
@@ -444,6 +455,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13ReservoirTopN12shrink_fuzzyEv">
 <span id="_CPPv3N5faiss13ReservoirTopN12shrink_fuzzyEv"></span><span id="_CPPv2N5faiss13ReservoirTopN12shrink_fuzzyEv"></span><span id="faiss::ReservoirTopN::shrink_fuzzy"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a245c853afda40ce193a7f39944bb82c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink_fuzzy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13ReservoirTopN6shrinkEv">
+<span id="_CPPv3N5faiss13ReservoirTopN6shrinkEv"></span><span id="_CPPv2N5faiss13ReservoirTopN6shrinkEv"></span><span id="faiss::ReservoirTopN::shrink"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1ac2089937fa4314560faec451e42f471d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -481,7 +497,7 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13ReservoirTopN9thresholdE">
-<span id="_CPPv3N5faiss13ReservoirTopN9thresholdE"></span><span id="_CPPv2N5faiss13ReservoirTopN9thresholdE"></span><span id="faiss::ReservoirTopN::threshold__T"></span><span class="target" id="structfaiss_1_1ReservoirTopN_1a3950c21614db6bc85c89768612524eed"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4N5faiss13ReservoirTopN1TE" title="faiss::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threshold</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss13ReservoirTopN9thresholdE"></span><span id="_CPPv2N5faiss13ReservoirTopN9thresholdE"></span><span id="faiss::ReservoirTopN::threshold__C::T"></span><span class="target" id="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643"></span><a class="reference internal" href="../file/ResultHandler_8h.html#_CPPv4I0EN5faiss13ReservoirTopNE" title="faiss::ReservoirTopN::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threshold</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -493,7 +509,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1ReservoirResultHandler_1_1SingleResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::ReservoirResultHandler::SingleResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html" class="btn btn-neutral float-left" title="Struct faiss::ReservoirBlockResultHandler::SingleResultHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="structfaiss_1_1ResidualCoarseQuantizer.html" class="btn btn-neutral float-right" title="Struct faiss::ResidualCoarseQuantizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
