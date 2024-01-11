@@ -165,10 +165,10 @@ class StandardGpuResourcesImpl : public GpuResources {
      */
 
     // managed_memory_resource
-    rmm::mr::device_memory_resource* mmr;
+    std::unique_ptr<rmm::mr::device_memory_resource> mmr_;
 
     // pinned_memory_resource
-    std::unique_ptr<rmm::mr::host_memory_resource> pmr;
+    std::unique_ptr<rmm::mr::host_memory_resource> pmr_;
 #endif
 
     /// Pinned memory allocation for use with this GPU
