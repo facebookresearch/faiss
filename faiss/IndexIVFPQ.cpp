@@ -749,7 +749,7 @@ struct QueryTables {
     }
 };
 
-// This way of handling the sleector is not optimal since all distances
+// This way of handling the selector is not optimal since all distances
 // are computed even if the id would filter it out.
 template <class C, bool use_sel>
 struct KnnSearchResults {
