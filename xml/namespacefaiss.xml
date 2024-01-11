@@ -30,6 +30,7 @@
     <innerclass refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public">faiss::FlatCodesDistanceComputer</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
     <innerclass refid="structfaiss_1_1TransformedVectors" prot="public">faiss::TransformedVectors</innerclass>
+    <innerclass refid="structfaiss_1_1ResultHandler" prot="public">faiss::ResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersHNSW" prot="public">faiss::SearchParametersHNSW</innerclass>
     <innerclass refid="structfaiss_1_1HNSW" prot="public">faiss::HNSW</innerclass>
     <innerclass refid="structfaiss_1_1HNSWStats" prot="public">faiss::HNSWStats</innerclass>
@@ -81,12 +82,15 @@
     <innerclass refid="structfaiss_1_1PQDecoder16" prot="public">faiss::PQDecoder16</innerclass>
     <innerclass refid="structfaiss_1_1Quantizer" prot="public">faiss::Quantizer</innerclass>
     <innerclass refid="structfaiss_1_1ResidualQuantizer" prot="public">faiss::ResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1HeapResultHandler" prot="public">faiss::HeapResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1BlockResultHandler" prot="public">faiss::BlockResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1Top1BlockResultHandler" prot="public">faiss::Top1BlockResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1HeapBlockResultHandler" prot="public">faiss::HeapBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1ReservoirTopN" prot="public">faiss::ReservoirTopN</innerclass>
-    <innerclass refid="structfaiss_1_1ReservoirResultHandler" prot="public">faiss::ReservoirResultHandler</innerclass>
-    <innerclass refid="structfaiss_1_1RangeSearchResultHandler" prot="public">faiss::RangeSearchResultHandler</innerclass>
-    <innerclass refid="structfaiss_1_1SingleBestResultHandler" prot="public">faiss::SingleBestResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1ReservoirBlockResultHandler" prot="public">faiss::ReservoirBlockResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1RangeSearchBlockResultHandler" prot="public">faiss::RangeSearchBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1ScalarQuantizer" prot="public">faiss::ScalarQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1SIMDResultHandler" prot="public">faiss::SIMDResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1SIMDResultHandlerToFloat" prot="public">faiss::SIMDResultHandlerToFloat</innerclass>
     <innerclass refid="classfaiss_1_1ThreadedIndex" prot="public">faiss::ThreadedIndex</innerclass>
     <innerclass refid="structfaiss_1_1SearchParameters" prot="public">faiss::SearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1Index" prot="public">faiss::Index</innerclass>
@@ -121,7 +125,6 @@
     <innerclass refid="structfaiss_1_1IndexFlatL2" prot="public">faiss::IndexFlatL2</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
-    <innerclass refid="structfaiss_1_1ReconstructFromNeighbors" prot="public">faiss::ReconstructFromNeighbors</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW" prot="public">faiss::IndexHNSW</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWFlat" prot="public">faiss::IndexHNSWFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWPQ" prot="public">faiss::IndexHNSWPQ</innerclass>
@@ -559,7 +562,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="262" column="28" declfile="faiss/impl/HNSW.h" declline="262" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="261" column="28" declfile="faiss/impl/HNSW.h" declline="261" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -573,6 +576,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="185" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="185" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" prot="public" static="no" mutable="no">
+        <type>FAISS_API bool</type>
+        <definition>FAISS_API bool faiss::simd_result_handlers_accept_virtual</definition>
+        <argsstring></argsstring>
+        <name>simd_result_handlers_accept_virtual</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="74" column="23" declfile="faiss/impl/simd_result_handlers.h" declline="74" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -695,7 +711,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="147" column="32" declfile="faiss/IndexFastScan.h" declline="147" declcolumn="32"/>
+        <location file="faiss/IndexFastScan.h" line="148" column="32" declfile="faiss/IndexFastScan.h" declline="148" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" mutable="no">
         <type>FAISS_API bool</type>
@@ -734,7 +750,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="239" column="35" declfile="faiss/IndexIVFFastScan.h" declline="239" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="246" column="35" declfile="faiss/IndexIVFFastScan.h" declline="246" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" mutable="no">
         <type>FAISS_API size_t</type>
@@ -1621,7 +1637,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="38" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="38" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="41" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="41" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7ed9c5bb3d86d93d4fc4bc6512b926b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1697,7 +1713,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="55" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="55" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="58" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="58" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint8_t</type>
@@ -1749,7 +1765,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="69" column="9" declfile="faiss/impl/pq4_fast_scan.h" declline="69" declcolumn="9"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="72" column="9" declfile="faiss/impl/pq4_fast_scan.h" declline="72" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1805,7 +1821,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="81" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="81" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="84" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="84" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1869,20 +1885,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="108" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="108" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="111" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="111" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1ab54ce348e59de2229eaae01b153f3405" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
-        </templateparamlist>
+      <memberdef kind="function" id="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pq4_accumulate_loop</definition>
-        <argsstring>(int nq, size_t nb, int bbs, int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <argsstring>(int nq, size_t nb, int bbs, int nsq, const uint8_t *codes, const uint8_t *LUT, SIMDResultHandler &amp;res, const NormTableScaler *scaler)</argsstring>
         <name>pq4_accumulate_loop</name>
         <param>
           <type>int</type>
@@ -1909,11 +1917,11 @@
           <declname>LUT</declname>
         </param>
         <param>
-          <type>ResultHandler &amp;</type>
+          <type><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref> &amp;</type>
           <declname>res</declname>
         </param>
         <param>
-          <type>const Scaler &amp;</type>
+          <type>const <ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref> *</type>
           <declname>scaler</declname>
         </param>
         <briefdescription>
@@ -1981,7 +1989,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="121" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="121" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="123" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="123" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a323a06b2cc33d2afa49cd54690134ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1998,7 +2006,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="146" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="146" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="148" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="148" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2016,7 +2024,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="149" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="149" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="151" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="151" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2082,7 +2090,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="160" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="160" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="162" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="162" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2116,20 +2124,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="164" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="164" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="166" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="166" declcolumn="5"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aba48fa149b9a6d3eb5d61eb3ddfaed2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
-        </templateparamlist>
+      <memberdef kind="function" id="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pq4_accumulate_loop_qbs</definition>
-        <argsstring>(int qbs, size_t nb, int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <argsstring>(int qbs, size_t nb, int nsq, const uint8_t *codes, const uint8_t *LUT, SIMDResultHandler &amp;res, const NormTableScaler *scaler=nullptr)</argsstring>
         <name>pq4_accumulate_loop_qbs</name>
         <param>
           <type>int</type>
@@ -2152,12 +2152,13 @@
           <declname>LUT</declname>
         </param>
         <param>
-          <type>ResultHandler &amp;</type>
+          <type><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref> &amp;</type>
           <declname>res</declname>
         </param>
         <param>
-          <type>const Scaler &amp;</type>
+          <type>const <ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref> *</type>
           <declname>scaler</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -2224,7 +2225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="182" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="182" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="183" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="183" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abd58cb9ccddf108229bd3f2d3f0d2bac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5147,10 +5148,10 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="477" column="5" declfile="faiss/utils/distances.h" declline="477" declcolumn="5"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a8a1d1234d7f3f6fbcf277c2f6316760f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a8031f842f9139705e44040b6043db201" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool faiss::exhaustive_L2sqr_fused_cmax</definition>
-        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, SingleBestResultHandler&lt; CMax&lt; float, int64_t &gt;&gt; &amp;res, const float *y_norms)</argsstring>
+        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, Top1BlockResultHandler&lt; CMax&lt; float, int64_t &gt;&gt; &amp;res, const float *y_norms)</argsstring>
         <name>exhaustive_L2sqr_fused_cmax</name>
         <param>
           <type>const float *</type>
@@ -5173,7 +5174,7 @@
           <declname>ny</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1SingleBestResultHandler" kindref="compound">SingleBestResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt;&gt; &amp;</type>
+          <type><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt;&gt; &amp;</type>
           <declname>res</declname>
         </param>
         <param>
@@ -9698,11 +9699,6 @@
 <para>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</para>
-<para>The SIMDResultHandler object is intended to be templated and inlined. Methods:<itemizedlist>
-<listitem><para>handle(): called when 32 distances are computed and provided in two <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>. (q, b) indicate which entry it is in the block.</para>
-</listitem><listitem><para>set_block_origin(): set the sub-matrix that is being computed</para>
-</listitem></itemizedlist>
-</para>
 <para>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</para>
 <para>x[ i * d + j ]</para>
 <para>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</para>

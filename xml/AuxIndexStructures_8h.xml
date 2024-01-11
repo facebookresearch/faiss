@@ -68,7 +68,7 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="5">
+      <node id="6">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
@@ -83,18 +83,22 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="5">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+      </node>
+      <node id="13">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
@@ -104,29 +108,29 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss/impl/ScalarQuantizer.h</label>
         <link refid="ScalarQuantizer_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
         <link refid="GpuIndexIVFFlat_8h_source"/>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
@@ -138,6 +142,8 @@
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -197,158 +203,157 @@
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>when<sp/>lims<sp/>contains<sp/>the<sp/>nb<sp/>of<sp/>elements<sp/>result<sp/>entries</highlight></codeline>
 <codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>each<sp/>query</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45" refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" kindref="member">do_allocation</ref>();</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>();</highlight></codeline>
-<codeline lineno="48"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment">/****************************************************************</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>Result<sp/>structures<sp/>for<sp/>range<sp/>search.</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>The<sp/>main<sp/>constraint<sp/>here<sp/>is<sp/>that<sp/>we<sp/>want<sp/>to<sp/>support<sp/>parallel</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>queries<sp/>from<sp/>different<sp/>threads<sp/>in<sp/>various<sp/>ways:<sp/>1<sp/>thread<sp/>per<sp/>query,</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>several<sp/>threads<sp/>per<sp/>query.<sp/>We<sp/>store<sp/>the<sp/>actual<sp/>results<sp/>in<sp/>blocks<sp/>of</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>fixed<sp/>size<sp/>rather<sp/>than<sp/>exponentially<sp/>increasing<sp/>memory.<sp/>At<sp/>the<sp/>end,</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>we<sp/>copy<sp/>the<sp/>block<sp/>content<sp/>to<sp/>a<sp/>linear<sp/>result<sp/>array.</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*****************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="60"><highlight class="comment">/**<sp/>List<sp/>of<sp/>temporary<sp/>buffers<sp/>used<sp/>to<sp/>store<sp/>results<sp/>before<sp/>they<sp/>are</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"><sp/>*<sp/><sp/>copied<sp/>to<sp/>the<sp/>RangeSearchResult<sp/>object.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="62" refid="structfaiss_1_1BufferList" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref><sp/>{</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>buffer<sp/>sizes<sp/>in<sp/>#<sp/>entries</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>buffer_size;</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66" refid="structfaiss_1_1BufferList_1_1Buffer" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BufferList_1_1Buffer" kindref="compound">Buffer</ref><sp/>{</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>ids;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;Buffer&gt;<sp/>buffers;</highlight></codeline>
-<codeline lineno="72" refid="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" kindref="member">wp</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>write<sp/>pointer<sp/>in<sp/>the<sp/>last<sp/>buffer.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>buffer_size);</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref>();</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>create<sp/>a<sp/>new<sp/>buffer</highlight></codeline>
-<codeline lineno="79" refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" kindref="member">append_buffer</ref>();</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>one<sp/>result,<sp/>possibly<sp/>appending<sp/>a<sp/>new<sp/>buffer<sp/>if<sp/>needed</highlight></codeline>
-<codeline lineno="82" refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" kindref="member">add</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dis);</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>copy<sp/>elemnts<sp/>ofs:ofs+n-1<sp/>seen<sp/>as<sp/>linear<sp/>data<sp/>in<sp/>the<sp/>buffers<sp/>to</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>tables<sp/>dest_ids,<sp/>dest_dis</highlight></codeline>
-<codeline lineno="86" refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" kindref="member">copy_range</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ofs,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>dest_ids,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dest_dis);</highlight></codeline>
-<codeline lineno="87"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref>;</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="91"><highlight class="comment">///<sp/>result<sp/>structure<sp/>for<sp/>a<sp/>single<sp/>query</highlight></codeline>
-<codeline lineno="92" refid="structfaiss_1_1RangeQueryResult" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref><sp/>{</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>qno;<sp/><sp/><sp/></highlight><highlight class="comment">//&lt;<sp/>id<sp/>of<sp/>the<sp/>query</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nres;<sp/></highlight><highlight class="comment">//&lt;<sp/>nb<sp/>of<sp/>results<sp/>for<sp/>this<sp/>query</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref>*<sp/>pres;</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="97"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>search<sp/>function<sp/>to<sp/>report<sp/>a<sp/>new<sp/>result</highlight></codeline>
-<codeline lineno="98" refid="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" kindref="member">add</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dis,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="101"><highlight class="comment">///<sp/>the<sp/>entries<sp/>in<sp/>the<sp/>buffers<sp/>are<sp/>split<sp/>per<sp/>query</highlight></codeline>
-<codeline lineno="102" refid="structfaiss_1_1RangeSearchPartialResult" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref><sp/>:<sp/><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref><sp/>{</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>res;</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>eventually<sp/>the<sp/>result<sp/>will<sp/>be<sp/>stored<sp/>in<sp/>res_in</highlight></codeline>
-<codeline lineno="106" refid="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" kindref="member">RangeSearchPartialResult</ref>(<ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>res_in);</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="108"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>query<sp/>ids<sp/>+<sp/>nb<sp/>of<sp/>results<sp/>per<sp/>query.</highlight></codeline>
-<codeline lineno="109" refid="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;RangeQueryResult&gt;<sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" kindref="member">queries</ref>;</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="111"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>begin<sp/>a<sp/>new<sp/>result</highlight></codeline>
-<codeline lineno="112" refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" kindref="member">new_result</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>qno);</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment"><sp/><sp/><sp/><sp/>/*****************************************</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>functions<sp/>used<sp/>at<sp/>the<sp/>end<sp/>of<sp/>the<sp/>search<sp/>to<sp/>merge<sp/>the<sp/>result</highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>lists<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>finalize();</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>range_search<sp/>before<sp/>do_allocation</highlight></codeline>
-<codeline lineno="120" refid="structfaiss_1_1RangeSearchPartialResult_1ab6a385008493c7b630e4e7bc56e3da74" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1ab6a385008493c7b630e4e7bc56e3da74" kindref="member">set_lims</ref>();</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>range_search<sp/>after<sp/>do_allocation</highlight></codeline>
-<codeline lineno="123" refid="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" kindref="member">copy_result</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>incremental<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>merge<sp/>a<sp/>set<sp/>of<sp/>PartialResult&apos;s<sp/>into<sp/>one<sp/>RangeSearchResult</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>on<sp/>ouptut<sp/>the<sp/>partialresults<sp/>are<sp/>empty!</highlight></codeline>
-<codeline lineno="127" refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" kindref="member">merge</ref>(</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;RangeSearchPartialResult*&gt;&amp;<sp/>partial_results,</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>do_delete<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="130"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">/***********************************************************</highlight></codeline>
-<codeline lineno="133"><highlight class="comment"><sp/>*<sp/>Interrupt<sp/>callback</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"><sp/>***********************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight></codeline>
-<codeline lineno="136" refid="structfaiss_1_1InterruptCallback" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1InterruptCallback" kindref="compound">InterruptCallback</ref><sp/>{</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>want_interrupt()<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1InterruptCallback" kindref="compound">InterruptCallback</ref>()<sp/>{}</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>lock<sp/>that<sp/>protects<sp/>concurrent<sp/>calls<sp/>to<sp/>is_interrupted</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::mutex<sp/>lock;</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;InterruptCallback&gt;<sp/>instance;</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight></codeline>
-<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear_instance();</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>check<sp/>if:</highlight></codeline>
-<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>-<sp/>an<sp/>interrupt<sp/>callback<sp/>is<sp/>set</highlight></codeline>
-<codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>-<sp/>the<sp/>callback<sp/>returns<sp/>true</highlight></codeline>
-<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>if<sp/>this<sp/>is<sp/>the<sp/>case,<sp/>then<sp/>throw<sp/>an<sp/>exception.<sp/>Should<sp/>not<sp/>be<sp/>called</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>from<sp/>multiple<sp/>threads.</highlight></codeline>
-<codeline lineno="152"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="153" refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" kindref="member">check</ref>();</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>check()<sp/>but<sp/>return<sp/>true<sp/>if<sp/>is<sp/>interrupted<sp/>instead<sp/>of</highlight></codeline>
-<codeline lineno="156"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>throwing.<sp/>Can<sp/>be<sp/>called<sp/>from<sp/>multiple<sp/>threads.</highlight></codeline>
-<codeline lineno="157" refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" kindref="member">is_interrupted</ref>();</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="159"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>assuming<sp/>each<sp/>iteration<sp/>takes<sp/>a<sp/>certain<sp/>number<sp/>of<sp/>flops,<sp/>what</highlight></codeline>
-<codeline lineno="160"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>is<sp/>a<sp/>reasonable<sp/>interval<sp/>to<sp/>check<sp/>for<sp/>interrupts?</highlight></codeline>
-<codeline lineno="161"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="162" refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" kindref="member">get_period_hint</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>flops);</highlight></codeline>
-<codeline lineno="163"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="165"><highlight class="comment">///<sp/>set<sp/>implementation<sp/>optimized<sp/>for<sp/>fast<sp/>access.</highlight></codeline>
-<codeline lineno="166" refid="structfaiss_1_1VisitedTable" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref><sp/>{</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>visited;</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>visno;</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size)<sp/>:<sp/>visited(size),<sp/>visno(1)<sp/>{}</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="172"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>flag<sp/>#no<sp/>to<sp/>true</highlight></codeline>
-<codeline lineno="173" refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" kindref="member">set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)<sp/>{</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visited[no]<sp/>=<sp/>visno;</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="177"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>flag<sp/>#no</highlight></codeline>
-<codeline lineno="178" refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" kindref="member">get</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>visited[no]<sp/>==<sp/>visno;</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reset<sp/>all<sp/>flags<sp/>to<sp/>false</highlight></codeline>
-<codeline lineno="183" refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kindref="member">advance</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno++;</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(visno<sp/>==<sp/>250)<sp/>{</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>250<sp/>rather<sp/>than<sp/>255<sp/>because<sp/>sometimes<sp/>we<sp/>use<sp/>visno<sp/>and<sp/>visno+1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memset(visited.data(),<sp/>0,<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(visited[0])<sp/>*<sp/>visited.size());</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno<sp/>=<sp/>1;</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="191"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="192"><highlight class="normal"></highlight></codeline>
-<codeline lineno="193"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="194"><highlight class="normal"></highlight></codeline>
-<codeline lineno="195"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="44" refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" kindref="member">do_allocation</ref>();</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>();</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment">/****************************************************************</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>Result<sp/>structures<sp/>for<sp/>range<sp/>search.</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/>The<sp/>main<sp/>constraint<sp/>here<sp/>is<sp/>that<sp/>we<sp/>want<sp/>to<sp/>support<sp/>parallel</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>queries<sp/>from<sp/>different<sp/>threads<sp/>in<sp/>various<sp/>ways:<sp/>1<sp/>thread<sp/>per<sp/>query,</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>several<sp/>threads<sp/>per<sp/>query.<sp/>We<sp/>store<sp/>the<sp/>actual<sp/>results<sp/>in<sp/>blocks<sp/>of</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>fixed<sp/>size<sp/>rather<sp/>than<sp/>exponentially<sp/>increasing<sp/>memory.<sp/>At<sp/>the<sp/>end,</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>we<sp/>copy<sp/>the<sp/>block<sp/>content<sp/>to<sp/>a<sp/>linear<sp/>result<sp/>array.</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*****************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="59"><highlight class="comment">/**<sp/>List<sp/>of<sp/>temporary<sp/>buffers<sp/>used<sp/>to<sp/>store<sp/>results<sp/>before<sp/>they<sp/>are</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*<sp/><sp/>copied<sp/>to<sp/>the<sp/>RangeSearchResult<sp/>object.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="structfaiss_1_1BufferList" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref><sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>buffer<sp/>sizes<sp/>in<sp/>#<sp/>entries</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>buffer_size;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="structfaiss_1_1BufferList_1_1Buffer" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BufferList_1_1Buffer" kindref="compound">Buffer</ref><sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>ids;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;Buffer&gt;<sp/>buffers;</highlight></codeline>
+<codeline lineno="71" refid="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" kindref="member">wp</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>write<sp/>pointer<sp/>in<sp/>the<sp/>last<sp/>buffer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>buffer_size);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref>();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="77"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>create<sp/>a<sp/>new<sp/>buffer</highlight></codeline>
+<codeline lineno="78" refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" kindref="member">append_buffer</ref>();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>one<sp/>result,<sp/>possibly<sp/>appending<sp/>a<sp/>new<sp/>buffer<sp/>if<sp/>needed</highlight></codeline>
+<codeline lineno="81" refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" kindref="member">add</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dis);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>copy<sp/>elemnts<sp/>ofs:ofs+n-1<sp/>seen<sp/>as<sp/>linear<sp/>data<sp/>in<sp/>the<sp/>buffers<sp/>to</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>tables<sp/>dest_ids,<sp/>dest_dis</highlight></codeline>
+<codeline lineno="85" refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" kindref="member">copy_range</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ofs,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>dest_ids,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dest_dis);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref>;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///<sp/>result<sp/>structure<sp/>for<sp/>a<sp/>single<sp/>query</highlight></codeline>
+<codeline lineno="91" refid="structfaiss_1_1RangeQueryResult" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref><sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>qno;<sp/><sp/><sp/></highlight><highlight class="comment">//&lt;<sp/>id<sp/>of<sp/>the<sp/>query</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nres;<sp/></highlight><highlight class="comment">//&lt;<sp/>nb<sp/>of<sp/>results<sp/>for<sp/>this<sp/>query</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref>*<sp/>pres;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>search<sp/>function<sp/>to<sp/>report<sp/>a<sp/>new<sp/>result</highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" kindref="member">add</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dis,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="100"><highlight class="comment">///<sp/>the<sp/>entries<sp/>in<sp/>the<sp/>buffers<sp/>are<sp/>split<sp/>per<sp/>query</highlight></codeline>
+<codeline lineno="101" refid="structfaiss_1_1RangeSearchPartialResult" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref><sp/>:<sp/><ref refid="structfaiss_1_1BufferList" kindref="compound">BufferList</ref><sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>res;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>eventually<sp/>the<sp/>result<sp/>will<sp/>be<sp/>stored<sp/>in<sp/>res_in</highlight></codeline>
+<codeline lineno="105" refid="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" kindref="member">RangeSearchPartialResult</ref>(<ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>res_in);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>query<sp/>ids<sp/>+<sp/>nb<sp/>of<sp/>results<sp/>per<sp/>query.</highlight></codeline>
+<codeline lineno="108" refid="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;RangeQueryResult&gt;<sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" kindref="member">queries</ref>;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>begin<sp/>a<sp/>new<sp/>result</highlight></codeline>
+<codeline lineno="111" refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" kindref="member">new_result</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>qno);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"><sp/><sp/><sp/><sp/>/*****************************************</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>functions<sp/>used<sp/>at<sp/>the<sp/>end<sp/>of<sp/>the<sp/>search<sp/>to<sp/>merge<sp/>the<sp/>result</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>lists<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>finalize();</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>range_search<sp/>before<sp/>do_allocation</highlight></codeline>
+<codeline lineno="119" refid="structfaiss_1_1RangeSearchPartialResult_1ab6a385008493c7b630e4e7bc56e3da74" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1ab6a385008493c7b630e4e7bc56e3da74" kindref="member">set_lims</ref>();</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>range_search<sp/>after<sp/>do_allocation</highlight></codeline>
+<codeline lineno="122" refid="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" kindref="member">copy_result</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>incremental<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>merge<sp/>a<sp/>set<sp/>of<sp/>PartialResult&apos;s<sp/>into<sp/>one<sp/>RangeSearchResult</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>on<sp/>ouptut<sp/>the<sp/>partialresults<sp/>are<sp/>empty!</highlight></codeline>
+<codeline lineno="126" refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" kindref="member">merge</ref>(</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;RangeSearchPartialResult*&gt;&amp;<sp/>partial_results,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>do_delete<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment">/***********************************************************</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*<sp/>Interrupt<sp/>callback</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>***********************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="structfaiss_1_1InterruptCallback" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1InterruptCallback" kindref="compound">InterruptCallback</ref><sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>want_interrupt()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1InterruptCallback" kindref="compound">InterruptCallback</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>lock<sp/>that<sp/>protects<sp/>concurrent<sp/>calls<sp/>to<sp/>is_interrupted</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::mutex<sp/>lock;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;InterruptCallback&gt;<sp/>instance;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear_instance();</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>check<sp/>if:</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>-<sp/>an<sp/>interrupt<sp/>callback<sp/>is<sp/>set</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>-<sp/>the<sp/>callback<sp/>returns<sp/>true</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>if<sp/>this<sp/>is<sp/>the<sp/>case,<sp/>then<sp/>throw<sp/>an<sp/>exception.<sp/>Should<sp/>not<sp/>be<sp/>called</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>from<sp/>multiple<sp/>threads.</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152" refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" kindref="member">check</ref>();</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>check()<sp/>but<sp/>return<sp/>true<sp/>if<sp/>is<sp/>interrupted<sp/>instead<sp/>of</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>throwing.<sp/>Can<sp/>be<sp/>called<sp/>from<sp/>multiple<sp/>threads.</highlight></codeline>
+<codeline lineno="156" refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" kindref="member">is_interrupted</ref>();</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>assuming<sp/>each<sp/>iteration<sp/>takes<sp/>a<sp/>certain<sp/>number<sp/>of<sp/>flops,<sp/>what</highlight></codeline>
+<codeline lineno="159"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>is<sp/>a<sp/>reasonable<sp/>interval<sp/>to<sp/>check<sp/>for<sp/>interrupts?</highlight></codeline>
+<codeline lineno="160"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161" refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" kindref="member">get_period_hint</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>flops);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="164"><highlight class="comment">///<sp/>set<sp/>implementation<sp/>optimized<sp/>for<sp/>fast<sp/>access.</highlight></codeline>
+<codeline lineno="165" refid="structfaiss_1_1VisitedTable" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref><sp/>{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>visited;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>visno;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size)<sp/>:<sp/>visited(size),<sp/>visno(1)<sp/>{}</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="171"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>flag<sp/>#no<sp/>to<sp/>true</highlight></codeline>
+<codeline lineno="172" refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" kindref="member">set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visited[no]<sp/>=<sp/>visno;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>flag<sp/>#no</highlight></codeline>
+<codeline lineno="177" refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" kindref="member">get</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>visited[no]<sp/>==<sp/>visno;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="181"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reset<sp/>all<sp/>flags<sp/>to<sp/>false</highlight></codeline>
+<codeline lineno="182" refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kindref="member">advance</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno++;</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(visno<sp/>==<sp/>250)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>250<sp/>rather<sp/>than<sp/>255<sp/>because<sp/>sometimes<sp/>we<sp/>use<sp/>visno<sp/>and<sp/>visno+1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memset(visited.data(),<sp/>0,<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(visited[0])<sp/>*<sp/>visited.size());</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="190"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/impl/AuxIndexStructures.h"/>
   </compounddef>

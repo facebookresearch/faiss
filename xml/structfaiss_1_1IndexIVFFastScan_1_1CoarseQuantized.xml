@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexIVFFastScan::CoarseQuantized</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a86141ca7f36fc996aafcb7a442cacdc3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexIVFFastScan::CoarseQuantized::nprobe</definition>
+        <argsstring></argsstring>
+        <name>nprobe</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFFastScan.h" line="94" column="16" bodyfile="faiss/IndexIVFFastScan.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a3626d6c3dda01a45c5c6584badb102c9" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::IndexIVFFastScan::CoarseQuantized::dis</definition>
+        <argsstring></argsstring>
+        <name>dis</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFFastScan.h" line="95" column="21" bodyfile="faiss/IndexIVFFastScan.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a446de6fb7e46df7a072dfe25641bc410" prot="public" static="no" mutable="no">
+        <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+        <definition>const idx_t* faiss::IndexIVFFastScan::CoarseQuantized::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFFastScan.h" line="96" column="21" bodyfile="faiss/IndexIVFFastScan.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/IndexIVFFastScan.h" line="93" column="5" bodyfile="faiss/IndexIVFFastScan.h" bodystart="93" bodyend="97"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a3626d6c3dda01a45c5c6584badb102c9" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan::CoarseQuantized</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a446de6fb7e46df7a072dfe25641bc410" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan::CoarseQuantized</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized_1a86141ca7f36fc996aafcb7a442cacdc3" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan::CoarseQuantized</scope><name>nprobe</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

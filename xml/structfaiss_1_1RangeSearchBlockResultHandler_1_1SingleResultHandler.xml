@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RangeSearchBlockResultHandler::SingleResultHandler</compoundname>
+    <basecompoundref refid="structfaiss_1_1ResultHandler" prot="public" virt="non-virtual">faiss::ResultHandler&lt; C &gt;</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a4dd4d89aee021216241c6ccda1b7b3c3" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref></type>
+        <definition>RangeSearchPartialResult faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::pres</definition>
+        <argsstring></argsstring>
+        <name>pres</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="482" column="34" bodyfile="faiss/impl/ResultHandler.h" bodystart="482" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1aa03f4c78f92903789ac0ea2cc64e5c94" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> *</type>
+        <definition>RangeQueryResult* faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::qr</definition>
+        <argsstring></argsstring>
+        <name>qr</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="483" column="26" bodyfile="faiss/impl/ResultHandler.h" bodystart="483" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643" prot="public" static="no" mutable="no">
+        <type>C::T</type>
+        <definition>C::T faiss::ResultHandler&lt; C &gt;::threshold</definition>
+        <argsstring></argsstring>
+        <name>threshold</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="60" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1aed58fceaf567d1d0191d1f989fa83cb2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::SingleResultHandler</definition>
+        <argsstring>(RangeSearchBlockResultHandler &amp;rh)</argsstring>
+        <name>SingleResultHandler</name>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchBlockResultHandler" kindref="compound">RangeSearchBlockResultHandler</ref> &amp;</type>
+          <declname>rh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="485" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="485" bodyend="488"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a160cc10701de9ff1519216dac60ae2d7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::begin</definition>
+        <argsstring>(size_t i)</argsstring>
+        <name>begin</name>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>begin results for query # i </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="491" column="14" bodyfile="faiss/impl/ResultHandler.h" bodystart="491" bodyend="493"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a02e40e25a434ee3b01c86957ca20b260" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::add_result</definition>
+        <argsstring>(T dis, TI idx) final</argsstring>
+        <name>add_result</name>
+        <reimplements refid="structfaiss_1_1ResultHandler_1a3cf97e0bcb27feb310bebd35407fc47b">add_result</reimplements>
+        <param>
+          <type>T</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>TI</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+<para>add one result for query i </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="496" column="14" bodyfile="faiss/impl/ResultHandler.h" bodystart="496" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1adaedc3219dd79e3f7ea9d8ababfaea0d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::end</definition>
+        <argsstring>()</argsstring>
+        <name>end</name>
+        <briefdescription>
+<para>series of results for query i is done </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="504" column="14" bodyfile="faiss/impl/ResultHandler.h" bodystart="504" bodyend="504"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a26970b8cca7b5a3129d185bb1b0a9e80" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler::~SingleResultHandler</definition>
+        <argsstring>()</argsstring>
+        <name>~SingleResultHandler</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="506" column="9" bodyfile="faiss/impl/ResultHandler.h" bodystart="506" bodyend="508"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::ResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandler"/>
+      </node>
+      <node id="1">
+        <label>faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>faiss::RangeSearchResult</label>
+        <link refid="structfaiss_1_1RangeSearchResult"/>
+      </node>
+      <node id="5">
+        <label>faiss::BufferList</label>
+        <link refid="structfaiss_1_1BufferList"/>
+      </node>
+      <node id="2">
+        <label>faiss::ResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandler"/>
+      </node>
+      <node id="3">
+        <label>faiss::RangeQueryResult</label>
+        <link refid="structfaiss_1_1RangeQueryResult"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pres</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>qr</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pres</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::RangeSearchPartialResult</label>
+        <link refid="structfaiss_1_1RangeSearchPartialResult"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>res</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/ResultHandler.h" line="479" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="479" bodyend="509"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a02e40e25a434ee3b01c86957ca20b260" prot="public" virt="virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>add_result</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a160cc10701de9ff1519216dac60ae2d7" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1adaedc3219dd79e3f7ea9d8ababfaea0d" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>end</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a4dd4d89aee021216241c6ccda1b7b3c3" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>pres</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1aa03f4c78f92903789ac0ea2cc64e5c94" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>qr</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1aed58fceaf567d1d0191d1f989fa83cb2" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>SingleResultHandler</name></member>
+      <member refid="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>threshold</name></member>
+      <member refid="structfaiss_1_1ResultHandler_1afb7fe7e6ac1b2aa5d41a4d06c3cc58da" prot="public" virt="virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>~ResultHandler</name></member>
+      <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a26970b8cca7b5a3129d185bb1b0a9e80" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler::SingleResultHandler</scope><name>~SingleResultHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

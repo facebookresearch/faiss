@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="234" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="234" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="233" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="233" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="234" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="234" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="233" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="233" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSWStats_1afafad9953d7ac341682840169bc58588" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="234" column="18" bodyfile="faiss/impl/HNSW.h" bodystart="234" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="233" column="18" bodyfile="faiss/impl/HNSW.h" bodystart="233" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="235" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="235" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="234" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="234" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSWStats_1a6bb6554915c07208c97e04fbe42541c6" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="236" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="236" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="235" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="235" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="238" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="238" bodyend="244"/>
+        <location file="faiss/impl/HNSW.h" line="237" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="237" bodyend="243"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -119,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="246" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="246" bodyend="250"/>
+        <location file="faiss/impl/HNSW.h" line="245" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="245" bodyend="249"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSWStats_1adafef04e7a01e5688c2ced24019d65a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -136,14 +136,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="252" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="252" bodyend="258"/>
+        <location file="faiss/impl/HNSW.h" line="251" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="251" bodyend="257"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/HNSW.h" line="233" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="233" bodyend="259"/>
+    <location file="faiss/impl/HNSW.h" line="232" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="232" bodyend="258"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HNSWStats_1adafef04e7a01e5688c2ced24019d65a7" prot="public" virt="non-virtual"><scope>faiss::HNSWStats</scope><name>combine</name></member>
       <member refid="structfaiss_1_1HNSWStats_1a492cbc4f5dc75d69e368ced8b852429d" prot="public" virt="non-virtual"><scope>faiss::HNSWStats</scope><name>HNSWStats</name></member>

@@ -1,0 +1,294 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1Top1BlockResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::Top1BlockResultHandler</compoundname>
+    <basecompoundref refid="structfaiss_1_1BlockResultHandler" prot="public" virt="non-virtual">faiss::BlockResultHandler&lt; C &gt;</basecompoundref>
+    <innerclass refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler" prot="public">faiss::Top1BlockResultHandler::SingleResultHandler</innerclass>
+    <templateparamlist>
+      <param>
+        <type>class C</type>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1Top1BlockResultHandler_1a881b36e5e8f2d106cad6b835f6828afa" prot="public" static="no">
+        <type>typename C::T</type>
+        <definition>using faiss::Top1BlockResultHandler&lt; C &gt;::T =  typename C::T</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="76" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1Top1BlockResultHandler_1ab9cbf5c0982bbe7478bfccfccfeca017" prot="public" static="no">
+        <type>typename C::TI</type>
+        <definition>using faiss::Top1BlockResultHandler&lt; C &gt;::TI =  typename C::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="77" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1Top1BlockResultHandler_1a3b4c804ec8e3689b6a2fa3268b68902a" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* faiss::Top1BlockResultHandler&lt; C &gt;::dis_tab</definition>
+        <argsstring></argsstring>
+        <name>dis_tab</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="82" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Top1BlockResultHandler_1ac117396b9b5e9a17b0f3bf7b117b7dcf" prot="public" static="no" mutable="no">
+        <type>TI *</type>
+        <definition>TI* faiss::Top1BlockResultHandler&lt; C &gt;::ids_tab</definition>
+        <argsstring></argsstring>
+        <name>ids_tab</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="84" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::nq</definition>
+        <argsstring></argsstring>
+        <name>nq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="34" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="39" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::i1</definition>
+        <argsstring></argsstring>
+        <name>i1</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="39" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1a9c2912ce455cb34894bb965a519f4eb0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::Top1BlockResultHandler&lt; C &gt;::Top1BlockResultHandler</definition>
+        <argsstring>(size_t nq, T *dis_tab, TI *ids_tab)</argsstring>
+        <name>Top1BlockResultHandler</name>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>T *</type>
+          <declname>dis_tab</declname>
+        </param>
+        <param>
+          <type>TI *</type>
+          <declname>ids_tab</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="86" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="86" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1a2ef1ec0b7a560c0e6dd0c368ae662e91" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::begin_multiple</definition>
+        <argsstring>(size_t i0, size_t i1) final</argsstring>
+        <name>begin_multiple</name>
+        <reimplements refid="structfaiss_1_1BlockResultHandler_1a6ec6f42f7cd3c812beeadcc9f0d4df56">begin_multiple</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i1</declname>
+        </param>
+        <briefdescription>
+<para>begin </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="123" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="123" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1aba342a0023bc3cca3c8fda11d85052f1" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::add_results</definition>
+        <argsstring>(size_t j0, size_t j1, const T *dis_tab) final</argsstring>
+        <name>add_results</name>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j1</declname>
+        </param>
+        <param>
+          <type>const T *</type>
+          <declname>dis_tab</declname>
+        </param>
+        <briefdescription>
+<para>add results for query i0..i1 and j0..j1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="133" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="133" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1a08fbb2bd996db429d01a5f85b830aaad" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::add_result</definition>
+        <argsstring>(const size_t i, const T dis, const TI idx)</argsstring>
+        <name>add_result</name>
+        <param>
+          <type>const size_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>const T</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>const TI</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="151" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="151" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::BlockResultHandler&lt; C &gt;::add_results</definition>
+        <argsstring>(size_t, size_t, const typename C::T *)</argsstring>
+        <name>add_results</name>
+        <param>
+          <type>size_t</type>
+        </param>
+        <param>
+          <type>size_t</type>
+        </param>
+        <param>
+          <type>const typename C::T *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="48" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a4cd78859a05a11f3f63ba3290e5276de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::BlockResultHandler&lt; C &gt;::end_multiple</definition>
+        <argsstring>()</argsstring>
+        <name>end_multiple</name>
+        <reimplementedby refid="structfaiss_1_1HeapBlockResultHandler_1a6b71c55d3af4094c0cac586aaa89b187">end_multiple</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ReservoirBlockResultHandler_1a69f72c11d4157d8294b192341a905534">end_multiple</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="51" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::Top1BlockResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1Top1BlockResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::Top1BlockResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1Top1BlockResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/ResultHandler.h" line="75" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="75" bodyend="160"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a08fbb2bd996db429d01a5f85b830aaad" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>add_result</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1aba342a0023bc3cca3c8fda11d85052f1" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" virt="virtual" ambiguityscope="faiss::BlockResultHandler::"><scope>faiss::Top1BlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a2ef1ec0b7a560c0e6dd0c368ae662e91" prot="public" virt="virtual"><scope>faiss::Top1BlockResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1afd2cc09fc87d365e63fc4e153bd9c45f" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>BlockResultHandler</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a3b4c804ec8e3689b6a2fa3268b68902a" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>dis_tab</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a4cd78859a05a11f3f63ba3290e5276de" prot="public" virt="virtual"><scope>faiss::Top1BlockResultHandler</scope><name>end_multiple</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>i1</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1ac117396b9b5e9a17b0f3bf7b117b7dcf" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>ids_tab</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>nq</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a881b36e5e8f2d106cad6b835f6828afa" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>T</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1ab9cbf5c0982bbe7478bfccfccfeca017" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a9c2912ce455cb34894bb965a519f4eb0" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>Top1BlockResultHandler</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a0b3f386e400cb4814980f11eb6050e0e" prot="public" virt="virtual"><scope>faiss::Top1BlockResultHandler</scope><name>~BlockResultHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

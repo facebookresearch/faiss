@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="67" column="15" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="66" column="15" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1_1Buffer_1a48ca066e1ec4de4459cec49b62b73de1" prot="public" static="no" mutable="no">
         <type>float *</type>
@@ -27,14 +27,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="68" column="15" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="67" column="15" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/AuxIndexStructures.h" line="66" column="5" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="66" bodyend="69"/>
+    <location file="faiss/impl/AuxIndexStructures.h" line="65" column="5" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="65" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BufferList_1_1Buffer_1a48ca066e1ec4de4459cec49b62b73de1" prot="public" virt="non-virtual"><scope>faiss::BufferList::Buffer</scope><name>dis</name></member>
       <member refid="structfaiss_1_1BufferList_1_1Buffer_1a4420738a41a7821422398cfa214cc158" prot="public" virt="non-virtual"><scope>faiss::BufferList::Buffer</scope><name>ids</name></member>

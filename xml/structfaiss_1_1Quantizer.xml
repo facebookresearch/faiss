@@ -209,7 +209,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Product <ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>. Implemented only for METRIC_L2 </para>
+<para>General interface for quantizer objects </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="7">

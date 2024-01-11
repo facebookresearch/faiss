@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::RangeHandler::Triplet</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a65b7c58a233553ad10e792d12143a7b2" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::q</definition>
+        <argsstring></argsstring>
+        <name>q</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="496" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="496" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1ae4e44e7af5bd814f147859589237ad31" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::b</definition>
+        <argsstring></argsstring>
+        <name>b</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="497" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="497" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a7cb5fffa43fb40fb4e0ea37b1bd8c92b" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::dis</definition>
+        <argsstring></argsstring>
+        <name>dis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="498" column="18" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="498" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/simd_result_handlers.h" line="495" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="495" bodyend="499"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1ae4e44e7af5bd814f147859589237ad31" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler::Triplet</scope><name>b</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a7cb5fffa43fb40fb4e0ea37b1bd8c92b" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler::Triplet</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a65b7c58a233553ad10e792d12143a7b2" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler::Triplet</scope><name>q</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="103" column="23" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="103" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="102" column="23" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> &gt;</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="109" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="108" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1a5eb5086d4b0f3904a6e4ad7a3b93d96a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="64" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="64" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="63" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="63" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1abf92e38d902aabae3c6267e36e55f932" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1BufferList_1_1Buffer" kindref="compound">Buffer</ref> &gt;</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="71" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="70" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="72" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="72" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="71" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="106" column="14"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="105" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> &amp;</type>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="112" column="22"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="111" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a3443ee23c08ca510afd64334d6656f50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -121,7 +121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="117" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="116" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1ab6a385008493c7b630e4e7bc56e3da74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="120" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="119" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="123" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="122" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -168,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="79" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="78" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -190,7 +190,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="82" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="86" column="10"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="85" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -245,7 +245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="127" column="17"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="126" column="17"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -284,7 +284,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/AuxIndexStructures.h" line="102" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="102" bodyend="130"/>
+    <location file="faiss/impl/AuxIndexStructures.h" line="101" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="101" bodyend="129"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>add</name></member>
       <member refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>append_buffer</name></member>
