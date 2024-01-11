@@ -189,6 +189,7 @@ set(FAISS_HEADERS
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
+  utils/fp16-arm.h
   utils/fp16.h
   utils/hamming-inl.h
   utils/hamming.h
