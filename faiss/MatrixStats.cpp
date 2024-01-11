@@ -181,12 +181,12 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
 
         double max_std = 0, min_std = HUGE_VAL;
 
-        size_t n_dangerous_range = 0, n_0_range = 0, n0 = 0;
+        size_t n_dangerous_range = 0, n_0_range = 0, n0_2 = 0;
 
         for (size_t j = 0; j < d; j++) {
             PerDimStats& st = per_dim_stats[j];
             st.compute_mean_std();
-            n0 += st.n0;
+            n0_2 += st.n0;
 
             if (st.max == st.min) {
                 n_0_range++;
@@ -200,12 +200,12 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
                 min_std = st.stddev;
         }
 
-        if (n0 == 0) {
+        if (n0_2 == 0) {
             do_comment("matrix contains no 0s\n");
         } else {
             do_comment(
                     "matrix contains %.2f %% 0 entries\n",
-                    n0 * 100.0 / (n * d));
+                    n0_2 * 100.0 / (n * d));
         }
 
         if (n_0_range == 0) {

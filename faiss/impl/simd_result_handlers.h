@@ -61,9 +61,9 @@ struct StoreResultHandler {
         d1.store(data + ofs + 16);
     }
 
-    void set_block_origin(size_t i0, size_t j0) {
-        this->i0 = i0;
-        this->j0 = j0;
+    void set_block_origin(size_t i0_2, size_t j0_2) {
+        this->i0 = i0_2;
+        this->j0 = j0_2;
     }
 };
 
@@ -78,8 +78,8 @@ struct FixedStorageHandler {
         dis[q + i0][2 * b + 1] = d1;
     }
 
-    void set_block_origin(size_t i0, size_t j0) {
-        this->i0 = i0;
+    void set_block_origin(size_t i0_2, size_t j0) {
+        this->i0 = i0_2;
         assert(j0 == 0);
     }
 
@@ -112,9 +112,9 @@ struct SIMDResultHandler {
     explicit SIMDResultHandler(size_t ntotal)
             : ntotal(ntotal), id_map(nullptr), q_map(nullptr), dbias(nullptr) {}
 
-    void set_block_origin(size_t i0, size_t j0) {
-        this->i0 = i0;
-        this->j0 = j0;
+    void set_block_origin(size_t i0_2, size_t j0_2) {
+        this->i0 = i0_2;
+        this->j0 = j0_2;
     }
 
     // adjust handler data for IVF.
