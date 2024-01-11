@@ -114,18 +114,19 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
  * scanning implementation for search
  ************************************************************/
 
-template <class VectorDistance, class ResultHandler>
+template <class VectorDistance, class BlockResultHandler>
 void search_with_decompress(
         const IndexAdditiveQuantizer& ir,
         const float* xq,
         VectorDistance& vd,
-        ResultHandler& res) {
+        BlockResultHandler& res) {
     const uint8_t* codes = ir.codes.data();
     size_t ntotal = ir.ntotal;
     size_t code_size = ir.code_size;
     const AdditiveQuantizer* aq = ir.aq;
 
-    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    using SingleResultHandler =
+            typename BlockResultHandler::SingleResultHandler;
 
 #pragma omp parallel for if (res.nq > 100)
     for (int64_t q = 0; q < res.nq; q++) {
@@ -142,11 +143,14 @@ void search_with_decompress(
     }
 }
 
-template <bool is_IP, AdditiveQuantizer::Search_type_t st, class ResultHandler>
+template <
+        bool is_IP,
+        AdditiveQuantizer::Search_type_t st,
+        class BlockResultHandler>
 void search_with_LUT(
         const IndexAdditiveQuantizer& ir,
         const float* xq,
-        ResultHandler& res) {
+        BlockResultHandler& res) {
     const AdditiveQuantizer& aq = *ir.aq;
     const uint8_t* codes = ir.codes.data();
     size_t ntotal = ir.ntotal;
@@ -154,7 +158,8 @@ void search_with_LUT(
     size_t nq = res.nq;
     size_t d = ir.d;
 
-    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    using SingleResultHandler =
+            typename BlockResultHandler::SingleResultHandler;
     std::unique_ptr<float[]> LUT(new float[nq * aq.total_codebook_size]);
 
     aq.compute_LUT(nq, xq, LUT.get());
@@ -241,21 +246,23 @@ void IndexAdditiveQuantizer::search(
         if (metric_type == METRIC_L2) {
             using VD = VectorDistance<METRIC_L2>;
             VD vd = {size_t(d), metric_arg};
-            HeapResultHandler<VD::C> rh(n, distances, labels, k);
+            HeapBlockResultHandler<VD::C> rh(n, distances, labels, k);
             search_with_decompress(*this, x, vd, rh);
         } else if (metric_type == METRIC_INNER_PRODUCT) {
             using VD = VectorDistance<METRIC_INNER_PRODUCT>;
             VD vd = {size_t(d), metric_arg};
-            HeapResultHandler<VD::C> rh(n, distances, labels, k);
+            HeapBlockResultHandler<VD::C> rh(n, distances, labels, k);
             search_with_decompress(*this, x, vd, rh);
         }
     } else {
         if (metric_type == METRIC_INNER_PRODUCT) {
-            HeapResultHandler<CMin<float, idx_t>> rh(n, distances, labels, k);
+            HeapBlockResultHandler<CMin<float, idx_t>> rh(
+                    n, distances, labels, k);
             search_with_LUT<true, AdditiveQuantizer::ST_LUT_nonorm>(
                     *this, x, rh);
         } else {
-            HeapResultHandler<CMax<float, idx_t>> rh(n, distances, labels, k);
+            HeapBlockResultHandler<CMax<float, idx_t>> rh(
+                    n, distances, labels, k);
             switch (aq->search_type) {
 #define DISPATCH(st)                                                 \
     case AdditiveQuantizer::st:                                      \

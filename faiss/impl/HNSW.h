@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #pragma once
 
 #include <queue>
@@ -42,6 +40,8 @@ namespace faiss {
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
+template <class C>
+struct ResultHandler;
 
 struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
@@ -53,6 +53,9 @@ struct SearchParametersHNSW : SearchParameters {
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
+
+    // for now we do only these distances
+    using C = CMax<float, int64_t>;
 
     typedef std::pair<float, storage_idx_t> Node;
 
@@ -195,18 +198,14 @@ struct HNSW {
     /// search interface for 1 point, single thread
     HNSWStats search(
             DistanceComputer& qdis,
-            int k,
-            idx_t* I,
-            float* D,
+            ResultHandler<C>& res,
             VisitedTable& vt,
             const SearchParametersHNSW* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
             DistanceComputer& qdis,
-            int k,
-            idx_t* idxi,
-            float* simi,
+            ResultHandler<C>& res,
             idx_t nprobe,
             const storage_idx_t* nearest_i,
             const float* nearest_d,
