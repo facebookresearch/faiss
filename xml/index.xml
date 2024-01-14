@@ -1484,7 +1484,7 @@
   </compound>
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
@@ -1591,7 +1591,7 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
