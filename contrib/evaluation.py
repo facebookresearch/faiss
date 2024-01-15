@@ -261,6 +261,7 @@ def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
             mask = DrefC == dis
             testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
+
 def check_ref_range_results(Lref, Dref, Iref,
                             Lnew, Dnew, Inew):
     """ compare range search results wrt. a reference result,

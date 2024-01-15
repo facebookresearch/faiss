@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexBinaryHNSW.h>
 
 #include <omp.h>
@@ -28,6 +26,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -201,27 +200,31 @@ void IndexBinaryHNSW::search(
             !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
+    // we use the buffer for distances as float but convert them back
+    // to int in the end
+    float* distances_f = (float*)distances;
+
+    using RH = HeapBlockResultHandler<HNSW::C>;
+    RH bres(n, distances_f, labels, k);
+
 #pragma omp parallel
     {
         VisitedTable vt(ntotal);
         std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+        RH::SingleResultHandler res(bres);
 
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
-            idx_t* idxi = labels + i * k;
-            float* simi = (float*)(distances + i * k);
-
+            res.begin(i);
             dis->set_query((float*)(x + i * code_size));
-
-            maxheap_heapify(k, simi, idxi);
-            hnsw.search(*dis, k, idxi, simi, vt);
-            maxheap_reorder(k, simi, idxi);
+            hnsw.search(*dis, res, vt);
+            res.end();
         }
     }
 
 #pragma omp parallel for
     for (int i = 0; i < n * k; ++i) {
-        distances[i] = std::round(((float*)distances)[i]);
+        distances[i] = std::round(distances_f[i]);
     }
 }
 

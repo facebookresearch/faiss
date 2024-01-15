@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/impl/HNSW.h>
 
 #include <string>
@@ -14,6 +12,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/platform_macros.h>
@@ -513,17 +512,15 @@ void HNSW::add_with_locks(
  **************************************************************/
 
 namespace {
-
 using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
+using C = HNSW::C;
 /** Do a BFS on the candidates list */
 
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
-        int k,
-        idx_t* I,
-        float* D,
+        ResultHandler<C>& res,
         MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
@@ -539,15 +536,16 @@ int search_from_candidates(
     int efSearch = params ? params->efSearch : hnsw.efSearch;
     const IDSelector* sel = params ? params->sel : nullptr;
 
+    C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
         if (!sel || sel->is_member(v1)) {
-            if (nres < k) {
-                faiss::maxheap_push(++nres, D, I, d, v1);
-            } else if (d < D[0]) {
-                faiss::maxheap_replace_top(nres, D, I, d, v1);
+            if (d < threshold) {
+                if (res.add_result(d, v1)) {
+                    threshold = res.threshold;
+                }
             }
         }
         vt.set(v1);
@@ -609,13 +607,14 @@ int search_from_candidates(
         size_t saved_j[4];
 
         ndis += jmax - begin;
+        threshold = res.threshold;
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (!sel || sel->is_member(idx)) {
-                if (nres < k) {
-                    faiss::maxheap_push(++nres, D, I, dis, idx);
-                } else if (dis < D[0]) {
-                    faiss::maxheap_replace_top(nres, D, I, dis, idx);
+                if (dis < threshold) {
+                    if (res.add_result(dis, idx)) {
+                        threshold = res.threshold;
+                    }
                 }
             }
             candidates.push(idx, dis);
@@ -799,19 +798,28 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
     return top_candidates;
 }
 
+// just used as a lower bound for the minmaxheap, but it is set for heap search
+int extract_k_from_ResultHandler(ResultHandler<C>& res) {
+    using RH = HeapBlockResultHandler<C>;
+    if (auto hres = dynamic_cast<RH::SingleResultHandler*>(&res)) {
+        return hres->k;
+    }
+    return 1;
+}
+
 } // anonymous namespace
 
 HNSWStats HNSW::search(
         DistanceComputer& qdis,
-        int k,
-        idx_t* I,
-        float* D,
+        ResultHandler<C>& res,
         VisitedTable& vt,
         const SearchParametersHNSW* params) const {
     HNSWStats stats;
     if (entry_point == -1) {
         return stats;
     }
+    int k = extract_k_from_ResultHandler(res);
+
     if (upper_beam == 1) {
         //  greedy search on upper levels
         storage_idx_t nearest = entry_point;
@@ -828,7 +836,7 @@ HNSWStats HNSW::search(
             candidates.push(nearest, d_nearest);
 
             search_from_candidates(
-                    *this, qdis, k, I, D, candidates, vt, stats, 0, 0, params);
+                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
         } else {
             std::priority_queue<Node> top_candidates =
                     search_from_candidate_unbounded(
@@ -848,7 +856,8 @@ HNSWStats HNSW::search(
                 float d;
                 storage_idx_t label;
                 std::tie(d, label) = top_candidates.top();
-                faiss::maxheap_push(++nres, D, I, d, label);
+                res.add_result(d, label);
+                nres++;
                 top_candidates.pop();
             }
         }
@@ -861,6 +870,10 @@ HNSWStats HNSW::search(
 
         std::vector<idx_t> I_to_next(candidates_size);
         std::vector<float> D_to_next(candidates_size);
+
+        HeapBlockResultHandler<C> block_resh(
+                1, D_to_next.data(), I_to_next.data(), candidates_size);
+        HeapBlockResultHandler<C>::SingleResultHandler resh(block_resh);
 
         int nres = 1;
         I_to_next[0] = entry_point;
@@ -877,18 +890,12 @@ HNSWStats HNSW::search(
 
             if (level == 0) {
                 nres = search_from_candidates(
-                        *this, qdis, k, I, D, candidates, vt, stats, 0);
+                        *this, qdis, res, candidates, vt, stats, 0);
             } else {
+                resh.begin(0);
                 nres = search_from_candidates(
-                        *this,
-                        qdis,
-                        candidates_size,
-                        I_to_next.data(),
-                        D_to_next.data(),
-                        candidates,
-                        vt,
-                        stats,
-                        level);
+                        *this, qdis, resh, candidates, vt, stats, level);
+                resh.end();
             }
             vt.advance();
         }
@@ -899,9 +906,7 @@ HNSWStats HNSW::search(
 
 void HNSW::search_level_0(
         DistanceComputer& qdis,
-        int k,
-        idx_t* idxi,
-        float* simi,
+        ResultHandler<C>& res,
         idx_t nprobe,
         const storage_idx_t* nearest_i,
         const float* nearest_d,
@@ -909,7 +914,7 @@ void HNSW::search_level_0(
         HNSWStats& search_stats,
         VisitedTable& vt) const {
     const HNSW& hnsw = *this;
-
+    int k = extract_k_from_ResultHandler(res);
     if (search_type == 1) {
         int nres = 0;
 
@@ -922,22 +927,13 @@ void HNSW::search_level_0(
             if (vt.get(cj))
                 continue;
 
-            int candidates_size = std::max(hnsw.efSearch, int(k));
+            int candidates_size = std::max(hnsw.efSearch, k);
             MinimaxHeap candidates(candidates_size);
 
             candidates.push(cj, nearest_d[j]);
 
             nres = search_from_candidates(
-                    hnsw,
-                    qdis,
-                    k,
-                    idxi,
-                    simi,
-                    candidates,
-                    vt,
-                    search_stats,
-                    0,
-                    nres);
+                    hnsw, qdis, res, candidates, vt, search_stats, 0, nres);
         }
     } else if (search_type == 2) {
         int candidates_size = std::max(hnsw.efSearch, int(k));
@@ -953,7 +949,7 @@ void HNSW::search_level_0(
         }
 
         search_from_candidates(
-                hnsw, qdis, k, idxi, simi, candidates, vt, search_stats, 0);
+                hnsw, qdis, res, candidates, vt, search_stats, 0);
     }
 }
 

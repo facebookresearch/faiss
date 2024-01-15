@@ -48,12 +48,12 @@ outputs:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - cuda-version {{ cudatoolkit }}
-        - libraft =23.12
+        - libraft =24.02
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - {{ pin_compatible('cuda-version', max_pin='x') }}
-        - libraft =23.12
+        - libraft =24.02
     test:
       requires:
         - conda-build

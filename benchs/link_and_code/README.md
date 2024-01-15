@@ -39,6 +39,8 @@ The code runs on top of Faiss. The HNSW index can be extended with a
 `ReconstructFromNeighbors` C++ object that refines the distances. The
 training is implemented in Python.
 
+Update: 2023-12-28: the current Faiss dropped support for reconstruction with
+this method.
 
 Reproducing Table 2 in the paper
 --------------------------------
