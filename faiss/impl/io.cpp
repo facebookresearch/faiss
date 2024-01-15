@@ -196,13 +196,13 @@ size_t BufferedIOWriter::operator()(
     while (size > 0) {
         assert(b0 == bsz);
         // now we need to flush to add more bytes
-        size_t ofs = 0;
+        size_t ofs_2 = 0;
         do {
-            assert(ofs < 10000000);
-            size_t written = (*writer)(buffer.data() + ofs, 1, bsz - ofs);
+            assert(ofs_2 < 10000000);
+            size_t written = (*writer)(buffer.data() + ofs_2, 1, bsz - ofs_2);
             FAISS_THROW_IF_NOT(written > 0);
-            ofs += written;
-        } while (ofs != bsz);
+            ofs_2 += written;
+        } while (ofs_2 != bsz);
 
         // copy src to buffer
         size_t nb1 = std::min(bsz, size);
@@ -217,12 +217,12 @@ size_t BufferedIOWriter::operator()(
 }
 
 BufferedIOWriter::~BufferedIOWriter() {
-    size_t ofs = 0;
-    while (ofs != b0) {
-        // printf("Destructor write %zd \n", b0 - ofs);
-        size_t written = (*writer)(buffer.data() + ofs, 1, b0 - ofs);
+    size_t ofs_2 = 0;
+    while (ofs_2 != b0) {
+        // printf("Destructor write %zd \n", b0 - ofs_2);
+        size_t written = (*writer)(buffer.data() + ofs_2, 1, b0 - ofs_2);
         FAISS_THROW_IF_NOT(written > 0);
-        ofs += written;
+        ofs_2 += written;
     }
 }
 

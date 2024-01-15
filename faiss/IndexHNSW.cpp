@@ -733,7 +733,6 @@ int search_from_candidates_2(
         int level,
         int nres_in = 0) {
     int nres = nres_in;
-    int ndis = 0;
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         FAISS_ASSERT(v1 >= 0);
@@ -756,7 +755,6 @@ int search_from_candidates_2(
             if (vt.visited[v1] == vt.visno + 1) {
                 // nothing to do
             } else {
-                ndis++;
                 float d = qdis(v1);
                 candidates.push(v1, d);
 
