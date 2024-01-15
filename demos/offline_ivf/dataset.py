@@ -100,17 +100,13 @@ class MultiFileVectorDataset:
                 continue
             logging.info(f"processing: {f.name}...")
             xb = _memmap_vecs(
-                f"{self.root}/{f.name}",
-                f.format,
-                f.dtype,
-                f.size,
-                self.d,
+                f"{self.root}/{f.name}", f.format, f.dtype, f.size, self.d,
             )
             if start > 0:
                 xb = xb[start:]
                 start = 0
             req = min(batch_size - rem, xb.shape[0])
-            buffer[rem : rem + req] = xb[:req]
+            buffer[rem:rem + req] = xb[:req]
             rem += req
             if rem == batch_size:
                 if self.normalize:

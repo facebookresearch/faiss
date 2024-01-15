@@ -5,11 +5,8 @@
 import numpy as np
 import unittest
 from utils import load_config
-from offline_ivf import OfflineIVF
 import pathlib as pl
 import tempfile
-import shutil
-import os
 from typing import List
 from tests.testing_utils import TestDataCreator
 from run import process_options_and_run_jobs
@@ -35,6 +32,7 @@ A_INDEX_OPQ_FILES: List[str] = [
     "I_a_ann_OPQ4_IVF256_PQ4_np200.npy",
     "D_a_ann_refined_OPQ4_IVF256_PQ4_np200.npy",
 ]
+
 
 class TestOIVF(unittest.TestCase):
     """
@@ -127,7 +125,6 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("index_shard")
             cfg = load_config(test_args.config)
@@ -169,7 +166,6 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("index_shard")
             cfg = load_config(test_args.config)
@@ -216,10 +212,8 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("index_shard")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("search")
             cfg = load_config(test_args.config)
@@ -252,19 +246,16 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("index_shard")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("merge_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("evaluate")
             process_options_and_run_jobs(test_args)
             common_path = tmpdirname + "/my_queries_data_in_my_test_data/eval/"
             for filename in A_INDEX_FILES:
-                file_to_check = common_path +"/"+ filename
+                file_to_check = common_path + "/" + filename
                 self.assert_file_exists(file_to_check)
 
     def test_evaluate_without_margin_OPQ(self) -> None:
@@ -291,13 +282,10 @@ class TestOIVF(unittest.TestCase):
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("index_shard")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("merge_index")
-            cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
             test_args = data_creator.setup_cli("evaluate")
             process_options_and_run_jobs(test_args)
@@ -305,174 +293,3 @@ class TestOIVF(unittest.TestCase):
             for filename in A_INDEX_OPQ_FILES:
                 file_to_check = common_path + filename
                 self.assert_file_exists(file_to_check)
-
-
-    def test_split_batch_size_bigger_than_file_sizes(self) -> None:
-        """
-        Test split_files step, batch size bigger than file sizes.
-        """
-        with tempfile.TemporaryDirectory() as tmpdirname:
-
-            test_file_sizes = [19999, 20001, 30000, 10000]
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float32,
-                index_factory=["IVF256,PQ4"],
-                training_sample=9984,
-                file_sizes=test_file_sizes,
-                nprobe=2,
-                k=2,
-                metric="METRIC_L2",
-                index_shard_size=10000,
-                query_batch_size=40000,
-                evaluation_sample=100,
-                with_queries_ds=True,
-            )
-            data_creator.create_test_data()
-            test_args = data_creator.setup_cli("train_index")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("index_shard")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("search")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("split_files")
-            process_options_and_run_jobs(test_args)
-
-            common_path = tmpdirname + "/my_queries_data_in_my_test_data/knn/"
-            I_groundtruth_files = [
-                "I0000000000_IVF256_PQ4_np2.npy",
-                "I0000040000_IVF256_PQ4_np2.npy",
-            ]
-            first_file_gt = I_groundtruth_files.pop(0)
-            I_groundtruth = np.load(common_path + first_file_gt)
-            for batched_file in I_groundtruth_files:
-                I_groundtruth = np.vstack(
-                    [I_groundtruth, np.load(common_path + batched_file)]
-                )
-            split_files = sorted(
-                [
-                    "mm5_p5.x2y.002.idx.npy",
-                    "mm5_p5.x2y.003.idx.npy",
-                    "mm5_p5.x2y.000.idx.npy",
-                    "mm5_p5.x2y.001.idx.npy",
-                ]
-            )
-            first_file = split_files.pop(0)
-            output_path = (
-                common_path
-                + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
-            )
-
-            I_all_splits = np.load(output_path + first_file)
-            for filename in split_files:
-                self.assert_file_exists(output_path + filename)
-                I = np.load(output_path + filename)
-                I_all_splits = np.vstack([I_all_splits, I])
-
-            self.assertTrue((I_all_splits == I_groundtruth).all())
-
-    def test_split_batch_size_smaller_than_file_sizes(self) -> None:
-        """
-        Test split_files step, the batch size less than file sizes
-        """
-        test_file_sizes = [14995, 5005]
-        with tempfile.TemporaryDirectory() as tmpdirname:
-
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float32,
-                index_factory=["IVF256,PQ4"],
-                training_sample=9984,
-                file_sizes=test_file_sizes,
-                nprobe=2,
-                k=2,
-                metric="METRIC_L2",
-                index_shard_size=10000,
-                query_batch_size=5000,
-                evaluation_sample=100,
-                with_queries_ds=True,
-            )
-            data_creator.create_test_data()
-            test_args = data_creator.setup_cli("train_index")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("index_shard")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("search")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("split_files")
-            process_options_and_run_jobs(test_args)
-
-            common_path = tmpdirname + "/my_queries_data_in_my_test_data/knn/"
-            I_groundtruth_files = [
-                "D_approx0000000000_IVF256_PQ4_np2.npy",
-                "D_approx0000005000_IVF256_PQ4_np2.npy",
-                "D_approx0000010000_IVF256_PQ4_np2.npy",
-                "D_approx0000015000_IVF256_PQ4_np2.npy",
-            ]
-
-            first_file_gt = I_groundtruth_files.pop(0)
-            I_groundtruth = np.load(common_path + first_file_gt)
-            for batched_file in I_groundtruth_files:
-                I_groundtruth = np.vstack(
-                    [I_groundtruth, np.load(common_path + batched_file)]
-                )
-            split_files = sorted(
-                ["mm5_p5.x2y.000.dist.npy", "mm5_p5.x2y.001.dist.npy"]
-            )
-            output_path = (
-                common_path
-                + "dists5_p5.my_test_data-my_queries_data.IVF256_PQ4.k2.np2.fp32-shard/"
-            )
-            first_file = split_files.pop(0)
-            I_all_splits = np.load(output_path + first_file)
-            for filename in split_files:
-                self.assert_file_exists(output_path + filename)
-                I = np.load(output_path + filename)
-                I_all_splits = np.vstack([I_all_splits, I])
-
-            self.assertTrue((I_all_splits == I_groundtruth).all())
-
-    def test_split_files_with_corrupted_input_file(self) -> None:
-        """
-        Test split_files step, the batch size less than file sizes
-        """
-        test_file_sizes = [14995, 5005]
-        with tempfile.TemporaryDirectory() as tmpdirname:
-
-            k = 2
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float32,
-                index_factory=["IVF256,PQ4"],
-                training_sample=9984,
-                file_sizes=test_file_sizes,
-                nprobe=2,
-                k=k,
-                metric="METRIC_L2",
-                index_shard_size=10000,
-                query_batch_size=5000,
-                evaluation_sample=100,
-                with_queries_ds=True,
-            )
-            data_creator.create_test_data()
-            test_args = data_creator.setup_cli("train_index")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("index_shard")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("search")
-            process_options_and_run_jobs(test_args)
-            # Corrupts the last file
-            common_path = tmpdirname + "/my_queries_data_in_my_test_data/knn/"
-            D_corrupt_file = np.empty((0, k), dtype=np.float32)
-            np.save(
-                common_path + "D_approx0000015000_IVF256_PQ4_np2.npy",
-                D_corrupt_file,
-            )
-            test_args = data_creator.setup_cli("split_files")
-
-            self.assertRaises(
-                AssertionError, process_options_and_run_jobs, test_args
-            )

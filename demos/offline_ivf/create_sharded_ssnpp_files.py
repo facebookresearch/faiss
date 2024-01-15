@@ -28,7 +28,7 @@ def main(args: argparse.Namespace):
     ), "num of embeddings per file should divide total num of embeddings"
     for i in range(num_batches):
         xb_batch = ssnpp_data[
-            i * args.data_batch : (i + 1) * args.data_batch, :
+            i * args.data_batch:(i + 1) * args.data_batch, :
         ]
         filename = args.output_dir + f"/ssnpp_{(i):010}.npy"
         np.save(filename, xb_batch)

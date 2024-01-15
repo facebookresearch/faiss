@@ -414,7 +414,9 @@ class OfflineIVF:
 
     def _index_search(self, index_shard_prefix, xq, nprobe):
         assert nprobe is not None
-        logging.info(f"open sharded index: {index_shard_prefix}, {self.nshards}")
+        logging.info(
+            f"open sharded index: {index_shard_prefix}, {self.nshards}"
+        )
         index = self._open_sharded_index(index_shard_prefix)
         index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
         logging.info(f"setting nprobe to {nprobe}")
@@ -938,99 +940,3 @@ class OfflineIVF:
             )
 
         logging.info("done")
-
-    def split_files(self):
-        self._split_files(file_type="I", save_output_id="idx")
-        self._split_files(file_type="D_approx", save_output_id="dist")
-
-    def _split_files(self, file_type: str, save_output_id: str):
-        """
-        #Output in directory dists5_p5.eng0-hin.OPQ64,IVFauto,PQ64.k16.np128.fp16-shard
-        This method handles the post-processing of npy files to have the same number and size
-        as the number of files in a given dataset.
-        The assumption about the input files are all of size xq_bs except possible for the last one, that can be shorter.
-        """
-
-        logging.info(
-            f"split_npy_files, output dir in {self.postprocess_output_dir}"
-        )
-        if not os.path.exists(self.postprocess_output_dir):
-            os.makedirs(self.postprocess_output_dir)
-
-        I_files = sorted(self._get_output_files(file_type))
-
-        num_input_files = len(I_files)
-        total_output_size = sum(self.file_sizes)
-        last_input_file = np.load(I_files[-1], mmap_mode="r")
-        I_dtype = last_input_file.dtype
-        remainder = total_output_size - (num_input_files - 1) * self.xq_bs
-        assert (
-            last_input_file.shape[0] == remainder
-            and last_input_file.shape[1] == self.k
-        ), f"wrong size for input data file, check file: {I_files[-1]}"
-        for i in range(
-            num_input_files - 1
-        ):  # check all files except the last one, which is checked above
-            I_matrix = np.load(I_files[i], mmap_mode="r")
-            assert (
-                I_matrix.shape[0] == self.xq_bs and I_matrix.shape[1] == self.k
-            ), f"wrong size for input data file , check file: {I_files[i]} "
-
-        output_files = []
-
-        current_input_file_index = 0
-        current_input_file_offset = 0
-        for jj, current_output_file_size in enumerate(self.file_sizes):
-            output_file = np.empty((0, self.k), dtype=I_dtype)
-            while output_file.shape[0] < current_output_file_size:
-                still_need = current_output_file_size - output_file.shape[0]
-                I_current_file = np.load(
-                    I_files[current_input_file_index], mmap_mode="r"
-                )
-                max_we_can_read_from_current_input = min(
-                    I_current_file.shape[0],
-                    current_input_file_offset + still_need,
-                )
-                input_chunk = I_current_file[
-                    current_input_file_offset:max_we_can_read_from_current_input,
-                ]
-                output_file = np.vstack([output_file, input_chunk])
-                current_input_file_offset = max_we_can_read_from_current_input
-                if current_input_file_offset == I_current_file.shape[0]:
-                    current_input_file_index += 1
-                    current_input_file_offset = 0
-            output_files.append(output_file)
-            logging.info(
-                f"saving files: mm5_p5.x2y.{(jj):03}.{save_output_id}"
-            )
-            np.save(
-                f"{self.postprocess_output_dir}"
-                + f"/mm5_p5.x2y.{(jj):03}.{save_output_id}",
-                output_file,
-            )
-
-    def cast_to_uint32(self):
-        self._cast_to_unint32(file_type="I")
-
-    def _cast_to_unint32(self, file_type: str):
-        logging.info("casting to uint32:")
-        I_files = self._get_output_files(file_type)
-        for I_file in I_files:
-            I_matrix = np.load(I_file, mmap_mode="r")
-            assert (
-                np.all(I_matrix) >= 0
-                and np.all(I_matrix) < np.iinfo(np.uint32).max
-            ), (
-                "Some indices are less than zero or exceed"
-                f" {np.iinfo(np.uint32).max}, canno cast to uint32"
-            )
-
-            filename = I_file.rsplit(".", 1)[0]
-            np.save(filename + "_uint32.npy", I_matrix.astype(np.uint32))
-        logging.info("done! casting to uint32")
-
-    def _get_output_files(self, file_type):
-        return [
-            f"{self.knn_dir}/{file_type}{(i):010}_{self.knn_output_file_suffix}"
-            for i in range(0, self.xq_ds.size, self.xq_bs)
-        ]

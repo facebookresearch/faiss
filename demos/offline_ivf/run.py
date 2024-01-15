@@ -134,33 +134,17 @@ if __name__ == "__main__":
         help=" if True, runs in cluster",
     )
     add_group_args(
-        group,
-        "--job_name",
-        type=str,
-        default="oivf",
-        help="cluster job name",
+        group, "--job_name", type=str, default="oivf", help="cluster job name",
     )
     add_group_args(
-        group,
-        "--num_nodes",
-        type=str,
-        default=1,
-        help="num of nodes per job",
+        group, "--num_nodes", type=str, default=1, help="num of nodes per job",
     )
     add_group_args(
-        group,
-        "--tasks_per_node",
-        type=int,
-        default=1,
-        help="tasks per job",
+        group, "--tasks_per_node", type=int, default=1, help="tasks per job",
     )
 
     add_group_args(
-        group,
-        "--gpus_per_node",
-        type=int,
-        default=8,
-        help="cluster job name",
+        group, "--gpus_per_node", type=int, default=8, help="cluster job name",
     )
     add_group_args(
         group,
