@@ -189,6 +189,7 @@ set(FAISS_HEADERS
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
+  utils/fp16-arm.h
   utils/fp16.h
   utils/hamming-inl.h
   utils/hamming.h
@@ -328,7 +329,7 @@ if(FAISS_OPT_LEVEL STREQUAL "avx2")
   )
 endif()
 if(FAISS_OPT_LEVEL STREQUAL "avx512")
-  install(TARGETS faiss_avx512
+  install(TARGETS faiss_avx2 faiss_avx512
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -9,6 +9,7 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+- Support for range search in HNSW and Fast scan IVF.
 ## [1.7.4] - 2023-04-12
 ### Added
 - Added big batch IVF search for conducting efficient search with big batches of queries

@@ -54,6 +54,9 @@ void pq4_pack_codes(
     FAISS_THROW_IF_NOT(nb % bbs == 0);
     FAISS_THROW_IF_NOT(nsq % 2 == 0);
 
+    if (nb == 0) {
+        return;
+    }
     memset(blocks, 0, nb * nsq / 2);
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};

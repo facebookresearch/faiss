@@ -81,6 +81,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simd_result_handlers.h>
+
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -490,6 +493,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+
+// NOTE(matthijs) let's not go into wrapping simdlib
+struct faiss::simd16uint16 {};
+
+%include  <faiss/impl/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
