@@ -17,11 +17,6 @@
 #include <vector>
 #include "faiss/MetricType.h"
 
-#if defined USE_NVIDIA_RAFT
-#include <rmm/mr/device/per_device_resource.hpp>
-#include <rmm/mr/device/pool_memory_resource.hpp>
-#endif
-
 void pickEncoding(int& codes, int& dim) {
     std::vector<int> codeSizes{
             3, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 96};
@@ -852,14 +847,6 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
     config.interleavedLayout = true;
     config.use_raft = true;
 
-    auto old_mr = rmm::mr::get_current_device_resource();
-    rmm::mr::managed_memory_resource managed_mr;
-    // Construct a resource that uses a coalescing best-fit pool allocator
-    rmm::mr::pool_memory_resource<rmm::mr::managed_memory_resource> pool_mr{
-            &managed_mr};
-    // Updates the current device resource pointer to `pool_mr`
-    rmm::mr::set_current_device_resource(&pool_mr);
-
     faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
             &res,
             dim,
@@ -881,9 +868,6 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.015f,
             0.1f,
             0.015f);
-
-    // reset the RMM memory resource to the old value
-    rmm::mr::set_current_device_resource(old_mr);
 #endif
 }
 

@@ -132,7 +132,8 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
     if (n > 0) {
         idx_t totalSize = n * this->d * sizeof(float);
 
-        if (!config_.use_raft && (totalSize > kAddPageSize || n > kAddVecSize)) {
+        if (!config_.use_raft &&
+            (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
                     kAddPageSize / (this->d * sizeof(float));

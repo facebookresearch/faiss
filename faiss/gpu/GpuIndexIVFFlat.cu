@@ -215,8 +215,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-#if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
+#if defined USE_NVIDIA_RAFT
         setIndex_(
                 resources_.get(),
                 this->d,
@@ -252,14 +252,11 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         raft_handle.sync_stream();
 
         raftIndex_->setRaftIndex(std::move(raft_ivfflat_index));
-    } else
 #else
-    if (config_.use_raft) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
 #endif
-    {
+    } else {
         // FIXME: GPUize more of this
         // First, make sure that the data is resident on the CPU, if it is not
         // on the CPU, as we depend upon parts of the CPU code
@@ -309,9 +306,8 @@ void GpuIndexIVFFlat::setIndex_(
         bool interleavedLayout,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-#if defined USE_NVIDIA_RAFT
-
     if (config_.use_raft) {
+#if defined USE_NVIDIA_RAFT
         FAISS_THROW_IF_NOT_MSG(
                 ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
                 "RAFT only supports INDICES_64_BIT");
@@ -329,14 +325,11 @@ void GpuIndexIVFFlat::setIndex_(
                 interleavedLayout,
                 indicesOptions,
                 space));
-    } else
 #else
-    if (config_.use_raft) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
 #endif
-    {
+    } else {
         index_.reset(new IVFFlat(
                 resources,
                 dim,

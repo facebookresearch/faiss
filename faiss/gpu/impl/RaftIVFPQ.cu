@@ -26,13 +26,12 @@
 #include <faiss/gpu/impl/RaftIVFPQ.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
-#include <raft/core/nvtx.hpp>
 #include <raft/neighbors/ivf_pq.cuh>
 #include <raft/neighbors/ivf_pq_helpers.cuh>
 
-#include <chrono>
 #include <limits>
 #include <memory>
+
 namespace faiss {
 namespace gpu {
 
@@ -317,8 +316,6 @@ void RaftIVFPQ::search(
     auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
             outDistances.data(), (idx_t)numQueries, (idx_t)k_);
 
-//     raft_knn_index.emplace(raft::neighbors::ivf_pq::deserialize<int64_t>(raft_handle, "/raid/tarangj/datasets/deep-image-96-inner/index/faiss_trained_index"));
-
     raft::neighbors::ivf_pq::search<float, idx_t>(
             raft_handle,
             pams,
@@ -326,50 +323,38 @@ void RaftIVFPQ::search(
             queries_view,
             out_inds_view,
             out_dists_view);
-//     raft::print_device_vector("raft_knn_index.pq_centers", raft_knn_index.value().pq_centers().data_handle(), 100, std::cout);
-//     raft::print_device_vector("indices", indices, 100, std::cout);
-//     raft::print_device_vector("distances", distances, 100, std::cout);
 
-    //     {
-    // raft::common::nvtx::range<raft::common::nvtx::domain::raft>
-    // fun_scope("RaftIVFPQ::nan_filtering(%d)", queries.getSize(0));
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
-    idx_t n_rows_valid =
-            validRowIndices(resources_, queries, nan_flag.data_handle());
+    validRowIndices(resources_, queries, nan_flag.data_handle());
 
-    if (n_rows_valid < numQueries) {
-        raft::linalg::map_offset(
-                raft_handle,
-                raft::make_device_vector_view(
-                        outIndices.data(), numQueries * k_),
-                [nan_flag = nan_flag.data_handle(),
-                 out_inds = outIndices.data(),
-                 k_] __device__(uint32_t i) {
-                    uint32_t row = i / k_;
-                    if (!nan_flag[row])
-                        return idx_t(-1);
-                    return out_inds[i];
-                });
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view(outIndices.data(), numQueries * k_),
+            [nan_flag = nan_flag.data_handle(),
+             out_inds = outIndices.data(),
+             k_] __device__(uint32_t i) {
+                uint32_t row = i / k_;
+                if (!nan_flag[row])
+                    return idx_t(-1);
+                return out_inds[i];
+            });
 
-        float max_val = std::numeric_limits<float>::max();
-        raft::linalg::map_offset(
-                raft_handle,
-                raft::make_device_vector_view(
-                        outDistances.data(), numQueries * k_),
-                [nan_flag = nan_flag.data_handle(),
-                 out_dists = outDistances.data(),
-                 max_val,
-                 k_] __device__(uint32_t i) {
-                    uint32_t row = i / k_;
-                    if (!nan_flag[row])
-                        return max_val;
-                    return out_dists[i];
-                });
-    }
-//     raft::print_device_vector("indices_from_faiss", outIndices.data(), 100, std::cout);
-//     raft::print_device_vector("distances_from_faiss", outDistances.data(), 100, std::cout);
+    float max_val = std::numeric_limits<float>::max();
+    raft::linalg::map_offset(
+            raft_handle,
+            raft::make_device_vector_view(outDistances.data(), numQueries * k_),
+            [nan_flag = nan_flag.data_handle(),
+             out_dists = outDistances.data(),
+             max_val,
+             k_] __device__(uint32_t i) {
+                uint32_t row = i / k_;
+                if (!nan_flag[row])
+                    return max_val;
+                return out_dists[i];
+            });
+    raft_handle.sync_stream();
 }
 
 idx_t RaftIVFPQ::addVectors(
@@ -396,9 +381,6 @@ idx_t RaftIVFPQ::addVectors(
                     raft::make_device_vector_view<const idx_t, idx_t>(
                             indices.data(), n_rows_valid)),
             raft_knn_index.value()));
-
-//     raft::neighbors::ivf_pq::serialize(raft_handle, "/raid/tarangj/datasets/deep-image-96-inner/index/faiss_trained_index", raft_knn_index.value());
-        // printf("raft_ivfpq_index.size() %u\n", raft_ivfpq_index.size());
 
     return n_rows_valid;
 }

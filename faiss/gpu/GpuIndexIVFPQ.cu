@@ -350,10 +350,10 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-#if defined USE_NVIDIA_RAFT
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
     if (config_.use_raft) {
+#if defined USE_NVIDIA_RAFT
         if (pq.assign_index) {
             fprintf(stderr,
                     "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled");
@@ -413,14 +413,11 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 raft_handle.get_stream());
         raft_handle.sync_stream();
         raftIndex_->setRaftIndex(std::move(raft_ivfpq_index));
-    } else
 #else
-    if (config_.use_raft) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
 #endif
-    {
+    } else {
         // FIXME: GPUize more of this
         // First, make sure that the data is resident on the CPU, if it is not
         // on the CPU, as we depend upon parts of the CPU code
@@ -475,8 +472,8 @@ void GpuIndexIVFPQ::setIndex_(
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-#if defined USE_NVIDIA_RAFT
     if (config_.use_raft) {
+#if defined USE_NVIDIA_RAFT
         index_.reset(new RaftIVFPQ(
                 resources,
                 dim,
@@ -491,14 +488,11 @@ void GpuIndexIVFPQ::setIndex_(
                 pqCentroidData,
                 indicesOptions,
                 space));
-    } else
 #else
-    if (config_.use_raft) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
 #endif
-    {
+    } else {
         index_.reset(new IVFPQ(
                 resources,
                 dim,
