@@ -100,7 +100,11 @@ class MultiFileVectorDataset:
                 continue
             logging.info(f"processing: {f.name}...")
             xb = _memmap_vecs(
-                f"{self.root}/{f.name}", f.format, f.dtype, f.size, self.d,
+                f"{self.root}/{f.name}",
+                f.format,
+                f.dtype,
+                f.size,
+                self.d,
             )
             if start > 0:
                 xb = xb[start:]

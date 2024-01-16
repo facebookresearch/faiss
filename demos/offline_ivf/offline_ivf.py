@@ -121,10 +121,6 @@ class OfflineIVF:
         fp = 32
         if self.dt == "float16":
             fp = 16
-        self.postprocess_output_dir = (
-            self.knn_dir
-            + f"/dists5_p5.{args.xb}-{args.xq}.{self.index_factory_fn}.k{self.k}.np{self.nprobe}.fp{fp}-shard"
-        )
 
         self.xq_bs = cfg["query_batch_size"]
         if "metric" in cfg:

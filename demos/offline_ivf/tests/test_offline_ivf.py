@@ -48,7 +48,6 @@ class TestOIVF(unittest.TestCase):
         Test the OIVF consistency check step, that it throws if no other steps have been ran.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
@@ -72,7 +71,6 @@ class TestOIVF(unittest.TestCase):
         Test the OIVF train index step, that it correctly produces the empty.faissindex template file.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
@@ -103,7 +101,6 @@ class TestOIVF(unittest.TestCase):
         """
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             index_shard_size = 10000
             num_files = 3
             file_size = 10000
@@ -147,7 +144,6 @@ class TestOIVF(unittest.TestCase):
         Test the case where the shard size is not a divisor of the database size and is greater than the first file size.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             file_sizes = [20000, 15001, 13990]
             xb_ds_size = sum(file_sizes)
             index_shard_size = 30000
@@ -188,7 +184,6 @@ class TestOIVF(unittest.TestCase):
         Test search step using test data objects to bypass dependencies on previous steps.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             num_files = 3
             file_size = 10000
             query_batch_size = 10000
@@ -227,7 +222,6 @@ class TestOIVF(unittest.TestCase):
         Test evaluate step using test data objects, no margin evaluation, single index.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
@@ -263,7 +257,6 @@ class TestOIVF(unittest.TestCase):
         Test evaluate step using test data objects, no margin evaluation, single index.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
