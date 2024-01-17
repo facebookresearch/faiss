@@ -37,22 +37,22 @@ inline size_t roundup(size_t a, size_t b) {
 
 void IndexFastScan::init_fastscan(
         int d,
-        size_t M,
-        size_t nbits,
+        size_t M_2,
+        size_t nbits_2,
         MetricType metric,
         int bbs) {
-    FAISS_THROW_IF_NOT(nbits == 4);
+    FAISS_THROW_IF_NOT(nbits_2 == 4);
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     this->d = d;
-    this->M = M;
-    this->nbits = nbits;
+    this->M = M_2;
+    this->nbits = nbits_2;
     this->metric_type = metric;
     this->bbs = bbs;
-    ksub = (1 << nbits);
+    ksub = (1 << nbits_2);
 
-    code_size = (M * nbits + 7) / 8;
+    code_size = (M_2 * nbits_2 + 7) / 8;
     ntotal = ntotal2 = 0;
-    M2 = roundup(M, 2);
+    M2 = roundup(M_2, 2);
     is_trained = false;
 }
 
