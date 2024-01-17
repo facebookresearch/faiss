@@ -42,7 +42,7 @@ outlined on that page and do not file a public issue.
 
 ## Coding Style
 
-* 4 or 2 spaces for indentation in C++ (no tabs)
+* 4 spaces for indentation in C++ (no tabs)
 * 80 character line length (both for C++ and Python)
 * C++ language level: C++17
 
