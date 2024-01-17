@@ -1,6 +1,6 @@
 # Installing Faiss via conda
 
-The recommended way to install Faiss is through [conda](https://docs.conda.io).
+The supported way to install Faiss is through [conda](https://docs.conda.io).
 Stable releases are pushed regularly to the pytorch conda channel, as well as
 pre-release nightly builds.
 
@@ -77,7 +77,7 @@ found to run on other platforms as well, see
 
 The basic requirements are:
 - a C++17 compiler (with support for OpenMP support version 2 or higher),
-- a BLAS implementation (we strongly recommend using Intel MKL for best
+- a BLAS implementation (on Intel machines we strongly recommend using Intel MKL for best
 performance).
 
 The optional requirements are:

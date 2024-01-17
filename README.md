@@ -49,11 +49,22 @@ The main authors of Faiss are:
 - [Lucas Hosseini](https://github.com/beauby) implemented the binary indexes and the build system
 - [Chengqi Deng](https://github.com/KinglittleQ) implemented NSG, NNdescent and much of the additive quantization code.
 - [Alexandr Guzhva](https://github.com/alexanderguzhva) many optimizations: SIMD, memory allocation and layout, fast decoding kernels for vector codecs, etc.
+- [Gergely Szilvasy](https://github.com/algoriddle) build system, benchmarking framework.
 
 ## Reference
 
-Reference to cite when you use Faiss in a research paper:
-
+References to cite when you use Faiss in a research paper:
+```
+@article{douze2024faiss,
+      title={The Faiss library},
+      author={Matthijs Douze and Alexandr Guzhva and Chengqi Deng and Jeff Johnson and Gergely Szilvasy and Pierre-Emmanuel Mazaré and Maria Lomeli and Lucas Hosseini and Hervé Jégou},
+      year={2024},
+      eprint={2401.08281},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
+For the GPU version of Faiss, please cite:
 ```
 @article{johnson2019billion,
   title={Billion-scale similarity search with {GPUs}},
