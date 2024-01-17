@@ -315,6 +315,10 @@ workflows:
           exec: linux-x86_64-cpu
           opt_level: "avx2"
       - build_cmake:
+          name: Linux x86_64 AVX512 (cmake)
+          exec: linux-x86_64-cpu
+          opt_level: "avx512"
+      - build_cmake:
           name: Linux x86_64 GPU (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
