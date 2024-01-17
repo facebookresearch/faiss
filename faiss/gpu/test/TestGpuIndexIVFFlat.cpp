@@ -738,6 +738,13 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
             0.015f);
 
 #if defined USE_NVIDIA_RAFT
+    // Update the RMM device resource for RAFT internal allocations to use managed memory
+    rmm::mr::device_memory_resource* old_mr =
+            rmm::mr::get_per_device_resource(cuda_device_id{device});
+    rmm::mr::managed_memory_resource managed_mr;
+    // Updates the current device resource pointer to `managed_mr`
+    rmm::mr::set_per_device_resource(cuda_device_id{device}, &managed_mr);
+
     config.use_raft = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
@@ -755,6 +762,9 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
             kF32MaxRelErr,
             0.1f,
             0.015f);
+
+    // reset the RMM memory resource to the old value
+    rmm::mr::set_per_device_resource(cuda_device_id{device}, old_mr);
 #endif
 }
 
