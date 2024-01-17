@@ -683,18 +683,21 @@ struct RankingScore2 : Score3Computer<float, double> {
     double accum_gt_weight_diff(
             const std::vector<int>& a,
             const std::vector<int>& b) {
-        int nb = b.size(), na = a.size();
+        const auto nb_2 = b.size();
+        const auto na = a.size();
 
         double accu = 0;
-        int j = 0;
-        for (int i = 0; i < na; i++) {
-            int ai = a[i];
-            while (j < nb && ai >= b[j])
+        size_t j = 0;
+        for (size_t i = 0; i < na; i++) {
+            const auto ai = a[i];
+            while (j < nb_2 && ai >= b[j]) {
                 j++;
+            }
 
             double accu_i = 0;
-            for (int k = j; k < b.size(); k++)
+            for (auto k = j; k < b.size(); k++) {
                 accu_i += rank_weight(b[k] - ai);
+            }
 
             accu += rank_weight(ai) * accu_i;
         }
