@@ -35,8 +35,6 @@
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 #include <faiss/utils/utils.h>
 
-static const size_t BLOCKSIZE_QUERY = 8192;
-
 namespace faiss {
 
 size_t hamming_batch_size = 65536;
