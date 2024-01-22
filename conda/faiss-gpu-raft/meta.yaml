@@ -74,7 +74,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig
+        - swig =4.0.2
         - cmake >=3.23.1
         - make  # [not win]
       host:
