@@ -450,7 +450,7 @@ int compute_search_nslice(
     return nslice;
 }
 
-}; // namespace
+} // namespace
 
 void IndexIVFFastScan::search_dispatch_implem(
         idx_t n,
