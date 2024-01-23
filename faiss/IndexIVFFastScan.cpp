@@ -858,7 +858,7 @@ void IndexIVFFastScan::search_implem_10(
 
     bool single_LUT = !lookup_table_is_3d();
 
-    size_t ndis = 0, nlist_visited = 0;
+    size_t ndis = 0;
     int qmap1[1];
 
     handler.q_map = qmap1;
@@ -906,7 +906,6 @@ void IndexIVFFastScan::search_implem_10(
                     handler,
                     scaler);
 
-            nlist_visited++;
             ndis++;
         }
     }
