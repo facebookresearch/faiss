@@ -35,8 +35,6 @@
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 #include <faiss/utils/utils.h>
 
-static const size_t BLOCKSIZE_QUERY = 8192;
-
 namespace faiss {
 
 size_t hamming_batch_size = 65536;
@@ -271,10 +269,10 @@ void hammings_knn_mc(
         HCounterState<HammingComputer>& csi = cs[i];
 
         int nres = 0;
-        for (int b = 0; b < nBuckets && nres < k; b++) {
-            for (int l = 0; l < csi.counters[b] && nres < k; l++) {
-                labels[i * k + nres] = csi.ids_per_dis[b * k + l];
-                distances[i * k + nres] = b;
+        for (int b_2 = 0; b_2 < nBuckets && nres < k; b_2++) {
+            for (int l = 0; l < csi.counters[b_2] && nres < k; l++) {
+                labels[i * k + nres] = csi.ids_per_dis[b_2 * k + l];
+                distances[i * k + nres] = b_2;
                 nres++;
             }
         }
@@ -679,6 +677,90 @@ void generalized_hammings_knn_hc(
 
     if (ordered)
         ha->reorder();
+}
+
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size) {
+    FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const int32_t* in = unpacked + i * M;
+        uint8_t* out = packed + i * code_size;
+        BitstringWriter wr(out, code_size);
+        for (int j = 0; j < M; j++) {
+            wr.write(in[j], nbit);
+        }
+    }
+}
+
+void pack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbit,
+        const int32_t* unpacked,
+        uint8_t* packed,
+        size_t code_size) {
+    int totbit = 0;
+    for (int j = 0; j < M; j++) {
+        totbit += nbit[j];
+    }
+    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const int32_t* in = unpacked + i * M;
+        uint8_t* out = packed + i * code_size;
+        BitstringWriter wr(out, code_size);
+        for (int j = 0; j < M; j++) {
+            wr.write(in[j], nbit[j]);
+        }
+    }
+}
+
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        int nbit,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked) {
+    FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const uint8_t* in = packed + i * code_size;
+        int32_t* out = unpacked + i * M;
+        BitstringReader rd(in, code_size);
+        for (int j = 0; j < M; j++) {
+            out[j] = rd.read(nbit);
+        }
+    }
+}
+
+void unpack_bitstrings(
+        size_t n,
+        size_t M,
+        const int32_t* nbit,
+        const uint8_t* packed,
+        size_t code_size,
+        int32_t* unpacked) {
+    int totbit = 0;
+    for (int j = 0; j < M; j++) {
+        totbit += nbit[j];
+    }
+    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        const uint8_t* in = packed + i * code_size;
+        int32_t* out = unpacked + i * M;
+        BitstringReader rd(in, code_size);
+        for (int j = 0; j < M; j++) {
+            out[j] = rd.read(nbit[j]);
+        }
+    }
 }
 
 } // namespace faiss

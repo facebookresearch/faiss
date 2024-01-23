@@ -123,7 +123,7 @@ void parallel_merge(
     }
 }
 
-}; // namespace
+} // namespace
 
 void fvec_argsort(size_t n, const float* vals, size_t* perm) {
     for (size_t i = 0; i < n; i++) {
@@ -544,7 +544,6 @@ void bucket_sort_inplace_parallel(
 
         // in this loop, we write elements collected in the previous round
         // and collect the elements that are overwritten for the next round
-        size_t tot_written = 0;
         int round = 0;
         for (;;) {
 #pragma omp barrier
@@ -553,9 +552,6 @@ void bucket_sort_inplace_parallel(
             for (const ToWrite<TI>& to_write_2 : all_to_write) {
                 n_to_write += to_write_2.lims.back();
             }
-
-            tot_written += n_to_write;
-            // assert(tot_written <= nval);
 
 #pragma omp master
             {

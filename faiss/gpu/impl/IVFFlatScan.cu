@@ -345,10 +345,6 @@ void runIVFFlatScan(
         GpuResources* res) {
     auto stream = res->getDefaultStreamCurrentDevice();
 
-    constexpr idx_t kMinQueryTileSize = 8;
-    constexpr idx_t kMaxQueryTileSize = 65536; // used as blockIdx.y dimension
-    constexpr idx_t kThrustMemSize = 16384;
-
     auto nprobe = listIds.getSize(1);
 
     // If the maximum list length (in terms of number of vectors) times nprobe
@@ -359,37 +355,22 @@ void runIVFFlatScan(
 
     // Make a reservation for Thrust to do its dirty work (global memory
     // cross-block reduction space); hopefully this is large enough.
+    constexpr idx_t kThrustMemSize = 16384;
+
     DeviceTensor<char, 1, true> thrustMem1(
             res, makeTempAlloc(AllocType::Other, stream), {kThrustMemSize});
     DeviceTensor<char, 1, true> thrustMem2(
             res, makeTempAlloc(AllocType::Other, stream), {kThrustMemSize});
     DeviceTensor<char, 1, true>* thrustMem[2] = {&thrustMem1, &thrustMem2};
 
-    // How much temporary storage is available?
-    // If possible, we'd like to fit within the space available.
-    size_t sizeAvailable = res->getTempMemoryAvailableCurrentDevice();
+    // How much temporary memory would we need to handle a single query?
+    size_t sizePerQuery = getIVFPerQueryTempMemory(k, nprobe, maxListLength);
 
-    // We run two passes of heap selection
-    // This is the size of the first-level heap passes
-    constexpr idx_t kNProbeSplit = 8;
-    idx_t pass2Chunks = std::min(nprobe, kNProbeSplit);
-
-    idx_t sizeForFirstSelectPass =
-            pass2Chunks * k * (sizeof(float) + sizeof(idx_t));
-
-    // How much temporary storage we need per each query
-    idx_t sizePerQuery = 2 *                            // # streams
-            ((nprobe * sizeof(idx_t) + sizeof(idx_t)) + // prefixSumOffsets
-             nprobe * maxListLength * sizeof(float) +   // allDistances
-             sizeForFirstSelectPass);
-
-    idx_t queryTileSize = sizeAvailable / sizePerQuery;
-
-    if (queryTileSize < kMinQueryTileSize) {
-        queryTileSize = kMinQueryTileSize;
-    } else if (queryTileSize > kMaxQueryTileSize) {
-        queryTileSize = kMaxQueryTileSize;
-    }
+    // How many queries do we wish to run at once?
+    idx_t queryTileSize = getIVFQueryTileSize(
+            queries.getSize(0),
+            res->getTempMemoryAvailableCurrentDevice(),
+            sizePerQuery);
 
     // Temporary memory buffers
     // Make sure there is space prior to the start which will be 0, and
@@ -428,6 +409,7 @@ void runIVFFlatScan(
     DeviceTensor<float, 1, true>* allDistances[2] = {
             &allDistances1, &allDistances2};
 
+    idx_t pass2Chunks = getIVFKSelectionPass2Chunks(nprobe);
     DeviceTensor<float, 3, true> heapDistances1(
             res,
             makeTempAlloc(AllocType::Other, stream),

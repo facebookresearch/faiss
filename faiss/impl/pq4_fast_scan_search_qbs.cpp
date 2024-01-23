@@ -14,6 +14,9 @@
 
 namespace faiss {
 
+// declared in simd_result_handlers.h
+bool simd_result_handlers_accept_virtual = true;
+
 using namespace simd_result_handlers;
 
 /************************************************************
@@ -123,7 +126,7 @@ void accumulate_q_4step(
     constexpr int Q4 = (QBS >> 12) & 15;
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         FixedStorageHandler<SQ, 2> res2;
         const uint8_t* LUT = LUT0;
         kernel_accumulate_block<Q1>(nsq, codes, LUT, res2, scaler);
@@ -156,7 +159,7 @@ void kernel_accumulate_block_loop(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         res.set_block_origin(0, j0);
         kernel_accumulate_block<NQ, ResultHandler>(
                 nsq, codes + j0 * nsq / 2, LUT, res, scaler);
@@ -194,10 +197,8 @@ void accumulate(
 #undef DISPATCH
 }
 
-} // namespace
-
 template <class ResultHandler, class Scaler>
-void pq4_accumulate_loop_qbs(
+void pq4_accumulate_loop_qbs_fixed_scaler(
         int qbs,
         size_t ntotal2,
         int nsq,
@@ -243,7 +244,7 @@ void pq4_accumulate_loop_qbs(
 
     // default implementation where qbs is not known at compile time
 
-    for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
+    for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         const uint8_t* LUT = LUT0;
         int qi = qbs;
         int i0 = 0;
@@ -272,49 +273,39 @@ void pq4_accumulate_loop_qbs(
     }
 }
 
-// explicit template instantiations
+struct Run_pq4_accumulate_loop_qbs {
+    template <class ResultHandler>
+    void f(ResultHandler& res,
+           int qbs,
+           size_t nb,
+           int nsq,
+           const uint8_t* codes,
+           const uint8_t* LUT,
+           const NormTableScaler* scaler) {
+        if (scaler) {
+            pq4_accumulate_loop_qbs_fixed_scaler(
+                    qbs, nb, nsq, codes, LUT, res, *scaler);
+        } else {
+            DummyScaler dummy;
+            pq4_accumulate_loop_qbs_fixed_scaler(
+                    qbs, nb, nsq, codes, LUT, res, dummy);
+        }
+    }
+};
 
-#define INSTANTIATE_ACCUMULATE_Q(RH)                            \
-    template void pq4_accumulate_loop_qbs<RH, DummyScaler>(     \
-            int,                                                \
-            size_t,                                             \
-            int,                                                \
-            const uint8_t*,                                     \
-            const uint8_t*,                                     \
-            RH&,                                                \
-            const DummyScaler&);                                \
-    template void pq4_accumulate_loop_qbs<RH, NormTableScaler>( \
-            int,                                                \
-            size_t,                                             \
-            int,                                                \
-            const uint8_t*,                                     \
-            const uint8_t*,                                     \
-            RH&,                                                \
-            const NormTableScaler&);
+} // namespace
 
-using Csi = CMax<uint16_t, int>;
-INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi>)
-INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi>)
-INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi>)
-using Csi2 = CMin<uint16_t, int>;
-INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi2>)
-INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi2>)
-INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi2>)
-
-using Cfl = CMax<uint16_t, int64_t>;
-using HHCsl = HeapHandler<Cfl, true>;
-using RHCsl = ReservoirHandler<Cfl, true>;
-using SHCsl = SingleResultHandler<Cfl, true>;
-INSTANTIATE_ACCUMULATE_Q(HHCsl)
-INSTANTIATE_ACCUMULATE_Q(RHCsl)
-INSTANTIATE_ACCUMULATE_Q(SHCsl)
-using Cfl2 = CMin<uint16_t, int64_t>;
-using HHCsl2 = HeapHandler<Cfl2, true>;
-using RHCsl2 = ReservoirHandler<Cfl2, true>;
-using SHCsl2 = SingleResultHandler<Cfl2, true>;
-INSTANTIATE_ACCUMULATE_Q(HHCsl2)
-INSTANTIATE_ACCUMULATE_Q(RHCsl2)
-INSTANTIATE_ACCUMULATE_Q(SHCsl2)
+void pq4_accumulate_loop_qbs(
+        int qbs,
+        size_t nb,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        SIMDResultHandler& res,
+        const NormTableScaler* scaler) {
+    Run_pq4_accumulate_loop_qbs consumer;
+    dispatch_SIMDResultHanlder(res, consumer, qbs, nb, nsq, codes, LUT, scaler);
+}
 
 /***************************************************************
  * Packing functions

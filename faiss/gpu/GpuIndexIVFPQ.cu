@@ -282,7 +282,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
             verbose,
             pq.cp.seed);
 
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
+    std::unique_ptr<const float[]> del_x(x_in == x ? nullptr : x);
 
     if (this->verbose) {
         printf("computing residuals\n");

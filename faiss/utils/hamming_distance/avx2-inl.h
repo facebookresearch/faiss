@@ -259,8 +259,8 @@ struct HammingComputerDefault {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
-        this->a8 = a8;
+    void set(const uint8_t* a8_2, int code_size) {
+        this->a8 = a8_2;
         quotient8 = code_size / 8;
         remainder8 = code_size % 8;
     }

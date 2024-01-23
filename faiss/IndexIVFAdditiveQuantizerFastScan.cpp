@@ -211,7 +211,8 @@ void IndexIVFAdditiveQuantizerFastScan::estimate_norm_scale(
 
     size_t index_nprobe = nprobe;
     nprobe = 1;
-    compute_LUT(n, x, coarse_ids.data(), coarse_dis.data(), dis_tables, biases);
+    CoarseQuantized cq{index_nprobe, coarse_dis.data(), coarse_ids.data()};
+    compute_LUT(n, x, cq, dis_tables, biases);
     nprobe = index_nprobe;
 
     float scale = 0;
@@ -313,11 +314,8 @@ void IndexIVFAdditiveQuantizerFastScan::search(
     }
 
     NormTableScaler scaler(norm_scale);
-    if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
-    } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
-    }
+    IndexIVFFastScan::CoarseQuantized cq{nprobe};
+    search_dispatch_implem(n, x, k, distances, labels, cq, &scaler);
 }
 
 /*********************************************************
@@ -383,12 +381,12 @@ bool IndexIVFAdditiveQuantizerFastScan::lookup_table_is_3d() const {
 void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         size_t n,
         const float* x,
-        const idx_t* coarse_ids,
-        const float*,
+        const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
         AlignedTable<float>& biases) const {
     const size_t dim12 = ksub * M;
     const size_t ip_dim12 = aq->M * ksub;
+    const size_t nprobe = cq.nprobe;
 
     dis_tables.resize(n * dim12);
 
@@ -409,7 +407,7 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
 #pragma omp for
             for (idx_t ij = 0; ij < n * nprobe; ij++) {
                 int i = ij / nprobe;
-                quantizer->reconstruct(coarse_ids[ij], c);
+                quantizer->reconstruct(cq.ids[ij], c);
                 biases[ij] = coef * fvec_inner_product(c, x + i * d, d);
             }
         }

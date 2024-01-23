@@ -969,7 +969,6 @@ void fvec_L2sqr_ny_y_transposed_D(
 
     // squared length of x
     float x_sqlen = 0;
-    ;
     for (size_t j = 0; j < DIM; j++) {
         x_sqlen += x[j] * x[j];
     }

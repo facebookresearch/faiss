@@ -1,6 +1,6 @@
 # Installing Faiss via conda
 
-The recommended way to install Faiss is through [conda](https://docs.conda.io).
+The supported way to install Faiss is through [conda](https://docs.conda.io).
 Stable releases are pushed regularly to the pytorch conda channel, as well as
 pre-release nightly builds.
 
@@ -77,7 +77,7 @@ found to run on other platforms as well, see
 
 The basic requirements are:
 - a C++17 compiler (with support for OpenMP support version 2 or higher),
-- a BLAS implementation (we strongly recommend using Intel MKL for best
+- a BLAS implementation (on Intel machines we strongly recommend using Intel MKL for best
 performance).
 
 The optional requirements are:
@@ -119,8 +119,8 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`
-  and `avx2`, by increasing order of optimization),
+  generate code using optimized SIMD instructions (possible values are `generic`,
+  `avx2` and `avx512`, by increasing order of optimization),
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS

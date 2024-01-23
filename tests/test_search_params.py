@@ -444,9 +444,9 @@ class TestSortedIDSelectorRange(unittest.TestCase):
 
 class TestPrecomputed(unittest.TestCase):
 
-    def test_knn_and_range(self):
-        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
-        index = faiss.index_factory(ds.d, "IVF32,Flat")
+    def do_test_knn_and_range(self, factory, range=True):
+        ds = datasets.SyntheticDataset(32, 10000, 100, 20)
+        index = faiss.index_factory(ds.d, factory)
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 5
@@ -455,14 +455,27 @@ class TestPrecomputed(unittest.TestCase):
         Dq, Iq = index.quantizer.search(ds.get_queries(), index.nprobe)
         Dnew, Inew = index.search_preassigned(ds.get_queries(), 10, Iq, Dq)
         np.testing.assert_equal(Iref, Inew)
-        np.testing.assert_equal(Dref, Dnew)
+        np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
 
-        r2 = float(np.median(Dref[:, 5]))
-        Lref, Dref, Iref = index.range_search(ds.get_queries(), r2)
-        assert Lref.size > 10   # make sure there is something to test...
+        if range:
+            r2 = float(np.median(Dref[:, 5]))
+            Lref, Dref, Iref = index.range_search(ds.get_queries(), r2)
+            assert Lref.size > 10   # make sure there is something to test...
 
-        Lnew, Dnew, Inew = index.range_search_preassigned(ds.get_queries(), r2, Iq, Dq)
-        check_ref_range_results(
-            Lref, Dref, Iref,
-            Lnew, Dnew, Inew
-        )
+            Lnew, Dnew, Inew = index.range_search_preassigned(ds.get_queries(), r2, Iq, Dq)
+            check_ref_range_results(
+                Lref, Dref, Iref,
+                Lnew, Dnew, Inew
+            )
+
+    def test_knn_and_range_Flat(self):
+        self.do_test_knn_and_range("IVF32,Flat")
+
+    def test_knn_and_range_SQ(self):
+        self.do_test_knn_and_range("IVF32,SQ8")
+
+    def test_knn_and_range_PQ(self):
+        self.do_test_knn_and_range("IVF32,PQ8x4np")
+
+    def test_knn_and_range_FS(self):
+        self.do_test_knn_and_range("IVF32,PQ8x4fs", range=False)

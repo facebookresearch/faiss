@@ -19,6 +19,39 @@ namespace gpu {
 
 class GpuResources;
 
+/// For the final k-selection of IVF query distances, we perform two passes.
+/// The first pass scans some number of per-IVF list distances reducing them to
+/// at most 8, then a second pass processes these <= 8 to the single final list
+/// of NN candidates
+size_t getIVFKSelectionPass2Chunks(size_t nprobe);
+
+/// Function to determine amount of temporary space that we allocate
+/// for storing basic IVF list scanning distances during query, based on the
+/// memory allocation per query. This is the memory requirement for
+/// IVFFlat/IVFSQ but IVFPQ will add some additional allocation as well (see
+/// getIVFPQPerQueryTempMemory)
+size_t getIVFPerQueryTempMemory(size_t k, size_t nprobe, size_t maxListLength);
+
+/// Function to determine amount of temporary space that we allocate
+/// for storing basic IVFPQ list scanning distances during query, based on the
+/// memory allocation per query.
+size_t getIVFPQPerQueryTempMemory(
+        size_t k,
+        size_t nprobe,
+        size_t maxListLength,
+        bool usePrecomputedCodes,
+        size_t numSubQuantizers,
+        size_t numSubQuantizerCodes);
+
+/// Based on the amount of temporary memory needed per IVF query (determined by
+/// one of the above functions) and the amount of current temporary memory
+/// available, determine how many queries we will run concurrently in a single
+/// tile so as to stay within reasonable temporary memory allocation limits.
+size_t getIVFQueryTileSize(
+        size_t numQueries,
+        size_t tempMemoryAvailable,
+        size_t sizePerQuery);
+
 /// Function for multi-pass scanning that collects the length of
 /// intermediate results for all (query, probe) pair
 void runCalcListOffsets(

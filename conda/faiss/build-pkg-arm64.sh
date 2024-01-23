@@ -7,7 +7,7 @@
 set -e
 
 
-# Build swigfaiss.so/swigfaiss_avx2.so.
+# Build swigfaiss.so
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
       -DFAISS_ENABLE_GPU=OFF \

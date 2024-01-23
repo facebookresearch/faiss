@@ -16,7 +16,7 @@
 
 #include <faiss/utils/Heap.h>
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 namespace faiss {
 
@@ -28,7 +28,7 @@ bool exhaustive_L2sqr_fused_cmax_AVX512(
         size_t d,
         size_t nx,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms);
 
 } // namespace faiss

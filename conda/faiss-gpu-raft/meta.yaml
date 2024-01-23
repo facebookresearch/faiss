@@ -47,13 +47,13 @@ outputs:
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cudatoolkit {{ cudatoolkit }}
-        - libraft =23.08
+        - cuda-version {{ cudatoolkit }}
+        - libraft =24.02
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
-        - libraft =23.08
+        - {{ pin_compatible('cuda-version', max_pin='x') }}
+        - libraft =24.02
     test:
       requires:
         - conda-build
@@ -74,7 +74,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig
+        - swig =4.0.2
         - cmake >=3.23.1
         - make  # [not win]
       host:
@@ -84,12 +84,15 @@ outputs:
       run:
         - python {{ python }}
         - numpy >=1.19,<2
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
         - numpy
         - scipy
         - pytorch
+        - pytorch-cuda =11.8
+        - cuda-version =11.8
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

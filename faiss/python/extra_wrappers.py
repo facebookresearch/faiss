@@ -14,6 +14,9 @@ from faiss.loader import *
 
 import faiss
 
+import collections.abc
+
+
 ###########################################
 # Wrapper for a few functions
 ###########################################
@@ -579,3 +582,72 @@ class Kmeans:
         self.index.add(self.centroids)
         D, I = self.index.search(x, 1)
         return D.ravel(), I.ravel()
+
+
+###########################################
+# Packing and unpacking bistrings
+###########################################
+
+def is_sequence(x):
+    return isinstance(x, collections.abc.Sequence)
+
+pack_bitstrings_c = pack_bitstrings
+
+def pack_bitstrings(a, nbit):
+    """
+    Pack a set integers (i, j) where i=0:n and j=0:M into
+    n bitstrings.
+    Output is an uint8 array of size (n, code_size), where code_size is
+    such that at most 7 bits per code are wasted.
+
+    If nbit is an integer: all entries takes nbit bits.
+    If nbit is an array: entry (i, j) takes nbit[j] bits.
+    """
+    n, M = a.shape
+    a = np.ascontiguousarray(a, dtype='int32')
+    if is_sequence(nbit):
+        nbit = np.ascontiguousarray(nbit, dtype='int32')
+        assert nbit.shape == (M,)
+        code_size = int((nbit.sum() + 7) // 8)
+        b = np.empty((n, code_size), dtype='uint8')
+        pack_bitstrings_c(
+            n, M, swig_ptr(nbit), swig_ptr(a), swig_ptr(b), code_size)
+    else:
+        code_size = (M * nbit + 7) // 8
+        b = np.empty((n, code_size), dtype='uint8')
+        pack_bitstrings_c(n, M, nbit, swig_ptr(a), swig_ptr(b), code_size)
+    return b
+
+unpack_bitstrings_c = unpack_bitstrings
+
+def unpack_bitstrings(b, M_or_nbits, nbit=None):
+    """
+    Unpack a set integers (i, j) where i=0:n and j=0:M from
+    n bitstrings (encoded as uint8s).
+    Input is an uint8 array of size (n, code_size), where code_size is
+    such that at most 7 bits per code are wasted.
+
+    Two forms:
+    - when called with (array, M, nbit): there are M entries of size
+      nbit per row
+    - when called with (array, nbits): element (i, j) is encoded in
+      nbits[j] bits
+    """
+    n, code_size = b.shape
+    if nbit is None:
+        nbit = np.ascontiguousarray(M_or_nbits, dtype='int32')
+        M = len(nbit)
+        min_code_size = int((nbit.sum() + 7) // 8)
+        assert code_size >= min_code_size
+        a = np.empty((n, M), dtype='int32')
+        unpack_bitstrings_c(
+            n, M, swig_ptr(nbit),
+            swig_ptr(b), code_size, swig_ptr(a))
+    else:
+        M = M_or_nbits
+        min_code_size = (M * nbit + 7) // 8
+        assert code_size >= min_code_size
+        a = np.empty((n, M), dtype='int32')
+        unpack_bitstrings_c(
+            n, M, nbit, swig_ptr(b), code_size, swig_ptr(a))
+    return a

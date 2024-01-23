@@ -398,15 +398,12 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     graph = std::make_shared<nsg::Graph<int>>(N, R);
     std::fill_n(graph->data, N * R, EMPTY_ID);
 
-    int size = 0;
-
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < R + 1; j++) {
             int id;
             READ1(id);
             if (id != EMPTY_ID) {
                 graph->at(i, j) = id;
-                size += 1;
             } else {
                 break;
             }
@@ -436,7 +433,7 @@ ProductQuantizer* read_ProductQuantizer(const char* fname) {
 
 ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     ProductQuantizer* pq = new ProductQuantizer();
-    ScopeDeleter1<ProductQuantizer> del(pq);
+    std::unique_ptr<ProductQuantizer> del(pq);
 
     read_ProductQuantizer(pq, reader);
     del.release();
@@ -595,7 +592,7 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(idxp->encode_signs);
             READ1(idxp->polysemous_ht);
         }
-        // Old versoins of PQ all had metric_type set to INNER_PRODUCT
+        // Old versions of PQ all had metric_type set to INNER_PRODUCT
         // when they were in fact using L2. Therefore, we force metric type
         // to L2 when the old format is detected
         if (h == fourcc("IxPQ") || h == fourcc("IxPo")) {

@@ -41,7 +41,6 @@ struct RangeSearchResult {
 
     /// called when lims contains the nb of elements result entries
     /// for each query
-
     virtual void do_allocation();
 
     virtual ~RangeSearchResult();

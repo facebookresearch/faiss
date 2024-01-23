@@ -224,6 +224,7 @@ struct IVFScanner : InvertedListScanner {
               hc(qcode.data(), index->code_size) {
         this->store_pairs = store_pairs;
         this->code_size = index->code_size;
+        this->keep_max = is_similarity_metric(index->metric_type);
     }
 
     void set_query(const float* query) override {

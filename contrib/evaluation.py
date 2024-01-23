@@ -261,6 +261,7 @@ def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, rtol=1e-5):
             mask = DrefC == dis
             testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
+
 def check_ref_range_results(Lref, Dref, Iref,
                             Lnew, Dnew, Inew):
     """ compare range search results wrt. a reference result,
@@ -380,7 +381,23 @@ class OperatingPointsWithRanges(OperatingPoints):
         return np.zeros(len(self.ranges), dtype=int)
 
     def num_experiments(self):
-        return np.prod([len(values) for name, values in self.ranges])
+        return int(np.prod([len(values) for name, values in self.ranges]))
+
+    def sample_experiments(self, n_autotune, rs=np.random):
+        """ sample a set of experiments of max size n_autotune
+        (run all experiments in random order if n_autotune is 0)
+        """
+        assert n_autotune == 0 or n_autotune >= 2
+        totex = self.num_experiments()
+        rs = np.random.RandomState(123)
+        if n_autotune == 0 or totex < n_autotune:
+            experiments = rs.permutation(totex - 2)
+        else:
+            experiments = rs.choice(
+                totex - 2, size=n_autotune - 2, replace=False)
+
+        experiments = [0, totex - 1] + [int(cno) + 1 for cno in experiments]
+        return experiments
 
     def cno_to_key(self, cno):
         """Convert a sequential experiment number to a key"""

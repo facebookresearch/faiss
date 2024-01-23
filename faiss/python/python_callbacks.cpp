@@ -22,7 +22,7 @@ struct PyThreadLock {
     }
 };
 
-}; // namespace
+} // namespace
 
 /***********************************************************
  * Callbacks for IO reader and writer
