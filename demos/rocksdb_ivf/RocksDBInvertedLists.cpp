@@ -105,4 +105,4 @@ InvertedListsIterator* RocksDBInvertedLists::get_iterator(
     return new RocksDBInvertedListsIterator(db_.get(), list_no, code_size);
 }
 
-} // namespace faiss
+} // namespace faiss_rocksdb

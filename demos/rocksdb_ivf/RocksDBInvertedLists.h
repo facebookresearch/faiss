@@ -17,7 +17,7 @@ struct RocksDBInvertedListsIterator : faiss::InvertedListsIterator {
     virtual void next() override;
     virtual std::pair<faiss::idx_t, const uint8_t*> get_id_and_codes() override;
 
-private:
+   private:
     std::unique_ptr<rocksdb::Iterator> it;
     size_t list_no;
     size_t code_size;
@@ -51,8 +51,8 @@ struct RocksDBInvertedLists : faiss::InvertedLists {
 
     faiss::InvertedListsIterator* get_iterator(size_t list_no) const override;
 
-private:
+   private:
     std::unique_ptr<rocksdb::DB> db_;
 };
 
-} // namespace faiss
+} // namespace faiss_rocksdb

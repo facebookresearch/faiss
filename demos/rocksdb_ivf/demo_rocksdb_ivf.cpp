@@ -24,7 +24,8 @@ int main(int argc, char* argv[]) {
         size_t nlist = 100;
         IndexFlatL2 quantizer(d);
         IndexIVFFlat index(&quantizer, d, nlist);
-        faiss_rocksdb::RocksDBInvertedLists ril(argv[1], nlist, index.code_size);
+        faiss_rocksdb::RocksDBInvertedLists ril(
+                argv[1], nlist, index.code_size);
         index.replace_invlists(&ril, false);
 
         idx_t nb = 10000;
