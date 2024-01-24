@@ -230,7 +230,7 @@ set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
