@@ -292,8 +292,8 @@ void beam_search_encode_step(
                     cent_ids.data() + i * beam_size * new_beam_size;
 
             // here we could be a tad more efficient by merging sorted arrays
-            for (int i = 0; i < new_beam_size; i++) {
-                new_distances_i[i] = C::neutral();
+            for (int i_2 = 0; i_2 < new_beam_size; i_2++) {
+                new_distances_i[i_2] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
             heap_addn<C>(
@@ -325,8 +325,8 @@ void beam_search_encode_step(
             const float* cent_distances_i =
                     cent_distances.data() + i * beam_size * K;
             // then we have to select the best results
-            for (int i = 0; i < new_beam_size; i++) {
-                new_distances_i[i] = C::neutral();
+            for (int i_2 = 0; i_2 < new_beam_size; i_2++) {
+                new_distances_i[i_2] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
 
@@ -558,8 +558,8 @@ void beam_search_encode_step_tab(
         const float* cent_distances_i = cent_distances.data();
 
         // then we have to select the best results
-        for (int i = 0; i < new_beam_size; i++) {
-            new_distances_i[i] = C::neutral();
+        for (int i_2 = 0; i_2 < new_beam_size; i_2++) {
+            new_distances_i[i_2] = C::neutral();
         }
         std::vector<int> perm(new_beam_size, -1);
 
