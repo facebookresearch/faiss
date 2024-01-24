@@ -791,7 +791,6 @@ void hashtable_int64_to_int64_lookup(
     std::vector<int64_t> hk(n), bucket_no(n);
     int64_t mask = capacity - 1;
     int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
-    size_t nbucket = (size_t)1 << log2_nbucket;
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++) {
