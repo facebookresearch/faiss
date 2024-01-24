@@ -77,14 +77,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="96" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="96" bodyend="96"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a2fd9d6de3769b1816d7da8b56a1f7a8a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a17aa52718da78dc5c231eb4a478d483c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::SingleResultHandler::begin</definition>
-        <argsstring>(const size_t current_idx)</argsstring>
+        <argsstring>(const size_t current_idx_2)</argsstring>
         <name>begin</name>
         <param>
           <type>const size_t</type>
-          <declname>current_idx</declname>
+          <declname>current_idx_2</declname>
         </param>
         <briefdescription>
 <para>begin results for query # i </para>
@@ -177,7 +177,7 @@
     <location file="faiss/impl/ResultHandler.h" line="89" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="89" bodyend="120"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a10eaa9a99e97f7670d7b2b705f1f0287" prot="public" virt="virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>add_result</name></member>
-      <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a2fd9d6de3769b1816d7da8b56a1f7a8a" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a17aa52718da78dc5c231eb4a478d483c" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a9e380bc3382c6565f6ea7cd614c67a66" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>current_idx</name></member>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a4c5dc996378cdf43840f3af8e5024415" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>end</name></member>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a6780f07c33fbcae965b7115ccaa04e59" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler::SingleResultHandler</scope><name>hr</name></member>

@@ -154,14 +154,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="385" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="385" bodyend="387"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a6f93ae7c6aad24241e383459c39673de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1abd666be5639fa1551dd12d8ac29dc78d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ReservoirBlockResultHandler&lt; C &gt;::SingleResultHandler::begin</definition>
-        <argsstring>(size_t qno)</argsstring>
+        <argsstring>(size_t qno_2)</argsstring>
         <name>begin</name>
         <param>
           <type>size_t</type>
-          <declname>qno</declname>
+          <declname>qno_2</declname>
         </param>
         <briefdescription>
 <para>begin results for query # i </para>
@@ -362,7 +362,7 @@
     <listofallmembers>
       <member refid="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>add</name></member>
       <member refid="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8" prot="public" virt="virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>add_result</name></member>
-      <member refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a6f93ae7c6aad24241e383459c39673de" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1abd666be5639fa1551dd12d8ac29dc78d" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1ReservoirTopN_1af1917705e1d452fde77df5433e197c47" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>capacity</name></member>
       <member refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a6fe4729f1f7cc619f3bf628d1d2d04a4" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>end</name></member>
       <member refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler_1a550bcf9e2a6231aef725a151d9abb2f3" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler::SingleResultHandler</scope><name>hr</name></member>

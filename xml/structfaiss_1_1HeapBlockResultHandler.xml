@@ -154,7 +154,7 @@
         <definition>void faiss::HeapBlockResultHandler&lt; C &gt;::begin_multiple</definition>
         <argsstring>(size_t i0_2, size_t i1_2) final</argsstring>
         <name>begin_multiple</name>
-        <reimplements refid="structfaiss_1_1BlockResultHandler_1a6ec6f42f7cd3c812beeadcc9f0d4df56">begin_multiple</reimplements>
+        <reimplements refid="structfaiss_1_1BlockResultHandler_1aa6ad904b25be73e7f32c2f8daa2a5a68">begin_multiple</reimplements>
         <param>
           <type>size_t</type>
           <declname>i0_2</declname>

@@ -137,7 +137,7 @@
         <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::begin_multiple</definition>
         <argsstring>(size_t i0, size_t i1) final</argsstring>
         <name>begin_multiple</name>
-        <reimplements refid="structfaiss_1_1BlockResultHandler_1a6ec6f42f7cd3c812beeadcc9f0d4df56">begin_multiple</reimplements>
+        <reimplements refid="structfaiss_1_1BlockResultHandler_1aa6ad904b25be73e7f32c2f8daa2a5a68">begin_multiple</reimplements>
         <param>
           <type>size_t</type>
           <declname>i0</declname>
@@ -155,10 +155,10 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="123" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="123" bodyend="130"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1aba342a0023bc3cca3c8fda11d85052f1" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Top1BlockResultHandler_1a4336127604f52e2f21170750f7bc0882" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::Top1BlockResultHandler&lt; C &gt;::add_results</definition>
-        <argsstring>(size_t j0, size_t j1, const T *dis_tab) final</argsstring>
+        <argsstring>(size_t j0, size_t j1, const T *dis_tab_2) final</argsstring>
         <name>add_results</name>
         <param>
           <type>size_t</type>
@@ -170,7 +170,7 @@
         </param>
         <param>
           <type>const T *</type>
-          <declname>dis_tab</declname>
+          <declname>dis_tab_2</declname>
         </param>
         <briefdescription>
 <para>add results for query i0..i1 and j0..j1 </para>
@@ -275,7 +275,7 @@
     <location file="faiss/impl/ResultHandler.h" line="75" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="75" bodyend="160"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1a08fbb2bd996db429d01a5f85b830aaad" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>add_result</name></member>
-      <member refid="structfaiss_1_1Top1BlockResultHandler_1aba342a0023bc3cca3c8fda11d85052f1" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1Top1BlockResultHandler_1a4336127604f52e2f21170750f7bc0882" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" virt="virtual" ambiguityscope="faiss::BlockResultHandler::"><scope>faiss::Top1BlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1Top1BlockResultHandler_1a2ef1ec0b7a560c0e6dd0c368ae662e91" prot="public" virt="virtual"><scope>faiss::Top1BlockResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1afd2cc09fc87d365e63fc4e153bd9c45f" prot="public" virt="non-virtual"><scope>faiss::Top1BlockResultHandler</scope><name>BlockResultHandler</name></member>
