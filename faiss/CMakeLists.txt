@@ -147,6 +147,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/CodePacker.h
   impl/IDSelector.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
@@ -198,6 +199,7 @@ set(FAISS_HEADERS
   utils/prefetch.h
   utils/quantize_lut.h
   utils/random.h
+  utils/sorting.h
   utils/simdlib.h
   utils/simdlib_avx2.h
   utils/simdlib_emulated.h
