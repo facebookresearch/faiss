@@ -437,7 +437,7 @@
 <codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductResidualQuantizer" kindref="compound">ProductResidualQuantizer</ref>();</highlight></codeline>
 <codeline lineno="152"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"></highlight></codeline>
-<codeline lineno="154"><highlight class="normal">};<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight></codeline>
+<codeline lineno="154"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/ProductAdditiveQuantizer.h"/>
   </compounddef>
