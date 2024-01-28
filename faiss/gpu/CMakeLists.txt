@@ -236,6 +236,14 @@ endfunction()
 
 generate_ivf_interleaved_code()
 
+add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+set_target_properties(faiss_gpu PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+target_include_directories(faiss_gpu PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
           impl/RaftUtils.h
@@ -254,13 +262,6 @@ endif()
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
-set_target_properties(faiss_gpu PROPERTIES
-  POSITION_INDEPENDENT_CODE ON
-  WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
-target_include_directories(faiss_gpu PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
