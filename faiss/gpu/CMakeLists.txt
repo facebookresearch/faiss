@@ -261,9 +261,9 @@ set_target_properties(faiss_gpu PROPERTIES
 )
 target_include_directories(faiss_gpu PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-target_link_libraries(faiss PUBLIC faiss_gpu)
-target_link_libraries(faiss_avx2 PUBLIC faiss_gpu)
-target_link_libraries(faiss_avx512 PUBLIC faiss_gpu)
+target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_sources(faiss PRIVATE CompileOptions.cpp)
 target_sources(faiss_avx2 PRIVATE CompileOptions.cpp)
 target_sources(faiss_avx512 PRIVATE CompileOptions.cpp)
