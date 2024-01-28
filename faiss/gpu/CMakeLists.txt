@@ -254,7 +254,11 @@ endif()
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-add_library(faiss_gpu SHARED ${FAISS_GPU_SRC})
+add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+set_target_properties(faiss_gpu PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 target_include_directories(faiss_gpu PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 target_link_libraries(faiss PUBLIC faiss_gpu)

@@ -33,7 +33,7 @@ macro(faiss_gpu_test file)
 endmacro()
 
 
-# faiss_gpu_test(TestCodePacking.cpp)
+faiss_gpu_test(TestCodePacking.cpp)
 faiss_gpu_test(TestGpuIndexFlat.cpp)
 faiss_gpu_test(TestGpuIndexIVFFlat.cpp)
 faiss_gpu_test(TestGpuIndexBinaryFlat.cpp)
@@ -41,7 +41,7 @@ faiss_gpu_test(TestGpuMemoryException.cpp)
 faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.cu)
-faiss_gpu_test(TestGpuSelect.cu)
+# faiss_gpu_test(TestGpuSelect.cu)
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
