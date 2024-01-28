@@ -231,12 +231,20 @@ jobs:
             conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - when:
           condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Install CUDA
+                command: |
+                  conda install -y -q cuda-nvcc cuda-cudart-dev libcublas libcublas-dev cuda-toolkit -c "nvidia/label/cuda-11.4.4"
+      - when:
+          condition:
             equal: [ "ON", << parameters.raft >> ]
           steps:
             - run:
                 name: Install libraft
                 command: |
-                  conda install -y -q libraft cuda-version=11.4 -c rapidsai-nightly -c nvidia -c pkgs/main -c conda-forge
+                  conda install -y -q libraft cuda-version=11.4 -c rapidsai-nightly -c "nvidia/label/cuda-11.4.4" -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
