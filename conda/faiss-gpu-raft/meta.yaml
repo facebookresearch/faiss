@@ -44,23 +44,24 @@ outputs:
         - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
-        - cuda-nvcc
-        - cuda-cudart-dev
-        - libcublas-dev
-        - libcurand-dev
-        - cuda-nvprof
+        # - cuda-nvcc
+        # - cuda-cudart-dev
+        # - libcublas-dev
+        # - libcurand-dev
+        # - cuda-nvprof
         - cuda-toolkit {{ cudatoolkit }}
+        - pytorch-cuda
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-toolkit {{ cudatoolkit }}
-        - libcublas
+        # - cuda-toolkit {{ cudatoolkit }}
+        # - libcublas
         - libraft =24.02
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cuda-toolkit', max_pin='x') }}
-        - libcublas
+        - {{ pin_compatible('pytorch-cuda', max_pin='x') }}
+        # - libcublas
         - libraft =24.02
     test:
       requires:
@@ -99,8 +100,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
-        - pytorch-cuda =11.8
-        - cuda-version =11.8
+        # - pytorch-cuda
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
