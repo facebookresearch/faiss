@@ -435,17 +435,17 @@ workflows:
           compiler_version: "11.2"
           label: nightly
       - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 12.1.1)
+          name: Linux x86_64 GPU nightlies (CUDA 12.1.0)
           exec: linux-x86_64-gpu
-          cuda: "12.1.1"
+          cuda: "12.1.0"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
       - build_conda:
-          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.1)
+          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.0)
           exec: linux-x86_64-gpu
           raft: "ON"
-          cuda: "12.1.1"
+          cuda: "12.1.0"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
