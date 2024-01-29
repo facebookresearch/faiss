@@ -95,14 +95,14 @@ jobs:
             # conda config --set verbosity 3
             conda update -y -q conda
             conda install -y -q conda-build
-      - when:
-          condition: << parameters.label >>
-          steps:
-            - run:
-                name: Enable anaconda uploads
-                command: |
-                  conda install -y -q anaconda-client
-                  conda config --set anaconda_upload yes
+      # - when:
+      #     condition: << parameters.label >>
+      #     steps:
+      #       - run:
+      #           name: Enable anaconda uploads
+      #           command: |
+      #             conda install -y -q anaconda-client
+      #             conda config --set anaconda_upload yes
       - when:
           condition:
             and:
@@ -137,7 +137,6 @@ jobs:
             - run:
                 name: Conda build (GPU)
                 no_output_timeout: 60m
-                  # sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                 command: |
                   cd conda
                   conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
@@ -152,7 +151,6 @@ jobs:
             - run:
                 name: Conda build (GPU) w/ anaconda upload
                 no_output_timeout: 60m
-                  # sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                 command: |
                   cd conda
                   conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
@@ -167,7 +165,6 @@ jobs:
             - run:
                 name: Conda build (GPU w/ RAFT)
                 no_output_timeout: 60m
-                  # sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
@@ -182,7 +179,6 @@ jobs:
             - run:
                 name: Conda build (GPU w/ RAFT) w/ anaconda upload
                 no_output_timeout: 60m
-                  # sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
@@ -216,13 +212,6 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
             fi
-      # - when:
-      #     condition:
-      #       equal: [ "ON", << parameters.gpu >> ]
-      #     steps:
-      #       - run:
-      #           name: Configure CUDA
-      #           command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
       - run:
           name: Set up environment
           command: |
@@ -235,7 +224,7 @@ jobs:
             - run:
                 name: Install env using main channel
                 command: |
-                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
+                  conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - when:
           condition:
             equal: [ "ON", << parameters.raft >> ]
@@ -243,7 +232,7 @@ jobs:
             - run:
                 name: Install env using conda-forge channel
                 command: |
-                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 libraft cuda-version=11.8 -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
+                  conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 libraft cuda-version=11.8 -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
       - when:
           condition:
             equal: [ "ON", << parameters.gpu >> ]
@@ -365,10 +354,10 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: Linux x86_64 GPU packages (CUDA 11.4)
+          name: Linux x86_64 GPU packages (CUDA 11.8)
           exec: linux-x86_64-gpu
           label: main
-          cuda: "11.4"
+          cuda: "11.8"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
@@ -377,11 +366,11 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: Linux x86_64 GPU w/ RAFT packages (CUDA 11.4)
+          name: Linux x86_64 GPU w/ RAFT packages (CUDA 11.8)
           exec: linux-x86_64-gpu
           label: main
           raft: "ON"
-          cuda: "11.4"
+          cuda: "11.8"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
@@ -417,31 +406,46 @@ workflows:
             branches:
               ignore: /.*/
 
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 0 * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
+  #   jobs:
       - build_conda:
           name: Linux x86_64 nightlies
           exec: linux-x86_64-cpu
           label: nightly
       - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 11.4)
+          name: Linux x86_64 GPU nightlies (CUDA 11.8)
           exec: linux-x86_64-gpu
-          cuda: "11.4"
+          cuda: "11.8"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
       - build_conda:
-          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.4)
+          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.8)
           exec: linux-x86_64-gpu
           raft: "ON"
-          cuda: "11.4"
+          cuda: "11.8"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          compiler_version: "11.2"
+          label: nightly
+      - build_conda:
+          name: Linux x86_64 GPU nightlies (CUDA 12.1)
+          exec: linux-x86_64-gpu
+          cuda: "12.1"
+          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          compiler_version: "11.2"
+          label: nightly
+      - build_conda:
+          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1)
+          exec: linux-x86_64-gpu
+          raft: "ON"
+          cuda: "12.1"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
