@@ -47,6 +47,7 @@ outputs:
         - cuda-nvcc
         - cuda-cudart-dev
         - libcublas-dev
+        - libcurand-dev
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
