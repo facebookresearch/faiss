@@ -50,14 +50,12 @@ outputs:
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-version {{ cudatoolkit }}
         - cuda-toolkit {{ cudatoolkit }}
         - libcublas
         - libraft =24.02
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cuda-version', max_pin='x') }}
         - {{ pin_compatible('cuda-toolkit', max_pin='x') }}
         - libcublas
         - libraft =24.02
