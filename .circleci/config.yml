@@ -243,7 +243,7 @@ jobs:
             - run:
                 name: Install env using conda-forge channel
                 command: |
-                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 libraft cuda-version=11.8 -c "nvidia/label/cuda-11.8.0" -c conda-forge
+                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64 libraft cuda-version=11.8 -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
       - when:
           condition:
             equal: [ "ON", << parameters.gpu >> ]
