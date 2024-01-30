@@ -8618,8 +8618,8 @@
     <member refid="namespacefaiss_1ac28d81570f1e19a951fde542fb505663" kind="function"><name>knn_inner_product</name></member>
     <member refid="namespacefaiss_1a9ff85c4951798ff50ca6728f582d0e18" kind="function"><name>knn_L2sqr</name></member>
     <member refid="namespacefaiss_1abd3b922992d654af67f0fe866f8bf46c" kind="function"><name>knn_L2sqr</name></member>
-    <member refid="namespacefaiss_1a23318c515f89eba3b85fae15eefd4625" kind="function"><name>knn_inner_products_by_idx</name></member>
-    <member refid="namespacefaiss_1ad9f8bfff061aef572422312b0de793fd" kind="function"><name>knn_L2sqr_by_idx</name></member>
+    <member refid="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" kind="function"><name>knn_inner_products_by_idx</name></member>
+    <member refid="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" kind="function"><name>knn_L2sqr_by_idx</name></member>
     <member refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" kind="function"><name>range_search_L2sqr</name></member>
     <member refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kind="function"><name>range_search_inner_product</name></member>
     <member refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kind="function"><name>compute_PQ_dis_tables_dsub2</name></member>

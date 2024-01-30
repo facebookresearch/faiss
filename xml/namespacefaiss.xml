@@ -4680,10 +4680,10 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="351" column="6" declfile="faiss/utils/distances.h" declline="351" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a23318c515f89eba3b85fae15eefd4625" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1ad88ef733c01a81533dce5cf5644e8a4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::knn_inner_products_by_idx</definition>
-        <argsstring>(const float *x, const float *y, const int64_t *subset, size_t d, size_t nx, size_t nsubset, size_t k, float *vals, int64_t *ids, int64_t ld_ids=-1)</argsstring>
+        <argsstring>(const float *x, const float *y, const int64_t *subset, size_t d, size_t nx, size_t ny, size_t nsubset, size_t k, float *vals, int64_t *ids, int64_t ld_ids=-1)</argsstring>
         <name>knn_inner_products_by_idx</name>
         <param>
           <type>const float *</type>
@@ -4704,6 +4704,10 @@
         <param>
           <type>size_t</type>
           <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
         </param>
         <param>
           <type>size_t</type>
@@ -4777,10 +4781,10 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="373" column="6" declfile="faiss/utils/distances.h" declline="373" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1ad9f8bfff061aef572422312b0de793fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1ad7b3cea341840095293ff9e89dd756c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::knn_L2sqr_by_idx</definition>
-        <argsstring>(const float *x, const float *y, const int64_t *subset, size_t d, size_t nx, size_t nsubset, size_t k, float *vals, int64_t *ids, int64_t ld_subset=-1)</argsstring>
+        <argsstring>(const float *x, const float *y, const int64_t *subset, size_t d, size_t nx, size_t ny, size_t nsubset, size_t k, float *vals, int64_t *ids, int64_t ld_subset=-1)</argsstring>
         <name>knn_L2sqr_by_idx</name>
         <param>
           <type>const float *</type>
@@ -4801,6 +4805,10 @@
         <param>
           <type>size_t</type>
           <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
         </param>
         <param>
           <type>size_t</type>
@@ -4872,7 +4880,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="395" column="6" declfile="faiss/utils/distances.h" declline="395" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="396" column="6" declfile="faiss/utils/distances.h" declline="396" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -4953,7 +4961,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="422" column="6" declfile="faiss/utils/distances.h" declline="422" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="424" column="6" declfile="faiss/utils/distances.h" declline="424" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5000,7 +5008,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="433" column="6" declfile="faiss/utils/distances.h" declline="433" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="435" column="6" declfile="faiss/utils/distances.h" declline="435" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5042,7 +5050,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="448" column="6" declfile="faiss/utils/distances.h" declline="448" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="450" column="6" declfile="faiss/utils/distances.h" declline="450" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5110,7 +5118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="472" column="6" declfile="faiss/utils/distances.h" declline="472" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="474" column="6" declfile="faiss/utils/distances.h" declline="474" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -5146,7 +5154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="477" column="5" declfile="faiss/utils/distances.h" declline="477" declcolumn="5"/>
+        <location file="faiss/utils/distances.h" line="479" column="5" declfile="faiss/utils/distances.h" declline="479" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8031f842f9139705e44040b6043db201" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
