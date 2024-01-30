@@ -95,14 +95,14 @@ jobs:
             # conda config --set verbosity 3
             conda update -y -q conda
             conda install -y -q conda-build
-      # - when:
-      #     condition: << parameters.label >>
-      #     steps:
-      #       - run:
-      #           name: Enable anaconda uploads
-      #           command: |
-      #             conda install -y -q anaconda-client
-      #             conda config --set anaconda_upload yes
+      - when:
+          condition: << parameters.label >>
+          steps:
+            - run:
+                name: Enable anaconda uploads
+                command: |
+                  conda install -y -q anaconda-client
+                  conda config --set anaconda_upload yes
       - when:
           condition:
             and:
@@ -326,15 +326,15 @@ workflows:
           name: Linux x86_64 GPU (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
-          # requires:
-          #   - Linux x86_64 AVX2 (cmake)
+          requires:
+            - Linux x86_64 AVX2 (cmake)
       - build_cmake:
           name: Linux x86_64 GPU w/ RAFT (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
           raft: "ON"
-          # requires:
-          #   - Linux x86_64 GPU (cmake)
+          requires:
+            - Linux x86_64 GPU (cmake)
       - build_conda:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
@@ -406,15 +406,15 @@ workflows:
             branches:
               ignore: /.*/
 
-  # nightly:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 0 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  #   jobs:
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
       - build_conda:
           name: Linux x86_64 nightlies
           exec: linux-x86_64-cpu
@@ -434,21 +434,21 @@ workflows:
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           label: nightly
-      - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 12.1.0)
-          exec: linux-x86_64-gpu
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
-          compiler_version: "11.2"
-          label: nightly
-      - build_conda:
-          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.0)
-          exec: linux-x86_64-gpu
-          raft: "ON"
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
-          compiler_version: "11.2"
-          label: nightly
+      # - build_conda:
+      #     name: Linux x86_64 GPU nightlies (CUDA 12.1.0)
+      #     exec: linux-x86_64-gpu
+      #     cuda: "12.1.0"
+      #     cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+      #     compiler_version: "11.2"
+      #     label: nightly
+      # - build_conda:
+      #     name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.0)
+      #     exec: linux-x86_64-gpu
+      #     raft: "ON"
+      #     cuda: "12.1.0"
+      #     cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+      #     compiler_version: "11.2"
+      #     label: nightly
       - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
