@@ -13,6 +13,8 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/IDGrouper.h>
+#include <faiss/utils/GroupHeap.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
 #include <iostream>
@@ -264,6 +266,193 @@ struct HeapBlockResultHandler : BlockResultHandler<C> {
         for (size_t i = i0; i < i1; i++) {
             heap_reorder<C>(k, heap_dis_tab + i * k, heap_ids_tab + i * k);
         }
+    }
+};
+
+/*****************************************************************
+ * Heap based result handler with grouping
+ *****************************************************************/
+
+template <class C>
+struct GroupedHeapBlockResultHandler : BlockResultHandler<C> {
+    using T = typename C::T;
+    using TI = typename C::TI;
+    using BlockResultHandler<C>::i0;
+    using BlockResultHandler<C>::i1;
+
+    T* heap_dis_tab;
+    TI* heap_ids_tab;
+    int64_t k; // number of results to keep
+
+    IDGrouper* id_grouper;
+    TI* heap_group_ids_tab;
+    std::unordered_map<TI, size_t>* group_id_to_index_in_heap_tab;
+
+    GroupedHeapBlockResultHandler(
+            size_t nq,
+            T* heap_dis_tab,
+            TI* heap_ids_tab,
+            size_t k,
+            IDGrouper* id_grouper)
+            : BlockResultHandler<C>(nq),
+              heap_dis_tab(heap_dis_tab),
+              heap_ids_tab(heap_ids_tab),
+              k(k),
+              id_grouper(id_grouper) {}
+
+    /******************************************************
+     * API for 1 result at a time (each SingleResultHandler is
+     * called from 1 thread)
+     */
+
+    struct SingleResultHandler : ResultHandler<C> {
+        GroupedHeapBlockResultHandler& hr;
+        using ResultHandler<C>::threshold;
+        size_t k;
+
+        T* heap_dis;
+        TI* heap_ids;
+        TI* heap_group_ids;
+        std::unordered_map<TI, size_t> group_id_to_index_in_heap;
+
+        explicit SingleResultHandler(GroupedHeapBlockResultHandler& hr)
+                : hr(hr), k(hr.k) {}
+
+        /// begin results for query # i
+        void begin(size_t i) {
+            heap_dis = hr.heap_dis_tab + i * k;
+            heap_ids = hr.heap_ids_tab + i * k;
+            heap_heapify<C>(k, heap_dis, heap_ids);
+            threshold = heap_dis[0];
+            heap_group_ids = new TI[hr.k];
+            for (size_t i = 0; i < hr.k; i++) {
+                heap_group_ids[i] = -1;
+            }
+        }
+
+        /// add one result for query i
+        bool add_result(T dis, TI idx) final {
+            if (!C::cmp(threshold, dis)) {
+                return false;
+            }
+
+            idx_t group_id = hr.id_grouper->get_group(idx);
+            typename std::unordered_map<TI, size_t>::const_iterator it_pos =
+                    group_id_to_index_in_heap.find(group_id);
+            if (it_pos == group_id_to_index_in_heap.end()) {
+                group_heap_replace_top<C>(
+                        k,
+                        heap_dis,
+                        heap_ids,
+                        heap_group_ids,
+                        dis,
+                        idx,
+                        group_id,
+                        &group_id_to_index_in_heap);
+                threshold = heap_dis[0];
+                return true;
+            } else {
+                size_t pos = it_pos->second;
+                if (!C::cmp(heap_dis[pos], dis)) {
+                    return false;
+                }
+                group_heap_replace_at<C>(
+                        pos,
+                        k,
+                        heap_dis,
+                        heap_ids,
+                        heap_group_ids,
+                        dis,
+                        idx,
+                        group_id,
+                        &group_id_to_index_in_heap);
+                threshold = heap_dis[0];
+                return true;
+            }
+        }
+
+        /// series of results for query i is done
+        void end() {
+            heap_reorder<C>(k, heap_dis, heap_ids);
+            delete heap_group_ids;
+        }
+    };
+
+    /******************************************************
+     * API for multiple results (called from 1 thread)
+     */
+
+    /// begin
+    void begin_multiple(size_t i0_2, size_t i1_2) final {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
+        for (size_t i = i0; i < i1; i++) {
+            heap_heapify<C>(k, heap_dis_tab + i * k, heap_ids_tab + i * k);
+        }
+        size_t size = (i1 - i0) * k;
+        heap_group_ids_tab = new TI[size];
+        for (size_t i = 0; i < size; i++) {
+            heap_group_ids_tab[i] = -1;
+        }
+        group_id_to_index_in_heap_tab =
+                new std::unordered_map<TI, size_t>[i1 - i0];
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results(size_t j0, size_t j1, const T* dis_tab) final {
+#pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
+            T* heap_dis = heap_dis_tab + i * k;
+            TI* heap_ids = heap_ids_tab + i * k;
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+            T thresh = heap_dis[0]; // NOLINT(*-use-default-none)
+            for (size_t j = j0; j < j1; j++) {
+                T dis = dis_tab_i[j];
+                if (C::cmp(thresh, dis)) {
+                    idx_t group_id = id_grouper->get_group(j);
+                    typename std::unordered_map<TI, size_t>::const_iterator
+                            it_pos = group_id_to_index_in_heap_tab[i - i0].find(
+                                    group_id);
+                    if (it_pos == group_id_to_index_in_heap_tab[i - i0].end()) {
+                        group_heap_replace_top<C>(
+                                k,
+                                heap_dis,
+                                heap_ids,
+                                heap_group_ids_tab + ((i - i0) * k),
+                                dis,
+                                j,
+                                group_id,
+                                &group_id_to_index_in_heap_tab[i - i0]);
+                        thresh = heap_dis[0];
+                    } else {
+                        size_t pos = it_pos->first;
+                        if (C::cmp(heap_dis[pos], dis)) {
+                            group_heap_replace_at<C>(
+                                    pos,
+                                    k,
+                                    heap_dis,
+                                    heap_ids,
+                                    heap_group_ids_tab + ((i - i0) * k),
+                                    dis,
+                                    j,
+                                    group_id,
+                                    &group_id_to_index_in_heap_tab[i - i0]);
+                            thresh = heap_dis[0];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// series of results for queries i0..i1 is done
+    void end_multiple() final {
+        // maybe parallel for
+        for (size_t i = i0; i < i1; i++) {
+            heap_reorder<C>(k, heap_dis_tab + i * k, heap_ids_tab + i * k);
+        }
+        delete group_id_to_index_in_heap_tab;
+        delete heap_group_ids_tab;
     }
 };
 
