@@ -9,6 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/impl/IDGrouper.h>
 #include <faiss/impl/IDSelector.h>
 
 #include <unordered_map>
@@ -121,6 +122,27 @@ struct IDSelectorTranslated : IDSelector {
 
     bool is_member(idx_t id) const override {
         return sel->is_member(id_map[id]);
+    }
+};
+
+// IDGrouper that translates the ids using an IDMap
+struct IDGrouperTranslated : IDGrouper {
+    const std::vector<int64_t>& id_map;
+    const IDGrouper* grp;
+
+    IDGrouperTranslated(
+            const std::vector<int64_t>& id_map,
+            const IDGrouper* grp)
+            : id_map(id_map), grp(grp) {}
+
+    IDGrouperTranslated(IndexBinaryIDMap& index_idmap, const IDGrouper* grp)
+            : id_map(index_idmap.id_map), grp(grp) {}
+
+    IDGrouperTranslated(IndexIDMap& index_idmap, const IDGrouper* grp)
+            : id_map(index_idmap.id_map), grp(grp) {}
+
+    idx_t get_group(idx_t id) const override {
+        return grp->get_group(id_map[id]);
     }
 };
 

@@ -38,9 +38,10 @@
 
 namespace faiss {
 
-/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h and
-/// impl/DistanceComputer.h
+/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h
+/// ,impl/IDGrouper.h and impl/DistanceComputer.h
 struct IDSelector;
+struct IDGrouper;
 struct RangeSearchResult;
 struct DistanceComputer;
 
@@ -52,6 +53,9 @@ struct DistanceComputer;
 struct SearchParameters {
     /// if non-null, only these IDs will be considered during search.
     IDSelector* sel = nullptr;
+    /// if non-null, only best matched ID per group will be included in the
+    /// result.
+    IDGrouper* grp = nullptr;
     /// make sure we can dynamic_cast this
     virtual ~SearchParameters() {}
 };

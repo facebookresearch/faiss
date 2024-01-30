@@ -102,6 +102,23 @@ struct ScopedSelChange {
     }
 };
 
+/// RAII object to reset the IDGrouper in the params object
+struct ScopedGrpChange {
+    SearchParameters* params = nullptr;
+    IDGrouper* old_grp = nullptr;
+
+    void set(SearchParameters* params_2, IDGrouper* new_grp) {
+        this->params = params_2;
+        old_grp = params_2->grp;
+        params_2->grp = new_grp;
+    }
+    ~ScopedGrpChange() {
+        if (params) {
+            params->grp = old_grp;
+        }
+    }
+};
+
 } // namespace
 
 template <typename IndexT>
@@ -114,6 +131,8 @@ void IndexIDMapTemplate<IndexT>::search(
         const SearchParameters* params) const {
     IDSelectorTranslated this_idtrans(this->id_map, nullptr);
     ScopedSelChange sel_change;
+    IDGrouperTranslated this_idgrptrans(this->id_map, nullptr);
+    ScopedGrpChange grp_change;
 
     if (params && params->sel) {
         auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
@@ -129,6 +148,16 @@ void IndexIDMapTemplate<IndexT>::search(
             auto params_non_const = const_cast<SearchParameters*>(params);
             this_idtrans.sel = params->sel;
             sel_change.set(params_non_const, &this_idtrans);
+        }
+    }
+
+    if (params && params->grp) {
+        auto idtrans = dynamic_cast<const IDGrouperTranslated*>(params->grp);
+
+        if (!idtrans) {
+            auto params_non_const = const_cast<SearchParameters*>(params);
+            this_idgrptrans.grp = params->grp;
+            grp_change.set(params_non_const, &this_idgrptrans);
         }
     }
     index->search(n, x, k, distances, labels, params);
