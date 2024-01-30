@@ -23,11 +23,12 @@
 #pragma once
 
 #include <faiss/gpu/GpuResources.h>
+#include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
 
 #include <faiss/MetricType.h>
 
-#include <raft/neighbors/cagra.cuh>
+#include <raft/neighbors/cagra_types.hpp>
 
 namespace faiss {
 
@@ -47,6 +48,7 @@ class RaftCagra {
             idx_t intermediate_graph_degree,
             idx_t graph_degree,
             faiss::cagra_build_algo graph_build_algo,
+            size_t nn_descent_niter,
             faiss::MetricType metric,
             float metricArg);
 

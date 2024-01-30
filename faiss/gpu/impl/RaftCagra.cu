@@ -21,10 +21,12 @@
  */
 
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <cstddef>
 #include <faiss/gpu/impl/RaftCagra.cuh>
 
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
+#include <raft/neighbors/cagra.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -35,6 +37,7 @@ RaftCagra::RaftCagra(
         idx_t intermediate_graph_degree,
         idx_t graph_degree,
         faiss::cagra_build_algo graph_build_algo,
+        size_t nn_descent_niter,
         faiss::MetricType metric,
         float metricArg)
         : resources_(resources),
@@ -51,6 +54,7 @@ RaftCagra::RaftCagra(
     index_pams_.build_algo =
             static_cast<raft::neighbors::cagra::graph_build_algo>(
                     graph_build_algo);
+    index_pams_.nn_descent_niter = nn_descent_niter;
 }
 
 void RaftCagra::train(idx_t n, const float* x) {
