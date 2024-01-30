@@ -44,15 +44,16 @@ outputs:
         - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
+        - pytorch-cuda
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-version {{ cudatoolkit }}
         - libraft =24.02
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cuda-version', max_pin='x') }}
+        - {{ pin_compatible('pytorch-cuda', max_pin='x') }}
         - libraft =24.02
     test:
       requires:
@@ -91,8 +92,6 @@ outputs:
         - numpy
         - scipy
         - pytorch
-        - pytorch-cuda =11.8
-        - cuda-version =11.8
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

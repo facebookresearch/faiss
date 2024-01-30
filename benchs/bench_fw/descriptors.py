@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 from .utils import timer
+
 logger = logging.getLogger(__name__)
 
 
@@ -101,7 +102,9 @@ class DatasetDescriptor:
             tablename=f"{self.get_filename()}kmeans_{k}.npy"
         )
         meta_filename = kmeans_vectors.tablename + ".json"
-        if not io.file_exist(kmeans_vectors.tablename) or not io.file_exist(meta_filename):
+        if not io.file_exist(kmeans_vectors.tablename) or not io.file_exist(
+            meta_filename
+        ):
             if dry_run:
                 return None, None, kmeans_vectors.tablename
             x = io.get_dataset(self)

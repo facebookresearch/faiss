@@ -216,7 +216,7 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
         return new RemapDimensionsTransform(d, std::max(d_out, d), false);
     }
     return nullptr;
-};
+}
 
 /***************************************************************
  * Parse IndexIVF

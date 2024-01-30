@@ -1630,21 +1630,6 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
 
 #ifdef USE_AVX
 
-// reads 0 <= d < 8 floats as __m256
-static inline __m256 masked_read_8(int d, const float* x) {
-    assert(0 <= d && d < 8);
-    if (d < 4) {
-        __m256 res = _mm256_setzero_ps();
-        res = _mm256_insertf128_ps(res, masked_read(d, x), 0);
-        return res;
-    } else {
-        __m256 res = _mm256_setzero_ps();
-        res = _mm256_insertf128_ps(res, _mm_loadu_ps(x), 0);
-        res = _mm256_insertf128_ps(res, masked_read(d - 4, x + 4), 1);
-        return res;
-    }
-}
-
 float fvec_L1(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
     __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
@@ -1863,7 +1848,7 @@ void fvec_inner_products_ny(
  * heavily optimized table computations
  ***************************************************************************/
 
-static inline void fvec_madd_ref(
+[[maybe_unused]] static inline void fvec_madd_ref(
         size_t n,
         const float* a,
         float bf,
@@ -1930,7 +1915,7 @@ static inline void fvec_madd_avx2(
 
 #ifdef __SSE3__
 
-static inline void fvec_madd_sse(
+[[maybe_unused]] static inline void fvec_madd_sse(
         size_t n,
         const float* a,
         float bf,
