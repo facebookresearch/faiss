@@ -6,6 +6,13 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
+{% if cudatoolkit == '11.8.0' %}
+{% set cuda_constraints=">=11.8,<11.9" %}
+{% set libcublas_constraints=">=11.11,<12" %}
+{% elif cudatoolkit == '12.1.0' %}
+{% set cuda_constraints=">=12.1,<12.2" %}
+{% set libcublas_constraints=">=12.1,<12.2" %}
+{% endif %}
 
 package:
   name: faiss-pkg
@@ -45,14 +52,14 @@ outputs:
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
-        - pytorch-cuda
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('pytorch-cuda', max_pin='x') }}
+        - cuda-cudart {{ cuda_constraints }}
+        - libcublas {{ libcublas_constraints }}
     test:
       requires:
         - conda-build
@@ -90,6 +97,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
+        - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
