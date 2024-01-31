@@ -7,11 +7,11 @@
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 {% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.8,<12" %}
+{% set cuda_constraints=">=11.8,<11.9" %}
 {% set libcublas_constraints=">=11.11,<12" %}
 {% elif cudatoolkit == '12.1.0' %}
-{% set cuda_constraints=">=12.1,<13" %}
-{% set libcublas_constraints=">=12.1,<13" %}
+{% set cuda_constraints=">=12.1,<12.2" %}
+{% set libcublas_constraints=">=12.1,<12.2" %}
 {% endif %}
 
 package:
@@ -97,7 +97,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
-        - pytorch-cuda
+        - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
