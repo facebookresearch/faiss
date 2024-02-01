@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <faiss/gpu/GpuIndicesOptions.h>
 
 #include <faiss/MetricType.h>
 
@@ -50,7 +51,8 @@ class RaftCagra {
             faiss::cagra_build_algo graph_build_algo,
             size_t nn_descent_niter,
             faiss::MetricType metric,
-            float metricArg);
+            float metricArg,
+            IndicesOptions indicesOptions);
 
     ~RaftCagra() = default;
 

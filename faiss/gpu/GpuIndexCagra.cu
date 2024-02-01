@@ -4,6 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2024, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/impl/RaftCagra.cuh>
@@ -18,7 +33,9 @@ GpuIndexCagra::GpuIndexCagra(
         faiss::MetricType metric,
         GpuIndexCagraConfig config)
         : GpuIndex(provider->getResources(), dims, metric, 0.0f, config),
-          cagraConfig_(config) {}
+          cagraConfig_(config) {
+            this->is_trained = false;
+          }
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
     if (this->is_trained) {
@@ -36,7 +53,8 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
             cagraConfig_.nn_descent_niter,
             this->metric_type,
-            this->metric_arg);
+            this->metric_arg,
+            faiss::gpu::INDICES_64_BIT);
 
     index_->train(n, x);
 
@@ -58,7 +76,13 @@ void GpuIndexCagra::searchImpl_(
     Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
-    auto params = dynamic_cast<const SearchParametersCagra*>(search_params);
+    SearchParametersCagra* params;
+    if (search_params) {
+        params = dynamic_cast<SearchParametersCagra*>(const_cast<SearchParameters*>(search_params));
+    }
+    else {
+        params = new SearchParametersCagra{};
+    }
 
     index_->search(
             queries,
@@ -78,6 +102,10 @@ void GpuIndexCagra::searchImpl_(
             params->hashmap_max_fill_rate,
             params->num_random_samplings,
             params->rand_xor_mask);
+
+    if (not search_params) {
+        delete params;
+    }
 }
 
 } // namespace gpu

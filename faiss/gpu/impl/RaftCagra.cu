@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ RaftCagra::RaftCagra(
         faiss::cagra_build_algo graph_build_algo,
         size_t nn_descent_niter,
         faiss::MetricType metric,
-        float metricArg)
+        float metricArg,
+        IndicesOptions indicesOptions)
         : resources_(resources),
           dim_(dim),
           metric_(metric),
@@ -48,6 +49,9 @@ RaftCagra::RaftCagra(
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2,
             "CAGRA currently only supports L2 metric.");
+    FAISS_THROW_IF_NOT_MSG(
+            indicesOptions == faiss::gpu::INDICES_64_BIT,
+            "only INDICES_64_BIT is supported for RAFT CAGRA index");
 
     index_pams_.intermediate_graph_degree = intermediate_graph_degree;
     index_pams_.graph_degree = graph_degree;
