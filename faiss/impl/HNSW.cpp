@@ -829,7 +829,7 @@ HNSWStats HNSW::search(
             greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
         }
 
-        int ef = std::max(efSearch, k);
+        int ef = std::max(params ? params->efSearch : efSearch, k);        
         if (search_bounded_queue) { // this is the most common branch
             MinimaxHeap candidates(ef);
 
