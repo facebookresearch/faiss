@@ -338,13 +338,11 @@ static void write_NSG(const NSG* nsg, IOWriter* f) {
     FAISS_THROW_IF_NOT(K == nsg->R);
     FAISS_THROW_IF_NOT(true == graph->own_fields);
 
-    int size = 0;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < K; j++) {
             int id = graph->at(i, j);
             if (id != EMPTY_ID) {
                 WRITE1(id);
-                size += 1;
             } else {
                 break;
             }

@@ -4,19 +4,19 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from copy import copy
 import logging
 import os
 from collections import OrderedDict
+from copy import copy
 from dataclasses import dataclass
 from typing import ClassVar, Dict, List, Optional
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
-
 import numpy as np
+
 from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
-    OperatingPointsWithRanges,
     knn_intersection_measure,
+    OperatingPointsWithRanges,
 )
 from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib_gpu
     reverse_index_factory,
@@ -27,7 +27,13 @@ from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib_g
 )
 
 from .descriptors import DatasetDescriptor
-from .utils import distance_ratio_measure, get_cpu_info, timer, refine_distances_knn, refine_distances_range
+from .utils import (
+    distance_ratio_measure,
+    get_cpu_info,
+    refine_distances_knn,
+    refine_distances_range,
+    timer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +112,9 @@ class IndexBase:
                 icm_encoder_factory = faiss.GpuIcmEncoderFactory(ngpus)
                 if isinstance(index, faiss.IndexProductLocalSearchQuantizer):
                     for i in range(index.plsq.nsplits):
-                        lsq = faiss.downcast_Quantizer(index.plsq.subquantizer(i))
+                        lsq = faiss.downcast_Quantizer(
+                            index.plsq.subquantizer(i)
+                        )
                         if lsq.icm_encoder_factory is None:
                             lsq.icm_encoder_factory = icm_encoder_factory
                 else:
@@ -119,29 +127,39 @@ class IndexBase:
             obj = faiss.extract_index_ivf(index)
         elif name in ["use_beam_LUT", "max_beam_size"]:
             if isinstance(index, faiss.IndexProductResidualQuantizer):
-                obj = [faiss.downcast_Quantizer(index.prq.subquantizer(i)) for i in range(index.prq.nsplits)]
+                obj = [
+                    faiss.downcast_Quantizer(index.prq.subquantizer(i))
+                    for i in range(index.prq.nsplits)
+                ]
             else:
                 obj = index.rq
         elif name == "encode_ils_iters":
             if isinstance(index, faiss.IndexProductLocalSearchQuantizer):
-                obj = [faiss.downcast_Quantizer(index.plsq.subquantizer(i)) for i in range(index.plsq.nsplits)]
+                obj = [
+                    faiss.downcast_Quantizer(index.plsq.subquantizer(i))
+                    for i in range(index.plsq.nsplits)
+                ]
             else:
                 obj = index.lsq
         else:
             obj = index
-        
+
         if not isinstance(obj, list):
             obj = [obj]
         for o in obj:
             test = getattr(o, name)
-            if assert_same and not name == 'use_beam_LUT':
+            if assert_same and not name == "use_beam_LUT":
                 assert test == val
             else:
                 setattr(o, name, val)
 
     @staticmethod
     def filter_index_param_dict_list(param_dict_list):
-        if param_dict_list is not None and param_dict_list[0] is not None and "k_factor" in param_dict_list[0]:
+        if (
+            param_dict_list is not None
+            and param_dict_list[0] is not None
+            and "k_factor" in param_dict_list[0]
+        ):
             filtered = copy(param_dict_list)
             del filtered[0]["k_factor"]
             return filtered
@@ -153,6 +171,7 @@ class IndexBase:
         return isinstance(model, faiss.IndexFlat)
 
     def is_ivf(self):
+        return False
         model = self.get_model()
         return faiss.try_extract_index_ivf(model) is not None
 
@@ -243,7 +262,9 @@ class IndexBase:
             pretransform = None
             quantizer_query_vectors = query_vectors
 
-        quantizer, _, _ = self.get_quantizer(dry_run=False, pretransform=pretransform)
+        quantizer, _, _ = self.get_quantizer(
+            dry_run=False, pretransform=pretransform
+        )
         QD, QI, _, QP, _ = quantizer.knn_search(
             dry_run=False,
             search_parameters=None,
@@ -300,7 +321,9 @@ class IndexBase:
                 # Index2Layer doesn't support search
                 xq = self.io.get_dataset(query_vectors)
                 xb = index.reconstruct_n(0, index.ntotal)
-                (D, I), t, _ = timer("knn_search 2layer", lambda: faiss.knn(xq, xb, k))
+                (D, I), t, _ = timer(
+                    "knn_search 2layer", lambda: faiss.knn(xq, xb, k)
+                )
             elif self.is_ivf() and not isinstance(index, faiss.IndexRefine):
                 index_ivf = faiss.extract_index_ivf(index)
                 nprobe = (
@@ -310,7 +333,7 @@ class IndexBase:
                     else index_ivf.nprobe
                 )
                 xqt, QD, QI, QP = self.knn_search_quantizer(
-                    query_vectors=query_vectors, 
+                    query_vectors=query_vectors,
                     k=nprobe,
                 )
                 if index_ivf.parallel_mode != 2:
@@ -358,11 +381,19 @@ class IndexBase:
             "construction_params": self.get_construction_params(),
             "search_params": search_parameters,
             "knn_intersection": knn_intersection_measure(
-                I, I_gt,
-            ) if I_gt is not None else None,
+                I,
+                I_gt,
+            )
+            if I_gt is not None
+            else None,
             "distance_ratio": distance_ratio_measure(
-                I, R, D_gt, self.metric_type,
-            ) if D_gt is not None else None,
+                I,
+                R,
+                D_gt,
+                self.metric_type,
+            )
+            if D_gt is not None
+            else None,
         }
         logger.info("knn_search: end")
         return D, I, R, P, None
@@ -377,12 +408,14 @@ class IndexBase:
     ):
         logger.info("reconstruct: begin")
         filename = (
-            self.get_knn_search_name(parameters, query_vectors, k, reconstruct=True)
+            self.get_knn_search_name(
+                parameters, query_vectors, k, reconstruct=True
+            )
             + "zip"
         )
         if self.io.file_exist(filename):
             logger.info(f"Using cached results for {filename}")
-            P, = self.io.read_file(filename, ["P"])
+            (P,) = self.io.read_file(filename, ["P"])
             P["index"] = self.get_index_name()
             P["codec"] = self.get_codec_name()
             P["factory"] = self.get_model_name()
@@ -395,15 +428,21 @@ class IndexBase:
             codec_meta = self.fetch_meta()
             Index.set_index_param_dict(codec, parameters)
             xb = self.io.get_dataset(self.database_vectors)
-            xb_encoded, encode_t, _ = timer("sa_encode", lambda: codec.sa_encode(xb))
+            xb_encoded, encode_t, _ = timer(
+                "sa_encode", lambda: codec.sa_encode(xb)
+            )
             xq = self.io.get_dataset(query_vectors)
             if self.is_decode_supported():
-                xb_decoded, decode_t, _ = timer("sa_decode", lambda: codec.sa_decode(xb_encoded))
+                xb_decoded, decode_t, _ = timer(
+                    "sa_decode", lambda: codec.sa_decode(xb_encoded)
+                )
                 mse = np.square(xb_decoded - xb).sum(axis=1).mean().item()
                 _, I = faiss.knn(xq, xb_decoded, k, metric=self.metric_type)
                 asym_recall = knn_intersection_measure(I, I_gt)
                 xq_decoded = codec.sa_decode(codec.sa_encode(xq))
-                _, I = faiss.knn(xq_decoded, xb_decoded, k, metric=self.metric_type)
+                _, I = faiss.knn(
+                    xq_decoded, xb_decoded, k, metric=self.metric_type
+                )
             else:
                 mse = None
                 asym_recall = None
@@ -604,7 +643,7 @@ class Index(IndexBase):
 
         if self.is_ivf() and not isinstance(index, faiss.IndexRefine):
             xbt, QD, QI, QP = self.knn_search_quantizer(
-                query_vectors=self.database_vectors, 
+                query_vectors=self.database_vectors,
                 k=1,
             )
             index_ivf = faiss.extract_index_ivf(index)
@@ -638,22 +677,21 @@ class Index(IndexBase):
     def get_construction_params(self):
         return self.construction_params
 
-    # def get_code_size(self):
-    #     def get_index_code_size(index):
-    #         index = faiss.downcast_index(index)
-    #         if isinstance(index, faiss.IndexPreTransform):
-    #             return get_index_code_size(index.index)
-    #         elif isinstance(index, faiss.IndexHNSWFlat):
-    #             return index.d * 4  # TODO
-    #         elif type(index) in [faiss.IndexRefine, faiss.IndexRefineFlat]:
-    #             return get_index_code_size(
-    #                 index.base_index
-    #             ) + get_index_code_size(index.refine_index)
-    #         else:
-    #             return index.code_size
+    def get_code_size(self, codec=None):
+        def get_index_code_size(index):
+            index = faiss.downcast_index(index)
+            if isinstance(index, faiss.IndexPreTransform):
+                return get_index_code_size(index.index)
+            elif type(index) in [faiss.IndexRefine, faiss.IndexRefineFlat]:
+                return get_index_code_size(
+                    index.base_index
+                ) + get_index_code_size(index.refine_index)
+            else:
+                return index.code_size if hasattr(index, "code_size") else 0
 
-    #     codec = self.get_codec()
-    #     return get_index_code_size(codec)
+        if codec is None:
+            codec = self.get_codec()
+        return get_index_code_size(codec)
 
     def get_sa_code_size(self, codec=None):
         if codec is None:
@@ -680,32 +718,28 @@ class Index(IndexBase):
         if model_ivf is not None:
             add_range_or_val(
                 "nprobe",
-                # [
+                [2**i for i in range(12) if 2**i <= model_ivf.nlist * 0.5],
+                # [1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28] + [
+                #     i
+                #     for i in range(32, 64, 8)
+                #     if i <= model_ivf.nlist * 0.1
+                # ] + [
+                #     i
+                #     for i in range(64, 128, 16)
+                #     if i <= model_ivf.nlist * 0.1
+                # ] + [
+                #     i
+                #     for i in range(128, 256, 32)
+                #     if i <= model_ivf.nlist * 0.1
+                # ] + [
+                #     i
+                #     for i in range(256, 512, 64)
+                #     if i <= model_ivf.nlist * 0.1
+                # ] + [
                 #     2**i
-                #     for i in range(12)
-                #     if 2**i <= model_ivf.nlist * 0.5
+                #     for i in range(9, 12)
+                #     if 2**i <= model_ivf.nlist * 0.1
                 # ],
-                [1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28] + [
-                    i
-                    for i in range(32, 64, 8)
-                    if i <= model_ivf.nlist * 0.1
-                ] + [
-                    i
-                    for i in range(64, 128, 16)
-                    if i <= model_ivf.nlist * 0.1
-                ] + [
-                    i
-                    for i in range(128, 256, 32)
-                    if i <= model_ivf.nlist * 0.1
-                ] + [
-                    i
-                    for i in range(256, 512, 64)
-                    if i <= model_ivf.nlist * 0.1
-                ] + [
-                    2**i
-                    for i in range(9, 12)
-                    if 2**i <= model_ivf.nlist * 0.1
-                ],
             )
         model = faiss.downcast_index(model)
         if isinstance(model, faiss.IndexRefine):
@@ -718,7 +752,9 @@ class Index(IndexBase):
                 "efSearch",
                 [2**i for i in range(3, 11)],
             )
-        elif isinstance(model, faiss.IndexResidualQuantizer) or isinstance(model, faiss.IndexProductResidualQuantizer):
+        elif isinstance(model, faiss.IndexResidualQuantizer) or isinstance(
+            model, faiss.IndexProductResidualQuantizer
+        ):
             add_range_or_val(
                 "max_beam_size",
                 [1, 2, 4, 8, 16, 32],
@@ -727,7 +763,9 @@ class Index(IndexBase):
                 "use_beam_LUT",
                 [1],
             )
-        elif isinstance(model, faiss.IndexLocalSearchQuantizer) or isinstance(model, faiss.IndexProductLocalSearchQuantizer):
+        elif isinstance(model, faiss.IndexLocalSearchQuantizer) or isinstance(
+            model, faiss.IndexProductLocalSearchQuantizer
+        ):
             add_range_or_val(
                 "encode_ils_iters",
                 [2, 4, 8, 16],
@@ -854,7 +892,9 @@ class IndexFromFactory(Index):
     def fetch_codec(self, dry_run=False):
         codec_filename = self.get_codec_name() + "codec"
         meta_filename = self.get_codec_name() + "json"
-        if self.io.file_exist(codec_filename) and self.io.file_exist(meta_filename):
+        if self.io.file_exist(codec_filename) and self.io.file_exist(
+            meta_filename
+        ):
             codec = self.io.read_index(codec_filename)
             assert self.d == codec.d
             assert self.metric_type == codec.metric_type
@@ -874,6 +914,7 @@ class IndexFromFactory(Index):
                 "training_size": self.training_vectors.num_vectors,
                 "codec_size": codec_size,
                 "sa_code_size": self.get_sa_code_size(codec),
+                "code_size": self.get_code_size(codec),
                 "cpu": get_cpu_info(),
             }
             self.io.write_json(meta, meta_filename, overwrite=True)
@@ -921,7 +962,9 @@ class IndexFromFactory(Index):
             training_vectors = self.training_vectors
         else:
             training_vectors = pretransform.transform(self.training_vectors)
-        centroids, t, requires = training_vectors.k_means(self.io, model_ivf.nlist, dry_run)
+        centroids, t, requires = training_vectors.k_means(
+            self.io, model_ivf.nlist, dry_run
+        )
         if requires is not None:
             return None, None, requires
         quantizer = IndexFromFactory(
@@ -944,11 +987,11 @@ class IndexFromFactory(Index):
         model = self.get_model()
         opaque = True
         t_aggregate = 0
-        try:
-            reverse_index_factory(model)
-            opaque = False
-        except NotImplementedError:
-            opaque = True
+        # try:
+        #     reverse_index_factory(model)
+        #     opaque = False
+        # except NotImplementedError:
+        #     opaque = True
         if opaque:
             codec = model
         else:
@@ -958,7 +1001,9 @@ class IndexFromFactory(Index):
                 if not isinstance(sub_index, faiss.IndexFlat):
                     # replace the sub-index with Flat and fetch pre-trained
                     pretransform = self.get_pretransform()
-                    codec, meta, report = pretransform.fetch_codec(dry_run=dry_run)
+                    codec, meta, report = pretransform.fetch_codec(
+                        dry_run=dry_run
+                    )
                     if report is not None:
                         return None, None, report
                     t_aggregate += meta["training_time"]
@@ -978,7 +1023,9 @@ class IndexFromFactory(Index):
                         training_vectors=transformed_training_vectors,
                     )
                     wrapper.set_io(self.io)
-                    codec.index, meta, report = wrapper.fetch_codec(dry_run=dry_run)
+                    codec.index, meta, report = wrapper.fetch_codec(
+                        dry_run=dry_run
+                    )
                     if report is not None:
                         return None, None, report
                     t_aggregate += meta["training_time"]
@@ -1008,14 +1055,18 @@ class IndexFromFactory(Index):
                     d=model.base_index.d,
                     metric=model.base_index.metric_type,
                     database_vectors=self.database_vectors,
-                    construction_params=IndexBase.filter_index_param_dict_list(self.construction_params),
+                    construction_params=IndexBase.filter_index_param_dict_list(
+                        self.construction_params
+                    ),
                     search_params=None,
                     factory=reverse_index_factory(model.base_index),
                     training_vectors=self.training_vectors,
                 )
                 wrapper.set_io(self.io)
                 codec = faiss.clone_index(model)
-                codec.base_index, meta, requires = wrapper.fetch_codec(dry_run=dry_run)
+                codec.base_index, meta, requires = wrapper.fetch_codec(
+                    dry_run=dry_run
+                )
                 if requires is not None:
                     return None, None, requires
                 t_aggregate += meta["training_time"]

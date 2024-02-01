@@ -6,6 +6,13 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
+{% if cudatoolkit == '11.8.0' %}
+{% set cuda_constraints=">=11.8,<11.9" %}
+{% set libcublas_constraints=">=11.11,<12" %}
+{% elif cudatoolkit == '12.1.0' %}
+{% set cuda_constraints=">=12.1,<12.2" %}
+{% set libcublas_constraints=">=12.1,<12.2" %}
+{% endif %}
 
 package:
   name: faiss-pkg
@@ -44,16 +51,19 @@ outputs:
         - cmake >=3.23.1
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-version {{ cudatoolkit }}
         - libraft =24.02
+        - cuda-version {{ cuda_constraints }}
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cuda-version', max_pin='x') }}
+        - cuda-cudart {{ cuda_constraints }}
+        - libcublas {{ libcublas_constraints }}
         - libraft =24.02
+        - cuda-version {{ cuda_constraints }}
     test:
       requires:
         - conda-build
@@ -74,7 +84,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig
+        - swig =4.0.2
         - cmake >=3.23.1
         - make  # [not win]
       host:
@@ -84,14 +94,14 @@ outputs:
       run:
         - python {{ python }}
         - numpy >=1.19,<2
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
         - numpy
         - scipy
         - pytorch
-        - pytorch-cuda =11.8
-        - cuda-version =11.8
+        - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

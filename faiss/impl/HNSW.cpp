@@ -851,13 +851,11 @@ HNSWStats HNSW::search(
                 top_candidates.pop();
             }
 
-            int nres = 0;
             while (!top_candidates.empty()) {
                 float d;
                 storage_idx_t label;
                 std::tie(d, label) = top_candidates.top();
                 res.add_result(d, label);
-                nres++;
                 top_candidates.pop();
             }
         }

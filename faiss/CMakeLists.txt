@@ -147,6 +147,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/CodePacker.h
   impl/IDSelector.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
@@ -198,6 +199,7 @@ set(FAISS_HEADERS
   utils/prefetch.h
   utils/quantize_lut.h
   utils/random.h
+  utils/sorting.h
   utils/simdlib.h
   utils/simdlib_avx2.h
   utils/simdlib_emulated.h
@@ -230,7 +232,7 @@ set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)

@@ -257,6 +257,24 @@ class TestSelector(unittest.TestCase):
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
 
+    def test_bounds(self):
+        # https://github.com/facebookresearch/faiss/issues/3156
+        d = 64  # dimension
+        nb = 100000  # database size
+        xb = np.random.random((nb, d))
+        index_ip = faiss.IndexFlatIP(d)
+        index_ip.add(xb)
+        index_l2 = faiss.IndexFlatIP(d)
+        index_l2.add(xb)
+
+        out_of_bounds_id = nb + 15  # + 14 or lower will work fine
+        id_selector = faiss.IDSelectorArray([out_of_bounds_id])
+        search_params = faiss.SearchParameters(sel=id_selector)
+
+        # ignores out of bound, does not crash
+        distances, indices = index_ip.search(xb[:2], k=3, params=search_params)
+        distances, indices = index_l2.search(xb[:2], k=3, params=search_params)
+
 
 class TestSearchParams(unittest.TestCase):
 
