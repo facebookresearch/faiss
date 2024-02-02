@@ -39,7 +39,7 @@ bool should_use_raft(GpuIndexConfig config_) {
 #ifdef __CUDA_ARCH__
 
 /// Disable RAFT below Volta
-#if (__CUDA_ARCH__) <= 700
+#if (__CUDA_ARCH__) < 700
     return false;
 #endif
 #endif
