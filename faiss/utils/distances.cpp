@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 
@@ -670,7 +671,7 @@ void knn_inner_product(
     }
     if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
         knn_inner_products_by_idx(
-                x, y, sela->ids, d, nx, sela->n, k, vals, ids, 0);
+                x, y, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
         return;
     }
 
@@ -726,7 +727,7 @@ void knn_L2sqr(
         sel = nullptr;
     }
     if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
-        knn_L2sqr_by_idx(x, y, sela->ids, d, nx, sela->n, k, vals, ids, 0);
+        knn_L2sqr_by_idx(x, y, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
         return;
     }
     if (k == 1) {
@@ -904,6 +905,7 @@ void knn_inner_products_by_idx(
         size_t d,
         size_t nx,
         size_t ny,
+        size_t nsubset,
         size_t k,
         float* res_vals,
         int64_t* res_ids,
@@ -921,9 +923,10 @@ void knn_inner_products_by_idx(
         int64_t* __restrict idxi = res_ids + i * k;
         minheap_heapify(k, simi, idxi);
 
-        for (j = 0; j < ny; j++) {
-            if (idsi[j] < 0)
+        for (j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
                 break;
+            }
             float ip = fvec_inner_product(x_, y + d * idsi[j], d);
 
             if (ip > simi[0]) {
@@ -941,6 +944,7 @@ void knn_L2sqr_by_idx(
         size_t d,
         size_t nx,
         size_t ny,
+        size_t nsubset,
         size_t k,
         float* res_vals,
         int64_t* res_ids,
@@ -955,7 +959,10 @@ void knn_L2sqr_by_idx(
         float* __restrict simi = res_vals + i * k;
         int64_t* __restrict idxi = res_ids + i * k;
         maxheap_heapify(k, simi, idxi);
-        for (size_t j = 0; j < ny; j++) {
+        for (size_t j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
+                break;
+            }
             float disij = fvec_L2sqr(x_, y + d * idsi[j], d);
 
             if (disij < simi[0]) {

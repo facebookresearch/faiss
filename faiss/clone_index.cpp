@@ -238,13 +238,6 @@ Index* clone_AdditiveQuantizerIndex(const Index* index) {
 
 namespace {
 
-IndexHNSW* clone_HNSW(const IndexHNSW* ihnsw) {
-    TRYCLONE(IndexHNSWFlat, ihnsw)
-    TRYCLONE(IndexHNSWPQ, ihnsw)
-    TRYCLONE(IndexHNSWSQ, ihnsw)
-    return new IndexHNSW(*ihnsw);
-}
-
 InvertedLists* clone_InvertedLists(const InvertedLists* invlists) {
     if (auto* ails = dynamic_cast<const ArrayInvertedLists*>(invlists)) {
         return new ArrayInvertedLists(*ails);

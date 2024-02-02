@@ -10,13 +10,13 @@ import logging
 import os
 import pickle
 from dataclasses import dataclass
-import submitit
 from typing import Any, List, Optional
 from zipfile import ZipFile
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 
 import numpy as np
+import submitit
 from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib_gpu
     dataset_from_name,
 )
@@ -46,6 +46,9 @@ def merge_rcq_itq(
 @dataclass
 class BenchmarkIO:
     path: str
+
+    def clone(self):
+        return BenchmarkIO(path=self.path)
 
     def __post_init__(self):
         self.cached_ds = {}
@@ -119,18 +122,27 @@ class BenchmarkIO:
 
     def get_dataset(self, dataset):
         if dataset not in self.cached_ds:
-            if dataset.namespace is not None and dataset.namespace[:4] == "std_":
+            if (
+                dataset.namespace is not None
+                and dataset.namespace[:4] == "std_"
+            ):
                 if dataset.tablename not in self.cached_ds:
                     self.cached_ds[dataset.tablename] = dataset_from_name(
                         dataset.tablename,
                     )
                 p = dataset.namespace[4]
                 if p == "t":
-                    self.cached_ds[dataset] = self.cached_ds[dataset.tablename].get_train(dataset.num_vectors)
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_train(dataset.num_vectors)
                 elif p == "d":
-                    self.cached_ds[dataset] = self.cached_ds[dataset.tablename].get_database()
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_database()
                 elif p == "q":
-                    self.cached_ds[dataset] = self.cached_ds[dataset.tablename].get_queries()
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_queries()
                 else:
                     raise ValueError
             elif dataset.namespace == "syn":
@@ -233,8 +245,8 @@ class BenchmarkIO:
         if local:
             results = [func(p) for p in params]
             return results
-        print(f'launching {len(params)} jobs')
-        executor = submitit.AutoExecutor(folder='/checkpoint/gsz/jobs')
+        logger.info(f"launching {len(params)} jobs")
+        executor = submitit.AutoExecutor(folder="/checkpoint/gsz/jobs")
         executor.update_parameters(
             nodes=1,
             gpus_per_node=8,
@@ -248,9 +260,9 @@ class BenchmarkIO:
             slurm_constraint="bldg1",
         )
         jobs = executor.map_array(func, params)
-        print(f'launched {len(jobs)} jobs')
-        # for job, param in zip(jobs, params):
-        #   print(f"{job.job_id=} {param=}")
+        logger.info(f"launched {len(jobs)} jobs")
+        for job, param in zip(jobs, params):
+            logger.info(f"{job.job_id=} {param[0]=}")
         results = [job.result() for job in jobs]
-        print(f'received {len(results)} results')
+        print(f"received {len(results)} results")
         return results
