@@ -17,10 +17,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#endif
-
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -45,6 +41,18 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 // requires substantial amounts of memory
 // FIXME: parameterize based on algorithm need
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
+
+
+bool should_use_raft(GpuIndexConfig config_) {
+#ifdef __CUDA_ARCH__
+
+/// Disable RAFT below Volta
+#if (__CUDA_ARCH__) < 700
+    return false;
+#endif
+#endif
+    return config_.use_raft;
+}
 
 GpuIndex::GpuIndex(
         std::shared_ptr<GpuResources> resources,
@@ -75,6 +83,7 @@ GpuIndex::GpuIndex(
     FAISS_ASSERT((bool)resources_);
     resources_->initializeForDevice(config_.device);
 }
+
 
 int GpuIndex::getDevice() const {
     return config_.device;

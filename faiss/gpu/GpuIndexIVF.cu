@@ -16,10 +16,6 @@
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#endif
-
 namespace faiss {
 namespace gpu {
 

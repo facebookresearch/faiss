@@ -16,11 +16,10 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/impl/RaftIVFPQ.cuh>
-
 #include <raft/neighbors/ivf_pq.cuh>
 #include <raft/neighbors/ivf_pq_helpers.cuh>
+#include <faiss/gpu/impl/RaftIVFPQ.cuh>
+#include <faiss/gpu/utils/RaftUtils.h>
 #endif
 
 #include <limits>

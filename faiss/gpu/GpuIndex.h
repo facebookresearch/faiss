@@ -45,6 +45,10 @@ struct GpuIndexConfig {
 #endif
 };
 
+/// A centralized function that determines whether RAFT should
+/// be used based on various conditions (such as unsupported architecture)
+bool should_use_raft(GpuIndexConfig config_);
+
 class GpuIndex : public faiss::Index {
    public:
     GpuIndex(

@@ -26,7 +26,6 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 
-#include <faiss/gpu/GpuIndex.h>
 #include <raft/distance/distance_types.hpp>
 
 namespace faiss {
@@ -57,10 +56,7 @@ inline raft::distance::DistanceType metricFaissToRaft(
     }
 }
 
-/// A centralized function that determines whether RAFT should
-/// be used based on various conditions (such as unsupported compute
-/// architecture)
-bool should_use_raft(GpuIndexConfig config_);
+
 
 /// Identify matrix rows containing non NaN values. validRows[i] is false is row
 /// i contains a NaN value and true otherwise.

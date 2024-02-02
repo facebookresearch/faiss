@@ -7,20 +7,21 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/impl/RaftFlatIndex.cuh>
-#endif
-
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 #include <limits>
+
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#include <faiss/gpu/utils/RaftUtils.h>
+#endif
 
 namespace faiss {
 namespace gpu {

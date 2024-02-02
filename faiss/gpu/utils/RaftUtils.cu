@@ -35,16 +35,6 @@
 namespace faiss {
 namespace gpu {
 
-bool should_use_raft(GpuIndexConfig config_) {
-#ifdef __CUDA_ARCH__
-
-/// Disable RAFT below Volta
-#if (__CUDA_ARCH__) < 700
-    return false;
-#endif
-#endif
-    return config_.use_raft;
-}
 
 void validRowIndices(
         GpuResources* res,
