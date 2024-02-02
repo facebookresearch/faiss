@@ -13,8 +13,8 @@
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/RaftUtils.h>
+#include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #endif
 
 #include <faiss/gpu/utils/ConversionOperators.cuh>
