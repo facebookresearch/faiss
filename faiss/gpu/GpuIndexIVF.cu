@@ -16,6 +16,10 @@
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/utils/RaftUtils.h>
+#endif
+
 namespace faiss {
 namespace gpu {
 
@@ -73,7 +77,7 @@ void GpuIndexIVF::init_() {
         cp.spherical = true;
     }
 
-    if (!config_.use_raft) {
+    if (!should_use_raft(config_)) {
         // here we set a low # iterations because this is typically used
         // for large clusterings
         // (copying IndexIVF.cpp's Level1Quantizer

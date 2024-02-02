@@ -17,6 +17,10 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/utils/RaftUtils.h>
+#endif
+
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -132,7 +136,7 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
     if (n > 0) {
         idx_t totalSize = n * this->d * sizeof(float);
 
-        if (!config_.use_raft &&
+        if (!should_use_raft(config_) &&
             (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
@@ -237,7 +241,7 @@ void GpuIndex::search(
 
     bool usePaged = false;
 
-    if (!config_.use_raft && getDeviceForAddress(x) == -1) {
+    if (!should_use_raft(config_) && getDeviceForAddress(x) == -1) {
         // It is possible that the user is querying for a vector set size
         // `x` that won't fit on the GPU.
         // In this case, we will have to handle paging of the data from CPU
