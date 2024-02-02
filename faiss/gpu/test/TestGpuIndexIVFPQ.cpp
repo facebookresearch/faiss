@@ -886,7 +886,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.015f);
 
     // reset the RMM memory resource to the old value
-    rmm::mr::set_per_device_resource(cuda_device_id{device}, old_mr);
+    rmm::mr::set_per_device_resource(rmm::cuda_device_id{device}, old_mr);
 #endif
 }
 
