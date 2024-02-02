@@ -14,6 +14,7 @@
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #if defined USE_NVIDIA_RAFT
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#include <faiss/gpu/utils/RaftUtils.h>
 #endif
 
 #include <faiss/gpu/utils/ConversionOperators.cuh>
@@ -94,7 +95,7 @@ GpuIndexFlat::~GpuIndexFlat() {}
 void GpuIndexFlat::resetIndex_(int dims) {
 #if defined USE_NVIDIA_RAFT
 
-    if (flatshould_use_raft(config_)) {
+    if (should_use_raft(config_)) {
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
                 dims,
@@ -102,7 +103,7 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 config_.memorySpace));
     } else
 #else
-    if (flatshould_use_raft(config_)) {
+    if (should_use_raft(config_)) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else

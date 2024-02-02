@@ -26,6 +26,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 
+#include <faiss/gpu/GpuIndex.h>
 #include <raft/distance/distance_types.hpp>
 
 namespace faiss {

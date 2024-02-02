@@ -245,9 +245,9 @@ if(FAISS_ENABLE_RAFT)
           utils/RaftUtils.h)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
-    	    impl/RaftIVFFlat.cu
+          impl/RaftIVFFlat.cu
           impl/RaftIVFPQ.cu
-          utils/RaftUtils.cu)
+          utils/RaftUtils.cu
           impl/RaftIVFFlat.cu)
 endif()
 
