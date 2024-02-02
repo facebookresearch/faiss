@@ -97,7 +97,7 @@ GpuIndexIVFFlat::~GpuIndexIVFFlat() {}
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
     DeviceScope scope(config_.device);
 
-    if (config_.use_raft) {
+    if (should_use_raft(config_)) {
         FAISS_THROW_MSG(
                 "Pre-allocation of IVF lists is not supported with RAFT enabled.");
     }
@@ -118,7 +118,7 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     index_.reset();
 
     // skip base class allocations if RAFT is not enabled
-    if (!config_.use_raft) {
+    if (!should_use_raft(config_)) {
         baseIndex_.reset();
     }
 
@@ -215,7 +215,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    if (config_.use_raft) {
+    if (should_use_raft(config_)) {
 #if defined USE_NVIDIA_RAFT
         setIndex_(
                 resources_.get(),
@@ -284,7 +284,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
 
     if (reserveMemoryVecs_) {
-        if (config_.use_raft) {
+        if (should_use_raft(config_)) {
             FAISS_THROW_MSG(
                     "Pre-allocation of IVF lists is not supported with RAFT enabled.");
         } else
@@ -306,7 +306,7 @@ void GpuIndexIVFFlat::setIndex_(
         bool interleavedLayout,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (config_.use_raft) {
+    if (should_use_raft(config_)) {
 #if defined USE_NVIDIA_RAFT
         FAISS_THROW_IF_NOT_MSG(
                 ivfFlatConfig_.indicesOptions == INDICES_64_BIT,

@@ -21,7 +21,7 @@
  */
 
 #include <faiss/gpu/utils/RaftUtils.h>
-
+#include <faiss/gpu/GpuIndex.h>
 #include <raft/core/device_mdarray.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/linalg/coalesced_reduction.cuh>
@@ -34,6 +34,15 @@
 
 namespace faiss {
 namespace gpu {
+
+bool should_use_raft(GpuIndexConfig config_) {
+#ifdef __CUDA_ARCH__
+#if (__CUDA_ARCH__) == 600
+    return false;
+#endif
+#endif
+    return config_.use_raft;
+}
 
 void validRowIndices(
         GpuResources* res,

@@ -110,7 +110,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     index_.reset();
 
     // skip base class allocations if RAFT is not enabled
-    if (!config_.use_raft) {
+    if (!should_use_raft(config_)) {
         baseIndex_.reset();
     }
 
@@ -352,7 +352,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
-    if (config_.use_raft) {
+    if (should_use_raft(config_)) {
 #if defined USE_NVIDIA_RAFT
         if (pq.assign_index) {
             fprintf(stderr,
@@ -472,7 +472,7 @@ void GpuIndexIVFPQ::setIndex_(
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (config_.use_raft) {
+    if (should_use_raft(config_)) {
 #if defined USE_NVIDIA_RAFT
         index_.reset(new RaftIVFPQ(
                 resources,
@@ -518,7 +518,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
 
     // up to a single byte per code
     if (ivfpqConfig_.interleavedLayout) {
-        if (!config_.use_raft) {
+        if (!should_use_raft(config_)) {
             FAISS_THROW_IF_NOT_FMT(
                     bitsPerCode_ == 4 || bitsPerCode_ == 5 ||
                             bitsPerCode_ == 6 || bitsPerCode_ == 8,
@@ -537,7 +537,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
                     bitsPerCode_ * subQuantizers_);
         }
     } else {
-        if (config_.use_raft) {
+        if (should_use_raft(config_)) {
             FAISS_THROW_MSG(
                     "RAFT requires interleaved layout to be set to true");
         } else {
@@ -556,7 +556,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
             "is not supported",
             subQuantizers_);
 
-    if (!config_.use_raft) {
+    if (!should_use_raft(config_)) {
         // Sub-quantizers must evenly divide dimensions available
         FAISS_THROW_IF_NOT_FMT(
                 this->d % subQuantizers_ == 0,
