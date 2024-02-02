@@ -239,7 +239,6 @@ generate_ivf_interleaved_code()
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
           impl/RaftFlatIndex.cuh
-          impl/RaftUtils.h
           impl/RaftIVFFlat.cuh
           impl/RaftIVFPQ.cuh
           utils/RaftUtils.h)
