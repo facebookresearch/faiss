@@ -35,7 +35,6 @@
 namespace faiss {
 namespace gpu {
 
-
 void validRowIndices(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,

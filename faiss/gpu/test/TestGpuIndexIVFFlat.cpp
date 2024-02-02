@@ -32,6 +32,10 @@
 #include <vector>
 #include "faiss/gpu/GpuIndicesOptions.h"
 
+#if defined USE_NVIDIA_RAFT
+#include <rmm/mr/device/managed_memory_resource.hpp>
+#endif
+
 // FIXME: figure out a better way to test fp16
 constexpr float kF16MaxRelErr = 0.3f;
 constexpr float kF32MaxRelErr = 0.03f;
