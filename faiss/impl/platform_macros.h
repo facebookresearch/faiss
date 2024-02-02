@@ -66,6 +66,11 @@ inline int __builtin_clzll(uint64_t x) {
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
 
+#ifndef __clang__
+#define __m128i_u __m128i
+#define __m256i_u __m256i
+#endif
+
 // MSVC does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit
 // processors cf.
 // https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
