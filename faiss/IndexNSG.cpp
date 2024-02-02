@@ -104,7 +104,7 @@ void IndexNSG::search(
     }
 }
 
-void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int GK) {
+void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int GK_2) {
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
@@ -115,9 +115,9 @@ void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int GK) {
     ntotal = storage->ntotal;
 
     // check the knn graph
-    check_knn_graph(knn_graph, n, GK);
+    check_knn_graph(knn_graph, n, GK_2);
 
-    const nsg::Graph<idx_t> knng(knn_graph, n, GK);
+    const nsg::Graph<idx_t> knng(knn_graph, n, GK_2);
     nsg.build(storage, n, knng, verbose);
     is_built = true;
 }

@@ -39,9 +39,9 @@ struct BlockResultHandler {
     size_t i0 = 0, i1 = 0;
 
     // start collecting results for queries [i0, i1)
-    virtual void begin_multiple(size_t i0, size_t i1) {
-        this->i0 = i0;
-        this->i1 = i1;
+    virtual void begin_multiple(size_t i0_2, size_t i1_2) {
+        this->i0 = i0_2;
+        this->i1 = i1_2;
     }
 
     // add results for queries [i0, i1) and database [j0, j1)
@@ -96,8 +96,8 @@ struct Top1BlockResultHandler : BlockResultHandler<C> {
         explicit SingleResultHandler(Top1BlockResultHandler& hr) : hr(hr) {}
 
         /// begin results for query # i
-        void begin(const size_t current_idx) {
-            this->current_idx = current_idx;
+        void begin(const size_t current_idx_2) {
+            this->current_idx = current_idx_2;
             threshold = C::neutral();
             min_idx = -1;
         }
@@ -130,9 +130,9 @@ struct Top1BlockResultHandler : BlockResultHandler<C> {
     }
 
     /// add results for query i0..i1 and j0..j1
-    void add_results(size_t j0, size_t j1, const T* dis_tab) final {
+    void add_results(size_t j0, size_t j1, const T* dis_tab_2) final {
         for (int64_t i = i0; i < i1; i++) {
-            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+            const T* dis_tab_i = dis_tab_2 + (j1 - j0) * (i - i0) - j0;
 
             auto& min_distance = this->dis_tab[i];
             auto& min_index = this->ids_tab[i];
@@ -389,14 +389,14 @@ struct ReservoirBlockResultHandler : BlockResultHandler<C> {
         size_t qno;
 
         /// begin results for query # i
-        void begin(size_t qno) {
+        void begin(size_t qno_2) {
             reservoir_dis.resize(hr.capacity);
             reservoir_ids.resize(hr.capacity);
             this->vals = reservoir_dis.data();
             this->ids = reservoir_ids.data();
             this->i = 0; // size of reservoir
             this->threshold = C::neutral();
-            this->qno = qno;
+            this->qno = qno_2;
         }
 
         /// series of results for query qno is done

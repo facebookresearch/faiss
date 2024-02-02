@@ -63,9 +63,10 @@ Index* clone_index(const Index* index) {
 // assumes there is a copy constructor ready. Always try from most
 // specific to most general. Most indexes don't have complicated
 // structs, the default copy constructor often just works.
-#define TRYCLONE(classname, obj)                                      \
-    if (const classname* clo = dynamic_cast<const classname*>(obj)) { \
-        return new classname(*clo);                                   \
+#define TRYCLONE(classname, obj)                       \
+    if (const classname* clo##classname =              \
+                dynamic_cast<const classname*>(obj)) { \
+        return new classname(*clo##classname);         \
     } else
 
 VectorTransform* Cloner::clone_VectorTransform(const VectorTransform* vt) {
@@ -236,13 +237,6 @@ Index* clone_AdditiveQuantizerIndex(const Index* index) {
 }
 
 namespace {
-
-IndexHNSW* clone_HNSW(const IndexHNSW* ihnsw) {
-    TRYCLONE(IndexHNSWFlat, ihnsw)
-    TRYCLONE(IndexHNSWPQ, ihnsw)
-    TRYCLONE(IndexHNSWSQ, ihnsw)
-    return new IndexHNSW(*ihnsw);
-}
 
 InvertedLists* clone_InvertedLists(const InvertedLists* invlists) {
     if (auto* ails = dynamic_cast<const ArrayInvertedLists*>(invlists)) {
