@@ -9,7 +9,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     h ttp://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,9 @@
 
 import numpy as np
 import faiss
-import sklearn
 import time
 import argparse
 import rmm
-import random
 
 ######################################################
 # Command-line parsing
@@ -43,25 +41,16 @@ def aa(*args, **kwargs):
 
 
 group = parser.add_argument_group('benchmarking options')
-
-# aa('--bm_train', default=False, action='store_true',
-#    help='whether to benchmark train operation on GPU index')
-# aa('--bm_add', default=False, action='store_true',
-#    help='whether to benchmark add operation on GPU index')
-# aa('--bm_search', default=True,
-#    help='whether to benchmark search operation on GPU index')
 aa('--raft_only', default=False, action='store_true',
    help='whether to only produce RAFT enabled benchmarks')
 
-
 group = parser.add_argument_group('IVF options')
-aa('--bits_per_code', default=8, type=int, help='bits per code. Note that < 8 is not supported for classical GPU')
-aa('--pq_len', default=4, type=int, help='number of vector elements represented by one PQ code')
-aa('--use_precomputed', default=True, type=bool, help='use precomputed codes')
+aa('--bits_per_code', default=8, type=int, help='bits per code. Note that < 8 is only supported when RAFT is enabled')
+aa('--pq_len', default=2, type=int, help='number of vector elements represented by one PQ code')
+aa('--use_precomputed', default=True, type=bool, help='use precomputed codes (not with RAFT enabled)')
 
 group = parser.add_argument_group('searching')
-
-aa('--k', default=50, type=int, help='nb of nearest neighbors')
+aa('--k', default=10, type=int, help='nb of nearest neighbors')
 aa('--nprobe', default=50, type=int, help='nb of IVF lists to probe')
 
 args = parser.parse_args()
@@ -72,16 +61,17 @@ rs = np.random.RandomState(123)
 
 res = faiss.StandardGpuResources()
 
+# Use an RMM pool memory resource for device allocations
+mr = rmm.mr.PoolMemoryResource(rmm.mr.CudaMemoryResource())
+rmm.mr.set_current_device_resource(mr)
+
+# A heuristic to select a suitable number of lists
 def compute_nlist(numVecs):
     nlist = np.sqrt(numVecs)
     if (numVecs / nlist < 1000):
         nlist = numVecs / 1000
     return int(nlist)
 
-
-# set the RMM pool memory resource for faster allocations
-mr = rmm.mr.PoolMemoryResource(rmm.mr.CudaMemoryResource(), initial_pool_size=2**30, maximum_pool_size=2**31)
-rmm.mr.set_current_device_resource(mr)
 
 def bench_train_milliseconds(index, trainVecs, use_raft):
     co = faiss.GpuMultipleClonerOptions()

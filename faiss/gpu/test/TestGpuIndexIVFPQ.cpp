@@ -844,6 +844,17 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.015f);
 
 #if defined USE_NVIDIA_RAFT
+    // Update the RMM device resource for RAFT internal allocations to use
+    // managed memory
+    rmm::mr::device_memory_resource* old_mr =
+            rmm::mr::get_per_device_resource(cuda_device_id{device});
+    rmm::mr::managed_memory_resource managed_mr;
+    // Construct a resource that uses a coalescing best-fit pool allocator
+    rmm::mr::pool_memory_resource<rmm::mr::managed_memory_resource> pool_mr{
+            &managed_mr};
+    // Updates the current device resource pointer to `pool_mr`
+    rmm::mr::set_per_device_resource(cuda_device_id{device}, &pool_mr);
+
     config.interleavedLayout = true;
     config.use_raft = true;
 
@@ -868,6 +879,9 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.015f,
             0.1f,
             0.015f);
+
+    // reset the RMM memory resource to the old value
+    rmm::mr::set_per_device_resource(cuda_device_id{device}, old_mr);
 #endif
 }
 
