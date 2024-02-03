@@ -7,11 +7,11 @@
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 {% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.8,<11.9" %}
+{% set cuda_constraints=">=11.8,<12" %}
 {% set libcublas_constraints=">=11.11,<12" %}
-{% elif cudatoolkit == '12.1.0' %}
-{% set cuda_constraints=">=12.1,<12.2" %}
-{% set libcublas_constraints=">=12.1,<12.2" %}
+{% elif cudatoolkit == '12.1.1' %}
+{% set cuda_constraints=">=12.1,<13" %}
+{% set libcublas_constraints=">=12.1,<13" %}
 {% endif %}
 
 package:
