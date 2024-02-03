@@ -247,6 +247,11 @@ if(FAISS_ENABLE_RAFT)
           impl/RaftIVFPQ.cu
           utils/RaftUtils.cu
           impl/RaftIVFFlat.cu)
+
+  target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_RAFT=1)
+
 endif()
 
 add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
@@ -256,11 +261,6 @@ set_target_properties(faiss_gpu PROPERTIES
 )
 target_include_directories(faiss_gpu PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-
-  target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
-  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
-  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_RAFT=1)
-endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
