@@ -829,7 +829,7 @@ HNSWStats HNSW::search(
             greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
         }
 
-        int ef = std::max(efSearch, k);
+        int ef = std::max(params ? params->efSearch : efSearch, k);
         if (search_bounded_queue) { // this is the most common branch
             MinimaxHeap candidates(ef);
 
@@ -851,13 +851,11 @@ HNSWStats HNSW::search(
                 top_candidates.pop();
             }
 
-            int nres = 0;
             while (!top_candidates.empty()) {
                 float d;
                 storage_idx_t label;
                 std::tie(d, label) = top_candidates.top();
                 res.add_result(d, label);
-                nres++;
                 top_candidates.pop();
             }
         }

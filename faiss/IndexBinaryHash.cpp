@@ -342,7 +342,6 @@ static void verify_shortlist(
         const std::unordered_set<idx_t>& shortlist,
         SearchResults& res) {
     size_t code_size = index->code_size;
-    size_t nlist = 0, ndis = 0, n0 = 0;
 
     HammingComputer hc(q, code_size);
     const uint8_t* codes = index->xb.data();
