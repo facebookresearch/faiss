@@ -306,6 +306,26 @@ class TestRangeEval(unittest.TestCase):
 
 class TestPreassigned(unittest.TestCase):
 
+    def test_index_pretransformed(self):
+
+        ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
+        xt = ds.get_train()
+        xq = ds.get_queries()
+        xb = ds.get_database()
+        index = faiss.index_factory(128, 'PCA64,IVF64,PQ4np')
+        index.train(xt)
+        index.add(xb)
+        index_downcasted = faiss.extract_index_ivf(index)
+        index_downcasted.nprobe = 10
+        xq_trans = index.chain.at(0).apply_py(xq)
+        D_ref, I_ref = index.search(xq, 4)
+
+        quantizer = index_downcasted.quantizer
+        Dq, Iq = quantizer.search(xq_trans, index_downcasted.nprobe)
+        D, I = ivf_tools.search_preassigned(index, xq, 4, Iq, Dq)
+        np.testing.assert_almost_equal(D_ref, D, decimal=4)
+        np.testing.assert_array_equal(I_ref, I)
+
     def test_float(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
 
