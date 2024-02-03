@@ -245,7 +245,13 @@ if(FAISS_ENABLE_RAFT)
           impl/RaftFlatIndex.cu
           impl/RaftIVFFlat.cu
           impl/RaftIVFPQ.cu
-          utils/RaftUtils.cu)
+          utils/RaftUtils.cu
+          impl/RaftIVFFlat.cu)
+
+  target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_RAFT=1)
+
 endif()
 
 add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
