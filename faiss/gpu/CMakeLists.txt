@@ -240,13 +240,13 @@ if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
           impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh
-          impl/RaftFlatIndex.cuh)
+          impl/RaftIVFPQ.cuh
+          utils/RaftUtils.cuh)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
           impl/RaftIVFFlat.cu
           impl/RaftIVFPQ.cu
-          utils/RaftUtils.cu
-          impl/RaftIVFFlat.cu)
+          utils/RaftUtils.cu)
 endif()
 
 add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
