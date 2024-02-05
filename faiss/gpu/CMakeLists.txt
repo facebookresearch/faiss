@@ -241,7 +241,7 @@ if(FAISS_ENABLE_RAFT)
           impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh
           impl/RaftIVFPQ.cuh
-          utils/RaftUtils.cuh)
+          utils/RaftUtils.h)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
           impl/RaftIVFFlat.cu
@@ -263,6 +263,7 @@ set_target_properties(faiss_gpu PROPERTIES
 target_include_directories(faiss_gpu PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
+if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
 
@@ -285,6 +286,7 @@ target_include_directories(faiss_gpu PUBLIC
     impl/RaftIVFFlat.cu
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
+  target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
