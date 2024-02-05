@@ -239,10 +239,22 @@ generate_ivf_interleaved_code()
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
           impl/RaftIVFFlat.cuh
-          impl/RaftFlatIndex.cuh)
+          impl/RaftIVFPQ.cuh
+          utils/RaftUtils.cuh)
   list(APPEND FAISS_GPU_SRC
           impl/RaftFlatIndex.cu
-	        impl/RaftIVFFlat.cu)
+          impl/RaftIVFFlat.cu
+          impl/RaftIVFPQ.cu
+          utils/RaftUtils.cu)
+endif()
+
+add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+set_target_properties(faiss_gpu PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+target_include_directories(faiss_gpu PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
