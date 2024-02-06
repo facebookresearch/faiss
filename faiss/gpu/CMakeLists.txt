@@ -264,14 +264,6 @@ if(FAISS_ENABLE_RAFT)
 
 endif()
 
-add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
-set_target_properties(faiss_gpu PROPERTIES
-  POSITION_INDEPENDENT_CODE ON
-  WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
-target_include_directories(faiss_gpu PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-
 if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
