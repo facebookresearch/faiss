@@ -16,6 +16,7 @@
 #include <sstream>
 #include <vector>
 #include "faiss/MetricType.h"
+#include "faiss/gpu/GpuIndicesOptions.h"
 
 #if defined USE_NVIDIA_RAFT
 #include <rmm/mr/device/managed_memory_resource.hpp>
@@ -241,6 +242,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         config.usePrecomputedTables = false;
         config.useMMCodeDistance = true;
         config.indicesOptions = opt.indicesOpt;
+        config.use_raft = false;
 
         // Make sure that the float16 version works as well
         config.useFloat16LookupTables = (tries % 2 == 0);
@@ -344,6 +346,7 @@ TEST(TestGpuIndexIVFPQ, Float16Coarse) {
     config.usePrecomputedTables = opt.usePrecomputed;
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
+    config.use_raft = false;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -570,8 +573,8 @@ void queryNaNTest(Options opt) {
     config.usePrecomputedTables = opt.usePrecomputed;
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
-    config.interleavedLayout = opt.interleavedLayout;
     config.use_raft = opt.useRaft;
+    config.interleavedLayout = opt.useRaft ? true : opt.interleavedLayout;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
@@ -609,6 +612,7 @@ void queryNaNTest(Options opt) {
 
 TEST(TestGpuIndexIVFPQ, QueryNaN) {
     Options opt;
+    opt.useRaft = false;
     queryNaNTest(opt);
 }
 
@@ -851,6 +855,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
 #if defined USE_NVIDIA_RAFT
     config.interleavedLayout = true;
     config.use_raft = true;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
 
     faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
             &res,

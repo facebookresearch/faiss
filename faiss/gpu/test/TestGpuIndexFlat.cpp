@@ -268,6 +268,7 @@ TEST(TestGpuIndexFlat, QueryEmpty) {
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = 0;
     config.useFloat16 = false;
+    config.use_raft = false;
     int dim = 128;
     faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
 
