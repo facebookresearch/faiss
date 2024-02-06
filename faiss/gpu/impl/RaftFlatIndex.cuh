@@ -28,6 +28,7 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -67,3 +68,4 @@ class RaftFlatIndex : public FlatIndex {
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop

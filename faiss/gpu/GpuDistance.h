@@ -9,6 +9,7 @@
 
 #include <faiss/Index.h>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -168,3 +169,4 @@ void bruteForceKnn(
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop
