@@ -280,6 +280,7 @@ if(FAISS_ENABLE_RAFT)
     impl/RaftFlatIndex.cu
     impl/RaftIVFFlat.cu
     impl/RaftIVFPQ.cu
+    utils/RaftUtils.cu
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
   target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)

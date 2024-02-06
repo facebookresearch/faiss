@@ -29,6 +29,7 @@
 
 #include <optional>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 /// Implementing class for IVFPQ on the GPU
@@ -146,3 +147,4 @@ class RaftIVFPQ : public IVFPQ {
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop

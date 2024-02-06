@@ -28,6 +28,7 @@
 
 #include <raft/distance/distance_types.hpp>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -71,3 +72,4 @@ idx_t inplaceGatherFilteredRows(
         Tensor<idx_t, 1, true>& indices);
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop
