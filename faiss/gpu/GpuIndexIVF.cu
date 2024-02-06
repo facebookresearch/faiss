@@ -425,6 +425,7 @@ void GpuIndexIVF::range_search_preassigned(
 }
 
 bool GpuIndexIVF::addImplRequiresIDs_() const {
+    // All IVF indices have storage for IDs
     return true;
 }
 
