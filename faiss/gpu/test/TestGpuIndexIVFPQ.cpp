@@ -293,6 +293,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         config.device = opt.device;
         config.usePrecomputedTables = false;
         config.indicesOptions = opt.indicesOpt;
+        config.use_raft = false;
 
         // Make sure that the float16 version works as well
         config.useFloat16LookupTables = (dimPerSubQ == 7);
@@ -670,6 +671,7 @@ void addNaNTest(Options opt) {
 
 TEST(TestGpuIndexIVFPQ, AddNaN) {
     Options opt;
+    opt.useRaft = false;
     addNaNTest(opt);
 }
 
@@ -829,6 +831,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = device;
     config.memorySpace = faiss::gpu::MemorySpace::Unified;
+    config.use_raft = false;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
