@@ -59,6 +59,8 @@ RaftCagra::RaftCagra(
             static_cast<raft::neighbors::cagra::graph_build_algo>(
                     graph_build_algo);
     index_pams_.nn_descent_niter = nn_descent_niter;
+
+    reset();
 }
 
 void RaftCagra::train(idx_t n, const float* x) {
@@ -136,6 +138,10 @@ void RaftCagra::search(
             queries_view,
             indices_view,
             distances_view);
+}
+
+void RaftCagra::reset() {
+    raft_knn_index.reset();
 }
 
 } // namespace gpu

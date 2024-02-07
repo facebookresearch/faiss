@@ -82,6 +82,7 @@ void queryTest() {
 
         faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
+        // Training IndexHNSW is a no-op
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numTrain, trainVecs.data());
 

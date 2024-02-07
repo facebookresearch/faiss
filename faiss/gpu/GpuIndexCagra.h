@@ -113,17 +113,18 @@ struct GpuIndexCagra : public GpuIndex {
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexCagraConfig config = GpuIndexCagraConfig());
 
-    ~GpuIndexCagra() {}
+    ~GpuIndexCagra() override = default;
 
     /// Trains CAGRA based on the given vector data
     void train(idx_t n, const float* x) override;
 
-    void reset() {}
+    void reset() override;
 
    protected:
-    bool addImplRequiresIDs_() const {}
+    bool addImplRequiresIDs_() const override;
 
-    void addImpl_(idx_t n, const float* x, const idx_t* ids) {}
+    void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+
     /// Called from GpuIndex for search
     void searchImpl_(
             idx_t n,

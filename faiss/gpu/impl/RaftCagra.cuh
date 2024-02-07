@@ -77,6 +77,8 @@ class RaftCagra {
             idx_t num_random_samplings,
             idx_t rand_xor_mask);
 
+    void reset();
+
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;

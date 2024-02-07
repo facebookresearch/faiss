@@ -59,8 +59,16 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
     index_->train(n, x);
 
     this->is_trained = true;
-    this->ntotal += n;
+    this->ntotal = n;
 }
+
+bool GpuIndexCagra::addImplRequiresIDs_() const {
+    return false;
+};
+
+void GpuIndexCagra::addImpl_(idx_t n, const float* x, const idx_t* ids) {
+    FAISS_THROW_MSG("adding vectors is not supported by GpuIndexCagra.");
+};
 
 void GpuIndexCagra::searchImpl_(
         idx_t n,
@@ -105,6 +113,17 @@ void GpuIndexCagra::searchImpl_(
 
     if (not search_params) {
         delete params;
+    }
+}
+
+void GpuIndexCagra::reset() {
+    DeviceScope scope(config_.device);
+
+    if (index_) {
+        index_->reset();
+        this->ntotal = 0;
+    } else {
+        FAISS_ASSERT(this->ntotal == 0);
     }
 }
 
