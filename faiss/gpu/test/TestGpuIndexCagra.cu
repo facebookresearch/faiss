@@ -21,14 +21,14 @@
  */
 
 #include <faiss/IndexHNSW.h>
+#include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
-#include <cstddef>
-#include <faiss/MetricType.h>
 #include <optional>
 #include <vector>
 
@@ -43,7 +43,8 @@ struct Options {
         graphDegree = faiss::gpu::randSelect({32, 64});
         intermediateGraphDegree = faiss::gpu::randSelect({64, 98});
         buildAlgo = faiss::gpu::randSelect(
-                {faiss::gpu::graph_build_algo::IVF_PQ, faiss::gpu::graph_build_algo::NN_DESCENT});
+                {faiss::gpu::graph_build_algo::IVF_PQ,
+                 faiss::gpu::graph_build_algo::NN_DESCENT});
 
         numQuery = faiss::gpu::randVal(32, 100);
         k = faiss::gpu::randVal(10, 30);
@@ -54,9 +55,10 @@ struct Options {
     std::string toString() const {
         std::stringstream str;
         str << "CAGRA device " << device << " numVecs " << numTrain << " dim "
-            << dim << " graphDegree " << graphDegree << " intermediateGraphDegree " << intermediateGraphDegree
-            << "buildAlgo " << static_cast<int>(buildAlgo)
-            << " numQuery " << numQuery << " k " << k;
+            << dim << " graphDegree " << graphDegree
+            << " intermediateGraphDegree " << intermediateGraphDegree
+            << "buildAlgo " << static_cast<int>(buildAlgo) << " numQuery "
+            << numQuery << " k " << k;
 
         return str.str();
     }
@@ -78,8 +80,7 @@ void queryTest() {
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
 
-        faiss::IndexHNSWFlat cpuIndex(
-            opt.dim, opt.graphDegree / 2);
+        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numTrain, trainVecs.data());
@@ -112,9 +113,13 @@ void queryTest() {
                 &cpuSearchParams);
 
         auto gpuRes = res.getResources();
-        auto devAlloc = faiss::gpu::makeDevAlloc(faiss::gpu::AllocType::FlatData, gpuRes->getDefaultStreamCurrentDevice());
-        faiss::gpu::DeviceTensor<float, 2, true> testDistance(gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
-        faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> testIndices(gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        auto devAlloc = faiss::gpu::makeDevAlloc(
+                faiss::gpu::AllocType::FlatData,
+                gpuRes->getDefaultStreamCurrentDevice());
+        faiss::gpu::DeviceTensor<float, 2, true> testDistance(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> testIndices(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
         gpuIndex.search(
                 opt.numQuery,
                 queryVecs.data(),
@@ -122,26 +127,47 @@ void queryTest() {
                 testDistance.data(),
                 testIndices.data());
 
-        auto refDistanceDev = faiss::gpu::toDeviceTemporary(gpuRes.get(), refDistance, gpuRes->getDefaultStreamCurrentDevice());
-        auto refIndicesDev = faiss::gpu::toDeviceTemporary(gpuRes.get(), refIndices, gpuRes->getDefaultStreamCurrentDevice());
+        auto refDistanceDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                refDistance,
+                gpuRes->getDefaultStreamCurrentDevice());
+        auto refIndicesDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                refIndices,
+                gpuRes->getDefaultStreamCurrentDevice());
 
         auto raft_handle = gpuRes->getRaftHandleCurrentDevice();
 
-        auto ref_dis_mds = raft::make_device_matrix_view<const float, int>(refDistanceDev.data(), opt.numQuery, opt.k);
-        auto ref_dis_mds_opt = std::optional<raft::device_matrix_view<const float, int>>(ref_dis_mds);
-        auto ref_ind_mds = raft::make_device_matrix_view<const faiss::idx_t, int>(refIndicesDev.data(), opt.numQuery, opt.k);
+        auto ref_dis_mds = raft::make_device_matrix_view<const float, int>(
+                refDistanceDev.data(), opt.numQuery, opt.k);
+        auto ref_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        ref_dis_mds);
+        auto ref_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        refIndicesDev.data(), opt.numQuery, opt.k);
 
-        auto test_dis_mds = raft::make_device_matrix_view<const float, int>(testDistance.data(), opt.numQuery, opt.k);
-                auto test_dis_mds_opt = std::optional<raft::device_matrix_view<const float, int>>(test_dis_mds);
+        auto test_dis_mds = raft::make_device_matrix_view<const float, int>(
+                testDistance.data(), opt.numQuery, opt.k);
+        auto test_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        test_dis_mds);
 
-        auto test_ind_mds = raft::make_device_matrix_view<const faiss::idx_t, int>(testIndices.data(), opt.numQuery, opt.k);
+        auto test_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        testIndices.data(), opt.numQuery, opt.k);
 
         double scalar_init = 0;
         auto recall_score = raft::make_host_scalar(scalar_init);
 
-        raft::stats::neighborhood_recall(raft_handle, test_ind_mds, ref_ind_mds, recall_score.view(), test_dis_mds_opt, ref_dis_mds_opt);
+        raft::stats::neighborhood_recall(
+                raft_handle,
+                test_ind_mds,
+                ref_ind_mds,
+                recall_score.view(),
+                test_dis_mds_opt,
+                ref_dis_mds_opt);
         ASSERT_TRUE(*recall_score.data_handle() > 0.98);
-
     }
 }
 

@@ -34,8 +34,8 @@ GpuIndexCagra::GpuIndexCagra(
         GpuIndexCagraConfig config)
         : GpuIndex(provider->getResources(), dims, metric, 0.0f, config),
           cagraConfig_(config) {
-            this->is_trained = false;
-          }
+    this->is_trained = false;
+}
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
     if (this->is_trained) {
@@ -78,9 +78,9 @@ void GpuIndexCagra::searchImpl_(
 
     SearchParametersCagra* params;
     if (search_params) {
-        params = dynamic_cast<SearchParametersCagra*>(const_cast<SearchParameters*>(search_params));
-    }
-    else {
+        params = dynamic_cast<SearchParametersCagra*>(
+                const_cast<SearchParameters*>(search_params));
+    } else {
         params = new SearchParametersCagra{};
     }
 

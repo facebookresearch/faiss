@@ -121,9 +121,9 @@ struct GpuIndexCagra : public GpuIndex {
     void reset() {}
 
    protected:
-   bool addImplRequiresIDs_() const {}
+    bool addImplRequiresIDs_() const {}
 
-   void addImpl_(idx_t n, const float* x, const idx_t* ids) {}
+    void addImpl_(idx_t n, const float* x, const idx_t* ids) {}
     /// Called from GpuIndex for search
     void searchImpl_(
             idx_t n,

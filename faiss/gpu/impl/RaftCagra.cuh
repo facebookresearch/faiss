@@ -22,10 +22,10 @@
 
 #pragma once
 
+#include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <faiss/gpu/GpuIndicesOptions.h>
 
 #include <faiss/MetricType.h>
 
