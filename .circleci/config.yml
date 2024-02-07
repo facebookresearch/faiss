@@ -356,10 +356,10 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: Linux x86_64 GPU packages (CUDA 11.8.0)
+          name: Linux x86_64 GPU packages (CUDA 11.4.4)
           exec: linux-x86_64-gpu
           label: main
-          cuda: "11.8.0"
+          cuda: "11.4.4"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
@@ -373,7 +373,7 @@ workflows:
           label: main
           raft: "ON"
           cuda: "11.8.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
             tags:
@@ -381,11 +381,11 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: Linux x86_64 GPU packages (CUDA 12.1.0)
+          name: Linux x86_64 GPU packages (CUDA 12.1.1)
           exec: linux-x86_64-gpu
           label: main
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          cuda: "12.1.1"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
             tags:
@@ -393,12 +393,12 @@ workflows:
             branches:
               ignore: /.*/
       - build_conda:
-          name: Linux x86_64 GPU w/ RAFT packages (CUDA 12.1.0)
+          name: Linux x86_64 GPU w/ RAFT packages (CUDA 12.1.1)
           exec: linux-x86_64-gpu
           label: main
           raft: "ON"
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          cuda: "12.1.1"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
           filters:
             tags:
@@ -447,35 +447,35 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 11.8.0)
+          name: Linux x86_64 GPU nightlies (CUDA 11.4.4)
           exec: linux-x86_64-gpu
-          cuda: "11.8.0"
+          label: nightly
+          cuda: "11.4.4"
           cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-          label: nightly
       - build_conda:
           name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.8.0)
           exec: linux-x86_64-gpu
+          label: nightly
           raft: "ON"
           cuda: "11.8.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-          label: nightly
       - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 12.1.0)
+          name: Linux x86_64 GPU nightlies (CUDA 12.1.1)
           exec: linux-x86_64-gpu
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          label: nightly
+          cuda: "12.1.1"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-          label: nightly
       - build_conda:
-          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.0)
+          name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.1)
           exec: linux-x86_64-gpu
+          label: nightly
           raft: "ON"
-          cuda: "12.1.0"
-          cuda_archs: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+          cuda: "12.1.1"
+          cuda_archs: "70-real;72-real;75-real;80;86-real"
           compiler_version: "11.2"
-          label: nightly
       - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
