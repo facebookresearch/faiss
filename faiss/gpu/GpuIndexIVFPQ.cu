@@ -108,7 +108,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Clear out our old data
     index_.reset();
 
-    // skip base class allocations if RAFT is not enabled
+    // skip base class allocations if RAFT is enabled
     if (!should_use_raft(config_)) {
         baseIndex_.reset();
     }
