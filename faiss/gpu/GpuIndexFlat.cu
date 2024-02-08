@@ -19,7 +19,6 @@
 #include <limits>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #endif
 
