@@ -15,13 +15,6 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
-#include "faiss/MetricType.h"
-#include "faiss/gpu/GpuIndicesOptions.h"
-
-#if defined USE_NVIDIA_RAFT
-#include <rmm/mr/device/managed_memory_resource.hpp>
-#include <rmm/mr/device/pool_memory_resource.hpp>
-#endif
 
 void pickEncoding(int& codes, int& dim) {
     std::vector<int> codeSizes{
