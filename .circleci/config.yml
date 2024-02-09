@@ -25,7 +25,7 @@ executors:
     resource_class: macos.m1.large.gen1
   windows-x86_64-cpu:
     machine:
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2019-vs2019:2023.04.1
       shell: bash.exe
     resource_class: windows.medium
 

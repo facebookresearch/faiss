@@ -135,8 +135,9 @@ void IndexIVFPQ::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* coarse_idx) {
-    add_core_o(n, x, xids, nullptr, coarse_idx);
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
+    add_core_o(n, x, xids, nullptr, coarse_idx, inverted_list_context);
 }
 
 static std::unique_ptr<float[]> compute_residuals(
@@ -212,7 +213,8 @@ void IndexIVFPQ::add_core_o(
         const float* x,
         const idx_t* xids,
         float* residuals_2,
-        const idx_t* precomputed_idx) {
+        const idx_t* precomputed_idx,
+        void* inverted_list_context) {
     idx_t bs = index_ivfpq_add_core_o_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
@@ -229,7 +231,8 @@ void IndexIVFPQ::add_core_o(
                     x + i0 * d,
                     xids ? xids + i0 : nullptr,
                     residuals_2 ? residuals_2 + i0 * d : nullptr,
-                    precomputed_idx ? precomputed_idx + i0 : nullptr);
+                    precomputed_idx ? precomputed_idx + i0 : nullptr,
+                    inverted_list_context);
         }
         return;
     }
@@ -281,7 +284,8 @@ void IndexIVFPQ::add_core_o(
         }
 
         uint8_t* code = xcodes.get() + i * code_size;
-        size_t offset = invlists->add_entry(key, id, code);
+        size_t offset =
+                invlists->add_entry(key, id, code, inverted_list_context);
 
         if (residuals_2) {
             float* res2 = residuals_2 + i * d;

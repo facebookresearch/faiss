@@ -10,6 +10,7 @@ set(FAISS_TEST_SRC
   test_ivfpq_codec.cpp
   test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
+  test_ivf_index.cpp
   test_merge.cpp
   test_omp_threads.cpp
   test_ondisk_ivf.cpp
