@@ -311,9 +311,10 @@ void GpuIndexIVFFlat::setIndex_(
         FAISS_THROW_IF_NOT_MSG(
                 ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
                 "RAFT only supports INDICES_64_BIT");
-        FAISS_THROW_IF_NOT_MSG(
-                ivfFlatConfig_.interleavedLayout,
-                "RAFT requires interleavedLayout to be true");
+        if (!ivfFlatConfig_.interleavedLayout) {
+            fprintf(stderr,
+                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.");
+        }
         index_.reset(new RaftIVFFlat(
                 resources,
                 dim,

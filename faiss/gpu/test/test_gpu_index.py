@@ -226,7 +226,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
 
         # construct a GPU index using the same trained coarse quantizer
         # from the CPU index
-        config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+        config = faiss.GpuIndexIVFPQConfig()
         idx_gpu = faiss.GpuIndexIVFPQ(
             res, idx_coarse_cpu, d, nlist_lvl_2, 4, 8)
         assert(not idx_gpu.is_trained)
@@ -265,7 +265,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             sub_q = 16
             nprobe = 16
 
-            config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+            config = faiss.GpuIndexIVFPQConfig()
             config.interleavedLayout = True
             idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
             q = faiss.IndexFlatL2(d)
@@ -310,7 +310,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             bits_per_code = 8
             nprobe = 4
 
-            config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+            config = faiss.GpuIndexIVFPQConfig()
             config.interleavedLayout = True
             idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
             q = faiss.IndexFlatL2(d)
@@ -354,7 +354,7 @@ class TestInterleavedIVFPQLayout(unittest.TestCase):
             bits_per_code = 8
             nprobe = 4
 
-            config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+            config = faiss.GpuIndexIVFPQConfig()
             config.interleavedLayout = True
             idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
             q = faiss.IndexFlatL2(d)
@@ -397,7 +397,7 @@ class TestIVFIndices(unittest.TestCase):
         # Force values to not be representable in int32
         xb_indices = (xb_indices_base + 4294967296).astype('int64')
 
-        config = faiss.GpuIndexIVFFlatConfig(use_raft=False)
+        config = faiss.GpuIndexIVFFlatConfig()
         idx = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
         idx.train(xb)
         idx.add_with_ids(xb, xb_indices)
@@ -430,7 +430,7 @@ class TestIVFIndices(unittest.TestCase):
         # Force values to not be representable in int32
         xb_indices = (xb_indices_base + 4294967296).astype('int64')
 
-        config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+        config = faiss.GpuIndexIVFPQConfig()
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)
@@ -512,7 +512,7 @@ class TestInvalidParams(unittest.TestCase):
         # Force values to not be representable in int32
         xb_indices = (xb_indices_base + 4294967296).astype('int64')
 
-        config = faiss.GpuIndexIVFPQConfig(use_raft=False)
+        config = faiss.GpuIndexIVFPQConfig()
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)

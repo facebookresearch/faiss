@@ -517,29 +517,28 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
     FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be >0");
 
     // up to a single byte per code
-    if (ivfpqConfig_.interleavedLayout) {
-        if (!should_use_raft(config_)) {
+    if (should_use_raft(config_)) {
+        if (!ivfpqConfig_.interleavedLayout) {
+            fprintf(stderr,
+                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.");
+        }
+        FAISS_THROW_IF_NOT_FMT(
+                bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
+                "Bits per code must be within closed range [4,8] (passed %d)",
+                bitsPerCode_);
+        FAISS_THROW_IF_NOT_FMT(
+                (bitsPerCode_ * subQuantizers_) % 8 == 0,
+                "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
+                bitsPerCode_,
+                subQuantizers_,
+                bitsPerCode_ * subQuantizers_);
+    } else {
+        if (ivfpqConfig_.interleavedLayout) {
             FAISS_THROW_IF_NOT_FMT(
                     bitsPerCode_ == 4 || bitsPerCode_ == 5 ||
                             bitsPerCode_ == 6 || bitsPerCode_ == 8,
                     "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
                     bitsPerCode_);
-        } else {
-            FAISS_THROW_IF_NOT_FMT(
-                    bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
-                    "Bits per code must be within closed range [4,8] (passed %d)",
-                    bitsPerCode_);
-            FAISS_THROW_IF_NOT_FMT(
-                    (bitsPerCode_ * subQuantizers_) % 8 == 0,
-                    "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
-                    bitsPerCode_,
-                    subQuantizers_,
-                    bitsPerCode_ * subQuantizers_);
-        }
-    } else {
-        if (should_use_raft(config_)) {
-            FAISS_THROW_MSG(
-                    "RAFT requires interleaved layout to be set to true");
         } else {
             FAISS_THROW_IF_NOT_FMT(
                     bitsPerCode_ == 8,
