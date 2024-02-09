@@ -60,6 +60,3 @@ class TestGpuSerialize(unittest.TestCase):
             # Make sure the index is in a state where we can add to it
             # without error
             gpu_index_restore.add(query)
-
-if __name__ == '__main__':
-    unittest.main()
