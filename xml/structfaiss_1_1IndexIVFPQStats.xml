@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="168" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="168" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="170" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="170" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="170" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="170" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="172" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="172" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1a6b1fc7a99f1a4eb7d916dc36a7712140" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="174" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="174" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="176" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="176" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="175" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="175" bodyend="-1"/>
+        <location file="faiss/IndexIVFPQ.h" line="177" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="177" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="177" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="177" bodyend="179"/>
+        <location file="faiss/IndexIVFPQ.h" line="179" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="179" bodyend="181"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQStats_1a84959a8cb7c2a75ca5a32dd73beaaee3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="180" column="10"/>
+        <location file="faiss/IndexIVFPQ.h" line="182" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -93,7 +93,7 @@
     <detaileddescription>
 <para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
     </detaileddescription>
-    <location file="faiss/IndexIVFPQ.h" line="167" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="167" bodyend="181"/>
+    <location file="faiss/IndexIVFPQ.h" line="169" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="169" bodyend="183"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVFPQStats_1aded5c391a06a3ccb0b519433faf6cc30" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQStats</scope><name>IndexIVFPQStats</name></member>
       <member refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQStats</scope><name>n_hamming_pass</name></member>

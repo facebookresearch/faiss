@@ -76,6 +76,21 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="74" column="22" bodyfile="faiss/IndexIVF.h" bodystart="74" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* faiss::SearchParametersIVF::inverted_list_context</definition>
+        <argsstring></argsstring>
+        <name>inverted_list_context</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>context object to pass to <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="76" column="10" bodyfile="faiss/IndexIVF.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
         <definition>IDSelector* faiss::SearchParameters::sel</definition>
@@ -172,6 +187,7 @@
     </collaborationgraph>
     <location file="faiss/IndexIVFPQ.h" line="22" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="22" bodyend="27"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>inverted_list_context</name></member>
       <member refid="structfaiss_1_1IVFPQSearchParameters_1abb58e8a6e58752abee118760b48e7d7e" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>IVFPQSearchParameters</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>max_codes</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>nprobe</name></member>
