@@ -73,7 +73,7 @@ RaftIVFPQ::~RaftIVFPQ() {}
 
 void RaftIVFPQ::reserveMemory(idx_t numVecs) {
     fprintf(stderr,
-            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.");
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.\n");
 }
 
 void RaftIVFPQ::reset() {
@@ -82,7 +82,7 @@ void RaftIVFPQ::reset() {
 
 size_t RaftIVFPQ::reclaimMemory() {
     fprintf(stderr,
-            "WARN: reclaimMemory is NOP. reclaimMemory is not supported with RAFT enabled.");
+            "WARN: reclaimMemory is NOP. reclaimMemory is not supported with RAFT enabled.\n");
     return 0;
 }
 

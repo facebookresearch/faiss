@@ -94,6 +94,8 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
     // instance
     this->is_trained = false;
 
+    FAISS_THROW_IF_NOT_MSG(!config.use_raft, "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
+
     verifyPQSettings_();
 }
 
@@ -356,7 +358,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 #if defined USE_NVIDIA_RAFT
         if (pq.assign_index) {
             fprintf(stderr,
-                    "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled");
+                    "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled.\n");
         }
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
@@ -520,7 +522,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
     if (should_use_raft(config_)) {
         if (!ivfpqConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.");
+                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.\n");
         }
         FAISS_THROW_IF_NOT_FMT(
                 bitsPerCode_ >= 4 && bitsPerCode_ <= 8,

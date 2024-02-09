@@ -72,6 +72,9 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
                   config),
           ivfFlatConfig_(config),
           reserveMemoryVecs_(0) {
+    FAISS_THROW_IF_NOT_MSG(
+            !config.use_raft,
+            "GpuIndexIVFFlat: RAFT does not support separate coarseQuantizer");
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
     if (this->is_trained) {
@@ -313,7 +316,7 @@ void GpuIndexIVFFlat::setIndex_(
                 "RAFT only supports INDICES_64_BIT");
         if (!ivfFlatConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.");
+                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.\n");
         }
         index_.reset(new RaftIVFFlat(
                 resources,

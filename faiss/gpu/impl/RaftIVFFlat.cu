@@ -72,7 +72,7 @@ RaftIVFFlat::~RaftIVFFlat() {}
 
 void RaftIVFFlat::reserveMemory(idx_t numVecs) {
     fprintf(stderr,
-            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.");
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.\n");
 }
 
 void RaftIVFFlat::reset() {
