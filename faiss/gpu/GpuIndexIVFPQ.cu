@@ -319,6 +319,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
         try {
             GpuIndexFlatConfig config;
             config.device = ivfpqConfig_.device;
+            config.use_raft = false;
             GpuIndexFlatL2 pqIndex(resources_, pq.dsub, config);
 
             pq.assign_index = &pqIndex;
