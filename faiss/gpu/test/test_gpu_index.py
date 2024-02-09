@@ -226,7 +226,6 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
 
         # construct a GPU index using the same trained coarse quantizer
         # from the CPU index
-        config = faiss.GpuIndexIVFPQConfig()
         idx_gpu = faiss.GpuIndexIVFPQ(
             res, idx_coarse_cpu, d, nlist_lvl_2, 4, 8)
         assert(not idx_gpu.is_trained)
