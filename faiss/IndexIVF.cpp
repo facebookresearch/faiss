@@ -203,7 +203,8 @@ void IndexIVF::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* coarse_idx) {
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
     // do some blocking to avoid excessive allocs
     idx_t bs = 65536;
     if (n > bs) {
@@ -218,7 +219,8 @@ void IndexIVF::add_core(
                     i1 - i0,
                     x + i0 * d,
                     xids ? xids + i0 : nullptr,
-                    coarse_idx + i0);
+                    coarse_idx + i0,
+                    inverted_list_context);
         }
         return;
     }
@@ -249,7 +251,10 @@ void IndexIVF::add_core(
             if (list_no >= 0 && list_no % nt == rank) {
                 idx_t id = xids ? xids[i] : ntotal + i;
                 size_t ofs = invlists->add_entry(
-                        list_no, id, flat_codes.get() + i * code_size);
+                        list_no,
+                        id,
+                        flat_codes.get() + i * code_size,
+                        inverted_list_context);
 
                 dm_adder.add(i, list_no, ofs);
 
@@ -445,6 +450,9 @@ void IndexIVF::search_preassigned(
                      : pmode == 1 ? nprobe > 1
                                   : nprobe * n > 1);
 
+    void* inverted_list_context =
+            params ? params->inverted_list_context : nullptr;
+
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
         std::unique_ptr<InvertedListScanner> scanner(
@@ -507,7 +515,7 @@ void IndexIVF::search_preassigned(
                     nlist);
 
             // don't waste time on empty lists
-            if (invlists->is_empty(key)) {
+            if (invlists->is_empty(key, inverted_list_context)) {
                 return (size_t)0;
             }
 
@@ -520,7 +528,7 @@ void IndexIVF::search_preassigned(
                     size_t list_size = 0;
 
                     std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key));
+                            invlists->get_iterator(key, inverted_list_context));
 
                     nheap += scanner->iterate_codes(
                             it.get(), simi, idxi, k, list_size);
@@ -783,6 +791,9 @@ void IndexIVF::range_search_preassigned(
                      : pmode == 1 ? nprobe > 1
                                   : nprobe * nx > 1);
 
+    void* inverted_list_context =
+            params ? params->inverted_list_context : nullptr;
+
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis)
     {
         RangeSearchPartialResult pres(result);
@@ -804,7 +815,7 @@ void IndexIVF::range_search_preassigned(
                     ik,
                     nlist);
 
-            if (invlists->is_empty(key)) {
+            if (invlists->is_empty(key, inverted_list_context)) {
                 return;
             }
 
@@ -813,7 +824,7 @@ void IndexIVF::range_search_preassigned(
                 scanner->set_list(key, coarse_dis[i * nprobe + ik]);
                 if (invlists->use_iterator) {
                     std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key));
+                            invlists->get_iterator(key, inverted_list_context));
 
                     scanner->iterate_codes_range(
                             it.get(), radius, qres, list_size);
