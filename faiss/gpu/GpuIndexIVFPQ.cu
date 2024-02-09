@@ -94,7 +94,9 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
     // instance
     this->is_trained = false;
 
-    FAISS_THROW_IF_NOT_MSG(!config.use_raft, "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
+    FAISS_THROW_IF_NOT_MSG(
+            !config.use_raft,
+            "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
 
     verifyPQSettings_();
 }
