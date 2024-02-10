@@ -73,7 +73,7 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
           ivfFlatConfig_(config),
           reserveMemoryVecs_(0) {
     FAISS_THROW_IF_NOT_MSG(
-            !config.use_raft,
+            !should_use_raft(config),
             "GpuIndexIVFFlat: RAFT does not support separate coarseQuantizer");
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
@@ -213,6 +213,13 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     if (this->is_trained) {
         FAISS_ASSERT(index_);
+        if (should_use_raft(config_)) {
+            // if RAFT is enabled, copy the IVF centroids to the RAFT index in
+            // case it has been reset. This is because reset clears the RAFT index
+            // and its centroids.
+            // TODO: change this once the coarse quantizer is separated from RAFT index
+            updateQuantizer();
+        };
         return;
     }
 
