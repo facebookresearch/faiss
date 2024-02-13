@@ -73,15 +73,10 @@ void GpuIndexIVF::init_() {
         cp.spherical = true;
     }
 
-    if (!should_use_raft(config_)) {
-        // here we set a low # iterations because this is typically used
-        // for large clusterings
-        // (copying IndexIVF.cpp's Level1Quantizer
-        cp.niter = 10;
-    } else {
-        // set the number of iterations to RAFT's default for IVF methods
-        cp.niter = 20;
-    }
+    // here we set a low # iterations because this is typically used
+    // for large clusterings (copying IndexIVF.cpp's Level1Quantizer
+    cp.niter = 10;
+
     cp.verbose = verbose;
 
     if (quantizer) {
