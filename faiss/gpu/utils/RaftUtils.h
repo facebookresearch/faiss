@@ -57,7 +57,7 @@ inline raft::distance::DistanceType metricFaissToRaft(
     }
 }
 
-/// Identify matrix rows containing non NaN values. validRows[i] is false is row
+/// Identify matrix rows containing non NaN values. validRows[i] is false if row
 /// i contains a NaN value and true otherwise.
 void validRowIndices(
         GpuResources* res,
