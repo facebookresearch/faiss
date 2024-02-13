@@ -32,6 +32,7 @@ set(FAISS_TEST_SRC
   test_hnsw.cpp
   test_partitioning.cpp
   test_fastscan_perf.cpp
+  test_io.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
