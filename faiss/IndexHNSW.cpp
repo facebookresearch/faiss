@@ -192,7 +192,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= !index_hnsw.init_level0; pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= !index_hnsw.init_level0;
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -228,7 +230,13 @@ void hnsw_add_vertices(
                         continue;
                     }
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt, index_hnsw.keep_max_size_level0);
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0);
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
@@ -250,8 +258,7 @@ void hnsw_add_vertices(
         }
         if (index_hnsw.init_level0) {
             FAISS_ASSERT(i1 == 0);
-        }
-        else {
+        } else {
             FAISS_ASSERT((i1 - hist[0]) == 0);
         }
     }
