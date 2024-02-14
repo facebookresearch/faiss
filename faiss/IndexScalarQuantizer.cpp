@@ -207,7 +207,8 @@ void IndexIVFScalarQuantizer::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* coarse_idx) {
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
     FAISS_THROW_IF_NOT(is_trained);
 
     std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
@@ -236,7 +237,8 @@ void IndexIVFScalarQuantizer::add_core(
                 memset(one_code.data(), 0, code_size);
                 squant->encode_vector(xi, one_code.data());
 
-                size_t ofs = invlists->add_entry(list_no, id, one_code.data());
+                size_t ofs = invlists->add_entry(
+                        list_no, id, one_code.data(), inverted_list_context);
 
                 dm_add.add(i, list_no, ofs);
 
