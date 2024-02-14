@@ -88,9 +88,18 @@ size_t RaftIVFPQ::reclaimMemory() {
 
 void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {}
 
-idx_t RaftIVFPQ::getListLength(idx_t listId) const {
+idx_t RaftIVFFlat::getListLength(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
-    uint32_t size = raft_knn_idex->lists()[label].size.load();
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+
+    uint32_t size;
+    raft::update_host(
+            &size,
+            raft_knn_index.value().list_sizes().data_handle() + listId,
+            1,
+            raft_handle.get_stream());
+    raft_handle.sync_stream();
 
     return static_cast<int>(size);
 }
