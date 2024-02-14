@@ -25,6 +25,10 @@
 #include <faiss/gpu/GpuIndex.h>
 
 namespace faiss {
+struct IndexHNSWCagra;
+}
+
+namespace faiss {
 namespace gpu {
 
 class RaftCagra;
@@ -118,7 +122,17 @@ struct GpuIndexCagra : public GpuIndex {
     /// Trains CAGRA based on the given vector data
     void train(idx_t n, const float* x) override;
 
+    /// Initialize ourselves from the given CPU index; will overwrite
+    /// all data in ourselves
+    void copyFrom(const faiss::IndexHNSWCagra* index);
+
+    /// Copy ourselves to the given CPU index; will overwrite all data
+    /// in the index instance
+    void copyTo(faiss::IndexHNSWCagra* index) const;
+
     void reset() override;
+
+    std::vector<idx_t> get_knngraph() const;
 
    protected:
     bool addImplRequiresIDs_() const override;

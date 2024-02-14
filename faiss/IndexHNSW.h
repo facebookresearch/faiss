@@ -34,6 +34,9 @@ struct IndexHNSW : Index {
     bool own_fields = false;
     Index* storage = nullptr;
 
+    bool init_level0 = true;
+    bool keep_max_size_level0 = false;
+
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
 
@@ -146,6 +149,11 @@ struct IndexHNSW2Level : IndexHNSW {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+};
+
+struct IndexHNSWCagra : IndexHNSW {
+    IndexHNSWCagra();
+    IndexHNSWCagra(int d, int M);
 };
 
 } // namespace faiss

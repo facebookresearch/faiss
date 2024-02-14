@@ -54,6 +54,17 @@ class RaftCagra {
             float metricArg,
             IndicesOptions indicesOptions);
 
+    RaftCagra(
+            GpuResources* resources,
+            int dim,
+            idx_t n,
+            int graph_degree,
+            const float* distances,
+            const idx_t* knn_graph,
+            faiss::MetricType metric,
+            float metricArg,
+            IndicesOptions indicesOptions);
+
     ~RaftCagra() = default;
 
     void train(idx_t n, const float* x);
@@ -78,6 +89,12 @@ class RaftCagra {
             idx_t rand_xor_mask);
 
     void reset();
+
+    idx_t get_knngraph_degree() const;
+
+    std::vector<idx_t> get_knngraph() const;
+
+    std::vector<float> get_training_dataset() const;
 
    private:
     /// Collection of GPU resources that we use

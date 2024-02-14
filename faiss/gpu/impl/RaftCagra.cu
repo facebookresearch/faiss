@@ -63,6 +63,61 @@ RaftCagra::RaftCagra(
     reset();
 }
 
+RaftCagra::RaftCagra(
+        GpuResources* resources,
+        int dim,
+        idx_t n,
+        int graph_degree,
+        const float* distances,
+        const idx_t* knn_graph,
+        faiss::MetricType metric,
+        float metricArg,
+        IndicesOptions indicesOptions)
+        : resources_(resources),
+          dim_(dim),
+          metric_(metric),
+          metricArg_(metricArg) {
+    FAISS_THROW_IF_NOT_MSG(
+            metric == faiss::METRIC_L2,
+            "CAGRA currently only supports L2 metric.");
+    FAISS_THROW_IF_NOT_MSG(
+            indicesOptions == faiss::gpu::INDICES_64_BIT,
+            "only INDICES_64_BIT is supported for RAFT CAGRA index");
+
+    auto distances_on_gpu = getDeviceForAddress(distances) >= 0;
+    auto knn_graph_on_gpu = getDeviceForAddress(knn_graph) >= 0;
+
+    FAISS_ASSERT(distances_on_gpu == knn_graph_on_gpu);
+
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    if (distances_on_gpu && knn_graph_on_gpu) {
+        auto distances_mds =
+                raft::make_device_matrix_view<const float, int64_t>(
+                        distances, n, dim);
+        auto knn_graph_mds =
+                raft::make_device_matrix_view<const idx_t, int64_t>(
+                        knn_graph, n, graph_degree);
+
+        raft_knn_index = raft::neighbors::cagra::index<float, idx_t>(
+                raft_handle,
+                raft::distance::DistanceType::L2Expanded,
+                distances_mds,
+                knn_graph_mds);
+    } else {
+        auto distances_mds = raft::make_host_matrix_view<const float, int64_t>(
+                distances, n, dim);
+        auto knn_graph_mds = raft::make_host_matrix_view<const idx_t, int64_t>(
+                knn_graph, n, graph_degree);
+
+        raft_knn_index = raft::neighbors::cagra::index<float, idx_t>(
+                raft_handle,
+                raft::distance::DistanceType::L2Expanded,
+                distances_mds,
+                knn_graph_mds);
+    }
+}
+
 void RaftCagra::train(idx_t n, const float* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -142,6 +197,57 @@ void RaftCagra::search(
 
 void RaftCagra::reset() {
     raft_knn_index.reset();
+}
+
+idx_t RaftCagra::get_knngraph_degree() const {
+    FAISS_ASSERT(raft_knn_index.has_value());
+    return static_cast<idx_t>(raft_knn_index.value().graph_degree());
+}
+
+std::vector<idx_t> RaftCagra::get_knngraph() const {
+    FAISS_ASSERT(raft_knn_index.has_value());
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
+
+    auto device_graph = raft_knn_index.value().graph();
+
+    std::vector<idx_t> host_graph(
+            device_graph.extent(0) * device_graph.extent(1));
+
+    raft::update_host(
+            host_graph.data(),
+            device_graph.data_handle(),
+            host_graph.size(),
+            stream);
+    raft_handle.sync_stream();
+
+    return host_graph;
+}
+
+std::vector<float> RaftCagra::get_training_dataset() const {
+    FAISS_ASSERT(raft_knn_index.has_value());
+    const raft::device_resources& raft_handle =
+            resources_->getRaftHandleCurrentDevice();
+    auto stream = raft_handle.get_stream();
+
+    auto device_dataset = raft_knn_index.value().dataset();
+
+    std::vector<float> host_dataset(
+            device_dataset.extent(0) * device_dataset.extent(1));
+
+    RAFT_CUDA_TRY(cudaMemcpy2DAsync(
+            host_dataset.data(),
+            sizeof(float) * dim_,
+            device_dataset.data_handle(),
+            sizeof(float) * device_dataset.stride(0),
+            sizeof(float) * dim_,
+            device_dataset.extent(0),
+            cudaMemcpyDefault,
+            raft_handle.get_stream()));
+    raft_handle.sync_stream();
+
+    return host_dataset;
 }
 
 } // namespace gpu

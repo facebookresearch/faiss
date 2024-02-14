@@ -39,6 +39,7 @@ struct Options {
     Options() {
         numTrain = 2 * faiss::gpu::randVal(2000, 5000);
         dim = faiss::gpu::randVal(4, 10);
+        numAdd = faiss::gpu::randVal(1000, 3000);
 
         graphDegree = faiss::gpu::randSelect({32, 64});
         intermediateGraphDegree = faiss::gpu::randSelect({64, 98});
@@ -64,6 +65,7 @@ struct Options {
     }
 
     int numTrain;
+    int numAdd;
     int dim;
     size_t graphDegree;
     size_t intermediateGraphDegree;
@@ -74,18 +76,18 @@ struct Options {
 };
 
 void queryTest() {
-    for (int tries = 0; tries < 2; ++tries) {
+    for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
 
+        // train cpu index
         faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
-        // Training IndexHNSW is a no-op
-        cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
+        // train gpu index
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
@@ -99,6 +101,7 @@ void queryTest() {
                 &res, cpuIndex.d, faiss::METRIC_L2, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
+        // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
 
         std::vector<float> refDistance(opt.numQuery * opt.k, 0);
@@ -113,6 +116,7 @@ void queryTest() {
                 refIndices.data(),
                 &cpuSearchParams);
 
+        // test quality of searches
         auto gpuRes = res.getResources();
         auto devAlloc = faiss::gpu::makeDevAlloc(
                 faiss::gpu::AllocType::FlatData,
@@ -174,6 +178,231 @@ void queryTest() {
 
 TEST(TestGpuIndexCagra, Float32_Query_L2) {
     queryTest();
+}
+
+void copyToTest() {
+    for (int tries = 0; tries < 5; ++tries) {
+        Options opt;
+
+        std::vector<float> trainVecs =
+                faiss::gpu::randVecs(opt.numTrain, opt.dim);
+        std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+        faiss::gpu::StandardGpuResources res;
+        res.noTempMemory();
+
+        // train gpu index and copy to cpu index
+        faiss::gpu::GpuIndexCagraConfig config;
+        config.device = opt.device;
+        config.graph_degree = opt.graphDegree;
+        config.intermediate_graph_degree = opt.intermediateGraphDegree;
+        config.build_algo = opt.buildAlgo;
+
+        faiss::gpu::GpuIndexCagra gpuIndex(
+                &res, opt.dim, faiss::METRIC_L2, config);
+        gpuIndex.train(opt.numTrain, trainVecs.data());
+
+        faiss::IndexHNSWCagra copiedCpuIndex(opt.dim, opt.graphDegree / 2);
+        copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
+        gpuIndex.copyTo(&copiedCpuIndex);
+
+        // add more vecs to copied cpu index
+        copiedCpuIndex.add(opt.numAdd, addVecs.data());
+
+        // train cpu index
+        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
+        cpuIndex.hnsw.efConstruction = opt.k * 2;
+        cpuIndex.add(opt.numTrain, trainVecs.data());
+
+        // add more vecs to cpu index
+        cpuIndex.add(opt.numAdd, addVecs.data());
+
+        // query indexes
+        auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+
+        std::vector<float> refDistance(opt.numQuery * opt.k, 0);
+        std::vector<faiss::idx_t> refIndices(opt.numQuery * opt.k, -1);
+        faiss::SearchParametersHNSW cpuSearchParams;
+        cpuSearchParams.efSearch = opt.k * 2;
+        cpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                refDistance.data(),
+                refIndices.data(),
+                &cpuSearchParams);
+
+        std::vector<float> copyRefDistance(opt.numQuery * opt.k, 0);
+        std::vector<faiss::idx_t> copyRefIndices(opt.numQuery * opt.k, -1);
+        faiss::SearchParametersHNSW cpuSearchParamstwo;
+        cpuSearchParamstwo.efSearch = opt.k * 2;
+        copiedCpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                copyRefDistance.data(),
+                copyRefIndices.data(),
+                &cpuSearchParamstwo);
+
+        // test quality of search
+        auto gpuRes = res.getResources();
+
+        auto refDistanceDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                refDistance,
+                gpuRes->getDefaultStreamCurrentDevice());
+        auto refIndicesDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                refIndices,
+                gpuRes->getDefaultStreamCurrentDevice());
+
+        auto copyRefDistanceDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                copyRefDistance,
+                gpuRes->getDefaultStreamCurrentDevice());
+        auto copyRefIndicesDev = faiss::gpu::toDeviceTemporary(
+                gpuRes.get(),
+                copyRefIndices,
+                gpuRes->getDefaultStreamCurrentDevice());
+
+        auto raft_handle = gpuRes->getRaftHandleCurrentDevice();
+
+        auto ref_dis_mds = raft::make_device_matrix_view<const float, int>(
+                refDistanceDev.data(), opt.numQuery, opt.k);
+        auto ref_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        ref_dis_mds);
+        auto ref_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        refIndicesDev.data(), opt.numQuery, opt.k);
+
+        auto copy_ref_dis_mds = raft::make_device_matrix_view<const float, int>(
+                copyRefDistanceDev.data(), opt.numQuery, opt.k);
+        auto copy_ref_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        copy_ref_dis_mds);
+        auto copy_ref_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        copyRefIndicesDev.data(), opt.numQuery, opt.k);
+
+        double scalar_init = 0;
+        auto recall_score = raft::make_host_scalar(scalar_init);
+
+        raft::stats::neighborhood_recall(
+                raft_handle,
+                copy_ref_ind_mds,
+                ref_ind_mds,
+                recall_score.view(),
+                copy_ref_dis_mds_opt,
+                ref_dis_mds_opt);
+        ASSERT_TRUE(*recall_score.data_handle() > 0.99);
+    }
+}
+
+TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
+    copyToTest();
+}
+
+void copyFromTest() {
+    for (int tries = 0; tries < 5; ++tries) {
+        Options opt;
+
+        std::vector<float> trainVecs =
+                faiss::gpu::randVecs(opt.numTrain, opt.dim);
+
+        // train cpu index
+        faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2);
+        cpuIndex.hnsw.efConstruction = opt.k * 2;
+        cpuIndex.add(opt.numTrain, trainVecs.data());
+
+        faiss::gpu::StandardGpuResources res;
+        res.noTempMemory();
+
+        // convert to gpu index
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(
+                &res, cpuIndex.d, faiss::METRIC_L2);
+        copiedGpuIndex.copyFrom(&cpuIndex);
+
+        // train gpu index
+        faiss::gpu::GpuIndexCagraConfig config;
+        config.device = opt.device;
+        config.graph_degree = opt.graphDegree;
+        config.intermediate_graph_degree = opt.intermediateGraphDegree;
+        config.build_algo = opt.buildAlgo;
+
+        faiss::gpu::GpuIndexCagra gpuIndex(
+                &res, opt.dim, faiss::METRIC_L2, config);
+        gpuIndex.train(opt.numTrain, trainVecs.data());
+
+        // query
+        auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+
+        auto gpuRes = res.getResources();
+        auto devAlloc = faiss::gpu::makeDevAlloc(
+                faiss::gpu::AllocType::FlatData,
+                gpuRes->getDefaultStreamCurrentDevice());
+        faiss::gpu::DeviceTensor<float, 2, true> copyTestDistance(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> copyTestIndices(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        copiedGpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                copyTestDistance.data(),
+                copyTestIndices.data());
+
+        faiss::gpu::DeviceTensor<float, 2, true> testDistance(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> testIndices(
+                gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
+        gpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                testDistance.data(),
+                testIndices.data());
+
+        // test quality of searches
+        auto raft_handle = gpuRes->getRaftHandleCurrentDevice();
+
+        auto test_dis_mds = raft::make_device_matrix_view<const float, int>(
+                testDistance.data(), opt.numQuery, opt.k);
+        auto test_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        test_dis_mds);
+
+        auto test_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        testIndices.data(), opt.numQuery, opt.k);
+
+        auto copy_test_dis_mds =
+                raft::make_device_matrix_view<const float, int>(
+                        copyTestDistance.data(), opt.numQuery, opt.k);
+        auto copy_test_dis_mds_opt =
+                std::optional<raft::device_matrix_view<const float, int>>(
+                        copy_test_dis_mds);
+
+        auto copy_test_ind_mds =
+                raft::make_device_matrix_view<const faiss::idx_t, int>(
+                        copyTestIndices.data(), opt.numQuery, opt.k);
+
+        double scalar_init = 0;
+        auto recall_score = raft::make_host_scalar(scalar_init);
+
+        raft::stats::neighborhood_recall(
+                raft_handle,
+                copy_test_ind_mds,
+                test_ind_mds,
+                recall_score.view(),
+                copy_test_dis_mds_opt,
+                test_dis_mds_opt);
+        ASSERT_TRUE(*recall_score.data_handle() > 0.99);
+    }
+}
+
+TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
+    copyFromTest();
 }
 
 int main(int argc, char** argv) {

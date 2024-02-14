@@ -20,9 +20,10 @@
  * limitations under the License.
  */
 
+#include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
+#include <cstddef>
 #include <faiss/gpu/impl/RaftCagra.cuh>
-#include "GpuIndexCagra.h"
 
 namespace faiss {
 namespace gpu {
@@ -54,7 +55,7 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             cagraConfig_.nn_descent_niter,
             this->metric_type,
             this->metric_arg,
-            faiss::gpu::INDICES_64_BIT);
+            INDICES_64_BIT);
 
     index_->train(n, x);
 
@@ -116,15 +117,90 @@ void GpuIndexCagra::searchImpl_(
     }
 }
 
+void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
+    FAISS_ASSERT(index);
+
+    auto base_index = index->storage;
+    auto l2_index = dynamic_cast<IndexFlatL2*>(base_index);
+    FAISS_ASSERT(l2_index);
+    auto distances = l2_index->get_xb();
+
+    auto hnsw = index->hnsw;
+    // copy level 0 to a dense knn graph matrix
+    std::vector<idx_t> knn_graph;
+    knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
+
+#pragma omp parallel for
+    for (size_t i = 0; i < index->ntotal; ++i) {
+        size_t begin, end;
+        hnsw.neighbor_range(i, 0, &begin, &end);
+        for (size_t j = begin; j < end; j++) {
+            // knn_graph.push_back(hnsw.neighbors[j]);
+            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
+                    hnsw.neighbors[j];
+        }
+    }
+
+    index_ = std::make_shared<RaftCagra>(
+            this->resources_.get(),
+            this->d,
+            index->ntotal,
+            hnsw.nb_neighbors(0),
+            distances,
+            knn_graph.data(),
+            this->metric_type,
+            this->metric_arg,
+            INDICES_64_BIT);
+
+    this->is_trained = true;
+}
+
+void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
+    FAISS_ASSERT(index_ && this->is_trained && index);
+
+    auto graph_degree = index_->get_knngraph_degree();
+    FAISS_THROW_IF_NOT_MSG(
+            (index->hnsw.nb_neighbors(0)) == graph_degree,
+            "IndexHNSWCagra.hnsw.nb_neighbors(0) should be equal to GpuIndexCagraConfig.graph_degree");
+
+    auto n_train = this->ntotal;
+    auto train_dataset = index_->get_training_dataset();
+
+    // turn off as level 0 is copied from CAGRA graph
+    index->init_level0 = false;
+    index->add(n_train, train_dataset.data());
+
+    auto graph = get_knngraph();
+
+#pragma omp parallel for
+    for (idx_t i = 0; i < n_train; i++) {
+        size_t begin, end;
+        index->hnsw.neighbor_range(i, 0, &begin, &end);
+        for (size_t j = begin; j < end; j++) {
+            index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
+        }
+    }
+
+    // turn back on to allow new vectors to be added to level 0
+    index->init_level0 = true;
+}
+
 void GpuIndexCagra::reset() {
     DeviceScope scope(config_.device);
 
     if (index_) {
         index_->reset();
         this->ntotal = 0;
+        this->is_trained = false;
     } else {
         FAISS_ASSERT(this->ntotal == 0);
     }
+}
+
+std::vector<idx_t> GpuIndexCagra::get_knngraph() const {
+    FAISS_ASSERT(index_ && this->is_trained);
+
+    return index_->get_knngraph();
 }
 
 } // namespace gpu
