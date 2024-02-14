@@ -43,13 +43,12 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
 bool should_use_raft(GpuIndexConfig config_) {
-#ifdef __CUDA_ARCH__
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, config_.device);
 
-/// Disable RAFT below Volta
-#if (__CUDA_ARCH__) < 700
-    return false;
-#endif
-#endif
+    if (prop.major < 7)
+        return false;
+
     return config_.use_raft;
 }
 

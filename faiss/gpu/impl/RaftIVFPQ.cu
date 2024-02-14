@@ -88,7 +88,7 @@ size_t RaftIVFPQ::reclaimMemory() {
 
 void RaftIVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {}
 
-idx_t RaftIVFFlat::getListLength(idx_t listId) const {
+idx_t RaftIVFPQ::getListLength(idx_t listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
