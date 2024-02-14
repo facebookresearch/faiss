@@ -10,6 +10,7 @@ set(FAISS_TEST_SRC
   test_ivfpq_codec.cpp
   test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
+  test_ivf_index.cpp
   test_merge.cpp
   test_omp_threads.cpp
   test_ondisk_ivf.cpp
@@ -30,6 +31,7 @@ set(FAISS_TEST_SRC
   test_code_distance.cpp
   test_hnsw.cpp
   test_partitioning.cpp
+  test_fastscan_perf.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

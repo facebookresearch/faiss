@@ -51,13 +51,15 @@ struct InvertedLists {
      *  Read only functions */
 
     // check if the list is empty
-    bool is_empty(size_t list_no) const;
+    bool is_empty(size_t list_no, void* inverted_list_context) const;
 
     /// get the size of a list
     virtual size_t list_size(size_t list_no) const = 0;
 
     /// get iterable for lists that use_iterator
-    virtual InvertedListsIterator* get_iterator(size_t list_no) const;
+    virtual InvertedListsIterator* get_iterator(
+            size_t list_no,
+            void* inverted_list_context) const;
 
     /** get the codes for an inverted list
      * must be released by release_codes
@@ -94,7 +96,11 @@ struct InvertedLists {
      * writing functions     */
 
     /// add one entry to an inverted list
-    virtual size_t add_entry(size_t list_no, idx_t theid, const uint8_t* code);
+    virtual size_t add_entry(
+            size_t list_no,
+            idx_t theid,
+            const uint8_t* code,
+            void* inverted_list_context = nullptr);
 
     virtual size_t add_entries(
             size_t list_no,
