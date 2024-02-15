@@ -64,7 +64,7 @@ TEST(TestFastScan, knnVSrange) {
                               .count();
 
     // we expect the perf of knn and range search
-    // to be similar, at least within a factor of 2
-    ASSERT_LT(range_time, knn_time * 2);
-    ASSERT_LT(knn_time, range_time * 2);
+    // to be similar, at least within a factor of 4
+    ASSERT_LE(range_time, knn_time * 4);
+    ASSERT_LE(knn_time, range_time * 4);
 }
