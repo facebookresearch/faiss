@@ -357,7 +357,6 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             const idx_t* __restrict ids,
             int radius,
             RangeQueryResult& result) const override {
-        size_t nup = 0;
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming(codes);
             if (dis < radius) {
@@ -651,7 +650,6 @@ void search_knn_hamming_per_invlist(
     idx_t max_codes = params ? params->max_codes : ivf->max_codes;
     FAISS_THROW_IF_NOT(max_codes == 0);
     FAISS_THROW_IF_NOT(!store_pairs);
-    MetricType metric_type = ivf->metric_type;
 
     // reorder buckets
     std::vector<int64_t> lims(n + 1);
