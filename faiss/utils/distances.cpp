@@ -417,8 +417,8 @@ void exhaustive_L2sqr_blas_cmax_avx2(
             for (int64_t i = i0; i < i1; i++) {
                 float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
 
-                _mm_prefetch(ip_line, _MM_HINT_NTA);
-                _mm_prefetch(ip_line + 16, _MM_HINT_NTA);
+                _mm_prefetch((const char*)ip_line, _MM_HINT_NTA);
+                _mm_prefetch((const char*)(ip_line + 16), _MM_HINT_NTA);
 
                 // constant
                 const __m256 mul_minus2 = _mm256_set1_ps(-2);
@@ -445,8 +445,8 @@ void exhaustive_L2sqr_blas_cmax_avx2(
 
                 // process 16 elements per loop
                 for (; idx_j < (count / 16) * 16; idx_j += 16, ip_line += 16) {
-                    _mm_prefetch(ip_line + 32, _MM_HINT_NTA);
-                    _mm_prefetch(ip_line + 48, _MM_HINT_NTA);
+                    _mm_prefetch((const char*)(ip_line + 32), _MM_HINT_NTA);
+                    _mm_prefetch((const char*)(ip_line + 48), _MM_HINT_NTA);
 
                     // load values for norms
                     const __m256 y_norm_0 =
