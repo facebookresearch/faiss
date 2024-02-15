@@ -92,7 +92,7 @@ TEST(ONDISK, make_invlists) {
         }
     }
     EXPECT_EQ(ntot, nadd);
-};
+}
 
 TEST(ONDISK, test_add) {
     int d = 8;
@@ -155,7 +155,7 @@ TEST(ONDISK, test_add) {
 
         delete index3;
     }
-};
+}
 
 // WARN this thest will run multithreaded only in opt mode
 TEST(ONDISK, make_invlists_threaded) {
@@ -204,4 +204,4 @@ TEST(ONDISK, make_invlists_threaded) {
         }
     }
     EXPECT_EQ(ntot, nadd);
-};
+}
