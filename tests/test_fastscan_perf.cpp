@@ -22,7 +22,7 @@
 TEST(TestFastScan, knnVSrange) {
     // small vectors and database
     int d = 64;
-    size_t nb = 1000;
+    size_t nb = 4000;
 
     // ivf centroids
     size_t nlist = 4;
@@ -52,16 +52,12 @@ TEST(TestFastScan, knnVSrange) {
     std::vector<faiss::idx_t> labels(nb);
     auto t = std::chrono::high_resolution_clock::now();
     index.search(nb, database.data(), 1, distances.data(), labels.data());
-    auto knn_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            std::chrono::high_resolution_clock::now() - t)
-                            .count();
+    auto knn_time = std::chrono::high_resolution_clock::now() - t;
 
     faiss::RangeSearchResult rsr(nb);
     t = std::chrono::high_resolution_clock::now();
     index.range_search(nb, database.data(), 1.0, &rsr);
-    auto range_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-                              std::chrono::high_resolution_clock::now() - t)
-                              .count();
+    auto range_time = std::chrono::high_resolution_clock::now() - t;
 
     // we expect the perf of knn and range search
     // to be similar, at least within a factor of 4
