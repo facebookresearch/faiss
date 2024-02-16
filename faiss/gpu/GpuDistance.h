@@ -107,7 +107,11 @@ struct GpuDistanceParams {
     int device = -1;
 
     /// Should the index dispatch down to RAFT?
+#if defined USE_NVIDIA_RAFT
+    bool use_raft = true;
+#else
     bool use_raft = false;
+#endif
 };
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest
