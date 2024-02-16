@@ -1046,7 +1046,7 @@ struct IVFPQScannerT : QueryTables {
             const uint8_t* codes,
             SearchResultType& res) const {
         int ht = ivfpq.polysemous_ht;
-        size_t n_hamming_pass = 0, nup = 0;
+        size_t n_hamming_pass = 0;
 
         int code_size = pq.code_size;
 
