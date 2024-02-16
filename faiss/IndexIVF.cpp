@@ -668,7 +668,6 @@ void IndexIVF::search_preassigned(
 #pragma omp for schedule(dynamic)
             for (int64_t ij = 0; ij < n * nprobe; ij++) {
                 size_t i = ij / nprobe;
-                size_t j = ij % nprobe;
 
                 scanner->set_query(x + i * d);
                 init_result(local_dis.data(), local_idx.data());
