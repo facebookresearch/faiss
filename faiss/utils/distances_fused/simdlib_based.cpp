@@ -73,7 +73,7 @@ void kernel(
 
     // prefetch the next point
 #if defined(__AVX2__)
-    _mm_prefetch(xd_0 + DIM * sizeof(float), _MM_HINT_NTA);
+    _mm_prefetch((const char*)(xd_0 + DIM * sizeof(float)), _MM_HINT_NTA);
 #endif
 
     // load a single point from x
