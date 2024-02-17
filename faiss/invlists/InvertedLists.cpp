@@ -28,11 +28,12 @@ InvertedLists::InvertedLists(size_t nlist, size_t code_size)
 
 InvertedLists::~InvertedLists() {}
 
-bool InvertedLists::is_empty(size_t list_no) const {
-    return use_iterator
-            ? !std::unique_ptr<InvertedListsIterator>(get_iterator(list_no))
-                       ->is_available()
-            : list_size(list_no) == 0;
+bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
+        const {
+    return use_iterator ? !std::unique_ptr<InvertedListsIterator>(
+                                   get_iterator(list_no, inverted_list_context))
+                                   ->is_available()
+                        : list_size(list_no) == 0;
 }
 
 idx_t InvertedLists::get_single_id(size_t list_no, size_t offset) const {
@@ -58,7 +59,8 @@ const uint8_t* InvertedLists::get_single_code(size_t list_no, size_t offset)
 size_t InvertedLists::add_entry(
         size_t list_no,
         idx_t theid,
-        const uint8_t* code) {
+        const uint8_t* code,
+        void* /*inverted_list_context*/) {
     return add_entries(list_no, 1, &theid, code);
 }
 
@@ -76,7 +78,9 @@ void InvertedLists::reset() {
     }
 }
 
-InvertedListsIterator* InvertedLists::get_iterator(size_t /*list_no*/) const {
+InvertedListsIterator* InvertedLists::get_iterator(
+        size_t /*list_no*/,
+        void* /*inverted_list_context*/) const {
     FAISS_THROW_MSG("get_iterator is not supported");
 }
 

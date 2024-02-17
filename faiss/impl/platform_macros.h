@@ -40,11 +40,13 @@
 
 #include <intrin.h>
 
+#ifndef __clang__
 inline int __builtin_ctzll(uint64_t x) {
     unsigned long ret;
     _BitScanForward64(&ret, x);
     return (int)ret;
 }
+#endif
 
 // cudatoolkit provides __builtin_ctz for NVCC >= 11.0
 #if !defined(__CUDACC__) || __CUDACC_VER_MAJOR__ < 11
@@ -55,12 +57,19 @@ inline int __builtin_ctz(unsigned long x) {
 }
 #endif
 
+#ifndef __clang__
 inline int __builtin_clzll(uint64_t x) {
     return (int)__lzcnt64(x);
 }
+#endif
 
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
+
+#ifndef __clang__
+#define __m128i_u __m128i
+#define __m256i_u __m256i
+#endif
 
 // MSVC does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit
 // processors cf.

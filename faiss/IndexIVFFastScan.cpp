@@ -643,7 +643,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
         {
             RangeSearchPartialResult pres(&rres);
 
-#pragma omp parallel for reduction(+ : ndis, nlist_visited)
+#pragma omp for reduction(+ : ndis, nlist_visited)
             for (int slice = 0; slice < nslice; slice++) {
                 idx_t i0 = n * slice / nslice;
                 idx_t i1 = n * (slice + 1) / nslice;

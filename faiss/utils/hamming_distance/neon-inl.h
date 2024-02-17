@@ -260,7 +260,6 @@ struct HammingComputer32 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
         uint8x16_t b0 = vld1q_u8(b8);
         uint8x16_t b1 = vld1q_u8(b8 + 16);
 
