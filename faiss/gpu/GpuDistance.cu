@@ -51,6 +51,17 @@ using namespace raft::distance;
 using namespace raft::neighbors;
 #endif
 
+bool should_use_raft(GpuDistanceParams args) {
+    cudaDeviceProp prop;
+    int dev = args.device >= 0 ? args.device : getCurrentDevice();
+    cudaGetDeviceProperties(&prop, dev);
+
+    if (prop.major < 7)
+        return false;
+
+    return args.use_raft;
+}
+
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     // Validate the input data
@@ -228,7 +239,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
 #if defined USE_NVIDIA_RAFT
     // Note: For now, RAFT bfknn requires queries and vectors to be same layout
-    if (args.use_raft && args.queriesRowMajor == args.vectorsRowMajor) {
+    if (should_use_raft(args) && args.queriesRowMajor == args.vectorsRowMajor) {
         DistanceType distance = metricFaissToRaft(args.metric, false);
 
         auto resImpl = prov->getResources();
@@ -349,9 +360,9 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         RAFT_LOG_INFO("All synced.");
     } else
 #else
-    if (args.use_raft) {
+    if (should_use_raft(args)) {
         FAISS_THROW_IF_NOT_MSG(
-                !args.use_raft,
+                !should_use_raft(args),
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif
