@@ -500,7 +500,9 @@ class TestSQ_to_gpu(unittest.TestCase):
         res = faiss.StandardGpuResources()
         index = faiss.index_factory(32, "SQfp16")
         index.add(np.random.rand(1000, 32).astype(np.float32))
-        gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
+        config = faiss.GpuClonerOptions()
+        config.use_raft = False
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, index, config)
         self.assertIsInstance(gpu_index, faiss.GpuIndexFlat)
 
 
