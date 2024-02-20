@@ -628,7 +628,9 @@ void LocalSearchQuantizer::icm_encode_step(
                         {
                             size_t binary_idx = (other_m + 1) * M * K * K +
                                     m * K * K + code2 * K + code;
-                            _mm_prefetch(binaries + binary_idx, _MM_HINT_T0);
+                            _mm_prefetch(
+                                    (const char*)(binaries + binary_idx),
+                                    _MM_HINT_T0);
                         }
                     }
 #endif

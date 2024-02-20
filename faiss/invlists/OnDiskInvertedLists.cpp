@@ -407,7 +407,7 @@ void OnDiskInvertedLists::update_entries(
     FAISS_THROW_IF_NOT(!read_only);
     if (n_entry == 0)
         return;
-    const List& l = lists[list_no];
+    [[maybe_unused]] const List& l = lists[list_no];
     assert(n_entry + offset <= l.size);
     idx_t* ids = const_cast<idx_t*>(get_ids(list_no));
     memcpy(ids + offset, ids_in, sizeof(ids_in[0]) * n_entry);

@@ -206,7 +206,8 @@ typename C::T partition_fuzzy_median3(
         assert(n_eq_1 <= n_eq);
     }
 
-    int wp = compress_array<C>(vals, ids, n, thresh, n_eq_1);
+    [[maybe_unused]] const int wp =
+            compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
     assert(wp == q);
     if (q_out) {
