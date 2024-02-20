@@ -21,6 +21,7 @@
  */
 
 #pragma once
+#ifdef USE_NVIDIA_RAFT
 
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuResources.h>
@@ -67,3 +68,5 @@ class RaftFlatIndex : public FlatIndex {
 
 } // namespace gpu
 } // namespace faiss
+
+#endif // USE_NVIDIA_RAFT

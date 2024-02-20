@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+#ifdef USE_NVIDIA_RAFT
+
 #include <faiss/gpu/impl/RaftUtils.h>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
@@ -143,3 +145,5 @@ void RaftFlatIndex::query(
 
 } // namespace gpu
 } // namespace faiss
+
+#endif // USE_NVIDIA_RAFT

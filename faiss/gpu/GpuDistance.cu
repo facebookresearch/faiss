@@ -30,7 +30,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
-#if defined USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAFT
 #include <faiss/gpu/impl/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
@@ -46,7 +46,7 @@
 namespace faiss {
 namespace gpu {
 
-#if defined USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAFT
 using namespace raft::distance;
 using namespace raft::neighbors;
 #endif
@@ -226,7 +226,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 or F16");
 
-#if defined USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAFT
     // Note: For now, RAFT bfknn requires queries and vectors to be same layout
     if (args.use_raft && args.queriesRowMajor == args.vectorsRowMajor) {
         DistanceType distance = faiss_to_raft(args.metric, false);
