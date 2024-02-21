@@ -99,6 +99,8 @@ void HNSW::clear_neighbor_tables(int level) {
 void HNSW::reset() {
     max_level = -1;
     entry_point = -1;
+    assign_probas.clear();
+    cum_nneighbor_per_level.clear();
     offsets.clear();
     offsets.push_back(0);
     levels.clear();

@@ -121,6 +121,10 @@ void GpuIndexCagra::searchImpl_(
 void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
     FAISS_ASSERT(index);
 
+    DeviceScope scope(config_.device);
+
+    GpuIndex::copyFrom(index);
+
     auto base_index = index->storage;
     auto l2_index = dynamic_cast<IndexFlatL2*>(base_index);
     FAISS_ASSERT(l2_index);
@@ -159,12 +163,17 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
 
-    index->reset();
+    DeviceScope scope(config_.device);
+
+    //
+    // Index information
+    //
+    GpuIndex::copyTo(index);
 
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
+    index->reset();
     index->hnsw.set_default_probas(M, 1.0 / log(M));
-    index->hnsw.offsets.push_back(0);
 
     auto n_train = this->ntotal;
     auto train_dataset = index_->get_training_dataset();
