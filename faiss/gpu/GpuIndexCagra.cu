@@ -24,6 +24,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <cstddef>
 #include <faiss/gpu/impl/RaftCagra.cuh>
+#include "GpuIndexCagra.h"
 
 namespace faiss {
 namespace gpu {
@@ -37,6 +38,8 @@ GpuIndexCagra::GpuIndexCagra(
           cagraConfig_(config) {
     this->is_trained = false;
 }
+
+GpuIndexCagra::~GpuIndexCagra() {}
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
     if (this->is_trained) {
@@ -158,10 +161,10 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
 
+    index->reset();
+
     auto graph_degree = index_->get_knngraph_degree();
-    FAISS_THROW_IF_NOT_MSG(
-            (index->hnsw.nb_neighbors(0)) == graph_degree,
-            "IndexHNSWCagra.hnsw.nb_neighbors(0) should be equal to GpuIndexCagraConfig.graph_degree");
+    index->hnsw.M = graph_degree / 2;
 
     auto n_train = this->ntotal;
     auto train_dataset = index_->get_training_dataset();
