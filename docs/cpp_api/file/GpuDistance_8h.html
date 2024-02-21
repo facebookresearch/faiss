@@ -202,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
@@ -383,6 +384,12 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15should_use_raftE17GpuDistanceParams">
+<span id="_CPPv3N5faiss3gpu15should_use_raftE17GpuDistanceParams"></span><span id="_CPPv2N5faiss3gpu15should_use_raftE17GpuDistanceParams"></span><span id="faiss::gpu::should_use_raft__GpuDistanceParams"></span><span class="target" id="GpuDistance_8h_1a2cfc72202868622221a8b69ec9a788e4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">should_use_raft</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu17GpuDistanceParamsE" title="faiss::gpu::GpuDistanceParams"><span class="n"><span class="pre">GpuDistanceParams</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu15should_use_raftE17GpuDistanceParams" title="Permalink to this definition"></a><br /></dt>
+<dd><p>A function that determines whether RAFT should be used based on various conditions (such as unsupported architecture) </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu5bfKnnEP20GpuResourcesProviderRK17GpuDistanceParams">
 <span id="_CPPv3N5faiss3gpu5bfKnnEP20GpuResourcesProviderRK17GpuDistanceParams"></span><span id="_CPPv2N5faiss3gpu5bfKnnEP20GpuResourcesProviderRK17GpuDistanceParams"></span><span id="faiss::gpu::bfKnn__GpuResourcesProviderP.GpuDistanceParamsCR"></span><span class="target" id="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bfKnn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="n"><span class="pre">GpuResourcesProvider</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">resources</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu17GpuDistanceParamsE" title="faiss::gpu::GpuDistanceParams"><span class="n"><span class="pre">GpuDistanceParams</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu5bfKnnEP20GpuResourcesProviderRK17GpuDistanceParams" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest neighbor searches on an externally-provided region of memory (e.g., from a pytorch tensor). The data (vectors, queries, outDistances, outIndices) can be resident on the GPU or the CPU, but all calculations are performed on the GPU. If the result buffers are on the CPU, results will be copied back when done.</p>
@@ -514,7 +521,7 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="faiss::gpu::GpuDistanceParams::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Should the index dispatch down to RAFT? </p>
+<dd><p>Should the index dispatch down to RAFT? TODO: change default to true if RAFT is enabled </p>
 </dd></dl>
 
 </div>
