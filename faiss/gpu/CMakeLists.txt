@@ -29,7 +29,6 @@ set(FAISS_GPU_SRC
   GpuIndexIVFFlat.cu
   GpuIndexIVFPQ.cu
   GpuIndexIVFScalarQuantizer.cu
-  $<$<BOOL:${FAISS_ENABLE_RAFT}>:GpuIndexCagra.cu>
   GpuResources.cpp
   StandardGpuResources.cpp
   impl/BinaryDistance.cu
@@ -92,7 +91,6 @@ set(FAISS_GPU_HEADERS
   GpuFaissAssert.h
   GpuIndex.h
   GpuIndexBinaryFlat.h
-  $<$<BOOL:${FAISS_ENABLE_RAFT}>:GpuIndexCagra.h>
   GpuIndexFlat.h
   GpuIndexIVF.h
   GpuIndexIVFFlat.h
@@ -240,11 +238,13 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
+          GpuIndexCagra.h
           impl/RaftCagra.cuh
           impl/RaftUtils.h
           impl/RaftIVFFlat.cuh
           impl/RaftFlatIndex.cuh)
   list(APPEND FAISS_GPU_SRC
+          GpuIndexCagra.cu
           impl/RaftCagra.cu
           impl/RaftFlatIndex.cu
           impl/RaftIVFFlat.cu)
