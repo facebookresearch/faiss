@@ -22,37 +22,49 @@
 
 #pragma once
 
-#include <faiss/impl/CodePacker.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
-#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/impl/IVFPQ.cuh>
 
-#include <raft/neighbors/ivf_flat.cuh>
+#include <raft/neighbors/ivf_pq.cuh>
 
 #include <optional>
 
 #pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
-
-class RaftIVFFlat : public IVFFlat {
+/// Implementing class for IVFPQ on the GPU
+class RaftIVFPQ : public IVFPQ {
    public:
-    RaftIVFFlat(
+    RaftIVFPQ(
             GpuResources* resources,
             int dim,
-            int nlist,
+            idx_t nlist,
             faiss::MetricType metric,
             float metricArg,
-            bool useResidual,
-            /// Optional ScalarQuantizer
-            faiss::ScalarQuantizer* scalarQ,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool useFloat16LookupTables,
+            bool useMMCodeDistance,
             bool interleavedLayout,
+            float* pqCentroidData,
             IndicesOptions indicesOptions,
             MemorySpace space);
 
-    ~RaftIVFFlat() override;
+    ~RaftIVFPQ() override;
 
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
+
+    /// Clear out the RAFT index
+    void reset() override;
+
+    /// After adding vectors, one can call this to reclaim device memory
+    /// to exactly the amount needed. Returns space reclaimed in bytes
+    size_t reclaimMemory() override;
+
+    /// Enable or disable pre-computed codes. The quantizer is needed to gather
+    /// the IVF centroids for use
+    void setPrecomputedCodes(Index* coarseQuantizer, bool enable) override;
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
@@ -76,25 +88,6 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) override;
 
-    /// Classify and encode/add vectors to our IVF lists.
-    /// The input data must be on our current device.
-    /// Returns the number of vectors successfully added. Vectors may
-    /// not be able to be added because they contain NaNs.
-    idx_t addVectors(
-            Index* coarseQuantizer,
-            Tensor<float, 2, true>& vecs,
-            Tensor<idx_t, 1, true>& indices) override;
-
-    /// Clear out the Raft index
-    void reset() override;
-
-    /// For debugging purposes, return the list length of a particular
-    /// list
-    idx_t getListLength(idx_t listId) const override;
-
-    /// Return the list indices of a particular list back to the CPU
-    std::vector<idx_t> getListIndices(idx_t listId) const override;
-
     /// Return the encoded vectors of a particular list back to the CPU
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
@@ -107,7 +100,23 @@ class RaftIVFFlat : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the Raft index
-    void setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx);
+    void setRaftIndex(raft::neighbors::ivf_pq::index<idx_t>&& idx);
+
+    /// Classify and encode/add vectors to our IVF lists.
+    /// The input data must be on our current device.
+    /// Returns the number of vectors successfully added. Vectors may
+    /// not be able to be added because they contain NaNs.
+    idx_t addVectors(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& vecs,
+            Tensor<idx_t, 1, true>& indices) override;
+
+    /// For debugging purposes, return the list length of a particular
+    /// list
+    idx_t getListLength(idx_t listId) const override;
+
+    /// Return the list indices of a particular list back to the CPU
+    std::vector<idx_t> getListIndices(idx_t listId) const override;
 
    private:
     /// Adds a set of codes and indices to a list, with the representation
@@ -120,29 +129,20 @@ class RaftIVFFlat : public IVFFlat {
             const idx_t* indices,
             idx_t numVecs) override;
 
-    /// Returns the number of bytes in which an IVF list containing numVecs
-    /// vectors is encoded on the device. Note that due to padding this is not
-    /// the same as the encoding size for a subset of vectors in an IVF list;
-    /// this is the size for an entire IVF list
-    size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
+    /// Returns the encoding size for a PQ-encoded IVF list
+    size_t getGpuListEncodingSize_(idx_t listId);
 
-    std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>
-            raft_knn_index{std::nullopt};
-};
+    /// Copy the PQ centroids to the Raft index. The data is already in the
+    /// preferred format with the transpose performed by the IVFPQ class helper.
+    void setPQCentroids_();
 
-struct RaftIVFFlatCodePackerInterleaved : CodePacker {
-    RaftIVFFlatCodePackerInterleaved(
-            size_t list_size,
-            uint32_t dim,
-            uint32_t chuk_size);
-    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
-            const final;
-    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
-            const final;
+    /// Update the product quantizer centroids buffer held in the IVFPQ class.
+    /// Used when the RAFT index was updated externally.
+    void setBasePQCentroids_();
 
-   protected:
-    uint32_t chunk_size;
-    uint32_t dim;
+    /// optional around the Raft IVF-PQ index
+    std::optional<raft::neighbors::ivf_pq::index<idx_t>> raft_knn_index{
+            std::nullopt};
 };
 
 } // namespace gpu

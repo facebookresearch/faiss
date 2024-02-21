@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
@@ -91,7 +91,7 @@ void RaftFlatIndex::query(
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        DistanceType distance = faiss_to_raft(metric, exactDistance);
+        DistanceType distance = metricFaissToRaft(metric, exactDistance);
 
         std::optional<raft::device_vector_view<const float, int64_t>>
                 norms_view = raft::make_device_vector_view(

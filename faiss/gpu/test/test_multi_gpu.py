@@ -29,6 +29,7 @@ class TestShardedFlat(unittest.TestCase):
 
         co = faiss.GpuMultipleClonerOptions()
         co.shard = True
+        co.use_raft = False
         index = faiss.index_cpu_to_all_gpus(index_cpu, co, ngpu=2)
 
         index.add(xb)
@@ -71,6 +72,7 @@ class TestShardedFlat(unittest.TestCase):
         co = faiss.GpuMultipleClonerOptions()
         co.shard = True
         co.common_ivf_quantizer = True
+        co.use_raft = False
         index = faiss.index_cpu_to_all_gpus(index, co, ngpu=2)
 
         index.quantizer  # make sure there is indeed a quantizer
@@ -111,6 +113,7 @@ class TestShardedFlat(unittest.TestCase):
 
         co = faiss.GpuMultipleClonerOptions()
         co.shard = shard
+        co.use_raft = False
 
         # index2 = faiss.index_cpu_to_all_gpus(index, ngpu=ngpu)
         res = faiss.StandardGpuResources()
@@ -188,7 +191,9 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         ts.append(time.time())
 
         res = faiss.StandardGpuResources()
-        gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
+        co = faiss.GpuClonerOptions()
+        co.use_raft = False
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, index, co)
         ts.append(time.time())
 
         # Validate the layout of the memory info
@@ -217,6 +222,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
             res = [faiss.StandardGpuResources() for i in range(2)]
             co = faiss.GpuMultipleClonerOptions()
             co.shard = shard
+            co.use_raft = False
 
             gpu_index = faiss.index_cpu_to_gpu_multiple_py(res, index, co)
 
