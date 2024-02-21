@@ -37,6 +37,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceTensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceVector.cuh&gt;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>GCC<sp/>visibility<sp/>push(default)</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
@@ -76,6 +77,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>GCC<sp/>visibility<sp/>pop</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/impl/RaftFlatIndex.cuh"/>
   </compounddef>

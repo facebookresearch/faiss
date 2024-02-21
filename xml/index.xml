@@ -1158,7 +1158,7 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ab817276eac6e8bee1f2659fa13f792ac" kind="function"><name>set_index_</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a1ce90695eccd0f370c41d2121935b194" kind="function"><name>setIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8ba535b7d88189bd973441f1f09c6012" kind="function"><name>getCurrentNProbe_</name></member>
@@ -1269,6 +1269,7 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a2ff7d6ec03863a7ecb048b06faf6100e" kind="function"><name>setIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aa2ffc3990536d39f4ced8201d4438793" kind="function"><name>verifyPQSettings_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a5c71f0186ba65d1408cd9ef5cfc12960" kind="function"><name>trainResidualQuantizer_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
@@ -8854,9 +8855,11 @@
     <member refid="GpuCloner_8h_1a3c1d63b6841829a0a51c42e041589adb" kind="function"><name>index_binary_gpu_to_cpu</name></member>
     <member refid="GpuCloner_8h_1a912ba9955075b7e10790c311f574d781" kind="function"><name>index_binary_cpu_to_gpu</name></member>
     <member refid="GpuCloner_8h_1a0738a578f6f04c79a547a842c7e3a0e8" kind="function"><name>index_binary_cpu_to_gpu_multiple</name></member>
+    <member refid="GpuDistance_8h_1a2cfc72202868622221a8b69ec9a788e4" kind="function"><name>should_use_raft</name></member>
     <member refid="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
     <member refid="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" kind="function"><name>bfKnn_tiling</name></member>
     <member refid="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" kind="function"><name>bruteForceKnn</name></member>
+    <member refid="GpuIndex_8h_1a7c09e232a8ffdc821a88f88858351529" kind="function"><name>should_use_raft</name></member>
     <member refid="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" kind="function"><name>tryCastGpuIndex</name></member>
     <member refid="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" kind="function"><name>isGpuIndex</name></member>
     <member refid="GpuIndex_8h_1a9a5eeb989c1d853a58aa65a8af310372" kind="function"><name>isGpuIndexImplemented</name></member>
@@ -8872,7 +8875,6 @@
     <member refid="InterleavedCodes_8h_1aaf252105b63cae024ead79790da77591" kind="function"><name>unpackInterleaved</name></member>
     <member refid="InterleavedCodes_8h_1aa5fbf46e73968e7535eb83ef86cbcd16" kind="function"><name>packNonInterleaved</name></member>
     <member refid="InterleavedCodes_8h_1ac7600011e96df9221930dcdfa0c790f5" kind="function"><name>packInterleaved</name></member>
-    <member refid="RaftUtils_8h_1aac52425937fe60ea6a3fa57363ea5f33" kind="function"><name>faiss_to_raft</name></member>
     <member refid="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" kind="function"><name>ivfOffsetToUserIndex</name></member>
     <member refid="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" kind="function"><name>newTestSeed</name></member>
     <member refid="TestUtils_8h_1a97a43b6f2ad18a336a6ffb7d182e70e3" kind="function"><name>setTestSeed</name></member>
@@ -8912,6 +8914,9 @@
     <member refid="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" kind="function"><name>streamWait</name></member>
     <member refid="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" kind="function"><name>streamWait</name></member>
     <member refid="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" kind="function"><name>streamWait</name></member>
+    <member refid="RaftUtils_8h_1a09ddc3176b613dae5b8cd9a61c6b3d4f" kind="function"><name>metricFaissToRaft</name></member>
+    <member refid="RaftUtils_8h_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
+    <member refid="RaftUtils_8h_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1gpu_1_1utils" kind="namespace"><name>faiss::gpu::utils</name>
     <member refid="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d" kind="function"><name>divDown</name></member>
@@ -9084,7 +9089,7 @@
   </compound>
   <compound refid="RaftIVFFlat_8cuh" kind="file"><name>RaftIVFFlat.cuh</name>
   </compound>
-  <compound refid="RaftUtils_8h" kind="file"><name>RaftUtils.h</name>
+  <compound refid="RaftIVFPQ_8cuh" kind="file"><name>RaftIVFPQ.cuh</name>
   </compound>
   <compound refid="RemapIndices_8h" kind="file"><name>RemapIndices.h</name>
   </compound>
@@ -9149,6 +9154,8 @@
   <compound refid="Pair_8cuh" kind="file"><name>Pair.cuh</name>
   </compound>
   <compound refid="PtxUtils_8cuh" kind="file"><name>PtxUtils.cuh</name>
+  </compound>
+  <compound refid="RaftUtils_8h" kind="file"><name>RaftUtils.h</name>
   </compound>
   <compound refid="ReductionOperators_8cuh" kind="file"><name>ReductionOperators.cuh</name>
   </compound>

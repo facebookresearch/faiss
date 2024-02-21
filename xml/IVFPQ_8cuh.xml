@@ -48,7 +48,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Enable<sp/>or<sp/>disable<sp/>pre-computed<sp/>codes.<sp/>The<sp/>quantizer<sp/>is<sp/>needed<sp/>to<sp/>gather</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>IVF<sp/>centroids<sp/>for<sp/>use</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>setPrecomputedCodes(Index*<sp/>coarseQuantizer,<sp/>bool<sp/>enable);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>setPrecomputedCodes(Index*<sp/>coarseQuantizer,<sp/>bool<sp/>enable);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>our<sp/>set<sp/>of<sp/>sub-quantizers<sp/>of<sp/>the<sp/>form</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(sub<sp/>q)(code<sp/>id)(sub<sp/>dim)</highlight></codeline>
@@ -143,7 +143,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/>private:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Number<sp/>of<sp/>sub-quantizers<sp/>per<sp/>vector</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>int<sp/>numSubQuantizers_;</highlight></codeline>
 <codeline></codeline>

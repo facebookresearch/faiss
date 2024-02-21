@@ -3,7 +3,7 @@
   <compounddef id="MetricType_8h" kind="file" language="C++">
     <compoundname>MetricType.h</compoundname>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
-    <includedby refid="RaftUtils_8h" local="no">faiss/gpu/impl/RaftUtils.h</includedby>
+    <includedby refid="RaftUtils_8h" local="no">faiss/gpu/utils/RaftUtils.h</includedby>
     <includedby refid="AuxIndexStructures_8h" local="no">faiss/impl/AuxIndexStructures.h</includedby>
     <includedby refid="CodePacker_8h" local="no">faiss/impl/CodePacker.h</includedby>
     <includedby refid="IDSelector_8h" local="no">faiss/impl/IDSelector.h</includedby>
@@ -271,10 +271,6 @@
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/gpu/impl/RaftUtils.h</label>
-        <link refid="RaftUtils_8h_source"/>
-      </node>
       <node id="7">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
@@ -406,6 +402,10 @@
       <node id="31">
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/gpu/utils/RaftUtils.h</label>
+        <link refid="RaftUtils_8h_source"/>
       </node>
       <node id="39">
         <label>faiss/python/python_callbacks.h</label>

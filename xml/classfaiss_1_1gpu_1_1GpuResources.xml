@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="195" column="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="200" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="200" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="205" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cublasHandle_t</type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="203" column="28"/>
+        <location file="faiss/gpu/GpuResources.h" line="208" column="28"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cudaStream_t</type>
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="207" column="26"/>
+        <location file="faiss/gpu/GpuResources.h" line="212" column="26"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -96,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="219" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="224" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::vector&lt; cudaStream_t &gt;</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="222" column="25"/>
+        <location file="faiss/gpu/GpuResources.h" line="227" column="25"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void *</type>
@@ -134,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="230" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="235" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -157,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="233" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="238" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -176,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="237" column="20"/>
+        <location file="faiss/gpu/GpuResources.h" line="242" column="20"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::pair&lt; void *, size_t &gt;</type>
@@ -191,7 +191,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="240" column="23"/>
+        <location file="faiss/gpu/GpuResources.h" line="245" column="23"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>cudaStream_t</type>
@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="243" column="26"/>
+        <location file="faiss/gpu/GpuResources.h" line="248" column="26"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cublasHandle_t</type>
@@ -225,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="250" column="20"/>
+        <location file="faiss/gpu/GpuResources.h" line="255" column="20"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cudaStream_t</type>
@@ -239,7 +239,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="253" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="258" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -253,7 +253,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="256" column="12"/>
+        <location file="faiss/gpu/GpuResources.h" line="261" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref></type>
@@ -271,7 +271,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="259" column="26"/>
+        <location file="faiss/gpu/GpuResources.h" line="264" column="26"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -289,7 +289,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="264" column="10"/>
+        <location file="faiss/gpu/GpuResources.h" line="269" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -303,7 +303,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="267" column="10"/>
+        <location file="faiss/gpu/GpuResources.h" line="272" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; cudaStream_t &gt;</type>
@@ -317,7 +317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="270" column="17"/>
+        <location file="faiss/gpu/GpuResources.h" line="275" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>cudaStream_t</type>
@@ -331,7 +331,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="273" column="18"/>
+        <location file="faiss/gpu/GpuResources.h" line="278" column="18"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -351,7 +351,7 @@
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="193" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="193" bodyend="274"/>
+    <location file="faiss/gpu/GpuResources.h" line="198" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="198" bodyend="279"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResources</scope><name>allocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuResources</scope><name>allocMemoryHandle</name></member>

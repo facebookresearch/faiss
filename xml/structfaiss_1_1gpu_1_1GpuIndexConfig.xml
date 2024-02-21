@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="41" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="44" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -98,7 +98,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuIndex.h" line="31" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="31" bodyend="42"/>
+    <location file="faiss/gpu/GpuIndex.h" line="31" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="31" bodyend="46"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>memorySpace</name></member>

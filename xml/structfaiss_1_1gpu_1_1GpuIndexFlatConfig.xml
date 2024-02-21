@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="41" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="44" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">

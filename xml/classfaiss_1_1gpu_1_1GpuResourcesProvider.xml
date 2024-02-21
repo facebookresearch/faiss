@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="280" column="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="285" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="283" column="29"/>
+        <location file="faiss/gpu/GpuResources.h" line="288" column="29"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -59,7 +59,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="278" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="278" bodyend="284"/>
+    <location file="faiss/gpu/GpuResources.h" line="283" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="283" bodyend="289"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a9de5bf47e6a9754f19e43b30dd61bfca" prot="public" virt="virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>~GpuResourcesProvider</name></member>

@@ -11,6 +11,7 @@
     <includedby refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includedby>
     <includedby refid="GpuIndexBinaryFlat_8h" local="no">faiss/gpu/GpuIndexBinaryFlat.h</includedby>
     <includedby refid="StandardGpuResources_8h" local="no">faiss/gpu/StandardGpuResources.h</includedby>
+    <includedby refid="RaftUtils_8h" local="no">faiss/gpu/utils/RaftUtils.h</includedby>
     <includedby refid="StackDeviceMemory_8h" local="no">faiss/gpu/utils/StackDeviceMemory.h</includedby>
     <incdepgraph>
       <node id="5">
@@ -95,7 +96,7 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="12">
+      <node id="13">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h_source"/>
         <childnode refid="10" relation="include">
@@ -136,6 +137,12 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/gpu/utils/RaftUtils.h</label>
+        <link refid="RaftUtils_8h_source"/>
       </node>
       <node id="8">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
@@ -219,272 +226,277 @@
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;raft/core/device_resources.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GpuResources;</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>AllocType<sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Unknown<sp/>allocation<sp/>type<sp/>or<sp/>miscellaneous<sp/>(not<sp/>currently<sp/>categorized)</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Other<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Primary<sp/>data<sp/>storage<sp/>for<sp/>GpuIndexFlat<sp/>(the<sp/>raw<sp/>matrix<sp/>of<sp/>vectors<sp/>and</highlight></codeline>
-<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>vector<sp/>norms<sp/>if<sp/>needed)</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>FlatData<sp/>=<sp/>1,</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Primary<sp/>data<sp/>storage<sp/>for<sp/>GpuIndexIVF*<sp/>(the<sp/>storage<sp/>for<sp/>each<sp/>individual</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>IVF<sp/>list)</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>IVFLists<sp/>=<sp/>2,</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Quantizer<sp/>(PQ,<sp/>SQ)<sp/>dictionary<sp/>information</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Quantizer<sp/>=<sp/>3,</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>GpuIndexIVFPQ,<sp/>&quot;precomputed<sp/>codes&quot;<sp/>for<sp/>more<sp/>efficient<sp/>PQ<sp/>lookup</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>require<sp/>the<sp/>use<sp/>of<sp/>possibly<sp/>large<sp/>tables.<sp/>These<sp/>are<sp/>marked<sp/>separately</highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>from</highlight></codeline>
-<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Quantizer<sp/>as<sp/>these<sp/>can<sp/>frequently<sp/>be<sp/>100s<sp/>-<sp/>1000s<sp/>of<sp/>MiB<sp/>in<sp/>size</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>QuantizerPrecomputedCodes<sp/>=<sp/>4,</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>StandardGpuResources<sp/>implementation<sp/>specific<sp/>types</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="67"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>using<sp/>StandardGpuResources,<sp/>temporary<sp/>memory<sp/>allocations</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>(MemorySpace::Temporary)<sp/>come<sp/>out<sp/>of<sp/>a<sp/>stack<sp/>region<sp/>of<sp/>memory<sp/>that<sp/>is</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>allocated<sp/>up<sp/>front<sp/>for<sp/>each<sp/>gpu<sp/>(e.g.,<sp/>1.5<sp/>GiB<sp/>upon<sp/>initialization).</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This</highlight></codeline>
-<codeline lineno="71"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>allocation<sp/>by<sp/>StandardGpuResources<sp/>is<sp/>marked<sp/>with<sp/>this<sp/>AllocType.</highlight></codeline>
-<codeline lineno="72"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TemporaryMemoryBuffer<sp/>=<sp/>10,</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>using<sp/>StandardGpuResources,<sp/>any<sp/>MemorySpace::Temporary<sp/>allocations</highlight></codeline>
-<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>that<sp/>cannot<sp/>be<sp/>satisfied<sp/>within<sp/>the<sp/>TemporaryMemoryBuffer<sp/>region<sp/>fall</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>back</highlight></codeline>
-<codeline lineno="77"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>calling<sp/>cudaMalloc<sp/>which<sp/>are<sp/>sized<sp/>to<sp/>just<sp/>the<sp/>request<sp/>at<sp/>hand.<sp/>These</highlight></codeline>
-<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>&quot;overflow&quot;<sp/>temporary<sp/>allocations<sp/>are<sp/>marked<sp/>with<sp/>this<sp/>AllocType.</highlight></codeline>
-<codeline lineno="79"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TemporaryMemoryOverflow<sp/>=<sp/>11,</highlight></codeline>
-<codeline lineno="80"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="82"><highlight class="comment">///<sp/>Convert<sp/>an<sp/>AllocType<sp/>to<sp/>string</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/>allocTypeToString(AllocType<sp/>t);</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="85"><highlight class="comment">///<sp/>Memory<sp/>regions<sp/>accessible<sp/>to<sp/>the<sp/>GPU</highlight></codeline>
-<codeline lineno="86"><highlight class="comment"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>MemorySpace<sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="87"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Temporary<sp/>device<sp/>memory<sp/>(guaranteed<sp/>to<sp/>no<sp/>longer<sp/>be<sp/>used<sp/>upon<sp/>exit<sp/>of<sp/>a</highlight></codeline>
-<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>top-level<sp/>index<sp/>call,<sp/>and<sp/>where<sp/>the<sp/>streams<sp/>using<sp/>it<sp/>have<sp/>completed<sp/>GPU</highlight></codeline>
-<codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>work).<sp/>Typically<sp/>backed<sp/>by<sp/>Device<sp/>memory<sp/>(cudaMalloc/cudaFree).</highlight></codeline>
-<codeline lineno="90"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Temporary<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Managed<sp/>using<sp/>cudaMalloc/cudaFree<sp/>(typical<sp/>GPU<sp/>device<sp/>memory)</highlight></codeline>
-<codeline lineno="93"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Device<sp/>=<sp/>1,</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Managed<sp/>using<sp/>cudaMallocManaged/cudaFree<sp/>(typical<sp/>Unified<sp/>CPU/GPU</highlight></codeline>
-<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>memory)</highlight></codeline>
-<codeline lineno="97"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Unified<sp/>=<sp/>2,</highlight></codeline>
-<codeline lineno="98"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="100"><highlight class="comment">///<sp/>Convert<sp/>a<sp/>MemorySpace<sp/>to<sp/>string</highlight></codeline>
-<codeline lineno="101"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/>memorySpaceToString(MemorySpace<sp/>s);</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="103"><highlight class="comment">///<sp/>Information<sp/>on<sp/>what/where<sp/>an<sp/>allocation<sp/>is</highlight></codeline>
-<codeline lineno="104" refid="structfaiss_1_1gpu_1_1AllocInfo" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>{</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>()<sp/>{}</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"></highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(AllocType<sp/>at,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,<sp/>MemorySpace<sp/>sp,<sp/>cudaStream_t<sp/>st)</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" kindref="member">type</ref>(at),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" kindref="member">device</ref>(dev),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" kindref="member">space</ref>(sp),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" kindref="member">stream</ref>(st)<sp/>{}</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>this<sp/>info</highlight></codeline>
-<codeline lineno="111" refid="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>internal<sp/>category<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
-<codeline lineno="114" refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>AllocType<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" kindref="member">type</ref><sp/>=<sp/>AllocType::Other;</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>device<sp/>on<sp/>which<sp/>the<sp/>allocation<sp/>is<sp/>happening</highlight></codeline>
-<codeline lineno="117" refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" kindref="member">device</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>memory<sp/>space<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
-<codeline lineno="120" refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>MemorySpace<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" kindref="member">space</ref><sp/>=<sp/>MemorySpace::Device;</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>stream<sp/>on<sp/>which<sp/>new<sp/>work<sp/>on<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>ordered<sp/>(e.g.,<sp/>if<sp/>a</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>piece<sp/>of<sp/>memory<sp/>cached<sp/>and<sp/>to<sp/>be<sp/>returned<sp/>for<sp/>this<sp/>call<sp/>was<sp/>last<sp/>used<sp/>on</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>stream<sp/>3<sp/>and<sp/>a<sp/>new<sp/>memory<sp/>request<sp/>is<sp/>for<sp/>stream<sp/>4,<sp/>the<sp/>memory<sp/>manager</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>will<sp/>synchronize<sp/>stream<sp/>4<sp/>to<sp/>wait<sp/>for<sp/>the<sp/>completion<sp/>of<sp/>stream<sp/>3<sp/>via</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>events<sp/>or<sp/>other<sp/>stream<sp/>synchronization.</highlight></codeline>
-<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>memory<sp/>manager<sp/>guarantees<sp/>that<sp/>the<sp/>returned<sp/>memory<sp/>is<sp/>free<sp/>to<sp/>use</highlight></codeline>
-<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>without<sp/>data<sp/>races<sp/>on<sp/>this<sp/>stream<sp/>specified.</highlight></codeline>
-<codeline lineno="130" refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" kindref="member">stream</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="131"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="133"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device<sp/>with<sp/>MemorySpace::Device</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeDevAlloc(AllocType<sp/>at,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="136"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device<sp/>with<sp/>MemorySpace::Temporary</highlight></codeline>
-<codeline lineno="137"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeTempAlloc(AllocType<sp/>at,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="139"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="140"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeSpaceAlloc(AllocType<sp/>at,<sp/>MemorySpace<sp/>sp,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="142"><highlight class="comment">///<sp/>Information<sp/>on<sp/>what/where<sp/>an<sp/>allocation<sp/>is,<sp/>along<sp/>with<sp/>how<sp/>big<sp/>it<sp/>should<sp/>be</highlight></codeline>
-<codeline lineno="143" refid="structfaiss_1_1gpu_1_1AllocRequest" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>{</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>()<sp/>{}</highlight></codeline>
-<codeline lineno="145"><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>&amp;<sp/>info,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz)</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(info),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref>(sz)<sp/>{}</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"></highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>(</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AllocType<sp/>at,</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MemorySpace<sp/>sp,</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>st,</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz)</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(at,<sp/>dev,<sp/>sp,<sp/>st),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref>(sz)<sp/>{}</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="157"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>this<sp/>request</highlight></codeline>
-<codeline lineno="158" refid="structfaiss_1_1gpu_1_1AllocRequest_1a9089e476b1b39c6fdb5d262e511ebef5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a9089e476b1b39c6fdb5d262e511ebef5" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="160"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
-<codeline lineno="161" refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="164"><highlight class="comment">///<sp/>A<sp/>RAII<sp/>object<sp/>that<sp/>manages<sp/>a<sp/>temporary<sp/>memory<sp/>request</highlight></codeline>
-<codeline lineno="165" refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref><sp/>{</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>();</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>(</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>r,</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,</highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>str,</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p,</highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz);</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>(<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;&amp;<sp/>m)<sp/>noexcept;</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>();</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;<sp/>operator=(<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;&amp;<sp/>m);</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>get()<sp/>{</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>data;</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"></highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>release();</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res;</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device;</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream;</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data;</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size;</highlight></codeline>
-<codeline lineno="189"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="191"><highlight class="comment">///<sp/>Base<sp/>class<sp/>of<sp/>GPU-side<sp/>resource<sp/>provider;<sp/>hides<sp/>provision<sp/>of</highlight></codeline>
-<codeline lineno="192"><highlight class="comment">///<sp/>cuBLAS<sp/>handles,<sp/>CUDA<sp/>streams<sp/>and<sp/>all<sp/>device<sp/>memory<sp/>allocation<sp/>performed</highlight></codeline>
-<codeline lineno="193" refid="classfaiss_1_1gpu_1_1GpuResources" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref><sp/>{</highlight></codeline>
-<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>();</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="197"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Call<sp/>to<sp/>pre-allocate<sp/>resources<sp/>for<sp/>a<sp/>particular<sp/>device.<sp/>If<sp/>this<sp/>is</highlight></codeline>
-<codeline lineno="198"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>not<sp/>called,<sp/>then<sp/>resources<sp/>will<sp/>be<sp/>allocated<sp/>at<sp/>the<sp/>first<sp/>time</highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>of<sp/>demand</highlight></codeline>
-<codeline lineno="200" refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" kindref="member">initializeForDevice</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/device/device_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GpuResources;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>AllocType<sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Unknown<sp/>allocation<sp/>type<sp/>or<sp/>miscellaneous<sp/>(not<sp/>currently<sp/>categorized)</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Other<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Primary<sp/>data<sp/>storage<sp/>for<sp/>GpuIndexFlat<sp/>(the<sp/>raw<sp/>matrix<sp/>of<sp/>vectors<sp/>and</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>vector<sp/>norms<sp/>if<sp/>needed)</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>FlatData<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Primary<sp/>data<sp/>storage<sp/>for<sp/>GpuIndexIVF*<sp/>(the<sp/>storage<sp/>for<sp/>each<sp/>individual</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>IVF<sp/>list)</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>IVFLists<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Quantizer<sp/>(PQ,<sp/>SQ)<sp/>dictionary<sp/>information</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Quantizer<sp/>=<sp/>3,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>GpuIndexIVFPQ,<sp/>&quot;precomputed<sp/>codes&quot;<sp/>for<sp/>more<sp/>efficient<sp/>PQ<sp/>lookup</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>require<sp/>the<sp/>use<sp/>of<sp/>possibly<sp/>large<sp/>tables.<sp/>These<sp/>are<sp/>marked<sp/>separately</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>from</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Quantizer<sp/>as<sp/>these<sp/>can<sp/>frequently<sp/>be<sp/>100s<sp/>-<sp/>1000s<sp/>of<sp/>MiB<sp/>in<sp/>size</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>QuantizerPrecomputedCodes<sp/>=<sp/>4,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>StandardGpuResources<sp/>implementation<sp/>specific<sp/>types</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>using<sp/>StandardGpuResources,<sp/>temporary<sp/>memory<sp/>allocations</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>(MemorySpace::Temporary)<sp/>come<sp/>out<sp/>of<sp/>a<sp/>stack<sp/>region<sp/>of<sp/>memory<sp/>that<sp/>is</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>allocated<sp/>up<sp/>front<sp/>for<sp/>each<sp/>gpu<sp/>(e.g.,<sp/>1.5<sp/>GiB<sp/>upon<sp/>initialization).</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>allocation<sp/>by<sp/>StandardGpuResources<sp/>is<sp/>marked<sp/>with<sp/>this<sp/>AllocType.</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TemporaryMemoryBuffer<sp/>=<sp/>10,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>using<sp/>StandardGpuResources,<sp/>any<sp/>MemorySpace::Temporary<sp/>allocations</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>that<sp/>cannot<sp/>be<sp/>satisfied<sp/>within<sp/>the<sp/>TemporaryMemoryBuffer<sp/>region<sp/>fall</highlight></codeline>
+<codeline lineno="77"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>back</highlight></codeline>
+<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>calling<sp/>cudaMalloc<sp/>which<sp/>are<sp/>sized<sp/>to<sp/>just<sp/>the<sp/>request<sp/>at<sp/>hand.<sp/>These</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>&quot;overflow&quot;<sp/>temporary<sp/>allocations<sp/>are<sp/>marked<sp/>with<sp/>this<sp/>AllocType.</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TemporaryMemoryOverflow<sp/>=<sp/>11,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="comment">///<sp/>Convert<sp/>an<sp/>AllocType<sp/>to<sp/>string</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/>allocTypeToString(AllocType<sp/>t);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="86"><highlight class="comment">///<sp/>Memory<sp/>regions<sp/>accessible<sp/>to<sp/>the<sp/>GPU</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>MemorySpace<sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Temporary<sp/>device<sp/>memory<sp/>(guaranteed<sp/>to<sp/>no<sp/>longer<sp/>be<sp/>used<sp/>upon<sp/>exit<sp/>of<sp/>a</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>top-level<sp/>index<sp/>call,<sp/>and<sp/>where<sp/>the<sp/>streams<sp/>using<sp/>it<sp/>have<sp/>completed<sp/>GPU</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>work).<sp/>Typically<sp/>backed<sp/>by<sp/>Device<sp/>memory<sp/>(cudaMalloc/cudaFree).</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Temporary<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Managed<sp/>using<sp/>cudaMalloc/cudaFree<sp/>(typical<sp/>GPU<sp/>device<sp/>memory)</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Device<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Managed<sp/>using<sp/>cudaMallocManaged/cudaFree<sp/>(typical<sp/>Unified<sp/>CPU/GPU</highlight></codeline>
+<codeline lineno="97"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>memory)</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>Unified<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="101"><highlight class="comment">///<sp/>Convert<sp/>a<sp/>MemorySpace<sp/>to<sp/>string</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/>memorySpaceToString(MemorySpace<sp/>s);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="104"><highlight class="comment">///<sp/>Information<sp/>on<sp/>what/where<sp/>an<sp/>allocation<sp/>is</highlight></codeline>
+<codeline lineno="105" refid="structfaiss_1_1gpu_1_1AllocInfo" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(AllocType<sp/>at,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,<sp/>MemorySpace<sp/>sp,<sp/>cudaStream_t<sp/>st)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" kindref="member">type</ref>(at),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" kindref="member">device</ref>(dev),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" kindref="member">space</ref>(sp),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" kindref="member">stream</ref>(st)<sp/>{}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>this<sp/>info</highlight></codeline>
+<codeline lineno="112" refid="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>internal<sp/>category<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
+<codeline lineno="115" refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>AllocType<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" kindref="member">type</ref><sp/>=<sp/>AllocType::Other;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="117"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>device<sp/>on<sp/>which<sp/>the<sp/>allocation<sp/>is<sp/>happening</highlight></codeline>
+<codeline lineno="118" refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" kindref="member">device</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>memory<sp/>space<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
+<codeline lineno="121" refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>MemorySpace<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" kindref="member">space</ref><sp/>=<sp/>MemorySpace::Device;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>stream<sp/>on<sp/>which<sp/>new<sp/>work<sp/>on<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>ordered<sp/>(e.g.,<sp/>if<sp/>a</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>piece<sp/>of<sp/>memory<sp/>cached<sp/>and<sp/>to<sp/>be<sp/>returned<sp/>for<sp/>this<sp/>call<sp/>was<sp/>last<sp/>used<sp/>on</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>stream<sp/>3<sp/>and<sp/>a<sp/>new<sp/>memory<sp/>request<sp/>is<sp/>for<sp/>stream<sp/>4,<sp/>the<sp/>memory<sp/>manager</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>will<sp/>synchronize<sp/>stream<sp/>4<sp/>to<sp/>wait<sp/>for<sp/>the<sp/>completion<sp/>of<sp/>stream<sp/>3<sp/>via</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>events<sp/>or<sp/>other<sp/>stream<sp/>synchronization.</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>memory<sp/>manager<sp/>guarantees<sp/>that<sp/>the<sp/>returned<sp/>memory<sp/>is<sp/>free<sp/>to<sp/>use</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>without<sp/>data<sp/>races<sp/>on<sp/>this<sp/>stream<sp/>specified.</highlight></codeline>
+<codeline lineno="131" refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" kindref="member">stream</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="134"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device<sp/>with<sp/>MemorySpace::Device</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeDevAlloc(AllocType<sp/>at,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="137"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device<sp/>with<sp/>MemorySpace::Temporary</highlight></codeline>
+<codeline lineno="138"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeTempAlloc(AllocType<sp/>at,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment">///<sp/>Create<sp/>an<sp/>AllocInfo<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>makeSpaceAlloc(AllocType<sp/>at,<sp/>MemorySpace<sp/>sp,<sp/>cudaStream_t<sp/>st);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="143"><highlight class="comment">///<sp/>Information<sp/>on<sp/>what/where<sp/>an<sp/>allocation<sp/>is,<sp/>along<sp/>with<sp/>how<sp/>big<sp/>it<sp/>should<sp/>be</highlight></codeline>
+<codeline lineno="144" refid="structfaiss_1_1gpu_1_1AllocRequest" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref><sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>&amp;<sp/>info,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz)</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(info),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref>(sz)<sp/>{}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>(</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AllocType<sp/>at,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MemorySpace<sp/>sp,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>st,</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz)</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref>(at,<sp/>dev,<sp/>sp,<sp/>st),<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref>(sz)<sp/>{}</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>this<sp/>request</highlight></codeline>
+<codeline lineno="159" refid="structfaiss_1_1gpu_1_1AllocRequest_1a9089e476b1b39c6fdb5d262e511ebef5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a9089e476b1b39c6fdb5d262e511ebef5" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="161"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
+<codeline lineno="162" refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/>rmm::mr::device_memory_resource*<sp/>mr<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="169"><highlight class="comment">///<sp/>A<sp/>RAII<sp/>object<sp/>that<sp/>manages<sp/>a<sp/>temporary<sp/>memory<sp/>request</highlight></codeline>
+<codeline lineno="170" refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref><sp/>{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>();</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>(</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>r,</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dev,</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>str,</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p,</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sz);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>(<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;&amp;<sp/>m)<sp/>noexcept;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>();</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;<sp/>operator=(<ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref>&amp;&amp;<sp/>m);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>get()<sp/>{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>data;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>release();</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>data;</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="196"><highlight class="comment">///<sp/>Base<sp/>class<sp/>of<sp/>GPU-side<sp/>resource<sp/>provider;<sp/>hides<sp/>provision<sp/>of</highlight></codeline>
+<codeline lineno="197"><highlight class="comment">///<sp/>cuBLAS<sp/>handles,<sp/>CUDA<sp/>streams<sp/>and<sp/>all<sp/>device<sp/>memory<sp/>allocation<sp/>performed</highlight></codeline>
+<codeline lineno="198" refid="classfaiss_1_1gpu_1_1GpuResources" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref><sp/>{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>();</highlight></codeline>
 <codeline lineno="201"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="202"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>cuBLAS<sp/>handle<sp/>that<sp/>we<sp/>use<sp/>for<sp/>the<sp/>given<sp/>device</highlight></codeline>
-<codeline lineno="203" refid="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" kindref="member">getBlasHandle</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="204"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="205"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stream<sp/>that<sp/>we<sp/>order<sp/>all<sp/>computation<sp/>on<sp/>for<sp/>the</highlight></codeline>
-<codeline lineno="206"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>given<sp/>device</highlight></codeline>
-<codeline lineno="207" refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"></highlight></codeline>
-<codeline lineno="209"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="210"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>raft<sp/>handle<sp/>for<sp/>the<sp/>given<sp/>device<sp/>which<sp/>can<sp/>be<sp/>used<sp/>to</highlight></codeline>
-<codeline lineno="211"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>calls<sp/>to<sp/>other<sp/>raft<sp/>primitives.</highlight></codeline>
-<codeline lineno="212"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>raft::device_resources&amp;<sp/>getRaftHandle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/>raft::device_resources&amp;<sp/>getRaftHandleCurrentDevice();</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="215"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="216"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Overrides<sp/>the<sp/>default<sp/>stream<sp/>for<sp/>a<sp/>device<sp/>to<sp/>the<sp/>user-supplied<sp/>stream.</highlight></codeline>
-<codeline lineno="217"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>resources<sp/>object<sp/>does<sp/>not<sp/>own<sp/>this<sp/>stream<sp/>(i.e.,<sp/>it<sp/>will<sp/>not<sp/>destroy</highlight></codeline>
-<codeline lineno="218"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>it).</highlight></codeline>
-<codeline lineno="219" refid="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" kindref="member">setDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t<sp/>stream)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Call<sp/>to<sp/>pre-allocate<sp/>resources<sp/>for<sp/>a<sp/>particular<sp/>device.<sp/>If<sp/>this<sp/>is</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>not<sp/>called,<sp/>then<sp/>resources<sp/>will<sp/>be<sp/>allocated<sp/>at<sp/>the<sp/>first<sp/>time</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>of<sp/>demand</highlight></codeline>
+<codeline lineno="205" refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" kindref="member">initializeForDevice</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>cuBLAS<sp/>handle<sp/>that<sp/>we<sp/>use<sp/>for<sp/>the<sp/>given<sp/>device</highlight></codeline>
+<codeline lineno="208" refid="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" kindref="member">getBlasHandle</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="210"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stream<sp/>that<sp/>we<sp/>order<sp/>all<sp/>computation<sp/>on<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="211"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>given<sp/>device</highlight></codeline>
+<codeline lineno="212" refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="215"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>raft<sp/>handle<sp/>for<sp/>the<sp/>given<sp/>device<sp/>which<sp/>can<sp/>be<sp/>used<sp/>to</highlight></codeline>
+<codeline lineno="216"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>calls<sp/>to<sp/>other<sp/>raft<sp/>primitives.</highlight></codeline>
+<codeline lineno="217"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>raft::device_resources&amp;<sp/>getRaftHandle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>raft::device_resources&amp;<sp/>getRaftHandleCurrentDevice();</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="220"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="221"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>set<sp/>of<sp/>alternative<sp/>streams<sp/>that<sp/>we<sp/>use<sp/>for<sp/>the<sp/>given<sp/>device</highlight></codeline>
-<codeline lineno="222" refid="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" kindref="member">getAlternateStreams</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="224"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Memory<sp/>management</highlight></codeline>
-<codeline lineno="225"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>an<sp/>allocation<sp/>from<sp/>the<sp/>given<sp/>memory<sp/>space,<sp/>ordered<sp/>with<sp/>respect</highlight></codeline>
-<codeline lineno="226"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>the<sp/>given<sp/>stream<sp/>(i.e.,<sp/>the<sp/>first<sp/>user<sp/>will<sp/>be<sp/>a<sp/>kernel<sp/>in<sp/>this</highlight></codeline>
-<codeline lineno="227"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>stream).<sp/>All<sp/>allocations<sp/>are<sp/>sized<sp/>internally<sp/>to<sp/>be<sp/>the<sp/>next<sp/>highest</highlight></codeline>
-<codeline lineno="228"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>multiple<sp/>of<sp/>16<sp/>bytes,<sp/>and<sp/>all<sp/>allocations<sp/>returned<sp/>are<sp/>guaranteed<sp/>to<sp/>be</highlight></codeline>
-<codeline lineno="229"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>16<sp/>byte<sp/>aligned.</highlight></codeline>
-<codeline lineno="230" refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" kindref="member">allocMemory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="232"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>previous<sp/>allocation</highlight></codeline>
-<codeline lineno="233" refid="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" kindref="member">deallocMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>in)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="235"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>MemorySpace::Temporary,<sp/>how<sp/>much<sp/>space<sp/>is<sp/>immediately<sp/>available</highlight></codeline>
-<codeline lineno="236"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>without<sp/>cudaMalloc<sp/>allocation?</highlight></codeline>
-<codeline lineno="237" refid="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" kindref="member">getTempMemoryAvailable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="239"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>available<sp/>CPU<sp/>pinned<sp/>memory<sp/>buffer</highlight></codeline>
-<codeline lineno="240" refid="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::pair&lt;void*,<sp/>size_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" kindref="member">getPinnedMemory</ref>()<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="241"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="242"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>we<sp/>perform<sp/>async<sp/>CPU<sp/>&lt;-&gt;<sp/>GPU<sp/>copies</highlight></codeline>
-<codeline lineno="243" refid="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" kindref="member">getAsyncCopyStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="244"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="245"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline lineno="246"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Functions<sp/>provided<sp/>by<sp/>default</highlight></codeline>
-<codeline lineno="247"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline lineno="248"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="249"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getBlasHandle<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="250" refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" kindref="member">getBlasHandleCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="251"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="252"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getDefaultStream<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="253" refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" kindref="member">getDefaultStreamCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="254"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="255"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getTempMemoryAvailable<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="256" refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" kindref="member">getTempMemoryAvailableCurrentDevice</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="257"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="258"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>temporary<sp/>memory<sp/>allocation<sp/>via<sp/>a<sp/>RAII<sp/>object</highlight></codeline>
-<codeline lineno="259" refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" kindref="member">allocMemoryHandle</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req);</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="261"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Synchronizes<sp/>the<sp/>CPU<sp/>with<sp/>respect<sp/>to<sp/>the<sp/>default<sp/>stream<sp/>for<sp/>the</highlight></codeline>
-<codeline lineno="262"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>given<sp/>device</highlight></codeline>
-<codeline lineno="263"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>equivalent<sp/>to<sp/>cudaDeviceSynchronize(getDefaultStream(device))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="264" refid="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" kindref="member">syncDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="221"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Overrides<sp/>the<sp/>default<sp/>stream<sp/>for<sp/>a<sp/>device<sp/>to<sp/>the<sp/>user-supplied<sp/>stream.</highlight></codeline>
+<codeline lineno="222"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>resources<sp/>object<sp/>does<sp/>not<sp/>own<sp/>this<sp/>stream<sp/>(i.e.,<sp/>it<sp/>will<sp/>not<sp/>destroy</highlight></codeline>
+<codeline lineno="223"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>it).</highlight></codeline>
+<codeline lineno="224" refid="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" kindref="member">setDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t<sp/>stream)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="226"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>set<sp/>of<sp/>alternative<sp/>streams<sp/>that<sp/>we<sp/>use<sp/>for<sp/>the<sp/>given<sp/>device</highlight></codeline>
+<codeline lineno="227" refid="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1afb469bf3b107f43ef0d6abe4a014bb5b" kindref="member">getAlternateStreams</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="229"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Memory<sp/>management</highlight></codeline>
+<codeline lineno="230"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>an<sp/>allocation<sp/>from<sp/>the<sp/>given<sp/>memory<sp/>space,<sp/>ordered<sp/>with<sp/>respect</highlight></codeline>
+<codeline lineno="231"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>the<sp/>given<sp/>stream<sp/>(i.e.,<sp/>the<sp/>first<sp/>user<sp/>will<sp/>be<sp/>a<sp/>kernel<sp/>in<sp/>this</highlight></codeline>
+<codeline lineno="232"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>stream).<sp/>All<sp/>allocations<sp/>are<sp/>sized<sp/>internally<sp/>to<sp/>be<sp/>the<sp/>next<sp/>highest</highlight></codeline>
+<codeline lineno="233"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>multiple<sp/>of<sp/>16<sp/>bytes,<sp/>and<sp/>all<sp/>allocations<sp/>returned<sp/>are<sp/>guaranteed<sp/>to<sp/>be</highlight></codeline>
+<codeline lineno="234"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>16<sp/>byte<sp/>aligned.</highlight></codeline>
+<codeline lineno="235" refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a4f29fea84dc03a44931d2e985ee39d82" kindref="member">allocMemory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="237"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>previous<sp/>allocation</highlight></codeline>
+<codeline lineno="238" refid="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a0f444157f93f8c99cf1ce12591818d3d" kindref="member">deallocMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>in)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="240"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>MemorySpace::Temporary,<sp/>how<sp/>much<sp/>space<sp/>is<sp/>immediately<sp/>available</highlight></codeline>
+<codeline lineno="241"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>without<sp/>cudaMalloc<sp/>allocation?</highlight></codeline>
+<codeline lineno="242" refid="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" kindref="member">getTempMemoryAvailable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>available<sp/>CPU<sp/>pinned<sp/>memory<sp/>buffer</highlight></codeline>
+<codeline lineno="245" refid="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::pair&lt;void*,<sp/>size_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" kindref="member">getPinnedMemory</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="247"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>we<sp/>perform<sp/>async<sp/>CPU<sp/>&lt;-&gt;<sp/>GPU<sp/>copies</highlight></codeline>
+<codeline lineno="248" refid="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" kindref="member">getAsyncCopyStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="251"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Functions<sp/>provided<sp/>by<sp/>default</highlight></codeline>
+<codeline lineno="252"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="253"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="254"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getBlasHandle<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="255" refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" kindref="member">getBlasHandleCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="257"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getDefaultStream<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="258" refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" kindref="member">getDefaultStreamCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getTempMemoryAvailable<sp/>with<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="261" refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" kindref="member">getTempMemoryAvailableCurrentDevice</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="263"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>temporary<sp/>memory<sp/>allocation<sp/>via<sp/>a<sp/>RAII<sp/>object</highlight></codeline>
+<codeline lineno="264" refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1af0949f87d4f522b7ee5be17ad760b266" kindref="member">allocMemoryHandle</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req);</highlight></codeline>
 <codeline lineno="265"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="266"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>syncDefaultStream<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="267" refid="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" kindref="member">syncDefaultStreamCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="269"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getAlternateStreams<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="270" refid="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" kindref="member">getAlternateStreamsCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="272"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getAsyncCopyStream<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
-<codeline lineno="273" refid="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" kindref="member">getAsyncCopyStreamCurrentDevice</ref>();</highlight></codeline>
-<codeline lineno="274"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="275"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="276"><highlight class="comment">///<sp/>Interface<sp/>for<sp/>a<sp/>provider<sp/>of<sp/>a<sp/>shared<sp/>resources<sp/>object.<sp/>This<sp/>is<sp/>to<sp/>avoid</highlight></codeline>
-<codeline lineno="277"><highlight class="comment">///<sp/>interfacing<sp/>std::shared_ptr<sp/>to<sp/>Python</highlight></codeline>
-<codeline lineno="278" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
-<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>();</highlight></codeline>
-<codeline lineno="281"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="282"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>shared<sp/>resources<sp/>object</highlight></codeline>
-<codeline lineno="283" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" kindref="member">getResources</ref>()<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="284"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="286"><highlight class="comment">///<sp/>A<sp/>simple<sp/>wrapper<sp/>for<sp/>a<sp/>GpuResources<sp/>object<sp/>to<sp/>make<sp/>a<sp/>GpuResourcesProvider</highlight></codeline>
-<codeline lineno="287"><highlight class="comment">///<sp/>out<sp/>of<sp/>it<sp/>again</highlight></codeline>
-<codeline lineno="288" refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>(std::shared_ptr&lt;GpuResources&gt;<sp/>p);</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"></highlight></codeline>
-<codeline lineno="293" refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="294"><highlight class="normal"></highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/>res_;</highlight></codeline>
-<codeline lineno="297"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight></codeline>
-<codeline lineno="299"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="300"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Synchronizes<sp/>the<sp/>CPU<sp/>with<sp/>respect<sp/>to<sp/>the<sp/>default<sp/>stream<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="267"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>given<sp/>device</highlight></codeline>
+<codeline lineno="268"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>equivalent<sp/>to<sp/>cudaDeviceSynchronize(getDefaultStream(device))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269" refid="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a130deab9f6d49cbdde8f9da45ce868fd" kindref="member">syncDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="271"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>syncDefaultStream<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="272" refid="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1adf6a5653ec2bbb0e9d58a0e1dd73897f" kindref="member">syncDefaultStreamCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="274"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getAlternateStreams<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="275" refid="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a2104e59caebc31d9f98729281b616acc" kindref="member">getAlternateStreamsCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="277"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Calls<sp/>getAsyncCopyStream<sp/>for<sp/>the<sp/>current<sp/>device</highlight></codeline>
+<codeline lineno="278" refid="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" kindref="member">getAsyncCopyStreamCurrentDevice</ref>();</highlight></codeline>
+<codeline lineno="279"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="281"><highlight class="comment">///<sp/>Interface<sp/>for<sp/>a<sp/>provider<sp/>of<sp/>a<sp/>shared<sp/>resources<sp/>object.<sp/>This<sp/>is<sp/>to<sp/>avoid</highlight></codeline>
+<codeline lineno="282"><highlight class="comment">///<sp/>interfacing<sp/>std::shared_ptr<sp/>to<sp/>Python</highlight></codeline>
+<codeline lineno="283" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>();</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="287"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>shared<sp/>resources<sp/>object</highlight></codeline>
+<codeline lineno="288" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" kindref="member">getResources</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="289"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="291"><highlight class="comment">///<sp/>A<sp/>simple<sp/>wrapper<sp/>for<sp/>a<sp/>GpuResources<sp/>object<sp/>to<sp/>make<sp/>a<sp/>GpuResourcesProvider</highlight></codeline>
+<codeline lineno="292"><highlight class="comment">///<sp/>out<sp/>of<sp/>it<sp/>again</highlight></codeline>
+<codeline lineno="293" refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>(std::shared_ptr&lt;GpuResources&gt;<sp/>p);</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298" refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/>res_;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/GpuResources.h"/>
   </compounddef>

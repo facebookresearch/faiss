@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="133" column="22" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="133" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="134" column="22" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="134" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -236,7 +236,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="144" column="31" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="161" column="31" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="161" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ae687f3d1b19bc2da4864ececf84b944b" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -250,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="147" column="10" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="147" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="164" column="10" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a1e0d550a362813a21de6af150ab67b7f" prot="protected" static="no" mutable="no">
         <type>int</type>
@@ -264,7 +264,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="150" column="9" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="167" column="9" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="167" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a56a4264e54409db885f439a06501ef11" prot="protected" static="no" mutable="no">
         <type>int</type>
@@ -278,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="153" column="9" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="170" column="9" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="170" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a145c8862f7e7ffd3b062a0ca38d6c6ec" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -292,7 +292,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="156" column="12" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="156" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="173" column="12" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="173" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a402394900e4e144eb1f8821028f3138f" prot="protected" static="no" mutable="no">
         <type>std::shared_ptr&lt; IVFPQ &gt;</type>
@@ -306,7 +306,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="160" column="21" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="160" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="177" column="21" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="177" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" kindref="compound">GpuIndexIVFConfig</ref></type>
@@ -348,7 +348,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="176" column="21" bodyfile="faiss/gpu/GpuIndex.h" bodystart="176" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="184" column="21" bodyfile="faiss/gpu/GpuIndex.h" bodystart="184" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kindref="compound">GpuIndexConfig</ref></type>
@@ -362,7 +362,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="179" column="26" bodyfile="faiss/gpu/GpuIndex.h" bodystart="179" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="187" column="26" bodyfile="faiss/gpu/GpuIndex.h" bodystart="187" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -376,7 +376,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="182" column="12" bodyfile="faiss/gpu/GpuIndex.h" bodystart="182" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="190" column="12" bodyfile="faiss/gpu/GpuIndex.h" bodystart="190" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -405,7 +405,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="55" column="5"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="56" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a5b2f05476e4aa35ff164ffd820628b84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -449,7 +449,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="62" column="5"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="63" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ac61c4acbe7885170477d6adf044451e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -497,7 +497,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="73" column="5"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="74" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ab105c6666af5697b4f1b3cb99a1f7bf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -510,7 +510,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="83" column="5"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="84" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a8d48f79af9080b55706050244fc24f0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -528,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="90" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="91" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1abdea07beafa14bb3d7fe9ad2c8dc34df" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -546,7 +546,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="94" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="95" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a4e7d62e21f7e23fa4e94c69131389eea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -564,7 +564,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="97" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="98" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1afda2894c0ce520e0d3d06eeca5ed5f0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -582,7 +582,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="100" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="101" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a518ebeefff55ed18c217d3c824f25676" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -596,7 +596,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="103" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="104" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7ed87c230b75e0d859704a7d5b9daead" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -610,7 +610,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="106" column="9"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="107" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a0fa38b70f5a2bc7e6e359b47b4c1e73c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -624,7 +624,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="109" column="9"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="110" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a7d8e89e73eeb7a936c144f28e613de23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -638,7 +638,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="112" column="9"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="113" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83831088d9593f753560965172ccb0a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -652,7 +652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="116" column="12"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="117" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -667,7 +667,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="120" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="121" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9a3a79c3758938846c09206676dd594b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -682,7 +682,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="125" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="126" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -705,7 +705,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="128" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="129" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1079,7 +1079,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="54" column="9"/>
+        <location file="faiss/gpu/GpuIndex.h" line="62" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a2eb235a51b0a70bdbc2c814a48a0917d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -1093,7 +1093,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="58" column="21"/>
+        <location file="faiss/gpu/GpuIndex.h" line="66" column="21"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1111,7 +1111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="62" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="70" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6402d93925d2a403dc187dc1a7aab1e3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1125,7 +1125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="65" column="12"/>
+        <location file="faiss/gpu/GpuIndex.h" line="73" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a5fcf3e9af349e17c27ce82fc0ed94966" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1148,7 +1148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="70" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="78" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1175,7 +1175,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="75" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="83" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1ab6382636bc3f651645ee66d8744f7c0f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1207,7 +1207,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="79" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="87" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a7d7d3746b5f02be8317e142d966c7d4f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1247,7 +1247,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="88" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="96" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1291,7 +1291,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="99" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="107" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1ae076ddbcfde3e7a21879ac379ff991d9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1319,7 +1319,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="111" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="119" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a1a1ccf88e127b613c5ef65e52d7a6428" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1351,7 +1351,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="116" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="124" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1923,6 +1923,72 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a2ff7d6ec03863a7ecb048b06faf6100e" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVFPQ::setIndex_</definition>
+        <argsstring>(GpuResources *resources, int dim, idx_t nlist, faiss::MetricType metric, float metricArg, int numSubQuantizers, int bitsPerSubQuantizer, bool useFloat16LookupTables, bool useMMCodeDistance, bool interleavedLayout, float *pqCentroidData, IndicesOptions indicesOptions, MemorySpace space)</argsstring>
+        <name>setIndex_</name>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
+          <declname>resources</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>metricArg</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numSubQuantizers</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerSubQuantizer</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>useFloat16LookupTables</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>useMMCodeDistance</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>interleavedLayout</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>pqCentroidData</declname>
+        </param>
+        <param>
+          <type>IndicesOptions</type>
+          <declname>indicesOptions</declname>
+        </param>
+        <param>
+          <type>MemorySpace</type>
+          <declname>space</declname>
+        </param>
+        <briefdescription>
+<para>Initialize appropriate index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="138" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aa2ffc3990536d39f4ced8201d4438793" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::GpuIndexIVFPQ::verifyPQSettings_</definition>
@@ -1935,7 +2001,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="137" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="154" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a5c71f0186ba65d1408cd9ef5cfc12960" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1957,7 +2023,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="140" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFPQ.h" line="157" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1975,7 +2041,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="124" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="132" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1993,7 +2059,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="127" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="135" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8ba535b7d88189bd973441f1f09c6012" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2298,7 +2364,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="51" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="51" bodyend="161"/>
+    <location file="faiss/gpu/GpuIndexIVFPQ.h" line="52" column="1" bodyfile="faiss/gpu/GpuIndexIVFPQ.h" bodystart="52" bodyend="178"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5fcf3e9af349e17c27ce82fc0ed94966" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>add</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>add_with_ids</name></member>
@@ -2382,6 +2448,7 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>search_and_reconstruct</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>search_preassigned</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>searchImpl_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a2ff7d6ec03863a7ecb048b06faf6100e" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>setIndex_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>setMinPagingSize</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1afda2894c0ce520e0d3d06eeca5ed5f0c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>setPrecomputedCodes</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a1e0d550a362813a21de6af150ab67b7f" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>subQuantizers_</name></member>
