@@ -39,8 +39,6 @@ GpuIndexCagra::GpuIndexCagra(
     this->is_trained = false;
 }
 
-GpuIndexCagra::~GpuIndexCagra() {}
-
 void GpuIndexCagra::train(idx_t n, const float* x) {
     if (this->is_trained) {
         FAISS_ASSERT(index_);
@@ -164,7 +162,9 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->reset();
 
     auto graph_degree = index_->get_knngraph_degree();
-    index->hnsw.M = graph_degree / 2;
+    auto M = graph_degree / 2;
+    index->hnsw.set_default_probas(M, 1.0 / log(M));
+    index->hnsw.offsets.push_back(0);
 
     auto n_train = this->ntotal;
     auto train_dataset = index_->get_training_dataset();

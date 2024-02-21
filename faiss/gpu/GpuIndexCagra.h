@@ -117,8 +117,6 @@ struct GpuIndexCagra : public GpuIndex {
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexCagraConfig config = GpuIndexCagraConfig());
 
-    ~GpuIndexCagra() override;
-
     /// Trains CAGRA based on the given vector data
     void train(idx_t n, const float* x) override;
 
