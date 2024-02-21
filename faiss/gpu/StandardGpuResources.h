@@ -24,8 +24,6 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device/cuda_memory_resource.hpp>
-#include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
 #endif
 
@@ -37,6 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
@@ -166,14 +165,11 @@ class StandardGpuResourcesImpl : public GpuResources {
      * to create a subclass only for the RMM memory resources.
      */
 
-    // cuda_memory_resource
-    std::unique_ptr<rmm::mr::device_memory_resource> cmr;
-
     // managed_memory_resource
-    std::unique_ptr<rmm::mr::device_memory_resource> mmr;
+    std::unique_ptr<rmm::mr::device_memory_resource> mmr_;
 
     // pinned_memory_resource
-    std::unique_ptr<rmm::mr::host_memory_resource> pmr;
+    std::unique_ptr<rmm::mr::host_memory_resource> pmr_;
 #endif
 
     /// Pinned memory allocation for use with this GPU
@@ -260,3 +256,4 @@ class StandardGpuResources : public GpuResourcesProvider {
 
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop

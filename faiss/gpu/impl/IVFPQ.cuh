@@ -39,7 +39,7 @@ class IVFPQ : public IVFBase {
 
     /// Enable or disable pre-computed codes. The quantizer is needed to gather
     /// the IVF centroids for use
-    void setPrecomputedCodes(Index* coarseQuantizer, bool enable);
+    virtual void setPrecomputedCodes(Index* coarseQuantizer, bool enable);
 
     /// Returns our set of sub-quantizers of the form
     /// (sub q)(code id)(sub dim)
@@ -134,7 +134,7 @@ class IVFPQ : public IVFBase {
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices);
 
-   private:
+   protected:
     /// Number of sub-quantizers per vector
     const int numSubQuantizers_;
 

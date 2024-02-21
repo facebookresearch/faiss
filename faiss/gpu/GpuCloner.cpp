@@ -152,8 +152,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        FAISS_THROW_IF_NOT_MSG(
-                !use_raft, "this type of index is not implemented for RAFT");
+        config.use_raft = use_raft;
 
         GpuIndexIVFFlat* res = new GpuIndexIVFFlat(
                 provider, ifl->d, ifl->nlist, ifl->metric_type, config);
@@ -204,8 +203,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.useFloat16LookupTables = useFloat16;
         config.usePrecomputedTables = usePrecomputed;
-        FAISS_THROW_IF_NOT_MSG(
-                !use_raft, "this type of index is not implemented for RAFT");
+        config.use_raft = use_raft;
+        config.interleavedLayout = use_raft;
 
         GpuIndexIVFPQ* res = new GpuIndexIVFPQ(provider, ipq, config);
 
