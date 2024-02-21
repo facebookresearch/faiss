@@ -141,7 +141,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>resize(size_t<sp/>newSize,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>mem<sp/>=<sp/>false;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(num_<sp/>&lt;<sp/>newSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(newSize<sp/>&gt;<sp/>capacity_)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mem<sp/>=<sp/>reserve(getNewCapacity_(newSize),<sp/>stream);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
@@ -258,7 +258,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(preferredSize<sp/>&lt;=<sp/>kDeviceVector_2x_Limit)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>utils::nextHighestPowerOf2(preferredSize);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>if<sp/>(preferredSize<sp/>&lt;=<sp/>kDeviceVector_1_25x_Limit)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>preferredSize<sp/>+<sp/>(preferredSize<sp/>&lt;&lt;<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>preferredSize<sp/>+<sp/>(preferredSize<sp/>&gt;&gt;<sp/>2);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>preferredSize;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
