@@ -169,10 +169,19 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     // Index information
     //
     GpuIndex::copyTo(index);
+    // This needs to be zeroed out as this implementation adds vectors to the
+    // cpuIndex instead of copying fields
+    index->ntotal = 0;
 
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
-    index->reset();
+    if (index->storage and index->own_fields) {
+        delete index->storage;
+    }
+    index->storage = new IndexFlatL2(index->d);
+    index->own_fields = true;
+    index->keep_max_size_level0 = true;
+    index->hnsw.reset();
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     auto n_train = this->ntotal;
