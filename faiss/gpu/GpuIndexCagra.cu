@@ -182,6 +182,8 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->own_fields = true;
     index->keep_max_size_level0 = true;
     index->hnsw.reset();
+    index->hnsw.assign_probas.clear();
+    index->hnsw.cum_nneighbor_per_level.clear();
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     auto n_train = this->ntotal;
