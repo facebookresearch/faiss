@@ -23,13 +23,16 @@
 #pragma once
 
 #include <faiss/MetricType.h>
-#include <raft/core/error.hpp>
+#include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/Tensor.cuh>
+
 #include <raft/distance/distance_types.hpp>
 
+#pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
-inline raft::distance::DistanceType faiss_to_raft(
+inline raft::distance::DistanceType metricFaissToRaft(
         MetricType metric,
         bool exactDistance) {
     switch (metric) {
@@ -53,5 +56,20 @@ inline raft::distance::DistanceType faiss_to_raft(
             RAFT_FAIL("Distance type not supported");
     }
 }
+
+/// Identify matrix rows containing non NaN values. validRows[i] is false if row
+/// i contains a NaN value and true otherwise.
+void validRowIndices(
+        GpuResources* res,
+        Tensor<float, 2, true>& vecs,
+        bool* validRows);
+
+/// Filter out matrix rows containing NaN values. The vectors and indices are
+/// updated in-place.
+idx_t inplaceGatherFilteredRows(
+        GpuResources* res,
+        Tensor<float, 2, true>& vecs,
+        Tensor<idx_t, 1, true>& indices);
 } // namespace gpu
 } // namespace faiss
+#pragma GCC visibility pop

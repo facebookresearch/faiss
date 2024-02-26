@@ -41,7 +41,7 @@ class IVFBase {
     virtual ~IVFBase();
 
     /// Reserve GPU memory in our inverted lists for this number of vectors
-    void reserveMemory(idx_t numVecs);
+    virtual void reserveMemory(idx_t numVecs);
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
@@ -52,7 +52,7 @@ class IVFBase {
 
     /// After adding vectors, one can call this to reclaim device memory
     /// to exactly the amount needed. Returns space reclaimed in bytes
-    size_t reclaimMemory();
+    virtual size_t reclaimMemory();
 
     /// Returns the number of inverted lists
     idx_t getNumLists() const;

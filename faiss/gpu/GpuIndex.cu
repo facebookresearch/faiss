@@ -42,6 +42,16 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 // FIXME: parameterize based on algorithm need
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
+bool should_use_raft(GpuIndexConfig config_) {
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, config_.device);
+
+    if (prop.major < 7)
+        return false;
+
+    return config_.use_raft;
+}
+
 GpuIndex::GpuIndex(
         std::shared_ptr<GpuResources> resources,
         int dims,
@@ -64,7 +74,7 @@ GpuIndex::GpuIndex(
                     (config_.memorySpace == MemorySpace::Unified &&
                      getFullUnifiedMemSupport(config_.device)),
             "Device %d does not support full CUDA 8 Unified Memory (CC 6.0+)",
-            config.device);
+            config_.device);
 
     metric_arg = metricArg;
 
@@ -132,7 +142,8 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
     if (n > 0) {
         idx_t totalSize = n * this->d * sizeof(float);
 
-        if (totalSize > kAddPageSize || n > kAddVecSize) {
+        if (!should_use_raft(config_) &&
+            (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
                     kAddPageSize / (this->d * sizeof(float));

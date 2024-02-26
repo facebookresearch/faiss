@@ -38,8 +38,16 @@ struct GpuIndexConfig {
     MemorySpace memorySpace = MemorySpace::Device;
 
     /// Should the index dispatch down to RAFT?
+#if defined USE_NVIDIA_RAFT
+    bool use_raft = true;
+#else
     bool use_raft = false;
+#endif
 };
+
+/// A centralized function that determines whether RAFT should
+/// be used based on various conditions (such as unsupported architecture)
+bool should_use_raft(GpuIndexConfig config_);
 
 class GpuIndex : public faiss::Index {
    public:

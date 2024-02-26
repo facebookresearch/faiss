@@ -88,7 +88,8 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     void train(idx_t n, const float* x) override;
 
    protected:
-    void set_index_(
+    /// Initialize appropriate index
+    void setIndex_(
             GpuResources* resources,
             int dim,
             int nlist,
@@ -101,6 +102,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
             IndicesOptions indicesOptions,
             MemorySpace space);
 
+   protected:
     /// Our configuration options
     const GpuIndexIVFFlatConfig ivfFlatConfig_;
 

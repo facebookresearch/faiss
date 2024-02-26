@@ -16,11 +16,6 @@
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
-#endif
-
 namespace faiss {
 namespace gpu {
 
@@ -79,9 +74,9 @@ void GpuIndexIVF::init_() {
     }
 
     // here we set a low # iterations because this is typically used
-    // for large clusterings
-    // (copying IndexIVF.cpp's Level1Quantizer
+    // for large clusterings (copying IndexIVF.cpp's Level1Quantizer
     cp.niter = 10;
+
     cp.verbose = verbose;
 
     if (quantizer) {
@@ -96,6 +91,7 @@ void GpuIndexIVF::init_() {
         GpuIndexFlatConfig config = ivfConfig_.flatConfig;
         // inherit our same device
         config.device = config_.device;
+        config.use_raft = config_.use_raft;
 
         if (metric_type == faiss::METRIC_L2) {
             quantizer = new GpuIndexFlatL2(resources_, d, config);
@@ -451,43 +447,12 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
 
     quantizer->reset();
 
-#if defined USE_NVIDIA_RAFT
+    // leverage the CPU-side k-means code, which works for the GPU
+    // flat index as well
+    Clustering clus(this->d, nlist, this->cp);
+    clus.verbose = verbose;
+    clus.train(n, x, *quantizer);
 
-    if (config_.use_raft) {
-        const raft::device_resources& raft_handle =
-                resources_->getRaftHandleCurrentDevice();
-
-        raft::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = metric_type == faiss::METRIC_L2
-                ? raft::distance::DistanceType::L2Expanded
-                : raft::distance::DistanceType::InnerProduct;
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction = 1.0;
-        raft_idx_params.kmeans_n_iters = cp.niter;
-        raft_idx_params.adaptive_centers = !cp.frozen_centroids;
-
-        auto raft_index = raft::neighbors::ivf_flat::build(
-                raft_handle, raft_idx_params, x, n, (idx_t)d);
-
-        raft_handle.sync_stream();
-
-        quantizer->train(nlist, raft_index.centers().data_handle());
-        quantizer->add(nlist, raft_index.centers().data_handle());
-    } else
-#else
-    if (config_.use_raft) {
-        FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
-    } else
-#endif
-    {
-        // leverage the CPU-side k-means code, which works for the GPU
-        // flat index as well
-        Clustering clus(this->d, nlist, this->cp);
-        clus.verbose = verbose;
-        clus.train(n, x, *quantizer);
-    }
     quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }

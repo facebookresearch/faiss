@@ -38,7 +38,11 @@ struct GpuClonerOptions {
     bool verbose = false;
 
     /// use the RAFT implementation
+#if defined USE_NVIDIA_RAFT
+    bool use_raft = true;
+#else
     bool use_raft = false;
+#endif
 };
 
 struct GpuMultipleClonerOptions : public GpuClonerOptions {

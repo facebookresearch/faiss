@@ -62,9 +62,9 @@ if(FAISS_ENABLE_GPU)
   enable_language(CUDA)
 endif()
 
-if(FAISS_ENABLE_RAFT)
-  find_package(raft COMPONENTS compiled distributed)
-endif()
+if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
+   find_package(raft COMPONENTS compiled distributed)
+ endif()
 
 add_subdirectory(faiss)
 

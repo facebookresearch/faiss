@@ -31,6 +31,7 @@ TEST(TestGpuMemoryException, AddException) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+    config.use_raft = false;
 
     faiss::gpu::GpuIndexFlatL2 gpuIndexL2Broken(
             &res, (int)brokenAddDims, config);

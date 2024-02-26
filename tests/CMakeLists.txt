@@ -70,6 +70,7 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   gtest_main
+  $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
 )
 
 # Defines `gtest_discover_tests()`.
