@@ -948,7 +948,7 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
-            h == fourcc("IHN2")) {
+            h == fourcc("IHN2") || h == fourcc("IHNc")) {
         IndexHNSW* idxhnsw = nullptr;
         if (h == fourcc("IHNf"))
             idxhnsw = new IndexHNSWFlat();
