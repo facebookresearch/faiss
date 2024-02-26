@@ -22,10 +22,12 @@
 
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <cstddef>
+#include <cstdint>
 #include <faiss/gpu/impl/RaftCagra.cuh>
 
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
+#include <raft/core/resource/thrust_policy.hpp>
 #include <raft/neighbors/cagra.cuh>
 
 namespace faiss {
@@ -91,30 +93,47 @@ RaftCagra::RaftCagra(
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+
     if (distances_on_gpu && knn_graph_on_gpu) {
+        raft_handle.sync_stream();
+        // Copying to host so that raft::neighbors::cagra::index
+        // creates an owning copy of the knn graph on device
+        auto knn_graph_copy =
+                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
+        thrust::copy(
+                thrust::device_ptr<const idx_t>(knn_graph),
+                thrust::device_ptr<const idx_t>(knn_graph + (n * graph_degree)),
+                knn_graph_copy.data_handle());
+
         auto distances_mds =
                 raft::make_device_matrix_view<const float, int64_t>(
                         distances, n, dim);
-        auto knn_graph_mds =
-                raft::make_device_matrix_view<const idx_t, int64_t>(
-                        knn_graph, n, graph_degree);
 
-        raft_knn_index = raft::neighbors::cagra::index<float, idx_t>(
+        raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                 raft_handle,
                 raft::distance::DistanceType::L2Expanded,
                 distances_mds,
-                knn_graph_mds);
-    } else {
+                raft::make_const_mdspan(knn_graph_copy.view()));
+    } else if (!distances_on_gpu && !knn_graph_on_gpu) {
+        // copy idx_t (int64_t) host knn_graph to uint32_t host knn_graph
+        auto knn_graph_copy =
+                raft::make_host_matrix<uint32_t, int64_t>(n, graph_degree);
+        std::copy(
+                knn_graph,
+                knn_graph + (n * graph_degree),
+                knn_graph_copy.data_handle());
+
         auto distances_mds = raft::make_host_matrix_view<const float, int64_t>(
                 distances, n, dim);
-        auto knn_graph_mds = raft::make_host_matrix_view<const idx_t, int64_t>(
-                knn_graph, n, graph_degree);
 
-        raft_knn_index = raft::neighbors::cagra::index<float, idx_t>(
+        raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                 raft_handle,
                 raft::distance::DistanceType::L2Expanded,
                 distances_mds,
-                knn_graph_mds);
+                raft::make_const_mdspan(knn_graph_copy.view()));
+    } else {
+        FAISS_THROW_MSG(
+                "distances and knn_graph must both be in device or host memory");
     }
 }
 
@@ -122,12 +141,12 @@ void RaftCagra::train(idx_t n, const float* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     if (getDeviceForAddress(x) >= 0) {
-        raft_knn_index = raft::neighbors::cagra::build<float, idx_t>(
+        raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
                 raft_handle,
                 index_pams_,
                 raft::make_device_matrix_view<const float, idx_t>(x, n, dim_));
     } else {
-        raft_knn_index = raft::neighbors::cagra::build<float, idx_t>(
+        raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
                 raft_handle,
                 index_pams_,
                 raft::make_host_matrix_view<const float, idx_t>(x, n, dim_));
@@ -186,13 +205,21 @@ void RaftCagra::search(
     search_pams.num_random_samplings = num_random_samplings;
     search_pams.rand_xor_mask = rand_xor_mask;
 
+    auto indices_copy = raft::make_device_matrix<uint32_t, idx_t>(
+            raft_handle, numQueries, k_);
+
     raft::neighbors::cagra::search(
             raft_handle,
             search_pams,
             raft_knn_index.value(),
             queries_view,
-            indices_view,
+            indices_copy.view(),
             distances_view);
+    thrust::copy(
+            raft::resource::get_thrust_policy(raft_handle),
+            indices_copy.data_handle(),
+            indices_copy.data_handle() + indices_copy.size(),
+            indices_view.data_handle());
 }
 
 void RaftCagra::reset() {
@@ -215,12 +242,13 @@ std::vector<idx_t> RaftCagra::get_knngraph() const {
     std::vector<idx_t> host_graph(
             device_graph.extent(0) * device_graph.extent(1));
 
-    raft::update_host(
-            host_graph.data(),
-            device_graph.data_handle(),
-            host_graph.size(),
-            stream);
     raft_handle.sync_stream();
+
+    thrust::copy(
+            thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
+            thrust::device_ptr<const uint32_t>(
+                    device_graph.data_handle() + device_graph.size()),
+            host_graph.data());
 
     return host_graph;
 }

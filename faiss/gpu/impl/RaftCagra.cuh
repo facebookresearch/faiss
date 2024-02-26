@@ -113,8 +113,8 @@ class RaftCagra {
     raft::neighbors::cagra::index_params index_pams_;
 
     /// Instance of trained RAFT CAGRA index
-    std::optional<raft::neighbors::cagra::index<float, idx_t>> raft_knn_index{
-            std::nullopt};
+    std::optional<raft::neighbors::cagra::index<float, uint32_t>>
+            raft_knn_index{std::nullopt};
 };
 
 } // namespace gpu
