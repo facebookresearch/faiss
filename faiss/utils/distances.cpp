@@ -20,6 +20,10 @@
 #include <immintrin.h>
 #endif
 
+#ifdef ENABLE_DNNL
+#include <faiss/utils/onednn/onednn_utils.h>
+#endif
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -142,8 +146,31 @@ void exhaustive_inner_product_seq(
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
     int nt = std::min(int(nx), omp_get_max_threads());
-
+    
     FAISS_ASSERT(use_sel == (sel != nullptr));
+
+#ifdef ENABLE_DNNL
+    // use AMX to accelerate if available
+    if (is_amxbf16_supported()) {
+        float *res_arr = (float *)malloc(nx * ny * sizeof(float));
+        comput_f32bf16f32_inner_product(nx, d, ny, d, const_cast<float*>(x), const_cast<float*>(y), res_arr);
+
+#pragma omp parallel num_threads(nt)
+    {
+       SingleResultHandler resi(res);
+#pragma omp for
+        for(size_t i = 0; i < nx; i++) {  
+            resi.begin(i);
+            for(size_t j = 0; j < ny; j++){            
+                float ip = res_arr[i*ny + j];
+                resi.add_result(ip , j);
+            }
+            resi.end();
+        }
+    }    
+        delete[] res_arr;
+    } else {
+#endif
 
 #pragma omp parallel num_threads(nt)
     {
@@ -165,6 +192,10 @@ void exhaustive_inner_product_seq(
             resi.end();
         }
     }
+  
+#ifdef ENABLE_DNNL   
+    }
+#endif
 }
 
 template <class BlockResultHandler, bool use_sel = false>
