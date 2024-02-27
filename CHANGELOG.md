@@ -10,24 +10,27 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
 
-## [1.8.0] - 2024-02-26
+## [1.8.0] - 2024-02-27
 ### Added
-- Integrated IVF-PQ from RAFT
-- Integrated IVF-Flat from RAFT
+- Added a new conda package faiss-gpu-raft alongside faiss-cpu and faiss-gpu
+- Integrated IVF-Flat and IVF-PQ implementations in faiss-gpu-raft from RAFT by Nvidia [thanks Corey Nolet and Tarang Jain]
 - Added a context parameter to InvertedLists and InvertedListsIterator
-- Added Faiss on Rocksdb demo
+- Added Faiss on Rocksdb demo to showing how inverted lists can be persisted in a key-value store
 - Introduced Offline IVF framework powered by Faiss big batch search
-- Added SIMD NEON Optimization for QT_FP16 in Scalar Quantizer. Specially thanks to Naveen Tatikonda @naveentatikonda
+- Added SIMD NEON Optimization for QT_FP16 in Scalar Quantizer. [thanks Naveen Tatikonda]
 - Generalized ResultHandler and supported range search for HNSW and FastScan
-- Introduced avx512 optimization mode and FAISS_OPT_LEVEL env variable
+- Introduced avx512 optimization mode and FAISS_OPT_LEVEL env variable [thanks Alexandr Ghuzva]
 - Added search parameters for IndexRefine::search() and IndexRefineFlat::search()
 - Supported large two-level clustering
+- Added support for Python 3.11 and 3.12
+- Added support for CUDA 12
 
 ### Changed
 - Used the benchmark to find Pareto optimal indices. Intentionally limited to IVF(Flat|HNSW),PQ|SQ indices
 - Splitted off RQ encoding steps to another file
 - Supported better NaN handling
-- HNSW speedup + Distance 4 points
+- HNSW speedup + Distance 4 points [thanks Alexandr Ghuzva]
+
 ### Fixed
 - Fixed DeviceVector reallocations in Faiss GPU
 - Used efSearch from params if provided in HNSW search
