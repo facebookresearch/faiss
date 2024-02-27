@@ -17,8 +17,8 @@
 #include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 4
+#define FAISS_VERSION_MINOR 8
+#define FAISS_VERSION_PATCH 0
 
 /**
  * @namespace faiss
