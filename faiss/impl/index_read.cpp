@@ -962,7 +962,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = true;
-        if (h == fourcc("IHNp")) {
+        if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
         }
         idx = idxhnsw;
