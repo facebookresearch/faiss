@@ -4,44 +4,47 @@ The supported way to install Faiss is through [conda](https://docs.conda.io).
 Stable releases are pushed regularly to the pytorch conda channel, as well as
 pre-release nightly builds.
 
-The CPU-only `faiss-cpu` conda package is currently available on Linux, OSX, and
-Windows. The `faiss-gpu`, containing both CPU and GPU indices, is available on
-Linux systems, for CUDA 11.4. Packages are built for Python versions 3.8-3.10.
+- The CPU-only faiss-cpu conda package is currently available on Linux (x86_64 and arm64), OSX (arm64 only), and Windows (x86_64)
+- faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86_64 only) for CUDA 11.4 and 12.1
+- NEW: faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86_64 only) for CUDA 11.8 and 12.1.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.7.4 mkl=2021 blas=1.0=mkl
+$ conda install -c pytorch faiss-cpu=1.8.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.7.4 mkl=2021 blas=1.0=mkl
+$ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
+
+# GPU(+CPU) version with NVIDIA RAFT
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
 ```
 
-For faiss-gpu, the nvidia channel is required for cudatoolkit=11.4, which is not
+For faiss-gpu, the nvidia channel is required for CUDA, which is not
 published in the main anaconda channel.
 
-NOTE: due to a bug in the latest 1.7.4 release, Intel MKL 2021 needs to be installed
-separately where applicable. Remove the MKL reference when installing on
-non-Intel platforms.
+For faiss-gpu-raft, the nvidia, rapidsai and conda-forge channels are required.
 
-Nightly pre-release packages can be installed as follows. There is no need to
-install MKL separately, the correct package is automatically installed as a
-dependency where necessary:
+Nightly pre-release packages can be installed as follows:
 
 ``` shell
 # CPU-only version
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.7.4
-```
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
 
-A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-06-19):
+# GPU(+CPU) version with NVIDIA RAFT
+conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
 ```
-conda create --name faiss_1.7.4 python=3.10
-conda activate faiss_1.7.4
-conda install faiss-gpu=1.7.4 mkl=2021 pytorch pytorch-cuda numpy -c pytorch -c nvidia
+In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
+
+A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-03-01):
+```
+conda create --name faiss_1.8.0
+conda activate faiss_1.8.0
+conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch pytorch-cuda numpy
 ```
 
 ## Installing from conda-forge
