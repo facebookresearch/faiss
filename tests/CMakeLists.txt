@@ -67,10 +67,11 @@ set(INSTALL_GTEST CACHE BOOL OFF)
 FetchContent_MakeAvailable(googletest)
 
 find_package(OpenMP REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
-  gtest_main
+  GTest::gtest_main
   $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
 )
 
