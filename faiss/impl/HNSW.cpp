@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <iostream>
+
 #include <faiss/impl/HNSW.h>
 
 #include <cstddef>
@@ -263,7 +265,7 @@ void HNSW::shrink_neighbor_list(
         }
     }
     size_t idx = 0;
-    while (keep_max_size_level0 && output.size() < max_size) {
+    while (keep_max_size_level0 && (output.size() < max_size) && (idx < outsiders.size())) {
         output.push_back(outsiders[idx++]);
     }
 }
@@ -337,7 +339,7 @@ void add_link(
     }
 
     shrink_neighbor_list(
-            qdis, resultSet, end - begin, keep_max_size_level0 && level == 0);
+            qdis, resultSet, end - begin, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
@@ -458,7 +460,7 @@ void HNSW::add_links_starting_from(
     int M = nb_neighbors(level);
 
     ::faiss::shrink_neighbor_list(
-            ptdis, link_targets, M, keep_max_size_level0 && level == 0);
+            ptdis, link_targets, M, keep_max_size_level0);
 
     std::vector<storage_idx_t> neighbors;
     neighbors.reserve(link_targets.size());

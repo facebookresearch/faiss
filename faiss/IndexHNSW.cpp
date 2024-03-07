@@ -7,6 +7,8 @@
 
 // -*- c++ -*-
 
+#include <iostream>
+
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>
@@ -196,6 +198,7 @@ void hnsw_add_vertices(
              pt_level >= !index_hnsw.init_level0;
              pt_level--) {
             int i0 = i1 - hist[pt_level];
+            // std::cout << "level: " << pt_level << "points: " << hist[pt_level] << std::endl;
 
             if (verbose) {
                 printf("Adding %d elements at level %d\n", i1 - i0, pt_level);
@@ -236,7 +239,7 @@ void hnsw_add_vertices(
                             pt_id,
                             locks,
                             vt,
-                            index_hnsw.keep_max_size_level0);
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
