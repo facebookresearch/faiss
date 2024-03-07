@@ -6,47 +6,22 @@
  */
 
 #include <cstdio>
-#include <cstdlib>
 #include <random>
-
-#include <unistd.h>
 
 #include <gtest/gtest.h>
 
 #include <faiss/IVFlib.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
-#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/invlists/OnDiskInvertedLists.h>
 
+#include "test_util.h"
+
 namespace {
 
-struct Tempfilename {
-    static pthread_mutex_t mutex;
-
-    std::string filename = "/tmp/faiss_tmp_XXXXXX";
-
-    Tempfilename() {
-        pthread_mutex_lock(&mutex);
-        int fd = mkstemp(&filename[0]);
-        close(fd);
-        pthread_mutex_unlock(&mutex);
-    }
-
-    ~Tempfilename() {
-        if (access(filename.c_str(), F_OK)) {
-            unlink(filename.c_str());
-        }
-    }
-
-    const char* c_str() {
-        return filename.c_str();
-    }
-};
-
-pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef faiss::idx_t idx_t;
 
@@ -95,7 +70,7 @@ int compare_merged(
     std::vector<float> refD(k * nq);
 
     index_shards->search(nq, cd.queries.data(), k, refD.data(), refI.data());
-    Tempfilename filename;
+    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
 
     std::vector<idx_t> newI(k * nq);
     std::vector<float> newD(k * nq);
@@ -212,7 +187,7 @@ TEST(MERGE, merge_flat_vt) {
 TEST(MERGE, merge_flat_ondisk) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_indices = true;
-    Tempfilename filename;
+    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
 
     for (int i = 0; i < nindex; i++) {
         auto ivf = new faiss::IndexIVFFlat(&cd.quantizer, d, nlist);
