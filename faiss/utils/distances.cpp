@@ -146,54 +146,61 @@ void exhaustive_inner_product_seq(
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
     int nt = std::min(int(nx), omp_get_max_threads());
-    
+
     FAISS_ASSERT(use_sel == (sel != nullptr));
 
 #ifdef ENABLE_DNNL
     // use AMX to accelerate if available
     if (is_amxbf16_supported()) {
-        float *res_arr = (float *)malloc(nx * ny * sizeof(float));
-        comput_f32bf16f32_inner_product(nx, d, ny, d, const_cast<float*>(x), const_cast<float*>(y), res_arr);
+        float* res_arr = (float*)malloc(nx * ny * sizeof(float));
+        comput_f32bf16f32_inner_product(
+                nx,
+                d,
+                ny,
+                d,
+                const_cast<float*>(x),
+                const_cast<float*>(y),
+                res_arr);
 
 #pragma omp parallel num_threads(nt)
-    {
-       SingleResultHandler resi(res);
+        {
+            SingleResultHandler resi(res);
 #pragma omp for
-        for(size_t i = 0; i < nx; i++) {  
-            resi.begin(i);
-            for(size_t j = 0; j < ny; j++){            
-                float ip = res_arr[i*ny + j];
-                resi.add_result(ip , j);
+            for (size_t i = 0; i < nx; i++) {
+                resi.begin(i);
+                for (size_t j = 0; j < ny; j++) {
+                    float ip = res_arr[i * ny + j];
+                    resi.add_result(ip, j);
+                }
+                resi.end();
             }
-            resi.end();
         }
-    }    
         delete[] res_arr;
     } else {
 #endif
 
 #pragma omp parallel num_threads(nt)
-    {
-        SingleResultHandler resi(res);
+        {
+            SingleResultHandler resi(res);
 #pragma omp for
-        for (int64_t i = 0; i < nx; i++) {
-            const float* x_i = x + i * d;
-            const float* y_j = y;
+            for (int64_t i = 0; i < nx; i++) {
+                const float* x_i = x + i * d;
+                const float* y_j = y;
 
-            resi.begin(i);
+                resi.begin(i);
 
-            for (size_t j = 0; j < ny; j++, y_j += d) {
-                if (use_sel && !sel->is_member(j)) {
-                    continue;
+                for (size_t j = 0; j < ny; j++, y_j += d) {
+                    if (use_sel && !sel->is_member(j)) {
+                        continue;
+                    }
+                    float ip = fvec_inner_product(x_i, y_j, d);
+                    resi.add_result(ip, j);
                 }
-                float ip = fvec_inner_product(x_i, y_j, d);
-                resi.add_result(ip, j);
+                resi.end();
             }
-            resi.end();
         }
-    }
-  
-#ifdef ENABLE_DNNL   
+
+#ifdef ENABLE_DNNL
     }
 #endif
 }
