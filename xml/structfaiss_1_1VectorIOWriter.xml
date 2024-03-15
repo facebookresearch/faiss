@@ -58,12 +58,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="61" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOWriter::fileno</definition>
+        <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -104,7 +104,7 @@
     <location file="faiss/impl/io.h" line="59" column="1" bodyfile="faiss/impl/io.h" bodystart="59" bodyend="62"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorIOWriter_1a2b3f128d0d030a34225041ba627fb815" prot="public" virt="non-virtual"><scope>faiss::VectorIOWriter</scope><name>data</name></member>
-      <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" virt="virtual"><scope>faiss::VectorIOWriter</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" virt="virtual"><scope>faiss::VectorIOWriter</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" virt="non-virtual"><scope>faiss::VectorIOWriter</scope><name>name</name></member>
       <member refid="structfaiss_1_1VectorIOWriter_1a06e4b9c1f49f9df496751f8063d5c879" prot="public" virt="virtual"><scope>faiss::VectorIOWriter</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1IOWriter_1a0b7fbb3222d8d2668ace6249d7dcd6aa" prot="public" virt="virtual"><scope>faiss::VectorIOWriter</scope><name>~IOWriter</name></member>

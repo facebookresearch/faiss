@@ -120,12 +120,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="89" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>int faiss::FileIOWriter::fileno</definition>
+        <definition>int faiss::FileIOWriter::filedescriptor</definition>
         <argsstring>() override</argsstring>
-        <name>fileno</name>
-        <reimplements refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f">fileno</reimplements>
+        <name>filedescriptor</name>
+        <reimplements refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0">filedescriptor</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -166,9 +166,9 @@
     <location file="faiss/impl/io.h" line="79" column="1" bodyfile="faiss/impl/io.h" bodystart="79" bodyend="92"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FileIOWriter_1acf255930d7040567e3981886eb653468" prot="public" virt="non-virtual"><scope>faiss::FileIOWriter</scope><name>f</name></member>
+      <member refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06" prot="public" virt="virtual"><scope>faiss::FileIOWriter</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1FileIOWriter_1a04edda07f635072eb02f5ade60a826cc" prot="public" virt="non-virtual"><scope>faiss::FileIOWriter</scope><name>FileIOWriter</name></member>
       <member refid="structfaiss_1_1FileIOWriter_1aa9918cbd4b4ff6b9d8603e58c4b9da7c" prot="public" virt="non-virtual"><scope>faiss::FileIOWriter</scope><name>FileIOWriter</name></member>
-      <member refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd" prot="public" virt="virtual"><scope>faiss::FileIOWriter</scope><name>fileno</name></member>
       <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" virt="non-virtual"><scope>faiss::FileIOWriter</scope><name>name</name></member>
       <member refid="structfaiss_1_1FileIOWriter_1ad5a95eab91a4b55a759410c034e75509" prot="public" virt="non-virtual"><scope>faiss::FileIOWriter</scope><name>need_close</name></member>
       <member refid="structfaiss_1_1FileIOWriter_1a7a95b4427902bee7b903db9ea09b755c" prot="public" virt="virtual"><scope>faiss::FileIOWriter</scope><name>operator()</name></member>

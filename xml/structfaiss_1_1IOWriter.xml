@@ -51,12 +51,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="45" column="20"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOWriter::fileno</definition>
+        <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -115,7 +115,7 @@
     </inheritancegraph>
     <location file="faiss/impl/io.h" line="40" column="1" bodyfile="faiss/impl/io.h" bodystart="40" bodyend="51"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" virt="virtual"><scope>faiss::IOWriter</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" virt="virtual"><scope>faiss::IOWriter</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" virt="non-virtual"><scope>faiss::IOWriter</scope><name>name</name></member>
       <member refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11" prot="public" virt="pure-virtual"><scope>faiss::IOWriter</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1IOWriter_1a0b7fbb3222d8d2668ace6249d7dcd6aa" prot="public" virt="virtual"><scope>faiss::IOWriter</scope><name>~IOWriter</name></member>

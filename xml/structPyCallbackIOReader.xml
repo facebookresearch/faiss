@@ -107,12 +107,12 @@
         </inbodydescription>
         <location file="faiss/python/python_callbacks.h" line="45" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOReader::fileno</definition>
+        <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -154,7 +154,7 @@
     <listofallmembers>
       <member refid="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>bs</name></member>
       <member refid="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>callback</name></member>
-      <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" virt="virtual"><scope>PyCallbackIOReader</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" prot="public" virt="virtual"><scope>PyCallbackIOReader</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>name</name></member>
       <member refid="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d" prot="public" virt="virtual"><scope>PyCallbackIOReader</scope><name>operator()</name></member>
       <member refid="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>PyCallbackIOReader</name></member>

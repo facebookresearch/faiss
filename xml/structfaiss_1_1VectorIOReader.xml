@@ -72,12 +72,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="56" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOReader::fileno</definition>
+        <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -118,7 +118,7 @@
     <location file="faiss/impl/io.h" line="53" column="1" bodyfile="faiss/impl/io.h" bodystart="53" bodyend="57"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorIOReader_1a0bc2d0055617f0da626a8377f6d76b42" prot="public" virt="non-virtual"><scope>faiss::VectorIOReader</scope><name>data</name></member>
-      <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" virt="virtual"><scope>faiss::VectorIOReader</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" prot="public" virt="virtual"><scope>faiss::VectorIOReader</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>faiss::VectorIOReader</scope><name>name</name></member>
       <member refid="structfaiss_1_1VectorIOReader_1a7eb8ab296df82e601420c5073f19fa43" prot="public" virt="virtual"><scope>faiss::VectorIOReader</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1VectorIOReader_1a5d2da3a979d582dcfbba15e341d24ac0" prot="public" virt="non-virtual"><scope>faiss::VectorIOReader</scope><name>rp</name></member>

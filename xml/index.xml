@@ -299,7 +299,7 @@
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1BufferedIOReader_1a5e86e5c802653905f1543c9d86b5457c" kind="function"><name>BufferedIOReader</name></member>
     <member refid="structfaiss_1_1BufferedIOReader_1aaa0d9fcd666e0b6f8f4b9751f78228da" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1BufferedIOWriter" kind="struct"><name>faiss::BufferedIOWriter</name>
     <member refid="structfaiss_1_1BufferedIOWriter_1ad26128c341f7dbf42299930905854442" kind="variable"><name>writer</name></member>
@@ -312,7 +312,7 @@
     <member refid="structfaiss_1_1BufferedIOWriter_1a4ce1175f2ea6a94fd7e4fb3c57539de1" kind="function"><name>BufferedIOWriter</name></member>
     <member refid="structfaiss_1_1BufferedIOWriter_1ad26e78fa5ba310cbf10765727f9432da" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1BufferedIOWriter_1a4b3fb6869ad3b0357e7bd19eb1e4b81e" kind="function"><name>~BufferedIOWriter</name></member>
-    <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1BufferList" kind="struct"><name>faiss::BufferList</name>
     <member refid="structfaiss_1_1BufferList_1a5eb5086d4b0f3904a6e4ad7a3b93d96a" kind="variable"><name>buffer_size</name></member>
@@ -634,7 +634,7 @@
     <member refid="structfaiss_1_1FileIOReader_1a261ba851e6fc12bf452c1ca9f10dd001" kind="function"><name>FileIOReader</name></member>
     <member refid="structfaiss_1_1FileIOReader_1a0e55df8c460124aae00ebe7e142b1360" kind="function"><name>~FileIOReader</name></member>
     <member refid="structfaiss_1_1FileIOReader_1a7b255677a3b90783243ca666d2613a06" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1FileIOWriter" kind="struct"><name>faiss::FileIOWriter</name>
     <member refid="structfaiss_1_1FileIOWriter_1acf255930d7040567e3981886eb653468" kind="variable"><name>f</name></member>
@@ -644,7 +644,7 @@
     <member refid="structfaiss_1_1FileIOWriter_1aa9918cbd4b4ff6b9d8603e58c4b9da7c" kind="function"><name>FileIOWriter</name></member>
     <member refid="structfaiss_1_1FileIOWriter_1a7bf3a41d7f92cc20656cb99d902cdc57" kind="function"><name>~FileIOWriter</name></member>
     <member refid="structfaiss_1_1FileIOWriter_1a7a95b4427902bee7b903db9ea09b755c" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" kind="struct"><name>faiss::simd_result_handlers::FixedStorageHandler</name>
     <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ad0e9987bf1e7eca3084c795b0418424c" kind="variable"><name>dis</name></member>
@@ -5935,13 +5935,13 @@
   <compound refid="structfaiss_1_1IOReader" kind="struct"><name>faiss::IOReader</name>
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" kind="function"><name>filedescriptor</name></member>
     <member refid="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" kind="function"><name>~IOReader</name></member>
   </compound>
   <compound refid="structfaiss_1_1IOWriter" kind="struct"><name>faiss::IOWriter</name>
     <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" kind="function"><name>filedescriptor</name></member>
     <member refid="structfaiss_1_1IOWriter_1a0b7fbb3222d8d2668ace6249d7dcd6aa" kind="function"><name>~IOWriter</name></member>
   </compound>
   <compound refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kind="struct"><name>faiss::detail::simdlib::is_simd256bit</name>
@@ -7000,7 +7000,7 @@
     <member refid="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8" kind="function"><name>PyCallbackIOReader</name></member>
     <member refid="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d" kind="function"><name>operator()</name></member>
     <member refid="structPyCallbackIOReader_1a71af3f17d57c83c3b85ec45dcfc34d01" kind="function"><name>~PyCallbackIOReader</name></member>
-    <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structPyCallbackIOWriter" kind="struct"><name>PyCallbackIOWriter</name>
     <member refid="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" kind="variable"><name>callback</name></member>
@@ -7009,7 +7009,7 @@
     <member refid="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f" kind="function"><name>PyCallbackIOWriter</name></member>
     <member refid="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644" kind="function"><name>operator()</name></member>
     <member refid="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259" kind="function"><name>~PyCallbackIOWriter</name></member>
-    <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1Quantizer" kind="struct"><name>faiss::Quantizer</name>
     <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" kind="variable"><name>d</name></member>
@@ -8325,13 +8325,13 @@
     <member refid="structfaiss_1_1VectorIOReader_1a5d2da3a979d582dcfbba15e341d24ac0" kind="variable"><name>rp</name></member>
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1VectorIOReader_1a7eb8ab296df82e601420c5073f19fa43" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorIOWriter" kind="struct"><name>faiss::VectorIOWriter</name>
     <member refid="structfaiss_1_1VectorIOWriter_1a2b3f128d0d030a34225041ba627fb815" kind="variable"><name>data</name></member>
     <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1VectorIOWriter_1a06e4b9c1f49f9df496751f8063d5c879" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" kind="function"><name>fileno</name></member>
+    <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" kind="function"><name>filedescriptor</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorTransform" kind="struct"><name>faiss::VectorTransform</name>
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>

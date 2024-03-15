@@ -108,12 +108,12 @@
         </inbodydescription>
         <location file="faiss/python/python_callbacks.h" line="32" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOWriter::fileno</definition>
+        <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -157,7 +157,7 @@
     <listofallmembers>
       <member refid="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>bs</name></member>
       <member refid="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>callback</name></member>
-      <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" virt="virtual"><scope>PyCallbackIOWriter</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" virt="virtual"><scope>PyCallbackIOWriter</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>name</name></member>
       <member refid="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644" prot="public" virt="virtual"><scope>PyCallbackIOWriter</scope><name>operator()</name></member>
       <member refid="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>PyCallbackIOWriter</name></member>

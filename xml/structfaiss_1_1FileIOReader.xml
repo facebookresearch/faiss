@@ -120,12 +120,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="74" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>int faiss::FileIOReader::fileno</definition>
+        <definition>int faiss::FileIOReader::filedescriptor</definition>
         <argsstring>() override</argsstring>
-        <name>fileno</name>
-        <reimplements refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372">fileno</reimplements>
+        <name>filedescriptor</name>
+        <reimplements refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6">filedescriptor</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -166,9 +166,9 @@
     <location file="faiss/impl/io.h" line="64" column="1" bodyfile="faiss/impl/io.h" bodystart="64" bodyend="77"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FileIOReader_1a39ec5a14f8490c870543aae2674af69b" prot="public" virt="non-virtual"><scope>faiss::FileIOReader</scope><name>f</name></member>
+      <member refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53" prot="public" virt="virtual"><scope>faiss::FileIOReader</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1FileIOReader_1afe31b806e5d08f8306bcaeccea8d1533" prot="public" virt="non-virtual"><scope>faiss::FileIOReader</scope><name>FileIOReader</name></member>
       <member refid="structfaiss_1_1FileIOReader_1a261ba851e6fc12bf452c1ca9f10dd001" prot="public" virt="non-virtual"><scope>faiss::FileIOReader</scope><name>FileIOReader</name></member>
-      <member refid="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4" prot="public" virt="virtual"><scope>faiss::FileIOReader</scope><name>fileno</name></member>
       <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>faiss::FileIOReader</scope><name>name</name></member>
       <member refid="structfaiss_1_1FileIOReader_1a4ef78024e4a2eb33c5b810c5a7bf01d2" prot="public" virt="non-virtual"><scope>faiss::FileIOReader</scope><name>need_close</name></member>
       <member refid="structfaiss_1_1FileIOReader_1a7b255677a3b90783243ca666d2613a06" prot="public" virt="virtual"><scope>faiss::FileIOReader</scope><name>operator()</name></member>

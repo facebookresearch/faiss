@@ -160,12 +160,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="133" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
-        <definition>virtual int faiss::IOWriter::fileno</definition>
+        <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
-        <name>fileno</name>
-        <reimplementedby refid="structfaiss_1_1FileIOWriter_1a9ca557aca4570b5e2c722250160727dd">fileno</reimplementedby>
+        <name>filedescriptor</name>
+        <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -212,7 +212,7 @@
       <member refid="structfaiss_1_1BufferedIOWriter_1a8c3ab184b5a417dee89cb234b43b83f0" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>bsz</name></member>
       <member refid="structfaiss_1_1BufferedIOWriter_1ad152ff08f5e6ba82464799c89a1fca9e" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>buffer</name></member>
       <member refid="structfaiss_1_1BufferedIOWriter_1a4ce1175f2ea6a94fd7e4fb3c57539de1" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>BufferedIOWriter</name></member>
-      <member refid="structfaiss_1_1IOWriter_1a160d24a6d658b0650cc2e710e116447f" prot="public" virt="virtual"><scope>faiss::BufferedIOWriter</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" prot="public" virt="virtual"><scope>faiss::BufferedIOWriter</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>name</name></member>
       <member refid="structfaiss_1_1BufferedIOWriter_1ad269d4059207e45ac16c01762aa8df64" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>ofs</name></member>
       <member refid="structfaiss_1_1BufferedIOWriter_1a2e548f4634c815cbbb892375010d02e3" prot="public" virt="non-virtual"><scope>faiss::BufferedIOWriter</scope><name>ofs2</name></member>
