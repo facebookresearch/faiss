@@ -275,6 +275,7 @@ struct HammingComputerDefault {
                     len -= 8;
                     accu += popcount64(a64[i] ^ b64[i]);
                     i++;
+                    [[fallthrough]];
                     case 7:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
@@ -308,6 +309,7 @@ struct HammingComputerDefault {
             const uint8_t* a = a8 + 8 * quotient8;
             const uint8_t* b = b8 + 8 * quotient8;
             switch (remainder8) {
+                [[fallthrough]];
                 case 7:
                     accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
                     [[fallthrough]];
