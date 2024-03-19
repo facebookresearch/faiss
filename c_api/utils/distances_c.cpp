@@ -100,3 +100,11 @@ void faiss_set_distance_compute_min_k_reservoir(int value) {
 int faiss_get_distance_compute_min_k_reservoir() {
     return faiss::distance_compute_min_k_reservoir;
 }
+
+void faiss_set_distance_compute_dnnl_query_bs(int value) {
+    faiss::distance_compute_dnnl_query_bs = value;
+}
+
+int faiss_get_distance_compute_dnnl_query_bs() {
+    return faiss::distance_compute_dnnl_query_bs;
+}

@@ -254,8 +254,16 @@ void exhaustive_inner_product_blas(
         return;
 
     /* block sizes */
-    const size_t bs_x = distance_compute_blas_query_bs;
-    const size_t bs_y = distance_compute_blas_database_bs;
+    size_t prov_bs_x = distance_compute_blas_query_bs;
+    size_t prov_bs_y = distance_compute_blas_database_bs;
+#ifdef ENABLE_DNNL
+    if (is_amxbf16_supported()) {
+        prov_bs_x = distance_compute_dnnl_query_bs;
+        prov_bs_y = distance_compute_dnnl_database_bs;
+    }
+#endif
+    const size_t bs_x = prov_bs_x;
+    const size_t bs_y = prov_bs_y;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
@@ -269,7 +277,20 @@ void exhaustive_inner_product_blas(
             size_t j1 = j0 + bs_y;
             if (j1 > ny)
                 j1 = ny;
-            /* compute the actual dot products */
+/* compute the actual dot products */
+#ifdef ENABLE_DNNL
+            if (is_amxbf16_supported()) {
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0;
+                comput_f32bf16f32_inner_product(
+                        nxi,
+                        d,
+                        nyi,
+                        d,
+                        const_cast<float*>(x + i0 * d),
+                        const_cast<float*>(y + j0 * d),
+                        ip_block.get());
+            } else
+#endif
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
@@ -688,6 +709,8 @@ int distance_compute_blas_threshold = 20;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
+int distance_compute_dnnl_query_bs = 10240;
+int distance_compute_dnnl_database_bs = 10240;
 
 void knn_inner_product(
         const float* x,
