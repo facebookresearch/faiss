@@ -59,18 +59,12 @@ if(FAISS_OPT_LEVEL STREQUAL "avx512")
   target_link_libraries(faiss_test PRIVATE faiss_avx512)
 endif()
 
-include(FetchContent)
-FetchContent_Declare(googletest
-  URL "https://github.com/google/googletest/archive/release-1.12.1.tar.gz")
-set(BUILD_GMOCK CACHE BOOL OFF)
-set(INSTALL_GTEST CACHE BOOL OFF)
-FetchContent_MakeAvailable(googletest)
-
 find_package(OpenMP REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
-  gtest_main
+  GTest::gtest_main
   $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
 )
 
