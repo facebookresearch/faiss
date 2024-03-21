@@ -54,6 +54,7 @@ set(FAISS_SRC
   impl/AuxIndexStructures.cpp
   impl/CodePacker.cpp
   impl/IDSelector.cpp
+  impl/IDGrouper.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
   impl/NSG.cpp
@@ -149,6 +150,7 @@ set(FAISS_HEADERS
   impl/AuxIndexStructures.h
   impl/CodePacker.h
   impl/IDSelector.h
+  impl/IDGrouper.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
   impl/FaissException.h
@@ -183,6 +185,7 @@ set(FAISS_HEADERS
   invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
   utils/AlignedTable.h
+  utils/GroupHeap.h
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
