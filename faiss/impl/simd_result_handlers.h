@@ -58,7 +58,8 @@ struct SIMDResultHandlerToFloat : SIMDResultHandler {
             nullptr; // table of biases to add to each query (for IVF L2 search)
     const float* normalizers = nullptr; // size 2 * nq, to convert
 
-    SIMDResultHandlerToFloat(size_t nq, size_t ntotal) : nq(nq), ntotal(ntotal) {}
+    SIMDResultHandlerToFloat(size_t nq, size_t ntotal)
+            : nq(nq), ntotal(ntotal) {}
 
     virtual void begin(const float* norms) {
         normalizers = norms;
@@ -249,7 +250,12 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
     float* dis;
     int64_t* ids;
 
-    SingleResultHandler(size_t nq, size_t ntotal, float* dis, int64_t* ids, const IDSelector* sel_in)
+    SingleResultHandler(
+            size_t nq,
+            size_t ntotal,
+            float* dis,
+            int64_t* ids,
+            const IDSelector* sel_in)
             : RHC(nq, ntotal, sel_in), idis(nq), dis(dis), ids(ids) {
         for (size_t i = 0; i < nq; i++) {
             ids[i] = -1;
@@ -287,8 +293,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             while (lt_mask) {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
@@ -330,7 +335,13 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
 
     int64_t k; // number of results to keep
 
-    HeapHandler(size_t nq, size_t ntotal, int64_t k, float* dis, int64_t* ids, const IDSelector* sel_in)
+    HeapHandler(
+            size_t nq,
+            size_t ntotal,
+            int64_t k,
+            float* dis,
+            int64_t* ids,
+            const IDSelector* sel_in)
             : RHC(nq, ntotal, sel_in),
               idis(nq * k),
               iids(nq * k),
@@ -378,8 +389,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             while (lt_mask) {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
@@ -444,9 +454,12 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
             size_t k,
             size_t cap,
             float* dis,
-            int64_t* ids, 
+            int64_t* ids,
             const IDSelector* sel_in)
-            : RHC(nq, ntotal, sel_in), capacity((cap + 15) & ~15), dis(dis), ids(ids) {
+            : RHC(nq, ntotal, sel_in),
+              capacity((cap + 15) & ~15),
+              dis(dis),
+              ids(ids) {
         assert(capacity % 16 == 0);
         all_ids.resize(nq * capacity);
         all_vals.resize(nq * capacity);
@@ -486,8 +499,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                     res.add(dis, real_idx);
                 }
             }
-        }
-        else {
+        } else {
             while (lt_mask) {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
@@ -565,7 +577,11 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
     };
     std::vector<Triplet> triplets;
 
-    RangeHandler(RangeSearchResult& rres, float radius, size_t ntotal, const IDSelector* sel_in)
+    RangeHandler(
+            RangeSearchResult& rres,
+            float radius,
+            size_t ntotal,
+            const IDSelector* sel_in)
             : RHC(rres.nq, ntotal, sel_in), rres(rres), radius(radius) {
         thresholds.resize(nq);
         n_per_query.resize(nq + 1);
