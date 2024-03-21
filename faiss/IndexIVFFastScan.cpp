@@ -417,14 +417,19 @@ struct CoarseQuantizedWithBuffer : CoarseQuantized {
     std::vector<float> dis_buffer;
 
     void quantize(
-        const Index* quantizer, 
-        idx_t n, 
-        const float* x, 
-        const SearchParameters* quantizer_params
-    ) {
+            const Index* quantizer,
+            idx_t n,
+            const float* x,
+            const SearchParameters* quantizer_params) {
         dis_buffer.resize(nprobe * n);
         ids_buffer.resize(nprobe * n);
-        quantizer->search(n, x, nprobe, dis_buffer.data(), ids_buffer.data(), quantizer_params);
+        quantizer->search(
+                n,
+                x,
+                nprobe,
+                dis_buffer.data(),
+                ids_buffer.data(),
+                quantizer_params);
         dis = dis_buffer.data();
         ids = ids_buffer.data();
     }
@@ -440,7 +445,10 @@ struct CoarseQuantizedSlice : CoarseQuantizedWithBuffer {
         }
     }
 
-    void quantize_slice(const Index* quantizer, const float* x, const SearchParameters* quantizer_params) {
+    void quantize_slice(
+            const Index* quantizer,
+            const float* x,
+            const SearchParameters* quantizer_params) {
         quantize(quantizer, i1 - i0, x + quantizer->d * i0, quantizer_params);
     }
 };
@@ -483,7 +491,7 @@ void IndexIVFFastScan::search_dispatch_implem(
     const idx_t nprobe = params ? params->nprobe : this->nprobe;
     const IDSelector* sel = (params) ? params->sel : nullptr;
     const SearchParameters* quantizer_params =
-        params ? params->quantizer_params : nullptr;
+            params ? params->quantizer_params : nullptr;
 
     bool is_max = !is_similarity_metric(metric_type);
     using RH = SIMDResultHandlerToFloat;
@@ -585,7 +593,8 @@ void IndexIVFFastScan::search_dispatch_implem(
             if (impl == 14 || impl == 15) {
                 // this might require slicing if there are too
                 // many queries (for now we keep this simple)
-                search_implem_14(n, x, k, distances, labels, cq, impl, scaler, params);
+                search_implem_14(
+                        n, x, k, distances, labels, cq, impl, scaler, params);
             } else {
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
                 for (int slice = 0; slice < nslice; slice++) {
@@ -632,7 +641,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     // const idx_t nprobe = params ? params->nprobe : this->nprobe;
     const IDSelector* sel = (params) ? params->sel : nullptr;
     const SearchParameters* quantizer_params =
-        params ? params->quantizer_params : nullptr;
+            params ? params->quantizer_params : nullptr;
 
     bool is_max = !is_similarity_metric(metric_type);
 
