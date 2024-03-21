@@ -55,14 +55,14 @@ outputs:
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - libraft =24.02
+        - libraft =24.04
         - cuda-version {{ cuda_constraints }}
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libraft =24.02
+        - libraft =24.04
         - cuda-version {{ cuda_constraints }}
     test:
       requires:
