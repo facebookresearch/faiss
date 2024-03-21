@@ -270,8 +270,9 @@ void IndexIVFFastScan::compute_LUT_uint8(
         biases.resize(n * nprobe);
     }
 
+    // OMP for MSVC requires i to have signed integral type
 #pragma omp parallel for if (n > 100)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const float* t_in = dis_tables_float.get() + i * dim123;
         const float* b_in = nullptr;
         uint8_t* t_out = dis_tables.get() + i * dim123_2;
