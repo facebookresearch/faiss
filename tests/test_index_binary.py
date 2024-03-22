@@ -143,6 +143,15 @@ class TestBinaryFlat(unittest.TestCase):
         # nb tests is actually low...
         self.assertTrue(nt1 > 19 and nt2 > 19)
 
+    def test_reconstruct(self):
+        index = faiss.IndexBinaryFlat(64)
+        input_vector = np.random.randint(0, 255, size=(10, index.code_size)).astype("uint8")
+        index.add(input_vector)
+
+        reconstructed_vector = index.reconstruct_n(0, 4)
+        assert reconstructed_vector.shape == (4, index.code_size)
+        assert np.all(input_vector[:4] == reconstructed_vector)
+
 
 class TestBinaryIVF(unittest.TestCase):
 
