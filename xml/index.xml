@@ -1735,10 +1735,7 @@
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
     <member refid="structfaiss_1_1HNSWStats_1a28e67551d5cf31ab374fc8df2bab7cee" kind="variable"><name>n1</name></member>
     <member refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kind="variable"><name>n2</name></member>
-    <member refid="structfaiss_1_1HNSWStats_1afafad9953d7ac341682840169bc58588" kind="variable"><name>n3</name></member>
     <member refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kind="variable"><name>ndis</name></member>
-    <member refid="structfaiss_1_1HNSWStats_1a6bb6554915c07208c97e04fbe42541c6" kind="variable"><name>nreorder</name></member>
-    <member refid="structfaiss_1_1HNSWStats_1a492cbc4f5dc75d69e368ced8b852429d" kind="function"><name>HNSWStats</name></member>
     <member refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1HNSWStats_1adafef04e7a01e5688c2ced24019d65a7" kind="function"><name>combine</name></member>
   </compound>
