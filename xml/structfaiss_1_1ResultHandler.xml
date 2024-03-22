@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="60" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="60" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="62" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="62" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="63" column="18"/>
+        <location file="faiss/impl/ResultHandler.h" line="65" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResultHandler_1afb7fe7e6ac1b2aa5d41a4d06c3cc58da" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="65" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="65" bodyend="65"/>
+        <location file="faiss/impl/ResultHandler.h" line="67" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="67" bodyend="67"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -107,7 +107,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/impl/ResultHandler.h" line="58" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="58" bodyend="66"/>
+    <location file="faiss/impl/ResultHandler.h" line="60" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="60" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ResultHandler_1a3cf97e0bcb27feb310bebd35407fc47b" prot="public" virt="pure-virtual"><scope>faiss::ResultHandler</scope><name>add_result</name></member>
       <member refid="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643" prot="public" virt="non-virtual"><scope>faiss::ResultHandler</scope><name>threshold</name></member>

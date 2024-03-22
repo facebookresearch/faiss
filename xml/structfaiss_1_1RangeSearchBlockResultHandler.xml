@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="463" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="463" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="465" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="465" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1RangeSearchBlockResultHandler_1a5aa9436c364964d1c4ffd0558b787bde" prot="public" static="no">
         <type>typename C::TI</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="464" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="464" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="466" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="466" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="468" column="23" bodyfile="faiss/impl/ResultHandler.h" bodystart="468" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="470" column="23" bodyfile="faiss/impl/ResultHandler.h" bodystart="470" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1a45ca1bec70846c32a9e29a0cbade2155" prot="public" static="no" mutable="no">
         <type>T</type>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="469" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="469" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="471" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="471" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1a67e5b66d2a29f400f91fcaa22cb23787" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref> * &gt;</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="515" column="17" bodyfile="faiss/impl/ResultHandler.h" bodystart="515" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="525" column="17" bodyfile="faiss/impl/ResultHandler.h" bodystart="525" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1ab89a41f0a8e2abde5e9c5485136406d2" prot="public" static="no" mutable="no">
         <type>std::vector&lt; size_t &gt;</type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="516" column="17" bodyfile="faiss/impl/ResultHandler.h" bodystart="516" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="526" column="17" bodyfile="faiss/impl/ResultHandler.h" bodystart="526" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchBlockResultHandler_1a6ec52b118dea57bd8e9359d90bd6b4b5" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="517" column="9" bodyfile="faiss/impl/ResultHandler.h" bodystart="517" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="527" column="9" bodyfile="faiss/impl/ResultHandler.h" bodystart="527" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="34" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="36" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="39" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="41" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -143,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="39" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="41" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -166,7 +166,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="471" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="471" bodyend="472"/>
+        <location file="faiss/impl/ResultHandler.h" line="473" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="473" bodyend="474"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1a2281c827ea9db3e83a1416b520c3bce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -189,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="520" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="520" bodyend="523"/>
+        <location file="faiss/impl/ResultHandler.h" line="530" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="530" bodyend="533"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1a1686cb85fb274d5ea88eba1845abe724" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -215,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="527" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="527" bodyend="559"/>
+        <location file="faiss/impl/ResultHandler.h" line="537" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="537" bodyend="569"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RangeSearchBlockResultHandler_1ab8b19850da22c1ef7dd9c05f2aa70b43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -228,7 +228,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="561" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="561" bodyend="565"/>
+        <location file="faiss/impl/ResultHandler.h" line="571" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="571" bodyend="582"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -250,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="48" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="48" bodyend="48"/>
+        <location file="faiss/impl/ResultHandler.h" line="50" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="50" bodyend="50"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a4cd78859a05a11f3f63ba3290e5276de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -265,7 +265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="51" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="51" bodyend="51"/>
+        <location file="faiss/impl/ResultHandler.h" line="53" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="53" bodyend="53"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -303,7 +303,7 @@
         <link refid="structfaiss_1_1BlockResultHandler"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="462" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="462" bodyend="566"/>
+    <location file="faiss/impl/ResultHandler.h" line="464" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="464" bodyend="583"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RangeSearchBlockResultHandler_1a1686cb85fb274d5ea88eba1845abe724" prot="public" virt="non-virtual"><scope>faiss::RangeSearchBlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" virt="virtual" ambiguityscope="faiss::BlockResultHandler::"><scope>faiss::RangeSearchBlockResultHandler</scope><name>add_results</name></member>

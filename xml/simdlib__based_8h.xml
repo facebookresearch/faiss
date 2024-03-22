@@ -6,7 +6,19 @@
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <incdepgraph>
-      <node id="17">
+      <node id="13">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
         <label>limits</label>
       </node>
       <node id="10">
@@ -41,11 +53,17 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="19">
         <label>cmath</label>
       </node>
-      <node id="16">
+      <node id="20">
         <label>cassert</label>
+      </node>
+      <node id="15">
+        <label>string</label>
+      </node>
+      <node id="14">
+        <label>exception</label>
       </node>
       <node id="1">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
@@ -54,15 +72,15 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="23">
         <label>faiss/utils/partitioning.h</label>
         <link refid="partitioning_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -73,37 +91,43 @@
       <node id="8">
         <label>vector</label>
       </node>
-      <node id="13">
+      <node id="16">
+        <label>utility</label>
+      </node>
+      <node id="17">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="14" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="22">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="14" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="25">
+        <label>iostream</label>
+      </node>
+      <node id="18">
         <label>climits</label>
       </node>
       <node id="7">
@@ -115,7 +139,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="24">
         <label>stdio.h</label>
       </node>
       <node id="2">
@@ -125,7 +149,11 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
       <node id="5">
