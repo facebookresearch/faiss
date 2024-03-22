@@ -230,30 +230,20 @@ struct HNSW {
 };
 
 struct HNSWStats {
-    size_t n1, n2, n3;
-    size_t ndis;
-    size_t nreorder;
-
-    HNSWStats(
-            size_t n1 = 0,
-            size_t n2 = 0,
-            size_t n3 = 0,
-            size_t ndis = 0,
-            size_t nreorder = 0)
-            : n1(n1), n2(n2), n3(n3), ndis(ndis), nreorder(nreorder) {}
+    size_t n1 = 0; /// numbner of vectors searched
+    size_t n2 =
+            0; /// number of queries for which the candidate list is exhasted
+    size_t ndis = 0; /// number of distances computed
 
     void reset() {
-        n1 = n2 = n3 = 0;
+        n1 = n2 = 0;
         ndis = 0;
-        nreorder = 0;
     }
 
     void combine(const HNSWStats& other) {
         n1 += other.n1;
         n2 += other.n2;
-        n3 += other.n3;
         ndis += other.ndis;
-        nreorder += other.nreorder;
     }
 };
 
