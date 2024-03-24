@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include "Index_c.h"
+#include "IndexBinary_c.h"
 #include "faiss_c.h"
 
 #ifdef __cplusplus
@@ -24,6 +25,9 @@ extern "C" {
 
 /** Clone an index. This is equivalent to `faiss::clone_index` */
 int faiss_clone_index(const FaissIndex*, FaissIndex** p_out);
+
+/** Clone a binary index. This is equivalent to `faiss::clone_index_binary` */
+int faiss_clone_index_binary(const FaissIndexBinary*, FaissIndexBinary** p_out);
 
 #ifdef __cplusplus
 }
