@@ -286,9 +286,28 @@ void IndexIVFPQFastScan::compute_LUT(
     }
 }
 
-void IndexIVFPQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
+void IndexIVFPQFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
         const {
-    pq.decode(bytes, x, n);
+    size_t coarse_size = coarse_code_size();
+
+#pragma omp parallel if (n > 1)
+    {
+        std::vector<float> residual(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * (code_size + coarse_size);
+            int64_t list_no = decode_listno(code);
+            float* xi = x + i * d;
+            pq.decode(code + coarse_size, xi);
+            if (by_residual) {
+                quantizer->reconstruct(list_no, residual.data());
+                for (size_t j = 0; j < d; j++) {
+                    xi[j] += residual[j];
+                }
+            }
+        }
+    }
 }
 
 } // namespace faiss
