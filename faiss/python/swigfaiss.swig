@@ -1022,18 +1022,10 @@ PyObject *swig_ptr (PyObject *a)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_bool, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
-#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
-#else
-        return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
-#endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
-#ifdef SWIGWORDSIZE64
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
-#else
-        return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
-#endif
     }
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
