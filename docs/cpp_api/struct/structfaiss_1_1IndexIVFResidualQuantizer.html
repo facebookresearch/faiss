@@ -771,14 +771,17 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexIVFResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss25IndexIVFResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss25IndexIVFResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexIVFResidualQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>encode a set of vectors</p>
+<dd><p>encode a set of vectors sa_encode will call encode_vector with include_listno=true </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>n</strong> – nb of vectors to encode </p></li>
+<li><p><strong>x</strong> – the vectors to encode </p></li>
+<li><p><strong>bytes</strong> – output array for the codes </p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>nb of bytes written to codes </p>
 </dd>
 </dl>
 </dd></dl>
