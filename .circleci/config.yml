@@ -168,7 +168,7 @@ jobs:
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c conda-forge
+                      -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
       - when:
           condition:
             and:
@@ -182,7 +182,7 @@ jobs:
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c conda-forge
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
 
   build_cmake:
     parameters:
