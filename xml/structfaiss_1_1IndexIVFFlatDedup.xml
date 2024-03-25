@@ -1564,13 +1564,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
+<para>encode a set of vectors sa_encode will call encode_vector with include_listno=true <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors </para>
+<para>nb of vectors to encode </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -1578,7 +1577,7 @@
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input vectors, size n * d </para>
+<para>the vectors to encode </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -1586,15 +1585,17 @@
 <parametername>bytes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" kindref="member">sa_code_size()</ref> </para>
+<para>output array for the codes </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
+<simplesect kind="return"><para>nb of bytes written to codes </para>
+</simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="436" column="10"/>
+        <location file="faiss/IndexIVF.h" line="444" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
