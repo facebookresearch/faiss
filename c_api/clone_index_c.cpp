@@ -24,10 +24,12 @@ int faiss_clone_index(const FaissIndex* idx, FaissIndex** p_out) {
     CATCH_AND_HANDLE
 }
 
-
-int faiss_clone_index_binary(const FaissIndexBinary* idx, FaissIndexBinary** p_out) {
+int faiss_clone_index_binary(
+        const FaissIndexBinary* idx,
+        FaissIndexBinary** p_out) {
     try {
-        auto out = faiss::clone_binary_index(reinterpret_cast<const IndexBinary*>(idx));
+        auto out = faiss::clone_binary_index(
+                reinterpret_cast<const IndexBinary*>(idx));
         *p_out = reinterpret_cast<FaissIndexBinary*>(out);
     }
     CATCH_AND_HANDLE

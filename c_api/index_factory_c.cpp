@@ -30,7 +30,6 @@ int faiss_index_factory(
     CATCH_AND_HANDLE
 }
 
-
 /** Build an index with the sequence of processing steps described in
  *  the string.
  */
@@ -39,8 +38,8 @@ int faiss_index_binary_factory(
         int d,
         const char* description) {
     try {
-        *p_index = reinterpret_cast<FaissIndexBinary*>(faiss::index_binary_factory(
-                d, description));
+        *p_index = reinterpret_cast<FaissIndexBinary*>(
+                faiss::index_binary_factory(d, description));
     }
     CATCH_AND_HANDLE
 }

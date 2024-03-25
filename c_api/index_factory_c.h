@@ -11,8 +11,8 @@
 #ifndef FAISS_INDEX_FACTORY_C_H
 #define FAISS_INDEX_FACTORY_C_H
 
-#include "Index_c.h"
 #include "IndexBinary_c.h"
+#include "Index_c.h"
 #include "faiss_c.h"
 
 #ifdef __cplusplus

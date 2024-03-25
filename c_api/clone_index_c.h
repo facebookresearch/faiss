@@ -13,8 +13,8 @@
 #define FAISS_CLONE_INDEX_C_H
 
 #include <stdio.h>
-#include "Index_c.h"
 #include "IndexBinary_c.h"
+#include "Index_c.h"
 #include "faiss_c.h"
 
 #ifdef __cplusplus
