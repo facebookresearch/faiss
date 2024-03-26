@@ -266,7 +266,7 @@ jobs:
           name: C++ tests
           command: |
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
+            make -C build test --output-on-failure
       - run:
           name: Install Python extension
           command: |
