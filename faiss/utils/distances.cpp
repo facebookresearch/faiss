@@ -20,6 +20,10 @@
 #include <immintrin.h>
 #endif
 
+#ifdef ENABLE_DNNL
+#include <faiss/utils/onednn/onednn_utils.h>
+#endif
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -145,26 +149,60 @@ void exhaustive_inner_product_seq(
 
     FAISS_ASSERT(use_sel == (sel != nullptr));
 
+#ifdef ENABLE_DNNL
+    // use AMX to accelerate if available
+    if (is_amxbf16_supported()) {
+        float* res_arr = (float*)malloc(nx * ny * sizeof(float));
+        comput_f32bf16f32_inner_product(
+                nx,
+                d,
+                ny,
+                d,
+                const_cast<float*>(x),
+                const_cast<float*>(y),
+                res_arr);
+
 #pragma omp parallel num_threads(nt)
-    {
-        SingleResultHandler resi(res);
+        {
+            SingleResultHandler resi(res);
 #pragma omp for
-        for (int64_t i = 0; i < nx; i++) {
-            const float* x_i = x + i * d;
-            const float* y_j = y;
-
-            resi.begin(i);
-
-            for (size_t j = 0; j < ny; j++, y_j += d) {
-                if (use_sel && !sel->is_member(j)) {
-                    continue;
+            for (size_t i = 0; i < nx; i++) {
+                resi.begin(i);
+                for (size_t j = 0; j < ny; j++) {
+                    float ip = res_arr[i * ny + j];
+                    resi.add_result(ip, j);
                 }
-                float ip = fvec_inner_product(x_i, y_j, d);
-                resi.add_result(ip, j);
+                resi.end();
             }
-            resi.end();
         }
+        delete[] res_arr;
+    } else {
+#endif
+
+#pragma omp parallel num_threads(nt)
+        {
+            SingleResultHandler resi(res);
+#pragma omp for
+            for (int64_t i = 0; i < nx; i++) {
+                const float* x_i = x + i * d;
+                const float* y_j = y;
+
+                resi.begin(i);
+
+                for (size_t j = 0; j < ny; j++, y_j += d) {
+                    if (use_sel && !sel->is_member(j)) {
+                        continue;
+                    }
+                    float ip = fvec_inner_product(x_i, y_j, d);
+                    resi.add_result(ip, j);
+                }
+                resi.end();
+            }
+        }
+
+#ifdef ENABLE_DNNL
     }
+#endif
 }
 
 template <class BlockResultHandler, bool use_sel = false>
@@ -216,8 +254,16 @@ void exhaustive_inner_product_blas(
         return;
 
     /* block sizes */
-    const size_t bs_x = distance_compute_blas_query_bs;
-    const size_t bs_y = distance_compute_blas_database_bs;
+    size_t prov_bs_x = distance_compute_blas_query_bs;
+    size_t prov_bs_y = distance_compute_blas_database_bs;
+#ifdef ENABLE_DNNL
+    if (is_amxbf16_supported()) {
+        prov_bs_x = distance_compute_dnnl_query_bs;
+        prov_bs_y = distance_compute_dnnl_database_bs;
+    }
+#endif
+    const size_t bs_x = prov_bs_x;
+    const size_t bs_y = prov_bs_y;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
@@ -231,7 +277,20 @@ void exhaustive_inner_product_blas(
             size_t j1 = j0 + bs_y;
             if (j1 > ny)
                 j1 = ny;
-            /* compute the actual dot products */
+/* compute the actual dot products */
+#ifdef ENABLE_DNNL
+            if (is_amxbf16_supported()) {
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0;
+                comput_f32bf16f32_inner_product(
+                        nxi,
+                        d,
+                        nyi,
+                        d,
+                        const_cast<float*>(x + i0 * d),
+                        const_cast<float*>(y + j0 * d),
+                        ip_block.get());
+            } else
+#endif
             {
                 float one = 1, zero = 0;
                 FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
@@ -650,6 +709,8 @@ int distance_compute_blas_threshold = 20;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
+int distance_compute_dnnl_query_bs = 10240;
+int distance_compute_dnnl_database_bs = 10240;
 
 void knn_inner_product(
         const float* x,

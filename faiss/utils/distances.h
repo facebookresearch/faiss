@@ -281,6 +281,10 @@ FAISS_API extern int distance_compute_blas_threshold;
 FAISS_API extern int distance_compute_blas_query_bs;
 FAISS_API extern int distance_compute_blas_database_bs;
 
+// block sizes for oneDNN/AMX distance computations
+FAISS_API extern int distance_compute_dnnl_query_bs;
+FAISS_API extern int distance_compute_dnnl_database_bs;
+
 // above this number of results we switch to a reservoir to collect results
 // rather than a heap
 FAISS_API extern int distance_compute_min_k_reservoir;
