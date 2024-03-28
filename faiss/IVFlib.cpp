@@ -352,7 +352,10 @@ void search_with_parameters(
     const IndexIVF* index_ivf = dynamic_cast<const IndexIVF*>(index);
     FAISS_THROW_IF_NOT(index_ivf);
 
-    index_ivf->quantizer->search(n, x, params->nprobe, Dq.data(), Iq.data());
+    SearchParameters* quantizer_params =
+            (params) ? params->quantizer_params : nullptr;
+    index_ivf->quantizer->search(
+            n, x, params->nprobe, Dq.data(), Iq.data(), quantizer_params);
 
     if (nb_dis_ptr) {
         *nb_dis_ptr = count_ndis(index_ivf, n * params->nprobe, Iq.data());
