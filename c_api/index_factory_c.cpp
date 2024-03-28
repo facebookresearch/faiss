@@ -15,7 +15,7 @@
 
 using faiss::Index;
 
-/** Build and index with the sequence of processing steps described in
+/** Build an index with the sequence of processing steps described in
  *  the string.
  */
 int faiss_index_factory(
@@ -26,6 +26,20 @@ int faiss_index_factory(
     try {
         *p_index = reinterpret_cast<FaissIndex*>(faiss::index_factory(
                 d, description, static_cast<faiss::MetricType>(metric)));
+    }
+    CATCH_AND_HANDLE
+}
+
+/** Build an index with the sequence of processing steps described in
+ *  the string.
+ */
+int faiss_index_binary_factory(
+        FaissIndexBinary** p_index,
+        int d,
+        const char* description) {
+    try {
+        *p_index = reinterpret_cast<FaissIndexBinary*>(
+                faiss::index_binary_factory(d, description));
     }
     CATCH_AND_HANDLE
 }
