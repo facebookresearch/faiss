@@ -26,7 +26,7 @@ class TestHNSW(unittest.TestCase):
         (_, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
         index = faiss.IndexFlatL2(d)
         index.add(self.xb)
-        Dref, Iref = index.search(self.xq, 1)
+        Dref, Iref = index.search(self.xq, int(1))
         self.Iref = Iref
 
     def test_hnsw(self):
