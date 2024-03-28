@@ -1,0 +1,98 @@
+name: Build conda
+description: Build conda
+inputs:
+  label:
+    description: "Label"
+    default: ""
+    required: false
+  cuda:
+    description: "cuda"
+    default: ""
+    required: false
+  raft:
+    description: "raft"
+    default: ""
+    required: false
+  compiler_version:
+    description: "compiler_version"
+    default: ""
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Choose shell
+      shell: bash
+      id: choose_shell
+      run: |
+        # if runner.os != 'Windows' use bash, else use pwsh
+        if [ "${{ runner.os }}" != "Windows" ]; then
+          echo "shell=bash" >> "$GITHUB_OUTPUT"
+        else
+          echo "shell=pwsh" >> "$GITHUB_OUTPUT"
+        fi
+    - name: Setup miniconda
+      uses: conda-incubator/setup-miniconda@v3.0.3
+      with:
+        python-version: '3.11'
+        miniconda-version:  latest
+    - name: Install conda build tools
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      run: |
+        # conda config --set solver libmamba
+        # conda config --set verbosity 3
+        conda update -y -q conda
+        conda install -y -q conda-build
+    - name: Enable anaconda uploads
+      if: inputs.label != ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      env:
+        PACKAGE_TYPE: inputs.label
+      run: |
+        conda install -y -q anaconda-client
+        conda config --set anaconda_upload yes
+    - name: Conda build (CPU)
+      if: inputs.label == '' && inputs.cuda == ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      run: |
+        conda build faiss --python 3.11 -c pytorch
+    - name: Conda build (CPU) w/ anaconda upload
+      if: inputs.label != '' && inputs.cuda == ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      env:
+        PACKAGE_TYPE: inputs.label
+      run: |
+        conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
+    - name: Conda build (GPU)
+      if: inputs.label == '' && inputs.cuda != '' && inputs.raft == ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      run: |
+        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+            -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
+    - name: Conda build (GPU) w/ anaconda upload
+      if: inputs.label != '' && inputs.cuda != '' && inputs.raft == ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      env:
+        PACKAGE_TYPE: inputs.label
+      run: |
+        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
+    - name: Conda build (GPU w/ RAFT)
+      if: inputs.label == '' && inputs.cuda != '' && inputs.raft != ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      run: |
+        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+            -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
+    - name: Conda build (GPU w/ RAFT) w/ anaconda upload
+      if: inputs.label != '' && inputs.cuda != '' && inputs.raft != ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      env:
+        PACKAGE_TYPE: inputs.label
+      run: |
+        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge

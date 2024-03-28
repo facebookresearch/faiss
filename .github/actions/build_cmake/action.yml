@@ -1,0 +1,103 @@
+name: Build cmake
+inputs:
+  opt_level:
+    description: 'The optimization level'
+    required: false
+    default: generic
+  gpu:
+    description: 'The GPU to use'
+    required: false
+    default: OFF
+  raft:
+    description: 'The raft to use'
+    required: false
+    default: OFF
+runs:
+  using: composite
+  steps:
+    - name: Setup miniconda
+      uses: conda-incubator/setup-miniconda@v3.0.3
+      with:
+        python-version: '3.11'
+        miniconda-version: latest
+    - name: Set up environment
+      shell: bash
+      run: |
+        conda config --set solver libmamba
+        conda update -y -q conda
+    - name: Install env using main channel
+      if: inputs.raft == 'OFF'
+      shell: bash
+      run: |
+        conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
+    - name: Install env using conda-forge channel
+      if: inputs.raft == 'ON'
+      shell: bash
+      run: |
+        conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.28 libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
+    - name: Install CUDA
+      if: inputs.gpu == 'ON' && inputs.raft == 'OFF'
+      shell: bash
+      run: |
+        conda install -y -q cuda-toolkit -c "nvidia/label/cuda-11.8.0"
+    - name: Build all targets
+      shell: bash
+      run: |
+        eval "$(conda shell.bash hook)"
+        conda activate
+        cmake -B build \
+              -DBUILD_TESTING=ON \
+              -DBUILD_SHARED_LIBS=ON \
+              -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
+              -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_C_API=ON \
+              -DPYTHON_EXECUTABLE=$CONDA/bin/python \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DBLA_VENDOR=Intel10_64_dyn \
+              -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+              .
+        make -k -C build -j$(nproc)
+    - name: C++ tests
+      shell: bash
+      run: |
+        export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+        make -C build test
+    - name: Install Python extension
+      shell: bash
+      working-directory: build/faiss/python
+      run: |
+        $CONDA/bin/python setup.py install
+    - name: Install pytest
+      shell: bash
+      run: |
+        conda install -y pytest
+        echo "$CONDA/bin" >> $GITHUB_PATH
+    - name: Python tests (CPU only)
+      if: inputs.gpu == 'OFF'
+      shell: bash
+      run: |
+        conda install -y -q pytorch -c pytorch
+        pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+        pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+    - name: Python tests (CPU + GPU)
+      if: inputs.gpu == 'ON'
+      shell: bash
+      run: |
+        conda install -y -q pytorch pytorch-cuda=11.8 -c pytorch -c nvidia/label/cuda-11.8.0
+        pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+        pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+        cp tests/common_faiss_tests.py faiss/gpu/test
+        pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+        pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
+    - name: Test avx2 loading
+      if: inputs.opt_level == 'avx2'
+      shell: bash
+      run: |
+        FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
+        LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
+    - name: Upload test results
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
+        path: test-results

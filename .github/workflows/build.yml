@@ -1,0 +1,182 @@
+name: Build
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    tags:
+      - 'v*'
+env:
+  OMP_NUM_THREADS: '10'
+  MKL_THREADING_LAYER: GNU
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-core clang-format-11
+      - name: Verify clang-format
+        run: |
+            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-11 -i
+            if git diff --quiet; then
+              echo "Formatting OK!"
+            else
+              echo "Formatting not OK!"
+              echo "------------------"
+              git --no-pager diff --color
+              exit 1
+            fi
+  linux-x86_64-cmake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+  linux-x86_64-AVX2-cmake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          opt_level: avx2
+  linux-x86_64-AVX512-cmake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          opt_level: avx512
+  linux-x86_64-GPU-cmake:
+    #needs: linux-x86_64-AVX2-cmake
+    runs-on: 4-core-gpu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+  linux-x86_64-GPU-w-RAFT-cmake:
+    #needs: linux-x86_64-GPU-cmake
+    runs-on: 4-core-gpu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+          raft: ON
+  linux-x86_64-conda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+  windows-x86_64-conda:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+  linux-arm64-conda:
+    runs-on: 4-core-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+  linux-x86_64-packages:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+  linux-x86_64-GPU-packages-CUDA-11-4-4:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-gpu
+    env:
+      CUDA_ARCHS: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          cuda: "11.4.4"
+          compiler_version: "11.2"
+  linux-x86_64-GPU-RAFT-packages-CUDA11-8-0:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-gpu
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          raft: "ON"
+          cuda: "11.8.0"
+          compiler_version: "11.2"
+  linux-x86_64-GPU-packages-CUDA-12-1-1:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-gpu
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          cuda: "12.1.1"
+          compiler_version: "11.2"
+  linux-x86_64-GPU-RAFT-packages-CUDA12-1-1:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-gpu
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          raft: "ON"
+          cuda: "12.1.1"
+          compiler_version: "11.2"
+  windows-x86_64-packages:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+  OSX-arm64-packages:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+  linux-arm64-packages:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
