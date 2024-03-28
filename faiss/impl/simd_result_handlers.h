@@ -221,20 +221,6 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
         return lt_mask;
     }
 
-    uint32_t get_lt_mask_for_range_search(size_t b) {
-        uint32_t lt_mask = 0xffffffff;
-
-        uint64_t idx = j0 + b * 32;
-        if (idx + 32 > ntotal) {
-            if (idx >= ntotal) {
-                return 0;
-            }
-            int nbit = (ntotal - idx);
-            lt_mask &= (uint32_t(1) << nbit) - 1;
-        }
-        return lt_mask;
-    }
-
     virtual ~ResultHandlerCompare() {}
 };
 
@@ -384,8 +370,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 if (this->sel->is_member(real_idx)) {
                     T dis = d32tab[j];
                     if (C::cmp(heap_dis[0], dis)) {
-                        heap_pop<C>(k, heap_dis, heap_ids);
-                        heap_push<C>(k, heap_dis, heap_ids, dis, real_idx);
+                        heap_replace_top<C>(k, heap_dis, heap_ids, dis, real_idx);
                     }
                 }
             }
@@ -397,8 +382,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 T dis = d32tab[j];
                 if (C::cmp(heap_dis[0], dis)) {
                     int64_t idx = this->adjust_id(b, j);
-                    heap_pop<C>(k, heap_dis, heap_ids);
-                    heap_push<C>(k, heap_dis, heap_ids, dis, idx);
+                    heap_replace_top<C>(k, heap_dis, heap_ids, dis, idx);
                 }
             }
         }
