@@ -104,10 +104,10 @@ int dgemm_(
 
 namespace {
 
-void fmat_inverse(float* a, int n) {
-    int info;
-    int lwork = n * n;
-    std::vector<int> ipiv(n);
+void fmat_inverse(float* a, FINTEGER n) {
+    FINTEGER info;
+    FINTEGER lwork = n * n;
+    std::vector<FINTEGER> ipiv(n);
     std::vector<float> workspace(lwork);
 
     sgetrf_(&n, &n, a, &n, ipiv.data(), &info);
@@ -123,10 +123,10 @@ void dfvec_add(size_t d, const double* a, const float* b, double* c) {
     }
 }
 
-void dmat_inverse(double* a, int n) {
-    int info;
-    int lwork = n * n;
-    std::vector<int> ipiv(n);
+void dmat_inverse(double* a, FINTEGER n) {
+    FINTEGER info;
+    FINTEGER lwork = n * n;
+    std::vector<FINTEGER> ipiv(n);
     std::vector<double> workspace(lwork);
 
     dgetrf_(&n, &n, a, &n, ipiv.data(), &info);

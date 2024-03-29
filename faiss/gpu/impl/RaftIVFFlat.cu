@@ -403,7 +403,8 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 
     // Update the pointers and the sizes
-    raft_knn_index.value().recompute_internal_state(raft_handle);
+    raft::neighbors::ivf_flat::helpers::recompute_internal_state(
+            raft_handle, &(raft_knn_index.value()));
 
     for (size_t i = 0; i < nlist; ++i) {
         size_t listSize = ivf->list_size(i);

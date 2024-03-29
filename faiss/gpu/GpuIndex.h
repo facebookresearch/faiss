@@ -84,19 +84,14 @@ class GpuIndex : public faiss::Index {
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
-    void assign(
-            idx_t n,
-            const float* x,
-            idx_t* labels,
-            // faiss::Index has idx_t for k
-            idx_t k = 1) const override;
+    void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1)
+            const override;
 
     /// `x`, `distances` and `labels` can be resident on the CPU or any
     /// GPU; copies are performed as needed
     void search(
             idx_t n,
             const float* x,
-            // faiss::Index has idx_t for k
             idx_t k,
             float* distances,
             idx_t* labels,
@@ -107,7 +102,6 @@ class GpuIndex : public faiss::Index {
     void search_and_reconstruct(
             idx_t n,
             const float* x,
-            // faiss::Index has idx_t for k
             idx_t k,
             float* distances,
             idx_t* labels,

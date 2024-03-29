@@ -433,6 +433,14 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /* The standalone codec interface (except sa_decode that is specific) */
     size_t sa_code_size() const override;
+
+    /** encode a set of vectors
+     * sa_encode will call encode_vector with include_listno=true
+     * @param n      nb of vectors to encode
+     * @param x      the vectors to encode
+     * @param bytes  output array for the codes
+     * @return nb of bytes written to codes
+     */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     IndexIVF();

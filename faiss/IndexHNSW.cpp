@@ -307,7 +307,7 @@ void hnsw_search(
         FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
         efSearch = params->efSearch;
     }
-    size_t n1 = 0, n2 = 0, n3 = 0, ndis = 0, nreorder = 0;
+    size_t n1 = 0, n2 = 0, ndis = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -323,7 +323,7 @@ void hnsw_search(
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(index->storage));
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder) schedule(guided)
+#pragma omp for reduction(+ : n1, n2, ndis) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 res.begin(i);
                 dis->set_query(x + i * index->d);
@@ -331,16 +331,14 @@ void hnsw_search(
                 HNSWStats stats = hnsw.search(*dis, res, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
-                n3 += stats.n3;
                 ndis += stats.ndis;
-                nreorder += stats.nreorder;
                 res.end();
             }
         }
         InterruptCallback::check();
     }
 
-    hnsw_stats.combine({n1, n2, n3, ndis, nreorder});
+    hnsw_stats.combine({n1, n2, ndis});
 }
 
 } // anonymous namespace
@@ -800,7 +798,7 @@ void IndexHNSW2Level::search(
         IndexHNSW::search(n, x, k, distances, labels);
 
     } else { // "mixed" search
-        size_t n1 = 0, n2 = 0, n3 = 0, ndis = 0, nreorder = 0;
+        size_t n1 = 0, n2 = 0, ndis = 0;
 
         const IndexIVFPQ* index_ivfpq =
                 dynamic_cast<const IndexIVFPQ*>(storage);
@@ -832,7 +830,7 @@ void IndexHNSW2Level::search(
             int candidates_size = hnsw.upper_beam;
             MinimaxHeap candidates(candidates_size);
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder)
+#pragma omp for reduction(+ : n1, n2, ndis)
             for (idx_t i = 0; i < n; i++) {
                 idx_t* idxi = labels + i * k;
                 float* simi = distances + i * k;
@@ -877,9 +875,7 @@ void IndexHNSW2Level::search(
                         k);
                 n1 += search_stats.n1;
                 n2 += search_stats.n2;
-                n3 += search_stats.n3;
                 ndis += search_stats.ndis;
-                nreorder += search_stats.nreorder;
 
                 vt.advance();
                 vt.advance();
@@ -888,7 +884,7 @@ void IndexHNSW2Level::search(
             }
         }
 
-        hnsw_stats.combine({n1, n2, n3, ndis, nreorder});
+        hnsw_stats.combine({n1, n2, ndis});
     }
 }
 

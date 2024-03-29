@@ -20,11 +20,11 @@ namespace faiss {
  * IO functions
  ***********************************************************************/
 
-int IOReader::fileno() {
+int IOReader::filedescriptor() {
     FAISS_THROW_MSG("IOReader does not support memory mapping");
 }
 
-int IOWriter::fileno() {
+int IOWriter::filedescriptor() {
     FAISS_THROW_MSG("IOWriter does not support memory mapping");
 }
 
@@ -85,8 +85,12 @@ size_t FileIOReader::operator()(void* ptr, size_t size, size_t nitems) {
     return fread(ptr, size, nitems, f);
 }
 
-int FileIOReader::fileno() {
+int FileIOReader::filedescriptor() {
+#ifdef _AIX
+    return fileno(f);
+#else
     return ::fileno(f);
+#endif
 }
 
 FileIOWriter::FileIOWriter(FILE* wf) : f(wf) {}
@@ -116,8 +120,12 @@ size_t FileIOWriter::operator()(const void* ptr, size_t size, size_t nitems) {
     return fwrite(ptr, size, nitems, f);
 }
 
-int FileIOWriter::fileno() {
+int FileIOWriter::filedescriptor() {
+#ifdef _AIX
+    return fileno(f);
+#else
     return ::fileno(f);
+#endif
 }
 
 /***********************************************************************

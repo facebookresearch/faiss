@@ -6,6 +6,7 @@ index:
   non-prod:
   - 'IVF16384,PQ128'
   - 'IVF32768,PQ128'
+  - 'OPQ64_128,IVF4096,PQ64'
 nprobe:
   prod:
     - 512
