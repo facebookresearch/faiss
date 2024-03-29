@@ -532,16 +532,20 @@ struct simd32uint8 : simd256bit {
     // The very important operation that everything relies on
     simd32uint8 lookup_2_lanes(const simd32uint8& idx) const {
         simd32uint8 c;
-        for (int j = 0; j < 32; j++) {
+        for (int j = 0; j < 16; j++) {
             if (idx.u8[j] & 0x80) {
                 c.u8[j] = 0;
             } else {
                 uint8_t i = idx.u8[j] & 15;
-                if (j < 16) {
-                    c.u8[j] = u8[i];
-                } else {
-                    c.u8[j] = u8[16 + i];
-                }
+                c.u8[j] = u8[i];
+            }
+
+            // j + 16, case
+            if (idx.u8[j+16] & 0x80) {
+                c.u8[j + 16] = 0;
+            } else {
+                uint8_t i = idx.u8[j + 16] & 15;
+                c.u8[j + 16] = u8[16 + i];
             }
         }
         return c;
