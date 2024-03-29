@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="51" column="26" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="68" column="26" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="52" column="9" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="52" bodyend="-1"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="69" column="9" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="69" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NormTableScaler_1a4ed8b0fff143ca5c3cc670f414452ea2" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="53" column="18" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="70" column="18" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="55" column="14" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="55" bodyend="55"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="72" column="14" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="72" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormTableScaler_1a7a05211499bd93edc931c01499ec90b8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref></type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="57" column="24" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="57" bodyend="60"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="74" column="24" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="74" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormTableScaler_1a5be4bfe6f7cf3d2eb4a30fdc35c8ada7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="62" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="62" bodyend="64"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="79" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="79" bodyend="81"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormTableScaler_1a47145d455998f34b88df1411900fdd29" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="66" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="66" bodyend="68"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="83" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="83" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormTableScaler_1afeb82636c351ed3b47b6b6487dafee6e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -140,7 +140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="72" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="72" bodyend="74"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="106" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="106" bodyend="108"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -169,7 +169,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/LookupTableScaler.h" line="50" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="50" bodyend="75"/>
+    <location file="faiss/impl/LookupTableScaler.h" line="67" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="67" bodyend="109"/>
     <listofallmembers>
       <member refid="structfaiss_1_1NormTableScaler_1a7a05211499bd93edc931c01499ec90b8" prot="public" virt="non-virtual"><scope>faiss::NormTableScaler</scope><name>lookup</name></member>
       <member refid="structfaiss_1_1NormTableScaler_1aac61cc4f6e1abd4cffb7e473f0561c98" prot="public" virt="non-virtual"><scope>faiss::NormTableScaler</scope><name>NormTableScaler</name></member>

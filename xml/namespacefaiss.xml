@@ -241,6 +241,9 @@
     <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>
     <innerclass refid="structfaiss_1_1simd8uint32" prot="public">faiss::simd8uint32</innerclass>
     <innerclass refid="structfaiss_1_1simd8float32" prot="public">faiss::simd8float32</innerclass>
+    <innerclass refid="structfaiss_1_1simd512bit" prot="public">faiss::simd512bit</innerclass>
+    <innerclass refid="structfaiss_1_1simd32uint16" prot="public">faiss::simd32uint16</innerclass>
+    <innerclass refid="structfaiss_1_1simd64uint8" prot="public">faiss::simd64uint8</innerclass>
     <innerclass refid="structfaiss_1_1CombinerRangeKNN" prot="public">faiss::CombinerRangeKNN</innerclass>
     <innerclass refid="structfaiss_1_1CodeSet" prot="public">faiss::CodeSet</innerclass>
     <innerclass refid="classfaiss_1_1WorkerThread" prot="public">faiss::WorkerThread</innerclass>
@@ -8370,6 +8373,27 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx2.h" line="754" column="13" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="754" bodyend="775"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a556920b8f676c3cce4dcb3c512ff4824" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::combine4x2</definition>
+        <argsstring>(simd32uint16 a, simd32uint16 b)</argsstring>
+        <name>combine4x2</name>
+        <param>
+          <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_avx512.h" line="210" column="21" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="210" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>

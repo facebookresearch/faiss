@@ -25,6 +25,7 @@
     <innerfile refid="random_8h">random.h</innerfile>
     <innerfile refid="simdlib_8h">simdlib.h</innerfile>
     <innerfile refid="simdlib__avx2_8h">simdlib_avx2.h</innerfile>
+    <innerfile refid="simdlib__avx512_8h">simdlib_avx512.h</innerfile>
     <innerfile refid="simdlib__emulated_8h">simdlib_emulated.h</innerfile>
     <innerfile refid="simdlib__neon_8h">simdlib_neon.h</innerfile>
     <innerfile refid="sorting_8h">sorting.h</innerfile>

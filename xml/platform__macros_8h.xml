@@ -33,6 +33,7 @@
     <includedby refid="generic-inl_8h" local="no">faiss/utils/hamming_distance/generic-inl.h</includedby>
     <includedby refid="partitioning_8h" local="no">faiss/utils/partitioning.h</includedby>
     <includedby refid="simdlib__avx2_8h" local="no">faiss/utils/simdlib_avx2.h</includedby>
+    <includedby refid="simdlib__avx512_8h" local="no">faiss/utils/simdlib_avx512.h</includedby>
     <includedby refid="sorting_8h" local="no">faiss/utils/sorting.h</includedby>
     <includedby refid="utils_8h" local="no">faiss/utils/utils.h</includedby>
     <incdepgraph>
@@ -260,6 +261,8 @@
         <childnode refid="120" relation="include">
         </childnode>
         <childnode refid="121" relation="include">
+        </childnode>
+        <childnode refid="122" relation="include">
         </childnode>
       </node>
       <node id="30">
@@ -567,6 +570,8 @@
       <node id="119">
         <label>faiss/utils/simdlib_avx2.h</label>
         <link refid="simdlib__avx2_8h_source"/>
+        <childnode refid="120" relation="include">
+        </childnode>
       </node>
       <node id="63">
         <label>faiss/IndexBinaryIVF.h</label>
@@ -600,7 +605,7 @@
         <label>faiss/IndexBinaryHash.h</label>
         <link refid="IndexBinaryHash_8h_source"/>
       </node>
-      <node id="120">
+      <node id="121">
         <label>faiss/utils/sorting.h</label>
         <link refid="sorting_8h_source"/>
       </node>
@@ -719,6 +724,10 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+      </node>
+      <node id="120">
+        <label>faiss/utils/simdlib_avx512.h</label>
+        <link refid="simdlib__avx512_8h_source"/>
       </node>
       <node id="11">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
@@ -962,7 +971,7 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="121">
+      <node id="122">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="46" relation="include">

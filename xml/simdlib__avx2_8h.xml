@@ -6,6 +6,7 @@
     <includes local="no">string</includes>
     <includes local="no">immintrin.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includedby refid="simdlib__avx512_8h" local="no">faiss/utils/simdlib_avx512.h</includedby>
     <incdepgraph>
       <node id="5">
         <label>faiss/impl/platform_macros.h</label>
@@ -40,6 +41,18 @@
         <label>cstdio</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/utils/simdlib_avx2.h</label>
+        <link refid="simdlib__avx2_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/utils/simdlib_avx512.h</label>
+        <link refid="simdlib__avx512_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
     <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>

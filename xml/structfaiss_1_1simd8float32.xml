@@ -109,11 +109,11 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_emulated.h" line="22" column="15" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="22" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" prot="public" static="no" mutable="no">
-        <type>union faiss::simd256bit::@2</type>
-        <definition>union faiss::simd256bit::@2 faiss::simd256bit::@3</definition>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a7c8581ec29fc18c1d165dbb76b050732" prot="public" static="no" mutable="no">
+        <type>union faiss::simd256bit::@4</type>
+        <definition>union faiss::simd256bit::@4 faiss::simd256bit::@5</definition>
         <argsstring></argsstring>
-        <name>@3</name>
+        <name>@5</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

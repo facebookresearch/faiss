@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/LookupTableScaler.h" line="42" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="42" bodyend="45"/>
+        <location file="faiss/impl/LookupTableScaler.h" line="59" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="59" bodyend="62"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -98,7 +98,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/LookupTableScaler.h" line="23" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="23" bodyend="46"/>
+    <location file="faiss/impl/LookupTableScaler.h" line="23" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="23" bodyend="63"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DummyScaler_1af2b7da16687684fa931767f1711f1f97" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>lookup</name></member>
       <member refid="structfaiss_1_1DummyScaler_1a973b155186da752549ed428708d59ed0" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>nscale</name></member>
