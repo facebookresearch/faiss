@@ -9295,6 +9295,7 @@
     <member refid="FaissAssert_8h_1aeb2e5257a5cd98e60d38489327221214" kind="define"><name>FAISS_THROW_MSG</name></member>
     <member refid="FaissAssert_8h_1af085c0a3b614b69944b51d58155f7d86" kind="define"><name>FAISS_THROW_FMT</name></member>
     <member refid="FaissAssert_8h_1a09f40255f198ee50a67ff9194e364dc9" kind="define"><name>FAISS_THROW_IF_NOT</name></member>
+    <member refid="FaissAssert_8h_1a71daf41ca66c1a16bb31c537a958c6aa" kind="define"><name>FAISS_THROW_IF_MSG</name></member>
     <member refid="FaissAssert_8h_1a795f62d9a23626abc3608192db593de3" kind="define"><name>FAISS_THROW_IF_NOT_MSG</name></member>
     <member refid="FaissAssert_8h_1af2e88bd5de770a472c175d1a0b47d5b6" kind="define"><name>FAISS_THROW_IF_NOT_FMT</name></member>
   </compound>
