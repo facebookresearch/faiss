@@ -30,9 +30,9 @@ int main(int argc, char* argv[]) {
 
         idx_t nb = 10000;
         std::vector<float> xb(d * nb);
-        float_rand(xb.data(), d * nb, 12345);           // 生成训练集
+        float_rand(xb.data(), d * nb, 12345);
         std::vector<idx_t> xids(nb);
-        std::iota(xids.begin(), xids.end(), 0); // 顺序生成 0~nb-1 数并赋值
+        std::iota(xids.begin(), xids.end(), 0);
 
         index.train(nb, xb.data());
         index.add_with_ids(nb, xb.data(), xids.data());
