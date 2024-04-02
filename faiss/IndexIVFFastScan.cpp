@@ -530,6 +530,7 @@ void IndexIVFFastScan::search_dispatch_implem(
         // sliced over threads (then it is more efficient to have each thread do
         // its own coarse quantization)
         cq.quantize(quantizer, n, x, quantizer_params);
+        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
     }
 
     if (impl == 1) {
@@ -672,6 +673,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
 
     if (!multiple_threads && !cq.done()) {
         cq.quantize(quantizer, n, x, quantizer_params);
+        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
     }
 
     size_t ndis = 0, nlist_visited = 0;
