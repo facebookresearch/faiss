@@ -505,7 +505,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
         n_per_query.resize(nq + 1);
     }
 
-    virtual void begin(const float* norms) {
+    virtual void begin(const float* norms) override {
         normalizers = norms;
         for (int q = 0; q < nq; ++q) {
             thresholds[q] =

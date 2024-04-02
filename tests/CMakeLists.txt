@@ -59,6 +59,34 @@ if(FAISS_OPT_LEVEL STREQUAL "avx512")
   target_link_libraries(faiss_test PRIVATE faiss_avx512)
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG 58d77fa8070e8cec2dc1ed015d66b454c8d78850 # release-1.12.1
+  OVERRIDE_FIND_PACKAGE)
+set(BUILD_GMOCK CACHE BOOL OFF)
+set(INSTALL_GTEST CACHE BOOL OFF)
+FetchContent_MakeAvailable(googletest)
+
+if(NOT EXISTS ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/gtest-config.cmake
+   AND NOT EXISTS ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/GTestConfig.cmake)
+  file(
+    WRITE ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/gtest-config.cmake
+    [=[
+include(CMakeFindDependencyMacro)
+find_dependency(googletest)
+if(NOT TARGET GTest::GTest)
+  add_library(GTest::GTest INTERFACE IMPORTED)
+  target_link_libraries(GTest::GTest INTERFACE GTest::gtest)
+endif()
+if(NOT TARGET GTest::Main)
+  add_library(GTest::Main INTERFACE IMPORTED)
+  target_link_libraries(GTest::Main INTERFACE GTest::gtest_main)
+endif()
+]=])
+endif()
+
 find_package(OpenMP REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 

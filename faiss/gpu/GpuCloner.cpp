@@ -224,6 +224,8 @@ faiss::Index* index_cpu_to_gpu(
         int device,
         const faiss::Index* index,
         const GpuClonerOptions* options) {
+    auto index_pq = dynamic_cast<const faiss::IndexPQ*>(index);
+    FAISS_THROW_IF_MSG(index_pq, "This index type is not implemented on GPU.");
     GpuClonerOptions defaults;
     ToGpuCloner cl(provider, device, options ? *options : defaults);
     return cl.clone_Index(index);

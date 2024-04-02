@@ -168,7 +168,7 @@ jobs:
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c conda-forge
+                      -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
       - when:
           condition:
             and:
@@ -182,7 +182,7 @@ jobs:
                 command: |
                   cd conda
                   conda build faiss-gpu-raft --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c conda-forge
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia/label/cuda-<<parameters.cuda>> -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
 
   build_cmake:
     parameters:
@@ -224,7 +224,7 @@ jobs:
             - run:
                 name: Install env using main channel
                 command: |
-                  conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
+                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64=11.2 sysroot_linux-64
       - when:
           condition:
             equal: [ "ON", << parameters.raft >> ]
@@ -232,7 +232,7 @@ jobs:
             - run:
                 name: Install env using conda-forge channel
                 command: |
-                  conda install -y -q python=3.11 cmake make swig=4.0.2 mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.28 libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
+                  conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64=11.2 sysroot_linux-64=2.28 libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
       - when:
           condition:
             and:

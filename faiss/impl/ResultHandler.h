@@ -12,8 +12,10 @@
 #pragma once
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
+#include <iostream>
 
 namespace faiss {
 
@@ -504,7 +506,15 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C> {
         void end() {}
 
         ~SingleResultHandler() {
-            pres.finalize();
+            try {
+                // finalize the partial result
+                pres.finalize();
+            } catch (const faiss::FaissException& e) {
+                // Do nothing if allocation fails in finalizing partial results.
+#ifndef NDEBUG
+                std::cerr << e.what() << std::endl;
+#endif
+            }
         }
     };
 
@@ -559,8 +569,15 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C> {
     }
 
     ~RangeSearchBlockResultHandler() {
-        if (partial_results.size() > 0) {
-            RangeSearchPartialResult::merge(partial_results);
+        try {
+            if (partial_results.size() > 0) {
+                RangeSearchPartialResult::merge(partial_results);
+            }
+        } catch (const faiss::FaissException& e) {
+            // Do nothing if allocation fails in merge.
+#ifndef NDEBUG
+            std::cerr << e.what() << std::endl;
+#endif
         }
     }
 };

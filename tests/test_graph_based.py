@@ -123,6 +123,16 @@ class TestHNSW(unittest.TestCase):
         mask = Iref[:, 0] == Ihnsw[:, 0]
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
 
+    def test_ndis_stats(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+        stats = faiss.cvar.hnsw_stats
+        stats.reset()
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+        self.assertGreater(stats.ndis, len(self.xq) * index.hnsw.efSearch)
+
 
 class TestNSG(unittest.TestCase):
 
