@@ -28,6 +28,7 @@
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
+#include <optional>
 #include <raft/neighbors/cagra.cuh>
 
 namespace faiss {
@@ -42,12 +43,17 @@ RaftCagra::RaftCagra(
         size_t nn_descent_niter,
         faiss::MetricType metric,
         float metricArg,
-        IndicesOptions indicesOptions)
+        IndicesOptions indicesOptions,
+        std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params,
+        std::optional<raft::neighbors::ivf_pq::search_params>
+                ivf_pq_search_params)
         : resources_(resources),
           dim_(dim),
           metric_(metric),
           metricArg_(metricArg),
-          index_pams_() {
+          index_pams_(),
+          ivf_pq_params_(ivf_pq_params),
+          ivf_pq_search_params_(ivf_pq_search_params) {
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2,
             "CAGRA currently only supports L2 metric.");
@@ -61,6 +67,15 @@ RaftCagra::RaftCagra(
             static_cast<raft::neighbors::cagra::graph_build_algo>(
                     graph_build_algo);
     index_pams_.nn_descent_niter = nn_descent_niter;
+
+    if (!ivf_pq_params_) {
+        ivf_pq_params_ =
+                std::make_optional<raft::neighbors::ivf_pq::index_params>();
+    }
+    if (!ivf_pq_search_params_) {
+        ivf_pq_search_params_ =
+                std::make_optional<raft::neighbors::ivf_pq::search_params>();
+    }
 
     reset();
 }
@@ -140,16 +155,75 @@ RaftCagra::RaftCagra(
 void RaftCagra::train(idx_t n, const float* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    if (getDeviceForAddress(x) >= 0) {
-        raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
-                raft_handle,
-                index_pams_,
-                raft::make_device_matrix_view<const float, idx_t>(x, n, dim_));
+    if (index_pams_.build_algo ==
+        raft::neighbors::cagra::graph_build_algo::IVF_PQ) {
+        std::optional<raft::host_matrix<uint32_t, int64_t>> knn_graph(
+                raft::make_host_matrix<uint32_t, int64_t>(
+                        n, index_pams_.intermediate_graph_degree));
+        if (getDeviceForAddress(x) >= 0) {
+            auto dataset_d =
+                    raft::make_device_matrix_view<const float, int64_t>(
+                            x, n, dim_);
+            raft::neighbors::cagra::build_knn_graph(
+                    raft_handle,
+                    dataset_d,
+                    knn_graph->view(),
+                    1.0f,
+                    ivf_pq_params_,
+                    ivf_pq_search_params_);
+        } else {
+            auto dataset_h = raft::make_host_matrix_view<const float, int64_t>(
+                    x, n, dim_);
+            raft::neighbors::cagra::build_knn_graph(
+                    raft_handle,
+                    dataset_h,
+                    knn_graph->view(),
+                    1.0f,
+                    ivf_pq_params_,
+                    ivf_pq_search_params_);
+        }
+        auto cagra_graph = raft::make_host_matrix<uint32_t, int64_t>(
+                n, index_pams_.graph_degree);
+
+        raft::neighbors::cagra::optimize<uint32_t>(
+                raft_handle, knn_graph->view(), cagra_graph.view());
+
+        // free intermediate graph before trying to create the index
+        knn_graph.reset();
+
+        if (getDeviceForAddress(x) >= 0) {
+            auto dataset_d =
+                    raft::make_device_matrix_view<const float, int64_t>(
+                            x, n, dim_);
+            raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
+                    raft_handle,
+                    index_pams_.metric,
+                    dataset_d,
+                    raft::make_const_mdspan(cagra_graph.view()));
+        } else {
+            auto dataset_h = raft::make_host_matrix_view<const float, int64_t>(
+                    x, n, dim_);
+            raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
+                    raft_handle,
+                    index_pams_.metric,
+                    dataset_h,
+                    raft::make_const_mdspan(cagra_graph.view()));
+        }
+
     } else {
-        raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
-                raft_handle,
-                index_pams_,
-                raft::make_host_matrix_view<const float, idx_t>(x, n, dim_));
+        if (getDeviceForAddress(x) >= 0) {
+            raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
+                    raft_handle,
+                    index_pams_,
+                    raft::make_device_matrix_view<const float, int64_t>(
+                            x, n, dim_));
+        } else {
+            raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
+                    raft_handle,
+                    index_pams_,
+                    raft::make_host_matrix_view<const float, int64_t>(
+                            x, n, dim_));
+        }
     }
 }
 
@@ -181,11 +255,11 @@ void RaftCagra::search(
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
 
-    auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
+    auto queries_view = raft::make_device_matrix_view<const float, int64_t>(
             queries.data(), numQueries, cols);
-    auto distances_view = raft::make_device_matrix_view<float, idx_t>(
+    auto distances_view = raft::make_device_matrix_view<float, int64_t>(
             outDistances.data(), numQueries, k_);
-    auto indices_view = raft::make_device_matrix_view<idx_t, idx_t>(
+    auto indices_view = raft::make_device_matrix_view<idx_t, int64_t>(
             outIndices.data(), numQueries, k_);
 
     raft::neighbors::cagra::search_params search_pams;
@@ -205,7 +279,7 @@ void RaftCagra::search(
     search_pams.num_random_samplings = num_random_samplings;
     search_pams.rand_xor_mask = rand_xor_mask;
 
-    auto indices_copy = raft::make_device_matrix<uint32_t, idx_t>(
+    auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
             raft_handle, numQueries, k_);
 
     raft::neighbors::cagra::search(

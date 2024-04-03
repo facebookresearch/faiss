@@ -26,10 +26,12 @@
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <optional>
 
 #include <faiss/MetricType.h>
 
 #include <raft/neighbors/cagra_types.hpp>
+#include <raft/neighbors/ivf_pq_types.hpp>
 
 namespace faiss {
 
@@ -52,7 +54,11 @@ class RaftCagra {
             size_t nn_descent_niter,
             faiss::MetricType metric,
             float metricArg,
-            IndicesOptions indicesOptions);
+            IndicesOptions indicesOptions,
+            std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params =
+                    std::nullopt,
+            std::optional<raft::neighbors::ivf_pq::search_params>
+                    ivf_pq_search_params = std::nullopt);
 
     RaftCagra(
             GpuResources* resources,
@@ -111,6 +117,10 @@ class RaftCagra {
 
     /// Parameters to build RAFT CAGRA index
     raft::neighbors::cagra::index_params index_pams_;
+
+    /// Parameters to build CAGRA graph using IVF PQ
+    std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params_;
+    std::optional<raft::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
 
     /// Instance of trained RAFT CAGRA index
     std::optional<raft::neighbors::cagra::index<float, uint32_t>>

@@ -24,6 +24,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <cstddef>
 #include <faiss/gpu/impl/RaftCagra.cuh>
+#include <optional>
 #include "GpuIndexCagra.h"
 
 namespace faiss {
@@ -47,6 +48,38 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
+    std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params =
+            std::nullopt;
+    std::optional<raft::neighbors::ivf_pq::search_params> ivf_pq_search_params =
+            std::nullopt;
+    if (cagraConfig_.ivf_pq_params != nullptr) {
+        ivf_pq_params =
+                std::make_optional<raft::neighbors::ivf_pq::index_params>();
+        ivf_pq_params->n_lists = cagraConfig_.ivf_pq_params->n_lists;
+        ivf_pq_params->kmeans_n_iters =
+                cagraConfig_.ivf_pq_params->kmeans_n_iters;
+        ivf_pq_params->kmeans_trainset_fraction =
+                cagraConfig_.ivf_pq_params->kmeans_trainset_fraction;
+        ivf_pq_params->pq_bits = cagraConfig_.ivf_pq_params->pq_bits;
+        ivf_pq_params->pq_dim = cagraConfig_.ivf_pq_params->pq_dim;
+        ivf_pq_params->codebook_kind =
+                static_cast<raft::neighbors::ivf_pq::codebook_gen>(
+                        cagraConfig_.ivf_pq_params->codebook_kind);
+        ivf_pq_params->force_random_rotation =
+                cagraConfig_.ivf_pq_params->force_random_rotation;
+        ivf_pq_params->conservative_memory_allocation =
+                cagraConfig_.ivf_pq_params->conservative_memory_allocation;
+    }
+    if (cagraConfig_.ivf_pq_search_params != nullptr) {
+        ivf_pq_search_params =
+                std::make_optional<raft::neighbors::ivf_pq::search_params>();
+        ivf_pq_search_params->n_probes =
+                cagraConfig_.ivf_pq_search_params->n_probes;
+        ivf_pq_search_params->lut_dtype =
+                cagraConfig_.ivf_pq_search_params->lut_dtype;
+        ivf_pq_search_params->preferred_shmem_carveout =
+                cagraConfig_.ivf_pq_search_params->preferred_shmem_carveout;
+    }
     index_ = std::make_shared<RaftCagra>(
             this->resources_.get(),
             this->d,
@@ -56,7 +89,9 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             cagraConfig_.nn_descent_niter,
             this->metric_type,
             this->metric_arg,
-            INDICES_64_BIT);
+            INDICES_64_BIT,
+            ivf_pq_params,
+            ivf_pq_search_params);
 
     index_->train(n, x);
 
