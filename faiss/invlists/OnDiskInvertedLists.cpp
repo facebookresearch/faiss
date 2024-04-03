@@ -565,15 +565,16 @@ void OnDiskInvertedLists::free_slot(size_t offset, size_t capacity) {
 /*****************************************
  * Compact form
  *****************************************/
-
-size_t OnDiskInvertedLists::merge_from(
+size_t OnDiskInvertedLists::merge_from_multiple(
         const InvertedLists** ils,
         int n_il,
+        bool shift_ids,
         bool verbose) {
     FAISS_THROW_IF_NOT_MSG(
             totsize == 0, "works only on an empty InvertedLists");
 
     std::vector<size_t> sizes(nlist);
+    std::vector<size_t> shift_id_offsets(n_il);
     for (int i = 0; i < n_il; i++) {
         const InvertedLists* il = ils[i];
         FAISS_THROW_IF_NOT(il->nlist == nlist && il->code_size == code_size);
@@ -581,6 +582,10 @@ size_t OnDiskInvertedLists::merge_from(
         for (size_t j = 0; j < nlist; j++) {
             sizes[j] += il->list_size(j);
         }
+
+        size_t il_totsize = il->compute_ntotal();
+        shift_id_offsets[i] =
+                (shift_ids && i > 0) ? shift_id_offsets[i - 1] + il_totsize : 0;
     }
 
     size_t cums = 0;
@@ -605,11 +610,21 @@ size_t OnDiskInvertedLists::merge_from(
             const InvertedLists* il = ils[i];
             size_t n_entry = il->list_size(j);
             l.size += n_entry;
+            ScopedIds scope_ids(il, j);
+            const idx_t* scope_ids_data = scope_ids.get();
+            std::vector<idx_t> new_ids;
+            if (shift_ids) {
+                new_ids.resize(n_entry);
+                for (size_t k = 0; k < n_entry; k++) {
+                    new_ids[k] = scope_ids[k] + shift_id_offsets[i];
+                }
+                scope_ids_data = new_ids.data();
+            }
             update_entries(
                     j,
                     l.size - n_entry,
                     n_entry,
-                    ScopedIds(il, j).get(),
+                    scope_ids_data,
                     ScopedCodes(il, j).get());
         }
         assert(l.size == l.capacity);
@@ -638,7 +653,7 @@ size_t OnDiskInvertedLists::merge_from(
 size_t OnDiskInvertedLists::merge_from_1(
         const InvertedLists* ils,
         bool verbose) {
-    return merge_from(&ils, 1, verbose);
+    return merge_from_multiple(&ils, 1, verbose);
 }
 
 void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1) {

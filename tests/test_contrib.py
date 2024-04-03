@@ -9,6 +9,7 @@ import numpy as np
 import platform
 import os
 import random
+import shutil
 import tempfile
 
 from faiss.contrib import datasets
@@ -17,15 +18,13 @@ from faiss.contrib import evaluation
 from faiss.contrib import ivf_tools
 from faiss.contrib import clustering
 from faiss.contrib import big_batch_search
+from faiss.contrib.ondisk import merge_ondisk
 
 from common_faiss_tests import get_dataset_2
-try:
-    from faiss.contrib.exhaustive_search import \
-        knn_ground_truth, knn, range_ground_truth, \
-        range_search_max_results, exponential_query_iterator
-except:
-    pass  # Submodule import broken in python 2.
-
+from faiss.contrib.exhaustive_search import \
+    knn_ground_truth, knn, range_ground_truth, \
+    range_search_max_results, exponential_query_iterator
+from contextlib import contextmanager
 
 @unittest.skipIf(platform.python_version_tuple()[0] < '3',
                  'Submodule import broken in python 2.')
@@ -674,3 +673,63 @@ class TestCodeSet(unittest.TestCase):
         np.testing.assert_equal(
             np.sort(np.unique(codes, axis=0), axis=None),
             np.sort(codes[inserted], axis=None))
+
+
+@unittest.skipIf(platform.system() == 'Windows',
+                'OnDiskInvertedLists is unsupported on Windows.')
+class TestMerge(unittest.TestCase):
+    @contextmanager
+    def temp_directory(self):
+        temp_dir = tempfile.mkdtemp()
+        try:
+            yield temp_dir
+        finally:
+            shutil.rmtree(temp_dir)
+
+    def do_test_ondisk_merge(self, shift_ids=False):
+        with self.temp_directory() as tmpdir:
+            # only train and add index to disk without adding elements.
+            # this will create empty inverted lists.
+            ds = datasets.SyntheticDataset(32, 2000, 200, 20)
+            index = faiss.index_factory(ds.d, "IVF32,Flat")
+            index.train(ds.get_train())
+            faiss.write_index(index, tmpdir + "/trained.index")
+
+            # create 4 shards and add elements to them
+            ns = 4  # number of shards
+
+            for bno in range(ns):
+                index = faiss.read_index(tmpdir + "/trained.index")
+                i0, i1 = int(bno * ds.nb / ns), int((bno + 1) * ds.nb / ns)
+                if shift_ids:
+                    index.add_with_ids(ds.xb[i0:i1], np.arange(0, ds.nb / ns))
+                else:
+                    index.add_with_ids(ds.xb[i0:i1], np.arange(i0, i1))
+                faiss.write_index(index, tmpdir + "/block_%d.index" % bno)
+
+            # construct the output index and merge them on disk
+            index = faiss.read_index(tmpdir + "/trained.index")
+            block_fnames = [tmpdir + "/block_%d.index" % bno for bno in range(4)]
+
+            merge_ondisk(
+                index, block_fnames, tmpdir + "/merged_index.ivfdata", shift_ids
+            )
+            faiss.write_index(index, tmpdir + "/populated.index")
+
+            # perform a search from index on disk
+            index = faiss.read_index(tmpdir + "/populated.index")
+            index.nprobe = 5
+            D, I = index.search(ds.xq, 5)
+
+            # ground-truth
+            gtI = ds.get_groundtruth(5)
+
+            recall_at_1 = (I[:, :1] == gtI[:, :1]).sum() / float(ds.xq.shape[0])
+            self.assertGreaterEqual(recall_at_1, 0.5)
+
+    def test_ondisk_merge(self):
+        self.do_test_ondisk_merge()
+
+    def test_ondisk_merge_with_shift_ids(self):
+        # verified that recall is same for test_ondisk_merge and
+        self.do_test_ondisk_merge(True)
