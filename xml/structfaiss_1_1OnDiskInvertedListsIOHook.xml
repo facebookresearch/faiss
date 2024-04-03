@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="142" column="5"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="143" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedListsIOHook_1ab1acdd64fa8a9cb97fafbd5902122ddd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="143" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="144" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedListsIOHook_1a9c5def4c9b6b157ee931d2d7f1ec2910" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -61,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="144" column="19"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="145" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedListsIOHook_1a9b69d2e66d8dc44f2a7c78848d565c84" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="145" column="19"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="146" column="19"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -223,7 +223,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/invlists/OnDiskInvertedLists.h" line="141" column="1" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="141" bodyend="151"/>
+    <location file="faiss/invlists/OnDiskInvertedLists.h" line="142" column="1" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="142" bodyend="152"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListsIOHook_1a7852d13afc3e94745f6738c58858098c" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedListsIOHook</scope><name>add_callback</name></member>
       <member refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedListsIOHook</scope><name>classname</name></member>

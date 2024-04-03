@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="121" column="16" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="121" bodyend="-1"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="122" column="16" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="122" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OnDiskInvertedLists_1a93eb0db0f7b9774061e956ef20f46550" prot="public" static="no" mutable="no">
         <type>OngoingPrefetch *</type>
@@ -176,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="125" column="21" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="124" bodyend="-1"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="126" column="21" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="125" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OnDiskInvertedLists_1af8d76f7a52fe47da75e2845d2ac36797" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -189,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="126" column="9" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="127" column="9" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="127" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -409,11 +409,11 @@
         </inbodydescription>
         <location file="faiss/invlists/OnDiskInvertedLists.h" line="100" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1abd32c2ce4f8b530dc5934a12a138e8ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1ab5b0cdf6bc8fd91ee99e930a8c4d67cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
-        <definition>size_t faiss::OnDiskInvertedLists::merge_from</definition>
-        <argsstring>(const InvertedLists **ils, int n_il, bool verbose=false)</argsstring>
-        <name>merge_from</name>
+        <definition>size_t faiss::OnDiskInvertedLists::merge_from_multiple</definition>
+        <argsstring>(const InvertedLists **ils, int n_il, bool shift_ids=false, bool verbose=false)</argsstring>
+        <name>merge_from_multiple</name>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> **</type>
           <declname>ils</declname>
@@ -421,6 +421,11 @@
         <param>
           <type>int</type>
           <declname>n_il</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>shift_ids</declname>
+          <defval>false</defval>
         </param>
         <param>
           <type>bool</type>
@@ -456,7 +461,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="110" column="12"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="111" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a0dbb919e454c26aaa1b907bdf35d3b55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -478,7 +483,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="113" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="114" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -501,7 +506,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="115" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="116" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1ac8f4c9cf887ec62b1e75e2af2f98253f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -514,7 +519,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="117" column="5"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="118" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1afbdee1f61b80b7748028fa95d3d09a6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -527,7 +532,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="128" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="129" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a11bf6949899bc7f11be17322dec68ee5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -544,7 +549,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="129" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="130" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a48854bce4aa01698b5b3fb0d636caac0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -565,7 +570,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="130" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="131" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a8f351c2423c5f87f61241eb7df8d50f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -582,7 +587,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="131" column="12"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="132" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a27fc559dcc2e48a7dded1a99540cb22a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -603,7 +608,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="132" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="133" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1afac59f9ed8a6a70ade1eda9df31a977a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -621,7 +626,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="135" column="10"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="136" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a5a2191421cbe2e3be7a3c25fb9de3793" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -634,7 +639,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/OnDiskInvertedLists.h" line="138" column="5"/>
+        <location file="faiss/invlists/OnDiskInvertedLists.h" line="139" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedLists_1a6d043287bb767a996b5b6873f69f6d44" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1023,7 +1028,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/invlists/OnDiskInvertedLists.h" line="60" column="1" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="60" bodyend="139"/>
+    <location file="faiss/invlists/OnDiskInvertedLists.h" line="60" column="1" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="60" bodyend="140"/>
     <listofallmembers>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a762cfcc06fe60dbaa807ce72723531a9" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>add_entries</name></member>
       <member refid="structfaiss_1_1InvertedLists_1aa8fe060cb73a42c570d7e835ab172356" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>add_entry</name></member>
@@ -1048,9 +1053,9 @@
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a19b264dfe5a541c1427d3b635ad887f5" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>list_size</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a96715d36dae381fc45204f091198d932" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>lists</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1aebd05c108fe85af4b095dad8e8915421" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>locks</name></member>
-      <member refid="structfaiss_1_1OnDiskInvertedLists_1abd32c2ce4f8b530dc5934a12a138e8ce" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>merge_from</name></member>
-      <member refid="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a" prot="public" virt="non-virtual" ambiguityscope="faiss::InvertedLists::"><scope>faiss::OnDiskInvertedLists</scope><name>merge_from</name></member>
+      <member refid="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1af5d433fa2f151e2d32a216d83c977e17" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>merge_from_1</name></member>
+      <member refid="structfaiss_1_1OnDiskInvertedLists_1ab5b0cdf6bc8fd91ee99e930a8c4d67cb" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>merge_from_multiple</name></member>
       <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>nlist</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1acce006c1c63aee12d45c7f7dbeb8bb23" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>OnDiskInvertedLists</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a5a2191421cbe2e3be7a3c25fb9de3793" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>OnDiskInvertedLists</name></member>

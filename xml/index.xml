@@ -6451,7 +6451,7 @@
     <member refid="structfaiss_1_1OnDiskInvertedLists_1a762cfcc06fe60dbaa807ce72723531a9" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1a4d64d34d7ce9b242bb840c218fc3059c" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1a6b2faf11aea3dcb1dbf07a52af33099b" kind="function"><name>resize</name></member>
-    <member refid="structfaiss_1_1OnDiskInvertedLists_1abd32c2ce4f8b530dc5934a12a138e8ce" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1OnDiskInvertedLists_1ab5b0cdf6bc8fd91ee99e930a8c4d67cb" kind="function"><name>merge_from_multiple</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1af5d433fa2f151e2d32a216d83c977e17" kind="function"><name>merge_from_1</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1a0dbb919e454c26aaa1b907bdf35d3b55" kind="function"><name>crop_invlists</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" kind="function"><name>prefetch_lists</name></member>
