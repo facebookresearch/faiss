@@ -67,11 +67,20 @@ else()
   find_package(faiss REQUIRED)
 endif()
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
+swig_add_library(swigfaiss
+  TYPE MODULE
+  LANGUAGE python
+  SOURCES swigfaiss.swig
+)
+else ()
 swig_add_library(swigfaiss
   TYPE SHARED
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
+endif()
+
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
 set_property(SOURCE swigfaiss_avx2.swig
@@ -159,6 +168,10 @@ add_library(faiss_python_callbacks EXCLUDE_FROM_ALL
 set_property(TARGET faiss_python_callbacks
   PROPERTY POSITION_INDEPENDENT_CODE ON
 )
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
+target_link_libraries(faiss_python_callbacks PRIVATE faiss)
+endif()
 
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
