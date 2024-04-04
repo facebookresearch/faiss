@@ -32,6 +32,7 @@ size_t nq = 100;
 int nindex = 4;
 int k = 10;
 int nlist = 40;
+int shard_size = nb / nindex;
 
 struct CommonData {
     std::vector<float> database;
@@ -100,7 +101,7 @@ int compare_merged(
         auto il = new faiss::OnDiskInvertedLists(
                 index0->nlist, index0->code_size, filename.c_str());
 
-        il->merge_from(lists.data(), lists.size());
+        il->merge_from_multiple(lists.data(), lists.size(), shift_ids);
 
         index0->replace_invlists(il, true);
         index0->ntotal = ntotal;
@@ -110,11 +111,14 @@ int compare_merged(
             nq, cd.queries.data(), k, newD.data(), newI.data());
 
     size_t ndiff = 0;
+    bool adjust_ids = shift_ids && !standard_merge;
     for (size_t i = 0; i < k * nq; i++) {
-        if (refI[i] != newI[i]) {
+        idx_t new_id = adjust_ids ? refI[i] % shard_size : refI[i];
+        if (refI[i] != new_id) {
             ndiff++;
         }
     }
+
     return ndiff;
 }
 
@@ -218,5 +222,25 @@ TEST(MERGE, merge_flat_ondisk_2) {
     EXPECT_TRUE(index_shards.is_trained);
     index_shards.add_with_ids(nb, cd.database.data(), cd.ids.data());
     int ndiff = compare_merged(&index_shards, false, false);
+    EXPECT_GE(0, ndiff);
+}
+
+// now use ondisk specific merge and use shift ids
+TEST(MERGE, merge_flat_ondisk_3) {
+    faiss::IndexShards index_shards(d, false, false);
+    index_shards.own_indices = true;
+
+    std::vector<idx_t> ids;
+    for (int i = 0; i < nb; ++i) {
+        int id = i % shard_size;
+        ids.push_back(id);
+    }
+    for (int i = 0; i < nindex; i++) {
+        index_shards.add_shard(
+                new faiss::IndexIVFFlat(&cd.quantizer, d, nlist));
+    }
+    EXPECT_TRUE(index_shards.is_trained);
+    index_shards.add_with_ids(nb, cd.database.data(), ids.data());
+    int ndiff = compare_merged(&index_shards, true, false);
     EXPECT_GE(0, ndiff);
 }
