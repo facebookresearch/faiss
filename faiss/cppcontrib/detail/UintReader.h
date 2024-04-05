@@ -12,13 +12,11 @@
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
 
-#define Swap2Bytes(val) \
- ( (((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00) )
+#define Swap2Bytes(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
 
-
-#define Swap4Bytes(val) \
- ( (((val) >> 24) & 0x000000FF) | (((val) >>  8) & 0x0000FF00) | \
-   (((val) <<  8) & 0x00FF0000) | (((val) << 24) & 0xFF000000) )
+#define Swap4Bytes(val)                                           \
+    ((((val) >> 24) & 0x000000FF) | (((val) >> 8) & 0x0000FF00) | \
+     (((val) << 8) & 0x00FF0000) | (((val) << 24) & 0xFF000000))
 
 #endif
 
@@ -46,9 +44,9 @@ struct Uint8Reader {
                             codes + ELEMENT_TO_READ * 4);
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
-                     return (code32) >> 24;
+                    return (code32) >> 24;
 #else
-                     return (code32 & 0x000000FF);
+                    return (code32 & 0x000000FF);
 #endif
                 } else {
                     return codes[CPOS];
@@ -309,15 +307,15 @@ struct Uint16Reader {
 #endif
                     return (code32 & 0x0000FFFF);
                 } else {
-                     const uint16_t* const __restrict codesFp16 =
+                    const uint16_t* const __restrict codesFp16 =
                             reinterpret_cast<const uint16_t*>(codes);
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
-                     uint16_t rt = codesFp16[CPOS];
-                     rt=Swap2Bytes(rt);
-                     return rt;
+                    uint16_t rt = codesFp16[CPOS];
+                    rt=Swap2Bytes(rt);
+                    return rt;
 #endif
-                     return codesFp16[CPOS];
+                    return codesFp16[CPOS];
                 }
             }
             case 1: {
@@ -335,7 +333,7 @@ struct Uint16Reader {
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
                     uint16_t rt = codesFp16[CPOS];
-                    rt=Swap2Bytes(rt);
+                    rt = Swap2Bytes(rt);
                     return rt;
 #endif
                     return codesFp16[CPOS];
