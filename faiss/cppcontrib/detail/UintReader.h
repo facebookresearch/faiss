@@ -312,7 +312,7 @@ struct Uint16Reader {
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
                     uint16_t rt = codesFp16[CPOS];
-                    rt=Swap2Bytes(rt);
+                    rt = Swap2Bytes(rt);
                     return rt;
 #endif
                     return codesFp16[CPOS];
