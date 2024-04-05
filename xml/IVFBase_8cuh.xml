@@ -118,9 +118,18 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>storePairs)<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>/*<sp/><sp/>It<sp/>is<sp/>used<sp/>to<sp/>reconstruct<sp/>a<sp/>given<sp/>number<sp/>of<sp/>vectors<sp/>in<sp/>an<sp/>Inverted<sp/>File</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*<sp/>(IVF)<sp/>index</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/>@param<sp/>i0<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>of<sp/>the<sp/>first<sp/>vector<sp/>to<sp/>reconstruct</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>reconstruct</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/>@param<sp/>out<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>This<sp/>is<sp/>a<sp/>pointer<sp/>to<sp/>a<sp/>buffer<sp/>where<sp/>the<sp/>reconstructed</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*<sp/>vectors<sp/>will<sp/>be<sp/>stored.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>*/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>reconstruct_n(idx_t<sp/>i0,<sp/>idx_t<sp/>n,<sp/>float*<sp/>out);</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Adds<sp/>a<sp/>set<sp/>of<sp/>codes<sp/>and<sp/>indices<sp/>to<sp/>a<sp/>list,<sp/>with<sp/>the<sp/>representation</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>coming<sp/>from<sp/>the<sp/>CPU<sp/>equivalent</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Adds<sp/>a<sp/>set<sp/>of<sp/>codes<sp/>and<sp/>indices<sp/>to<sp/>a<sp/>list,<sp/>with<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>representation<sp/>coming<sp/>from<sp/>the<sp/>CPU<sp/>equivalent</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>addEncodedVectorsToList_(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>listId,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>resident<sp/>on<sp/>the<sp/>host</highlight></codeline>

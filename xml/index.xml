@@ -1124,6 +1124,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a88676a893e9b44041e7a52327d960b54" kind="function"><name>reset</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a6e319a7ebff7e9a78ae640fa8e45a790" kind="function"><name>updateQuantizer</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a174853bbcb2c8760f9b10c7dd638827e" kind="function"><name>train</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ab95cbd3b7e87771c72c1e166a9caef2a" kind="function"><name>reconstruct_n</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a9153ac747b50b454d85416edcf484bd3" kind="function"><name>copyTo</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1acfd050f996094ebc825829cf1c81c5b5" kind="function"><name>getNumLists</name></member>
@@ -1147,7 +1148,6 @@
     <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
-    <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" kind="function"><name>get_distance_computer</name></member>
     <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kind="function"><name>sa_code_size</name></member>
     <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>

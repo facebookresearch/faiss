@@ -60,6 +60,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>storePairs)<sp/>override;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>reconstruct_n(idx_t<sp/>i0,<sp/>idx_t<sp/>n,<sp/>float*<sp/>out)<sp/>override;</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>bytes<sp/>in<sp/>which<sp/>an<sp/>IVF<sp/>list<sp/>containing<sp/>numVecs</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>vectors<sp/>is<sp/>encoded<sp/>on<sp/>the<sp/>device.<sp/>Note<sp/>that<sp/>due<sp/>to<sp/>padding<sp/>this<sp/>is<sp/>not</highlight></codeline>

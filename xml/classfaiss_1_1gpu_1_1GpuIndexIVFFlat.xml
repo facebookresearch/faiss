@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="107" column="33" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="109" column="33" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="109" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a741492b6184da608332a782492e8a2a8" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="110" column="12" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="110" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="112" column="12" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="112" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a030caa5345076d7432636226d6dc7bf4" prot="protected" static="no" mutable="no">
         <type>std::shared_ptr&lt; IVFFlat &gt;</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="113" column="21" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="113" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="115" column="21" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="115" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" kindref="compound">GpuIndexIVFConfig</ref></type>
@@ -355,6 +355,59 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexIVFFlat.h" line="88" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ab95cbd3b7e87771c72c1e166a9caef2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVFFlat::reconstruct_n</definition>
+        <argsstring>(idx_t i0, idx_t n, float *out) const override</argsstring>
+        <name>reconstruct_n</name>
+        <reimplements refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f">reconstruct_n</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>ni</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>recons</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reconstruct vectors i0 to i0 + ni - 1</para>
+<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>index of the first vector in the sequence </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ni</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors in the sequence </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recons</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reconstucted vector (size ni * d) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="90" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1208,62 +1261,6 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="189" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::reconstruct_n</definition>
-        <argsstring>(idx_t i0, idx_t ni, float *recons) const</argsstring>
-        <name>reconstruct_n</name>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a166582b8b10fc86e77ce8c48854496f8">reconstruct_n</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c">reconstruct_n</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a02ebb27dd56aec9a93c50bd6b96184e7">reconstruct_n</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a877b903b95d7b0d2bc48717a1690b6da">reconstruct_n</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>i0</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>ni</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>recons</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Reconstruct vectors i0 to i0 + ni - 1</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>i0</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>index of the first vector in the sequence </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>ni</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of vectors in the sequence </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>recons</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>reconstucted vector (size ni * d) </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="199" column="18"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
@@ -1626,7 +1623,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="92" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFFlat.h" line="94" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2153,7 +2150,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFFlat.h" line="33" column="1" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="33" bodyend="114"/>
+    <location file="faiss/gpu/GpuIndexIVFFlat.h" line="33" column="1" bodyfile="faiss/gpu/GpuIndexIVFFlat.h" bodystart="33" bodyend="116"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5fcf3e9af349e17c27ce82fc0ed94966" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>add</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>add_with_ids</name></member>
@@ -2218,7 +2215,7 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1adaa727f3e951068501ebf381b001f3bd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reclaimMemory</name></member>
       <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reconstruct_n</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ab95cbd3b7e87771c72c1e166a9caef2a" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reconstruct_n</name></member>
       <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>remove_ids</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a329d7734f1285788d10c1fbf1f88d72f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reserveMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a741492b6184da608332a782492e8a2a8" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFFlat</scope><name>reserveMemoryVecs_</name></member>

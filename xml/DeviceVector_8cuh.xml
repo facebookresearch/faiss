@@ -178,6 +178,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;out,<sp/>data()<sp/>+<sp/>idx,<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToHost,<sp/>stream));</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Clean<sp/>up<sp/>after<sp/>oversized<sp/>allocations,<sp/>while<sp/>leaving<sp/>some<sp/>space<sp/>to</highlight></codeline>
