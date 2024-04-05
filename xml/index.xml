@@ -235,6 +235,7 @@
     <member refid="structfaiss_1_1BlockInvertedLists_1a6b31daaea6703be4f1e55d5d01b301ff" kind="function"><name>list_size</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1a6bb2c32aa717167d259fc5473d53f86c" kind="function"><name>get_codes</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1a4ed87af2e06c67f2b6635211489075f5" kind="function"><name>get_ids</name></member>
+    <member refid="structfaiss_1_1BlockInvertedLists_1a5db57bbb76347d4e95c7a11f4c67b3a7" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1a820d8f05e6fae5eb5f82d43d19d0c7c6" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1aa5d61744a1478c537fec67e64b4dbe25" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1BlockInvertedLists_1a5004739d5e1315dfe537a1dead238acb" kind="function"><name>resize</name></member>
