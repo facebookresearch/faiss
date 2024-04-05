@@ -3981,6 +3981,22 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf">
+<span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ab95cbd3b7e87771c72c1e166a9caef2a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i0</strong> – index of the first vector in the sequence </p></li>
+<li><p><strong>ni</strong> – number of vectors in the sequence </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size ni * d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15GpuIndexIVFFlat8copyFromEPKN5faiss8IndexIVFE">
 <span id="_CPPv3N5faiss3gpu15GpuIndexIVFFlat8copyFromEPKN5faiss8IndexIVFE"></span><span id="_CPPv2N5faiss3gpu15GpuIndexIVFFlat8copyFromEPKN5faiss8IndexIVFE"></span><span id="faiss::gpu::GpuIndexIVFFlat::copyFrom__faiss::IndexIVFCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyFrom</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Copy what we need from the CPU equivalent. </p>
@@ -4172,22 +4188,6 @@
 <li><p><strong>n</strong> – number of vectors to reconstruct </p></li>
 <li><p><strong>keys</strong> – ids of the vectors to reconstruct (size n) </p></li>
 <li><p><strong>recons</strong> – reconstucted vector (size n * d) </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf">
-<span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>i0</strong> – index of the first vector in the sequence </p></li>
-<li><p><strong>ni</strong> – number of vectors in the sequence </p></li>
-<li><p><strong>recons</strong> – reconstucted vector (size ni * d) </p></li>
 </ul>
 </dd>
 </dl>
