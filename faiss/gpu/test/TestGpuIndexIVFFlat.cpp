@@ -842,6 +842,71 @@ TEST(TestGpuIndexIVFFlat, LongIVFList) {
 #endif
 }
 
+TEST(TestGpuIndexIVFFlat, Reconstruct_n) {
+    Options opt;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    faiss::IndexFlatL2 cpuQuantizer(opt.dim);
+    faiss::IndexIVFFlat cpuIndex(
+            &cpuQuantizer, opt.dim, opt.numCentroids, faiss::METRIC_L2);
+    cpuIndex.nprobe = opt.nprobe;
+    cpuIndex.train(opt.numTrain, trainVecs.data());
+    cpuIndex.add(opt.numAdd, addVecs.data());
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = opt.device;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
+    config.use_raft = false;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
+    gpuIndex.nprobe = opt.nprobe;
+
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+    gpuIndex.add(opt.numAdd, addVecs.data());
+
+    std::vector<float> gpuVals(opt.numAdd * opt.dim);
+
+    gpuIndex.reconstruct_n(0, gpuIndex.ntotal, gpuVals.data());
+
+    std::vector<float> cpuVals(opt.numAdd * opt.dim);
+
+    cpuIndex.reconstruct_n(0, cpuIndex.ntotal, cpuVals.data());
+
+    EXPECT_EQ(gpuVals, cpuVals);
+
+    config.indicesOptions = faiss::gpu::INDICES_32_BIT;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex1(
+            &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
+    gpuIndex1.nprobe = opt.nprobe;
+
+    gpuIndex1.train(opt.numTrain, trainVecs.data());
+    gpuIndex1.add(opt.numAdd, addVecs.data());
+
+    gpuIndex1.reconstruct_n(0, gpuIndex1.ntotal, gpuVals.data());
+
+    EXPECT_EQ(gpuVals, cpuVals);
+
+    config.indicesOptions = faiss::gpu::INDICES_CPU;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex2(
+            &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
+    gpuIndex2.nprobe = opt.nprobe;
+
+    gpuIndex2.train(opt.numTrain, trainVecs.data());
+    gpuIndex2.add(opt.numAdd, addVecs.data());
+
+    gpuIndex2.reconstruct_n(0, gpuIndex2.ntotal, gpuVals.data());
+
+    EXPECT_EQ(gpuVals, cpuVals);
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 
