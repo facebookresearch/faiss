@@ -153,6 +153,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         config.use_raft = use_raft;
+        config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
 
         GpuIndexIVFFlat* res = new GpuIndexIVFFlat(
                 provider, ifl->d, ifl->nlist, ifl->metric_type, config);
@@ -205,6 +206,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.usePrecomputedTables = usePrecomputed;
         config.use_raft = use_raft;
         config.interleavedLayout = use_raft;
+        config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
 
         GpuIndexIVFPQ* res = new GpuIndexIVFPQ(provider, ipq, config);
 
@@ -214,8 +216,13 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 
         return res;
     } else {
-        // default: use CPU cloner
-        return Cloner::clone_Index(index);
+        // use CPU cloner for IDMap and PreTransform
+        auto index_idmap = dynamic_cast<const IndexIDMap*>(index);
+        auto index_pt = dynamic_cast<const IndexPreTransform*>(index);
+        if (index_idmap || index_pt) {
+            return Cloner::clone_Index(index);
+        }
+        FAISS_THROW_MSG("This index type is not implemented on GPU.");
     }
 }
 
@@ -224,8 +231,6 @@ faiss::Index* index_cpu_to_gpu(
         int device,
         const faiss::Index* index,
         const GpuClonerOptions* options) {
-    auto index_pq = dynamic_cast<const faiss::IndexPQ*>(index);
-    FAISS_THROW_IF_MSG(index_pq, "This index type is not implemented on GPU.");
     GpuClonerOptions defaults;
     ToGpuCloner cl(provider, device, options ? *options : defaults);
     return cl.clone_Index(index);

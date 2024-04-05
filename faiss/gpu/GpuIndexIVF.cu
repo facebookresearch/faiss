@@ -7,6 +7,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/clone_index.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVF.h>
@@ -172,10 +173,29 @@ void GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
         // over to the GPU, on the same device that we are on.
         GpuResourcesProviderFromInstance pfi(getResources());
 
-        GpuClonerOptions options;
-        auto cloner = ToGpuCloner(&pfi, getDevice(), options);
-
-        quantizer = cloner.clone_Index(index->quantizer);
+        // Attempt to clone the index to GPU. If it fails because the coarse
+        // quantizer is not implemented on GPU and the flag to allow CPU
+        // fallback is set, retry it with CPU cloner and re-throw errors.
+        try {
+            GpuClonerOptions options;
+            auto cloner = ToGpuCloner(&pfi, getDevice(), options);
+            quantizer = cloner.clone_Index(index->quantizer);
+        } catch (const std::exception& e) {
+            if (strstr(e.what(), "not implemented on GPU")) {
+                if (ivfConfig_.allowCpuCoarseQuantizer) {
+                    Cloner cpuCloner;
+                    quantizer = cpuCloner.clone_Index(index->quantizer);
+                } else {
+                    FAISS_THROW_MSG(
+                            "This index type is not implemented on "
+                            "GPU and allowCpuCoarseQuantizer is set to false. "
+                            "Please set the flag to true to allow the CPU "
+                            "fallback in cloning.");
+                }
+            } else {
+                throw;
+            }
+        }
         own_fields = true;
     } else {
         // Otherwise, this is a GPU coarse quantizer index instance found in a
