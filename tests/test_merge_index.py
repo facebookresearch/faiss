@@ -246,45 +246,19 @@ class TestMerge2(unittest.TestCase):
 
 class TestRemoveFastScan(unittest.TestCase):
 
-    def do_fast_scan_test(self,
-                          factory_key,
-                          with_ids=False,
-                          direct_map_type=faiss.DirectMap.NoMap):
+    def do_fast_scan_test(self, factory_key, size1):
         ds = SyntheticDataset(110, 1000, 1000, 100)
-        index = faiss.index_factory(ds.d, factory_key)
-        index.train(ds.get_train())
-
-        index.reset()
+        index1 = faiss.index_factory(ds.d, factory_key)
+        index1.train(ds.get_train())
+        index1.reset()
         tokeep = [i % 3 == 0 for i in range(ds.nb)]
-        if with_ids:
-            index.add_with_ids(ds.get_database()[tokeep], np.arange(ds.nb)[tokeep])
-            faiss.extract_index_ivf(index).nprobe = 5
-        else:
-            index.add(ds.get_database()[tokeep])
-        _, Iref = index.search(ds.get_queries(), 5)
-
-        index.reset()
-        if with_ids:
-            index.add_with_ids(ds.get_database(), np.arange(ds.nb))
-            index.set_direct_map_type(direct_map_type)
-            faiss.extract_index_ivf(index).nprobe = 5
-        else:
-            index.add(ds.get_database())
-        index.remove_ids(np.where(np.logical_not(tokeep))[0])
-        _, Inew = index.search(ds.get_queries(), 5)
+        index1.add(ds.get_database()[tokeep])
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index1.add(ds.get_database())
+        index1.remove_ids(np.where(np.logical_not(tokeep))[0])
+        _, Inew = index1.search(ds.get_queries(), 5)
         np.testing.assert_array_equal(Inew, Iref)
 
-    def test_remove_PQFastScan(self):
-        # with_ids is not support for this type of index
-        self.do_fast_scan_test("PQ5x4fs", False)
-
-    def test_remove_IVFPQFastScan(self):
-        self.do_fast_scan_test("IVF20,PQ5x4fs", True)
-
-    def test_remove_IVFPQFastScan_2(self):
-        self.assertRaisesRegex(Exception,
-                               ".*not supported.*",
-                               self.do_fast_scan_test,
-                               "IVF20,PQ5x4fs",
-                               True,
-                               faiss.DirectMap.Hashtable)
+    def test_remove(self):
+        self.do_fast_scan_test("PQ5x4fs", 320)

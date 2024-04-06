@@ -15,7 +15,6 @@
 namespace faiss {
 
 struct CodePacker;
-struct IDSelector;
 
 /** Inverted Lists that are organized by blocks.
  *
@@ -48,8 +47,6 @@ struct BlockInvertedLists : InvertedLists {
     size_t list_size(size_t list_no) const override;
     const uint8_t* get_codes(size_t list_no) const override;
     const idx_t* get_ids(size_t list_no) const override;
-    /// remove ids from the InvertedLists
-    size_t remove_ids(const IDSelector& sel);
 
     // works only on empty BlockInvertedLists
     // the codes should be of size ceil(n_entry / n_per_block) * block_size
