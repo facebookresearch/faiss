@@ -126,6 +126,21 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuClonerOptions.h" line="44" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="44" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</definition>
+        <argsstring></argsstring>
+        <name>allowCpuCoarseQuantizer</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This flag controls the CPU fallback logic for coarse quantizer component of the index. When set to false (default), the cloner will throw an exception for indices not implemented on GPU. When set to true, it will fallback to a CPU implementation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="51" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
       </sectiondef>
     <briefdescription>
 <para>set some options on how to copy to GPU </para>
@@ -156,8 +171,9 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuClonerOptions.h" line="16" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="16" bodyend="46"/>
+    <location file="faiss/gpu/GpuClonerOptions.h" line="16" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="16" bodyend="52"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>allowCpuCoarseQuantizer</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>reserveVecs</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>storeTransposed</name></member>

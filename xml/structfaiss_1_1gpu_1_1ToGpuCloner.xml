@@ -152,6 +152,21 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuClonerOptions.h" line="44" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="44" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</definition>
+        <argsstring></argsstring>
+        <name>allowCpuCoarseQuantizer</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This flag controls the CPU fallback logic for coarse quantizer component of the index. When set to false (default), the cloner will throw an exception for indices not implemented on GPU. When set to true, it will fallback to a CPU implementation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="51" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuCloner_1a75c697e6c9678764e5fcd17e18f23867" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -280,6 +295,7 @@
     </collaborationgraph>
     <location file="faiss/gpu/GpuCloner.h" line="32" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="32" bodyend="42"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>allowCpuCoarseQuantizer</name></member>
       <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_IndexIVF</name></member>
       <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_VectorTransform</name></member>
