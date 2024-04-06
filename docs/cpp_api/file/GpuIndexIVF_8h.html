@@ -365,6 +365,12 @@
 <dd><p>Configuration for the coarse quantizer object. </p>
 </dd></dl>
 
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE">
+<span id="_CPPv3N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE"></span><span id="faiss::gpu::GpuIndexIVFConfig::allowCpuCoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a9ad7e2e02e0577e31968c539e499fe00"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allowCpuCoarseQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This flag controls the CPU fallback logic for coarse quantizer component of the index. When set to false (default), the cloner will throw an exception for indices not implemented on GPU. When set to true, it will fallback to a CPU implementation. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 

@@ -434,6 +434,12 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE">
+<span id="_CPPv3N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu17GpuIndexIVFConfig23allowCpuCoarseQuantizerE"></span><span id="faiss::gpu::GpuIndexIVFConfig::allowCpuCoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a9ad7e2e02e0577e31968c539e499fe00"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allowCpuCoarseQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>This flag controls the CPU fallback logic for coarse quantizer component of the index. When set to false (default), the cloner will throw an exception for indices not implemented on GPU. When set to true, it will fallback to a CPU implementation. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuIndexIVFConfig6deviceE">
 <span id="_CPPv3N5faiss3gpu17GpuIndexIVFConfig6deviceE"></span><span id="_CPPv2N5faiss3gpu17GpuIndexIVFConfig6deviceE"></span><span id="faiss::gpu::GpuIndexIVFConfig::device__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd><p>GPU device on which the index is resident. </p>
