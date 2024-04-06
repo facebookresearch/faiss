@@ -108,7 +108,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
         self.assertTrue(np.array_equal(I.reshape(10), ids_np[10:20]))
 
     # tests reconstruct, reconstruct_n
-    def test_reconstruct(self):
+    def test_flat_reconstruct(self):
         d = 32
         res = faiss.StandardGpuResources()
         res.noTempMemory()
@@ -136,6 +136,40 @@ class TestTorchUtilsGPU(unittest.TestCase):
         y = torch.empty(d, device=torch.device('cuda', 0), dtype=torch.float32)
         index.reconstruct(13, y)
         self.assertTrue(torch.equal(xb[13], y))
+
+        # Test reconstruct_n with torch gpu (native return)
+        y = index.reconstruct_n(10, 10)
+        self.assertTrue(y.is_cuda)
+        self.assertTrue(torch.equal(xb[10:20], y))
+
+        # Test reconstruct with numpy output provided
+        y = np.empty((10, d), dtype='float32')
+        index.reconstruct_n(20, 10, y)
+        self.assertTrue(np.array_equal(xb.cpu().numpy()[20:30], y))
+
+        # Test reconstruct_n with torch cpu output provided
+        y = torch.empty(10, d, dtype=torch.float32)
+        index.reconstruct_n(40, 10, y)
+        self.assertTrue(torch.equal(xb[40:50].cpu(), y))
+
+        # Test reconstruct_n with torch gpu output provided
+        y = torch.empty(10, d, device=torch.device('cuda', 0), dtype=torch.float32)
+        index.reconstruct_n(50, 10, y)
+        self.assertTrue(torch.equal(xb[50:60], y))
+
+    def test_ivfflat_reconstruct(self):
+        d = 32
+        nlist = 5
+        res = faiss.StandardGpuResources()
+        res.noTempMemory()
+        config = faiss.GpuIndexIVFFlatConfig()
+        config.use_raft = False
+
+        index = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
+
+        xb = torch.rand(100, d, device=torch.device('cuda', 0), dtype=torch.float32)
+        index.train(xb)
+        index.add(xb)
 
         # Test reconstruct_n with torch gpu (native return)
         y = index.reconstruct_n(10, 10)
