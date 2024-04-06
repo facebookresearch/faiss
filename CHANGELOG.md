@@ -9,6 +9,8 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+### Changed
+- Previously, when moving indices to GPU with coarse quantizers that were not implemented on GPU, the cloner would silently fallback to CPU. This version will now throw an exception instead and the calling code would need to explicitly allow fallback to CPU by setting a flag in cloner config.
 
 ## [1.8.0] - 2024-02-27
 ### Added
