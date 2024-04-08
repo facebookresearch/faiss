@@ -6,9 +6,9 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
-#include <faiss/impl/platform_macros.h>
 
 #include <array>
 
@@ -51,7 +51,6 @@ void pq4_pack_codes(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks) {
-
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
     FAISS_THROW_IF_NOT(nsq % 2 == 0);
