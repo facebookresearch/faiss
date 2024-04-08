@@ -81,15 +81,12 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode, fineCode;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
-              fineCode = Swap2Bytes(fine[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode = coarse[coarseCentroidIdx];
-              fineCode = fine[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
+                fineCode = Swap2Bytes(fine[fineCentroidIdx]);
+            } else {
+                coarseCode = coarse[coarseCentroidIdx];
+                fineCode = fine[fineCentroidIdx];
             }
 
             const float* const __restrict coarsePtr = pqCoarseCentroids +
@@ -129,15 +126,12 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
 
             intptr_t coarseCode, fineCode;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
-              fineCode = Swap2Bytes(fine[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode = coarse[coarseCentroidIdx];
-              fineCode = fine[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
+                fineCode = Swap2Bytes(fine[fineCentroidIdx]);
+            } else {
+                coarseCode = coarse[coarseCentroidIdx];
+                fineCode = fine[fineCentroidIdx];
             }
             const float* const __restrict coarsePtr = pqCoarseCentroids +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode) *
@@ -187,19 +181,16 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
-              fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
-              coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
-              fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode0 = coarse0[coarseCentroidIdx];
-              fineCode0 = fine0[fineCentroidIdx];
-              coarseCode1 = coarse1[coarseCentroidIdx];
-              fineCode1 = fine1[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
             }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
@@ -257,19 +248,16 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
-              fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
-              coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
-              fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode0 = coarse0[coarseCentroidIdx];
-              fineCode0 = fine0[fineCentroidIdx];
-              coarseCode1 = coarse1[coarseCentroidIdx];
-              fineCode1 = fine1[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
             }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids +
@@ -338,23 +326,20 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
             intptr_t coarseCode2, fineCode2;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
-              fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
-              coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
-              fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
-              coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
-              fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode0 = coarse0[coarseCentroidIdx];
-              fineCode0 = fine0[fineCentroidIdx];
-              coarseCode1 = coarse1[coarseCentroidIdx];
-              fineCode1 = fine1[fineCentroidIdx];
-              coarseCode2 = coarse2[coarseCentroidIdx];
-              fineCode2 = fine2[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+                coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
+                fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+                coarseCode2 = coarse2[coarseCentroidIdx];
+                fineCode2 = fine2[fineCentroidIdx];
             }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
@@ -428,23 +413,20 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, fineCode0, coarseCode1, fineCode1;
             intptr_t coarseCode2, fineCode2;
-            if (is_bigendian && sizeof(coarse_storage_type) == 2)
-            {
-              coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
-              fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
-              coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
-              fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
-              coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
-              fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
-            }
-            else
-            {
-              coarseCode0 = coarse0[coarseCentroidIdx];
-              fineCode0 = fine0[fineCentroidIdx];
-              coarseCode1 = coarse1[coarseCentroidIdx];
-              fineCode1 = fine1[fineCentroidIdx];
-              coarseCode2 = coarse2[coarseCentroidIdx];
-              fineCode2 = fine2[fineCentroidIdx];
+            if (is_bigendian && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+                coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
+                fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+                coarseCode2 = coarse2[coarseCentroidIdx];
+                fineCode2 = fine2[fineCentroidIdx];
             }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids +
