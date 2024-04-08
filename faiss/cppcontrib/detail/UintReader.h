@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <faiss/impl/platform_macros.h>
+#include <cstdint>
 
 #ifdef FAISS_BIG_ENDIAN
 #define Swap2Bytes(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
@@ -42,9 +42,9 @@ struct Uint8Reader {
                     const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
 #ifdef FAISS_BIG_ENDIAN
-                     return (code32) >> 24;
+                    return (code32) >> 24;
 #else
-                     return (code32 & 0x000000FF);
+                    return (code32 & 0x000000FF);
 #endif
                 } else {
                     return codes[CPOS];
@@ -286,14 +286,14 @@ struct Uint16Reader {
 #endif
                     return (code32 & 0x0000FFFF);
                 } else {
-                     const uint16_t* const __restrict codesFp16 =
+                    const uint16_t* const __restrict codesFp16 =
                             reinterpret_cast<const uint16_t*>(codes);
 #ifdef FAISS_BIG_ENDIAN
-                     uint16_t rt = codesFp16[CPOS];
-                     rt=Swap2Bytes(rt);
-                     return rt;
+                    uint16_t rt = codesFp16[CPOS];
+                    rt=Swap2Bytes(rt);
+                    return rt;
 #endif
-                     return codesFp16[CPOS];
+                    return codesFp16[CPOS];
                 }
             }
             case 1: {
@@ -309,7 +309,7 @@ struct Uint16Reader {
                             reinterpret_cast<const uint16_t*>(codes);
 #ifdef FAISS_BIG_ENDIAN
                     uint16_t rt = codesFp16[CPOS];
-                    rt=Swap2Bytes(rt);
+                    rt = Swap2Bytes(rt);
                     return rt;
 #endif
                     return codesFp16[CPOS];
