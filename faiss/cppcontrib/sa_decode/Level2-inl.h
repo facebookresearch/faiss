@@ -20,6 +20,7 @@
 
 #ifndef FAISS_BIG_ENDIAN
 #define FAISS_BIG_ENDIAN 0
+#define Swap2Bytes(val) val
 #endif
 
 namespace faiss {
