@@ -8,6 +8,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/platform_macros.h>
 
 #include <array>
 
@@ -50,6 +51,7 @@ void pq4_pack_codes(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks) {
+
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
     FAISS_THROW_IF_NOT(nsq % 2 == 0);
@@ -58,8 +60,7 @@ void pq4_pack_codes(
         return;
     }
     memset(blocks, 0, nb * nsq / 2);
-#if !defined(_MSC_VER) && \
-        (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+#ifdef FAISS_BIG_ENDIAN
     const uint8_t perm0[16] = {
             8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
 #else
@@ -99,8 +100,7 @@ void pq4_pack_codes_range(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks) {
-#if !defined(_MSC_VER) && \
-        (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+#ifdef FAISS_BIG_ENDIAN
     const uint8_t perm0[16] = {
             8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
 #else

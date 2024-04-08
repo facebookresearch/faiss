@@ -165,3 +165,11 @@ inline int __builtin_clzll(uint64_t x) {
 #endif
 
 // clang-format on
+
+/*******************************************************
+ * BIGENDIAN specific macros
+ *******************************************************/
+#if !defined(_MSC_VER) && \
+        (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+#define FAISS_BIG_ENDIAN 1
+#endif
