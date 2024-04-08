@@ -290,7 +290,7 @@ struct Uint16Reader {
                             reinterpret_cast<const uint16_t*>(codes);
 #ifdef FAISS_BIG_ENDIAN
                     uint16_t rt = codesFp16[CPOS];
-                    rt=Swap2Bytes(rt);
+                    rt = Swap2Bytes(rt);
                     return rt;
 #endif
                     return codesFp16[CPOS];
