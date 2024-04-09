@@ -346,7 +346,7 @@ workflows:
       - build_conda:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
-      - build_cmake:
+      - build_conda:
           name: OSX arm64 (cmake)
           exec: macosx-arm64-cpu
       - build_conda:
