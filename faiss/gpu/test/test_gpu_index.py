@@ -589,7 +589,10 @@ class TestGpuAutoTune(unittest.TestCase):
 
     def test_params(self):
         index = faiss.index_factory(32, "IVF65536_HNSW,PQ16")
-        index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
+        res = faiss.StandardGpuResources()
+        options = faiss.GpuClonerOptions()
+        options.allowCpuCoarseQuantizer = True
+        index = faiss.index_cpu_to_gpu(res, 0, index, options)
         ps = faiss.GpuParameterSpace()
         ps.initialize(index)
         for i in range(ps.parameter_ranges.size()):

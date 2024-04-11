@@ -49,7 +49,9 @@ struct RocksDBInvertedLists : faiss::InvertedLists {
 
     void resize(size_t list_no, size_t new_size) override;
 
-    faiss::InvertedListsIterator* get_iterator(size_t list_no) const override;
+    faiss::InvertedListsIterator* get_iterator(
+            size_t list_no,
+            void* inverted_list_context) const override;
 
    private:
     std::unique_ptr<rocksdb::DB> db_;

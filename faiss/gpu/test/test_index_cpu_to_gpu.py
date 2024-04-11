@@ -4,26 +4,86 @@ import faiss
 
 
 class TestMoveToGpu(unittest.TestCase):
-    def test_index_cpu_to_gpu(self):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.res = faiss.StandardGpuResources()
+
+    def create_index(self, factory_string):
         dimension = 128
         n = 2500
         db_vectors = np.random.random((n, dimension)).astype('float32')
-        code_size = 16
-        res = faiss.StandardGpuResources()
-        index_pq = faiss.IndexPQ(dimension, code_size, 6)
-        index_pq.train(db_vectors)
-        index_pq.add(db_vectors)
-        self.assertRaisesRegex(Exception, ".*not implemented.*",
-                               faiss.index_cpu_to_gpu, res, 0, index_pq)
+        index = faiss.index_factory(dimension, factory_string)
+        index.train(db_vectors)
+        if factory_string.startswith("IDMap"):
+            index.add_with_ids(db_vectors, np.arange(n))
+        else:
+            index.add(db_vectors)
+        return index
 
-    def test_index_cpu_to_gpu_does_not_throw_with_index_flat(self):
-        dimension = 128
-        n = 100
-        db_vectors = np.random.random((n, dimension)).astype('float32')
-        res = faiss.StandardGpuResources()
-        index_flat = faiss.IndexFlatL2(dimension)
-        index_flat.add(db_vectors)
+    def create_and_clone(self, factory_string,
+                         allowCpuCoarseQuantizer=None,
+                         use_raft=None):
+        idx = self.create_index(factory_string)
+        config = faiss.GpuClonerOptions()
+        if allowCpuCoarseQuantizer is not None:
+            config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer
+        if use_raft is not None:
+            config.use_raft = use_raft
+        faiss.index_cpu_to_gpu(self.res, 0, idx, config)
+
+    def verify_throws_not_implemented_exception(self, factory_string):
         try:
-            faiss.index_cpu_to_gpu(res, 0, index_flat)
-        except Exception:
-            self.fail("index_cpu_to_gpu() threw an unexpected exception.")
+            self.create_and_clone(factory_string)
+        except Exception as e:
+            if "not implemented" not in str(e):
+                self.fail("Expected an exception but no exception was "
+                          "thrown for factory_string: %s." % factory_string)
+
+    def verify_clones_successfully(self, factory_string,
+                                   allowCpuCoarseQuantizer=None,
+                                   use_raft=None):
+        try:
+            self.create_and_clone(
+                factory_string,
+                allowCpuCoarseQuantizer=allowCpuCoarseQuantizer,
+                use_raft=use_raft)
+        except Exception as e:
+            self.fail("Unexpected exception thrown factory_string: "
+                      "%s; error message: %s." % (factory_string, str(e)))
+
+    def test_not_implemented_indices(self):
+        self.verify_throws_not_implemented_exception("PQ16")
+        self.verify_throws_not_implemented_exception("LSHrt")
+        self.verify_throws_not_implemented_exception("HNSW")
+        self.verify_throws_not_implemented_exception("HNSW,PQ16")
+        self.verify_throws_not_implemented_exception("IDMap,PQ16")
+        self.verify_throws_not_implemented_exception("IVF256,ITQ64,SH1.2")
+
+    def test_implemented_indices(self):
+        self.verify_clones_successfully("Flat")
+        self.verify_clones_successfully("IVF1,Flat")
+        self.verify_clones_successfully("IVF32,PQ8")
+        self.verify_clones_successfully("IDMap,Flat")
+        self.verify_clones_successfully("PCA12,IVF32,Flat")
+        self.verify_clones_successfully("PCA32,IVF32,PQ8")
+        self.verify_clones_successfully("PCA32,IVF32,PQ8np")
+
+        # set use_raft to false, these index types are not supported on RAFT
+        self.verify_clones_successfully("IVF32,SQ8", use_raft=False)
+        self.verify_clones_successfully(
+            "PCA32,IVF32,SQ8", use_raft=False)
+
+    def test_with_flag(self):
+        self.verify_clones_successfully("IVF32_HNSW,Flat",
+                                        allowCpuCoarseQuantizer=True)
+        self.verify_clones_successfully("IVF256(PQ2x4fs),Flat",
+                                        allowCpuCoarseQuantizer=True)
+
+    def test_with_flag_set_to_false(self):
+        try:
+            self.verify_clones_successfully("IVF32_HNSW,Flat",
+                                            allowCpuCoarseQuantizer=False)
+        except Exception as e:
+            if "set the flag to true to allow the CPU fallback" not in str(e):
+                self.fail("Unexepected error message thrown: %s." % str(e))

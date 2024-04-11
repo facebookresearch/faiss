@@ -109,9 +109,18 @@ class IVFBase {
             Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) = 0;
 
+    /*  It is used to reconstruct a given number of vectors in an Inverted File
+     * (IVF) index
+     *  @param i0          index of the first vector to reconstruct
+     *  @param n           number of vectors to reconstruct
+     *  @param out         This is a pointer to a buffer where the reconstructed
+     * vectors will be stored.
+     */
+    virtual void reconstruct_n(idx_t i0, idx_t n, float* out);
+
    protected:
-    /// Adds a set of codes and indices to a list, with the representation
-    /// coming from the CPU equivalent
+    /// Adds a set of codes and indices to a list, with the
+    /// representation coming from the CPU equivalent
     virtual void addEncodedVectorsToList_(
             idx_t listId,
             // resident on the host
