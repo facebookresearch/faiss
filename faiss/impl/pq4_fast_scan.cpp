@@ -59,7 +59,7 @@ void pq4_pack_codes(
         return;
     }
     memset(blocks, 0, nb * nsq / 2);
-#ifdef FAISS_BIG_ENDIAN
+#if FAISS_BIG_ENDIAN
     const uint8_t perm0[16] = {
             8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
 #else
@@ -99,7 +99,7 @@ void pq4_pack_codes_range(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks) {
-#ifdef FAISS_BIG_ENDIAN
+#if FAISS_BIG_ENDIAN
     const uint8_t perm0[16] = {
             8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
 #else

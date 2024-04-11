@@ -14,15 +14,6 @@
 #include <faiss/cppcontrib/detail/CoarseBitType.h>
 #include <faiss/impl/platform_macros.h>
 
-#ifdef FAISS_BIG_ENDIAN
-#define Swap2Bytes(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
-#endif
-
-#ifndef FAISS_BIG_ENDIAN
-#define FAISS_BIG_ENDIAN 0
-#define Swap2Bytes(val) val
-#endif
-
 namespace faiss {
 namespace cppcontrib {
 
