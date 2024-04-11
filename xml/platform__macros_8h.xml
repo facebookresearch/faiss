@@ -524,6 +524,8 @@
       <node id="75">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="76" relation="include">
         </childnode>
         <childnode refid="62" relation="include">
