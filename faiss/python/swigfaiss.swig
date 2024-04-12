@@ -1121,16 +1121,13 @@ int * cast_integer_to_int_ptr (int64_t x) {
 void * cast_integer_to_void_ptr (int64_t x) {
     return (void*)x;
 }
-
 %}
+
 /*
 Force OSX to generate SWIGTYPE_p_long since OSX will generate SWIGTYPE_p_long_long when it meets int64 by default
 */
-%inline %{
-void dummy_function(long *) {}
-
-void dummy_unsigned_function(unsigned long *) {}
-%}
+%types(unsigned long*);
+%types(long*);
 
 
 
