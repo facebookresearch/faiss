@@ -267,7 +267,7 @@ std::string fourcc_inv_printable(uint32_t x) {
             str += c;
         } else {
             char buf[10];
-            sprintf(buf, "\\x%02x", c);
+            snprintf(buf, sizeof(buf), "\\x%02x", c);
             str += buf;
         }
     }
