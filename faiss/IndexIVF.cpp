@@ -444,7 +444,7 @@ void IndexIVF::search_preassigned(
         max_codes = unlimited_list_size;
     }
 
-    bool do_parallel = omp_get_max_threads() >= 2 &&
+    [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
             (pmode == 0           ? false
                      : pmode == 3 ? n > 1
                      : pmode == 1 ? nprobe > 1
@@ -784,7 +784,7 @@ void IndexIVF::range_search_preassigned(
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     // don't start parallel section if single query
-    bool do_parallel = omp_get_max_threads() >= 2 &&
+    [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
             (pmode == 3           ? false
                      : pmode == 0 ? nx > 1
                      : pmode == 1 ? nprobe > 1
