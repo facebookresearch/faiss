@@ -141,7 +141,7 @@ void exhaustive_inner_product_seq(
         const IDSelector* sel = nullptr) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    int nt = std::min(int(nx), omp_get_max_threads());
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
     FAISS_ASSERT(use_sel == (sel != nullptr));
 
@@ -178,7 +178,7 @@ void exhaustive_L2sqr_seq(
         const IDSelector* sel = nullptr) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    int nt = std::min(int(nx), omp_get_max_threads());
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
     FAISS_ASSERT(use_sel == (sel != nullptr));
 
