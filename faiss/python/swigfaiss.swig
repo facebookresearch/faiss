@@ -285,8 +285,8 @@ namespace std {
 
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
-%include <faiss/utils/hamming_distance/common.h>
 %include <faiss/utils/hamming.h>
+%include <faiss/utils/hamming_distance/common.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
