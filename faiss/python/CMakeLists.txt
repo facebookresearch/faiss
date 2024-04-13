@@ -24,11 +24,6 @@ macro(configure_swigfaiss source)
     CPLUSPLUS ON
     USE_TARGET_INCLUDE_DIRECTORIES TRUE
   )
-  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
-    set_source_files_properties(${source} PROPERTIES
-      SWIG_FLAGS -DSWIGWORDSIZE64
-    )
-  endif()
   if(WIN32)
     set_source_files_properties(${source} PROPERTIES
       SWIG_FLAGS -DSWIGWIN
