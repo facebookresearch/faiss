@@ -11,6 +11,7 @@
 #include <faiss/IndexBinary.h>
 #include <faiss/impl/IDSelector.h>
 
+#include <limits>
 #include <unordered_map>
 #include <vector>
 
@@ -78,6 +79,10 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
     using distance_t = typename IndexT::distance_t;
 
     std::unordered_map<idx_t, idx_t> rev_map;
+    std::vector<idx_t> delete_id_map_value;
+    idx_t min_max_id_map_index[2]{
+            std::numeric_limits<idx_t>::min(),
+            std::numeric_limits<idx_t>::min()};
 
     explicit IndexIDMap2Template(IndexT* index);
 

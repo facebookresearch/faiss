@@ -13,6 +13,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <vector>
+#include "faiss/MetricType.h"
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
@@ -253,16 +255,97 @@ void IndexIDMap2Template<IndexT>::merge_from(IndexT& otherIndex, idx_t add_id) {
 
 template <typename IndexT>
 void IndexIDMap2Template<IndexT>::construct_rev_map() {
-    rev_map.clear();
-    for (size_t i = 0; i < this->ntotal; i++) {
-        rev_map[this->id_map[i]] = i;
+    if (std::numeric_limits<idx_t>::min() == min_max_id_map_index[0] ||
+        std::numeric_limits<idx_t>::min() == min_max_id_map_index[1] ||
+        delete_id_map_value.empty()) {
+        rev_map.clear();
+        for (size_t i = 0; i < this->ntotal; i++) {
+            rev_map[this->id_map[i]] = i;
+        }
+    } else {
+        // accelerate build logic
+        // 1. Find the boundaries of deleted elements, namely the minimum and
+        // maximum values
+        // 2. The data before the minimum value has not changed
+        // 3. Reconstruct the data between the minimum value and the maximum
+        // value
+        // 4. The data after the maximum value can be subtracted from the
+        // constant value .
+        // 5. Finally delete the specified value
+
+        // section 1
+        // The data has not changed. Ignore.
+        // for (size_t i = 0; min_max_id_map_index[0] && i < this->ntotal; i++)
+        // {}
+
+        //  section 2 The data has changed. Refactor.
+        for (int64_t i = min_max_id_map_index[0];
+             i <= (min_max_id_map_index[1] -
+                   static_cast<idx_t>(delete_id_map_value.size())) &&
+             i < this->ntotal;
+             i++) {
+            rev_map[this->id_map[i]] = i;
+        }
+
+        // section 3 value minus a fixed value.
+        for (int64_t i = (min_max_id_map_index[1] -
+                          static_cast<idx_t>(delete_id_map_value.size())) +
+                     1;
+             i < this->ntotal;
+             i++) {
+            rev_map[this->id_map[i]] -= delete_id_map_value.size();
+        }
+
+        // delete the specified value
+        for (idx_t value : delete_id_map_value) {
+            rev_map.erase(value);
+        }
+
+        FAISS_ASSERT(rev_map.size() == this->ntotal);
+
+        delete_id_map_value.clear();
+        min_max_id_map_index[0] = min_max_id_map_index[1] =
+                std::numeric_limits<idx_t>::min();
     }
 }
 
 template <typename IndexT>
 size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel) {
-    // This is quite inefficient
-    size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids(sel);
+    // remove in sub-index first
+    IDSelectorTranslated sel2(IndexIDMapTemplate<IndexT>::id_map, &sel);
+    size_t nremove = IndexIDMapTemplate<IndexT>::index->remove_ids(sel2);
+
+    if (0 == nremove) {
+        return nremove;
+    }
+
+    delete_id_map_value.clear();
+    delete_id_map_value.reserve(nremove);
+    min_max_id_map_index[0] = min_max_id_map_index[1] =
+            std::numeric_limits<idx_t>::min();
+
+    int64_t j = 0;
+    for (idx_t i = 0; i < this->ntotal; i++) {
+        if (sel.is_member(IndexIDMapTemplate<IndexT>::id_map[i])) {
+            // remove
+            // record for accelerate
+            delete_id_map_value.push_back(
+                    IndexIDMapTemplate<IndexT>::id_map[i]);
+            if (std::numeric_limits<idx_t>::min() == min_max_id_map_index[0]) {
+                min_max_id_map_index[0] = i;
+            }
+            min_max_id_map_index[1] = i;
+        } else {
+            IndexIDMapTemplate<IndexT>::id_map[j] =
+                    IndexIDMapTemplate<IndexT>::id_map[i];
+            j++;
+        }
+    }
+    FAISS_ASSERT(j == IndexIDMapTemplate<IndexT>::index->ntotal);
+    this->ntotal = j;
+    IndexIDMapTemplate<IndexT>::id_map.resize(this->ntotal);
+    FAISS_ASSERT(nremove == delete_id_map_value.size());
+
     construct_rev_map();
     return nremove;
 }
