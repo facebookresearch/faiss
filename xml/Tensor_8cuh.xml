@@ -254,13 +254,12 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator[](IndexT);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>detail::</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;<sp/>operator[](IndexT);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor<sp/>(const).</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>detail::</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>operator[](IndexT)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;<sp/>operator[](IndexT)<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>size<sp/>of<sp/>a<sp/>given<sp/>dimension,<sp/>`[0,<sp/>Dim<sp/>-<sp/>1]`.<sp/>No<sp/>bounds</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>checking.</highlight></codeline>
