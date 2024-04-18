@@ -38,12 +38,15 @@ jobs:
       - run:
           name: Install clang-format
           command: |
+            apt-get install wget
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+            echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-18 main" | tee -a /etc/apt/sources.list
             apt-get update
-            apt-get install -y git-core clang-format-11
+            apt-get install -y git-core clang-format-18
       - run:
           name: Verify clang-format
           command: |
-             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-11 -i
+             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
              if git diff --quiet; then
                echo "Formatting OK!"
              else
