@@ -22,7 +22,7 @@ class TestSelector(unittest.TestCase):
     combinations as possible.
     """
 
-    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2):
+    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2, k=10):
         """ Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
         Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
@@ -30,7 +30,6 @@ class TestSelector(unittest.TestCase):
         ds = datasets.SyntheticDataset(32, 1000, 100, 20)
         index = faiss.index_factory(ds.d, index_key, mt)
         index.train(ds.get_train())
-        k = 10
 
         # reference result
         if "range" in id_selector_type:
@@ -144,6 +143,16 @@ class TestSelector(unittest.TestCase):
 
     def test_IVFPQ(self):
         self.do_test_id_selector("IVF32,PQ4x4np")
+
+    def test_IVFPQfs(self):
+        self.do_test_id_selector("IVF32,PQ4x4fs")
+
+    def test_IVFPQfs_k1(self):
+        self.do_test_id_selector("IVF32,PQ4x4fs", k=1)
+
+    def test_IVFPQfs_k40(self):
+        # test reservoir codepath
+        self.do_test_id_selector("IVF32,PQ4x4fs", k=40)
 
     def test_IVFSQ(self):
         self.do_test_id_selector("IVF32,SQ8")
