@@ -40,8 +40,7 @@ jobs:
           command: |
             apt-get update -y
             apt-get install -y wget
-            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-            echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-18 main" | tee -a /etc/apt/sources.list
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-18 main" | tee -a /etc/apt/sources.list
             apt-get update
             apt-get install -y git-core clang-format-18
       - run:
