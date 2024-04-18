@@ -38,8 +38,8 @@ jobs:
       - run:
           name: Install clang-format
           command: |
-            apt-get -y update
-            apt-get -y install wget
+            apt-get update -y
+            apt-get install -y wget
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
             echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-18 main" | tee -a /etc/apt/sources.list
             apt-get update
