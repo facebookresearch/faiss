@@ -161,8 +161,8 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
     /// Number of Iterations to run if building with NN_DESCENT 
     size_t nn_descent_niter = 20;
 
-    IVFPQBuildCagraConfig///ivf_pq_params = nullptr;
-    IVFPQSearchCagraConfig///ivf_pq_search_params = nullptr;
+    IVFPQBuildCagraConfig *ivf_pq_params = nullptr;
+    IVFPQSearchCagraConfig *ivf_pq_search_params = nullptr;
 };
 
 enum class search_algo {

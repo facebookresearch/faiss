@@ -28,6 +28,7 @@
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
+#include <raft_runtime/neighbors/cagra.hpp>
 #include <optional>
 #include <raft/neighbors/cagra.cuh>
 
@@ -212,13 +213,13 @@ void RaftCagra::train(idx_t n, const float* x) {
 
     } else {
         if (getDeviceForAddress(x) >= 0) {
-            raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
+            raft_knn_index = raft::runtime::neighbors::cagra::build(
                     raft_handle,
                     index_pams_,
                     raft::make_device_matrix_view<const float, int64_t>(
                             x, n, dim_));
         } else {
-            raft_knn_index = raft::neighbors::cagra::build<float, uint32_t>(
+            raft_knn_index = raft::runtime::neighbors::cagra::build(
                     raft_handle,
                     index_pams_,
                     raft::make_host_matrix_view<const float, int64_t>(
@@ -282,7 +283,7 @@ void RaftCagra::search(
     auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
             raft_handle, numQueries, k_);
 
-    raft::neighbors::cagra::search(
+    raft::runtime::neighbors::cagra::search(
             raft_handle,
             search_pams,
             raft_knn_index.value(),
