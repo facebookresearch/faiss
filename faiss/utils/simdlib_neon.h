@@ -170,14 +170,10 @@ static inline std::string elements_to_string(const char* fmt, const S& simd) {
     for (size_t i = 0; i < N; ++i) {
         int bytesWritten =
                 snprintf(ptr, sizeof(res) - (ptr - res), fmt, bytes[i]);
-        if (bytesWritten >= 0) {
-            ptr += bytesWritten;
-        } else {
-            break;
-        }
+        ptr += bytesWritten;
     }
-    // strip last ,
-
+    // The format usually contains a ',' separator so this is to remove the last
+    // separator.
     ptr[-1] = 0;
     return std::string(res);
 }
