@@ -35,6 +35,7 @@
 
 namespace faiss {
 
+/// Algorithm used to build underlying CAGRA graph
 enum class cagra_build_algo { IVF_PQ, NN_DESCENT };
 
 enum class cagra_search_algo { SINGLE_CTA, MULTI_CTA };
