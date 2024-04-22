@@ -265,7 +265,7 @@ void HNSW::shrink_neighbor_list(
         }
     }
     size_t idx = 0;
-    while (keep_max_size_level0 && (output.size() < max_size) && 
+    while (keep_max_size_level0 && (output.size() < max_size) &&
            (idx < outsiders.size())) {
         output.push_back(outsiders[idx++]);
     }
