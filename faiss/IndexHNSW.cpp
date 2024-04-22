@@ -198,7 +198,6 @@ void hnsw_add_vertices(
              pt_level >= !index_hnsw.init_level0;
              pt_level--) {
             int i0 = i1 - hist[pt_level];
-            // std::cout << "level: " << pt_level << "points: " << hist[pt_level] << std::endl;
 
             if (verbose) {
                 printf("Adding %d elements at level %d\n", i1 - i0, pt_level);

@@ -760,7 +760,7 @@ void write_index(const Index* idx, IOWriter* f) {
                 : dynamic_cast<const IndexHNSWPQ*>(idx)      ? fourcc("IHNp")
                 : dynamic_cast<const IndexHNSWSQ*>(idx)      ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx)  ? fourcc("IHN2")
-                : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHNc")
+                : dynamic_cast<const IndexHNSWCagra*>(idx)   ? fourcc("IHNc")
                                                              : 0;
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);

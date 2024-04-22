@@ -265,7 +265,8 @@ void HNSW::shrink_neighbor_list(
         }
     }
     size_t idx = 0;
-    while (keep_max_size_level0 && (output.size() < max_size) && (idx < outsiders.size())) {
+    while (keep_max_size_level0 && (output.size() < max_size) && 
+           (idx < outsiders.size())) {
         output.push_back(outsiders[idx++]);
     }
 }
@@ -338,8 +339,7 @@ void add_link(
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(
-            qdis, resultSet, end - begin, keep_max_size_level0);
+    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
@@ -459,8 +459,7 @@ void HNSW::add_links_starting_from(
     // but we can afford only this many neighbors
     int M = nb_neighbors(level);
 
-    ::faiss::shrink_neighbor_list(
-            ptdis, link_targets, M, keep_max_size_level0);
+    ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
 
     std::vector<storage_idx_t> neighbors;
     neighbors.reserve(link_targets.size());
