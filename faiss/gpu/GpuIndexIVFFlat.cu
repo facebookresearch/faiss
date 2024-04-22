@@ -356,5 +356,27 @@ void GpuIndexIVFFlat::setIndex_(
     }
 }
 
+void GpuIndexIVFFlat::reconstruct_n(idx_t i0, idx_t ni, float* out) const {
+    FAISS_ASSERT(index_);
+
+    if (ni == 0) {
+        // nothing to do
+        return;
+    }
+
+    FAISS_THROW_IF_NOT_FMT(
+            i0 < this->ntotal,
+            "start index (%zu) out of bounds (ntotal %zu)",
+            i0,
+            this->ntotal);
+    FAISS_THROW_IF_NOT_FMT(
+            i0 + ni - 1 < this->ntotal,
+            "max index requested (%zu) out of bounds (ntotal %zu)",
+            i0 + ni - 1,
+            this->ntotal);
+
+    index_->reconstruct_n(i0, ni, out);
+}
+
 } // namespace gpu
 } // namespace faiss

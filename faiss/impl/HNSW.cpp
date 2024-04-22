@@ -694,7 +694,7 @@ int search_from_candidates(
         if (candidates.size() == 0) {
             stats.n2++;
         }
-        stats.n3 += ndis;
+        stats.ndis += ndis;
     }
 
     return nres;
@@ -823,7 +823,7 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
     if (candidates.size() == 0) {
         ++stats.n2;
     }
-    stats.n3 += ndis;
+    stats.ndis += ndis;
 
     return top_candidates;
 }

@@ -169,6 +169,8 @@ class DeviceVector {
         T out;
         CUDA_VERIFY(cudaMemcpyAsync(
                 &out, data() + idx, sizeof(T), cudaMemcpyDeviceToHost, stream));
+
+        return out;
     }
 
     // Clean up after oversized allocations, while leaving some space to

@@ -178,7 +178,7 @@ class OfflineIVF:
             idxs.append(np.empty((0,), dtype=np.uint32))
         bs = 1_000_000
         i = 0
-        for buffer in tqdm(self.xb_ds.iterate(0, bs, np.float32)):
+        for buffer in tqdm(self._iterate_transformed(self.xb_ds, 0, bs, np.float32)):
             for j in range(len(codecs)):
                 codec, codeset, idx = codecs[j], codesets[j], idxs[j]
                 uniq = codeset.insert(codec.sa_encode(buffer))
@@ -227,64 +227,6 @@ class OfflineIVF:
             for buffer in ds.iterate(start, batch_size, dt):
                 yield buffer
 
-    def index_shard_and_quantize(self):
-        assert os.path.exists(self.index_template_file)
-        index = faiss.read_index(self.index_template_file)
-        index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
-        assert self.nprobe <= index_ivf.quantizer.ntotal, (
-            f"the number of vectors {index_ivf.quantizer.ntotal} is not enough"
-            f" to retrieve {self.nprobe} neighbours, check."
-        )
-
-        if is_pretransform_index(index):
-            d = index.chain.at(0).d_out
-        else:
-            d = self.input_d
-        for i in range(0, self.nshards):
-            sfn = f"{self.index_shard_prefix}{i}"
-            cqfn = f"{self.coarse_quantization_prefix}{i}"  # fixme
-            if os.path.exists(sfn) or os.path.exists(cqfn):
-                logging.info(f"skipping shard: {i}")
-                continue
-            try:
-                with open(cqfn, "xb") as cqf:
-                    index.reset()
-                    start = i * self.shard_size
-                    j = 0
-                    quantizer = faiss.index_cpu_to_all_gpus(
-                        index_ivf.quantizer
-                    )
-                    for xb_j in tqdm(
-                        self._iterate_transformed(
-                            self.xb_ds,
-                            start,
-                            EMBEDDINGS_BATCH_SIZE,
-                            np.float32,
-                        ),
-                        file=sys.stdout,
-                    ):
-                        assert xb_j.shape[1] == d
-                        _, I = quantizer.search(xb_j, self.nprobe)
-                        assert np.amin(I) >= 0, f"{I}"
-                        assert np.amax(I) < index_ivf.nlist
-                        cqf.write(I)
-                        self._index_add_core_wrapper(  # fixme
-                            index_ivf,
-                            xb_j,
-                            np.arange(start + j, start + j + xb_j.shape[0]),
-                            I[:, 0],
-                        )
-                        j += xb_j.shape[0]
-                        assert j <= self.shard_size
-                        if j == self.shard_size:
-                            break
-                logging.info(f"writing {sfn}...")
-                faiss.write_index(index, sfn)
-            except FileExistsError:
-                logging.info(f"skipping shard: {i}")
-                continue
-        logging.info("done")
-
     def index_shard(self):
         assert os.path.exists(self.index_template_file)
         index = faiss.read_index(self.index_template_file)
@@ -325,11 +267,18 @@ class OfflineIVF:
                         ),
                         file=sys.stdout,
                     ):
-                        assert xb_j.shape[1] == index.d
-                        index.add_with_ids(
-                            xb_j,
-                            np.arange(start + jj, start + jj + xb_j.shape[0]),
-                        )
+                        if is_pretransform_index(index):
+                            assert xb_j.shape[1] == index.chain.at(0).d_out
+                            index_ivf.add_with_ids(
+                                xb_j,
+                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                            )
+                        else:
+                            assert xb_j.shape[1] == index.d
+                            index.add_with_ids(
+                                xb_j,
+                                np.arange(start + jj, start + jj + xb_j.shape[0]),
+                            )
                         jj += xb_j.shape[0]
                         logging.info(jj)
                         assert (
@@ -728,10 +677,14 @@ class OfflineIVF:
                             os.remove(Ifn)
                             os.remove(Dfn)
 
-            try:  # TODO: modify shape for pretransform case
+            try:
+                if is_pretransform_index(index):
+                    d = index.chain.at(0).d_out
+                else:
+                    d = self.input_d
                 with open(Ifn, "xb") as f, open(Dfn, "xb") as g:
                     xq_i = np.empty(
-                        shape=(self.xq_bs, self.input_d), dtype=np.float16
+                        shape=(self.xq_bs, d), dtype=np.float16
                     )
                     q_assign = np.empty(
                         (self.xq_bs, self.nprobe), dtype=np.int32
@@ -893,8 +846,7 @@ class OfflineIVF:
             for j in range(SMALL_DATA_SAMPLE):
                 assert np.where(I[j] == j + r)[0].size > 0, (
                     f"I[j]: {I[j]}, j: {j}, i: {i}, shard_size:"
-                    f" {self.shard_size}"
-                )
+                    f" {self.shard_size}")
 
         logging.info("search results...")
         index_ivf.nprobe = self.nprobe
