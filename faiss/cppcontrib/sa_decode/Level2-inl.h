@@ -22,7 +22,6 @@ bool isBigEndian() {
 #endif
 }
 
-
 namespace faiss {
 namespace cppcontrib {
 
