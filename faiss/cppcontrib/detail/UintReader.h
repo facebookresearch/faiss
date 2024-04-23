@@ -32,7 +32,7 @@ struct Uint8Reader {
                 if (N_ELEMENTS > CPOS + 3) {
                     const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     return (code32) >> 24;
 #else
                     return (code32 & 0x000000FF);
@@ -45,7 +45,7 @@ struct Uint8Reader {
                 if (N_ELEMENTS > CPOS + 2) {
                     const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     return (code32 & 0x00FF0000) >> 16;
 #else
                     return (code32 & 0x0000FF00) >> 8;
@@ -58,7 +58,7 @@ struct Uint8Reader {
                 if (N_ELEMENTS > CPOS + 1) {
                     const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     return (code32 & 0x0000FF00) >> 8;
 #else
                     return (code32 & 0x00FF0000) >> 16;
@@ -71,7 +71,7 @@ struct Uint8Reader {
                 if (N_ELEMENTS > CPOS) {
                     const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     return (code32 & 0x000000FF);
 #else
                     return (code32) >> 24;
@@ -106,14 +106,14 @@ struct Uint10Reader {
                 if (N_ELEMENTS > CPOS + 2) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 5);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b0000001111111111);
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 5 + 0);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b0000001111111111);
@@ -123,14 +123,14 @@ struct Uint10Reader {
                 if (N_ELEMENTS > CPOS + 1) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 5);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b000011111111110000000000) >> 10;
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 5 + 1);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b0000111111111100) >> 2;
@@ -140,14 +140,14 @@ struct Uint10Reader {
                 if (N_ELEMENTS > CPOS) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 5);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b00111111111100000000000000000000) >> 20;
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 5 + 2);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b0011111111110000) >> 4;
@@ -156,7 +156,7 @@ struct Uint10Reader {
             case 3: {
                 uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                         codes + ELEMENT_TO_READ * 5 + 3);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                 code16 = Swap2Bytes(code16);
 #endif
                 return (code16 & 0b1111111111000000) >> 6;
@@ -187,14 +187,14 @@ struct Uint12Reader {
                 if (N_ELEMENTS > CPOS + 2) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 6);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b0000111111111111);
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 6 + 0);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b0000111111111111);
@@ -204,14 +204,14 @@ struct Uint12Reader {
                 if (N_ELEMENTS > CPOS + 1) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 6);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b111111111111000000000000) >> 12;
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 6 + 1);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b1111111111110000) >> 4;
@@ -221,14 +221,14 @@ struct Uint12Reader {
                 if (N_ELEMENTS > CPOS + 1) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 6 + 2);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b000011111111111100000000) >> 8;
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 6 + 3);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b0000111111111111);
@@ -238,14 +238,14 @@ struct Uint12Reader {
                 if (N_ELEMENTS > CPOS) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 6 + 2);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0b11111111111100000000000000000000) >> 20;
                 } else {
                     uint16_t code16 = *reinterpret_cast<const uint16_t*>(
                             codes + ELEMENT_TO_READ * 6 + 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code16 = Swap2Bytes(code16);
 #endif
                     return (code16 & 0b1111111111110000) >> 4;
@@ -272,14 +272,14 @@ struct Uint16Reader {
                 if (N_ELEMENTS > CPOS + 1) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return (code32 & 0x0000FFFF);
                 } else {
                     const uint16_t* const __restrict codesFp16 =
                             reinterpret_cast<const uint16_t*>(codes);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     uint16_t rt = codesFp16[CPOS];
                     rt = Swap2Bytes(rt);
                     return rt;
@@ -291,14 +291,14 @@ struct Uint16Reader {
                 if (N_ELEMENTS > CPOS) {
                     uint32_t code32 = *reinterpret_cast<const uint32_t*>(
                             codes + ELEMENT_TO_READ * 4);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     code32 = Swap4Bytes(code32);
 #endif
                     return code32 >> 16;
                 } else {
                     const uint16_t* const __restrict codesFp16 =
                             reinterpret_cast<const uint16_t*>(codes);
-#if FAISS_BIG_ENDIAN
+#ifdef FAISS_BIG_ENDIAN
                     uint16_t rt = codesFp16[CPOS];
                     rt = Swap2Bytes(rt);
                     return rt;

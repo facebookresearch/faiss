@@ -14,6 +14,15 @@
 #include <faiss/cppcontrib/detail/CoarseBitType.h>
 #include <faiss/impl/platform_macros.h>
 
+bool isBigEndian() {
+    #ifdef FAISS_BIG_ENDIAN
+        return true;
+    #else
+        return false;
+    #endif
+}
+
+
 namespace faiss {
 namespace cppcontrib {
 
@@ -74,7 +83,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode, fineCode;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
                 fineCode = Swap2Bytes(fine[fineCentroidIdx]);
             } else {
@@ -119,7 +128,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
 
             intptr_t coarseCode, fineCode;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
                 fineCode = Swap2Bytes(fine[fineCentroidIdx]);
             } else {
@@ -174,7 +183,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
                 fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
                 coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
@@ -241,7 +250,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
                 fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
                 coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
@@ -319,7 +328,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
             intptr_t coarseCode2, fineCode2;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
                 fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
                 coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
@@ -406,7 +415,7 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
             intptr_t coarseCode0, fineCode0, coarseCode1, fineCode1;
             intptr_t coarseCode2, fineCode2;
-            if (FAISS_BIG_ENDIAN && sizeof(coarse_storage_type) == 2) {
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
                 coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
                 fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
                 coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);

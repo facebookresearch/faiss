@@ -169,11 +169,9 @@ inline int __builtin_clzll(uint64_t x) {
 /*******************************************************
  * BIGENDIAN specific macros
  *******************************************************/
-#define FAISS_BIG_ENDIAN 0
 #if !defined(_MSC_VER) && \
         (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
-#undef FAISS_BIG_ENDIAN
-#define FAISS_BIG_ENDIAN 1
+#define FAISS_BIG_ENDIAN
 #endif
 
 #define Swap2Bytes(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
