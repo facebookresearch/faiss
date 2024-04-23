@@ -15,11 +15,11 @@
 #include <faiss/impl/platform_macros.h>
 
 bool isBigEndian() {
-    #ifdef FAISS_BIG_ENDIAN
-        return true;
-    #else
-        return false;
-    #endif
+#ifdef FAISS_BIG_ENDIAN
+    return true;
+#else
+    return false;
+#endif
 }
 
 
