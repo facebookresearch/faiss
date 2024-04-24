@@ -14,6 +14,9 @@
 #include <faiss/cppcontrib/detail/CoarseBitType.h>
 #include <faiss/impl/platform_macros.h>
 
+namespace faiss {
+namespace cppcontrib {
+
 bool isBigEndian() {
 #ifdef FAISS_BIG_ENDIAN
     return true;
@@ -21,9 +24,6 @@ bool isBigEndian() {
     return false;
 #endif
 }
-
-namespace faiss {
-namespace cppcontrib {
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// Index2LevelDecoder
