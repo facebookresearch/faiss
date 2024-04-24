@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import sys
 import numpy as np
 
 """
@@ -13,6 +14,8 @@ definition of the formats here: http://corpus-texmex.irisa.fr/
 
 def ivecs_read(fname):
     a = np.fromfile(fname, dtype='int32')
+    if sys.byteorder == 'big':
+      a.byteswap(inplace=True)
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy()
 
