@@ -495,7 +495,7 @@ class IndexBase:
         radius: Optional[float] = None,
     ):
         logger.info("range_search: begin")
-        if search_parameters is not None and search_parameters["snap"] == 1:
+        if search_parameters is not None and search_parameters.get("snap") == 1:
             query_vectors = self.snap(query_vectors)
         filename = (
             self.get_range_search_name(
@@ -776,6 +776,9 @@ class Index(IndexBase):
             )
         return op
 
+    def is_flat_index(self):
+        return self.get_index_name().startswith("Flat")
+
 
 # IndexFromCodec, IndexFromQuantizer and IndexFromPreTransform
 # are used to wrap pre-trained Faiss indices (codecs)
@@ -806,6 +809,9 @@ class IndexFromCodec(Index):
         name = os.path.basename(self.path)
         name += Index.param_dict_list_to_name(self.construction_params)
         return name
+
+    def fetch_meta(self, dry_run=False):
+        return None, None
 
     def fetch_codec(self):
         codec = self.io.read_index(
@@ -911,7 +917,7 @@ class IndexFromFactory(Index):
             assert codec_size is not None
             meta = {
                 "training_time": training_time,
-                "training_size": self.training_vectors.num_vectors,
+                "training_size": self.training_vectors.num_vectors if self.training_vectors else 0,
                 "codec_size": codec_size,
                 "sa_code_size": self.get_sa_code_size(codec),
                 "code_size": self.get_code_size(codec),
