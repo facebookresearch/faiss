@@ -10,12 +10,25 @@
       <node id="2">
         <label>arm_neon.h</label>
       </node>
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
       <node id="4">
         <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>cstdio</label>
       </node>
       <node id="5">
         <label>faiss/cppcontrib/detail/UintReader.h</label>
         <link refid="UintReader_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>

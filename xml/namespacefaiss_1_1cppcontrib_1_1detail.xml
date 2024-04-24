@@ -39,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/detail/UintReader.h" line="263" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="265" bodyend="-1"/>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="341" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="343" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="UintReader_8h_1a4e74e176d1b9d3deefcce7fa1300cb2d" prot="public" static="no">
         <templateparamlist>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/detail/UintReader.h" line="268" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="269" bodyend="-1"/>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="346" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="347" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
