@@ -1025,14 +1025,14 @@ PyObject *swig_ptr (PyObject *a)
     // Convert npy64 either long or long long  and it depends on how compiler define int64_t.
     // In the 64bit machine, typically the int64_t should be long but it is not hold for Apple osx.
     // In this case, we want to convert npy64 to long_Long in osx
-#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
+#if __SIZEOF_LONG__ == 8 && !(defined(__APPLE__) && defined(__MACH__))
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
 #endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
-#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
+#if __SIZEOF_LONG__ == 8 && !(defined(__APPLE__) && defined(__MACH__))
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
