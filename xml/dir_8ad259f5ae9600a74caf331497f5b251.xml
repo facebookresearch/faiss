@@ -28,6 +28,7 @@
     <innerfile refid="simdlib__avx512_8h">simdlib_avx512.h</innerfile>
     <innerfile refid="simdlib__emulated_8h">simdlib_emulated.h</innerfile>
     <innerfile refid="simdlib__neon_8h">simdlib_neon.h</innerfile>
+    <innerfile refid="simdlib__ppc64_8h">simdlib_ppc64.h</innerfile>
     <innerfile refid="sorting_8h">sorting.h</innerfile>
     <innerfile refid="utils_8h">utils.h</innerfile>
     <innerfile refid="WorkerThread_8h">WorkerThread.h</innerfile>

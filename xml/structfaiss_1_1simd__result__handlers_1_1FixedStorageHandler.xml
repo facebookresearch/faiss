@@ -216,6 +216,8 @@
         </childnode>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::SIMDResultHandler</label>

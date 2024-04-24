@@ -167,6 +167,8 @@
         </childnode>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/LookupTableScaler.h" line="67" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="67" bodyend="109"/>
