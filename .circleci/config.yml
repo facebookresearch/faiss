@@ -316,44 +316,41 @@ workflows:
   version: 2
   build:
     jobs:
-      # - format:
-      #     name: Format
-      # - build_cmake:
-      #     name: Linux x86_64 (cmake)
-      #     exec: linux-x86_64-cpu
-      # - build_cmake:
-      #     name: Linux x86_64 AVX2 (cmake)
-      #     exec: linux-x86_64-cpu
-      #     opt_level: "avx2"
-      # - build_cmake:
-      #     name: Linux x86_64 AVX512 (cmake)
-      #     exec: linux-x86_64-cpu
-      #     opt_level: "avx512"
-      # - build_cmake:
-      #     name: Linux x86_64 GPU (cmake)
-      #     exec: linux-x86_64-gpu
-      #     gpu: "ON"
-      #     requires:
-      #       - Linux x86_64 AVX2 (cmake)
-      # - build_cmake:
-      #     name: Linux x86_64 GPU w/ RAFT (cmake)
-      #     exec: linux-x86_64-gpu
-      #     gpu: "ON"
-      #     raft: "ON"
-      #     requires:
-      #       - Linux x86_64 GPU (cmake)
-      # - build_conda:
-      #     name: Linux x86_64 (conda)
-      #     exec: linux-x86_64-cpu
-      # - build_conda:
-      #     name: Windows x86_64 (conda)
-      #     exec: windows-x86_64-cpu
-      # - build_conda:
-      #     name: Linux arm64 (conda)
-      #     exec: linux-arm64-cpu
+      - format:
+          name: Format
+      - build_cmake:
+          name: Linux x86_64 (cmake)
+          exec: linux-x86_64-cpu
+      - build_cmake:
+          name: Linux x86_64 AVX2 (cmake)
+          exec: linux-x86_64-cpu
+          opt_level: "avx2"
+      - build_cmake:
+          name: Linux x86_64 AVX512 (cmake)
+          exec: linux-x86_64-cpu
+          opt_level: "avx512"
+      - build_cmake:
+          name: Linux x86_64 GPU (cmake)
+          exec: linux-x86_64-gpu
+          gpu: "ON"
+          requires:
+            - Linux x86_64 AVX2 (cmake)
+      - build_cmake:
+          name: Linux x86_64 GPU w/ RAFT (cmake)
+          exec: linux-x86_64-gpu
+          gpu: "ON"
+          raft: "ON"
+          requires:
+            - Linux x86_64 GPU (cmake)
       - build_conda:
-          name: OSX arm64 (cmake)
-          exec: macosx-arm64-cpu
+          name: Linux x86_64 (conda)
+          exec: linux-x86_64-cpu
+      - build_conda:
+          name: Windows x86_64 (conda)
+          exec: windows-x86_64-cpu
+      - build_conda:
+          name: Linux arm64 (conda)
+          exec: linux-arm64-cpu
       - build_conda:
           name: Linux x86_64 packages
           exec: linux-x86_64-cpu
