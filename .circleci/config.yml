@@ -38,12 +38,17 @@ jobs:
       - run:
           name: Install clang-format
           command: |
-            apt-get update
-            apt-get install -y git-core clang-format-11
+            apt-get update -y
+            apt-get install -y wget
+            apt install -y lsb-release wget software-properties-common gnupg
+            wget https://apt.llvm.org/llvm.sh
+            chmod u+x llvm.sh
+            ./llvm.sh 18
+            apt-get install -y git-core clang-format-18
       - run:
           name: Verify clang-format
           command: |
-             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-11 -i
+             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
              if git diff --quiet; then
                echo "Formatting OK!"
              else

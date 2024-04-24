@@ -27,6 +27,10 @@
 
 #include <faiss/utils/simdlib_neon.h>
 
+#elif defined(__PPC64__)
+
+#include <faiss/utils/simdlib_ppc64.h>
+
 #else
 
 // emulated = all operations are implemented as scalars

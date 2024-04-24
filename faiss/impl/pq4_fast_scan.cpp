@@ -6,6 +6,7 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 
@@ -58,8 +59,13 @@ void pq4_pack_codes(
         return;
     }
     memset(blocks, 0, nb * nsq / 2);
+#ifdef FAISS_BIG_ENDIAN
+    const uint8_t perm0[16] = {
+            8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
+#else
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+#endif
 
     uint8_t* codes2 = blocks;
     for (size_t i0 = 0; i0 < nb; i0 += bbs) {
@@ -93,8 +99,13 @@ void pq4_pack_codes_range(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks) {
+#ifdef FAISS_BIG_ENDIAN
+    const uint8_t perm0[16] = {
+            8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
+#else
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+#endif
 
     // range of affected blocks
     size_t block0 = i0 / bbs;
