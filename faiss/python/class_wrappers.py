@@ -956,10 +956,44 @@ def handle_IndexBinary(the_class):
             sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
+    def replacement_assign(self, x, k, labels=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+        This is the same as the `search` method, but discards the distances.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be uint8.
+        k : int
+            Number of nearest neighbors.
+        labels : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        labels: array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d == self.code_size
+        assert k > 0
+
+        if labels is None:
+            labels = np.empty((n, k), dtype=np.int64)
+        else:
+            assert labels.shape == (n, k)
+
+        self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
+        return labels
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'assign', replacement_assign)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
     replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
