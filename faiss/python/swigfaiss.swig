@@ -1025,14 +1025,14 @@ PyObject *swig_ptr (PyObject *a)
     // Convert npy64 either long or long long  and it depends on how compiler define int64_t.
     // In the 64bit machine, typically the int64_t should be long but it is not hold for Apple osx.
     // In this case, we want to convert npy64 to long_Long in osx
-#if __SIZEOF_LONG__ == 8 && !(defined(__APPLE__) && defined(__MACH__))
+#ifndef __APPLE__
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
 #endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
-#if __SIZEOF_LONG__ == 8 && !(defined(__APPLE__) && defined(__MACH__))
+#ifndef __APPLE__
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
@@ -1057,10 +1057,7 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
     }
 
 };
-
-
 %}
-
 
 %init %{
     /* needed, else crash at runtime */
@@ -1125,14 +1122,6 @@ void * cast_integer_to_void_ptr (int64_t x) {
     return (void*)x;
 }
 %}
-
-/*
-Force OSX to generate SWIGTYPE_p_long since OSX will generate SWIGTYPE_p_long_long when it meets int64 by default
-*/
-%types(unsigned long*);
-%types(long*);
-
-
 
 %inline %{
     void wait() {
