@@ -20,6 +20,7 @@ class IndexDescriptor:
     # but not both at the same time.
     path: Optional[str] = None
     factory: Optional[str] = None
+    codec_alias: Optional[str] = None
     construction_params: Optional[List[Dict[str, int]]] = None
     search_params: Optional[Dict[str, int]] = None
     # range metric definitions
