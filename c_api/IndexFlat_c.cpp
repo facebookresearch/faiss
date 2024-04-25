@@ -47,10 +47,10 @@ int faiss_IndexFlat_new_with(
 }
 
 void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size) {
-    auto& xb = reinterpret_cast<IndexFlat*>(index)->xb;
-    *p_xb = xb.data();
+    IndexFlat* indexf = reinterpret_cast<IndexFlat*>(index);
+    *p_xb = indexf->get_xb();
     if (p_size) {
-        *p_size = xb.size();
+        *p_size = indexf->codes.size() / sizeof(float);
     }
 }
 

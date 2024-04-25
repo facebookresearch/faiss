@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexLSH.h>
 
 #include <cstdio>
 #include <cstring>
 
 #include <algorithm>
+#include <memory>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
@@ -25,14 +24,12 @@ namespace faiss {
  ***************************************************************/
 
 IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
-        : Index(d),
+        : IndexFlatCodes((nbits + 7) / 8, d),
           nbits(nbits),
           rotate_data(rotate_data),
           train_thresholds(train_thresholds),
           rrot(d, nbits) {
     is_trained = !train_thresholds;
-
-    bytes_per_vec = (nbits + 7) / 8;
 
     if (rotate_data) {
         rrot.init(5);
@@ -41,11 +38,7 @@ IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
     }
 }
 
-IndexLSH::IndexLSH()
-        : nbits(0),
-          bytes_per_vec(0),
-          rotate_data(false),
-          train_thresholds(false) {}
+IndexLSH::IndexLSH() : nbits(0), rotate_data(false), train_thresholds(false) {}
 
 const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
     float* xt = nullptr;
@@ -64,7 +57,7 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
     }
 
     if (train_thresholds) {
-        if (xt == NULL) {
+        if (xt == nullptr) {
             xt = new float[nbits * n];
             memcpy(xt, x, sizeof(*x) * n * nbits);
         }
@@ -83,18 +76,17 @@ void IndexLSH::train(idx_t n, const float* x) {
         thresholds.resize(nbits);
         train_thresholds = false;
         const float* xt = apply_preprocess(n, x);
-        ScopeDeleter<float> del(xt == x ? nullptr : xt);
+        std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
         train_thresholds = true;
 
-        float* transposed_x = new float[n * nbits];
-        ScopeDeleter<float> del2(transposed_x);
+        std::unique_ptr<float[]> transposed_x(new float[n * nbits]);
 
         for (idx_t i = 0; i < n; i++)
             for (idx_t j = 0; j < nbits; j++)
                 transposed_x[j * n + i] = xt[i * nbits + j];
 
         for (idx_t i = 0; i < nbits; i++) {
-            float* xi = transposed_x + i * n;
+            float* xi = transposed_x.get() + i * n;
             // std::nth_element
             std::sort(xi, xi + n);
             if (n % 2 == 1)
@@ -106,38 +98,29 @@ void IndexLSH::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexLSH::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((ntotal + n) * bytes_per_vec);
-
-    sa_encode(n, x, &codes[ntotal * bytes_per_vec]);
-
-    ntotal += n;
-}
-
 void IndexLSH::search(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_preprocess(n, x);
-    ScopeDeleter<float> del(xt == x ? nullptr : xt);
+    std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
 
-    uint8_t* qcodes = new uint8_t[n * bytes_per_vec];
-    ScopeDeleter<uint8_t> del2(qcodes);
+    std::unique_ptr<uint8_t[]> qcodes(new uint8_t[n * code_size]);
 
-    fvecs2bitvecs(xt, qcodes, nbits, n);
+    fvecs2bitvecs(xt, qcodes.get(), nbits, n);
 
-    int* idistances = new int[n * k];
-    ScopeDeleter<int> del3(idistances);
+    std::unique_ptr<int[]> idistances(new int[n * k]);
 
-    int_maxheap_array_t res = {size_t(n), size_t(k), labels, idistances};
+    int_maxheap_array_t res = {size_t(n), size_t(k), labels, idistances.get()};
 
-    hammings_knn_hc(&res, qcodes, codes.data(), ntotal, bytes_per_vec, true);
+    hammings_knn_hc(&res, qcodes.get(), codes.data(), ntotal, code_size, true);
 
     // convert distances to floats
     for (int i = 0; i < k * n; i++)
@@ -158,28 +141,19 @@ void IndexLSH::transfer_thresholds(LinearTransform* vt) {
     thresholds.clear();
 }
 
-void IndexLSH::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-size_t IndexLSH::sa_code_size() const {
-    return bytes_per_vec;
-}
-
 void IndexLSH::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_preprocess(n, x);
-    ScopeDeleter<float> del(xt == x ? nullptr : xt);
+    std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
     fvecs2bitvecs(xt, bytes, nbits, n);
 }
 
 void IndexLSH::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     float* xt = x;
-    ScopeDeleter<float> del;
+    std::unique_ptr<float[]> del;
     if (rotate_data || nbits != d) {
         xt = new float[n * nbits];
-        del.set(xt);
+        del.reset(xt);
     }
     bitvecs2fvecs(bytes, xt, nbits, n);
 

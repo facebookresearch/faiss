@@ -10,9 +10,24 @@
 
 #include "Index_c.h"
 #include <faiss/Index.h>
+#include <faiss/impl/IDSelector.h>
 #include "macros_impl.h"
 
 extern "C" {
+
+DEFINE_DESTRUCTOR(SearchParameters)
+
+int faiss_SearchParameters_new(
+        FaissSearchParameters** p_sp,
+        FaissIDSelector* sel) {
+    try {
+        faiss::SearchParameters* params = new faiss::SearchParameters;
+        params->sel = reinterpret_cast<faiss::IDSelector*>(sel);
+        *p_sp = reinterpret_cast<FaissSearchParameters*>(params);
+        return 0;
+    }
+    CATCH_AND_HANDLE
+}
 
 DEFINE_DESTRUCTOR(Index)
 
@@ -62,6 +77,26 @@ int faiss_Index_search(
     try {
         reinterpret_cast<const faiss::Index*>(index)->search(
                 n, x, k, distances, labels);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_Index_search_with_params(
+        const FaissIndex* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const FaissSearchParameters* params,
+        float* distances,
+        idx_t* labels) {
+    try {
+        reinterpret_cast<const faiss::Index*>(index)->search(
+                n,
+                x,
+                k,
+                distances,
+                labels,
+                reinterpret_cast<const faiss::SearchParameters*>(params));
     }
     CATCH_AND_HANDLE
 }
@@ -155,6 +190,35 @@ int faiss_Index_compute_residual_n(
     try {
         reinterpret_cast<const faiss::Index*>(index)->compute_residual_n(
                 n, x, residuals, keys);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_Index_sa_code_size(const FaissIndex* index, size_t* size) {
+    try {
+        reinterpret_cast<const faiss::Index*>(index)->sa_code_size();
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_Index_sa_encode(
+        const FaissIndex* index,
+        idx_t n,
+        const float* x,
+        uint8_t* bytes) {
+    try {
+        reinterpret_cast<const faiss::Index*>(index)->sa_encode(n, x, bytes);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_Index_sa_decode(
+        const FaissIndex* index,
+        idx_t n,
+        const uint8_t* bytes,
+        float* x) {
+    try {
+        reinterpret_cast<const faiss::Index*>(index)->sa_decode(n, bytes, x);
     }
     CATCH_AND_HANDLE
 }

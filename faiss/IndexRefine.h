@@ -11,6 +11,13 @@
 
 namespace faiss {
 
+struct IndexRefineSearchParameters : SearchParameters {
+    float k_factor = 1;
+    SearchParameters* base_index_params = nullptr; // non-owning
+
+    virtual ~IndexRefineSearchParameters() = default;
+};
+
 /** Index that queries in a base_index (a fast one) and refines the
  *  results with an exact search, hopefully improving the results.
  */
@@ -44,10 +51,21 @@ struct IndexRefine : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     // reconstruct is routed to the refine_index
     void reconstruct(idx_t key, float* recons) const override;
+
+    /* standalone codec interface: the base_index codes are interleaved with the
+     * refine_index ones */
+    size_t sa_code_size() const override;
+
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
+
+    /// The sa_decode decodes from the index_refine, which is assumed to be more
+    /// accurate
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
     ~IndexRefine() override;
 };
@@ -66,7 +84,8 @@ struct IndexRefineFlat : IndexRefine {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

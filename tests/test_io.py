@@ -11,9 +11,7 @@ import os
 import io
 import sys
 import pickle
-from multiprocessing.dummy import Pool as ThreadPool
-
-from common_faiss_tests import get_dataset, get_dataset_2
+from multiprocessing.pool import ThreadPool
 
 
 class TestIOVariants(unittest.TestCase):
@@ -77,11 +75,12 @@ class TestCallbacks(unittest.TestCase):
         index2 = faiss.deserialize_index(np.frombuffer(buf, dtype='uint8'))
 
         self.assertEqual(index.d, index2.d)
-        self.assertTrue(np.all(
-            faiss.vector_to_array(index.xb) == faiss.vector_to_array(index2.xb)
-        ))
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.codes),
+            faiss.vector_to_array(index2.codes)
+        )
 
-        # This is not a callable function: shoudl raise an exception
+        # This is not a callable function: should raise an exception
         writer = faiss.PyCallbackIOWriter("blabla")
         self.assertRaises(
             Exception,
@@ -132,8 +131,8 @@ class TestCallbacks(unittest.TestCase):
 
             self.assertEqual(index.d, index2.d)
             np.testing.assert_array_equal(
-                faiss.vector_to_array(index.xb),
-                faiss.vector_to_array(index2.xb)
+                faiss.vector_to_array(index.codes),
+                faiss.vector_to_array(index2.codes)
             )
 
             # This is not a callable function: should raise an exception
@@ -178,8 +177,8 @@ class TestCallbacks(unittest.TestCase):
 
             self.assertEqual(index.d, index2.d)
             np.testing.assert_array_equal(
-                faiss.vector_to_array(index.xb),
-                faiss.vector_to_array(index2.xb)
+                faiss.vector_to_array(index.codes),
+                faiss.vector_to_array(index2.codes)
             )
 
         finally:
@@ -279,3 +278,94 @@ class TestPickle(unittest.TestCase):
 
     def test_ivf(self):
         self.dump_load_factory("IVF5,Flat")
+
+
+class Test_IO_VectorTransform(unittest.TestCase):
+    """
+    test write_VectorTransform using IOWriter Pointer
+    and read_VectorTransform using file name
+    """
+    def test_write_vector_transform(self):
+        d, n = 32, 1000
+        x = np.random.uniform(size=(n, d)).astype('float32')
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFSpectralHash(quantizer, d, n, 8, 1.0)
+        index.train(x)
+        index.add(x)
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+
+            writer = faiss.FileIOWriter(fname)
+            faiss.write_VectorTransform(index.vt, writer)
+            del writer
+
+            vt = faiss.read_VectorTransform(fname)
+
+            assert vt.d_in == index.vt.d_in
+            assert vt.d_out == index.vt.d_out
+            assert vt.is_trained
+
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    """
+    test write_VectorTransform using file name
+    and read_VectorTransform using IOWriter Pointer
+    """
+    def test_read_vector_transform(self):
+        d, n = 32, 1000
+        x = np.random.uniform(size=(n, d)).astype('float32')
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFSpectralHash(quantizer, d, n, 8, 1.0)
+        index.train(x)
+        index.add(x)
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+
+            faiss.write_VectorTransform(index.vt, fname)
+
+            reader = faiss.FileIOReader(fname)
+            vt = faiss.read_VectorTransform(reader)
+            del reader
+
+            assert vt.d_in == index.vt.d_in
+            assert vt.d_out == index.vt.d_out
+            assert vt.is_trained
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+
+class TestIVFPQRead(unittest.TestCase):
+    def test_reader(self):
+        d, n = 32, 1000
+        xq = np.random.uniform(size=(n, d)).astype('float32')
+        xb = np.random.uniform(size=(n, d)).astype('float32')
+
+        index = faiss.index_factory(32, "IVF32,PQ16np", faiss.METRIC_L2)
+        index.train(xb)
+        index.add(xb)
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        try:
+            faiss.write_index(index, fname)
+
+            index_a = faiss.read_index(fname)
+            index_b = faiss.read_index(fname, faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE)
+
+            Da, Ia = index_a.search(xq, 10)
+            Db, Ib = index_b.search(xq, 10)
+            np.testing.assert_array_equal(Ia, Ib)
+            np.testing.assert_almost_equal(Da, Db, decimal=5)
+
+            codes_a = index_a.sa_encode(xq)
+            codes_b = index_b.sa_encode(xq)
+            np.testing.assert_array_equal(codes_a, codes_b)
+
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)

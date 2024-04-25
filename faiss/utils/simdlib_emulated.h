@@ -57,6 +57,17 @@ struct simd256bit {
         bin(bits);
         return std::string(bits);
     }
+
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd256bit other) const {
+        for (size_t i = 0; i < 8; i++) {
+            if (u32[i] != other.u32[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 };
 
 /// vector of 16 elements in uint16
@@ -74,6 +85,41 @@ struct simd16uint16 : simd256bit {
     explicit simd16uint16(const simd256bit& x) : simd256bit(x) {}
 
     explicit simd16uint16(const uint16_t* x) : simd256bit((const void*)x) {}
+
+    explicit simd16uint16(
+            uint16_t u0,
+            uint16_t u1,
+            uint16_t u2,
+            uint16_t u3,
+            uint16_t u4,
+            uint16_t u5,
+            uint16_t u6,
+            uint16_t u7,
+            uint16_t u8,
+            uint16_t u9,
+            uint16_t u10,
+            uint16_t u11,
+            uint16_t u12,
+            uint16_t u13,
+            uint16_t u14,
+            uint16_t u15) {
+        this->u16[0] = u0;
+        this->u16[1] = u1;
+        this->u16[2] = u2;
+        this->u16[3] = u3;
+        this->u16[4] = u4;
+        this->u16[5] = u5;
+        this->u16[6] = u6;
+        this->u16[7] = u7;
+        this->u16[8] = u8;
+        this->u16[9] = u9;
+        this->u16[10] = u10;
+        this->u16[11] = u11;
+        this->u16[12] = u12;
+        this->u16[13] = u13;
+        this->u16[14] = u14;
+        this->u16[15] = u15;
+    }
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
@@ -120,6 +166,11 @@ struct simd16uint16 : simd256bit {
         }
     }
 
+    simd16uint16 operator*(const simd16uint16& other) const {
+        return binary_func(
+                *this, other, [](uint16_t a, uint16_t b) { return a * b; });
+    }
+
     // shift must be known at compile time
     simd16uint16 operator>>(const int shift) const {
         return unary_func(*this, [shift](uint16_t a) { return a >> shift; });
@@ -161,6 +212,13 @@ struct simd16uint16 : simd256bit {
         return binary_func(
                 *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
                     return a | b;
+                });
+    }
+
+    simd16uint16 operator^(const simd256bit& other) const {
+        return binary_func(
+                *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
+                    return a ^ b;
                 });
     }
 
@@ -283,6 +341,62 @@ inline uint32_t cmp_le32(
     return gem;
 }
 
+// hadd does not cross lanes
+inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
+    simd16uint16 c;
+    c.u16[0] = a.u16[0] + a.u16[1];
+    c.u16[1] = a.u16[2] + a.u16[3];
+    c.u16[2] = a.u16[4] + a.u16[5];
+    c.u16[3] = a.u16[6] + a.u16[7];
+    c.u16[4] = b.u16[0] + b.u16[1];
+    c.u16[5] = b.u16[2] + b.u16[3];
+    c.u16[6] = b.u16[4] + b.u16[5];
+    c.u16[7] = b.u16[6] + b.u16[7];
+
+    c.u16[8] = a.u16[8] + a.u16[9];
+    c.u16[9] = a.u16[10] + a.u16[11];
+    c.u16[10] = a.u16[12] + a.u16[13];
+    c.u16[11] = a.u16[14] + a.u16[15];
+    c.u16[12] = b.u16[8] + b.u16[9];
+    c.u16[13] = b.u16[10] + b.u16[11];
+    c.u16[14] = b.u16[12] + b.u16[13];
+    c.u16[15] = b.u16[14] + b.u16[15];
+
+    return c;
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+inline void cmplt_min_max_fast(
+        const simd16uint16 candidateValues,
+        const simd16uint16 candidateIndices,
+        const simd16uint16 currentValues,
+        const simd16uint16 currentIndices,
+        simd16uint16& minValues,
+        simd16uint16& minIndices,
+        simd16uint16& maxValues,
+        simd16uint16& maxIndices) {
+    for (size_t i = 0; i < 16; i++) {
+        bool flag = (candidateValues.u16[i] < currentValues.u16[i]);
+        minValues.u16[i] = flag ? candidateValues.u16[i] : currentValues.u16[i];
+        minIndices.u16[i] =
+                flag ? candidateIndices.u16[i] : currentIndices.u16[i];
+        maxValues.u16[i] =
+                !flag ? candidateValues.u16[i] : currentValues.u16[i];
+        maxIndices.u16[i] =
+                !flag ? candidateIndices.u16[i] : currentIndices.u16[i];
+    }
+}
+
 // vector of 32 unsigned 8-bit integers
 struct simd32uint8 : simd256bit {
     simd32uint8() {}
@@ -293,6 +407,75 @@ struct simd32uint8 : simd256bit {
 
     explicit simd32uint8(uint8_t x) {
         set1(x);
+    }
+    template <
+            uint8_t _0,
+            uint8_t _1,
+            uint8_t _2,
+            uint8_t _3,
+            uint8_t _4,
+            uint8_t _5,
+            uint8_t _6,
+            uint8_t _7,
+            uint8_t _8,
+            uint8_t _9,
+            uint8_t _10,
+            uint8_t _11,
+            uint8_t _12,
+            uint8_t _13,
+            uint8_t _14,
+            uint8_t _15,
+            uint8_t _16,
+            uint8_t _17,
+            uint8_t _18,
+            uint8_t _19,
+            uint8_t _20,
+            uint8_t _21,
+            uint8_t _22,
+            uint8_t _23,
+            uint8_t _24,
+            uint8_t _25,
+            uint8_t _26,
+            uint8_t _27,
+            uint8_t _28,
+            uint8_t _29,
+            uint8_t _30,
+            uint8_t _31>
+    static simd32uint8 create() {
+        simd32uint8 ret;
+        ret.u8[0] = _0;
+        ret.u8[1] = _1;
+        ret.u8[2] = _2;
+        ret.u8[3] = _3;
+        ret.u8[4] = _4;
+        ret.u8[5] = _5;
+        ret.u8[6] = _6;
+        ret.u8[7] = _7;
+        ret.u8[8] = _8;
+        ret.u8[9] = _9;
+        ret.u8[10] = _10;
+        ret.u8[11] = _11;
+        ret.u8[12] = _12;
+        ret.u8[13] = _13;
+        ret.u8[14] = _14;
+        ret.u8[15] = _15;
+        ret.u8[16] = _16;
+        ret.u8[17] = _17;
+        ret.u8[18] = _18;
+        ret.u8[19] = _19;
+        ret.u8[20] = _20;
+        ret.u8[21] = _21;
+        ret.u8[22] = _22;
+        ret.u8[23] = _23;
+        ret.u8[24] = _24;
+        ret.u8[25] = _25;
+        ret.u8[26] = _26;
+        ret.u8[27] = _27;
+        ret.u8[28] = _28;
+        ret.u8[29] = _29;
+        ret.u8[30] = _30;
+        ret.u8[31] = _31;
+        return ret;
     }
 
     explicit simd32uint8(const simd256bit& x) : simd256bit(x) {}
@@ -433,7 +616,63 @@ struct simd8uint32 : simd256bit {
 
     explicit simd8uint32(const simd256bit& x) : simd256bit(x) {}
 
-    explicit simd8uint32(const uint8_t* x) : simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint32_t* x) : simd256bit((const void*)x) {}
+
+    explicit simd8uint32(
+            uint32_t u0,
+            uint32_t u1,
+            uint32_t u2,
+            uint32_t u3,
+            uint32_t u4,
+            uint32_t u5,
+            uint32_t u6,
+            uint32_t u7) {
+        u32[0] = u0;
+        u32[1] = u1;
+        u32[2] = u2;
+        u32[3] = u3;
+        u32[4] = u4;
+        u32[5] = u5;
+        u32[6] = u6;
+        u32[7] = u7;
+    }
+
+    simd8uint32 operator+(simd8uint32 other) const {
+        simd8uint32 result;
+        for (int i = 0; i < 8; i++) {
+            result.u32[i] = u32[i] + other.u32[i];
+        }
+        return result;
+    }
+
+    simd8uint32 operator-(simd8uint32 other) const {
+        simd8uint32 result;
+        for (int i = 0; i < 8; i++) {
+            result.u32[i] = u32[i] - other.u32[i];
+        }
+        return result;
+    }
+
+    simd8uint32& operator+=(const simd8uint32& other) {
+        for (int i = 0; i < 8; i++) {
+            u32[i] += other.u32[i];
+        }
+        return *this;
+    }
+
+    bool operator==(simd8uint32 other) const {
+        for (size_t i = 0; i < 8; i++) {
+            if (u32[i] != other.u32[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(simd8uint32 other) const {
+        return !(*this == other);
+    }
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
@@ -458,7 +697,45 @@ struct simd8uint32 : simd256bit {
             u32[i] = x;
         }
     }
+
+    simd8uint32 unzip() const {
+        const uint32_t ret[] = {
+                u32[0], u32[2], u32[4], u32[6], u32[1], u32[3], u32[5], u32[7]};
+        return simd8uint32{ret};
+    }
 };
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8uint32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8uint32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8uint32& minValues,
+        simd8uint32& minIndices,
+        simd8uint32& maxValues,
+        simd8uint32& maxIndices) {
+    for (size_t i = 0; i < 8; i++) {
+        bool flag = (candidateValues.u32[i] < currentValues.u32[i]);
+        minValues.u32[i] = flag ? candidateValues.u32[i] : currentValues.u32[i];
+        minIndices.u32[i] =
+                flag ? candidateIndices.u32[i] : currentIndices.u32[i];
+        maxValues.u32[i] =
+                !flag ? candidateValues.u32[i] : currentValues.u32[i];
+        maxIndices.u32[i] =
+                !flag ? candidateIndices.u32[i] : currentIndices.u32[i];
+    }
+}
 
 struct simd8float32 : simd256bit {
     simd8float32() {}
@@ -477,6 +754,25 @@ struct simd8float32 : simd256bit {
         for (int i = 0; i < 8; i++) {
             f32[i] = x;
         }
+    }
+
+    explicit simd8float32(
+            float f0,
+            float f1,
+            float f2,
+            float f3,
+            float f4,
+            float f5,
+            float f6,
+            float f7) {
+        f32[0] = f0;
+        f32[1] = f1;
+        f32[2] = f2;
+        f32[3] = f3;
+        f32[4] = f4;
+        f32[5] = f5;
+        f32[6] = f6;
+        f32[7] = f7;
     }
 
     template <typename F>
@@ -504,6 +800,28 @@ struct simd8float32 : simd256bit {
     simd8float32 operator-(const simd8float32& other) const {
         return binary_func(
                 *this, other, [](float a, float b) { return a - b; });
+    }
+
+    simd8float32& operator+=(const simd8float32& other) {
+        for (size_t i = 0; i < 8; i++) {
+            f32[i] += other.f32[i];
+        }
+
+        return *this;
+    }
+
+    bool operator==(simd8float32 other) const {
+        for (size_t i = 0; i < 8; i++) {
+            if (f32[i] != other.f32[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(simd8float32 other) const {
+        return !(*this == other);
     }
 
     std::string tostring() const {
@@ -643,6 +961,83 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
     c.f32[7] = b.f32[7];
 
     return c;
+}
+
+// The following primitive is a vectorized version of the following code
+// snippet:
+//   float lowestValue = HUGE_VAL;
+//   uint lowestIndex = 0;
+//   for (size_t i = 0; i < n; i++) {
+//     if (values[i] < lowestValue) {
+//       lowestValue = values[i];
+//       lowestIndex = i;
+//     }
+//   }
+// Vectorized version can be implemented via two operations: cmp and blend
+// with something like this:
+//   lowestValues = [HUGE_VAL; 8];
+//   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
+//   for (size_t i = 0; i < n; i += 8) {
+//     auto comparison = cmp(values + i, lowestValues);
+//     lowestValues = blend(
+//         comparison,
+//         values + i,
+//         lowestValues);
+//     lowestIndices = blend(
+//         comparison,
+//         i + {0, 1, 2, 3, 4, 5, 6, 7},
+//         lowestIndices);
+//     lowestIndices += {8, 8, 8, 8, 8, 8, 8, 8};
+//   }
+// The problem is that blend primitive needs very different instruction
+// order for AVX and ARM.
+// So, let's introduce a combination of these two in order to avoid
+// confusion for ppl who write in low-level SIMD instructions. Additionally,
+// these two ops (cmp and blend) are very often used together.
+inline void cmplt_and_blend_inplace(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        simd8float32& lowestValues,
+        simd8uint32& lowestIndices) {
+    for (size_t j = 0; j < 8; j++) {
+        bool comparison = (candidateValues.f32[j] < lowestValues.f32[j]);
+        if (comparison) {
+            lowestValues.f32[j] = candidateValues.f32[j];
+            lowestIndices.u32[j] = candidateIndices.u32[j];
+        }
+    }
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8float32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8float32& minValues,
+        simd8uint32& minIndices,
+        simd8float32& maxValues,
+        simd8uint32& maxIndices) {
+    for (size_t i = 0; i < 8; i++) {
+        bool flag = (candidateValues.f32[i] < currentValues.f32[i]);
+        minValues.f32[i] = flag ? candidateValues.f32[i] : currentValues.f32[i];
+        minIndices.u32[i] =
+                flag ? candidateIndices.u32[i] : currentIndices.u32[i];
+        maxValues.f32[i] =
+                !flag ? candidateValues.f32[i] : currentValues.f32[i];
+        maxIndices.u32[i] =
+                !flag ? candidateIndices.u32[i] : currentIndices.u32[i];
+    }
 }
 
 } // namespace

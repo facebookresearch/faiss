@@ -43,8 +43,16 @@ def eval_quantizer(q, xq, xb, gt, xt, variants=None):
     for name, val in variants:
         if name is not None:
             print(f"{name}={val}")
-            getattr(q, name)  # make sure field exists
-            setattr(q, name, val)
+
+            if isinstance(q, faiss.ProductAdditiveQuantizer):
+                for i in range(q.nsplits):
+                    subq = faiss.downcast_Quantizer(q.subquantizer(i))
+                    getattr(subq, name)
+                    setattr(subq, name, val)
+            else:
+                getattr(q, name)  # make sure field exists
+                setattr(q, name, val)
+
         eval_codec(q, xq, xb, gt)
 
 
@@ -60,10 +68,12 @@ else:
     ds = DatasetSIFT1M()
 
 if len(todo) > 0:
-    if "x" in todo[0]:
-        M, nbits = todo[0].split("x")
-        M = int(M)
-        nbits = int(nbits)
+    if todo[0].count("x") == 1:
+        M, nbits = [int(x) for x in todo[0].split("x")]
+        del todo[0]
+    elif todo[0].count("x") == 2:
+        nsplits, Msub, nbits = [int(x) for x in todo[0].split("x")]
+        M = nsplits * Msub
         del todo[0]
 
 maxtrain = max(100 << nbits, 10**5)
@@ -106,6 +116,18 @@ if 'opq' in todo:
     print("===== PQ")
     eval_quantizer(pq, xq2, xb2, gt, xt2)
 
+if 'prq' in todo:
+    print(f"===== PRQ{nsplits}x{Msub}x{nbits}")
+    prq = faiss.ProductResidualQuantizer(d, nsplits, Msub, nbits)
+    variants = [("max_beam_size", i) for i in (1, 2, 4, 8, 16, 32)]
+    eval_quantizer(prq, xq, xb, gt, xt, variants=variants)
+
+if 'plsq' in todo:
+    print(f"===== PLSQ{nsplits}x{Msub}x{nbits}")
+    plsq = faiss.ProductLocalSearchQuantizer(d, nsplits, Msub, nbits)
+    variants = [("encode_ils_iters", i) for i in (2, 3, 4, 8, 16)]
+    eval_quantizer(plsq, xq, xb, gt, xt, variants=variants)
+
 if 'rq' in todo:
     print("===== RQ")
     rq = faiss.ResidualQuantizer(d, M, nbits, )
@@ -131,6 +153,5 @@ if 'rq_lut' in todo:
 if 'lsq' in todo:
     print("===== LSQ")
     lsq = faiss.LocalSearchQuantizer(d, M, nbits)
-    lsq.verbose = True
     variants = [("encode_ils_iters", i) for i in (2, 3, 4, 8, 16)]
     eval_quantizer(lsq, xq, xb, gt, xt, variants=variants)

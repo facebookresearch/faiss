@@ -16,6 +16,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/utils.h>
 
@@ -29,7 +30,7 @@ IndexScalarQuantizer::IndexScalarQuantizer(
         int d,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric)
-        : Index(d, metric), sq(d, qtype) {
+        : IndexFlatCodes(0, d, metric), sq(d, qtype) {
     is_trained = qtype == ScalarQuantizer::QT_fp16 ||
             qtype == ScalarQuantizer::QT_8bit_direct;
     code_size = sq.code_size;
@@ -43,30 +44,25 @@ void IndexScalarQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexScalarQuantizer::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((n + ntotal) * code_size);
-    sq.compute_codes(x, &codes[ntotal * code_size], n);
-    ntotal += n;
-}
-
 void IndexScalarQuantizer::search(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
-    FAISS_THROW_IF_NOT(k > 0);
+        idx_t* labels,
+        const SearchParameters* params) const {
+    const IDSelector* sel = params ? params->sel : nullptr;
 
+    FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(
             metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT);
 
 #pragma omp parallel
     {
-        InvertedListScanner* scanner =
-                sq.select_InvertedListScanner(metric_type, nullptr, true);
-        ScopeDeleter1<InvertedListScanner> del(scanner);
+        std::unique_ptr<InvertedListScanner> scanner(
+                sq.select_InvertedListScanner(metric_type, nullptr, true, sel));
+
         scanner->list_no = 0; // directly the list number
 
 #pragma omp for
@@ -92,7 +88,8 @@ void IndexScalarQuantizer::search(
     }
 }
 
-DistanceComputer* IndexScalarQuantizer::get_distance_computer() const {
+FlatCodesDistanceComputer* IndexScalarQuantizer::get_FlatCodesDistanceComputer()
+        const {
     ScalarQuantizer::SQDistanceComputer* dc =
             sq.get_distance_computer(metric_type);
     dc->code_size = sq.code_size;
@@ -100,27 +97,7 @@ DistanceComputer* IndexScalarQuantizer::get_distance_computer() const {
     return dc;
 }
 
-void IndexScalarQuantizer::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-void IndexScalarQuantizer::reconstruct_n(idx_t i0, idx_t ni, float* recons)
-        const {
-    std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer());
-    for (size_t i = 0; i < ni; i++) {
-        squant->decode_vector(&codes[(i + i0) * code_size], recons + i * d);
-    }
-}
-
-void IndexScalarQuantizer::reconstruct(idx_t key, float* recons) const {
-    reconstruct_n(key, 1, recons);
-}
-
 /* Codec interface */
-size_t IndexScalarQuantizer::sa_code_size() const {
-    return sq.code_size;
-}
 
 void IndexScalarQuantizer::sa_encode(idx_t n, const float* x, uint8_t* bytes)
         const {
@@ -144,21 +121,28 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
         size_t nlist,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric,
-        bool encode_residual)
-        : IndexIVF(quantizer, d, nlist, 0, metric),
-          sq(d, qtype),
-          by_residual(encode_residual) {
+        bool by_residual)
+        : IndexIVF(quantizer, d, nlist, 0, metric), sq(d, qtype) {
     code_size = sq.code_size;
+    this->by_residual = by_residual;
     // was not known at construction time
     invlists->code_size = code_size;
     is_trained = false;
 }
 
-IndexIVFScalarQuantizer::IndexIVFScalarQuantizer()
-        : IndexIVF(), by_residual(true) {}
+IndexIVFScalarQuantizer::IndexIVFScalarQuantizer() : IndexIVF() {
+    by_residual = true;
+}
 
-void IndexIVFScalarQuantizer::train_residual(idx_t n, const float* x) {
-    sq.train_residual(n, x, quantizer, by_residual, verbose);
+void IndexIVFScalarQuantizer::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
+    sq.train(n, x);
+}
+
+idx_t IndexIVFScalarQuantizer::train_encoder_num_vectors() const {
+    return 100000;
 }
 
 void IndexIVFScalarQuantizer::encode_vectors(
@@ -167,7 +151,7 @@ void IndexIVFScalarQuantizer::encode_vectors(
         const idx_t* list_nos,
         uint8_t* codes,
         bool include_listnos) const {
-    std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer());
+    std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
     memset(codes, 0, (code_size + coarse_size) * n);
 
@@ -196,7 +180,7 @@ void IndexIVFScalarQuantizer::encode_vectors(
 
 void IndexIVFScalarQuantizer::sa_decode(idx_t n, const uint8_t* codes, float* x)
         const {
-    std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer());
+    std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
     size_t coarse_size = coarse_code_size();
 
 #pragma omp parallel if (n > 1000)
@@ -223,15 +207,15 @@ void IndexIVFScalarQuantizer::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* coarse_idx) {
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
     FAISS_THROW_IF_NOT(is_trained);
 
-    size_t nadd = 0;
-    std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer());
+    std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
 
     DirectMapAdd dm_add(direct_map, n, xids);
 
-#pragma omp parallel reduction(+ : nadd)
+#pragma omp parallel
     {
         std::vector<float> residual(d);
         std::vector<uint8_t> one_code(code_size);
@@ -253,10 +237,10 @@ void IndexIVFScalarQuantizer::add_core(
                 memset(one_code.data(), 0, code_size);
                 squant->encode_vector(xi, one_code.data());
 
-                size_t ofs = invlists->add_entry(list_no, id, one_code.data());
+                size_t ofs = invlists->add_entry(
+                        list_no, id, one_code.data(), inverted_list_context);
 
                 dm_add.add(i, list_no, ofs);
-                nadd++;
 
             } else if (rank == 0 && list_no == -1) {
                 dm_add.add(i, -1, 0);
@@ -268,22 +252,28 @@ void IndexIVFScalarQuantizer::add_core(
 }
 
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
     return sq.select_InvertedListScanner(
-            metric_type, quantizer, store_pairs, by_residual);
+            metric_type, quantizer, store_pairs, sel, by_residual);
 }
 
 void IndexIVFScalarQuantizer::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
-    std::vector<float> centroid(d);
-    quantizer->reconstruct(list_no, centroid.data());
-
     const uint8_t* code = invlists->get_single_code(list_no, offset);
-    sq.decode(code, recons, 1);
-    for (int i = 0; i < d; ++i) {
-        recons[i] += centroid[i];
+
+    if (by_residual) {
+        std::vector<float> centroid(d);
+        quantizer->reconstruct(list_no, centroid.data());
+
+        sq.decode(code, recons, 1);
+        for (int i = 0; i < d; ++i) {
+            recons[i] += centroid[i];
+        }
+    } else {
+        sq.decode(code, recons, 1);
     }
 }
 

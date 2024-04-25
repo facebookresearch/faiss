@@ -32,7 +32,8 @@ struct IndexIVFFlat : IndexIVF {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx) override;
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
 
     void encode_vectors(
             idx_t n,
@@ -42,14 +43,15 @@ struct IndexIVFFlat : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-    IndexIVFFlat() {}
+    IndexIVFFlat();
 };
 
 struct IndexIVFFlatDedup : IndexIVFFlat {
@@ -89,7 +91,8 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     /// not implemented
     void update_vectors(int nv, const idx_t* idx, const float* v) override;

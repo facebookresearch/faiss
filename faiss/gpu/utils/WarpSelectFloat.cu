@@ -46,7 +46,7 @@ WARP_SELECT_DECL(float, false, 2048);
 void runWarpSelect(
         Tensor<float, 2, true>& in,
         Tensor<float, 2, true>& outK,
-        Tensor<int, 2, true>& outV,
+        Tensor<idx_t, 2, true>& outV,
         bool dir,
         int k,
         cudaStream_t stream) {

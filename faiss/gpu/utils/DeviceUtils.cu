@@ -86,6 +86,16 @@ int getMaxThreadsCurrentDevice() {
     return getMaxThreads(getCurrentDevice());
 }
 
+dim3 getMaxGrid(int device) {
+    auto& prop = getDeviceProperties(device);
+
+    return dim3(prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]);
+}
+
+dim3 getMaxGridCurrentDevice() {
+    return getMaxGrid(getCurrentDevice());
+}
+
 size_t getMaxSharedMemPerBlock(int device) {
     return getDeviceProperties(device).sharedMemPerBlock;
 }
@@ -149,10 +159,24 @@ bool getTensorCoreSupportCurrentDevice() {
     return getTensorCoreSupport(getCurrentDevice());
 }
 
-int getMaxKSelection() {
-    // Don't use the device at the moment, just base this based on the CUDA SDK
-    // that we were compiled with
-    return GPU_MAX_SELECTION_K;
+size_t getFreeMemory(int device) {
+    DeviceScope scope(device);
+
+    size_t free = 0;
+    size_t total = 0;
+
+    CUDA_VERIFY(cudaMemGetInfo(&free, &total));
+
+    return free;
+}
+
+size_t getFreeMemoryCurrentDevice() {
+    size_t free = 0;
+    size_t total = 0;
+
+    CUDA_VERIFY(cudaMemGetInfo(&free, &total));
+
+    return free;
 }
 
 DeviceScope::DeviceScope(int device) {

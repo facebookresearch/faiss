@@ -24,8 +24,6 @@ using namespace faiss;
 
 namespace {
 
-typedef Index::idx_t idx_t;
-
 // dimension of the vectors to index
 int d = 32;
 

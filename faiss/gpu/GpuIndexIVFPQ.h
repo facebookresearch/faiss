@@ -23,24 +23,19 @@ class GpuIndexFlat;
 class IVFPQ;
 
 struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
-    inline GpuIndexIVFPQConfig()
-            : useFloat16LookupTables(false),
-              usePrecomputedTables(false),
-              interleavedLayout(false),
-              useMMCodeDistance(false) {}
-
     /// Whether or not float16 residual distance tables are used in the
     /// list scanning kernels. When subQuantizers * 2^bitsPerCode >
     /// 16384, this is required.
-    bool useFloat16LookupTables;
+    bool useFloat16LookupTables = false;
 
     /// Whether or not we enable the precomputed table option for
     /// search, which can substantially increase the memory requirement.
-    bool usePrecomputedTables;
+    bool usePrecomputedTables = false;
 
     /// Use the alternative memory layout for the IVF lists
-    /// WARNING: this is a feature under development, do not use!
-    bool interleavedLayout;
+    /// WARNING: this is a feature under development, and is only supported with
+    /// RAFT enabled for the index. Do not use if RAFT is not enabled.
+    bool interleavedLayout = false;
 
     /// Use GEMM-backed computation of PQ code distances for the no precomputed
     /// table version of IVFPQ.
@@ -50,7 +45,7 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
     /// Note that MM code distance is enabled automatically if one uses a number
     /// of dimensions per sub-quantizer that is not natively specialized (an odd
     /// number like 7 or so).
-    bool useMMCodeDistance;
+    bool useMMCodeDistance = false;
 };
 
 /// IVFPQ index for the GPU
@@ -63,14 +58,27 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
             const faiss::IndexIVFPQ* index,
             GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
-    /// Construct an empty index
+    /// Constructs a new instance with an empty flat quantizer; the user
+    /// provides the number of IVF lists desired.
     GpuIndexIVFPQ(
             GpuResourcesProvider* provider,
             int dims,
-            int nlist,
-            int subQuantizers,
-            int bitsPerCode,
-            faiss::MetricType metric,
+            idx_t nlist,
+            idx_t subQuantizers,
+            idx_t bitsPerCode,
+            faiss::MetricType metric = faiss::METRIC_L2,
+            GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
+
+    /// Constructs a new instance with a provided CPU or GPU coarse quantizer;
+    /// the user provides the number of IVF lists desired.
+    GpuIndexIVFPQ(
+            GpuResourcesProvider* provider,
+            Index* coarseQuantizer,
+            int dims,
+            idx_t nlist,
+            idx_t subQuantizers,
+            idx_t bitsPerCode,
+            faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
     ~GpuIndexIVFPQ() override;
@@ -112,24 +120,13 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     /// product centroid information
     void reset() override;
 
+    /// Should be called if the user ever changes the state of the IVF coarse
+    /// quantizer manually (e.g., substitutes a new instance or changes vectors
+    /// in the coarse quantizer outside the scope of training)
+    void updateQuantizer() override;
+
     /// Trains the coarse and product quantizer based on the given vector data
-    void train(Index::idx_t n, const float* x) override;
-
-    /// Returns the number of vectors present in a particular inverted list
-    int getListLength(int listId) const override;
-
-    /// Return the encoded vector data contained in a particular inverted list,
-    /// for debugging purposes.
-    /// If gpuFormat is true, the data is returned as it is encoded in the
-    /// GPU-side representation.
-    /// Otherwise, it is converted to the CPU format.
-    /// compliant format, while the native GPU format may differ.
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
-            const override;
-
-    /// Return the vector indices contained in a particular inverted list, for
-    /// debugging purposes.
-    std::vector<Index::idx_t> getListIndices(int listId) const override;
+    void train(idx_t n, const float* x) override;
 
    public:
     /// Like the CPU version, we expose a publically-visible ProductQuantizer
@@ -137,22 +134,27 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     ProductQuantizer pq;
 
    protected:
-    /// Called from GpuIndex for add/add_with_ids
-    void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
-
-    /// Called from GpuIndex for search
-    void searchImpl_(
-            int n,
-            const float* x,
-            int k,
-            float* distances,
-            Index::idx_t* labels) const override;
+    /// Initialize appropriate index
+    void setIndex_(
+            GpuResources* resources,
+            int dim,
+            idx_t nlist,
+            faiss::MetricType metric,
+            float metricArg,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool useFloat16LookupTables,
+            bool useMMCodeDistance,
+            bool interleavedLayout,
+            float* pqCentroidData,
+            IndicesOptions indicesOptions,
+            MemorySpace space);
 
     /// Throws errors if configuration settings are improper
-    void verifySettings_() const;
+    void verifyPQSettings_() const;
 
     /// Trains the PQ quantizer based on the given vector data
-    void trainResidualQuantizer_(Index::idx_t n, const float* x);
+    void trainResidualQuantizer_(idx_t n, const float* x);
 
    protected:
     /// Our configuration options that we were initialized with
@@ -172,7 +174,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
     /// The product quantizer instance that we own; contains the
     /// inverted lists
-    std::unique_ptr<IVFPQ> index_;
+    std::shared_ptr<IVFPQ> index_;
 };
 
 } // namespace gpu

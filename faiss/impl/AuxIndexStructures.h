@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 // Auxiliary index structures, that are used in indexes but that can
 // be forward-declared
 
@@ -18,10 +16,9 @@
 #include <cstring>
 #include <memory>
 #include <mutex>
-#include <unordered_set>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 
 namespace faiss {
@@ -34,71 +31,19 @@ struct RangeSearchResult {
     size_t nq;    ///< nb of queries
     size_t* lims; ///< size (nq + 1)
 
-    typedef Index::idx_t idx_t;
-
     idx_t* labels;    ///< result for query i is labels[lims[i]:lims[i+1]]
     float* distances; ///< corresponding distances (not sorted)
 
     size_t buffer_size; ///< size of the result buffers used
 
     /// lims must be allocated on input to range_search.
-    explicit RangeSearchResult(idx_t nq, bool alloc_lims = true);
+    explicit RangeSearchResult(size_t nq, bool alloc_lims = true);
 
     /// called when lims contains the nb of elements result entries
     /// for each query
-
     virtual void do_allocation();
 
     virtual ~RangeSearchResult();
-};
-
-/** Encapsulates a set of ids to remove. */
-struct IDSelector {
-    typedef Index::idx_t idx_t;
-    virtual bool is_member(idx_t id) const = 0;
-    virtual ~IDSelector() {}
-};
-
-/** remove ids between [imni, imax) */
-struct IDSelectorRange : IDSelector {
-    idx_t imin, imax;
-
-    IDSelectorRange(idx_t imin, idx_t imax);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorRange() override {}
-};
-
-/** simple list of elements to remove
- *
- * this is inefficient in most cases, except for IndexIVF with
- * maintain_direct_map
- */
-struct IDSelectorArray : IDSelector {
-    size_t n;
-    const idx_t* ids;
-
-    IDSelectorArray(size_t n, const idx_t* ids);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorArray() override {}
-};
-
-/** Remove ids from a set. Repetitions of ids in the indices set
- * passed to the constructor does not hurt performance. The hash
- * function used for the bloom filter and GCC's implementation of
- * unordered_set are just the least significant bits of the id. This
- * works fine for random ids or ids in sequences but will produce many
- * hash collisions if lsb's are always the same */
-struct IDSelectorBatch : IDSelector {
-    std::unordered_set<idx_t> set;
-
-    typedef unsigned char uint8_t;
-    std::vector<uint8_t> bloom; // assumes low bits of id are a good hash value
-    int nbits;
-    idx_t mask;
-
-    IDSelectorBatch(size_t n, const idx_t* indices);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorBatch() override {}
 };
 
 /****************************************************************
@@ -114,8 +59,6 @@ struct IDSelectorBatch : IDSelector {
 /** List of temporary buffers used to store results before they are
  *  copied to the RangeSearchResult object. */
 struct BufferList {
-    typedef Index::idx_t idx_t;
-
     // buffer sizes in # entries
     size_t buffer_size;
 
@@ -146,7 +89,6 @@ struct RangeSearchPartialResult;
 
 /// result structure for a single query
 struct RangeQueryResult {
-    using idx_t = Index::idx_t;
     idx_t qno;   //< id of the query
     size_t nres; //< nb of results for this query
     RangeSearchPartialResult* pres;
@@ -187,30 +129,6 @@ struct RangeSearchPartialResult : BufferList {
 };
 
 /***********************************************************
- * The distance computer maintains a current query and computes
- * distances to elements in an index that supports random access.
- *
- * The DistanceComputer is not intended to be thread-safe (eg. because
- * it maintains counters) so the distance functions are not const,
- * instantiate one from each thread if needed.
- ***********************************************************/
-struct DistanceComputer {
-    using idx_t = Index::idx_t;
-
-    /// called before computing distances. Pointer x should remain valid
-    /// while operator () is called
-    virtual void set_query(const float* x) = 0;
-
-    /// compute distance of vector i to current query
-    virtual float operator()(idx_t i) = 0;
-
-    /// compute distance between two stored vectors
-    virtual float symmetric_dis(idx_t i, idx_t j) = 0;
-
-    virtual ~DistanceComputer() {}
-};
-
-/***********************************************************
  * Interrupt callback
  ***********************************************************/
 
@@ -246,7 +164,7 @@ struct FAISS_API InterruptCallback {
 /// set implementation optimized for fast access.
 struct VisitedTable {
     std::vector<uint8_t> visited;
-    int visno;
+    uint8_t visno;
 
     explicit VisitedTable(int size) : visited(size), visno(1) {}
 

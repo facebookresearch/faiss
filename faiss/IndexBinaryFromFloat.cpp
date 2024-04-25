@@ -9,13 +9,14 @@
 
 #include <faiss/IndexBinaryFromFloat.h>
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
 #include <memory>
 
 namespace faiss {
 
-IndexBinaryFromFloat::IndexBinaryFromFloat() {}
+IndexBinaryFromFloat::IndexBinaryFromFloat() = default;
 
 IndexBinaryFromFloat::IndexBinaryFromFloat(Index* index)
         : IndexBinary(index->d), index(index), own_fields(false) {
@@ -52,7 +53,10 @@ void IndexBinaryFromFloat::search(
         const uint8_t* x,
         idx_t k,
         int32_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     constexpr idx_t bs = 32768;

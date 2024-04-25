@@ -14,10 +14,26 @@
 #include "Clustering_c.h"
 #include "Index_c.h"
 #include "faiss_c.h"
+#include "impl/AuxIndexStructures_c.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+FAISS_DECLARE_CLASS_INHERITED(SearchParametersIVF, SearchParameters)
+FAISS_DECLARE_DESTRUCTOR(SearchParametersIVF)
+FAISS_DECLARE_SEARCH_PARAMETERS_DOWNCAST(SearchParametersIVF)
+
+int faiss_SearchParametersIVF_new(FaissSearchParametersIVF** p_sp);
+int faiss_SearchParametersIVF_new_with(
+        FaissSearchParametersIVF** p_sp,
+        FaissIDSelector* sel,
+        size_t nprobe,
+        size_t max_codes);
+
+FAISS_DECLARE_GETTER(SearchParametersIVF, const FaissIDSelector*, sel)
+FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, nprobe)
+FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, max_codes)
 
 /** Index based on a inverted file (IVF)
  *
@@ -137,6 +153,12 @@ void faiss_IndexIVF_invlists_get_ids(
         const FaissIndexIVF* index,
         size_t list_no,
         idx_t* invlist);
+
+int faiss_IndexIVF_train_encoder(
+        FaissIndexIVF* index,
+        idx_t n,
+        const float* x,
+        const idx_t* assign);
 
 typedef struct FaissIndexIVFStats {
     size_t nq;                // nb of queries run

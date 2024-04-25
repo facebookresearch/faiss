@@ -14,7 +14,7 @@
 #include <mutex>
 #include <stack>
 
-#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 
 namespace faiss {
 
@@ -29,8 +29,6 @@ constexpr int EMPTY_ID = -1;
    distances. This makes supporting INNER_PRODUCE search easier */
 
 struct NegativeDistanceComputer : DistanceComputer {
-    using idx_t = Index::idx_t;
-
     /// owned by this
     DistanceComputer* basedis;
 
@@ -59,7 +57,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 } // namespace
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (storage->metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();
@@ -140,9 +138,6 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
 NSG::NSG(int R) : R(R), rng(0x0903) {
     L = R + 32;
     C = R + 100;
-    search_L = 16;
-    ntotal = 0;
-    is_built = false;
     srand(0x1998);
 }
 
@@ -160,9 +155,6 @@ void NSG::search(
     std::vector<Node> tmp;
     search_on_graph<false>(
             *final_graph, dis, vt, enterpoint, pool_size, retset, tmp);
-
-    std::partial_sort(
-            retset.begin(), retset.begin() + k, retset.begin() + pool_size);
 
     for (size_t i = 0; i < k; i++) {
         I[i] = retset[i].id;

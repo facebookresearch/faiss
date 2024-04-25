@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/PolysemousTraining.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/platform_macros.h>
@@ -21,12 +21,9 @@ namespace faiss {
 
 /** Index based on a product quantizer. Stored vectors are
  * approximated by PQ codes. */
-struct IndexPQ : Index {
+struct IndexPQ : IndexFlatCodes {
     /// The product quantizer used to encode the vectors
     ProductQuantizer pq;
-
-    /// Codes. Size ntotal * pq.code_size
-    std::vector<uint8_t> codes;
 
     /** Constructor.
      *
@@ -34,40 +31,26 @@ struct IndexPQ : Index {
      * @param M      number of subquantizers
      * @param nbits  number of bit per subvector index
      */
-    IndexPQ(int d,        ///< dimensionality of the input vectors
-            size_t M,     ///< number of subquantizers
-            size_t nbits, ///< number of bit per subvector index
-            MetricType metric = METRIC_L2);
+    IndexPQ(int d, size_t M, size_t nbits, MetricType metric = METRIC_L2);
 
     IndexPQ();
 
     void train(idx_t n, const float* x) override;
-
-    void add(idx_t n, const float* x) override;
 
     void search(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
-
-    void reset() override;
-
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
-    void reconstruct(idx_t key, float* recons) const override;
-
-    size_t remove_ids(const IDSelector& sel) override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /* The standalone codec interface */
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-    DistanceComputer* get_distance_computer() const override;
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
     /******************************************************
      * Polysemous codes implementation
@@ -102,7 +85,9 @@ struct IndexPQ : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            int polysemous_ht,
+            bool generalized_hamming) const;
 
     /// prepare query for a polysemous search, but instead of
     /// computing the result, just get the histogram of Hamming
@@ -122,6 +107,12 @@ struct IndexPQ : Index {
      * @param dis  output distances, size n * ntotal
      */
     void hamming_distance_table(idx_t n, const float* x, int32_t* dis) const;
+};
+
+/// override search parameters from the class
+struct SearchParametersPQ : SearchParameters {
+    IndexPQ::Search_type_t search_type;
+    int polysemous_ht;
 };
 
 /// statistics are robust to internal threading, but not if
@@ -157,7 +148,8 @@ struct MultiIndexQuantizer : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// add and reset will crash at runtime
     void add(idx_t n, const float* x) override;
@@ -167,6 +159,9 @@ struct MultiIndexQuantizer : Index {
 
     void reconstruct(idx_t key, float* recons) const override;
 };
+
+// block size used in MultiIndexQuantizer::search
+FAISS_API extern int multi_index_quantizer_search_bs;
 
 /** MultiIndexQuantizer where the PQ assignmnet is performed by sub-indexes
  */
@@ -190,7 +185,8 @@ struct MultiIndexQuantizer2 : MultiIndexQuantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

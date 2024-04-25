@@ -9,7 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-#include <thrust/device_vector.h>
+#include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/NoTypeTensor.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
@@ -23,22 +23,22 @@ void runPQScanMultiPassPrecomputed(
         Tensor<float, 2, true>& precompTerm1,
         NoTypeTensor<3, true>& precompTerm2,
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
         int numSubQuantizers,
         int numSubQuantizerCodes,
-        thrust::device_vector<void*>& listCodes,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listCodes,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
-        int maxListLength,
+        DeviceVector<idx_t>& listLengths,
+        idx_t maxListLength,
         int k,
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res);
 
 } // namespace gpu

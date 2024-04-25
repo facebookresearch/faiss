@@ -12,14 +12,26 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <thrust/execution_policy.h>
+#include <thrust/fill.h>
 #include <algorithm>
 #include <vector>
 
 namespace faiss {
 namespace gpu {
 
+// For growing GPU allocations:
+// Below this size, we always round the allocation size up to the next highest
+// power of 2
+constexpr size_t kDeviceVector_2x_Limit = 4 * 1024 * 1024;
+
+// Otherwise, below this size, we always round the allocation size up by a
+// factor of 1.25. Otherwise, all reallocations are exact to the newly requested
+// size.
+constexpr size_t kDeviceVector_1_25x_Limit = 128 * 1024 * 1024;
+
 /// A simple version of thrust::device_vector<T>, but has more control
-/// over whether resize() initializes new space with T() (which we
+/// over streams, whether resize() initializes new space with T() (which we
 /// don't want), and control on how much the reserved space grows by
 /// upon resize/reserve. It is also meant for POD types only.
 ///
@@ -120,7 +132,7 @@ class DeviceVector {
     bool resize(size_t newSize, cudaStream_t stream) {
         bool mem = false;
 
-        if (num_ < newSize) {
+        if (newSize > capacity_) {
             mem = reserve(getNewCapacity_(newSize), stream);
         }
 
@@ -129,6 +141,36 @@ class DeviceVector {
         num_ = newSize;
 
         return mem;
+    }
+
+    // Set all entries in the vector to `value`
+    void setAll(const T& value, cudaStream_t stream) {
+        if (num_ > 0) {
+            thrust::fill(
+                    thrust::cuda::par.on(stream), data(), data() + num_, value);
+        }
+    }
+
+    // Set the specific value at a given index to `value`
+    void setAt(size_t idx, const T& value, cudaStream_t stream) {
+        FAISS_ASSERT(idx < num_);
+        CUDA_VERIFY(cudaMemcpyAsync(
+                data() + idx,
+                &value,
+                sizeof(T),
+                cudaMemcpyHostToDevice,
+                stream));
+    }
+
+    // Copy a specific value at a given index to the host
+    T getAt(size_t idx, cudaStream_t stream) {
+        FAISS_ASSERT(idx < num_);
+
+        T out;
+        CUDA_VERIFY(cudaMemcpyAsync(
+                &out, data() + idx, sizeof(T), cudaMemcpyDeviceToHost, stream));
+
+        return out;
     }
 
     // Clean up after oversized allocations, while leaving some space to
@@ -206,7 +248,13 @@ class DeviceVector {
     }
 
     size_t getNewCapacity_(size_t preferredSize) {
-        return utils::nextHighestPowerOf2(preferredSize);
+        if (preferredSize <= kDeviceVector_2x_Limit) {
+            return utils::nextHighestPowerOf2(preferredSize);
+        } else if (preferredSize <= kDeviceVector_1_25x_Limit) {
+            return preferredSize + (preferredSize >> 2);
+        } else {
+            return preferredSize;
+        }
     }
 
     /// Our current memory allocation, if any

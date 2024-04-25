@@ -12,10 +12,10 @@
 
 #include <sys/time.h>
 
+#include <faiss/gpu/GpuAutoTune.h>
+#include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/StandardGpuResources.h>
-
-#include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/index_io.h>
 
 double elapsed() {
@@ -130,7 +130,7 @@ int main() {
                k,
                nq);
 
-        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<faiss::idx_t> nns(k * nq);
         std::vector<float> dis(k * nq);
 
         index.search(nq, queries.data(), k, dis.data(), nns.data());

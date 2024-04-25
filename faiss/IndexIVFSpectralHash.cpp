@@ -9,10 +9,12 @@
 
 #include <faiss/IndexIVFSpectralHash.h>
 
-#include <stdint.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexPreTransform.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
@@ -29,23 +31,17 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
         float period)
         : IndexIVF(quantizer, d, nlist, (nbit + 7) / 8, METRIC_L2),
           nbit(nbit),
-          period(period),
-          threshold_type(Thresh_global) {
-    FAISS_THROW_IF_NOT(code_size % 4 == 0);
+          period(period) {
     RandomRotationMatrix* rr = new RandomRotationMatrix(d, nbit);
     rr->init(1234);
     vt = rr;
-    own_fields = true;
     is_trained = false;
+    by_residual = false;
 }
 
-IndexIVFSpectralHash::IndexIVFSpectralHash()
-        : IndexIVF(),
-          vt(nullptr),
-          own_fields(false),
-          nbit(0),
-          period(0),
-          threshold_type(Thresh_global) {}
+IndexIVFSpectralHash::IndexIVFSpectralHash() : IndexIVF() {
+    by_residual = false;
+}
 
 IndexIVFSpectralHash::~IndexIVFSpectralHash() {
     if (own_fields) {
@@ -66,10 +62,14 @@ float median(size_t n, float* x) {
 
 } // namespace
 
-void IndexIVFSpectralHash::train_residual(idx_t n, const float* x) {
+void IndexIVFSpectralHash::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
     if (!vt->is_trained) {
         vt->train(n, x);
     }
+    FAISS_THROW_IF_NOT(!by_residual);
 
     if (threshold_type == Thresh_global) {
         // nothing to do
@@ -151,13 +151,13 @@ void binarize_with_freq(
     memset(codes, 0, (nbit + 7) / 8);
     for (size_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
-        int xi = int(floor(xf * freq));
-        int bit = xi & 1;
+        int64_t xi = int64_t(floor(xf * freq));
+        int64_t bit = xi & 1;
         codes[i >> 3] |= bit << (i & 7);
     }
 }
 
-}; // namespace
+} // namespace
 
 void IndexIVFSpectralHash::encode_vectors(
         idx_t n,
@@ -166,36 +166,35 @@ void IndexIVFSpectralHash::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(!by_residual);
     float freq = 2.0 / period;
-
-    FAISS_THROW_IF_NOT_MSG(!include_listnos, "listnos encoding not supported");
+    size_t coarse_size = include_listnos ? coarse_code_size() : 0;
 
     // transform with vt
     std::unique_ptr<float[]> x(vt->apply(n, x_in));
 
-#pragma omp parallel
-    {
-        std::vector<float> zero(nbit);
+    std::vector<float> zero(nbit);
 
-        // each thread takes care of a subset of lists
 #pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            int64_t list_no = list_nos[i];
+    for (idx_t i = 0; i < n; i++) {
+        int64_t list_no = list_nos[i];
+        uint8_t* code = codes + i * (code_size + coarse_size);
 
-            if (list_no >= 0) {
-                const float* c;
-                if (threshold_type == Thresh_global) {
-                    c = zero.data();
-                } else {
-                    c = trained.data() + list_no * nbit;
-                }
-                binarize_with_freq(
-                        nbit,
-                        freq,
-                        x.get() + i * nbit,
-                        c,
-                        codes + i * code_size);
+        if (list_no >= 0) {
+            if (coarse_size) {
+                encode_listno(list_no, code);
             }
+            const float* c;
+
+            if (threshold_type == Thresh_global) {
+                c = zero.data();
+            } else {
+                c = trained.data() + list_no * nbit;
+            }
+            binarize_with_freq(
+                    nbit, freq, x.get() + i * nbit, c, code + coarse_size);
+        } else {
+            memset(code, 0, code_size + coarse_size);
         }
     }
 }
@@ -214,8 +213,6 @@ struct IVFScanner : InvertedListScanner {
     std::vector<uint8_t> qcode;
     HammingComputer hc;
 
-    using idx_t = Index::idx_t;
-
     IVFScanner(const IndexIVFSpectralHash* index, bool store_pairs)
             : index(index),
               nbit(index->nbit),
@@ -227,6 +224,7 @@ struct IVFScanner : InvertedListScanner {
               hc(qcode.data(), index->code_size) {
         this->store_pairs = store_pairs;
         this->code_size = index->code_size;
+        this->keep_max = is_similarity_metric(index->metric_type);
     }
 
     void set_query(const float* query) override {
@@ -291,29 +289,53 @@ struct IVFScanner : InvertedListScanner {
     }
 };
 
+struct BuildScanner {
+    using T = InvertedListScanner*;
+
+    template <class HammingComputer>
+    static T f(const IndexIVFSpectralHash* index, bool store_pairs) {
+        return new IVFScanner<HammingComputer>(index, store_pairs);
+    }
+};
+
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
-        bool store_pairs) const {
-    switch (code_size) {
-#define HANDLE_CODE_SIZE(cs) \
-    case cs:                 \
-        return new IVFScanner<HammingComputer##cs>(this, store_pairs)
-        HANDLE_CODE_SIZE(4);
-        HANDLE_CODE_SIZE(8);
-        HANDLE_CODE_SIZE(16);
-        HANDLE_CODE_SIZE(20);
-        HANDLE_CODE_SIZE(32);
-        HANDLE_CODE_SIZE(64);
-#undef HANDLE_CODE_SIZE
-        default:
-            if (code_size % 4 == 0) {
-                return new IVFScanner<HammingComputerDefault>(
-                        this, store_pairs);
-            } else {
-                FAISS_THROW_MSG("not supported");
-            }
+        bool store_pairs,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT(!sel);
+    BuildScanner bs;
+    return dispatch_HammingComputer(code_size, bs, this, store_pairs);
+}
+
+void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {
+    FAISS_THROW_IF_NOT(vt_in->d_out == nbit);
+    FAISS_THROW_IF_NOT(vt_in->d_in == d);
+    if (own_fields) {
+        delete vt;
     }
+    vt = vt_in;
+    threshold_type = Thresh_global;
+    is_trained = quantizer->is_trained && quantizer->ntotal == nlist &&
+            vt->is_trained;
+    own_fields = own;
+}
+
+/*
+    Check that the encoder is a single vector transform followed by a LSH
+    that just does thresholding.
+    If this is not the case, the linear transform + threhsolds of the IndexLSH
+    should be merged into the VectorTransform (which is feasible).
+*/
+
+void IndexIVFSpectralHash::replace_vt(IndexPreTransform* encoder, bool own) {
+    FAISS_THROW_IF_NOT(encoder->chain.size() == 1);
+    auto sub_index = dynamic_cast<IndexLSH*>(encoder->index);
+    FAISS_THROW_IF_NOT_MSG(sub_index, "final index should be LSH");
+    FAISS_THROW_IF_NOT(sub_index->nbits == nbit);
+    FAISS_THROW_IF_NOT(!sub_index->rotate_data);
+    FAISS_THROW_IF_NOT(!sub_index->train_thresholds);
+    replace_vt(encoder->chain[0], own);
 }
 
 } // namespace faiss

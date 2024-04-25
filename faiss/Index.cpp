@@ -10,6 +10,7 @@
 #include <faiss/Index.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 
@@ -17,13 +18,18 @@
 
 namespace faiss {
 
-Index::~Index() {}
+Index::~Index() = default;
 
 void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::range_search(idx_t, const float*, float, RangeSearchResult*) const {
+void Index::range_search(
+        idx_t,
+        const float*,
+        float,
+        RangeSearchResult*,
+        const SearchParameters* params) const {
     FAISS_THROW_MSG("range search not implemented");
 }
 
@@ -48,7 +54,25 @@ void Index::reconstruct(idx_t, float*) const {
     FAISS_THROW_MSG("reconstruct not implemented for this type of index");
 }
 
+void Index::reconstruct_batch(idx_t n, const idx_t* keys, float* recons) const {
+    std::mutex exception_mutex;
+    std::string exception_string;
+#pragma omp parallel for if (n > 1000)
+    for (idx_t i = 0; i < n; i++) {
+        try {
+            reconstruct(keys[i], &recons[i * d]);
+        } catch (const std::exception& e) {
+            std::lock_guard<std::mutex> lock(exception_mutex);
+            exception_string = e.what();
+        }
+    }
+    if (!exception_string.empty()) {
+        FAISS_THROW_MSG(exception_string.c_str());
+    }
+}
+
 void Index::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
+#pragma omp parallel for if (ni > 1000)
     for (idx_t i = 0; i < ni; i++) {
         reconstruct(i0 + i, recons + i * d);
     }
@@ -60,10 +84,11 @@ void Index::search_and_reconstruct(
         idx_t k,
         float* distances,
         idx_t* labels,
-        float* recons) const {
+        float* recons,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    search(n, x, k, distances, labels);
+    search(n, x, k, distances, labels, params);
     for (idx_t i = 0; i < n; ++i) {
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;
@@ -147,6 +172,14 @@ DistanceComputer* Index::get_distance_computer() const {
     } else {
         FAISS_THROW_MSG("get_distance_computer() not implemented");
     }
+}
+
+void Index::merge_from(Index& /* otherIndex */, idx_t /* add_id */) {
+    FAISS_THROW_MSG("merge_from() not implemented");
+}
+
+void Index::check_compatible_for_merge(const Index& /* otherIndex */) const {
+    FAISS_THROW_MSG("check_compatible_for_merge() not implemented");
 }
 
 } // namespace faiss

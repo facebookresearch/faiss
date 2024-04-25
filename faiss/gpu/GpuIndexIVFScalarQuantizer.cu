@@ -32,16 +32,14 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
           by_residual(index->by_residual),
           ivfSQConfig_(config),
           reserveMemoryVecs_(0) {
+    // This will perform SQ settings verification as well
     copyFrom(index);
-
-    FAISS_THROW_IF_NOT_MSG(
-            isSQSupported(sq.qtype), "Unsupported QuantizerType on GPU");
 }
 
 GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
         GpuResourcesProvider* provider,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::ScalarQuantizer::QuantizerType qtype,
         faiss::MetricType metric,
         bool encodeResidual,
@@ -51,21 +49,72 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
           by_residual(encodeResidual),
           ivfSQConfig_(config),
           reserveMemoryVecs_(0) {
-    // faiss::Index params
-    this->is_trained = false;
-
     // We haven't trained ourselves, so don't construct the IVFFlat
     // index yet
-    FAISS_THROW_IF_NOT_MSG(
-            isSQSupported(sq.qtype), "Unsupported QuantizerType on GPU");
+    verifySQSettings_();
+}
+
+GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
+        GpuResourcesProvider* provider,
+        Index* coarseQuantizer,
+        int dims,
+        idx_t nlist,
+        faiss::ScalarQuantizer::QuantizerType qtype,
+        faiss::MetricType metric,
+        bool encodeResidual,
+        GpuIndexIVFScalarQuantizerConfig config)
+        : GpuIndexIVF(
+                  provider,
+                  coarseQuantizer,
+                  dims,
+                  metric,
+                  0,
+                  nlist,
+                  config),
+          sq(dims, qtype),
+          by_residual(encodeResidual),
+          ivfSQConfig_(config),
+          reserveMemoryVecs_(0) {
+    // While we were passed an existing coarse quantizer instance (possibly
+    // trained or not), we have not yet trained our scalar quantizer, so we
+    // can't construct our index_ instance yet
+    this->is_trained = false;
+
+    verifySQSettings_();
 }
 
 GpuIndexIVFScalarQuantizer::~GpuIndexIVFScalarQuantizer() {}
 
+void GpuIndexIVFScalarQuantizer::verifySQSettings_() const {
+    FAISS_THROW_IF_NOT_MSG(
+            isSQSupported(sq.qtype), "Unsupported scalar QuantizerType on GPU");
+
+    // Check the amount of shared memory per block available based on our type
+    // is sufficient
+    // This check was previously in IVFFlatScan.cu, moved here to apply upon
+    // index construction
+    if (sq.qtype == ScalarQuantizer::QuantizerType::QT_8bit ||
+        sq.qtype == ScalarQuantizer::QuantizerType::QT_4bit) {
+        // There are quantization parameters per each dimension for these SQ
+        // types. These parameters are retained in shared memory for access
+        int maxDim =
+                getMaxSharedMemPerBlock(config_.device) / (sizeof(float) * 2);
+
+        FAISS_THROW_IF_NOT_FMT(
+                this->d < maxDim,
+                "GpuIndexIVFScalarQuantizer: Insufficient shared memory "
+                "available on the GPU for QT_8bit or QT_4bit with %d "
+                "dimensions; maximum dimensions possible is %d",
+                this->d,
+                maxDim);
+    }
+}
+
 void GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
+    DeviceScope scope(config_.device);
+
     reserveMemoryVecs_ = numVecs;
     if (index_) {
-        DeviceScope scope(config_.device);
         index_->reserveMemory(numVecs);
     }
 }
@@ -76,6 +125,7 @@ void GpuIndexIVFScalarQuantizer::copyFrom(
 
     // Clear out our old data
     index_.reset();
+    baseIndex_.reset();
 
     // Copy what we need from the CPU index
     GpuIndexIVF::copyFrom(index);
@@ -94,7 +144,8 @@ void GpuIndexIVFScalarQuantizer::copyFrom(
     // Copy our lists as well
     index_.reset(new IVFFlat(
             resources_.get(),
-            quantizer->getGpuData(),
+            this->d,
+            this->nlist,
             index->metric_type,
             index->metric_arg,
             by_residual,
@@ -102,9 +153,13 @@ void GpuIndexIVFScalarQuantizer::copyFrom(
             ivfSQConfig_.interleavedLayout,
             ivfSQConfig_.indicesOptions,
             config_.memorySpace));
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+    updateQuantizer();
 
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
+
+    verifySQSettings_();
 }
 
 void GpuIndexIVFScalarQuantizer::copyTo(
@@ -132,19 +187,29 @@ void GpuIndexIVFScalarQuantizer::copyTo(
 }
 
 size_t GpuIndexIVFScalarQuantizer::reclaimMemory() {
-    if (index_) {
-        DeviceScope scope(config_.device);
+    DeviceScope scope(config_.device);
 
+    if (index_) {
         return index_->reclaimMemory();
     }
 
     return 0;
 }
 
-void GpuIndexIVFScalarQuantizer::reset() {
-    if (index_) {
-        DeviceScope scope(config_.device);
+void GpuIndexIVFScalarQuantizer::updateQuantizer() {
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer, "Calling updateQuantizer without a quantizer instance");
 
+    // Only need to do something if we are already initialized
+    if (index_) {
+        index_->updateQuantizer(quantizer);
+    }
+}
+
+void GpuIndexIVFScalarQuantizer::reset() {
+    DeviceScope scope(config_.device);
+
+    if (index_) {
         index_->reset();
         this->ntotal = 0;
     } else {
@@ -152,49 +217,29 @@ void GpuIndexIVFScalarQuantizer::reset() {
     }
 }
 
-int GpuIndexIVFScalarQuantizer::getListLength(int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListLength(listId);
-}
-
-std::vector<uint8_t> GpuIndexIVFScalarQuantizer::getListVectorData(
-        int listId,
-        bool gpuFormat) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListVectorData(listId, gpuFormat);
-}
-
-std::vector<Index::idx_t> GpuIndexIVFScalarQuantizer::getListIndices(
-        int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListIndices(listId);
-}
-
-void GpuIndexIVFScalarQuantizer::trainResiduals_(
-        Index::idx_t n,
-        const float* x) {
+void GpuIndexIVFScalarQuantizer::trainResiduals_(idx_t n, const float* x) {
     // The input is already guaranteed to be on the CPU
-    sq.train_residual(n, x, quantizer, by_residual, verbose);
+    if (!by_residual) {
+        sq.train(n, x);
+    } else {
+        std::vector<idx_t> assign(n);
+        quantizer->assign(n, x, assign.data());
+
+        std::vector<float> residuals(n * d);
+        quantizer->compute_residual_n(n, x, residuals.data(), assign.data());
+
+        sq.train(n, residuals.data());
+    }
 }
 
-void GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
+void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
+
+    // just in case someone changed us
+    verifySQSettings_();
+    verifyIVFSettings_();
 
     if (this->is_trained) {
-        FAISS_ASSERT(quantizer->is_trained);
-        FAISS_ASSERT(quantizer->ntotal == nlist);
         FAISS_ASSERT(index_);
         return;
     }
@@ -207,7 +252,7 @@ void GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+            {n, this->d});
 
     trainQuantizer_(n, hostData.data());
     trainResiduals_(n, hostData.data());
@@ -215,7 +260,8 @@ void GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
     // The quantizer is now trained; construct the IVF index
     index_.reset(new IVFFlat(
             resources_.get(),
-            quantizer->getGpuData(),
+            this->d,
+            this->nlist,
             this->metric_type,
             this->metric_arg,
             by_residual,
@@ -223,52 +269,14 @@ void GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
             ivfSQConfig_.interleavedLayout,
             ivfSQConfig_.indicesOptions,
             config_.memorySpace));
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+    updateQuantizer();
 
     if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
 
     this->is_trained = true;
-}
-
-void GpuIndexIVFScalarQuantizer::addImpl_(
-        int n,
-        const float* x,
-        const Index::idx_t* xids) {
-    // Device is already set in GpuIndex::add
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
-
-    // Not all vectors may be able to be added (some may contain NaNs etc)
-    index_->addVectors(data, labels);
-
-    // but keep the ntotal based on the total number of vectors that we
-    // attempted to add
-    ntotal += n;
-}
-
-void GpuIndexIVFScalarQuantizer::searchImpl_(
-        int n,
-        const float* x,
-        int k,
-        float* distances,
-        Index::idx_t* labels) const {
-    // Device is already set in GpuIndex::search
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<float, 2, true> outDistances(distances, {n, k});
-    Tensor<Index::idx_t, 2, true> outLabels(
-            const_cast<Index::idx_t*>(labels), {n, k});
-
-    index_->query(queries, nprobe, k, outDistances, outLabels);
 }
 
 } // namespace gpu

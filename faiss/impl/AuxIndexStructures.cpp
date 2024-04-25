@@ -20,7 +20,7 @@ namespace faiss {
  * RangeSearchResult
  ***********************************************************************/
 
-RangeSearchResult::RangeSearchResult(idx_t nq, bool alloc_lims) : nq(nq) {
+RangeSearchResult::RangeSearchResult(size_t nq, bool alloc_lims) : nq(nq) {
     if (alloc_lims) {
         lims = new size_t[nq + 1];
         memset(lims, 0, sizeof(*lims) * (nq + 1));
@@ -199,60 +199,6 @@ void RangeSearchPartialResult::merge(
     result->lims[0] = 0;
 }
 
-/***********************************************************************
- * IDSelectorRange
- ***********************************************************************/
-
-IDSelectorRange::IDSelectorRange(idx_t imin, idx_t imax)
-        : imin(imin), imax(imax) {}
-
-bool IDSelectorRange::is_member(idx_t id) const {
-    return id >= imin && id < imax;
-}
-
-/***********************************************************************
- * IDSelectorArray
- ***********************************************************************/
-
-IDSelectorArray::IDSelectorArray(size_t n, const idx_t* ids) : n(n), ids(ids) {}
-
-bool IDSelectorArray::is_member(idx_t id) const {
-    for (idx_t i = 0; i < n; i++) {
-        if (ids[i] == id)
-            return true;
-    }
-    return false;
-}
-
-/***********************************************************************
- * IDSelectorBatch
- ***********************************************************************/
-
-IDSelectorBatch::IDSelectorBatch(size_t n, const idx_t* indices) {
-    nbits = 0;
-    while (n > (1L << nbits))
-        nbits++;
-    nbits += 5;
-    // for n = 1M, nbits = 25 is optimal, see P56659518
-
-    mask = (1L << nbits) - 1;
-    bloom.resize(1UL << (nbits - 3), 0);
-    for (long i = 0; i < n; i++) {
-        Index::idx_t id = indices[i];
-        set.insert(id);
-        id &= mask;
-        bloom[id >> 3] |= 1 << (id & 7);
-    }
-}
-
-bool IDSelectorBatch::is_member(idx_t i) const {
-    long im = i & mask;
-    if (!(bloom[im >> 3] & (1 << (im & 7)))) {
-        return 0;
-    }
-    return set.count(i);
-}
-
 /***********************************************************
  * Interrupt callback
  ***********************************************************/
@@ -284,7 +230,7 @@ bool InterruptCallback::is_interrupted() {
 
 size_t InterruptCallback::get_period_hint(size_t flops) {
     if (!instance.get()) {
-        return 1L << 30; // never check
+        return (size_t)1 << 30; // never check
     }
     // for 10M flops, it is reasonable to check once every 10 iterations
     return std::max((size_t)10 * 10 * 1000 * 1000 / (flops + 1), (size_t)1);

@@ -17,8 +17,8 @@
 #include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 1
+#define FAISS_VERSION_MINOR 8
+#define FAISS_VERSION_PATCH 0
 
 /**
  * @namespace faiss
@@ -38,10 +38,23 @@
 
 namespace faiss {
 
-/// Forward declarations see AuxIndexStructures.h
+/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h and
+/// impl/DistanceComputer.h
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+
+/** Parent class for the optional search paramenters.
+ *
+ * Sub-classes with additional search parameters should inherit this class.
+ * Ownership of the object fields is always to the caller.
+ */
+struct SearchParameters {
+    /// if non-null, only these IDs will be considered during search.
+    IDSelector* sel = nullptr;
+    /// make sure we can dynamic_cast this
+    virtual ~SearchParameters() {}
+};
 
 /** Abstract structure for an index, supports adding vectors and searching them.
  *
@@ -49,7 +62,6 @@ struct DistanceComputer;
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 
@@ -87,6 +99,7 @@ struct Index {
      * Vectors are implicitly assigned labels ntotal .. ntotal + n - 1
      * This function slices the input vectors in chunks smaller than
      * blocksize_add and calls add_core.
+     * @param n      number of vectors
      * @param x      input matrix, size n * d
      */
     virtual void add(idx_t n, const float* x) = 0;
@@ -96,7 +109,9 @@ struct Index {
      * The default implementation fails with an assertion, as it is
      * not supported by all indexes.
      *
-     * @param xids if non-null, ids to store for the vectors (size n)
+     * @param n         number of vectors
+     * @param x         input vectors, size n * d
+     * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
 
@@ -105,16 +120,19 @@ struct Index {
      * return at most k vectors. If there are not enough results for a
      * query, the result array is padded with -1s.
      *
+     * @param n           number of vectors
      * @param x           input vectors to search, size n * d
-     * @param labels      output labels of the NNs, size n*k
+     * @param k           number of extracted vectors
      * @param distances   output pairwise distances, size n*k
+     * @param labels      output labels of the NNs, size n*k
      */
     virtual void search(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const = 0;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const = 0;
 
     /** query n vectors of dimension d to the index.
      *
@@ -122,6 +140,7 @@ struct Index {
      * indexes do not implement the range_search (only the k-NN search
      * is mandatory).
      *
+     * @param n           number of vectors
      * @param x           input vectors to search, size n * d
      * @param radius      search radius
      * @param result      result table
@@ -130,13 +149,16 @@ struct Index {
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const;
 
     /** return the indexes of the k vectors closest to the query x.
      *
      * This function is identical as search but only return labels of neighbors.
+     * @param n           number of vectors
      * @param x           input vectors to search, size n * d
      * @param labels      output labels of the NNs, size n*k
+     * @param k           number of nearest neighbours
      */
     virtual void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1)
             const;
@@ -157,9 +179,21 @@ struct Index {
      */
     virtual void reconstruct(idx_t key, float* recons) const;
 
+    /** Reconstruct several stored vectors (or an approximation if lossy coding)
+     *
+     * this function may not be defined for some indexes
+     * @param n           number of vectors to reconstruct
+     * @param keys        ids of the vectors to reconstruct (size n)
+     * @param recons      reconstucted vector (size n * d)
+     */
+    virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
+            const;
+
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
      * this function may not be defined for some indexes
+     * @param i0          index of the first vector in the sequence
+     * @param ni          number of vectors in the sequence
      * @param recons      reconstucted vector (size ni * d)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, float* recons) const;
@@ -170,6 +204,11 @@ struct Index {
      * If there are not enough results for a query, the resulting arrays
      * is padded with -1s.
      *
+     * @param n           number of vectors
+     * @param x           input vectors to search, size n * d
+     * @param k           number of extracted vectors
+     * @param distances   output pairwise distances, size n*k
+     * @param labels      output labels of the NNs, size n*k
      * @param recons      reconstructed vectors size (n, k, d)
      **/
     virtual void search_and_reconstruct(
@@ -178,7 +217,8 @@ struct Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            float* recons) const;
+            float* recons,
+            const SearchParameters* params = nullptr) const;
 
     /** Computes a residual vector after indexing encoding.
      *
@@ -234,13 +274,24 @@ struct Index {
      */
     virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
 
-    /** encode a set of vectors
+    /** decode a set of vectors
      *
      * @param n       number of vectors
      * @param bytes   input encoded vectors, size n * sa_code_size()
      * @param x       output vectors, size n * d
      */
     virtual void sa_decode(idx_t n, const uint8_t* bytes, float* x) const;
+
+    /** moves the entries from another dataset to self.
+     * On output, other is empty.
+     * add_id is added to all moved ids
+     * (for sequential ids, this would be this->ntotal) */
+    virtual void merge_from(Index& otherIndex, idx_t add_id = 0);
+
+    /** check that the two indexes are compatible (ie, they are
+     * trained in the same way and have the same
+     * parameters). Otherwise throw. */
+    virtual void check_compatible_for_merge(const Index& otherIndex) const;
 };
 
 } // namespace faiss

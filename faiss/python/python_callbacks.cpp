@@ -22,7 +22,7 @@ struct PyThreadLock {
     }
 };
 
-}; // namespace
+} // namespace
 
 /***********************************************************
  * Callbacks for IO reader and writer
@@ -104,6 +104,33 @@ size_t PyCallbackIOReader::operator()(void* ptrv, size_t size, size_t nitems) {
 }
 
 PyCallbackIOReader::~PyCallbackIOReader() {
+    PyThreadLock gil;
+    Py_DECREF(callback);
+}
+
+/***********************************************************
+ * Callbacks for IDSelector
+ ***********************************************************/
+
+PyCallbackIDSelector::PyCallbackIDSelector(PyObject* callback)
+        : callback(callback) {
+    PyThreadLock gil;
+    Py_INCREF(callback);
+}
+
+bool PyCallbackIDSelector::is_member(faiss::idx_t id) const {
+    FAISS_THROW_IF_NOT((id >> 32) == 0);
+    PyThreadLock gil;
+    PyObject* result = PyObject_CallFunction(callback, "(n)", int(id));
+    if (result == NULL) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    bool b = PyObject_IsTrue(result);
+    Py_DECREF(result);
+    return b;
+}
+
+PyCallbackIDSelector::~PyCallbackIDSelector() {
     PyThreadLock gil;
     Py_DECREF(callback);
 }

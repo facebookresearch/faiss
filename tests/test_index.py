@@ -46,7 +46,9 @@ class TestIndexFlat(unittest.TestCase):
             Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
 
         Dref = all_dis[np.arange(nq)[:, None], Iref]
-        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0001)
+
+        # not too many elements are off.
+        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0002)
         #  np.testing.assert_equal(Iref, I1)
         np.testing.assert_almost_equal(Dref, D1, decimal=5)
 
@@ -108,7 +110,39 @@ class TestIndexFlat(unittest.TestCase):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
 
+class TestIndexFlatL2(unittest.TestCase):
+    def test_indexflat_l2_sync_norms_1(self):
+        d = 32
+        nb = 10000
+        nt = 0
+        nq = 16
+        k = 10
 
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+
+        # instantiate IndexHNSWFlat
+        index = faiss.IndexHNSWFlat(d, 32)
+        index.hnsw.efConstruction = 40
+
+        index.add(xb)
+        D1, I1 = index.search(xq, k)
+
+        index_l2 = faiss.downcast_index(index.storage)
+        index_l2.sync_l2norms()
+        D2, I2 = index.search(xq, k)
+
+        index_l2.clear_l2norms()
+        D3, I3 = index.search(xq, k)
+
+        #  not too many elements are off.
+        self.assertLessEqual((I2 != I1).sum(), 1)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_almost_equal(D2, D1, decimal=5)
+
+        #  not too many elements are off.
+        self.assertLessEqual((I3 != I1).sum(), 0)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_equal(D3, D1)
 
 
 class EvalIVFPQAccuracy(unittest.TestCase):
@@ -492,271 +526,6 @@ class TestSearchAndReconstruct(unittest.TestCase):
         self.run_search_and_reconstruct(index, xb, xq)
 
 
-class TestHNSW(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        unittest.TestCase.__init__(self, *args, **kwargs)
-        d = 32
-        nt = 0
-        nb = 1500
-        nq = 500
-
-        (_, self.xb, self.xq) = get_dataset_2(d, nt, nb, nq)
-        index = faiss.IndexFlatL2(d)
-        index.add(self.xb)
-        Dref, Iref = index.search(self.xq, 1)
-        self.Iref = Iref
-
-    def test_hnsw(self):
-        d = self.xq.shape[1]
-
-        index = faiss.IndexHNSWFlat(d, 16)
-        index.add(self.xb)
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
-
-        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
-
-        self.io_and_retest(index, Dhnsw, Ihnsw)
-
-    def test_hnsw_unbounded_queue(self):
-        d = self.xq.shape[1]
-
-        index = faiss.IndexHNSWFlat(d, 16)
-        index.add(self.xb)
-        index.search_bounded_queue = False
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
-
-        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
-
-        self.io_and_retest(index, Dhnsw, Ihnsw)
-
-    def io_and_retest(self, index, Dhnsw, Ihnsw):
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
-
-        Dhnsw2, Ihnsw2 = index2.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dhnsw2 == Dhnsw))
-        self.assertTrue(np.all(Ihnsw2 == Ihnsw))
-
-        # also test clone
-        index3 = faiss.clone_index(index)
-        Dhnsw3, Ihnsw3 = index3.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dhnsw3 == Dhnsw))
-        self.assertTrue(np.all(Ihnsw3 == Ihnsw))
-
-
-    def test_hnsw_2level(self):
-        d = self.xq.shape[1]
-
-        quant = faiss.IndexFlatL2(d)
-
-        index = faiss.IndexHNSW2Level(quant, 256, 8, 8)
-        index.train(self.xb)
-        index.add(self.xb)
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
-
-        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 310)
-
-        self.io_and_retest(index, Dhnsw, Ihnsw)
-
-    def test_add_0_vecs(self):
-        index = faiss.IndexHNSWFlat(10, 16)
-        zero_vecs = np.zeros((0, 10), dtype='float32')
-        # infinite loop
-        index.add(zero_vecs)
-
-    def test_hnsw_IP(self):
-        d = self.xq.shape[1]
-
-        index_IP = faiss.IndexFlatIP(d)
-        index_IP.add(self.xb)
-        Dref, Iref = index_IP.search(self.xq, 1)
-
-        index = faiss.IndexHNSWFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
-        index.add(self.xb)
-        Dhnsw, Ihnsw = index.search(self.xq, 1)
-
-        print('nb equal: ', (Iref == Ihnsw).sum())
-
-        self.assertGreaterEqual((Iref == Ihnsw).sum(), 480)
-
-        mask = Iref[:, 0] == Ihnsw[:, 0]
-        assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
-
-
-class TestNSG(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        unittest.TestCase.__init__(self, *args, **kwargs)
-        d = 32
-        nt = 0
-        nb = 1500
-        nq = 500
-        self.GK = 32
-
-        _, self.xb, self.xq = get_dataset_2(d, nt, nb, nq)
-
-    def make_knn_graph(self, metric):
-        n = self.xb.shape[0]
-        d = self.xb.shape[1]
-        index = faiss.IndexFlat(d, metric)
-        index.add(self.xb)
-        _, I = index.search(self.xb, self.GK + 1)
-        knn_graph = np.zeros((n, self.GK), dtype=np.int64)
-
-        # For the inner product distance, the distance between a vector and itself
-        # may not be the smallest, so it is not guaranteed that I[:, 0] is the query itself.
-        for i in range(n):
-            cnt = 0
-            for j in range(self.GK + 1):
-                if I[i, j] != i:
-                    knn_graph[i, cnt] = I[i, j]
-                    cnt += 1
-                if cnt == self.GK:
-                    break
-        return knn_graph
-
-    def subtest_io_and_clone(self, index, Dnsg, Insg):
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
-
-        Dnsg2, Insg2 = index2.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dnsg2 == Dnsg))
-        self.assertTrue(np.all(Insg2 == Insg))
-
-        # also test clone
-        index3 = faiss.clone_index(index)
-        Dnsg3, Insg3 = index3.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dnsg3 == Dnsg))
-        self.assertTrue(np.all(Insg3 == Insg))
-
-    def subtest_connectivity(self, index, nb):
-        vt = faiss.VisitedTable(nb)
-        count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
-        self.assertEqual(count, nb)
-
-    def subtest_add(self, build_type, thresh, metric=faiss.METRIC_L2):
-        d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
-
-        flat_index = faiss.IndexFlat(d, metric)
-        flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
-
-        index = faiss.IndexNSGFlat(d, 16, metric)
-        index.verbose = True
-        index.build_type = build_type
-        index.GK = self.GK
-        index.add(self.xb)
-        Dnsg, Insg = index.search(self.xq, 1)
-
-        recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
-        self.assertGreaterEqual(recalls, thresh)
-        self.subtest_connectivity(index, self.xb.shape[0])
-        self.subtest_io_and_clone(index, Dnsg, Insg)
-
-    def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
-        d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
-
-        flat_index = faiss.IndexFlat(d, metric)
-        flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
-
-        index = faiss.IndexNSGFlat(d, 16, metric)
-        index.verbose = True
-
-        index.build(self.xb, knn_graph)
-        Dnsg, Insg = index.search(self.xq, 1)
-
-        recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
-        self.assertGreaterEqual(recalls, thresh)
-        self.subtest_connectivity(index, self.xb.shape[0])
-
-    def test_add_bruteforce_L2(self):
-        self.subtest_add(0, 475, faiss.METRIC_L2)
-
-    def test_add_nndescent_L2(self):
-        self.subtest_add(1, 475, faiss.METRIC_L2)
-
-    def test_add_bruteforce_IP(self):
-        self.subtest_add(0, 480, faiss.METRIC_INNER_PRODUCT)
-
-    def test_add_nndescent_IP(self):
-        self.subtest_add(1, 480, faiss.METRIC_INNER_PRODUCT)
-
-    def test_build_L2(self):
-        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
-
-    def test_build_IP(self):
-        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
-        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
-
-    def test_build_invalid_knng(self):
-        """Make some invalid entries in the input knn graph.
-
-        It would cause a warning but IndexNSG should be able
-        to handel this.
-        """
-        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        knn_graph[:100, 5] = -111
-        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
-
-        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
-        knn_graph[:100, 5] = -111
-        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
-
-    def test_reset(self):
-        """test IndexNSG.reset()"""
-        d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
-
-        metric = faiss.METRIC_L2
-        flat_index = faiss.IndexFlat(d, metric)
-        flat_index.add(self.xb)
-        Dref, Iref = flat_index.search(self.xq, 1)
-
-        index = faiss.IndexNSGFlat(d, 16)
-        index.verbose = True
-        index.GK = 32
-
-        index.add(self.xb)
-        Dnsg, Insg = index.search(self.xq, 1)
-        recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
-        self.assertGreaterEqual(recalls, 475)
-        self.subtest_connectivity(index, self.xb.shape[0])
-
-        index.reset()
-        index.add(self.xb)
-        Dnsg, Insg = index.search(self.xq, 1)
-        recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
-        self.assertGreaterEqual(recalls, 475)
-        self.subtest_connectivity(index, self.xb.shape[0])
-
 
 class TestDistancesPositive(unittest.TestCase):
 
@@ -943,9 +712,6 @@ class TestReconsHash(unittest.TestCase):
     def test_IVFPQ(self):
         self.do_test("IVF5,PQ4x4np")
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class TestValidIndexParams(unittest.TestCase):
 
@@ -1023,3 +789,19 @@ class TestLargeRangeSearch(unittest.TestCase):
         lims, D, I = index.range_search(xq, 1.0)
 
         assert len(D) == len(xb) * len(xq)
+
+
+class TestRandomIndex(unittest.TestCase):
+
+    def test_random(self):
+        """ just check if several runs of search retrieve the
+        same results """
+        index = faiss.IndexRandom(32, 1000000000)
+        (xt, xb, xq) = get_dataset_2(32, 0, 0, 10)
+
+        Dref, Iref = index.search(xq, 10)
+        self.assertTrue(np.all(Dref[:, 1:] >= Dref[:, :-1]))
+
+        Dnew, Inew = index.search(xq, 10)
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)

@@ -79,7 +79,7 @@ void runCopyToTest(faiss::ScalarQuantizer::QuantizerType qtype) {
             &res, opt.dim, opt.numCentroids, qtype, METRIC_L2, true, config);
     gpuIndex.train(opt.numTrain, trainVecs.data());
     gpuIndex.add(opt.numAdd, addVecs.data());
-    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.nprobe = opt.nprobe;
 
     // use garbage values to see if we overwrite then
     IndexFlatL2 cpuQuantizer(1);
@@ -100,7 +100,7 @@ void runCopyToTest(faiss::ScalarQuantizer::QuantizerType qtype) {
     EXPECT_EQ(cpuIndex.quantizer->d, gpuIndex.quantizer->d);
     EXPECT_EQ(cpuIndex.d, opt.dim);
     EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
-    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.nprobe);
 
     testIVFEquality(cpuIndex, gpuIndex);
 
@@ -172,7 +172,7 @@ void runCopyFromTest(faiss::ScalarQuantizer::QuantizerType qtype) {
             METRIC_L2,
             false,
             config);
-    gpuIndex.setNumProbes(1);
+    gpuIndex.nprobe = 1;
 
     gpuIndex.copyFrom(&cpuIndex);
 
@@ -182,7 +182,7 @@ void runCopyFromTest(faiss::ScalarQuantizer::QuantizerType qtype) {
     EXPECT_EQ(cpuIndex.d, gpuIndex.d);
     EXPECT_EQ(cpuIndex.d, opt.dim);
     EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
-    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.nprobe);
 
     testIVFEquality(cpuIndex, gpuIndex);
 

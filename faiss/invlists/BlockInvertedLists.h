@@ -14,6 +14,9 @@
 
 namespace faiss {
 
+struct CodePacker;
+struct IDSelector;
+
 /** Inverted Lists that are organized by blocks.
  *
  * Different from the regular inverted lists, the codes are organized by blocks
@@ -28,19 +31,25 @@ namespace faiss {
  * data.
  */
 struct BlockInvertedLists : InvertedLists {
-    size_t n_per_block; // nb of vectors stored per block
-    size_t block_size;  // nb bytes per block
+    size_t n_per_block = 0; // nb of vectors stored per block
+    size_t block_size = 0;  // nb bytes per block
+
+    // required to interpret the content of the blocks (owned by this)
+    const CodePacker* packer = nullptr;
 
     std::vector<AlignedTable<uint8_t>> codes;
     std::vector<std::vector<idx_t>> ids;
 
     BlockInvertedLists(size_t nlist, size_t vec_per_block, size_t block_size);
+    BlockInvertedLists(size_t nlist, const CodePacker* packer);
 
     BlockInvertedLists();
 
     size_t list_size(size_t list_no) const override;
     const uint8_t* get_codes(size_t list_no) const override;
     const idx_t* get_ids(size_t list_no) const override;
+    /// remove ids from the InvertedLists
+    size_t remove_ids(const IDSelector& sel);
 
     // works only on empty BlockInvertedLists
     // the codes should be of size ceil(n_entry / n_per_block) * block_size

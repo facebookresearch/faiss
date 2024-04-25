@@ -29,8 +29,6 @@ using namespace faiss;
 
 namespace {
 
-typedef Index::idx_t idx_t;
-
 // dimension of the vectors to index
 int d = 32;
 
@@ -199,7 +197,7 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
                     float computed_D = scanner->distance_to_code(
                             codes.data() + vno * il->code_size);
 
-                    EXPECT_EQ(computed_D, D[jj]);
+                    EXPECT_FLOAT_EQ(computed_D, D[jj]);
                 }
             }
         }

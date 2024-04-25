@@ -39,6 +39,13 @@ typedef enum FaissMetricType {
     METRIC_JensenShannon,
 } FaissMetricType;
 
+FAISS_DECLARE_CLASS(SearchParameters)
+FAISS_DECLARE_DESTRUCTOR(SearchParameters)
+
+int faiss_SearchParameters_new(
+        FaissSearchParameters** p_sp,
+        FaissIDSelector* sel);
+
 /// Opaque type for referencing to an index object
 FAISS_DECLARE_CLASS(Index)
 FAISS_DECLARE_DESTRUCTOR(Index)
@@ -104,6 +111,27 @@ int faiss_Index_search(
         idx_t n,
         const float* x,
         idx_t k,
+        float* distances,
+        idx_t* labels);
+
+/**
+ * query n vectors of dimension d with search parameters to the index.
+ *
+ * return at most k vectors. If there are not enough results for a query,
+ * the result is padded with -1s.
+ *
+ * @param index       opaque pointer to index object
+ * @param x           input vectors to search, size n * d
+ * @param params      input params to modify how search is done
+ * @param labels      output labels of the NNs, size n*k
+ * @param distances   output pairwise distances, size n*k
+ */
+int faiss_Index_search_with_params(
+        const FaissIndex* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const FaissSearchParameters* params,
         float* distances,
         idx_t* labels);
 
@@ -211,6 +239,41 @@ int faiss_Index_compute_residual_n(
         const float* x,
         float* residuals,
         const idx_t* keys);
+
+/* The standalone codec interface */
+
+/** The size of the produced codes in bytes.
+ *
+ * @param index   opaque pointer to index object
+ * @param size    the returned size in bytes
+ */
+int faiss_Index_sa_code_size(const FaissIndex* index, size_t* size);
+
+/** encode a set of vectors
+ *
+ * @param index   opaque pointer to index object
+ * @param n       number of vectors
+ * @param x       input vectors, size n * d
+ * @param bytes   output encoded vectors, size n * sa_code_size()
+ */
+int faiss_Index_sa_encode(
+        const FaissIndex* index,
+        idx_t n,
+        const float* x,
+        uint8_t* bytes);
+
+/** decode a set of vectors
+ *
+ * @param index   opaque pointer to index object
+ * @param n       number of vectors
+ * @param bytes   input encoded vectors, size n * sa_code_size()
+ * @param x       output vectors, size n * d
+ */
+int faiss_Index_sa_decode(
+        const FaissIndex* index,
+        idx_t n,
+        const uint8_t* bytes,
+        float* x);
 
 #ifdef __cplusplus
 }

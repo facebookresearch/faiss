@@ -40,6 +40,8 @@ class PartitionTests:
         self.do_partition(160, (70, 80))
 
 
+def pointer_to_minus1():
+    return np.array([-1], dtype='int64').view("uint64")
 
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
@@ -67,7 +69,7 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
             )
         else:
             q_min, q_max = q
-            q = np.array([-1], dtype='uint64')
+            q = pointer_to_minus1()
             faiss.CMax_float_partition_fuzzy(
                 sp(vals), sp(ids), n,
                 q_min, q_max, sp(q)
@@ -117,7 +119,7 @@ class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
             )
         else:
             q_min, q_max = q
-            q = np.array([-1], dtype='uint64')
+            q = pointer_to_minus1()
             faiss.CMin_float_partition_fuzzy(
                 sp(vals), sp(ids), n,
                 q_min, q_max, sp(q)
@@ -164,7 +166,7 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q
-            q = np.array([-1], dtype='uint64')
+            q = pointer_to_minus1()
             faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n,
                 q_min, q_max, sp(q)
@@ -213,7 +215,7 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q
-            q = np.array([-1], dtype='uint64')
+            q = pointer_to_minus1()
             thresh2 = faiss.CMin_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n,
                 q_min, q_max, sp(q)

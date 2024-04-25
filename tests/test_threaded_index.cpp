@@ -19,6 +19,8 @@ namespace {
 
 struct TestException : public std::exception {};
 
+using idx_t = faiss::idx_t;
+
 struct MockIndex : public faiss::Index {
     explicit MockIndex(idx_t d) : faiss::Index(d) {
         resetMock();
@@ -43,7 +45,9 @@ struct MockIndex : public faiss::Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override {
+            idx_t* labels,
+            const faiss::SearchParameters* params) const override {
+        FAISS_THROW_IF_NOT(!params);
         nCalled = n;
         xCalled = x;
         kCalled = k;
@@ -64,13 +68,19 @@ struct MockIndex : public faiss::Index {
 
 template <typename IndexT>
 struct MockThreadedIndex : public faiss::ThreadedIndex<IndexT> {
-    using idx_t = faiss::Index::idx_t;
+    using idx_t = faiss::idx_t;
 
     explicit MockThreadedIndex(bool threaded)
             : faiss::ThreadedIndex<IndexT>(threaded) {}
 
     void add(idx_t, const float*) override {}
-    void search(idx_t, const float*, idx_t, float*, idx_t*) const override {}
+    void search(
+            idx_t,
+            const float*,
+            idx_t,
+            float*,
+            idx_t*,
+            const faiss::SearchParameters*) const override {}
     void reset() override {}
 };
 
@@ -159,7 +169,7 @@ TEST(ThreadedIndex, TestReplica) {
     int k = 6;
 
     // Try with threading and without
-    for (bool threaded : {true, false}) {
+    for ([[maybe_unused]] const bool threaded : {true, false}) {
         std::vector<std::unique_ptr<MockIndex>> idxs;
         faiss::IndexReplicas replica(d);
 
@@ -170,7 +180,7 @@ TEST(ThreadedIndex, TestReplica) {
 
         std::vector<float> x(n * d);
         std::vector<float> distances(n * k);
-        std::vector<faiss::Index::idx_t> labels(n * k);
+        std::vector<faiss::idx_t> labels(n * k);
 
         replica.add(n, x.data());
 
@@ -219,7 +229,7 @@ TEST(ThreadedIndex, TestShards) {
 
         std::vector<float> x(n * d);
         std::vector<float> distances(n * k);
-        std::vector<faiss::Index::idx_t> labels(n * k);
+        std::vector<faiss::idx_t> labels(n * k);
 
         shards.add(n, x.data());
 
@@ -237,8 +247,6 @@ TEST(ThreadedIndex, TestShards) {
         shards.search(n, x.data(), k, distances.data(), labels.data());
 
         for (int i = 0; i < idxs.size(); ++i) {
-            auto perShard = n / idxs.size();
-
             EXPECT_EQ(idxs[i]->nCalled, n);
             EXPECT_EQ(idxs[i]->xCalled, x.data());
             EXPECT_EQ(idxs[i]->kCalled, k);

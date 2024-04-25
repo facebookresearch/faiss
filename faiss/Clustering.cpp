@@ -20,25 +20,12 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/kmeans1d.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
-
-ClusteringParameters::ClusteringParameters()
-        : niter(25),
-          nredo(1),
-          verbose(false),
-          spherical(false),
-          int_centroids(false),
-          update_index(false),
-          frozen_centroids(false),
-          min_points_per_centroid(39),
-          max_points_per_centroid(256),
-          seed(1234),
-          decode_block_size(32768) {}
-// 39 corresponds to 10000 / 256 -> to avoid warnings on PQ tests with randu10k
 
 Clustering::Clustering(int d, int k) : d(d), k(k) {}
 
@@ -86,8 +73,6 @@ void Clustering::train(
 }
 
 namespace {
-
-using idx_t = Clustering::idx_t;
 
 idx_t subsample_training_set(
         const Clustering& clus,
@@ -232,7 +217,7 @@ int split_clusters(
     for (size_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
             size_t cj;
-            for (cj = 0; 1; cj = (cj + 1) % k) {
+            for (cj = 0; true; cj = (cj + 1) % k) {
                 /* probability to pick this cluster for split */
                 float p = (hassign[cj] - 1.0) / (float)(n - k);
                 float r = rng.rand_float();
@@ -265,7 +250,7 @@ int split_clusters(
     return nsplit;
 }
 
-}; // namespace
+} // namespace
 
 void Clustering::train_encoded(
         idx_t nx,
@@ -373,7 +358,7 @@ void Clustering::train_encoded(
     std::unique_ptr<float[]> dis(new float[nx]);
 
     // remember best iteration for redo
-    bool lower_is_better = index.metric_type != METRIC_INNER_PRODUCT;
+    bool lower_is_better = !is_similarity_metric(index.metric_type);
     float best_obj = lower_is_better ? HUGE_VALF : -HUGE_VALF;
     std::vector<ClusteringIterationStats> best_iteration_stats;
     std::vector<float> best_centroids;
@@ -553,6 +538,37 @@ void Clustering::train_encoded(
     }
 }
 
+Clustering1D::Clustering1D(int k) : Clustering(1, k) {}
+
+Clustering1D::Clustering1D(int k, const ClusteringParameters& cp)
+        : Clustering(1, k, cp) {}
+
+void Clustering1D::train_exact(idx_t n, const float* x) {
+    const float* xt = x;
+
+    std::unique_ptr<uint8_t[]> del;
+    if (n > k * max_points_per_centroid) {
+        uint8_t* x_new;
+        float* weights_new;
+        n = subsample_training_set(
+                *this,
+                n,
+                (uint8_t*)x,
+                sizeof(float) * d,
+                nullptr,
+                &x_new,
+                &weights_new);
+        del.reset(x_new);
+        xt = (float*)x_new;
+    }
+
+    centroids.resize(k);
+    double uf = kmeans1d(xt, n, k, centroids.data());
+
+    ClusteringIterationStats stats = {0.0, 0.0, 0.0, uf, 0};
+    iteration_stats.push_back(stats);
+}
+
 float kmeans_clustering(
         size_t d,
         size_t n,
@@ -560,7 +576,7 @@ float kmeans_clustering(
         const float* x,
         float* centroids) {
     Clustering clus(d, k);
-    clus.verbose = d * n * k > (1L << 30);
+    clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
     IndexFlatL2 index(d);
     clus.train(n, x, index);
@@ -592,8 +608,6 @@ ProgressiveDimClustering::ProgressiveDimClustering(
 
 namespace {
 
-using idx_t = Index::idx_t;
-
 void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
     idx_t d = std::min(d1, d2);
     for (idx_t i = 0; i < n; i++) {
@@ -603,7 +617,7 @@ void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
     }
 }
 
-}; // namespace
+} // namespace
 
 void ProgressiveDimClustering::train(
         idx_t n,

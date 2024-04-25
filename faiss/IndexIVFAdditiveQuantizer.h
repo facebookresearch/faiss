@@ -15,6 +15,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/platform_macros.h>
 
@@ -25,7 +26,6 @@ namespace faiss {
 struct IndexIVFAdditiveQuantizer : IndexIVF {
     // the quantizer
     AdditiveQuantizer* aq;
-    bool by_residual = true;
     int use_precomputed_table = 0; // for future use
 
     using Search_type_t = AdditiveQuantizer::Search_type_t;
@@ -39,7 +39,9 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
 
     explicit IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq);
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
+
+    idx_t train_encoder_num_vectors() const override;
 
     void encode_vectors(
             idx_t n,
@@ -49,7 +51,10 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
+
+    void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
 
     ~IndexIVFAdditiveQuantizer() override;
 };
@@ -114,6 +119,64 @@ struct IndexIVFLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFLocalSearchQuantizer();
 
     virtual ~IndexIVFLocalSearchQuantizer();
+};
+
+/** IndexIVF based on a product residual quantizer. Stored vectors are
+ * approximated by product residual quantization codes.
+ */
+struct IndexIVFProductResidualQuantizer : IndexIVFAdditiveQuantizer {
+    /// The product residual quantizer used to encode the vectors
+    ProductResidualQuantizer prq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of residual quantizers
+     * @param Msub   number of subquantizers per RQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexIVFProductResidualQuantizer(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexIVFProductResidualQuantizer();
+
+    virtual ~IndexIVFProductResidualQuantizer();
+};
+
+/** IndexIVF based on a product local search quantizer. Stored vectors are
+ * approximated by product local search quantization codes.
+ */
+struct IndexIVFProductLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
+    /// The product local search quantizer used to encode the vectors
+    ProductLocalSearchQuantizer plsq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of local search quantizers
+     * @param Msub   number of subquantizers per LSQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexIVFProductLocalSearchQuantizer(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexIVFProductLocalSearchQuantizer();
+
+    virtual ~IndexIVFProductLocalSearchQuantizer();
 };
 
 } // namespace faiss

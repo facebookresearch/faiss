@@ -7,6 +7,10 @@
 
 #pragma once
 
+// basic int types and size_t
+#include <cstdint>
+#include <cstdio>
+
 #ifdef _MSC_VER
 
 /*******************************************************
@@ -18,6 +22,10 @@
 #else // _FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
+
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif // _MSC_VER
 
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 
@@ -32,11 +40,13 @@
 
 #include <intrin.h>
 
+#ifndef __clang__
 inline int __builtin_ctzll(uint64_t x) {
     unsigned long ret;
     _BitScanForward64(&ret, x);
     return (int)ret;
 }
+#endif
 
 // cudatoolkit provides __builtin_ctz for NVCC >= 11.0
 #if !defined(__CUDACC__) || __CUDACC_VER_MAJOR__ < 11
@@ -47,12 +57,19 @@ inline int __builtin_ctz(unsigned long x) {
 }
 #endif
 
+#ifndef __clang__
 inline int __builtin_clzll(uint64_t x) {
     return (int)__lzcnt64(x);
 }
+#endif
 
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
+
+#ifndef __clang__
+#define __m128i_u __m128i
+#define __m256i_u __m256i
+#endif
 
 // MSVC does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit
 // processors cf.
@@ -74,6 +91,8 @@ inline int __builtin_clzll(uint64_t x) {
 #define __F16C__ 1
 #endif
 
+#define FAISS_ALWAYS_INLINE __forceinline
+
 #else
 /*******************************************************
  * Linux and OSX
@@ -84,6 +103,79 @@ inline int __builtin_clzll(uint64_t x) {
 
 // aligned should be *in front* of the declaration, for compatibility with
 // windows
+#ifdef SWIG
+#define ALIGNED(x)
+#else
 #define ALIGNED(x) __attribute__((aligned(x)))
+#endif
 
-#endif // _MSC_VER
+#define FAISS_ALWAYS_INLINE __attribute__((always_inline)) inline
+
+#endif
+
+#if defined(__GNUC__) || defined(__clang__)
+#define FAISS_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#else
+#define FAISS_DEPRECATED(msg)
+#endif // GCC or Clang
+
+// Localized enablement of imprecise floating point operations
+// You need to use all 3 macros to cover all compilers.
+#if defined(_MSC_VER)
+#define FAISS_PRAGMA_IMPRECISE_LOOP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    __pragma(float_control(precise, off, push))
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
+#elif defined(__clang__)
+#define FAISS_PRAGMA_IMPRECISE_LOOP \
+    _Pragma("clang loop vectorize(enable) interleave(enable)")
+
+// clang-format off
+
+// the following ifdef is needed, because old versions of clang (prior to 14)
+// do not generate FMAs on x86 unless this pragma is used. On the other hand,
+// ARM does not support the following pragma flag.
+// TODO: find out how to enable FMAs on clang 10 and earlier.
+#if defined(__x86_64__) && (defined(__clang_major__) && (__clang_major__ > 10))
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    _Pragma("float_control(precise, off, push)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END _Pragma("float_control(pop)")
+#else
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#endif
+#elif defined(__GNUC__)
+// Unfortunately, GCC does not provide a pragma for detecting it.
+// So, we have to stick to GNUC, which is defined by MANY compilers.
+// This is why clang/icc needs to be checked first.
+
+// todo: add __INTEL_COMPILER check for the classic ICC
+// todo: add __INTEL_LLVM_COMPILER for ICX
+
+#define FAISS_PRAGMA_IMPRECISE_LOOP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    _Pragma("GCC push_options") \
+    _Pragma("GCC optimize (\"unroll-loops,associative-math,no-signed-zeros\")")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END \
+    _Pragma("GCC pop_options")
+#else
+#define FAISS_PRAGMA_IMPRECISE_LOOP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#endif
+
+// clang-format on
+
+/*******************************************************
+ * BIGENDIAN specific macros
+ *******************************************************/
+#if !defined(_MSC_VER) && \
+        (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__))
+#define FAISS_BIG_ENDIAN
+#endif
+
+#define Swap2Bytes(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
+
+#define Swap4Bytes(val)                                           \
+    ((((val) >> 24) & 0x000000FF) | (((val) >> 8) & 0x0000FF00) | \
+     (((val) << 8) & 0x00FF0000) | (((val) << 24) & 0xFF000000))

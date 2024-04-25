@@ -4,9 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 """this is a basic test script for simple indices work"""
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-import sys
+import os
 import numpy as np
 import unittest
 import faiss
@@ -101,6 +100,9 @@ class TestBinaryFlat(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
+        I2 = index.assign(x=self.xq, k=3, labels=None)
+        assert np.all(I == I2)
+
         for i in range(nq):
             for j, dj in zip(I[i], D[i]):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])
@@ -143,6 +145,15 @@ class TestBinaryFlat(unittest.TestCase):
         print('nb tests', nt1, nt2)
         # nb tests is actually low...
         self.assertTrue(nt1 > 19 and nt2 > 19)
+
+    def test_reconstruct(self):
+        index = faiss.IndexBinaryFlat(64)
+        input_vector = np.random.randint(0, 255, size=(10, index.code_size)).astype("uint8")
+        index.add(input_vector)
+
+        reconstructed_vector = index.reconstruct_n(0, 4)
+        assert reconstructed_vector.shape == (4, index.code_size)
+        assert np.all(input_vector[:4] == reconstructed_vector)
 
 
 class TestBinaryIVF(unittest.TestCase):
@@ -289,6 +300,21 @@ class TestBinaryIVF(unittest.TestCase):
         assert np.all(D == ref_D)
         # assert np.all(I == ref_I)  # id may be different
 
+    def test_search_per_invlist(self):
+        d = self.xq.shape[1] * 8
+
+        quantizer = faiss.IndexBinaryFlat(d)
+        index = faiss.IndexBinaryIVF(quantizer, d, 10)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.train(self.xt)
+        index.add(self.xb)
+        index.nprobe = 3
+
+        Dref, Iref = index.search(self.xq, 10)
+        index.per_invlist_search = True
+        D2, I2 = index.search(self.xq, 10)
+        compare_binary_result_lists(Dref, Iref, D2, I2)
+
 
 class TestHNSW(unittest.TestCase):
 
@@ -337,9 +363,10 @@ class TestHNSW(unittest.TestCase):
         self.assertTrue((Dref == Dbin).all())
 
 
-
 class TestReplicasAndShards(unittest.TestCase):
 
+    @unittest.skipIf(os.name == "posix" and os.uname().sysname == "Darwin",
+                     "There is a bug in the OpenMP implementation on OSX.")
     def test_replicas(self):
         d = 32
         nq = 100
@@ -352,19 +379,13 @@ class TestReplicasAndShards(unittest.TestCase):
 
         Dref, Iref = index_ref.search(xq, 10)
 
-        # there is a OpenMP bug in this configuration, so disable threading
-        if sys.platform == "darwin" and "Clang 12" in sys.version:
-            nthreads = faiss.omp_get_max_threads()
-            faiss.omp_set_num_threads(1)
-        else:
-            nthreads = None
-
         nrep = 5
         index = faiss.IndexBinaryReplicas()
         for _i in range(nrep):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
             index.addIndex(sub_idx)
+        self.assertEqual(index_ref.code_size, index.code_size)
 
         D, I = index.search(xq, 10)
 
@@ -378,9 +399,6 @@ class TestReplicasAndShards(unittest.TestCase):
 
         index2.add(xb)
         D2, I2 = index2.search(xq, 10)
-
-        if nthreads is not None:
-            faiss.omp_set_num_threads(nthreads)
 
         self.assertTrue((Dref == D2).all())
         self.assertTrue((Iref == I2).all())

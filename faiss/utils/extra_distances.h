@@ -18,6 +18,8 @@
 
 namespace faiss {
 
+struct FlatCodesDistanceComputer;
+
 void pairwise_extra_distances(
         int64_t d,
         int64_t nq,
@@ -31,6 +33,7 @@ void pairwise_extra_distances(
         int64_t ldb = -1,
         int64_t ldd = -1);
 
+template <class C>
 void knn_extra_metrics(
         const float* x,
         const float* y,
@@ -39,11 +42,11 @@ void knn_extra_metrics(
         size_t ny,
         MetricType mt,
         float metric_arg,
-        float_maxheap_array_t* res);
+        HeapArray<C>* res);
 
 /** get a DistanceComputer that refers to this type of distance and
  *  indexes a flat array of size nb */
-DistanceComputer* get_extra_distance_computer(
+FlatCodesDistanceComputer* get_extra_distance_computer(
         size_t d,
         MetricType mt,
         float metric_arg,

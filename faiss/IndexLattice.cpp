@@ -118,7 +118,13 @@ void IndexLattice::add(idx_t, const float*) {
     FAISS_THROW_MSG("not implemented");
 }
 
-void IndexLattice::search(idx_t, const float*, idx_t, float*, idx_t*) const {
+void IndexLattice::search(
+        idx_t,
+        const float*,
+        idx_t,
+        float*,
+        idx_t*,
+        const SearchParameters*) const {
     FAISS_THROW_MSG("not implemented");
 }
 

@@ -9,194 +9,20 @@
 
 #include <faiss/MetaIndexes.h>
 
-#include <stdint.h>
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/WorkerThread.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
-
-namespace {} // namespace
-
-/*****************************************************
- * IndexIDMap implementation
- *******************************************************/
-
-template <typename IndexT>
-IndexIDMapTemplate<IndexT>::IndexIDMapTemplate(IndexT* index)
-        : index(index), own_fields(false) {
-    FAISS_THROW_IF_NOT_MSG(index->ntotal == 0, "index must be empty on input");
-    this->is_trained = index->is_trained;
-    this->metric_type = index->metric_type;
-    this->verbose = index->verbose;
-    this->d = index->d;
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::add(
-        idx_t,
-        const typename IndexT::component_t*) {
-    FAISS_THROW_MSG(
-            "add does not make sense with IndexIDMap, "
-            "use add_with_ids");
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::train(
-        idx_t n,
-        const typename IndexT::component_t* x) {
-    index->train(n, x);
-    this->is_trained = index->is_trained;
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::reset() {
-    index->reset();
-    id_map.clear();
-    this->ntotal = 0;
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::add_with_ids(
-        idx_t n,
-        const typename IndexT::component_t* x,
-        const typename IndexT::idx_t* xids) {
-    index->add(n, x);
-    for (idx_t i = 0; i < n; i++)
-        id_map.push_back(xids[i]);
-    this->ntotal = index->ntotal;
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::search(
-        idx_t n,
-        const typename IndexT::component_t* x,
-        idx_t k,
-        typename IndexT::distance_t* distances,
-        typename IndexT::idx_t* labels) const {
-    index->search(n, x, k, distances, labels);
-    idx_t* li = labels;
-#pragma omp parallel for
-    for (idx_t i = 0; i < n * k; i++) {
-        li[i] = li[i] < 0 ? li[i] : id_map[li[i]];
-    }
-}
-
-template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::range_search(
-        typename IndexT::idx_t n,
-        const typename IndexT::component_t* x,
-        typename IndexT::distance_t radius,
-        RangeSearchResult* result) const {
-    index->range_search(n, x, radius, result);
-#pragma omp parallel for
-    for (idx_t i = 0; i < result->lims[result->nq]; i++) {
-        result->labels[i] = result->labels[i] < 0 ? result->labels[i]
-                                                  : id_map[result->labels[i]];
-    }
-}
-
-namespace {
-
-struct IDTranslatedSelector : IDSelector {
-    const std::vector<int64_t>& id_map;
-    const IDSelector& sel;
-    IDTranslatedSelector(
-            const std::vector<int64_t>& id_map,
-            const IDSelector& sel)
-            : id_map(id_map), sel(sel) {}
-    bool is_member(idx_t id) const override {
-        return sel.is_member(id_map[id]);
-    }
-};
-
-} // namespace
-
-template <typename IndexT>
-size_t IndexIDMapTemplate<IndexT>::remove_ids(const IDSelector& sel) {
-    // remove in sub-index first
-    IDTranslatedSelector sel2(id_map, sel);
-    size_t nremove = index->remove_ids(sel2);
-
-    int64_t j = 0;
-    for (idx_t i = 0; i < this->ntotal; i++) {
-        if (sel.is_member(id_map[i])) {
-            // remove
-        } else {
-            id_map[j] = id_map[i];
-            j++;
-        }
-    }
-    FAISS_ASSERT(j == index->ntotal);
-    this->ntotal = j;
-    id_map.resize(this->ntotal);
-    return nremove;
-}
-
-template <typename IndexT>
-IndexIDMapTemplate<IndexT>::~IndexIDMapTemplate() {
-    if (own_fields)
-        delete index;
-}
-
-/*****************************************************
- * IndexIDMap2 implementation
- *******************************************************/
-
-template <typename IndexT>
-IndexIDMap2Template<IndexT>::IndexIDMap2Template(IndexT* index)
-        : IndexIDMapTemplate<IndexT>(index) {}
-
-template <typename IndexT>
-void IndexIDMap2Template<IndexT>::add_with_ids(
-        idx_t n,
-        const typename IndexT::component_t* x,
-        const typename IndexT::idx_t* xids) {
-    size_t prev_ntotal = this->ntotal;
-    IndexIDMapTemplate<IndexT>::add_with_ids(n, x, xids);
-    for (size_t i = prev_ntotal; i < this->ntotal; i++) {
-        rev_map[this->id_map[i]] = i;
-    }
-}
-
-template <typename IndexT>
-void IndexIDMap2Template<IndexT>::construct_rev_map() {
-    rev_map.clear();
-    for (size_t i = 0; i < this->ntotal; i++) {
-        rev_map[this->id_map[i]] = i;
-    }
-}
-
-template <typename IndexT>
-size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel) {
-    // This is quite inefficient
-    size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids(sel);
-    construct_rev_map();
-    return nremove;
-}
-
-template <typename IndexT>
-void IndexIDMap2Template<IndexT>::reconstruct(
-        idx_t key,
-        typename IndexT::component_t* recons) const {
-    try {
-        this->index->reconstruct(rev_map.at(key), recons);
-    } catch (const std::out_of_range& e) {
-        FAISS_THROW_FMT("key %" PRId64 " not found", key);
-    }
-}
-
-// explicit template instantiations
-
-template struct IndexIDMapTemplate<Index>;
-template struct IndexIDMapTemplate<IndexBinary>;
-template struct IndexIDMap2Template<Index>;
-template struct IndexIDMap2Template<IndexBinary>;
 
 /*****************************************************
  * IndexSplitVectors implementation
@@ -235,43 +61,46 @@ void IndexSplitVectors::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(k == 1, "search implemented only for k=1");
     FAISS_THROW_IF_NOT_MSG(
             sum_d == d, "not enough indexes compared to # dimensions");
 
     int64_t nshard = sub_indexes.size();
-    float* all_distances = new float[nshard * k * n];
-    idx_t* all_labels = new idx_t[nshard * k * n];
-    ScopeDeleter<float> del(all_distances);
-    ScopeDeleter<idx_t> del2(all_labels);
 
-    auto query_func = [n,
-                       x,
-                       k,
-                       distances,
-                       labels,
-                       all_distances,
-                       all_labels,
-                       this](int no) {
-        const IndexSplitVectors* index = this;
-        float* distances1 = no == 0 ? distances : all_distances + no * k * n;
-        idx_t* labels1 = no == 0 ? labels : all_labels + no * k * n;
-        if (index->verbose)
-            printf("begin query shard %d on %" PRId64 " points\n", no, n);
-        const Index* sub_index = index->sub_indexes[no];
-        int64_t sub_d = sub_index->d, d = index->d;
-        idx_t ofs = 0;
-        for (int i = 0; i < no; i++)
-            ofs += index->sub_indexes[i]->d;
-        float* sub_x = new float[sub_d * n];
-        ScopeDeleter<float> del1(sub_x);
-        for (idx_t i = 0; i < n; i++)
-            memcpy(sub_x + i * sub_d, x + ofs + i * d, sub_d * sizeof(sub_x));
-        sub_index->search(n, sub_x, k, distances1, labels1);
-        if (index->verbose)
-            printf("end query shard %d\n", no);
-    };
+    std::unique_ptr<float[]> all_distances(new float[nshard * k * n]);
+    std::unique_ptr<idx_t[]> all_labels(new idx_t[nshard * k * n]);
+
+    auto query_func =
+            [n, x, k, distances, labels, &all_distances, &all_labels, this](
+                    int no) {
+                const IndexSplitVectors* index = this;
+                float* distances1 =
+                        no == 0 ? distances : all_distances.get() + no * k * n;
+                idx_t* labels1 =
+                        no == 0 ? labels : all_labels.get() + no * k * n;
+                if (index->verbose)
+                    printf("begin query shard %d on %" PRId64 " points\n",
+                           no,
+                           n);
+                const Index* sub_index = index->sub_indexes[no];
+                int64_t sub_d = sub_index->d, d = index->d;
+                idx_t ofs = 0;
+                for (int i = 0; i < no; i++)
+                    ofs += index->sub_indexes[i]->d;
+
+                std::unique_ptr<float[]> sub_x(new float[sub_d * n]);
+                for (idx_t i = 0; i < n; i++)
+                    memcpy(sub_x.get() + i * sub_d,
+                           x + ofs + i * d,
+                           sub_d * sizeof(float));
+                sub_index->search(n, sub_x.get(), k, distances1, labels1);
+                if (index->verbose)
+                    printf("end query shard %d\n", no);
+            };
 
     if (!threaded) {
         for (int i = 0; i < nshard; i++) {
@@ -296,8 +125,8 @@ void IndexSplitVectors::search(
     int64_t factor = 1;
     for (int i = 0; i < nshard; i++) {
         if (i > 0) { // results of 0 are already in the table
-            const float* distances_i = all_distances + i * k * n;
-            const idx_t* labels_i = all_labels + i * k * n;
+            const float* distances_i = all_distances.get() + i * k * n;
+            const idx_t* labels_i = all_labels.get() + i * k * n;
             for (int64_t j = 0; j < n; j++) {
                 if (labels[j] >= 0 && labels_i[j] >= 0) {
                     labels[j] += labels_i[j] * factor;
@@ -326,5 +155,89 @@ IndexSplitVectors::~IndexSplitVectors() {
             delete sub_indexes[s];
     }
 }
+
+/********************************************************
+ * IndexRandom implementation
+ */
+
+IndexRandom::IndexRandom(
+        idx_t d,
+        idx_t ntotal,
+        int64_t seed,
+        MetricType metric_type)
+        : Index(d, metric_type), seed(seed) {
+    this->ntotal = ntotal;
+    is_trained = true;
+}
+
+void IndexRandom::add(idx_t n, const float*) {
+    ntotal += n;
+}
+
+void IndexRandom::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+    FAISS_THROW_IF_NOT(k <= ntotal);
+#pragma omp parallel for if (n > 1000)
+    for (idx_t i = 0; i < n; i++) {
+        RandomGenerator rng(
+                seed + ivec_checksum(d, (const int32_t*)(x + i * d)));
+        idx_t* I = labels + i * k;
+        float* D = distances + i * k;
+        // assumes k << ntotal
+        if (k < 100 * ntotal) {
+            std::unordered_set<idx_t> map;
+            for (int j = 0; j < k; j++) {
+                idx_t ii;
+                for (;;) {
+                    // yes I know it's not strictly uniform...
+                    ii = rng.rand_int64() % ntotal;
+                    if (map.count(ii) == 0) {
+                        break;
+                    }
+                }
+                I[j] = ii;
+                map.insert(ii);
+            }
+        } else {
+            std::vector<idx_t> perm(ntotal);
+            for (idx_t j = 0; j < ntotal; j++) {
+                perm[j] = j;
+            }
+            for (int j = 0; j < k; j++) {
+                std::swap(perm[j], perm[rng.rand_int(ntotal)]);
+                I[j] = perm[j];
+            }
+        }
+        float dprev = 0;
+        for (int j = 0; j < k; j++) {
+            float step = rng.rand_float();
+            if (is_similarity_metric(metric_type)) {
+                step = -step;
+            }
+            dprev += step;
+            D[j] = dprev;
+        }
+    }
+}
+
+void IndexRandom::reconstruct(idx_t key, float* recons) const {
+    RandomGenerator rng(seed + 123332 + key);
+    for (size_t i = 0; i < d; i++) {
+        recons[i] = rng.rand_float();
+    }
+}
+
+void IndexRandom::reset() {
+    ntotal = 0;
+}
+
+IndexRandom::~IndexRandom() = default;
 
 } // namespace faiss

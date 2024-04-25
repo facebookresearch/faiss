@@ -17,6 +17,7 @@
 namespace faiss {
 
 struct VectorTransform;
+struct IndexPreTransform;
 
 /** Inverted list that stores binary codes of size nbit. Before the
  * binary conversion, the dimension of the vectors is transformed from
@@ -25,23 +26,29 @@ struct VectorTransform;
  * Each coordinate is subtracted from a value determined by
  * threshold_type, and split into intervals of size period. Half of
  * the interval is a 0 bit, the other half a 1.
+ *
  */
 struct IndexIVFSpectralHash : IndexIVF {
-    VectorTransform* vt; // transformation from d to nbit dim
-    bool own_fields;
+    /// transformation from d to nbit dim
+    VectorTransform* vt = nullptr;
+    /// own the vt
+    bool own_fields = true;
 
-    int nbit;
-    float period;
+    /// nb of bits of the binary signature
+    int nbit = 0;
+    /// interval size for 0s and 1s
+    float period = 0;
 
     enum ThresholdType {
-        Thresh_global,
-        Thresh_centroid,
-        Thresh_centroid_half,
-        Thresh_median
+        Thresh_global,        ///< global threshold at 0
+        Thresh_centroid,      ///< compare to centroid
+        Thresh_centroid_half, ///< central interval around centroid
+        Thresh_median         ///< median of training set
     };
-    ThresholdType threshold_type;
+    ThresholdType threshold_type = Thresh_global;
 
-    // size nlist * nbit or 0 if Thresh_global
+    /// Trained threshold.
+    /// size nlist * nbit or 0 if Thresh_global
     std::vector<float> trained;
 
     IndexIVFSpectralHash(
@@ -53,7 +60,7 @@ struct IndexIVFSpectralHash : IndexIVF {
 
     IndexIVFSpectralHash();
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
     void encode_vectors(
             idx_t n,
@@ -63,7 +70,16 @@ struct IndexIVFSpectralHash : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
+
+    /** replace the vector transform for an empty (and possibly untrained) index
+     */
+    void replace_vt(VectorTransform* vt, bool own = false);
+
+    /** convenience function to get the VT from an index constucted by an
+     * index_factory (should end in "LSH") */
+    void replace_vt(IndexPreTransform* index, bool own = false);
 
     ~IndexIVFSpectralHash() override;
 };
