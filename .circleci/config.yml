@@ -352,9 +352,6 @@ workflows:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
       - build_conda:
-          name: OSX arm64 (conda)
-          exec: macosx-arm64-cpu
-      - build_conda:
           name: Linux x86_64 packages
           exec: linux-x86_64-cpu
           label: main
