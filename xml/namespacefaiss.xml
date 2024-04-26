@@ -484,7 +484,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="318" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="318" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="327" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="327" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>
