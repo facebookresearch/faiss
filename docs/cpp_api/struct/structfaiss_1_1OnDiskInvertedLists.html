@@ -590,17 +590,6 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv">
-<span id="_CPPv3NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv"></span><span id="_CPPv2NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv"></span><span id="faiss::OnDiskInvertedLists::is_empty__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a6d043287bb767a996b5b6873f69f6d44"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_empty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv">
-<span id="_CPPv3NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv"></span><span id="_CPPv2NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv"></span><span id="faiss::OnDiskInvertedLists::get_iterator__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a62e70c35c228a54bb682db61539d6995"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss21InvertedListsIteratorE" title="faiss::InvertedListsIterator"><span class="n"><span class="pre">InvertedListsIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_iterator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>get iterable for lists that use_iterator </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss19OnDiskInvertedLists13release_codesE6size_tPK7uint8_t">
 <span id="_CPPv3NK5faiss19OnDiskInvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="_CPPv2NK5faiss19OnDiskInvertedLists13release_codesE6size_tPK7uint8_t"></span><span id="faiss::OnDiskInvertedLists::release_codes__s.uint8_tCPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9a24bd313ece4e8e281f8bb28b5f528c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">release_codes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>release codes returned by get_codes (default implementation is nop </p>
@@ -630,6 +619,18 @@
 <dd class="field-odd"><p>a single code in an inverted list (should be deallocated with release_codes) </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv">
+<span id="_CPPv3NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv"></span><span id="_CPPv2NK5faiss19OnDiskInvertedLists8is_emptyE6size_tPv"></span><span id="faiss::OnDiskInvertedLists::is_empty__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1adc9d4472a745350a9dcbc92f799e73fe"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_empty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check if the list is empty </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv">
+<span id="_CPPv3NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv"></span><span id="_CPPv2NK5faiss19OnDiskInvertedLists12get_iteratorE6size_tPv"></span><span id="faiss::OnDiskInvertedLists::get_iterator__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ad800c9d43b933414ee102c2613bc3498"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss21InvertedListsIteratorE" title="faiss::InvertedListsIterator"><span class="n"><span class="pre">InvertedListsIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_iterator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>get iterable for lists that use_iterator </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -745,8 +746,9 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19OnDiskInvertedLists12use_iteratorE">
-<span id="_CPPv3N5faiss19OnDiskInvertedLists12use_iteratorE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists12use_iteratorE"></span><span id="faiss::OnDiskInvertedLists::use_iterator__b"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_iterator</span></span></span><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N5faiss19OnDiskInvertedLists12use_iteratorE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists12use_iteratorE"></span><span id="faiss::OnDiskInvertedLists::use_iterator__b"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>request to use iterator rather than get_codes / get_ids </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">

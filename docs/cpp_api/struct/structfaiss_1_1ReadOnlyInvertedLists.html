@@ -477,20 +477,9 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv">
-<span id="_CPPv3NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv"></span><span id="faiss::ReadOnlyInvertedLists::is_empty__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a6d043287bb767a996b5b6873f69f6d44"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_empty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists9list_sizeE6size_t">
 <span id="_CPPv3NK5faiss21ReadOnlyInvertedLists9list_sizeE6size_t"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists9list_sizeE6size_t"></span><span id="faiss::ReadOnlyInvertedLists::list_size__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9bd256053ee360473842105460fe285f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list_size</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd><p>get the size of a list </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv">
-<span id="_CPPv3NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv"></span><span id="faiss::ReadOnlyInvertedLists::get_iterator__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a62e70c35c228a54bb682db61539d6995"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss21InvertedListsIteratorE" title="faiss::InvertedListsIterator"><span class="n"><span class="pre">InvertedListsIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_iterator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>get iterable for lists that use_iterator </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -551,6 +540,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists14prefetch_listsEPK5idx_ti">
 <span id="_CPPv3NK5faiss21ReadOnlyInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists14prefetch_listsEPK5idx_ti"></span><span id="faiss::ReadOnlyInvertedLists::prefetch_lists__idx_tCP.iC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prefetch_lists</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">list_nos</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlist</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>prepare the following lists (default does nothing) a list can be -1 hence the signed long </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv">
+<span id="_CPPv3NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists8is_emptyE6size_tPv"></span><span id="faiss::ReadOnlyInvertedLists::is_empty__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1adc9d4472a745350a9dcbc92f799e73fe"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_empty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check if the list is empty </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv">
+<span id="_CPPv3NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv"></span><span id="_CPPv2NK5faiss21ReadOnlyInvertedLists12get_iteratorE6size_tPv"></span><span id="faiss::ReadOnlyInvertedLists::get_iterator__s.voidPC"></span><span class="target" id="structfaiss_1_1InvertedLists_1ad800c9d43b933414ee102c2613bc3498"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss21InvertedListsIteratorE" title="faiss::InvertedListsIterator"><span class="n"><span class="pre">InvertedListsIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_iterator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">inverted_list_context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>get iterable for lists that use_iterator </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -621,8 +622,9 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21ReadOnlyInvertedLists12use_iteratorE">
-<span id="_CPPv3N5faiss21ReadOnlyInvertedLists12use_iteratorE"></span><span id="_CPPv2N5faiss21ReadOnlyInvertedLists12use_iteratorE"></span><span id="faiss::ReadOnlyInvertedLists::use_iterator__b"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_iterator</span></span></span><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N5faiss21ReadOnlyInvertedLists12use_iteratorE"></span><span id="_CPPv2N5faiss21ReadOnlyInvertedLists12use_iteratorE"></span><span id="faiss::ReadOnlyInvertedLists::use_iterator__b"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>request to use iterator rather than get_codes / get_ids </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
