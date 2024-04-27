@@ -110,8 +110,8 @@ void HNSW::print_neighbor_stats(int level) const {
            level,
            nb_neighbors(level));
     size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
-#pragma omp parallel for reduction(+: tot_neigh) reduction(+: tot_common) \
-  reduction(+: tot_reciprocal) reduction(+: n_node)
+#pragma omp parallel for reduction(+ : tot_neigh) reduction(+ : tot_common) \
+        reduction(+ : tot_reciprocal) reduction(+ : n_node)
     for (int i = 0; i < levels.size(); i++) {
         if (levels[i] > level) {
             n_node++;

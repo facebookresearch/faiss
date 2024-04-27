@@ -327,7 +327,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     int64_t,
                     raft::col_major>>
                     index_vec = {index.view()};
-            RAFT_LOG_INFO("Invoking flat bfknn");
+
             brute_force::knn(
                     handle,
                     index_vec,
@@ -354,10 +354,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     [] __device__(const float& a) { return powf(a, 2); });
         }
 
-        RAFT_LOG_INFO("Done.");
-
         handle.sync_stream();
-        RAFT_LOG_INFO("All synced.");
     } else
 #else
     if (should_use_raft(args)) {

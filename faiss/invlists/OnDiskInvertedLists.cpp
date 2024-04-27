@@ -394,8 +394,8 @@ const idx_t* OnDiskInvertedLists::get_ids(size_t list_no) const {
         return nullptr;
     }
 
-    return (
-        const idx_t*)(ptr + lists[list_no].offset + code_size * lists[list_no].capacity);
+    return (const idx_t*)(ptr + lists[list_no].offset +
+                          code_size * lists[list_no].capacity);
 }
 
 void OnDiskInvertedLists::update_entries(

@@ -100,6 +100,9 @@ class TestBinaryFlat(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
+        I2 = index.assign(x=self.xq, k=3, labels=None)
+        assert np.all(I == I2)
+
         for i in range(nq):
             for j, dj in zip(I[i], D[i]):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])

@@ -456,7 +456,7 @@ void search_knn_hamming_heap(
             }
 
         } // parallel for
-    }     // parallel
+    } // parallel
 
     indexIVF_stats.nq += n;
     indexIVF_stats.nlist += nlistv;

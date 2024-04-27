@@ -214,9 +214,8 @@ static void verifyIndex2LevelDecoder(
         double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_seq"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_seq" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,9 +263,8 @@ static void verifyIndex2LevelDecoder(
         const double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,9 +325,8 @@ static void verifyIndex2LevelDecoder(
         const double error1 = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel1 << "\t" << error1 << std::endl;
+                  << "accum_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel1 << "\t" << error1 << std::endl;
 
         // kernels: accum 2 points, shared centroids
         StopWatch swKernel2;
@@ -357,9 +354,8 @@ static void verifyIndex2LevelDecoder(
         const double error2 = getError(n, d, outputFaiss, outputKernel2);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2 << "\t" << error2 << std::endl;
+                  << "accum2_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2 << "\t" << error2 << std::endl;
 
         // kernels: accum 2 points, unique centroids
         StopWatch swKernel2u;
@@ -389,9 +385,8 @@ static void verifyIndex2LevelDecoder(
         const double error2u = getError(n, d, outputFaiss, outputKernel2u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2u << "\t" << error2u << std::endl;
+                  << "accum2u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2u << "\t" << error2u << std::endl;
 
         // kernels: accum 3 points, shared centroids
         StopWatch swKernel3;
@@ -424,9 +419,8 @@ static void verifyIndex2LevelDecoder(
         const double error3 = getError(n, d, outputFaiss, outputKernel3);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3 << "\t" << error3 << std::endl;
+                  << "accum3_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3 << "\t" << error3 << std::endl;
 
         // kernels: accum 3 points, unique centroids
         StopWatch swKernel3u;
@@ -463,9 +457,8 @@ static void verifyIndex2LevelDecoder(
         const double error3u = getError(n, d, outputFaiss, outputKernel3u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3u << "\t" << error3u << std::endl;
+                  << "accum3u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3u << "\t" << error3u << std::endl;
     }
 }
 
@@ -532,9 +525,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_seq"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_seq" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -582,9 +574,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -651,9 +642,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error1 = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel1 << "\t" << error1 << std::endl;
+                  << "accum_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel1 << "\t" << error1 << std::endl;
 
         // kernels: accum 2 points, shared centroids
         StopWatch swKernel2;
@@ -686,9 +676,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error2 = getError(n, d, outputFaiss, outputKernel2);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2 << "\t" << error2 << std::endl;
+                  << "accum2_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2 << "\t" << error2 << std::endl;
 
         // kernels: accum 2 points, unique centroids
         StopWatch swKernel2u;
@@ -723,9 +712,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error2u = getError(n, d, outputFaiss, outputKernel2u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2u << "\t" << error2u << std::endl;
+                  << "accum2u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2u << "\t" << error2u << std::endl;
 
         // kernels: accum 3 points, shared centroids
         StopWatch swKernel3;
@@ -763,9 +751,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error3 = getError(n, d, outputFaiss, outputKernel3);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3 << "\t" << error3 << std::endl;
+                  << "accum3_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3 << "\t" << error3 << std::endl;
 
         // kernels: accum 3 points, unique centroids
         StopWatch swKernel3u;
@@ -807,9 +794,8 @@ static void verifyMinMaxIndex2LevelDecoder(
         const double error3u = getError(n, d, outputFaiss, outputKernel3u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3u << "\t" << error3u << std::endl;
+                  << "accum3u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3u << "\t" << error3u << std::endl;
     }
 }
 
@@ -866,9 +852,8 @@ static void verifyIndexPQDecoder(
         double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_seq"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_seq" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -915,9 +900,8 @@ static void verifyIndexPQDecoder(
         const double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -978,9 +962,8 @@ static void verifyIndexPQDecoder(
         const double error1 = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel1 << "\t" << error1 << std::endl;
+                  << "accum_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel1 << "\t" << error1 << std::endl;
 
         // kernels: accum 2 points, shared centroids
         StopWatch swKernel2;
@@ -1007,9 +990,8 @@ static void verifyIndexPQDecoder(
         const double error2 = getError(n, d, outputFaiss, outputKernel2);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2 << "\t" << error2 << std::endl;
+                  << "accum2_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2 << "\t" << error2 << std::endl;
 
         // kernels: accum 2 points, unique centroids
         StopWatch swKernel2u;
@@ -1037,9 +1019,8 @@ static void verifyIndexPQDecoder(
         const double error2u = getError(n, d, outputFaiss, outputKernel2u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2u << "\t" << error2u << std::endl;
+                  << "accum2u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2u << "\t" << error2u << std::endl;
 
         // kernels: accum 3 points, shared centroids
         StopWatch swKernel3;
@@ -1071,9 +1052,8 @@ static void verifyIndexPQDecoder(
         const double error3 = getError(n, d, outputFaiss, outputKernel3);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3 << "\t" << error3 << std::endl;
+                  << "accum3_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3 << "\t" << error3 << std::endl;
 
         // kernels: accum 3 points, unique centroids
         StopWatch swKernel3u;
@@ -1107,9 +1087,8 @@ static void verifyIndexPQDecoder(
         const double error3u = getError(n, d, outputFaiss, outputKernel3u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3u << "\t" << error3u << std::endl;
+                  << "accum3u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3u << "\t" << error3u << std::endl;
     }
 }
 
@@ -1171,9 +1150,8 @@ static void verifyMinMaxIndexPQDecoder(
         double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_seq"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_seq" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1220,9 +1198,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "store_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel << "\t" << error << std::endl;
+                  << "store_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel << "\t" << error << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1288,9 +1265,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error1 = getError(n, d, outputFaiss, outputKernel1);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel1 << "\t" << error1 << std::endl;
+                  << "accum_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel1 << "\t" << error1 << std::endl;
 
         // kernels: accum 2 points, shared centroids
         StopWatch swKernel2;
@@ -1322,9 +1298,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error2 = getError(n, d, outputFaiss, outputKernel2);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2 << "\t" << error2 << std::endl;
+                  << "accum2_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2 << "\t" << error2 << std::endl;
 
         // kernels: accum 2 points, unique centroids
         StopWatch swKernel2u;
@@ -1357,9 +1332,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error2u = getError(n, d, outputFaiss, outputKernel2u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum2u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel2u << "\t" << error2u << std::endl;
+                  << "accum2u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel2u << "\t" << error2u << std::endl;
 
         // kernels: accum 3 points, shared centroids
         StopWatch swKernel3;
@@ -1396,9 +1370,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error3 = getError(n, d, outputFaiss, outputKernel3);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3 << "\t" << error3 << std::endl;
+                  << "accum3_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3 << "\t" << error3 << std::endl;
 
         // kernels: accum 3 points, unique centroids
         StopWatch swKernel3u;
@@ -1437,9 +1410,8 @@ static void verifyMinMaxIndexPQDecoder(
         const double error3u = getError(n, d, outputFaiss, outputKernel3u);
 
         std::cout << description << "\t" << n << "\t" << d << "\t"
-                  << "accum3u_rnd"
-                  << "\t" << nIterations << "\t" << timeFaiss << "\t"
-                  << timeKernel3u << "\t" << error3u << std::endl;
+                  << "accum3u_rnd" << "\t" << nIterations << "\t" << timeFaiss
+                  << "\t" << timeKernel3u << "\t" << error3u << std::endl;
     }
 }
 
@@ -1512,14 +1484,9 @@ int main(int argc, char** argv) {
             (N_ITERATIONS % 6) == 0, "Number of iterations should be 6*x");
 
     // print the header
-    std::cout << "Codec\t"
-              << "n\t"
-              << "d\t"
-              << "Experiment\t"
-              << "Iterations\t"
-              << "Faiss time\t"
-              << "SADecodeKernel time\t"
-              << "Error" << std::endl;
+    std::cout << "Codec\t" << "n\t" << "d\t" << "Experiment\t" << "Iterations\t"
+              << "Faiss time\t" << "SADecodeKernel time\t" << "Error"
+              << std::endl;
 
     // The following experiment types are available:
     // * store_seq - decode a contiguous block of codes into vectors, one by one
