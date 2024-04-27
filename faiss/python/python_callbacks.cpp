@@ -46,7 +46,7 @@ size_t PyCallbackIOWriter::operator()(
         size_t wi = ws > bs ? bs : ws;
         PyObject* result = PyObject_CallFunction(
                 callback, "(N)", PyBytes_FromStringAndSize(ptr, wi));
-        if (result == NULL) {
+        if (result == nullptr) {
             FAISS_THROW_MSG("py err");
         }
         // TODO check nb of bytes written
@@ -77,7 +77,7 @@ size_t PyCallbackIOReader::operator()(void* ptrv, size_t size, size_t nitems) {
     while (rs > 0) {
         size_t ri = rs > bs ? bs : rs;
         PyObject* result = PyObject_CallFunction(callback, "(n)", ri);
-        if (result == NULL) {
+        if (result == nullptr) {
             FAISS_THROW_MSG("propagate py error");
         }
         if (!PyBytes_Check(result)) {
@@ -122,7 +122,7 @@ bool PyCallbackIDSelector::is_member(faiss::idx_t id) const {
     FAISS_THROW_IF_NOT((id >> 32) == 0);
     PyThreadLock gil;
     PyObject* result = PyObject_CallFunction(callback, "(n)", int(id));
-    if (result == NULL) {
+    if (result == nullptr) {
         FAISS_THROW_MSG("propagate py error");
     }
     bool b = PyObject_IsTrue(result);
