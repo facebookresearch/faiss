@@ -16,7 +16,7 @@ runs:
   using: composite
   steps:
     - name: Setup miniconda
-      uses: conda-incubator/setup-miniconda@v3.0.3
+      uses: continuumio/miniconda3
       with:
         python-version: '3.11'
         miniconda-version: latest
