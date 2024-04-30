@@ -52,7 +52,7 @@ jobs:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
     runs-on: ubuntu-latest
-    image: continuumio/miniconda3
+    container: continuumio/miniconda3
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
