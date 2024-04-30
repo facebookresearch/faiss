@@ -20,7 +20,7 @@ runs:
       with:
         python-version: '3.11'
         miniconda-version: latest
-        architecture: 'Linux-x86_64'
+        architecture: 'x86_64'
     - name: Set up environment
       shell: bash
       run: |
