@@ -11,12 +11,11 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-arm64-conda:
-    runs-on: 2-core-ubuntu-arm
+  linux-x86_64-GPU-cmake:
+    runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
+          gpu: ON
