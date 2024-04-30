@@ -11,6 +11,31 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Install clang-format
+        run: |
+            sudo apt-get update -y
+            sudo apt-get install -y wget
+            sudo apt install -y lsb-release wget software-properties-common gnupg
+            wget https://apt.llvm.org/llvm.sh
+            chmod u+x llvm.sh
+            sudo ./llvm.sh 18
+            sudo apt-get install -y git-core clang-format-18
+      - name: Verify clang-format
+        run: |
+            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
+            if git diff --quiet; then
+              echo "Formatting OK!"
+            else
+              echo "Formatting not OK!"
+              echo "------------------"
+              git --no-pager diff --color
+              exit 1
+            fi
   linux-x86_64-cmake:
     runs-on: ubuntu-latest
     steps:
