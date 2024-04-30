@@ -59,6 +59,8 @@ runs:
         ls /home/runner/work/faiss/faiss/conda/faiss/meta.yaml
         conda config --set verbosity 2
         conda build faiss --python 3.11 -c pytorch
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
