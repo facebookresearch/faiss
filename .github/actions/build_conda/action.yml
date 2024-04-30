@@ -50,6 +50,8 @@ runs:
       run: |
         conda install -y -q anaconda-client
         conda config --set anaconda_upload yes
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Conda build (CPU)
       if: inputs.label == '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
