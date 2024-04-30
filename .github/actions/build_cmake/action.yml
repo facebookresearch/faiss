@@ -43,6 +43,7 @@ runs:
     - name: Build all targets
       shell: bash
       run: |
+        ldd --version
         eval "$(conda shell.bash hook)"
         conda activate
         cmake -B build \
