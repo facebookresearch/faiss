@@ -75,7 +75,7 @@ struct Options {
     int device;
 };
 
-void queryTest() {
+void queryTest(faiss::MetricType metric) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
@@ -97,8 +97,7 @@ void queryTest() {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
-        faiss::gpu::GpuIndexCagra gpuIndex(
-                &res, cpuIndex.d, faiss::METRIC_L2, config);
+        faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
         // query
@@ -177,10 +176,14 @@ void queryTest() {
 }
 
 TEST(TestGpuIndexCagra, Float32_Query_L2) {
-    queryTest();
+    queryTest(faiss::METRIC_L2);
 }
 
-void copyToTest() {
+TEST(TestGpuIndexCagra, Float32_Query_IP) {
+    queryTest(faiss::METRIC_INNER_PRODUCT);
+}
+
+void copyToTest(faiss::MetricType metric) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
@@ -198,8 +201,7 @@ void copyToTest() {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
-        faiss::gpu::GpuIndexCagra gpuIndex(
-                &res, opt.dim, faiss::METRIC_L2, config);
+        faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
         faiss::IndexHNSWCagra copiedCpuIndex;
@@ -300,10 +302,14 @@ void copyToTest() {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
-    copyToTest();
+    copyToTest(faiss::METRIC_L2);
 }
 
-void copyFromTest() {
+TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
+    copyToTest(faiss::METRIC_INNER_PRODUCT);
+}
+
+void copyFromTest(faiss::MetricType metric) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
@@ -319,8 +325,7 @@ void copyFromTest() {
         res.noTempMemory();
 
         // convert to gpu index
-        faiss::gpu::GpuIndexCagra copiedGpuIndex(
-                &res, cpuIndex.d, faiss::METRIC_L2);
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
         copiedGpuIndex.copyFrom(&cpuIndex);
 
         // train gpu index
@@ -330,8 +335,7 @@ void copyFromTest() {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
-        faiss::gpu::GpuIndexCagra gpuIndex(
-                &res, opt.dim, faiss::METRIC_L2, config);
+        faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
         // query
@@ -402,7 +406,11 @@ void copyFromTest() {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
-    copyFromTest();
+    copyFromTest(faiss::METRIC_L2);
+}
+
+TEST(TestGpuIndexCagra, Float32_CopyFrom_IP) {
+    copyFromTest(faiss::METRIC_INNER_PRODUCT);
 }
 
 int main(int argc, char** argv) {

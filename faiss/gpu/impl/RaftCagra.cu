@@ -52,22 +52,22 @@ RaftCagra::RaftCagra(
           dim_(dim),
           metric_(metric),
           metricArg_(metricArg),
-          index_pams_(),
+          index_params_(),
           ivf_pq_params_(ivf_pq_params),
           ivf_pq_search_params_(ivf_pq_search_params) {
     FAISS_THROW_IF_NOT_MSG(
-            metric == faiss::METRIC_L2,
-            "CAGRA currently only supports L2 metric.");
+            metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
+            "CAGRA currently only supports L2 or Inner Product metric.");
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for RAFT CAGRA index");
 
-    index_pams_.intermediate_graph_degree = intermediate_graph_degree;
-    index_pams_.graph_degree = graph_degree;
-    index_pams_.build_algo =
+    index_params_.intermediate_graph_degree = intermediate_graph_degree;
+    index_params_.graph_degree = graph_degree;
+    index_params_.build_algo =
             static_cast<raft::neighbors::cagra::graph_build_algo>(
                     graph_build_algo);
-    index_pams_.nn_descent_niter = nn_descent_niter;
+    index_params_.nn_descent_niter = nn_descent_niter;
 
     if (!ivf_pq_params_) {
         ivf_pq_params_ =
@@ -77,6 +77,12 @@ RaftCagra::RaftCagra(
         ivf_pq_search_params_ =
                 std::make_optional<raft::neighbors::ivf_pq::search_params>();
     }
+    index_params_.metric = metric_ == faiss::METRIC_L2
+            ? raft::distance::DistanceType::L2Expanded
+            : raft::distance::DistanceType::InnerProduct;
+    ivf_pq_params_->metric = metric_ == faiss::METRIC_L2
+            ? raft::distance::DistanceType::L2Expanded
+            : raft::distance::DistanceType::InnerProduct;
 
     reset();
 }
@@ -96,8 +102,8 @@ RaftCagra::RaftCagra(
           metric_(metric),
           metricArg_(metricArg) {
     FAISS_THROW_IF_NOT_MSG(
-            metric == faiss::METRIC_L2,
-            "CAGRA currently only supports L2 metric.");
+            metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
+            "CAGRA currently only supports L2 or Inner Product metric.");
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for RAFT CAGRA index");
@@ -127,7 +133,9 @@ RaftCagra::RaftCagra(
 
         raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                 raft_handle,
-                raft::distance::DistanceType::L2Expanded,
+                metric_ == faiss::METRIC_L2
+                        ? raft::distance::DistanceType::L2Expanded
+                        : raft::distance::DistanceType::InnerProduct,
                 distances_mds,
                 raft::make_const_mdspan(knn_graph_copy.view()));
     } else if (!distances_on_gpu && !knn_graph_on_gpu) {
@@ -144,7 +152,9 @@ RaftCagra::RaftCagra(
 
         raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                 raft_handle,
-                raft::distance::DistanceType::L2Expanded,
+                metric_ == faiss::METRIC_L2
+                        ? raft::distance::DistanceType::L2Expanded
+                        : raft::distance::DistanceType::InnerProduct,
                 distances_mds,
                 raft::make_const_mdspan(knn_graph_copy.view()));
     } else {
@@ -156,11 +166,11 @@ RaftCagra::RaftCagra(
 void RaftCagra::train(idx_t n, const float* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    if (index_pams_.build_algo ==
+    if (index_params_.build_algo ==
         raft::neighbors::cagra::graph_build_algo::IVF_PQ) {
         std::optional<raft::host_matrix<uint32_t, int64_t>> knn_graph(
                 raft::make_host_matrix<uint32_t, int64_t>(
-                        n, index_pams_.intermediate_graph_degree));
+                        n, index_params_.intermediate_graph_degree));
         if (getDeviceForAddress(x) >= 0) {
             auto dataset_d =
                     raft::make_device_matrix_view<const float, int64_t>(
@@ -184,7 +194,7 @@ void RaftCagra::train(idx_t n, const float* x) {
                     ivf_pq_search_params_);
         }
         auto cagra_graph = raft::make_host_matrix<uint32_t, int64_t>(
-                n, index_pams_.graph_degree);
+                n, index_params_.graph_degree);
 
         raft::neighbors::cagra::optimize<uint32_t>(
                 raft_handle, knn_graph->view(), cagra_graph.view());
@@ -198,7 +208,9 @@ void RaftCagra::train(idx_t n, const float* x) {
                             x, n, dim_);
             raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                     raft_handle,
-                    index_pams_.metric,
+                    metric_ == faiss::METRIC_L2
+                            ? raft::distance::DistanceType::L2Expanded
+                            : raft::distance::DistanceType::InnerProduct,
                     dataset_d,
                     raft::make_const_mdspan(cagra_graph.view()));
         } else {
@@ -206,7 +218,9 @@ void RaftCagra::train(idx_t n, const float* x) {
                     x, n, dim_);
             raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
                     raft_handle,
-                    index_pams_.metric,
+                    metric_ == faiss::METRIC_L2
+                            ? raft::distance::DistanceType::L2Expanded
+                            : raft::distance::DistanceType::InnerProduct,
                     dataset_h,
                     raft::make_const_mdspan(cagra_graph.view()));
         }
@@ -215,13 +229,13 @@ void RaftCagra::train(idx_t n, const float* x) {
         if (getDeviceForAddress(x) >= 0) {
             raft_knn_index = raft::runtime::neighbors::cagra::build(
                     raft_handle,
-                    index_pams_,
+                    index_params_,
                     raft::make_device_matrix_view<const float, int64_t>(
                             x, n, dim_));
         } else {
             raft_knn_index = raft::runtime::neighbors::cagra::build(
                     raft_handle,
-                    index_pams_,
+                    index_params_,
                     raft::make_host_matrix_view<const float, int64_t>(
                             x, n, dim_));
         }

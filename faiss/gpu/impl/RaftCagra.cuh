@@ -117,7 +117,7 @@ class RaftCagra {
     float metricArg_;
 
     /// Parameters to build RAFT CAGRA index
-    raft::neighbors::cagra::index_params index_pams_;
+    raft::neighbors::cagra::index_params index_params_;
 
     /// Parameters to build CAGRA graph using IVF PQ
     std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params_;
