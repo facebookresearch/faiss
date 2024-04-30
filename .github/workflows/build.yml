@@ -19,8 +19,8 @@ jobs:
   #    - uses: ./.github/actions/build_cmake
   #      with:
   #        gpu: ON
-  windows-x86_64-conda:
-    runs-on: windows-2019
+  linux-x86_64-conda:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
