@@ -55,6 +55,8 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        echo "blah"
+        ls /home/runner/work/faiss/faiss/conda/faiss/meta.yaml
         conda config --set verbosity 2
         conda build faiss --python 3.11 -c pytorch
     - name: Conda build (CPU) w/ anaconda upload
