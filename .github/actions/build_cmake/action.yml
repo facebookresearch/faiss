@@ -15,11 +15,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup miniconda
-      uses: continuumio/miniconda3
-      with:
-        python-version: '3.11'
-        miniconda-version: latest
     - name: Set up environment
       shell: bash
       run: |
