@@ -40,6 +40,8 @@ runs:
       shell: bash
       run: |
         conda install -y -q cuda-toolkit -c "nvidia/label/cuda-11.8.0"
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Build all targets
       shell: bash
       run: |
