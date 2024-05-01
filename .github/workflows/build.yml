@@ -50,3 +50,12 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: avx2
+  linux-x86_64-conda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
