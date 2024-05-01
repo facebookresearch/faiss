@@ -59,3 +59,12 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - uses: ./.github/actions/build_conda
+  windows-x86_64-conda:
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
