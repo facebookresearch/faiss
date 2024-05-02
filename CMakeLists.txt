@@ -22,9 +22,9 @@ cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 
 set(FAISS_LANGUAGES CXX)
 
-#if(FAISS_ENABLE_GPU)
-#  list(APPEND FAISS_LANGUAGES CUDA)
-#ndif()
+if(FAISS_ENABLE_GPU)
+  list(APPEND FAISS_LANGUAGES CUDA)
+endif()
 
 if(FAISS_ENABLE_RAFT)
 include(cmake/thirdparty/fetch_rapids.cmake)
