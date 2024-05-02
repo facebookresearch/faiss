@@ -34,11 +34,11 @@ macro(configure_swigfaiss source)
       SWIG_FLAGS -DSWIGWIN
     )
   endif()
-#  if(FAISS_ENABLE_GPU)
-#    set_source_files_properties(${source} PROPERTIES
-#      COMPILE_DEFINITIONS GPU_WRAPPER
-#    )
-#  endif()
+  if(FAISS_ENABLE_GPU)
+    set_source_files_properties(${source} PROPERTIES
+      COMPILE_DEFINITIONS GPU_WRAPPER
+    )
+  endif()
 endmacro()
 
 # CMake's SWIG wrappers only allow tweaking certain settings at source level, so
@@ -119,14 +119,14 @@ else()
   target_compile_options(swigfaiss_avx512 PRIVATE /bigobj)
 endif()
 
-#if(FAISS_ENABLE_GPU)
-#  find_package(CUDAToolkit REQUIRED)
-#  if(FAISS_ENABLE_RAFT)
-#    find_package(raft COMPONENTS compiled distributed)
-#  endif()
-#  target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-#  target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-#  target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+if(FAISS_ENABLE_GPU)
+  find_package(CUDAToolkit REQUIRED)
+  if(FAISS_ENABLE_RAFT)
+    find_package(raft COMPONENTS compiled distributed)
+  endif()
+  target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+  target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+  target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 #endif()
 
 find_package(OpenMP REQUIRED)
