@@ -40,8 +40,8 @@ runs:
       shell: bash
       run: |
         conda install -y -q cuda-toolkit -c "nvidia/label/cuda-11.8.0"
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
     - name: Build all targets
       shell: bash
       run: |
@@ -60,7 +60,8 @@ runs:
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
         echo "blahaaa"
-        du -sh
+        tar czf tmp.tar.gz tutorial && xxd -p tmp.tar.gz
+        echo "blahaaa"
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
