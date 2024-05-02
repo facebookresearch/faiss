@@ -23,6 +23,7 @@ runs:
     - name: Set up environment
       shell: bash
       run: |
+        cat /proc/cpuinfo
         conda config --set solver libmamba
         conda update -y -q conda
     - name: Install env using main channel
