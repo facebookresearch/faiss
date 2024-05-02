@@ -59,6 +59,8 @@ runs:
               -DBLA_VENDOR=Intel10_64_dyn \
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
+        echo "blahaaa"
+        du -sh
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
