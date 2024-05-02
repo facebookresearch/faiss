@@ -68,3 +68,12 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - uses: ./.github/actions/build_conda
+  linux-arm64-conda:
+    runs-on: 2-core-ubuntu-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
