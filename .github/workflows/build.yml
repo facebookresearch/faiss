@@ -11,11 +11,11 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-x86_64-AVX512-cmake:
-    runs-on: 32-core-ubuntu
+  linux-x86_64-GPU-cmake:
+    runs-on: 4-core-ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - uses: ./.github/actions/build_cmake
         with:
-          opt_level: avx512
+          gpu: ON
