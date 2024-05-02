@@ -68,9 +68,9 @@ if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
 
 add_subdirectory(faiss)
 
-#if(FAISS_ENABLE_GPU)
-#  add_subdirectory(faiss/gpu)
-#endif()
+if(FAISS_ENABLE_GPU)
+  add_subdirectory(faiss/gpu)
+endif()
 
 if(FAISS_ENABLE_PYTHON)
   add_subdirectory(faiss/python)
