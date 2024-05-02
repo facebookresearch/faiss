@@ -12,7 +12,6 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-GPU-cmake:
-    needs: linux-x86_64-AVX2-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
