@@ -12,7 +12,7 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-GPU-cmake:
-    runs-on: 4-core-ubuntu-20.04
+    runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
