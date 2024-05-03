@@ -13,7 +13,7 @@ env:
 jobs:
   osx-arm64-packages:
 #    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
