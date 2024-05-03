@@ -255,4 +255,10 @@ bool TimeoutCallback::want_interrupt() {
     return false;
 }
 
+void TimeoutCallback::reset(double timeout_in_seconds) {
+    auto tc(new faiss::TimeoutCallback());
+    faiss::InterruptCallback::instance.reset(tc);
+    tc->set_timeout(timeout_in_seconds);
+}
+
 } // namespace faiss

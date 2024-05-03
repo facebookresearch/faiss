@@ -1041,7 +1041,9 @@ PyObject *swig_ptr (PyObject *a)
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
 }
+%}
 
+%inline %{
 
 struct PythonInterruptCallback: faiss::InterruptCallback {
 
@@ -1056,15 +1058,18 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
         return err == -1;
     }
 
+    static void reset() {
+        faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
+    }
 };
+
 %}
 
 %init %{
     /* needed, else crash at runtime */
     import_array();
 
-    faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
-
+    PythonInterruptCallback::reset();
 %}
 
 // return a pointer usable as input for functions that expect pointers

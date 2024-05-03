@@ -31,9 +31,7 @@ TEST(TestCallback, timeout) {
 
     faiss::Clustering kmeans(d, k, cp);
 
-    auto tc(new faiss::TimeoutCallback());
-    faiss::InterruptCallback::instance.reset(tc);
-    tc->set_timeout(0.010);
+    faiss::TimeoutCallback::reset(0.010);
     EXPECT_THROW(kmeans.train(n, vecs.data(), *index), faiss::FaissException);
     delete index;
 }

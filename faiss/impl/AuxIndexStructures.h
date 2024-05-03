@@ -166,6 +166,7 @@ struct TimeoutCallback : InterruptCallback {
     double timeout;
     bool want_interrupt() override;
     void set_timeout(double timeout_in_seconds);
+    static void reset(double timeout_in_seconds);
 };
 
 /// set implementation optimized for fast access.
