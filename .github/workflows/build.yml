@@ -103,7 +103,7 @@ jobs:
           label: main
   linux-arm64-packages:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: 4-core-arm
+    runs-on: 2-core-ubuntu-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
