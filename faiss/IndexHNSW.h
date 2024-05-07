@@ -153,7 +153,7 @@ struct IndexHNSW2Level : IndexHNSW {
 
 struct IndexHNSWCagra : IndexHNSW {
     IndexHNSWCagra();
-    IndexHNSWCagra(int d, int M);
+    IndexHNSWCagra(int d, int M, MetricType metric = METRIC_L2);
 };
 
 } // namespace faiss

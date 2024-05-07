@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <memory>
 #include <queue>
 #include <unordered_set>
 
@@ -932,8 +933,15 @@ IndexHNSWCagra::IndexHNSWCagra() {
     is_trained = true;
 }
 
-IndexHNSWCagra::IndexHNSWCagra(int d, int M)
-        : IndexHNSW(new IndexFlatL2(d), M) {
+IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
+        : IndexHNSW(
+                  (metric == METRIC_L2)
+                          ? static_cast<IndexFlat*>(new IndexFlatL2(d))
+                          : static_cast<IndexFlat*>(new IndexFlatIP(d)),
+                  M) {
+    FAISS_THROW_IF_NOT_MSG(
+            ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
+            "unsupported metric type for IndexHNSWCagra");
     own_fields = true;
     is_trained = true;
     init_level0 = true;

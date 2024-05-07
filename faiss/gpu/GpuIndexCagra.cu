@@ -160,10 +160,9 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
 
     GpuIndex::copyFrom(index);
 
-    auto base_index = index->storage;
-    auto l2_index = dynamic_cast<IndexFlatL2*>(base_index);
-    FAISS_ASSERT(l2_index);
-    auto distances = l2_index->get_xb();
+    auto base_index = dynamic_cast<IndexFlat*>(index->storage);
+    FAISS_ASSERT(base_index);
+    auto distances = base_index->get_xb();
 
     auto hnsw = index->hnsw;
     // copy level 0 to a dense knn graph matrix
@@ -213,7 +212,12 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     if (index->storage and index->own_fields) {
         delete index->storage;
     }
-    index->storage = new IndexFlatL2(index->d);
+
+    if (this->metric_type == METRIC_L2) {
+        index->storage = new IndexFlatL2(index->d);
+    } else if (this->metric_type == METRIC_INNER_PRODUCT) {
+        index->storage = new IndexFlatIP(index->d);
+    }
     index->own_fields = true;
     index->keep_max_size_level0 = true;
     index->hnsw.reset();

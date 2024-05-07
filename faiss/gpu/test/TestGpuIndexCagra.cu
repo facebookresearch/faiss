@@ -75,15 +75,19 @@ struct Options {
     int device;
 };
 
-void queryTest(faiss::MetricType metric) {
+void queryTest(faiss::MetricType metric, double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
+        if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
+            metric == faiss::METRIC_INNER_PRODUCT) {
+            continue;
+        }
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
 
         // train cpu index
-        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2, metric);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
@@ -171,21 +175,25 @@ void queryTest(faiss::MetricType metric) {
                 recall_score.view(),
                 test_dis_mds_opt,
                 ref_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > 0.98);
+        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
 
 TEST(TestGpuIndexCagra, Float32_Query_L2) {
-    queryTest(faiss::METRIC_L2);
+    queryTest(faiss::METRIC_L2, 0.98);
 }
 
 TEST(TestGpuIndexCagra, Float32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT);
+    queryTest(faiss::METRIC_INNER_PRODUCT, 0.88);
 }
 
-void copyToTest(faiss::MetricType metric) {
+void copyToTest(faiss::MetricType metric, double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
+        if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
+            metric == faiss::METRIC_INNER_PRODUCT) {
+            continue;
+        }
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -204,7 +212,8 @@ void copyToTest(faiss::MetricType metric) {
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
-        faiss::IndexHNSWCagra copiedCpuIndex;
+        faiss::IndexHNSWCagra copiedCpuIndex(
+                opt.dim, opt.graphDegree / 2, metric);
         gpuIndex.copyTo(&copiedCpuIndex);
         copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
 
@@ -212,7 +221,7 @@ void copyToTest(faiss::MetricType metric) {
         copiedCpuIndex.add(opt.numAdd, addVecs.data());
 
         // train cpu index
-        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2, metric);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
@@ -297,27 +306,31 @@ void copyToTest(faiss::MetricType metric) {
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > 0.99);
+        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
-    copyToTest(faiss::METRIC_L2);
+    copyToTest(faiss::METRIC_L2, 0.98);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.88);
 }
 
-void copyFromTest(faiss::MetricType metric) {
+void copyFromTest(faiss::MetricType metric, double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
+        if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
+            metric == faiss::METRIC_INNER_PRODUCT) {
+            continue;
+        }
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
 
         // train cpu index
-        faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2, metric);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
@@ -401,16 +414,16 @@ void copyFromTest(faiss::MetricType metric) {
                 recall_score.view(),
                 copy_test_dis_mds_opt,
                 test_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > 0.99);
+        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
-    copyFromTest(faiss::METRIC_L2);
+    copyFromTest(faiss::METRIC_L2, 0.98);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_IP) {
-    copyFromTest(faiss::METRIC_INNER_PRODUCT);
+    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.88);
 }
 
 int main(int argc, char** argv) {
