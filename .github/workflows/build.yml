@@ -12,15 +12,7 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   gpu-test-ubuntu20:
-    runs-on: 4-core-ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/build_cmake
-        with:
-          gpu: ON
-  gpu-test-ubuntu22:
-    runs-on: 4-core-ubuntu-gpu-t4
+    runs-on: faiss-avx512
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
