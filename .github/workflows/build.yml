@@ -12,7 +12,7 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   gpu-test-ubuntu20:
-    runs-on: faiss-avx512
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
