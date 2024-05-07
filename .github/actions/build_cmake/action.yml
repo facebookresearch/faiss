@@ -59,6 +59,7 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=Intel10_64_dyn \
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+              -DCMAKE_CXX_FLAGS='-Wall'
               .
         make -k -C build -j$(nproc)
     - name: C++ tests

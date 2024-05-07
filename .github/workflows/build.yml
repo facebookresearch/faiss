@@ -11,15 +11,19 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  osx-arm64-packages:
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: macos-14
+  gpu-test-ubuntu20:
+    runs-on: 4-core-ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-#        with:
-#          label: main
+          gpu: ON
+  gpu-test-ubuntu22:
+    runs-on: 4-core-ubuntu-gpu-t4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
