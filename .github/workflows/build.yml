@@ -11,28 +11,3 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  avx512-test:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/build_cmake
-        with:
-          opt_level: avx512
-  gpu-test-ubuntu20:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/build_cmake
-        with:
-          gpu: ON
-  raft-test-ubuntu20:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/build_cmake
-        with:
-          gpu: ON
-          raft: ON

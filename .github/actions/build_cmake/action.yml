@@ -23,7 +23,6 @@ runs:
     - name: Set up environment
       shell: bash
       run: |
-        cat /proc/cpuinfo
         conda config --set solver libmamba
         conda update -y -q conda
     - name: Install env using main channel
@@ -41,8 +40,6 @@ runs:
       shell: bash
       run: |
         conda install -y -q cuda-toolkit -c "nvidia/label/cuda-11.8.0"
-#    - name: Setup tmate session
-#      uses: mxschmitt/action-tmate@v3
     - name: Build all targets
       shell: bash
       run: |
@@ -59,6 +56,7 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=Intel10_64_dyn \
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+              -DCMAKE_SHARED_LINKER_FLAGS="-lc" -DCMAKE_EXE_LINKER_FLAGS="-lc" \
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
