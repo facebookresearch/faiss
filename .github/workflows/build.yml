@@ -11,14 +11,6 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-x86_64-GPU-cmake:
-    runs-on: 4-core-ubuntu-gpu-t4
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/build_cmake
-        with:
-          gpu: ON
   linux-x86_64-GPU-w-RAFT-cmake:
     runs-on: 4-core-ubuntu-gpu-t4
     steps:

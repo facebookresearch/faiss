@@ -38,9 +38,6 @@ set(FAISS_TEST_SRC
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc")
-
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
   target_link_libraries(faiss_test PRIVATE faiss)
 endif()
