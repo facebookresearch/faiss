@@ -34,7 +34,16 @@ struct IndexHNSW : Index {
     bool own_fields = false;
     Index* storage = nullptr;
 
+    // When set to false, level 0 in the knn graph is not initialized.
+    // This option is used by GpuIndexCagra::copyTo(IndexHNSWCagra*)
+    // as level 0 knn graph is copied over from the index built by
+    // GpuIndexCagra.
     bool init_level0 = true;
+
+    // When set to true, all neighbors in level 0 are filled up
+    // to the maximum size allowed (2 * M). This option is used by
+    // IndexHHNSWCagra to create a full base layer graph that is
+    // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);

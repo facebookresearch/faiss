@@ -765,7 +765,8 @@ void write_index(const Index* idx, IOWriter* f) {
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);
         write_index_header(idxhnsw, f);
-        WRITE1(idxhnsw->keep_max_size_level0);
+        if (h == fourcc("IHNc"))
+            WRITE1(idxhnsw->keep_max_size_level0);
         write_HNSW(&idxhnsw->hnsw, f);
         write_index(idxhnsw->storage, f);
     } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {

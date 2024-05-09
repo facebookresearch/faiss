@@ -25,7 +25,6 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
-#include "GpuIndexIVFPQ.h"
 
 namespace faiss {
 struct IndexHNSWCagra;
@@ -232,7 +231,7 @@ struct SearchParametersCagra : SearchParameters {
 
     uint32_t num_random_samplings = 1;
     /// Bit mask used for initial random seed node selection.
-    uint64_t rand_xor_mask = 0x128394;
+    uint64_t seed = 0x128394;
 };
 
 struct GpuIndexCagra : public GpuIndex {

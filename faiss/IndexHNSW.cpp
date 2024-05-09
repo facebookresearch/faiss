@@ -7,8 +7,6 @@
 
 // -*- c++ -*-
 
-#include <iostream>
-
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>

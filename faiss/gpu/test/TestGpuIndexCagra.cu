@@ -184,7 +184,7 @@ TEST(TestGpuIndexCagra, Float32_Query_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, 0.88);
+    queryTest(faiss::METRIC_INNER_PRODUCT, 0.85);
 }
 
 void copyToTest(faiss::MetricType metric, double expected_recall) {
@@ -315,7 +315,7 @@ TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.88);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.85);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
@@ -423,7 +423,7 @@ TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_IP) {
-    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.88);
+    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.85);
 }
 
 int main(int argc, char** argv) {

@@ -961,7 +961,8 @@ Index* read_index(IOReader* f, int io_flags) {
         if (h == fourcc("IHNc"))
             idxhnsw = new IndexHNSWCagra();
         read_index_header(idxhnsw, f);
-        READ1(idxhnsw->keep_max_size_level0);
+        if (h == fourcc("IHNc"))
+            READ1(idxhnsw->keep_max_size_level0);
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = true;

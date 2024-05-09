@@ -25,7 +25,6 @@
 #include <cstddef>
 #include <faiss/gpu/impl/RaftCagra.cuh>
 #include <optional>
-#include "GpuIndexCagra.h"
 
 namespace faiss {
 namespace gpu {
@@ -146,7 +145,7 @@ void GpuIndexCagra::searchImpl_(
             params->hashmap_min_bitlen,
             params->hashmap_max_fill_rate,
             params->num_random_samplings,
-            params->rand_xor_mask);
+            params->seed);
 
     if (not search_params) {
         delete params;
