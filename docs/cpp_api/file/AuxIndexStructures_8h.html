@@ -618,7 +618,8 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallbackE">
 <span id="_CPPv3N5faiss17InterruptCallbackE"></span><span id="_CPPv2N5faiss17InterruptCallbackE"></span><span id="faiss::InterruptCallback"></span><span class="target" id="structfaiss_1_1InterruptCallback"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InterruptCallback</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17InterruptCallbackE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1TimeoutCallback.html#structfaiss_1_1TimeoutCallback"><span class="std std-ref">faiss::TimeoutCallback</span></a></p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallback14want_interruptEv">
@@ -651,7 +652,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallback14is_interruptedEv">
 <span id="_CPPv3N5faiss17InterruptCallback14is_interruptedEv"></span><span id="_CPPv2N5faiss17InterruptCallback14is_interruptedEv"></span><span id="faiss::InterruptCallback::is_interrupted"></span><span class="target" id="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_interrupted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17InterruptCallback14is_interruptedEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>same as <a class="reference internal" href="../struct/structfaiss_1_1InterruptCallback.html#structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"><span class="std std-ref">check()</span></a> but return true if is interrupted instead of throwing. Can be called from multiple threads. </p>
+<dd><p>same as <a class="reference internal" href="../struct/structfaiss_1_1TimeoutCallback.html#structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"><span class="std std-ref">check()</span></a> but return true if is interrupted instead of throwing. Can be called from multiple threads. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -671,6 +672,85 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallback8instanceE">
 <span id="_CPPv3N5faiss17InterruptCallback8instanceE"></span><span id="_CPPv2N5faiss17InterruptCallback8instanceE"></span><span id="faiss::InterruptCallback::instance__std::unique_ptr:InterruptCallback:"></span><span class="target" id="structfaiss_1_1InterruptCallback_1acf135176cd744921e4981390c6a7a929"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5faiss17InterruptCallbackE" title="faiss::InterruptCallback"><span class="n"><span class="pre">InterruptCallback</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17InterruptCallback8instanceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallbackE">
+<span id="_CPPv3N5faiss15TimeoutCallbackE"></span><span id="_CPPv2N5faiss15TimeoutCallbackE"></span><span id="faiss::TimeoutCallback"></span><span class="target" id="structfaiss_1_1TimeoutCallback"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TimeoutCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss17InterruptCallbackE" title="faiss::InterruptCallback"><span class="n"><span class="pre">InterruptCallback</span></span></a><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallbackE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback14want_interruptEv">
+<span id="_CPPv3N5faiss15TimeoutCallback14want_interruptEv"></span><span id="_CPPv2N5faiss15TimeoutCallback14want_interruptEv"></span><span id="faiss::TimeoutCallback::want_interrupt"></span><span class="target" id="structfaiss_1_1TimeoutCallback_1a23002f252121513f76d66c31a1ad6102"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">want_interrupt</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback14want_interruptEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback11set_timeoutEd">
+<span id="_CPPv3N5faiss15TimeoutCallback11set_timeoutEd"></span><span id="_CPPv2N5faiss15TimeoutCallback11set_timeoutEd"></span><span id="faiss::TimeoutCallback::set_timeout__double"></span><span class="target" id="structfaiss_1_1TimeoutCallback_1a9ea457a2845a5c39798090807163bac5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_timeout</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout_in_seconds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback11set_timeoutEd" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback5startE">
+<span id="_CPPv3N5faiss15TimeoutCallback5startE"></span><span id="_CPPv2N5faiss15TimeoutCallback5startE"></span><span id="faiss::TimeoutCallback::start__std::chrono::time_point:std::chrono::steady_clock:"></span><span class="target" id="structfaiss_1_1TimeoutCallback_1aaa80c32084303235b34096c6bc576641"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">chrono</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">time_point</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">chrono</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">steady_clock</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback5startE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback7timeoutE">
+<span id="_CPPv3N5faiss15TimeoutCallback7timeoutE"></span><span id="_CPPv2N5faiss15TimeoutCallback7timeoutE"></span><span id="faiss::TimeoutCallback::timeout__double"></span><span class="target" id="structfaiss_1_1TimeoutCallback_1ab3127a32c4c9c515eb9bd43d3b87c5cb"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">timeout</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback7timeoutE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback5resetEd">
+<span id="_CPPv3N5faiss15TimeoutCallback5resetEd"></span><span id="_CPPv2N5faiss15TimeoutCallback5resetEd"></span><span id="faiss::TimeoutCallback::reset__double"></span><span class="target" id="structfaiss_1_1TimeoutCallback_1a7a1dd0bdb62f30fae483f6f7da2b0cb0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout_in_seconds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback5resetEd" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback14clear_instanceEv">
+<span id="_CPPv3N5faiss15TimeoutCallback14clear_instanceEv"></span><span id="_CPPv2N5faiss15TimeoutCallback14clear_instanceEv"></span><span id="faiss::TimeoutCallback::clear_instance"></span><span class="target" id="structfaiss_1_1InterruptCallback_1a9a881ae6d76470f2f801013b694a4569"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear_instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback14clear_instanceEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback5checkEv">
+<span id="_CPPv3N5faiss15TimeoutCallback5checkEv"></span><span id="_CPPv2N5faiss15TimeoutCallback5checkEv"></span><span id="faiss::TimeoutCallback::check"></span><span class="target" id="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback5checkEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>check if:<ul class="simple">
+<li><p>an interrupt callback is set</p></li>
+<li><p>the callback returns true if this is the case, then throw an exception. Should not be called from multiple threads. </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback14is_interruptedEv">
+<span id="_CPPv3N5faiss15TimeoutCallback14is_interruptedEv"></span><span id="_CPPv2N5faiss15TimeoutCallback14is_interruptedEv"></span><span id="faiss::TimeoutCallback::is_interrupted"></span><span class="target" id="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_interrupted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback14is_interruptedEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>same as <a class="reference internal" href="../struct/structfaiss_1_1TimeoutCallback.html#structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"><span class="std std-ref">check()</span></a> but return true if is interrupted instead of throwing. Can be called from multiple threads. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback15get_period_hintE6size_t">
+<span id="_CPPv3N5faiss15TimeoutCallback15get_period_hintE6size_t"></span><span id="_CPPv2N5faiss15TimeoutCallback15get_period_hintE6size_t"></span><span id="faiss::TimeoutCallback::get_period_hint__s"></span><span class="target" id="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_period_hint</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">flops</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback15get_period_hintE6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>assuming each iteration takes a certain number of flops, what is a reasonable interval to check for interrupts? </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback4lockE">
+<span id="_CPPv3N5faiss15TimeoutCallback4lockE"></span><span id="_CPPv2N5faiss15TimeoutCallback4lockE"></span><span id="faiss::TimeoutCallback::lock__std::mutex"></span><span class="target" id="structfaiss_1_1InterruptCallback_1a2b7c49b103b71e89086cbb1a0a30a6eb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lock</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback4lockE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15TimeoutCallback8instanceE">
+<span id="_CPPv3N5faiss15TimeoutCallback8instanceE"></span><span id="_CPPv2N5faiss15TimeoutCallback8instanceE"></span><span id="faiss::TimeoutCallback::instance__std::unique_ptr:InterruptCallback:"></span><span class="target" id="structfaiss_1_1InterruptCallback_1acf135176cd744921e4981390c6a7a929"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5faiss17InterruptCallbackE" title="faiss::InterruptCallback"><span class="n"><span class="pre">InterruptCallback</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15TimeoutCallback8instanceE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

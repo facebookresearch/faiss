@@ -307,6 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TimeoutCallback.html">Struct faiss::TimeoutCallback</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
@@ -418,7 +419,8 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallbackE">
 <span id="_CPPv3N5faiss17InterruptCallbackE"></span><span id="_CPPv2N5faiss17InterruptCallbackE"></span><span id="faiss::InterruptCallback"></span><span class="target" id="structfaiss_1_1InterruptCallback"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InterruptCallback</span></span></span><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Subclassed by <a class="reference internal" href="structfaiss_1_1TimeoutCallback.html#structfaiss_1_1TimeoutCallback"><span class="std std-ref">faiss::TimeoutCallback</span></a></p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallback14want_interruptEv">
@@ -451,7 +453,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17InterruptCallback14is_interruptedEv">
 <span id="_CPPv3N5faiss17InterruptCallback14is_interruptedEv"></span><span id="_CPPv2N5faiss17InterruptCallback14is_interruptedEv"></span><span id="faiss::InterruptCallback::is_interrupted"></span><span class="target" id="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_interrupted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>same as <a class="reference internal" href="#structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"><span class="std std-ref">check()</span></a> but return true if is interrupted instead of throwing. Can be called from multiple threads. </p>
+<dd><p>same as <a class="reference internal" href="structfaiss_1_1TimeoutCallback.html#structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2"><span class="std std-ref">check()</span></a> but return true if is interrupted instead of throwing. Can be called from multiple threads. </p>
 </dd></dl>
 
 <dl class="cpp function">
