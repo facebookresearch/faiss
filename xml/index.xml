@@ -8416,6 +8416,19 @@
     <member refid="classfaiss_1_1ThreadedIndex_1a3bfc1a3002a150d850b20dc40c5d31fe" kind="function"><name>onAfterRemoveIndex</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1a26c2b3a37f612f8654a855831ad828a6" kind="function"><name>waitAndHandleFutures</name></member>
   </compound>
+  <compound refid="structfaiss_1_1TimeoutCallback" kind="struct"><name>faiss::TimeoutCallback</name>
+    <member refid="structfaiss_1_1TimeoutCallback_1aaa80c32084303235b34096c6bc576641" kind="variable"><name>start</name></member>
+    <member refid="structfaiss_1_1TimeoutCallback_1ab3127a32c4c9c515eb9bd43d3b87c5cb" kind="variable"><name>timeout</name></member>
+    <member refid="structfaiss_1_1TimeoutCallback_1a23002f252121513f76d66c31a1ad6102" kind="function"><name>want_interrupt</name></member>
+    <member refid="structfaiss_1_1TimeoutCallback_1a9ea457a2845a5c39798090807163bac5" kind="function"><name>set_timeout</name></member>
+    <member refid="structfaiss_1_1TimeoutCallback_1a7a1dd0bdb62f30fae483f6f7da2b0cb0" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1a9a881ae6d76470f2f801013b694a4569" kind="function"><name>clear_instance</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" kind="function"><name>check</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" kind="function"><name>is_interrupted</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" kind="function"><name>get_period_hint</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1a2b7c49b103b71e89086cbb1a0a30a6eb" kind="variable"><name>lock</name></member>
+    <member refid="structfaiss_1_1InterruptCallback_1acf135176cd744921e4981390c6a7a929" kind="variable"><name>instance</name></member>
+  </compound>
   <compound refid="structfaiss_1_1gpu_1_1ToCPUCloner" kind="struct"><name>faiss::gpu::ToCPUCloner</name>
     <member refid="structfaiss_1_1gpu_1_1ToCPUCloner_1ac176600d3e3e5c79ce334ed12e835d50" kind="function"><name>merge_index</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToCPUCloner_1a213e9050200bc81d808892216f6a578c" kind="function"><name>clone_Index</name></member>

@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="166" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="166" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="174" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="174" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="167" column="13" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="167" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="175" column="13" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="175" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="169" column="14" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="169" bodyend="169"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="177" column="14" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="177" bodyend="177"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -65,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="172" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="172" bodyend="174"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="180" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="180" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="177" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="177" bodyend="179"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="185" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="185" bodyend="187"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="182" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="182" bodyend="189"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="190" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="190" bodyend="197"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -105,7 +105,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/AuxIndexStructures.h" line="165" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="165" bodyend="190"/>
+    <location file="faiss/impl/AuxIndexStructures.h" line="173" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="173" bodyend="198"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>advance</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>get</name></member>

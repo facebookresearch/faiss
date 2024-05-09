@@ -23,6 +23,7 @@
     <innerclass refid="structfaiss_1_1RangeQueryResult" prot="public">faiss::RangeQueryResult</innerclass>
     <innerclass refid="structfaiss_1_1RangeSearchPartialResult" prot="public">faiss::RangeSearchPartialResult</innerclass>
     <innerclass refid="structfaiss_1_1InterruptCallback" prot="public">faiss::InterruptCallback</innerclass>
+    <innerclass refid="structfaiss_1_1TimeoutCallback" prot="public">faiss::TimeoutCallback</innerclass>
     <innerclass refid="structfaiss_1_1VisitedTable" prot="public">faiss::VisitedTable</innerclass>
     <innerclass refid="structfaiss_1_1CodePacker" prot="public">faiss::CodePacker</innerclass>
     <innerclass refid="structfaiss_1_1CodePackerFlat" prot="public">faiss::CodePackerFlat</innerclass>
