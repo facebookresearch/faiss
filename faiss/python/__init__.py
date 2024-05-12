@@ -316,3 +316,14 @@ def deserialize_index_binary(data):
     reader = VectorIOReader()
     copy_array_to_vector(data, reader.data)
     return read_index_binary(reader)
+
+
+class TimeoutGuard:
+    def __init__(self, timeout_in_seconds: float):
+        self.timeout = timeout_in_seconds
+
+    def __enter__(self):
+        TimeoutCallback.reset(self.timeout)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        PythonInterruptCallback.reset()
