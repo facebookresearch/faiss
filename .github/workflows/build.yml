@@ -11,7 +11,7 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-x86_64-GPU-w-RAFT-cmake:
+  linux-x86_64-GPU-cmake:
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -19,4 +19,3 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           gpu: ON
-          raft: ON
