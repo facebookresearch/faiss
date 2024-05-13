@@ -50,6 +50,15 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: avx2
+  linux-x86_64-GPU-cmake:
+    needs: linux-x86_64-AVX2-cmake
+    runs-on: 4-core-ubuntu-gpu-t4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
   linux-x86_64-GPU-w-RAFT-cmake:
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
