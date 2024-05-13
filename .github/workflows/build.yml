@@ -50,6 +50,15 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: avx2
+  linux-x86_64-AVX512-cmake:
+    if: false # TODO: enable when GitHub Actions adds AVX-512 hosts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/build_cmake
+        with:
+          opt_level: avx512
   linux-x86_64-GPU-cmake:
     needs: linux-x86_64-AVX2-cmake
     runs-on: 4-core-ubuntu-gpu-t4
