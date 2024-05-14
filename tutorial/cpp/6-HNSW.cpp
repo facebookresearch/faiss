@@ -55,8 +55,6 @@ int main() {
             printf("\n");
         }
 
-        index.search(nq, xq, k, D, I);
-
         printf("D=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
