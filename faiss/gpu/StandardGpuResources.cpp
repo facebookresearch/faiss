@@ -260,9 +260,9 @@ void StandardGpuResourcesImpl::setDefaultStream(
 #if defined USE_NVIDIA_RAFT
         // delete the raft handle for this device, which will be initialized
         // with the updated stream during any subsequent calls to getRaftHandle
-        auto it = raftHandles_.find(device);
-        if (it != raftHandles_.end()) {
-            raftHandles_.erase(it);
+        auto it2 = raftHandles_.find(device);
+        if (it2 != raftHandles_.end()) {
+            raftHandles_.erase(it2);
         }
 #endif
     }
@@ -286,9 +286,9 @@ void StandardGpuResourcesImpl::revertDefaultStream(int device) {
 #if defined USE_NVIDIA_RAFT
         // delete the raft handle for this device, which will be initialized
         // with the updated stream during any subsequent calls to getRaftHandle
-        auto it = raftHandles_.find(device);
-        if (it != raftHandles_.end()) {
-            raftHandles_.erase(it);
+        auto it2 = raftHandles_.find(device);
+        if (it2 != raftHandles_.end()) {
+            raftHandles_.erase(it2);
         }
 #endif
     }
