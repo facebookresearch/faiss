@@ -49,12 +49,10 @@ outputs:
       host:
         - python {{ python }}
         - numpy >=1.19,<2
-        - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
         - numpy >=1.19,<2
         - packaging
-        - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
         - numpy
