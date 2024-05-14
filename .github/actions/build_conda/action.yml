@@ -42,6 +42,8 @@ runs:
         # conda config --set verbosity 3
         conda update -y -q conda
         conda install -y -q conda-build git-lfs
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
