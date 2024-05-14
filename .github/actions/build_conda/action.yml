@@ -41,7 +41,7 @@ runs:
         # conda config --set solver libmamba
         # conda config --set verbosity 3
         conda update -y -q conda
-        conda install -y -q conda-build
+        conda install -y -q conda-build git-lfs
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
