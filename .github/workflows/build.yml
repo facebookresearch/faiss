@@ -11,7 +11,7 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-x86_64-GPU-RAFT-packages-CUDA12-1-1:
+  linux-x86_64-GPU-packages-CUDA-12-1-1:
     #if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: 4-core-ubuntu-gpu-t4
     env:
@@ -25,6 +25,5 @@ jobs:
       - uses: ./.github/actions/build_conda
         with:
 #          label: main
-          raft: "ON"
           cuda: "12.1.1"
           compiler_version: "11.2"
