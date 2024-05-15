@@ -18,6 +18,13 @@ package:
   name: faiss-pkg
   version: {{ version }}
 
+requirements:
+  build:
+        - {{ compiler('cxx') }}
+        - cmake >=3.24.0
+        - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
+
 build:
   number: {{ number }}
 
@@ -45,13 +52,9 @@ outputs:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
-        - cmake >=3.24.0
-        - make  # [not win]
         - mkl-devel =2023  # [x86_64]
-        - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
@@ -78,11 +81,8 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig
-        - cmake >=3.24.0
-        - make  # [not win]
       host:
         - python {{ python }}
         - numpy >=1.19,<2
