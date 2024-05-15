@@ -116,6 +116,56 @@ jobs:
       - uses: ./.github/actions/build_conda
         with:
           label: main
+  linux-x86_64-GPU-RAFT-packages-CUDA11-8-0:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          raft: "ON"
+          cuda: "11.8.0"
+          compiler_version: "11.2"
+  linux-x86_64-GPU-packages-CUDA-12-1-1:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          cuda: "12.1.1"
+          compiler_version: "11.2"
+  linux-x86_64-GPU-RAFT-packages-CUDA12-1-1:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          label: main
+          raft: "ON"
+          cuda: "12.1.1"
+          compiler_version: "11.2"
   windows-x86_64-packages:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2019
