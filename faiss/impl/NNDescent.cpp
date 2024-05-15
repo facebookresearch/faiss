@@ -154,15 +154,20 @@ NNDescent::NNDescent(const int d, const int K) : K(K), d(d) {
 NNDescent::~NNDescent() {}
 
 void NNDescent::join(DistanceComputer& qdis) {
+    idx_t check_period = InterruptCallback::get_period_hint(d * search_L);
+    for (idx_t i0 = 0; i0 < (idx_t)ntotal; i0 += check_period) {
+        idx_t i1 = std::min(i0 + check_period, (idx_t)ntotal);
 #pragma omp parallel for default(shared) schedule(dynamic, 100)
-    for (int n = 0; n < ntotal; n++) {
-        graph[n].join([&](int i, int j) {
-            if (i != j) {
-                float dist = qdis.symmetric_dis(i, j);
-                graph[i].insert(j, dist);
-                graph[j].insert(i, dist);
-            }
-        });
+        for (idx_t n = i0; n < i1; n++) {
+            graph[n].join([&](int i, int j) {
+                if (i != j) {
+                    float dist = qdis.symmetric_dis(i, j);
+                    graph[i].insert(j, dist);
+                    graph[j].insert(i, dist);
+                }
+            });
+        }
+        InterruptCallback::check();
     }
 }
 
