@@ -37,7 +37,6 @@ int main() {
         xq[d * i] += i / 1000.;
     }
 
-    int nlist = 100;
     int k = 4;
 
     faiss::IndexHNSWFlat index(d, 32);
