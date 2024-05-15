@@ -10,6 +10,7 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/utils/distances.h>
+#include <cmath>
 #include <type_traits>
 
 namespace faiss {
@@ -130,4 +131,23 @@ inline float VectorDistance<METRIC_Jaccard>::operator()(
     return accu_num / accu_den;
 }
 
+template <>
+inline float VectorDistance<METRIC_NaNEuclidean>::operator()(
+        const float* x,
+        const float* y) const {
+    // https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+    float accu = 0;
+    size_t present = 0;
+    for (size_t i = 0; i < d; i++) {
+        if (!std::isnan(x[i]) && !std::isnan(y[i])) {
+            float diff = x[i] - y[i];
+            accu += diff * diff;
+            present++;
+        }
+    }
+    if (present == 0) {
+        return NAN;
+    }
+    return float(d) / float(present) * accu;
+}
 } // namespace faiss
