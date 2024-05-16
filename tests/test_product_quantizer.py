@@ -26,7 +26,6 @@ class TestProductQuantizer(unittest.TestCase):
         x2 = pq.decode(codes)
         diff = ((x - x2)**2).sum()
 
-        # print("diff=", diff)
         # diff= 4418.0562
         self.assertGreater(5000, diff)
 
@@ -71,7 +70,6 @@ class TestProductQuantizer(unittest.TestCase):
 
     def test_codec(self):
         for i in range(16):
-            print("Testing nbits=%d" % (i + 1))
             self.do_test_codec(i + 1)
 
 

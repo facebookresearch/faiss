@@ -32,9 +32,6 @@ void test_approx_topk(
         const uint32_t k,
         const uint32_t nDatasetsToTest,
         const bool verbose) {
-    if (verbose) {
-        printf("-----------\n");
-    }
 
     // generate random data
     std::default_random_engine rng(123);
@@ -100,10 +97,6 @@ void test_approx_topk(
                     approxDistances.data(),
                     approxIndices.data());
         } catch (const faiss::FaissException&) {
-            //
-            if (verbose) {
-                printf("Skipping the case.\n");
-            }
             return;
         }
 
@@ -124,15 +117,6 @@ void test_approx_topk(
                 sqrError += diff * diff;
 
                 bGotMismatches = true;
-
-                if (verbose) {
-                    printf("i=%d, bs.d=%f, bs.i=%d, app.d=%f, app.i=%d\n",
-                           i,
-                           baselineDistances[i],
-                           baselineIndices[i],
-                           approxDistances[i],
-                           approxIndices[i]);
-                }
             } else {
                 if (baselineIndices[i] != approxIndices[i]) {
                     nSoftMismatches += 1;
@@ -143,9 +127,6 @@ void test_approx_topk(
         }
 
         if (bGotMismatches) {
-            if (verbose) {
-                printf("\n");
-            }
         }
 
         //
@@ -159,24 +140,6 @@ void test_approx_topk(
                 nMissed += 1;
             }
         }
-    }
-
-    if (verbose) {
-        printf("%d, %d, %d, %d, %d, %d: %ld, %ld, %ld, %f, %ld, %ld, %f, %f\n",
-               NBUCKETS,
-               N,
-               beamSize,
-               nPerBeam,
-               k,
-               nDatasetsToTest,
-               nMatches,
-               nSoftMismatches,
-               nHardMismatches,
-               sqrError,
-               nAvailable,
-               nMissed,
-               timeBaseline,
-               timeApprox);
     }
 
     // just confirm that the error is not crazy

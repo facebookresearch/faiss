@@ -102,7 +102,6 @@ class TestCallbacks(unittest.TestCase):
                 reader = faiss.BufferedIOReader(reader, bsz)
 
                 y = np.zeros_like(x)
-                print('nbytes=', y.nbytes)
                 reader(faiss.swig_ptr(y), y.nbytes, 1)
 
             np.testing.assert_array_equal(x, y)
