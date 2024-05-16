@@ -51,16 +51,9 @@ TEST(MEM_LEAK, ivfflat) {
                     D.data(),
                     I.data());
             if (i % 100 == 0) {
-                printf("[%.2f s] BS %d %d: %ld kB %.2f bytes/it\r",
-                       (getmillisecs() - t0) / 1000,
-                       bs,
-                       i,
-                       get_mem_usage_kb(),
-                       (get_mem_usage_kb() - m0) * 1024.0 / (i + 1));
                 fflush(stdout);
             }
         }
-        printf("\n");
         EXPECT_GE(50 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
     }
 }

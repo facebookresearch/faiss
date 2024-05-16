@@ -74,8 +74,6 @@ void make_index_slices(
     for (int i = 0; i < total_size; i++) {
         sub_indexes.emplace_back(clone_index(trained_index));
 
-        printf("preparing sub-index # %d\n", i);
-
         Index* index = sub_indexes.back().get();
 
         auto xb = make_data(nb * d);
@@ -122,13 +120,11 @@ int test_sliding_window(const char* index_key) {
     auto xq = make_data(nq * d);
 
     for (int i = 0; i < total_size + window_size; i++) {
-        printf("doing step %d / %d\n", i, total_size + window_size);
 
         // update the index
         window.step(
                 i < total_size ? sub_indexes[i].get() : nullptr,
                 i >= window_size);
-        printf("   current n_slice = %d\n", window.n_slice);
 
         auto new_res = search_index(index.get(), xq.data());
 
@@ -159,7 +155,6 @@ int test_sliding_invlists(const char* index_key) {
     auto xq = make_data(nq * d);
 
     for (int i = 0; i < total_size + window_size; i++) {
-        printf("doing step %d / %d\n", i, total_size + window_size);
 
         // update the index
         std::vector<const InvertedLists*> ils;
@@ -178,8 +173,6 @@ int test_sliding_invlists(const char* index_key) {
         // will be deleted by the index
         index_ivf->replace_invlists(ci, true);
 
-        printf("   nb invlists = %zd\n", ils.size());
-
         auto new_res = search_index(index.get(), xq.data());
 
         std::unique_ptr<Index> merged_index(
@@ -194,7 +187,6 @@ int test_sliding_invlists(const char* index_key) {
             if (ref_res[j] != new_res[j])
                 ndiff++;
         }
-        printf("  nb differences: %zd / %zd\n", ndiff, ref_res.size());
         EXPECT_EQ(ref_res, new_res);
     }
     return 0;

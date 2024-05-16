@@ -44,7 +44,6 @@ class TestClustering(unittest.TestCase):
         faiss.normalize_L2(xt)
 
         mask = np.abs(xt) > 0.045
-        # print("fraction:", mask.sum() / mask.size) # around 10% non-zeros
         xt[np.logical_not(mask)] = 0
 
         centroids = ds.get_queries()
@@ -72,7 +71,6 @@ class TestClustering(unittest.TestCase):
         faiss.normalize_L2(xt)
 
         mask = np.abs(xt) > 0.045
-        # print("fraction:", mask.sum() / mask.size) # around 10% non-zeros
         xt[np.logical_not(mask)] = 0
 
         km = faiss.Kmeans(ds.d, 50)
