@@ -465,7 +465,6 @@ class TestSortedIDSelectorRange(unittest.TestCase):
         sp = faiss.swig_ptr
         selr.find_sorted_ids_bounds(
             len(ids), sp(ids), sp(j01[:1]), sp(j01[1:]))
-        print(j01)
         assert j01[0] >= j01[1]
 
 
