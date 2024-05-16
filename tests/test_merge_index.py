@@ -49,10 +49,8 @@ class TestMerge1(unittest.TestCase):
         # trains the quantizer
         ref_index.train(xt)
 
-        print('ref search')
         ref_index.add(xb)
         _Dref, Iref = ref_index.search(xq, k)
-        print(Iref[:5, :6])
 
         indexes = []
         ni = 3
@@ -67,15 +65,11 @@ class TestMerge1(unittest.TestCase):
         index = indexes[0]
 
         for i in range(1, ni):
-            print('merge ntotal=%d other.ntotal=%d ' % (
-                index.ntotal, indexes[i].ntotal))
             index.merge_from(indexes[i], index.ntotal)
 
         _D, I = index.search(xq, k)
-        print(I[:5, :6])
 
         ndiff = (I != Iref).sum()
-        print('%d / %d differences' % (ndiff, nq * k))
         assert (ndiff < nq * k / 1000.)
 
     def test_merge(self):
@@ -101,7 +95,6 @@ class TestMerge1(unittest.TestCase):
             id_list = gen.permutation(nb * 7)[:nb].astype('int64')
             index.add_with_ids(xb, id_list)
 
-        print('ref search ntotal=%d' % index.ntotal)
         Dref, Iref = index.search(xq, k)
 
         toremove = np.zeros(nq * k, dtype='int64')
@@ -114,17 +107,11 @@ class TestMerge1(unittest.TestCase):
                     nr = nr + 1
                     toremove[nr] = Iref[i, j]
 
-        print('nr=', nr)
-
         idsel = faiss.IDSelectorBatch(
             nr, faiss.swig_ptr(toremove))
 
         for i in range(nr):
             assert (idsel.is_member(int(toremove[i])))
-
-        nremoved = index.remove_ids(idsel)
-
-        print('nremoved=%d ntotal=%d' % (nremoved, index.ntotal))
 
         D, I = index.search(xq, k)
 
