@@ -26,7 +26,6 @@ class TestProductQuantizer(unittest.TestCase):
         x2 = pq.decode(codes)
         diff = ((x - x2)**2).sum()
 
-        # print("diff=", diff)
         # diff= 4418.0562
         self.assertGreater(5000, diff)
 
