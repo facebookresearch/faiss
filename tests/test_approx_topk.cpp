@@ -32,7 +32,6 @@ void test_approx_topk(
         const uint32_t k,
         const uint32_t nDatasetsToTest,
         const bool verbose) {
-
     // generate random data
     std::default_random_engine rng(123);
     std::uniform_real_distribution<float> u(0, 1);

@@ -367,7 +367,6 @@ void test_lowlevel_access_binary(const char* index_key) {
         // re-order heap
         heap_reorder<CMax<int32_t, idx_t>>(k, D.data(), I.data());
 
-
         // check that we have the same results as the reference search
         for (int j = 0; j < k; j++) {
             // here the order is not guaranteed to be the same
