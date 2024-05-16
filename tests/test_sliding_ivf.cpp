@@ -120,7 +120,6 @@ int test_sliding_window(const char* index_key) {
     auto xq = make_data(nq * d);
 
     for (int i = 0; i < total_size + window_size; i++) {
-
         // update the index
         window.step(
                 i < total_size ? sub_indexes[i].get() : nullptr,
@@ -155,7 +154,6 @@ int test_sliding_invlists(const char* index_key) {
     auto xq = make_data(nq * d);
 
     for (int i = 0; i < total_size + window_size; i++) {
-
         // update the index
         std::vector<const InvertedLists*> ils;
         for (int j = i - window_size + 1; j <= i; j++) {
@@ -182,10 +180,10 @@ int test_sliding_invlists(const char* index_key) {
 
         EXPECT_EQ(ref_res.size(), new_res.size());
 
-        size_t ndiff = 0;
+        size_t n_diff = 0;
         for (size_t j = 0; j < ref_res.size(); j++) {
             if (ref_res[j] != new_res[j])
-                ndiff++;
+                n_diff++;
         }
         EXPECT_EQ(ref_res, new_res);
     }
