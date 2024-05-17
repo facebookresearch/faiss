@@ -189,7 +189,6 @@ class TestNyFuncs(unittest.TestCase):
         for d in 1, 2, 4, 8, 12, 16:
             x = rs.rand(d).astype('float32')
             for ny in 128, 129, 130:
-                print("d=%d ny=%d" % (d, ny))
                 y = rs.rand(ny, d).astype('float32')
                 ref = ((x - y) ** 2).sum(1)
                 new = np.zeros(ny, dtype='float32')
@@ -204,7 +203,6 @@ class TestNyFuncs(unittest.TestCase):
         for d in 1, 2, 4, 8, 12, 16:
             x = rs.rand(d).astype('float32')
             for ny in 128, 129, 130:
-                print("d=%d ny=%d" % (d, ny))
                 y = rs.rand(ny, d).astype('float32')
                 ref = (x * y).sum(1)
                 new = np.zeros(ny, dtype='float32')
@@ -220,7 +218,6 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print(comments)
         assert 'has 5 copies' in comments
         assert '5 null vectors' in comments
 
@@ -229,7 +226,6 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[::2] = m[1::2]
         comments = faiss.MatrixStats(m).comments
-        print(comments)
         assert '20 vectors are distinct' in comments
 
     def test_dead_dims(self):
@@ -237,7 +233,6 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] = 0
         comments = faiss.MatrixStats(m).comments
-        print(comments)
         assert '5 dimensions are constant' in comments
 
     def test_rogue_means(self):
@@ -245,7 +240,6 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         m[:, 5:10] += 12345
         comments = faiss.MatrixStats(m).comments
-        print(comments)
         assert '5 dimensions are too large wrt. their variance' in comments
 
     def test_normalized(self):
@@ -253,7 +247,6 @@ class TestMatrixStats(unittest.TestCase):
         m = rs.rand(40, 20).astype('float32')
         faiss.normalize_L2(m)
         comments = faiss.MatrixStats(m).comments
-        print(comments)
         assert 'vectors are normalized' in comments
 
     def test_hash(self):
@@ -300,7 +293,6 @@ class TestScalarQuantizer(unittest.TestCase):
                 D, I = index.search(x[3:], 1)
 
                 # assert D[0, 0] == Dref[0, 0]
-                # print(D[0, 0], ((x[3] - x[2]) ** 2).sum())
                 assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
 
     def test_6bit_equiv(self):
@@ -313,8 +305,6 @@ class TestScalarQuantizer(unittest.TestCase):
             index = faiss.IndexScalarQuantizer(
                 d, faiss.ScalarQuantizer.QT_6bit)
             index.train(trainset)
-
-            print('cs=', index.code_size)
 
             x = rs.randint(64, size=(100, d)).astype('float32')
 
@@ -330,7 +320,6 @@ class TestScalarQuantizer(unittest.TestCase):
             for i in range(20):
                 for j in range(10):
                     dis = ((y[i] - x2[I[i, j]]) ** 2).sum()
-                    # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
     def test_reconstruct(self):
@@ -371,7 +360,6 @@ class TestRandom(unittest.TestCase):
         x = faiss.randint(20000, vmax=100)
         assert np.all(x >= 0) and np.all(x < 100)
         c = np.bincount(x, minlength=100)
-        print(c)
         assert c.max() - c.min() < 50 * 2
 
     def test_rand_vector(self):
@@ -473,7 +461,6 @@ class TestSWIGWrap(unittest.TestCase):
         """ tests swig_ptr and rev_swig_ptr for this type of array """
         a = np.arange(12).astype(dtype)
         ptr = faiss.swig_ptr(a)
-        print(ptr)
         a2 = faiss.rev_swig_ptr(ptr, 12)
         np.testing.assert_array_equal(a, a2)
 
@@ -547,7 +534,6 @@ class TestNNDescentKNNG(unittest.TestCase):
                         recalls += 1
                         break
         recall = 1.0 * recalls / (nb * K)
-        print('Metric: {}, knng accuracy: {}'.format(metric_names[metric], recall))
         assert recall > 0.99
 
     def test_small_nndescent(self):
@@ -656,7 +642,6 @@ class TestBucketSort(unittest.TestCase):
             rows, _ = np.where(tab == b)
             rows.sort()
             tab2[lims[b]:lims[b + 1]].sort()
-            # print(rows, tab2[lims[b] : lims[b + 1]])
             rows = set(rows)
             self.assertEqual(rows, set(tab2[lims[b]:lims[b + 1]]))
 

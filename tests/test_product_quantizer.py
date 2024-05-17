@@ -70,7 +70,6 @@ class TestProductQuantizer(unittest.TestCase):
 
     def test_codec(self):
         for i in range(16):
-            print("Testing nbits=%d" % (i + 1))
             self.do_test_codec(i + 1)
 
 

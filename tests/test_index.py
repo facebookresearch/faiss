@@ -338,7 +338,6 @@ class TestScalarQuantizer(unittest.TestCase):
             D, I = index.search(xq, 10)
 
             nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
-        print(nok, nq)
 
         self.assertGreaterEqual(nok['flat'], nq * 0.6)
         # The tests below are a bit fragile, it happens that the
@@ -372,8 +371,6 @@ class TestScalarQuantizer(unittest.TestCase):
             index.add(xb)
             D, I = index.search(xq, 10)
             nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
-
-        print(nok, nq)
 
         self.assertGreaterEqual(nok['QT_8bit'], nq * 0.9)
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_4bit'])
@@ -442,7 +439,6 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         recons_err = np.mean(norm1(R_flat - xb[I_flat]))
 
-        print('Reconstruction error = %.3f' % recons_err)
         if eps is not None:
             self.assertLessEqual(recons_err, eps)
 
@@ -638,7 +634,6 @@ class TestReconsException(unittest.TestCase):
 
         # should not raise an exception
         index.reconstruct(5)
-        print(index.ntotal)
         index.reconstruct(150)
 
 

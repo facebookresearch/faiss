@@ -82,10 +82,8 @@ class Shards(unittest.TestCase):
         k = 32
         ref_index = faiss.IndexFlatL2(d)
 
-        print('ref search')
         ref_index.add(xb)
         _Dref, Iref = ref_index.search(xq, k)
-        print(Iref[:5, :6])
 
         shard_index = faiss.IndexShards(d)
         shard_index_2 = faiss.IndexShards(d, True, False)
@@ -109,7 +107,6 @@ class Shards(unittest.TestCase):
         for test_no in range(3):
             with_threads = test_no == 1
 
-            print('shard search test_no = %d' % test_no)
             if with_threads:
                 remember_nt = faiss.omp_get_max_threads()
                 faiss.omp_set_num_threads(1)
@@ -122,14 +119,10 @@ class Shards(unittest.TestCase):
             else:
                 _D, I = shard_index_2.search(xq, k)
 
-            print(I[:5, :6])
-
             if with_threads:
                 faiss.omp_set_num_threads(remember_nt)
 
             ndiff = (I != Iref).sum()
-
-            print('%d / %d differences' % (ndiff, nq * k))
             assert (ndiff < nq * k / 1000.)
 
     def test_shards_ivf(self):
