@@ -6,6 +6,9 @@
 
 set -e
 
+cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/include/* $CONDA_PREFIX/include/
+cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/include/c++/11.2.0/* $CONDA_PREFIX/include/
+cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/include/c++/11.2.0/x86_64-conda-linux-gnu/* $CONDA_PREFIX/include/
 
 # Build libfaiss.so/libfaiss_avx2.so/libfaiss_avx512.so
 cmake -B _build \
