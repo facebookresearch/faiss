@@ -154,7 +154,6 @@ int test_sliding_invlists(const char* index_key) {
     auto xq = make_data(nq * d);
 
     for (int i = 0; i < total_size + window_size; i++) {
-
         // update the index
         std::vector<const InvertedLists*> ils;
         for (int j = i - window_size + 1; j <= i; j++) {
