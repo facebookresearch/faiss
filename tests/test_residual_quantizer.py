@@ -967,8 +967,6 @@ def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,
             for b in range(beam_size):
                 dotprods[i, b, :] += cb[codes[i, b, j]]
 
-    # print("dps", dotprods[:3, :2, :4])
-
     new_distances += 2 * dotprods
     cent_distances = new_distances
 
@@ -1174,7 +1172,6 @@ class TestProductResidualQuantizer(unittest.TestCase):
         rq.train(xt)
         err_rq = eval_codec(rq, xb)
 
-        # print(err_prq, err_rq)
         self.assertEqual(err_prq, err_rq)
 
 
