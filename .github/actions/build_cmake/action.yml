@@ -1,15 +1,15 @@
 name: Build cmake
 inputs:
   opt_level:
-    description: 'The optimization level'
+    description: 'Compile options / optimization level.'
     required: false
     default: generic
   gpu:
-    description: 'The GPU to use'
+    description: 'Enable GPU support.'
     required: false
     default: OFF
   raft:
-    description: 'The raft to use'
+    description: 'Enable RAFT support.'
     required: false
     default: OFF
 runs:
@@ -20,12 +20,12 @@ runs:
       with:
         python-version: '3.11'
         miniconda-version: latest
-    - name: Set up environment
+    - name: Initialize Conda environment
       shell: bash
       run: |
         conda config --set solver libmamba
         conda update -y -q conda
-    - name: Configure conda environment
+    - name: Configure Conda environment
       shell: bash
       run: |
         conda install -y -q -c conda-forge gxx_linux-64=11.2 sysroot_linux-64=2.28

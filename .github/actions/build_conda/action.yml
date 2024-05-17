@@ -1,21 +1,21 @@
-name: Build conda
-description: Build conda
+name: Conda build
+description: Builds FAISS inside a Conda environment and uploads to repository when label is provided.
 inputs:
   label:
-    description: "Label"
+    description: "The label to be used for uploads to Conda."
     default: ""
     required: false
   cuda:
-    description: "cuda"
+    description: "CUDA toolkit version to use."
     default: ""
     required: false
   raft:
-    description: "raft"
+    description: "Enable RAFT support."
     default: ""
     required: false
   compiler_version:
     description: "compiler_version"
-    default: ""
+    default: "Compiler version for C/C++/CUDA."
     required: false
 runs:
   using: composite
@@ -24,7 +24,7 @@ runs:
       shell: bash
       id: choose_shell
       run: |
-        # if runner.os != 'Windows' use bash, else use pwsh
+        # Use pwsh on Windows; bash everywhere else
         if [ "${{ runner.os }}" != "Windows" ]; then
           echo "shell=bash" >> "$GITHUB_OUTPUT"
         else
@@ -38,8 +38,6 @@ runs:
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        # conda config --set solver libmamba
-        # conda config --set verbosity 3
         conda update -y -q conda
         conda install -y -q conda-build
     - name: Enable anaconda uploads
