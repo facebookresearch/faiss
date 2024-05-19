@@ -4,6 +4,10 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+message("<debug>")
+list(PREPEND CMAKE_INCLUDE_PATH ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/include/)
+message("</debug>")
+
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
@@ -228,9 +232,6 @@ endif()
 
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
-
-find_package(libc REQUIRED)
-list(PREPEND CMAKE_INCLUDE_PATH ${LIBC_INCLUDE_DIRS})
 
 add_library(faiss ${FAISS_SRC})
 
