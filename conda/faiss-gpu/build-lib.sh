@@ -21,7 +21,6 @@ cmake -B _build \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_INSTALL_LIBDIR=lib \
-      -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
       -DCMAKE_BUILD_TYPE=Release .
 
 make -C _build -j$(nproc) faiss faiss_avx2 faiss_avx512

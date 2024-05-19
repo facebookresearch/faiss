@@ -297,6 +297,9 @@ endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
 
+find_package(libc REQUIRED)
+append(LIST CMAKE_INCLUDE_PATH ${LIBC_INCLUDE_DIRS})
+
 find_package(OpenMP REQUIRED)
 target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
