@@ -9,7 +9,6 @@
 {% if cudatoolkit == '11.4.4' %}
 {% set cuda_constraints=">=11.4,<12" %}
 {% set libcublas_constraints=">=11.6,<12" %}
-{% set FAISS_FLATTEN_CONDA_INCLUDES = "1" %}
 {% elif cudatoolkit == '12.1.1' %}
 {% set cuda_constraints=">=12.1,<13" %}
 {% set libcublas_constraints=">=12.1,<13" %}
