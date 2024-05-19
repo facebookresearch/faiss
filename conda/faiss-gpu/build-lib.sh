@@ -6,6 +6,14 @@
 
 set -e
 
+echo "debugdebug"
+echo $FAISS_FLATTEN_CONDA_INCLUDES
+if [[ -n "$FAISS_FLATTEN_CONDA_INCLUDES" && "$FAISS_FLATTEN_CONDA_INCLUDES" == "1" ]]; then
+  echo "will FIX conda includes"
+fi
+echo "debugdebug"
+exit 1
+
 #cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/sysroot/usr/include/* $CONDA_PREFIX/include/
 #cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/include/c++/11.2.0/* $CONDA_PREFIX/include/
 #cp -r -n $CONDA_PREFIX/x86_64-conda-linux-gnu/include/c++/11.2.0/x86_64-conda-linux-gnu/* $CONDA_PREFIX/include/
