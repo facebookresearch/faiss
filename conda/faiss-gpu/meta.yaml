@@ -9,6 +9,7 @@
 {% if cudatoolkit == '11.4.4' %}
 {% set cuda_constraints=">=11.4,<12" %}
 {% set libcublas_constraints=">=11.6,<12" %}
+{% set flatten_includes="1" %}
 {% elif cudatoolkit == '12.1.1' %}
 {% set cuda_constraints=">=12.1,<13" %}
 {% set libcublas_constraints=">=12.1,<13" %}
@@ -41,9 +42,10 @@ outputs:
       string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
+      env:
+        - FAISS_FLATTEN_CONDA_INCLUDES: {{ flatten_includes }}
       script_env:
         - CUDA_ARCHS
-        - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
         - {{ compiler('cxx') }}
