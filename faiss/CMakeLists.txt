@@ -229,6 +229,9 @@ endif()
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
+find_package(libc REQUIRED)
+list(PREPEND CMAKE_INCLUDE_PATH ${LIBC_INCLUDE_DIRS})
+
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
@@ -296,9 +299,6 @@ if (${finteger_idx} EQUAL -1)
 endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
-
-find_package(libc REQUIRED)
-list(PREPEND CMAKE_INCLUDE_PATH ${LIBC_INCLUDE_DIRS})
 
 find_package(OpenMP REQUIRED)
 target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
