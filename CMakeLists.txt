@@ -22,9 +22,9 @@ cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 
 include(CMakePrintHelpers)
 message("<debug>")
-cmake_print_variables(PROJECT_SOURCE_DIR)
+cmake_print_variables(CMAKE_INCLUDE_PATH)
 list(PREPEND CMAKE_INCLUDE_PATH ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/include/)
-cmake_print_variables(PROJECT_SOURCE_DIR)
+cmake_print_variables(CMAKE_INCLUDE_PATH)
 message("</debug>")
 
 set(FAISS_LANGUAGES CXX)
