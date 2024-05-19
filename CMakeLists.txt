@@ -20,6 +20,10 @@
 
 cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 
+message("<debug>")
+list(PREPEND CMAKE_INCLUDE_PATH ${CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/include/)
+message("</debug>")
+
 set(FAISS_LANGUAGES CXX)
 
 if(FAISS_ENABLE_GPU)
