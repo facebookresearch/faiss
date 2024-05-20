@@ -437,7 +437,29 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 %}
 
 #endif // USE_ROCM
-#endif
+#else // GPU_WRAPPER
+
+%{
+int get_num_gpus()
+{
+    return 0;
+}
+
+void gpu_profiler_start()
+{
+}
+
+void gpu_profiler_stop()
+{
+}
+
+void gpu_sync_all_devices()
+{
+}
+%}
+
+
+#endif // GPU_WRAPPER
 
 // order matters because includes are not recursive
 
