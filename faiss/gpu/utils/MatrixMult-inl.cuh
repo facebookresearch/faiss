@@ -174,7 +174,7 @@ cublasStatus_t rawBatchGemm(
             A,
             cAT,
             lda,
-            strideA, 
+            strideA,
             B,
             cBT,
             ldb,

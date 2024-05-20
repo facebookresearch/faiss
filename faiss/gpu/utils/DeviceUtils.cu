@@ -125,7 +125,8 @@ int getDeviceForAddress(const void* p) {
     }
 
 #if USE_ROCM
-    if (att.type != hipMemoryTypeHost && att.type != hipMemoryTypeUnregistered) {
+    if (att.type != hipMemoryTypeHost &&
+        att.type != hipMemoryTypeUnregistered) {
         return att.device;
     } else {
         return -1;

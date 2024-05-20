@@ -59,8 +59,8 @@ struct LoadCode32<1> {
             uint8_t* p,
             int offset) {
         p += offset * 1;
-        //using T = uint8_t __attribute__((ext_vector_type(1)));
-        //T* t = reinterpret_cast<T*>(p);
+        // using T = uint8_t __attribute__((ext_vector_type(1)));
+        // T* t = reinterpret_cast<T*>(p);
         uint8_t* u = reinterpret_cast<uint8_t*>(code32);
         u[0] = __builtin_nontemporal_load(p);
     }
@@ -87,7 +87,7 @@ struct LoadCode32<3> {
             uint8_t* p,
             int offset) {
         p += offset * 3;
-    using T = uint8_t __attribute__((ext_vector_type(3)));
+        using T = uint8_t __attribute__((ext_vector_type(3)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[1] = __builtin_nontemporal_load(t);
@@ -129,7 +129,7 @@ struct LoadCode32<12> {
             uint8_t* p,
             int offset) {
         p += offset * 12;
-    using T = uint32_t __attribute__((ext_vector_type(3)));
+        using T = uint32_t __attribute__((ext_vector_type(3)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -143,7 +143,7 @@ struct LoadCode32<16> {
             uint8_t* p,
             int offset) {
         p += offset * 16;
-    using T = uint32_t __attribute__((ext_vector_type(4)));
+        using T = uint32_t __attribute__((ext_vector_type(4)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -157,7 +157,7 @@ struct LoadCode32<20> {
             uint8_t* p,
             int offset) {
         p += offset * 20;
-    using T = uint32_t __attribute__((ext_vector_type(5)));
+        using T = uint32_t __attribute__((ext_vector_type(5)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -171,10 +171,10 @@ struct LoadCode32<24> {
             uint8_t* p,
             int offset) {
         p += offset * 24;
-    using T = uint32_t __attribute__((ext_vector_type(6)));
-    T* t = reinterpret_cast<T*>(p);
+        using T = uint32_t __attribute__((ext_vector_type(6)));
+        T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
-    u[0] = __builtin_nontemporal_load(t);
+        u[0] = __builtin_nontemporal_load(t);
     }
 };
 
@@ -185,7 +185,7 @@ struct LoadCode32<28> {
             uint8_t* p,
             int offset) {
         p += offset * 28;
-    using T = uint32_t __attribute__((ext_vector_type(7)));
+        using T = uint32_t __attribute__((ext_vector_type(7)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -199,7 +199,7 @@ struct LoadCode32<32> {
             uint8_t* p,
             int offset) {
         p += offset * 32;
-    using T = uint32_t __attribute__((ext_vector_type(8)));
+        using T = uint32_t __attribute__((ext_vector_type(8)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -213,7 +213,7 @@ struct LoadCode32<40> {
             uint8_t* p,
             int offset) {
         p += offset * 40;
-    using T = uint32_t __attribute__((ext_vector_type(10)));
+        using T = uint32_t __attribute__((ext_vector_type(10)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -227,7 +227,7 @@ struct LoadCode32<48> {
             uint8_t* p,
             int offset) {
         p += offset * 48;
-    using T = uint32_t __attribute__((ext_vector_type(12)));
+        using T = uint32_t __attribute__((ext_vector_type(12)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -241,7 +241,7 @@ struct LoadCode32<56> {
             uint8_t* p,
             int offset) {
         p += offset * 56;
-    using T = uint32_t __attribute__((ext_vector_type(14)));
+        using T = uint32_t __attribute__((ext_vector_type(14)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -255,7 +255,7 @@ struct LoadCode32<64> {
             uint8_t* p,
             int offset) {
         p += offset * 64;
-    using T = uint32_t __attribute__((ext_vector_type(16)));
+        using T = uint32_t __attribute__((ext_vector_type(16)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
@@ -269,7 +269,7 @@ struct LoadCode32<96> {
             uint8_t* p,
             int offset) {
         p += offset * 96;
-    using T = uint32_t __attribute__((ext_vector_type(24)));
+        using T = uint32_t __attribute__((ext_vector_type(24)));
         T* t = reinterpret_cast<T*>(p);
         T* u = reinterpret_cast<T*>(code32);
         u[0] = __builtin_nontemporal_load(t);
