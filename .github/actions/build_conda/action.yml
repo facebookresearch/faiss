@@ -31,7 +31,7 @@ runs:
           echo "shell=pwsh" >> "$GITHUB_OUTPUT"
         fi
     - name: Setup miniconda
-      uses: conda-incubator/setup-miniconda@v3.0.3
+      uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
         miniconda-version:  latest
