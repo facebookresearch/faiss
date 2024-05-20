@@ -16,7 +16,7 @@ runs:
   using: composite
   steps:
     - name: Setup miniconda
-      uses: conda-incubator/setup-miniconda@v3.0.3
+      uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
         miniconda-version: latest
@@ -97,7 +97,7 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
         path: test-results
