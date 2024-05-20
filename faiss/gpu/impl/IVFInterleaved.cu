@@ -26,103 +26,107 @@ __global__ void ivfInterleavedScan2(
         bool dir,
         Tensor<float, 2, true> distanceOut,
         Tensor<idx_t, 2, true> indicesOut) {
-    int queryId = blockIdx.x;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        int queryId = blockIdx.x;
 
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    __shared__ float smemK[kNumWarps * NumWarpQ];
-    // The BlockSelect value type is uint32_t, as we pack together which probe
-    // (up to nprobe - 1) and which k (up to k - 1) from each individual list
-    // together, and both nprobe and k are limited to GPU_MAX_SELECTION_K.
-    __shared__ uint32_t smemV[kNumWarps * NumWarpQ];
+        __shared__ float smemK[kNumWarps * NumWarpQ];
+        // The BlockSelect value type is uint32_t, as we pack together which
+        // probe (up to nprobe - 1) and which k (up to k - 1) from each
+        // individual list together, and both nprobe and k are limited to
+        // GPU_MAX_SELECTION_K.
+        __shared__ uint32_t smemV[kNumWarps * NumWarpQ];
 
-    // To avoid creating excessive specializations, we combine direction
-    // kernels, selecting for the smallest element. If `dir` is true, we negate
-    // all values being selected (so that we are selecting the largest element).
-    BlockSelect<
-            float,
-            uint32_t,
-            false,
-            Comparator<float>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(kFloatMax, kMaxUInt32, smemK, smemV, k);
+        // To avoid creating excessive specializations, we combine direction
+        // kernels, selecting for the smallest element. If `dir` is true, we
+        // negate all values being selected (so that we are selecting the
+        // largest element).
+        BlockSelect<
+                float,
+                uint32_t,
+                false,
+                Comparator<float>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(kFloatMax, kMaxUInt32, smemK, smemV, k);
 
-    // nprobe x k
-    idx_t num = distanceIn.getSize(1) * distanceIn.getSize(2);
+        // nprobe x k
+        idx_t num = distanceIn.getSize(1) * distanceIn.getSize(2);
 
-    const float* distanceBase = distanceIn[queryId].data();
-    idx_t limit = utils::roundDown(num, kWarpSize);
+        const float* distanceBase = distanceIn[queryId].data();
+        idx_t limit = utils::roundDown(num, kWarpSize);
 
-    // This will keep our negation factor
-    float adj = dir ? -1 : 1;
+        // This will keep our negation factor
+        float adj = dir ? -1 : 1;
 
-    idx_t i = threadIdx.x;
-    for (; i < limit; i += blockDim.x) {
-        // We represent the index as (probe id)(k)
-        // Right now, both are limited to a maximum of 2048, but we will
-        // dedicate each to the high and low words of a uint32_t
-        static_assert(GPU_MAX_SELECTION_K <= 65536, "");
+        idx_t i = threadIdx.x;
+        for (; i < limit; i += blockDim.x) {
+            // We represent the index as (probe id)(k)
+            // Right now, both are limited to a maximum of 2048, but we will
+            // dedicate each to the high and low words of a uint32_t
+            static_assert(GPU_MAX_SELECTION_K <= 65536, "");
 
-        uint32_t curProbe = i / k;
-        uint32_t curK = i % k;
-        // Since nprobe and k are limited, we can pack both of these together
-        // into a uint32_t
-        uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
+            uint32_t curProbe = i / k;
+            uint32_t curK = i % k;
+            // Since nprobe and k are limited, we can pack both of these
+            // together into a uint32_t
+            uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        // The IDs reported from the list may be -1, if a particular IVF list
-        // doesn't even have k entries in it
-        if (listIds[queryId][curProbe] != -1) {
-            // Adjust the value we are selecting based on the sorting order
-            heap.addThreadQ(distanceBase[i] * adj, index);
+            // The IDs reported from the list may be -1, if a particular IVF
+            // list doesn't even have k entries in it
+            if (listIds[queryId][curProbe] != -1) {
+                // Adjust the value we are selecting based on the sorting order
+                heap.addThreadQ(distanceBase[i] * adj, index);
+            }
+
+            heap.checkThreadQ();
         }
 
-        heap.checkThreadQ();
-    }
-
-    // Handle warp divergence separately
-    if (i < num) {
-        uint32_t curProbe = i / k;
-        uint32_t curK = i % k;
-        uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
-
-        idx_t listId = listIds[queryId][curProbe];
-        if (listId != -1) {
-            heap.addThreadQ(distanceBase[i] * adj, index);
-        }
-    }
-
-    // Merge all final results
-    heap.reduce();
-
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        // Re-adjust the value we are selecting based on the sorting order
-        distanceOut[queryId][i] = smemK[i] * adj;
-        auto packedIndex = smemV[i];
-
-        // We need to remap to the user-provided indices
-        idx_t index = -1;
-
-        // We may not have at least k values to return; in this function, max
-        // uint32 is our sentinel value
-        if (packedIndex != kMaxUInt32) {
-            uint32_t curProbe = packedIndex >> 16;
-            uint32_t curK = packedIndex & 0xffff;
+        // Handle warp divergence separately
+        if (i < num) {
+            uint32_t curProbe = i / k;
+            uint32_t curK = i % k;
+            uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
             idx_t listId = listIds[queryId][curProbe];
-            idx_t listOffset = indicesIn[queryId][curProbe][curK];
-
-            if (opt == INDICES_32_BIT) {
-                index = (idx_t)((int*)listIndices[listId])[listOffset];
-            } else if (opt == INDICES_64_BIT) {
-                index = ((idx_t*)listIndices[listId])[listOffset];
-            } else {
-                index = (listId << 32 | (idx_t)listOffset);
+            if (listId != -1) {
+                heap.addThreadQ(distanceBase[i] * adj, index);
             }
         }
 
-        indicesOut[queryId][i] = index;
+        // Merge all final results
+        heap.reduce();
+
+        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            // Re-adjust the value we are selecting based on the sorting order
+            distanceOut[queryId][i] = smemK[i] * adj;
+            auto packedIndex = smemV[i];
+
+            // We need to remap to the user-provided indices
+            idx_t index = -1;
+
+            // We may not have at least k values to return; in this function,
+            // max uint32 is our sentinel value
+            if (packedIndex != kMaxUInt32) {
+                uint32_t curProbe = packedIndex >> 16;
+                uint32_t curK = packedIndex & 0xffff;
+
+                idx_t listId = listIds[queryId][curProbe];
+                idx_t listOffset = indicesIn[queryId][curProbe][curK];
+
+                if (opt == INDICES_32_BIT) {
+                    index = (idx_t)((int*)listIndices[listId])[listOffset];
+                } else if (opt == INDICES_64_BIT) {
+                    index = ((idx_t*)listIndices[listId])[listOffset];
+                } else {
+                    index = (listId << 32 | (idx_t)listOffset);
+                }
+            }
+
+            indicesOut[queryId][i] = index;
+        }
     }
 }
 
@@ -152,7 +156,7 @@ void runIVFInterleavedScan2(
 
     if (k == 1) {
         IVF_SCAN_2(128, 1, 1);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         IVF_SCAN_2(128, 32, 2);
     } else if (k <= 64) {
         IVF_SCAN_2(128, 64, 3);
@@ -211,7 +215,7 @@ void runIVFInterleavedScan(
 
     if (k == 1) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 1, 1>);
-    } else if (k <= 32) {
+    } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 32, 2>);
     } else if (k <= 64) {
         ivf_interleaved_call(ivfInterleavedScanImpl<128, 64, 3>);

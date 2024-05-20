@@ -197,6 +197,16 @@ function(generate_ivf_interleaved_code)
     "64|2048|8"
   )
 
+  if(USE_ROCM)
+    set(CU_OR_HIP "hip")
+  else()
+    set(CU_OR_HIP "cu")
+  endif()
+
+  if (USE_ROCM)
+     list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+  endif()
+
   # Traverse through the Cartesian product of X and Y
   foreach(sub_codec ${SUB_CODEC_TYPE})
   foreach(metric_type ${SUB_METRIC_TYPE})
@@ -210,10 +220,10 @@ function(generate_ivf_interleaved_code)
     set(filename "template_${sub_codec}_${metric_type}_${sub_threads}_${sub_num_warp_q}_${sub_num_thread_q}")
     # Remove illegal characters from filename
     string(REGEX REPLACE "[^A-Za-z0-9_]" "" filename ${filename})
-    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.cu")
+    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.${CU_OR_HIP}")
 
     # Read the template file
-    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.cu" template_content)
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.${CU_OR_HIP}" template_content)
 
     # Replace the placeholders
     string(REPLACE "SUB_CODEC_TYPE" "${sub_codec}" template_content "${template_content}")
@@ -286,6 +296,10 @@ if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)
 endif()
 
+if (USE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+endif()
+
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
@@ -300,6 +314,12 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
+if (USE_ROCM)
+find_package(HIP REQUIRED)
+find_package(hipBLAS REQUIRED)
+target_link_libraries(faiss_gpu PRIVATE hip::host roc::hipblas)
+target_compile_options(faiss_gpu PRIVATE)
+else()
 # Prepares a host linker script and enables host linker to support
 # very large device object files.
 # This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
@@ -318,3 +338,4 @@ target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 target_compile_options(faiss_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)
+endif()

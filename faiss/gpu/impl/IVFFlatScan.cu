@@ -211,8 +211,9 @@ void runIVFFlatScanTile(
     runCalcListOffsets(
             res, listIds, listLengths, prefixSumOffsets, thrustMem, stream);
 
+    int warpSize = getWarpSizeCurrentDevice();
     auto grid = dim3(listIds.getSize(1), listIds.getSize(0));
-    auto block = dim3(kWarpSize * kIVFFlatScanWarps);
+    auto block = dim3(warpSize * kIVFFlatScanWarps);
 
 #define RUN_IVF_FLAT                                                  \
     do {                                                              \
