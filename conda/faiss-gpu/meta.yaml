@@ -41,12 +41,11 @@ outputs:
       string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
-      env:
-        {% if cudatoolkit == '11.4.4' %}
-        - FAISS_FLATTEN_CONDA_INCLUDES: "1"
-        {% endif %}
       script_env:
         - CUDA_ARCHS
+        {% if cudatoolkit == '11.4.4' %}
+        - FAISS_FLATTEN_CONDA_INCLUDES = "1"
+        {% endif %}
     requirements:
       build:
         - {{ compiler('cxx') }}
