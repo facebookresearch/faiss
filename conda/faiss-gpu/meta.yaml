@@ -44,7 +44,7 @@ outputs:
       env:
         {% if cudatoolkit == '11.4.4' %}
         - FAISS_FLATTEN_CONDA_INCLUDES: "1"
-        {% endf %}
+        {% endif %}
       script_env:
         - CUDA_ARCHS
     requirements:
