@@ -26,6 +26,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/utils/distances.h>
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
@@ -85,6 +86,9 @@ void queryTest(faiss::MetricType metric, double expected_recall) {
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numTrain, opt.dim, trainVecs.data());
+        }
 
         // train cpu index
         faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2, metric);
@@ -106,6 +110,9 @@ void queryTest(faiss::MetricType metric, double expected_recall) {
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numQuery, opt.dim, queryVecs.data());
+        }
 
         std::vector<float> refDistance(opt.numQuery * opt.k, 0);
         std::vector<faiss::idx_t> refIndices(opt.numQuery * opt.k, -1);
@@ -184,10 +191,13 @@ TEST(TestGpuIndexCagra, Float32_Query_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, 0.85);
+    queryTest(faiss::METRIC_INNER_PRODUCT, 0.98);
 }
 
-void copyToTest(faiss::MetricType metric, double expected_recall) {
+void copyToTest(
+        faiss::MetricType metric,
+        double expected_recall,
+        bool base_level_only) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
         if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
@@ -197,7 +207,13 @@ void copyToTest(faiss::MetricType metric, double expected_recall) {
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numTrain, opt.dim, trainVecs.data());
+        }
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numAdd, opt.dim, addVecs.data());
+        }
 
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
@@ -214,11 +230,14 @@ void copyToTest(faiss::MetricType metric, double expected_recall) {
 
         faiss::IndexHNSWCagra copiedCpuIndex(
                 opt.dim, opt.graphDegree / 2, metric);
+        copiedCpuIndex.base_level_only = base_level_only;
         gpuIndex.copyTo(&copiedCpuIndex);
         copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
 
         // add more vecs to copied cpu index
-        copiedCpuIndex.add(opt.numAdd, addVecs.data());
+        if (!base_level_only) {
+            copiedCpuIndex.add(opt.numAdd, addVecs.data());
+        }
 
         // train cpu index
         faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2, metric);
@@ -226,10 +245,15 @@ void copyToTest(faiss::MetricType metric, double expected_recall) {
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
         // add more vecs to cpu index
-        cpuIndex.add(opt.numAdd, addVecs.data());
+        if (!base_level_only) {
+            cpuIndex.add(opt.numAdd, addVecs.data());
+        }
 
         // query indexes
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numQuery, opt.dim, queryVecs.data());
+        }
 
         std::vector<float> refDistance(opt.numQuery * opt.k, 0);
         std::vector<faiss::idx_t> refIndices(opt.numQuery * opt.k, -1);
@@ -306,16 +330,26 @@ void copyToTest(faiss::MetricType metric, double expected_recall) {
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
+        std::cout << "recall_score: " << *recall_score.data_handle()
+                  << std::endl;
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
-    copyToTest(faiss::METRIC_L2, 0.98);
+    copyToTest(faiss::METRIC_L2, 0.98, false);
+}
+
+TEST(TestGpuIndexCagra, Float32_CopyTo_L2_BaseLevelOnly) {
+    copyToTest(faiss::METRIC_L2, 0.98, true);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.85);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, false);
+}
+
+TEST(TestGpuIndexCagra, Float32_CopyTo_IP_BaseLevelOnly) {
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.8, true);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
@@ -328,6 +362,9 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numTrain, opt.dim, trainVecs.data());
+        }
 
         // train cpu index
         faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2, metric);
@@ -353,6 +390,9 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            faiss::fvec_renorm_L2(opt.numQuery, opt.dim, queryVecs.data());
+        }
 
         auto gpuRes = res.getResources();
         auto devAlloc = faiss::gpu::makeDevAlloc(
@@ -423,7 +463,7 @@ TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_IP) {
-    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.85);
+    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.98);
 }
 
 int main(int argc, char** argv) {

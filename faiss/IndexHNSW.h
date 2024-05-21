@@ -163,6 +163,30 @@ struct IndexHNSW2Level : IndexHNSW {
 struct IndexHNSWCagra : IndexHNSW {
     IndexHNSWCagra();
     IndexHNSWCagra(int d, int M, MetricType metric = METRIC_L2);
+
+    /// When set to true, the index is immutable.
+    /// This option is used to copy the knn graph from GpuIndexCagra
+    /// to the base level of IndexHNSWCagra without adding upper levels.
+    /// Doing so enables to search the HNSW index, but removes the
+    /// ability to add vectors.
+    bool base_level_only = false;
+
+    /// When `base_level_only` is set to `True`, the search function
+    /// searches only the base level knn graph of the HNSW index.
+    /// This parameter selects the entry point by randomly selecting
+    /// some points and using the best one.
+    int num_base_level_search_entrypoints = 32;
+
+    void add(idx_t n, const float* x);
+
+    /// entry point for search
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr);
 };
 
 } // namespace faiss

@@ -229,7 +229,13 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
-    index->add(n_train, train_dataset.data());
+    if (!index->base_level_only) {
+        index->add(n_train, train_dataset.data());
+    } else {
+        index->hnsw.prepare_level_tab(n_train, false);
+        index->storage->add(n_train, train_dataset.data());
+        index->ntotal = n_train;
+    }
 
     auto graph = get_knngraph();
 

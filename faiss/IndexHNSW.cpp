@@ -17,8 +17,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <limits>
 #include <memory>
 #include <queue>
+#include <random>
 #include <unordered_set>
 
 #include <sys/stat.h>
@@ -944,6 +946,68 @@ IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
     is_trained = true;
     init_level0 = true;
     keep_max_size_level0 = true;
+}
+
+void IndexHNSWCagra::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !base_level_only,
+            "Cannot add vectors when base_level_only is set to True");
+
+    IndexHNSW::add(n, x);
+}
+
+void IndexHNSWCagra::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) {
+    if (!base_level_only) {
+        IndexHNSW::search(n, x, k, distances, labels, params);
+    } else {
+        std::vector<storage_idx_t> nearest(n);
+        std::vector<float> nearest_d(n);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(this->storage));
+            dis->set_query(x + i * d);
+            storage_idx_t entrypoint = -1;
+            float entrypoint_d = std::numeric_limits<float>::max();
+
+            std::random_device rd;
+            std::mt19937 gen(i);
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal);
+
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                auto distance = (*dis)(idx);
+                if (distance < entrypoint_d) {
+                    entrypoint_d = distance;
+                    entrypoint = idx;
+                }
+            }
+
+            FAISS_THROW_IF_NOT_MSG(
+                    entrypoint >= 0, "Could not find a valid entrypoint.");
+
+            nearest[i] = entrypoint;
+            nearest_d[i] = entrypoint_d;
+        }
+
+        if (params) {
+            const SearchParametersHNSW* params_hnsw =
+                    dynamic_cast<const SearchParametersHNSW*>(params);
+            this->hnsw.efSearch = params_hnsw->efSearch;
+            this->hnsw.check_relative_distance =
+                    params_hnsw->check_relative_distance;
+        }
+
+        search_level_0(
+                n, x, k, nearest.data(), nearest_d.data(), distances, labels);
+    }
 }
 
 } // namespace faiss
