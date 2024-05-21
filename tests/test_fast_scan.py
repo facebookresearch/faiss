@@ -34,7 +34,6 @@ class TestSearch(unittest.TestCase):
         nq = Iref.shape[0]
         recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
         assert recall_at_1 > 0.6
-        # print(f'recall@1 = {recall_at_1:.3f}')
 
 
     # This is an experiment to see if we can catch performance
@@ -498,7 +497,6 @@ class TestAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall = (Ia == gt).sum() / nq
 
-        print(aq, st, implem, metric_type, recall_ref, recall)
         assert abs(recall_ref - recall) < 0.05
 
     def xx_test_accuracy(self):
@@ -531,7 +529,6 @@ class TestAQFastScan(unittest.TestCase):
         nq = Iref.shape[0]
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
-        print(recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
     def xx_test_from_idxaq(self):

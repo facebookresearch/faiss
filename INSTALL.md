@@ -40,11 +40,11 @@ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8
 ```
 In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
 
-A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-03-01):
+A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-05-15):
 ```
 conda create --name faiss_1.8.0
 conda activate faiss_1.8.0
-conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch pytorch-cuda numpy
+conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch=*=*cuda* pytorch-cuda=11 numpy
 ```
 
 ## Installing from conda-forge

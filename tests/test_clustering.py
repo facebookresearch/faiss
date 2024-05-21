@@ -110,9 +110,6 @@ class TestClustering(unittest.TestCase):
         cdis2_first = cdis2[:5].sum()
         cdis2_last = cdis2[5:].sum()
 
-        print(cdis1_first, cdis1_last)
-        print(cdis2_first, cdis2_last)
-
         # with the new clustering, the last should be much (*2) closer
         # to their centroids
         self.assertGreater(cdis1_last, cdis1_first * 2)
