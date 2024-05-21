@@ -43,9 +43,7 @@ outputs:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
-        {% if cudatoolkit == '11.4.4' %}
-        - FAISS_FLATTEN_CONDA_INCLUDES=1
-        {% endif %}
+        - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
         - {{ compiler('cxx') }}
