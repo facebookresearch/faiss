@@ -121,6 +121,7 @@ jobs:
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+      FAISS_FLATTEN_CONDA_INCLUDES: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
