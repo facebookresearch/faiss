@@ -43,6 +43,9 @@ outputs:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
+        {% if cudatoolkit == '11.4.4' %}
+        - FAISS_FLATTEN_CONDA_INCLUDES=1
+        {% endif %}
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -83,6 +86,7 @@ outputs:
         - swig
         - cmake >=3.24.0
         - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
         - numpy >=1.19,<2

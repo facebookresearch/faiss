@@ -236,4 +236,29 @@ size_t InterruptCallback::get_period_hint(size_t flops) {
     return std::max((size_t)10 * 10 * 1000 * 1000 / (flops + 1), (size_t)1);
 }
 
+void TimeoutCallback::set_timeout(double timeout_in_seconds) {
+    timeout = timeout_in_seconds;
+    start = std::chrono::steady_clock::now();
+}
+
+bool TimeoutCallback::want_interrupt() {
+    if (timeout == 0) {
+        return false;
+    }
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<float, std::milli> duration = end - start;
+    float elapsed_in_seconds = duration.count() / 1000.0;
+    if (elapsed_in_seconds > timeout) {
+        timeout = 0;
+        return true;
+    }
+    return false;
+}
+
+void TimeoutCallback::reset(double timeout_in_seconds) {
+    auto tc(new faiss::TimeoutCallback());
+    faiss::InterruptCallback::instance.reset(tc);
+    tc->set_timeout(timeout_in_seconds);
+}
+
 } // namespace faiss

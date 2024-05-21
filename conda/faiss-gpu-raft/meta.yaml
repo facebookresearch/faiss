@@ -87,6 +87,7 @@ outputs:
         - swig
         - cmake >=3.24.0
         - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
         - numpy >=1.19,<2

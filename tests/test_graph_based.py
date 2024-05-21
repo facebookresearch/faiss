@@ -209,7 +209,6 @@ class TestNSG(unittest.TestCase):
         Dnsg, Insg = index.search(self.xq, 1)
 
         recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
         self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
         self.subtest_io_and_clone(index, Dnsg, Insg)
@@ -230,7 +229,6 @@ class TestNSG(unittest.TestCase):
         Dnsg, Insg = index.search(self.xq, 1)
 
         recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
         self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
 
@@ -286,7 +284,6 @@ class TestNSG(unittest.TestCase):
         index.add(self.xb)
         Dnsg, Insg = index.search(self.xq, 1)
         recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
         self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
 
@@ -294,7 +291,6 @@ class TestNSG(unittest.TestCase):
         index.add(self.xb)
         Dnsg, Insg = index.search(self.xq, 1)
         recalls = (Iref == Insg).sum()
-        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
         self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
 
@@ -335,7 +331,6 @@ class TestNSG(unittest.TestCase):
 
         # test accuracy
         recalls = (Iref == I).sum()
-        print("IndexNSGPQ", recalls)
         self.assertGreaterEqual(recalls, 190)  # 193
 
         # test I/O
@@ -361,7 +356,6 @@ class TestNSG(unittest.TestCase):
 
         # test accuracy
         recalls = (Iref == I).sum()
-        print("IndexNSGSQ", recalls)
         self.assertGreaterEqual(recalls, 405)  # 411
 
         # test I/O
@@ -395,7 +389,6 @@ class TestNNDescent(unittest.TestCase):
 
         # test accuracy
         recalls = (Iref == I).sum()
-        print("IndexNNDescentFlat", recalls)
         self.assertGreaterEqual(recalls, 450)  # 462
 
         # do some IO tests
