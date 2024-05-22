@@ -352,10 +352,17 @@ void IndexHNSW::search(
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    using RH = HeapBlockResultHandler<HNSW::C>;
-    RH bres(n, distances, labels, k);
+    if (params_in && params_in->grp) {
+        using RH = GroupedHeapBlockResultHandler<HNSW::C>;
+        RH bres(n, distances, labels, k, params_in->grp);
 
-    hnsw_search(this, n, x, bres, params_in);
+        hnsw_search(this, n, x, bres, params_in);
+    } else {
+        using RH = HeapBlockResultHandler<HNSW::C>;
+        RH bres(n, distances, labels, k);
+
+        hnsw_search(this, n, x, bres, params_in);
+    }
 
     if (is_similarity_metric(this->metric_type)) {
         // we need to revert the negated distances
