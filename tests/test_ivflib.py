@@ -125,7 +125,6 @@ class TestSearchWithParameters(unittest.TestCase):
 
         Dpre, _ = index.search(xq, 15)
         radius = float(np.median(Dpre[:, -1]))
-        print("Radius=", radius)
         stats = faiss.cvar.indexIVF_stats
         stats.reset()
         Lref, Dref, Iref = index.range_search(xq, radius)
