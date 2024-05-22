@@ -24,3 +24,6 @@ target_link_libraries(6-HNSW PRIVATE faiss)
 
 add_executable(7-PQFastScan EXCLUDE_FROM_ALL 7-PQFastScan.cpp)
 target_link_libraries(7-PQFastScan PRIVATE faiss)
+
+add_executable(8-PQFastScanRefine EXCLUDE_FROM_ALL 8-PQFastScanRefine.cpp)
+target_link_libraries(8-PQFastScanRefine PRIVATE faiss)
