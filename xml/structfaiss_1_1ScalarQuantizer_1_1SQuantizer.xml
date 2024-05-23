@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="89" column="22"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="90" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="90" column="22"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="91" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -56,14 +56,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="92" column="17" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="92" bodyend="92"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="93" column="17" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="93" bodyend="93"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/ScalarQuantizer.h" line="87" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="87" bodyend="93"/>
+    <location file="faiss/impl/ScalarQuantizer.h" line="88" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="88" bodyend="94"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQuantizer</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQuantizer</scope><name>encode_vector</name></member>

@@ -7451,6 +7451,7 @@
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952ea128bcc572501a040ae5eddad599f5dfe" kind="enumvalue"><name>QT_fp16</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eab03999c03af6350eaf490acd4b37c3be" kind="enumvalue"><name>QT_8bit_direct</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eaf654ce120baf92b9ac3c43592744fbf8" kind="enumvalue"><name>QT_6bit</name></member>
+    <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eae6cdb226519ce240694da1a4f21232cd" kind="enumvalue"><name>QT_bf16</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kind="enum"><name>RangeStat</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06aa52f2f14616c61c04baf6323d43588fd" kind="enumvalue"><name>RS_minmax</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06afb4b9f4ee9003fa0193e6de69632f7a0" kind="enumvalue"><name>RS_meanstd</name></member>
@@ -8798,6 +8799,8 @@
     <member refid="namespacefaiss_1a31e62b2521dd1eeb8632005add40ecbd" kind="function"><name>lo_offset</name></member>
     <member refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kind="function"><name>is_similarity_metric</name></member>
     <member refid="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" kind="function"><name>is_aligned_pointer</name></member>
+    <member refid="namespacefaiss_1a14b8c774f4115b66556dc772d2cafe43" kind="function"><name>encode_bf16</name></member>
+    <member refid="namespacefaiss_1a824108d159d2fb71164979e93363c6dc" kind="function"><name>decode_bf16</name></member>
     <member refid="namespacefaiss_1a7466bd32de31640860393a701eaac5ad" kind="function"><name>fvec_L2sqr</name></member>
     <member refid="namespacefaiss_1af6490f0d832462623e19a96481daeef5" kind="function"><name>fvec_inner_product</name></member>
     <member refid="namespacefaiss_1ab43fbb711cebede63ce85090fcc2b4b7" kind="function"><name>fvec_L1</name></member>
@@ -8971,15 +8974,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d139" kind="namespace"><name>faiss::@139</name>
+  <compound refid="namespacefaiss_1_1_0d131" kind="namespace"><name>faiss::@131</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d155" kind="namespace"><name>faiss::@155</name>
+  <compound refid="namespacefaiss_1_1_0d140" kind="namespace"><name>faiss::@140</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d157" kind="namespace"><name>faiss::@157</name>
+  <compound refid="namespacefaiss_1_1_0d156" kind="namespace"><name>faiss::@156</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d158" kind="namespace"><name>faiss::@158</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d160" kind="namespace"><name>faiss::@160</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -9614,6 +9619,10 @@
     <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
   </compound>
   <compound refid="approx__topk__hamming_8h" kind="file"><name>approx_topk_hamming.h</name>
+  </compound>
+  <compound refid="bf16_8h" kind="file"><name>bf16.h</name>
+    <member refid="bf16_8h_1a04fff3a147b71de5a0e6ca4bcefb0232" kind="variable"><name>as_u32</name></member>
+    <member refid="bf16_8h_1a13ce1a634c3e2fa278755308a2cbe1f2" kind="variable"><name>as_f32</name></member>
   </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>

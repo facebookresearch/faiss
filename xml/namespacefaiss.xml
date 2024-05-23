@@ -3207,6 +3207,40 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="22" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="22" bodyend="25"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a14b8c774f4115b66556dc772d2cafe43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::encode_bf16</definition>
+        <argsstring>(const float f)</argsstring>
+        <name>encode_bf16</name>
+        <param>
+          <type>const float</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/bf16.h" line="23" column="17" bodyfile="faiss/utils/bf16.h" bodystart="23" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a824108d159d2fb71164979e93363c6dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::decode_bf16</definition>
+        <argsstring>(const uint16_t v)</argsstring>
+        <name>decode_bf16</name>
+        <param>
+          <type>const uint16_t</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/bf16.h" line="30" column="14" bodyfile="faiss/utils/bf16.h" bodystart="30" bodyend="34"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7466bd32de31640860393a701eaac5ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::fvec_L2sqr</definition>
