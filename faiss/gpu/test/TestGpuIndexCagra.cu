@@ -347,7 +347,7 @@ TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.8, true);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, true);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
