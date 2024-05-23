@@ -515,6 +515,13 @@ void IndexHNSW::search_level_0(
             hnsw_stats.combine(search_stats);
         }
     }
+    if (is_similarity_metric(this->metric_type)) {
+// we need to revert the negated distances
+#pragma omp parallel for
+        for (size_t i = 0; i < k * n; i++) {
+            distances[i] = -distances[i];
+        }
+    }
 }
 
 void IndexHNSW::init_level_0_from_knngraph(

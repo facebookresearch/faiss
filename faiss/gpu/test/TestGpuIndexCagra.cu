@@ -278,7 +278,6 @@ void copyToTest(
                 copyRefDistance.data(),
                 copyRefIndices.data(),
                 &cpuSearchParamstwo);
-        std::cout << "copyRefIndices[0]: " << copyRefIndices[0] << std::endl;
 
         // test quality of search
         auto gpuRes = res.getResources();
@@ -331,8 +330,6 @@ void copyToTest(
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-        std::cout << "recall_score: " << *recall_score.data_handle()
-                  << std::endl;
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
