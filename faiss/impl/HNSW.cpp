@@ -942,6 +942,8 @@ void HNSW::search_level_0(
     const HNSW& hnsw = *this;
     auto efSearch = params ? params->efSearch : hnsw.efSearch;
     int k = extract_k_from_ResultHandler(res);
+    std::cout << "efSearch: " << efSearch << ", k: " << k << std::endl;
+
     if (search_type == 1) {
         int nres = 0;
 
