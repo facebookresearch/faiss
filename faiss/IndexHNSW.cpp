@@ -975,8 +975,6 @@ void IndexHNSWCagra::search(
 
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
-            // std::unique_ptr<DistanceComputer> dis(
-            //         this->storage->get_distance_computer());
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(this->storage));
             dis->set_query(x + i * d);
@@ -990,13 +988,11 @@ void IndexHNSWCagra::search(
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
                 auto idx = distrib(gen);
                 auto distance = (*dis)(idx);
-                // std::cout << "distance: " << distance << std::endl;
-                if (distance > nearest_d[i]) {
+                if (distance < nearest_d[i]) {
                     nearest[i] = idx;
                     nearest_d[i] = distance;
                 }
             }
-
             FAISS_THROW_IF_NOT_MSG(
                     nearest[i] >= 0, "Could not find a valid entrypoint.");
         }
