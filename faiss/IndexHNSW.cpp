@@ -468,9 +468,16 @@ void IndexHNSW::search_level_0(
         idx_t* labels,
         int nprobe,
         int search_type,
-        const SearchParameters* params) const {
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
+
+    const SearchParametersHNSW* params = nullptr;
+
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
+    }
 
     storage_idx_t ntotal = hnsw.levels.size();
 
@@ -498,7 +505,8 @@ void IndexHNSW::search_level_0(
                     nearest_d + i * nprobe,
                     search_type,
                     search_stats,
-                    vt);
+                    vt,
+                    params);
             res.end();
             vt.advance();
         }
@@ -970,7 +978,6 @@ void IndexHNSWCagra::search(
     if (!base_level_only) {
         IndexHNSW::search(n, x, k, distances, labels, params);
     } else {
-        std::cout << "LEVEL 0 SEARCH" << std::endl;
         std::vector<storage_idx_t> nearest(n);
         std::vector<float> nearest_d(n);
 
@@ -1008,7 +1015,7 @@ void IndexHNSWCagra::search(
                 labels,
                 1, // n_probes
                 1, // search_type
-                dynamic_cast<const SearchParametersHNSW*>(params));
+                params);
     }
 }
 
