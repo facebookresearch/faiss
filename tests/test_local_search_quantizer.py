@@ -196,7 +196,6 @@ class TestComponents(unittest.TestCase):
         err_float = eval_codec(lsq, xb)
 
         # 6533.377 vs 25457.99
-        print(err_double, err_float)
         self.assertLess(err_double, err_float)
 
     def test_compute_binary_terms(self):
@@ -348,7 +347,6 @@ class TestLocalSearchQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        print(err_lsq, err_pq)
         self.assertLess(err_lsq, err_pq)
 
 
@@ -463,7 +461,6 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
             index.nprobe = nprobe
             D, I = index.search(ds.get_queries(), 10)
             inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
-            # print("nprobe=", nprobe, "inter=", inter)
             inters.append(inter)
 
         inters = np.array(inters)
@@ -528,7 +525,6 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        print(err_plsq, err_pq)
         self.assertLess(err_plsq, err_pq)
 
     def test_with_lsq(self):
@@ -549,7 +545,6 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
         lsq.train(xt)
         err_lsq = eval_codec(lsq, xb)
 
-        print(err_plsq, err_lsq)
         self.assertEqual(err_plsq, err_lsq)
 
     def test_lut(self):
@@ -664,7 +659,6 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
         """check that the error is in the same ballpark as LSQ."""
         inter1 = self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
         inter2 = self.eval_index_accuracy("IVF32,LSQ4x5_Nqint8")
-        # print(inter1, inter2)  # 381 vs 374
         self.assertGreaterEqual(inter1 * 1.1, inter2)
 
     def test_factory(self):

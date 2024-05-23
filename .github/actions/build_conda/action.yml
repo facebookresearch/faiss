@@ -1,21 +1,21 @@
-name: Build conda
-description: Build conda
+name: Conda build
+description: Builds FAISS inside a Conda environment and uploads to repository when label is provided.
 inputs:
   label:
-    description: "Label"
+    description: "The label to be used for uploads to Conda."
     default: ""
     required: false
   cuda:
-    description: "cuda"
+    description: "CUDA toolkit version to use."
     default: ""
     required: false
   raft:
-    description: "raft"
+    description: "Enable RAFT support."
     default: ""
     required: false
   compiler_version:
     description: "compiler_version"
-    default: ""
+    default: "Compiler version for C/C++/CUDA."
     required: false
 runs:
   using: composite
@@ -24,29 +24,27 @@ runs:
       shell: bash
       id: choose_shell
       run: |
-        # if runner.os != 'Windows' use bash, else use pwsh
+        # Use pwsh on Windows; bash everywhere else
         if [ "${{ runner.os }}" != "Windows" ]; then
           echo "shell=bash" >> "$GITHUB_OUTPUT"
         else
           echo "shell=pwsh" >> "$GITHUB_OUTPUT"
         fi
     - name: Setup miniconda
-      uses: conda-incubator/setup-miniconda@v3.0.3
+      uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
         miniconda-version:  latest
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        # conda config --set solver libmamba
-        # conda config --set verbosity 3
         conda update -y -q conda
         conda install -y -q conda-build
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda install -y -q anaconda-client
         conda config --set anaconda_upload yes
@@ -61,7 +59,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
     - name: Conda build (GPU)
@@ -76,7 +74,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
@@ -92,7 +90,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge

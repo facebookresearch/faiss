@@ -10,8 +10,7 @@
 #include <cstdlib>
 #include <random>
 
-#include <faiss/IndexFlat.h>
-#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexPQFastScan.h>
 
 using idx_t = faiss::idx_t;
 
@@ -23,48 +22,45 @@ int main() {
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
 
-    float* xb = new float[d * nb];
-    float* xq = new float[d * nq];
+    float* xb = new float[(int)(d * nb)];
+    float* xq = new float[(int)(d * nq)];
 
     for (int i = 0; i < nb; i++) {
-        for (int j = 0; j < d; j++)
+        for (int j = 0; j < d; j++) {
             xb[d * i + j] = distrib(rng);
+        }
         xb[d * i] += i / 1000.;
     }
 
     for (int i = 0; i < nq; i++) {
-        for (int j = 0; j < d; j++)
+        for (int j = 0; j < d; j++) {
             xq[d * i + j] = distrib(rng);
+        }
         xq[d * i] += i / 1000.;
     }
 
-    int nlist = 100;
-    int k = 4;
+    int m = 8;
+    int n_bit = 4;
 
-    faiss::IndexFlatL2 quantizer(d); // the other index
-    faiss::IndexIVFFlat index(&quantizer, d, nlist);
-    assert(!index.is_trained);
+    faiss::IndexPQFastScan index(d, m, n_bit);
+    printf("Index is trained? %s\n", index.is_trained ? "true" : "false");
     index.train(nb, xb);
-    assert(index.is_trained);
+    printf("Index is trained? %s\n", index.is_trained ? "true" : "false");
     index.add(nb, xb);
 
+    int k = 4;
+
     { // search xq
-        idx_t* I = new idx_t[k * nq];
-        float* D = new float[k * nq];
+        idx_t* I = new idx_t[(int)(k * nq)];
+        float* D = new float[(int)(k * nq)];
 
         index.search(nq, xq, k, D, I);
 
         printf("I=\n");
         for (int i = nq - 5; i < nq; i++) {
-            for (int j = 0; j < k; j++)
+            for (int j = 0; j < k; j++) {
                 printf("%5zd ", I[i * k + j]);
-            printf("\n");
-        }
-
-        printf("D=\n");
-        for (int i = nq - 5; i < nq; i++) {
-            for (int j = 0; j < k; j++)
-                printf("%5f ", D[i * k + j]);
+            }
             printf("\n");
         }
 
@@ -76,4 +72,4 @@ int main() {
     delete[] xq;
 
     return 0;
-}
+} // namespace facebook::detail
