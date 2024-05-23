@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1NegativeDistanceComputer" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::NegativeDistanceComputer</compoundname>
+    <basecompoundref refid="structfaiss_1_1DistanceComputer" prot="public" virt="non-virtual">faiss::DistanceComputer</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1NegativeDistanceComputer_1a43391d16b8fc618a6ca30010acfe3a8c" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
+        <definition>DistanceComputer* faiss::NegativeDistanceComputer::basedis</definition>
+        <argsstring></argsstring>
+        <name>basedis</name>
+        <briefdescription>
+<para>owned by this </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="67" column="22" bodyfile="faiss/impl/DistanceComputer.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::NegativeDistanceComputer::NegativeDistanceComputer</definition>
+        <argsstring>(DistanceComputer *basedis)</argsstring>
+        <name>NegativeDistanceComputer</name>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
+          <declname>basedis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="69" column="14" bodyfile="faiss/impl/DistanceComputer.h" bodystart="69" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::NegativeDistanceComputer::set_query</definition>
+        <argsstring>(const float *x) override</argsstring>
+        <name>set_query</name>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec">set_query</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>called before computing distances. Pointer x should remain valid while operator () is called </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="72" column="10" bodyfile="faiss/impl/DistanceComputer.h" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a9098b773e2a5cf64a616de0f3b94f3de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::NegativeDistanceComputer::operator()</definition>
+        <argsstring>(idx_t i) override</argsstring>
+        <name>operator()</name>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4d71be87bbd904043f6bc2fae03d037f">operator()</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>compute distance of vector i to current query </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="77" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="77" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::NegativeDistanceComputer::distances_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) override</argsstring>
+        <name>distances_batch_4</name>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff">distances_batch_4</reimplements>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute distances of current query to 4 stored vectors. certain <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> implementations may benefit heavily from this. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="81" column="10" bodyfile="faiss/impl/DistanceComputer.h" bodystart="81" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::NegativeDistanceComputer::symmetric_dis</definition>
+        <argsstring>(idx_t i, idx_t j) override</argsstring>
+        <name>symmetric_dis</name>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7">symmetric_dis</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>compute distance between two stored vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="99" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="99" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::NegativeDistanceComputer::~NegativeDistanceComputer</definition>
+        <argsstring>()</argsstring>
+        <name>~NegativeDistanceComputer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="103" column="13" bodyfile="faiss/impl/DistanceComputer.h" bodystart="103" bodyend="105"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::NegativeDistanceComputer</label>
+        <link refid="structfaiss_1_1NegativeDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::NegativeDistanceComputer</label>
+        <link refid="structfaiss_1_1NegativeDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>basedis</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/DistanceComputer.h" line="65" column="1" bodyfile="faiss/impl/DistanceComputer.h" bodystart="65" bodyend="106"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a43391d16b8fc618a6ca30010acfe3a8c" prot="public" virt="non-virtual"><scope>faiss::NegativeDistanceComputer</scope><name>basedis</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>distances_batch_4</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" prot="public" virt="non-virtual"><scope>faiss::NegativeDistanceComputer</scope><name>NegativeDistanceComputer</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a9098b773e2a5cf64a616de0f3b94f3de" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>set_query</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>symmetric_dis</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>~DistanceComputer</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>~NegativeDistanceComputer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

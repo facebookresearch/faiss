@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="67" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="68" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="70" column="5" bodyfile="faiss/impl/DistanceComputer.h" bodystart="70" bodyend="71"/>
+        <location file="faiss/impl/DistanceComputer.h" line="116" column="5" bodyfile="faiss/impl/DistanceComputer.h" bodystart="116" bodyend="117"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -65,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="73" column="5" bodyfile="faiss/impl/DistanceComputer.h" bodystart="73" bodyend="73"/>
+        <location file="faiss/impl/DistanceComputer.h" line="119" column="5" bodyfile="faiss/impl/DistanceComputer.h" bodystart="119" bodyend="119"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="75" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="75" bodyend="77"/>
+        <location file="faiss/impl/DistanceComputer.h" line="121" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="121" bodyend="123"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="80" column="19"/>
+        <location file="faiss/impl/DistanceComputer.h" line="126" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a00da5c3be00c8cb13df7312fd99ccf02" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -116,13 +116,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="82" column="13" bodyfile="faiss/impl/DistanceComputer.h" bodystart="82" bodyend="82"/>
+        <location file="faiss/impl/DistanceComputer.h" line="128" column="13" bodyfile="faiss/impl/DistanceComputer.h" bodystart="128" bodyend="128"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
         <definition>virtual void faiss::DistanceComputer::set_query</definition>
         <argsstring>(const float *x)=0</argsstring>
         <name>set_query</name>
+        <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -141,6 +142,7 @@
         <definition>virtual void faiss::DistanceComputer::distances_batch_4</definition>
         <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3)</argsstring>
         <name>distances_batch_4</name>
+        <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c">distances_batch_4</reimplementedby>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>idx0</declname>
@@ -187,6 +189,7 @@
         <definition>virtual float faiss::DistanceComputer::symmetric_dis</definition>
         <argsstring>(idx_t i, idx_t j)=0</argsstring>
         <name>symmetric_dis</name>
+        <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df">symmetric_dis</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>i</declname>
@@ -239,7 +242,7 @@
         <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/DistanceComputer.h" line="66" column="1" bodyfile="faiss/impl/DistanceComputer.h" bodystart="66" bodyend="83"/>
+    <location file="faiss/impl/DistanceComputer.h" line="112" column="1" bodyfile="faiss/impl/DistanceComputer.h" bodystart="112" bodyend="129"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>codes</name></member>

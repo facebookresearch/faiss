@@ -6318,6 +6318,15 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1NegativeDistanceComputer" kind="struct"><name>faiss::NegativeDistanceComputer</name>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a43391d16b8fc618a6ca30010acfe3a8c" kind="variable"><name>basedis</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" kind="function"><name>NegativeDistanceComputer</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826" kind="function"><name>set_query</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a9098b773e2a5cf64a616de0f3b94f3de" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c" kind="function"><name>distances_batch_4</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" kind="function"><name>symmetric_dis</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" kind="function"><name>~NegativeDistanceComputer</name></member>
+  </compound>
   <compound refid="structfaiss_1_1nndescent_1_1Neighbor" kind="struct"><name>faiss::nndescent::Neighbor</name>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1adce5680f1e46d4aab85d672fd8bb2d3c" kind="variable"><name>id</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1af0ff46e796209339051874343b117ed4" kind="variable"><name>distance</name></member>

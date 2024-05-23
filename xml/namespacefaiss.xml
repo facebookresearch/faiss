@@ -28,6 +28,7 @@
     <innerclass refid="structfaiss_1_1CodePacker" prot="public">faiss::CodePacker</innerclass>
     <innerclass refid="structfaiss_1_1CodePackerFlat" prot="public">faiss::CodePackerFlat</innerclass>
     <innerclass refid="structfaiss_1_1DistanceComputer" prot="public">faiss::DistanceComputer</innerclass>
+    <innerclass refid="structfaiss_1_1NegativeDistanceComputer" prot="public">faiss::NegativeDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public">faiss::FlatCodesDistanceComputer</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
     <innerclass refid="structfaiss_1_1TransformedVectors" prot="public">faiss::TransformedVectors</innerclass>
