@@ -961,8 +961,12 @@ Index* read_index(IOReader* f, int io_flags) {
         if (h == fourcc("IHNc"))
             idxhnsw = new IndexHNSWCagra();
         read_index_header(idxhnsw, f);
-        if (h == fourcc("IHNc"))
+        if (h == fourcc("IHNc")) {
             READ1(idxhnsw->keep_max_size_level0);
+            auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
+            READ1(idx_hnsw_cagra->base_level_only);
+            READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+        }
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = true;

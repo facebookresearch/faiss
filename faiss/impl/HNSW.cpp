@@ -937,8 +937,10 @@ void HNSW::search_level_0(
         const float* nearest_d,
         int search_type,
         HNSWStats& search_stats,
-        VisitedTable& vt) const {
+        VisitedTable& vt,
+        const SearchParametersHNSW* params) const {
     const HNSW& hnsw = *this;
+    auto efSearch = params ? params->efSearch : hnsw.efSearch;
     int k = extract_k_from_ResultHandler(res);
     if (search_type == 1) {
         int nres = 0;
@@ -952,16 +954,24 @@ void HNSW::search_level_0(
             if (vt.get(cj))
                 continue;
 
-            int candidates_size = std::max(hnsw.efSearch, k);
+            int candidates_size = std::max(efSearch, k);
             MinimaxHeap candidates(candidates_size);
 
             candidates.push(cj, nearest_d[j]);
 
             nres = search_from_candidates(
-                    hnsw, qdis, res, candidates, vt, search_stats, 0, nres);
+                    hnsw,
+                    qdis,
+                    res,
+                    candidates,
+                    vt,
+                    search_stats,
+                    0,
+                    nres,
+                    params);
         }
     } else if (search_type == 2) {
-        int candidates_size = std::max(hnsw.efSearch, int(k));
+        int candidates_size = std::max(efSearch, int(k));
         candidates_size = std::max(candidates_size, int(nprobe));
 
         MinimaxHeap candidates(candidates_size);
@@ -974,7 +984,7 @@ void HNSW::search_level_0(
         }
 
         search_from_candidates(
-                hnsw, qdis, res, candidates, vt, search_stats, 0);
+                hnsw, qdis, res, candidates, vt, search_stats, 0, 0, params);
     }
 }
 

@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdint>
+#include "impl/HNSW.h"
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
@@ -466,7 +467,8 @@ void IndexHNSW::search_level_0(
         float* distances,
         idx_t* labels,
         int nprobe,
-        int search_type) const {
+        int search_type,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
@@ -501,7 +503,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
 }
 
@@ -962,7 +966,7 @@ void IndexHNSWCagra::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters* params) {
+        const SearchParameters* params) const {
     if (!base_level_only) {
         IndexHNSW::search(n, x, k, distances, labels, params);
     } else {
@@ -971,42 +975,43 @@ void IndexHNSWCagra::search(
 
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
+            // std::unique_ptr<DistanceComputer> dis(
+            //         this->storage->get_distance_computer());
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(this->storage));
             dis->set_query(x + i * d);
-            storage_idx_t entrypoint = -1;
-            float entrypoint_d = std::numeric_limits<float>::max();
+            nearest[i] = -1;
+            nearest_d[i] = std::numeric_limits<float>::max();
 
             std::random_device rd;
-            std::mt19937 gen(i);
+            std::mt19937 gen(rd());
             std::uniform_int_distribution<idx_t> distrib(0, this->ntotal);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
                 auto idx = distrib(gen);
                 auto distance = (*dis)(idx);
-                if (distance < entrypoint_d) {
-                    entrypoint_d = distance;
-                    entrypoint = idx;
+                // std::cout << "distance: " << distance << std::endl;
+                if (distance > nearest_d[i]) {
+                    nearest[i] = idx;
+                    nearest_d[i] = distance;
                 }
             }
 
             FAISS_THROW_IF_NOT_MSG(
-                    entrypoint >= 0, "Could not find a valid entrypoint.");
-
-            nearest[i] = entrypoint;
-            nearest_d[i] = entrypoint_d;
-        }
-
-        if (params) {
-            const SearchParametersHNSW* params_hnsw =
-                    dynamic_cast<const SearchParametersHNSW*>(params);
-            this->hnsw.efSearch = params_hnsw->efSearch;
-            this->hnsw.check_relative_distance =
-                    params_hnsw->check_relative_distance;
+                    nearest[i] >= 0, "Could not find a valid entrypoint.");
         }
 
         search_level_0(
-                n, x, k, nearest.data(), nearest_d.data(), distances, labels);
+                n,
+                x,
+                k,
+                nearest.data(),
+                nearest_d.data(),
+                distances,
+                labels,
+                1, // n_probes
+                1, // search_type
+                dynamic_cast<const SearchParametersHNSW*>(params));
     }
 }
 

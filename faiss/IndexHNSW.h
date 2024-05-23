@@ -93,7 +93,8 @@ struct IndexHNSW : Index {
             float* distances,
             idx_t* labels,
             int nprobe = 1,
-            int search_type = 1) const;
+            int search_type = 1,
+            const SearchParameters* params = nullptr) const;
 
     /// alternative graph building
     void init_level_0_from_knngraph(int k, const float* D, const idx_t* I);
@@ -177,7 +178,7 @@ struct IndexHNSWCagra : IndexHNSW {
     /// some points and using the best one.
     int num_base_level_search_entrypoints = 32;
 
-    void add(idx_t n, const float* x);
+    void add(idx_t n, const float* x) override;
 
     /// entry point for search
     void search(
@@ -186,7 +187,7 @@ struct IndexHNSWCagra : IndexHNSW {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const SearchParameters* params = nullptr);
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

@@ -278,6 +278,7 @@ void copyToTest(
                 copyRefDistance.data(),
                 copyRefIndices.data(),
                 &cpuSearchParamstwo);
+        std::cout << "copyRefIndices[0]: " << copyRefIndices[0] << std::endl;
 
         // test quality of search
         auto gpuRes = res.getResources();

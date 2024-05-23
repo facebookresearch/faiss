@@ -213,7 +213,8 @@ struct HNSW {
             const float* nearest_d,
             int search_type,
             HNSWStats& search_stats,
-            VisitedTable& vt) const;
+            VisitedTable& vt,
+            const SearchParametersHNSW* params = nullptr) const;
 
     void reset();
 
