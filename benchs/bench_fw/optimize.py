@@ -226,6 +226,7 @@ class Optimizer:
             [
                 (None, "Flat"),
                 (None, "SQfp16"),
+                (None, "SQbf16"),
                 (None, "SQ8"),
             ] + [
                 (f"OPQ{M}_{M * dim}", f"PQ{M}x{b}")

@@ -26,6 +26,7 @@ typedef enum FaissQuantizerType {
     QT_fp16,
     QT_8bit_direct, ///< fast indexing of uint8s
     QT_6bit,        ///< 6 bits per component
+    QT_bf16,
 } FaissQuantizerType;
 
 // forward declaration
