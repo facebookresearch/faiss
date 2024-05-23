@@ -32,7 +32,8 @@ IndexScalarQuantizer::IndexScalarQuantizer(
         MetricType metric)
         : IndexFlatCodes(0, d, metric), sq(d, qtype) {
     is_trained = qtype == ScalarQuantizer::QT_fp16 ||
-            qtype == ScalarQuantizer::QT_8bit_direct;
+            qtype == ScalarQuantizer::QT_8bit_direct ||
+            qtype == ScalarQuantizer::QT_bf16;
     code_size = sq.code_size;
 }
 

@@ -23,6 +23,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/utils/bf16.h>
 #include <faiss/utils/fp16.h>
 #include <faiss/utils/utils.h>
 
@@ -497,6 +498,72 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 #endif
 
 /*******************************************************************
+ * BF16 quantizer
+ *******************************************************************/
+
+template <int SIMDWIDTH>
+struct QuantizerBF16 {};
+
+template <>
+struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
+    const size_t d;
+
+    QuantizerBF16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
+
+    void encode_vector(const float* x, uint8_t* code) const final {
+        for (size_t i = 0; i < d; i++) {
+            ((uint16_t*)code)[i] = encode_bf16(x[i]);
+        }
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < d; i++) {
+            x[i] = decode_bf16(((uint16_t*)code)[i]);
+        }
+    }
+
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
+        return decode_bf16(((uint16_t*)code)[i]);
+    }
+};
+
+#ifdef __AVX2__
+
+template <>
+struct QuantizerBF16<8> : QuantizerBF16<1> {
+    QuantizerBF16(size_t d, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        __m128i code_128i = _mm_loadu_si128((const __m128i*)(code + 2 * i));
+        __m256i code_256i = _mm256_cvtepu16_epi32(code_128i);
+        code_256i = _mm256_slli_epi32(code_256i, 16);
+        return _mm256_castsi256_ps(code_256i);
+    }
+};
+
+#endif
+
+#ifdef __aarch64__
+
+template <>
+struct QuantizerBF16<8> : QuantizerBF16<1> {
+    QuantizerBF16(size_t d, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE float32x4x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 * i));
+        return {vreinterpretq_f32_u32(vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
+                vreinterpretq_f32_u32(
+                        vshlq_n_u32(vmovl_u16(codei.val[1]), 16))};
+    }
+};
+#endif
+
+/*******************************************************************
  * 8bit_direct quantizer
  *******************************************************************/
 
@@ -589,6 +656,8 @@ ScalarQuantizer::SQuantizer* select_quantizer_1(
                     d, trained);
         case ScalarQuantizer::QT_fp16:
             return new QuantizerFP16<SIMDWIDTH>(d, trained);
+        case ScalarQuantizer::QT_bf16:
+            return new QuantizerBF16<SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_8bit_direct:
             return new Quantizer8bitDirect<SIMDWIDTH>(d, trained);
     }
@@ -1378,6 +1447,10 @@ SQDistanceComputer* select_distance_computer(
             return new DCTemplate<QuantizerFP16<SIMDWIDTH>, Sim, SIMDWIDTH>(
                     d, trained);
 
+        case ScalarQuantizer::QT_bf16:
+            return new DCTemplate<QuantizerBF16<SIMDWIDTH>, Sim, SIMDWIDTH>(
+                    d, trained);
+
         case ScalarQuantizer::QT_8bit_direct:
             if (d % 16 == 0) {
                 return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
@@ -1426,6 +1499,10 @@ void ScalarQuantizer::set_derived_sizes() {
             code_size = d * 2;
             bits = 16;
             break;
+        case QT_bf16:
+            code_size = d * 2;
+            bits = 16;
+            break;
     }
 }
 
@@ -1462,6 +1539,7 @@ void ScalarQuantizer::train(size_t n, const float* x) {
             break;
         case QT_fp16:
         case QT_8bit_direct:
+        case QT_bf16:
             // no training necessary
             break;
     }
@@ -1789,6 +1867,11 @@ InvertedListScanner* sel1_InvertedListScanner(
         case ScalarQuantizer::QT_fp16:
             return sel2_InvertedListScanner<DCTemplate<
                     QuantizerFP16<SIMDWIDTH>,
+                    Similarity,
+                    SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
+        case ScalarQuantizer::QT_bf16:
+            return sel2_InvertedListScanner<DCTemplate<
+                    QuantizerBF16<SIMDWIDTH>,
                     Similarity,
                     SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_8bit_direct:

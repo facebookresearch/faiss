@@ -55,12 +55,10 @@ int main() {
             printf("\n");
         }
 
-        index.search(nq, xq, k, D, I);
-
-        printf("I=\n");
+        printf("D=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
-                printf("%5zd ", I[i * k + j]);
+                printf("%5f ", D[i * k + j]);
             printf("\n");
         }
 

@@ -173,6 +173,9 @@ class TestAccuracy(unittest.TestCase):
     def test_SQ3(self):
         self.compare_accuracy('SQ8', 'SQfp16')
 
+    def test_SQ4(self):
+        self.compare_accuracy('SQ8', 'SQbf16')
+
     def test_PQ(self):
         self.compare_accuracy('PQ6x8np', 'PQ8x8np')
 

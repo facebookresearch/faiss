@@ -56,6 +56,8 @@ def get_code_size(d, indexkey):
         return (d * 6 + 7) // 8
     elif indexkey == 'SQfp16':
         return d * 2
+    elif indexkey == 'SQbf16':
+        return d * 2
 
     mo = re.match('PCAR?(\\d+),(.*)$', indexkey)
     if mo:
@@ -140,6 +142,7 @@ def reverse_index_factory(index):
             faiss.ScalarQuantizer.QT_4bit: "4",
             faiss.ScalarQuantizer.QT_6bit: "6",
             faiss.ScalarQuantizer.QT_fp16: "fp16",
+            faiss.ScalarQuantizer.QT_bf16: "bf16",
         }
         return f"SQ{sqtypes[index.sq.qtype]}"
 
