@@ -14,7 +14,47 @@ import shutil
 import tempfile
 import platform
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, get_dataset
+from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.inspect_tools import make_LinearTransform_matrix
+from faiss.contrib.evaluation import check_ref_knn_with_draws
+
+class TestRemoveFastScan(unittest.TestCase):
+    def do_test(self, ntotal, removed):
+        d = 20
+        xt, xb, _ = get_dataset_2(d, ntotal, ntotal, 0)
+        index = faiss.index_factory(20, 'IDMap2,PQ5x4fs')
+        index.train(xt)
+        index.add_with_ids(xb, np.arange(ntotal).astype("int64"))
+        before = index.reconstruct_n(0, ntotal)
+        index.remove_ids(np.array(removed))
+        for i in range(ntotal):
+            if i in removed:
+                # should throw RuntimeError as this vector should be removed
+                try:
+                    after = index.reconstruct(i)
+                    assert False
+                except RuntimeError:
+                    pass
+            else:
+                after = index.reconstruct(i)
+                np.testing.assert_array_equal(before[i], after)
+        assert index.ntotal == ntotal - len(removed)
+
+    def test_remove_last_vector(self):
+        self.do_test(993, [992])
+
+    # test remove element from every address 0 -> 31
+    # [0, 32 + 1, 2 * 32 + 2, ....]
+    # [0,   33  ,     66    , 99, 132, .....]
+    def test_remove_every_address(self):
+        removed = (33 * np.arange(32)).tolist()
+        self.do_test(1100, removed)
+
+    # test remove range of vectors and leave ntotal divisible by 32
+    def test_leave_complete_block(self):
+        self.do_test(1000, np.arange(8).tolist())
+
 
 class TestRemove(unittest.TestCase):
 
@@ -97,6 +137,26 @@ class TestRemove(unittest.TestCase):
         else:
             assert False, 'should have raised an exception'
 
+    def test_factory_idmap2_suffix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "Flat,IDMap2")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(104)[0] == 1004
+        index.remove_ids(np.array([103], dtype='int64'))
+        assert index.reconstruct(104)[0] == 1004
+
+    def test_factory_idmap2_prefix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "IDMap2,Flat")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(109)[0] == 1009
+        index.remove_ids(np.array([100], dtype='int64'))
+        assert index.reconstruct(109)[0] == 1009
+
     def test_remove_id_map_2(self):
         # from https://github.com/facebookresearch/faiss/issues/255
         rs = np.random.RandomState(1234)
@@ -107,8 +167,6 @@ class TestRemove(unittest.TestCase):
         index.add_with_ids(X[:5, :], idx[:5])
         index.remove_ids(remove_set)
         index.add_with_ids(X[5:, :], idx[5:])
-
-        print (index.search(X, 1))
 
         for i in range(10):
             _, searchres = index.search(X[i:i + 1, :], 1)
@@ -149,7 +207,6 @@ class TestRemove(unittest.TestCase):
             pass
         else:
             assert False, 'should have raised an exception'
-
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -311,6 +368,7 @@ class TestTransformChain(unittest.TestCase):
 
         assert np.all(I == I2)
 
+
 @unittest.skipIf(platform.system() == 'Windows', \
                  'Mmap not supported on Windows.')
 class TestRareIO(unittest.TestCase):
@@ -370,12 +428,6 @@ class TestRareIO(unittest.TestCase):
 
 class TestIVFFlatDedup(unittest.TestCase):
 
-    def normalize_res(self, D, I):
-        dmax = D[-1]
-        res = [(d, i) for d, i in zip(D, I) if d < dmax]
-        res.sort()
-        return res
-
     def test_dedup(self):
         d = 10
         nb = 1000
@@ -411,10 +463,7 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dref, Iref = index_ref.search(xq, 20)
         Dnew, Inew = index_new.search(xq, 20)
 
-        for i in range(nq):
-            ref = self.normalize_res(Dref[i], Iref[i])
-            new = self.normalize_res(Dnew[i], Inew[i])
-            assert ref == new
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
         # test I/O
         fd, tmpfile = tempfile.mkstemp()
@@ -427,10 +476,7 @@ class TestIVFFlatDedup(unittest.TestCase):
                 os.unlink(tmpfile)
         Dst, Ist = index_st.search(xq, 20)
 
-        for i in range(nq):
-            new = self.normalize_res(Dnew[i], Inew[i])
-            st = self.normalize_res(Dst[i], Ist[i])
-            assert st == new
+        check_ref_knn_with_draws(Dnew, Inew, Dst, Ist)
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
@@ -441,10 +487,7 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dref, Iref = index_ref.search(xq, 20)
         Dnew, Inew = index_new.search(xq, 20)
 
-        for i in range(nq):
-            ref = self.normalize_res(Dref[i], Iref[i])
-            new = self.normalize_res(Dnew[i], Inew[i])
-            assert ref == new
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
 
 class TestSerialize(unittest.TestCase):
@@ -483,6 +526,7 @@ class TestSerialize(unittest.TestCase):
 
         Dnew, Inew = index3.search(xq, 5)
         assert np.all(Dnew == Dref) and np.all(Inew == Iref)
+
 
 @unittest.skipIf(platform.system() == 'Windows',
                  'OnDiskInvertedLists is unsupported on Windows.')
@@ -618,7 +662,315 @@ class TestInvlistMeta(unittest.TestCase):
         index.replace_invlists(il, True)
 
 
+class TestSplitMerge(unittest.TestCase):
+
+    def do_test(self, index_key, subset_type):
+        xt, xb, xq = get_dataset_2(32, 1000, 100, 10)
+        index = faiss.index_factory(32, index_key)
+        index.train(xt)
+        nsplit = 3
+        sub_indexes = [faiss.clone_index(index) for i in range(nsplit)]
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+        nlist = index.nlist
+        for i in range(nsplit):
+            if subset_type in (1, 3):
+                index.copy_subset_to(sub_indexes[i], subset_type, nsplit, i)
+            elif subset_type in (0, 2):
+                j0 = index.ntotal * i // nsplit
+                j1 = index.ntotal * (i + 1) // nsplit
+                index.copy_subset_to(sub_indexes[i], subset_type, j0, j1)
+            elif subset_type == 4:
+                index.copy_subset_to(
+                    sub_indexes[i], subset_type,
+                    i * nlist // nsplit, (i + 1) * nlist // nsplit)
+
+        index_shards = faiss.IndexShards(False, False)
+        for i in range(nsplit):
+            index_shards.add_shard(sub_indexes[i])
+        Dnew, Inew = index_shards.search(xq, 10)
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+
+    def test_Flat_subset_type_0(self):
+        self.do_test("IVF30,Flat", subset_type=0)
+
+    def test_Flat_subset_type_1(self):
+        self.do_test("IVF30,Flat", subset_type=1)
+
+    def test_Flat_subset_type_2(self):
+        self.do_test("IVF30,PQ4np", subset_type=2)
+
+    def test_Flat_subset_type_3(self):
+        self.do_test("IVF30,Flat", subset_type=3)
+
+    def test_Flat_subset_type_4(self):
+        self.do_test("IVF30,Flat", subset_type=4)
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestIndependentQuantizer(unittest.TestCase):
+
+    def test_sidebyside(self):
+        """ provide double-sized vectors to the index, where each vector
+        is the concatenation of twice the same vector """
+        ds = SyntheticDataset(32, 1000, 500, 50)
+
+        index = faiss.index_factory(ds.d, "IVF32,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 4
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        select32first = make_LinearTransform_matrix(
+            np.eye(64, dtype='float32')[:32])
+
+        select32last = make_LinearTransform_matrix(
+            np.eye(64, dtype='float32')[32:])
+
+        quantizer = faiss.IndexPreTransform(
+            select32first,
+            index.quantizer
+        )
+
+        index2 = faiss.IndexIVFIndependentQuantizer(
+            quantizer,
+            index, select32last
+        )
+
+        xq2 = np.hstack([ds.get_queries()] * 2)
+        quantizer.search(xq2, 30)
+        Dnew, Inew = index2.search(xq2, 10)
+
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
+
+        # test add
+        index2.reset()
+        xb2 = np.hstack([ds.get_database()] * 2)
+        index2.add(xb2)
+        Dnew, Inew = index2.search(xq2, 10)
+
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
+
+    def test_half_store(self):
+        """ the index stores only the first half of each vector
+        but the coarse quantizer sees them entirely """
+        ds = SyntheticDataset(32, 1000, 500, 50)
+        gt = ds.get_groundtruth(10)
+
+        select32first = make_LinearTransform_matrix(
+            np.eye(32, dtype='float32')[:16])
+
+        index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
+        index_ivf.nprobe = 4
+        index = faiss.IndexPreTransform(select32first, index_ivf)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        perf_ref = faiss.eval_intersection(Iref, gt)
+
+        index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
+        index_ivf.nprobe = 4
+        index = faiss.IndexIVFIndependentQuantizer(
+            faiss.IndexFlatL2(ds.d),
+            index_ivf, select32first
+        )
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        perf_new = faiss.eval_intersection(Inew, gt)
+
+        self.assertLess(perf_ref, perf_new)
+
+    def test_precomputed_tables(self):
+        """ see how precomputed tables behave with centroid distance estimates from a mismatching
+        coarse quantizer """
+        ds = SyntheticDataset(48, 2000, 500, 250)
+        gt = ds.get_groundtruth(10)
+
+        index = faiss.IndexIVFIndependentQuantizer(
+            faiss.IndexFlatL2(48),
+            faiss.index_factory(16, "IVF64,PQ4np"),
+            faiss.PCAMatrix(48, 16)
+        )
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
+        index_ivf.nprobe = 4
+
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        perf_ref = faiss.eval_intersection(Iref, gt)
+
+        index_ivf.use_precomputed_table = 1
+        index_ivf.precompute_table()
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        perf_new = faiss.eval_intersection(Inew, gt)
+
+        # to be honest, it is not clear which one is better...
+        self.assertNotEqual(perf_ref, perf_new)
+
+        # check IO while we are at it
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Dnew, D2)
+        np.testing.assert_array_equal(Inew, I2)
+
+
+
+class TestSearchAndReconstruct(unittest.TestCase):
+
+    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
+        n, d = xb.shape
+        assert xq.shape[1] == d
+        assert index.d == d
+
+        D_ref, I_ref = index.search(xq, k)
+        R_ref = index.reconstruct_n(0, n)
+        D, I, R = index.search_and_reconstruct(xq, k)
+
+        np.testing.assert_almost_equal(D, D_ref, decimal=5)
+        self.assertTrue((I == I_ref).all())
+        self.assertEqual(R.shape[:2], I.shape)
+        self.assertEqual(R.shape[2], d)
+
+        # (n, k, ..) -> (n * k, ..)
+        I_flat = I.reshape(-1)
+        R_flat = R.reshape(-1, d)
+        # Filter out -1s when not enough results
+        R_flat = R_flat[I_flat >= 0]
+        I_flat = I_flat[I_flat >= 0]
+
+        recons_ref_err = np.mean(np.linalg.norm(R_flat - R_ref[I_flat]))
+        self.assertLessEqual(recons_ref_err, 1e-6)
+
+        def norm1(x):
+            return np.sqrt((x ** 2).sum(axis=1))
+
+        recons_err = np.mean(norm1(R_flat - xb[I_flat]))
+
+        print('Reconstruction error = %.3f' % recons_err)
+        if eps is not None:
+            self.assertLessEqual(recons_err, eps)
+
+        return D, I, R
+
+    def test_IndexFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFFlat(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFFlat(quantizer, d, 32, faiss.METRIC_L2)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
+
+    def test_IndexIVFPQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_MultiIndex(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "IMI2x5,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_IndexTransform(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        index = faiss.index_factory(d, "L2norm,PCA8,IVF32,PQ8np")
+        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq)
+
+
+class TestSearchAndGetCodes(unittest.TestCase):
+
+    def do_test(self, factory_string):
+        ds = SyntheticDataset(32, 1000, 100, 10)
+
+        index = faiss.index_factory(ds.d, factory_string)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index.nprobe
+        index.nprobe = 10
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        D, I, codes = index.search_and_return_codes(
+            ds.get_queries(), 10, include_listnos=True)
+
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_array_equal(D, Dref)
+
+        # verify that we get the same distances when decompressing from
+        # returned codes (the codes are compatible with sa_decode)
+        for qi in range(ds.nq):
+            q = ds.get_queries()[qi]
+            xbi = index.sa_decode(codes[qi])
+            D2 = ((q - xbi) ** 2).sum(1)
+            np.testing.assert_allclose(D2, D[qi], rtol=1e-5)
+
+    def test_ivfpq(self):
+        self.do_test("IVF20,PQ4x4np")
+
+    def test_ivfsq(self):
+        self.do_test("IVF20,SQ8")
+
+    def test_ivfrq(self):
+        self.do_test("IVF20,RQ3x4")

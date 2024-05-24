@@ -12,10 +12,15 @@
 
 namespace faiss {
 
+struct CodePacker;
+struct NormTableScaler;
+
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
  * The codes are not stored sequentially but grouped in blocks of size bbs.
  * This makes it possible to compute distances quickly with SIMD instructions.
+ * The trailing codes (padding codes that are added to complete the last code)
+ * are garbage.
  *
  * Implementations:
  * 12: blocked loop with internal loop on Q with qbs
@@ -23,7 +28,6 @@ namespace faiss {
  * 14: no qbs with heap accumulator
  * 15: no qbs with reservoir accumulator
  */
-
 struct IndexFastScan : Index {
     // implementation to select
     int implem = 0;
@@ -66,7 +70,8 @@ struct IndexFastScan : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void add(idx_t n, const float* x) override;
 
@@ -83,25 +88,25 @@ struct IndexFastScan : Index {
             uint8_t* lut,
             float* normalizers) const;
 
-    template <bool is_max, class Scaler>
+    template <bool is_max>
     void search_dispatch_implem(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
             idx_t* labels,
-            const Scaler& scaler) const;
+            const NormTableScaler* scaler) const;
 
-    template <class Cfloat, class Scaler>
+    template <class Cfloat>
     void search_implem_234(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
             idx_t* labels,
-            const Scaler& scaler) const;
+            const NormTableScaler* scaler) const;
 
-    template <class C, class Scaler>
+    template <class C>
     void search_implem_12(
             idx_t n,
             const float* x,
@@ -109,9 +114,9 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const Scaler& scaler) const;
+            const NormTableScaler* scaler) const;
 
-    template <class C, class Scaler>
+    template <class C>
     void search_implem_14(
             idx_t n,
             const float* x,
@@ -119,9 +124,15 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const Scaler& scaler) const;
+            const NormTableScaler* scaler) const;
 
     void reconstruct(idx_t key, float* recons) const override;
+    size_t remove_ids(const IDSelector& sel) override;
+
+    CodePacker* get_CodePacker() const;
+
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+    void check_compatible_for_merge(const Index& otherIndex) const override;
 };
 
 struct FastScanStats {

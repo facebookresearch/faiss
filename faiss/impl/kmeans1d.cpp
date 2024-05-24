@@ -20,7 +20,6 @@
 
 namespace faiss {
 
-using idx_t = Index::idx_t;
 using LookUpFunc = std::function<float(idx_t, idx_t)>;
 
 void reduce(

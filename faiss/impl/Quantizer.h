@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -6,10 +11,8 @@
 
 namespace faiss {
 
-/** Product Quantizer. Implemented only for METRIC_L2 */
+/** General interface for quantizer objects */
 struct Quantizer {
-    using idx_t = Index::idx_t;
-
     size_t d;         ///< size of the input vectors
     size_t code_size; ///< bytes per indexed vector
 

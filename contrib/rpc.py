@@ -7,9 +7,12 @@
 Simplistic RPC implementation.
 Exposes all functions of a Server object.
 
-Uses pickle for serialization and the socket interface.
+This code is for demonstration purposes only, and does not include certain
+security protections. It is not meant to be run on an untrusted network or
+in a production environment.
 """
 
+import importlib
 import os
 import pickle
 import sys
@@ -23,22 +26,21 @@ LOG = logging.getLogger(__name__)
 # default
 PORT = 12032
 
-
-#########################################################################
-# simple I/O functions
-
-
-def inline_send_handle(f, conn):
-    st = os.fstat(f.fileno())
-    size = st.st_size
-    pickle.dump(size, conn)
-    conn.write(f.read(size))
+safe_modules = {
+    'numpy',
+    'numpy.core.multiarray',
+}
 
 
-def inline_send_string(s, conn):
-    size = len(s)
-    pickle.dump(size, conn)
-    conn.write(s)
+class RestrictedUnpickler(pickle.Unpickler):
+
+    def find_class(self, module, name):
+        # Only allow safe modules.
+        if module in safe_modules:
+            return getattr(importlib.import_module(module), name)
+        # Forbid everything else.
+        raise pickle.UnpicklingError("global '%s.%s' is forbidden" %
+                                     (module, name))
 
 
 class FileSock:
@@ -123,7 +125,7 @@ class Server:
         """
 
         try:
-            (fname,args)=pickle.load(self.fs)
+            (fname, args) = RestrictedUnpickler(self.fs).load()
         except EOFError:
             raise ClientExit("read args")
         self.log("executing method %s"%(fname))
@@ -133,7 +135,7 @@ class Server:
             f=getattr(self,fname)
         except AttributeError:
             st = AttributeError("unknown method "+fname)
-            self.log("unknown method ")
+            self.log("unknown method")
 
         try:
             ret = f(*args)
@@ -203,7 +205,7 @@ class Client:
         socktype = socket.AF_INET6 if v6 else socket.AF_INET
 
         sock = socket.socket(socktype, socket.SOCK_STREAM)
-        LOG.info("connecting", HOST, port, socktype)
+        LOG.info("connecting to %s:%d, socket type: %s", HOST, port, socktype)
         sock.connect((HOST, port))
         self.sock = sock
         self.fs = FileSock(sock)
@@ -214,7 +216,7 @@ class Client:
         return self.get_result()
 
     def get_result(self):
-        (st, ret) = pickle.load(self.fs)
+        (st, ret) = RestrictedUnpickler(self.fs).load()
         if st!=None:
             raise ServerException(st)
         else:
@@ -231,13 +233,13 @@ def run_server(new_handler, port=PORT, report_to_file=None, v6=False):
     s = socket.socket(socktype, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    LOG.info("bind %s:%d" % (HOST, port))
+    LOG.info("bind %s:%d", HOST, port)
     s.bind((HOST, port))
     s.listen(5)
 
     LOG.info("accepting connections")
     if report_to_file is not None:
-        LOG.info('storing host+port in', report_to_file)
+        LOG.info('storing host+port in %s', report_to_file)
         open(report_to_file, 'w').write('%s:%d ' % (socket.gethostname(), port))
 
     while True:
@@ -247,10 +249,10 @@ def run_server(new_handler, port=PORT, report_to_file=None, v6=False):
             if e[1]=='Interrupted system call': continue
             raise
 
-        LOG.info('Connected by', addr, end=' ')
+        LOG.info('Connected to %s', addr)
 
         ibs = new_handler(conn)
 
         tid = _thread.start_new_thread(ibs.exec_loop,())
 
-        LOG.info("tid",tid)
+        LOG.debug("Thread ID: %d", tid)

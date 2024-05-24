@@ -14,21 +14,23 @@ namespace gpu {
 // Utility function to translate (list id, offset) to a user index on
 // the CPU. In a cpp in order to use OpenMP
 void ivfOffsetToUserIndex(
-        Index::idx_t* indices,
-        int numLists,
-        int queries,
+        idx_t* indices,
+        idx_t numLists,
+        idx_t queries,
         int k,
-        const std::vector<std::vector<Index::idx_t>>& listOffsetToUserIndex) {
+        const std::vector<std::vector<idx_t>>& listOffsetToUserIndex) {
     FAISS_ASSERT(numLists == listOffsetToUserIndex.size());
 
 #pragma omp parallel for
-    for (int q = 0; q < queries; ++q) {
-        for (int r = 0; r < k; ++r) {
+    for (idx_t q = 0; q < queries; ++q) {
+        for (idx_t r = 0; r < k; ++r) {
             auto offsetIndex = indices[q * k + r];
 
-            if (offsetIndex < 0)
+            if (offsetIndex < 0) {
                 continue;
+            }
 
+            // FIXME: implicit limit on list and list offset length
             int listId = (int)(offsetIndex >> 32);
             int listOffset = (int)(offsetIndex & 0xffffffff);
 

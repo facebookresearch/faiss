@@ -14,8 +14,8 @@ using faiss::IndexReplicas;
 
 DEFINE_DESTRUCTOR(IndexReplicas)
 
-DEFINE_GETTER(IndexReplicas, int, own_fields)
-DEFINE_SETTER(IndexReplicas, int, own_fields)
+DEFINE_GETTER(IndexReplicas, int, own_indices)
+DEFINE_SETTER(IndexReplicas, int, own_indices)
 
 int faiss_IndexReplicas_new(FaissIndexReplicas** p_index, idx_t d) {
     try {

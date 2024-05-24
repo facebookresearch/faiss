@@ -76,6 +76,6 @@ static void bench(benchmark::State& state) {
     }
 }
 // I think maybe n and d should be input arguments
-// for thigns to really make sense, idk.
+// for things to really make sense, idk.
 BENCHMARK(bench)->Iterations(20);
 BENCHMARK_MAIN();

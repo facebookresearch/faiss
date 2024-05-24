@@ -18,20 +18,24 @@ namespace faiss {
 
 /** Index that stores the full vectors and performs exhaustive search */
 struct IndexFlat : IndexFlatCodes {
-    explicit IndexFlat(idx_t d, MetricType metric = METRIC_L2);
+    explicit IndexFlat(
+            idx_t d, ///< dimensionality of the input vectors
+            MetricType metric = METRIC_L2);
 
     void search(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 
@@ -74,13 +78,30 @@ struct IndexFlatIP : IndexFlat {
 };
 
 struct IndexFlatL2 : IndexFlat {
+    // Special cache for L2 norms.
+    // If this cache is set, then get_distance_computer() returns
+    // a special version that computes the distance using dot products
+    // and l2 norms.
+    std::vector<float> cached_l2norms;
+
+    /**
+     * @param d dimensionality of the input vectors
+     */
     explicit IndexFlatL2(idx_t d) : IndexFlat(d, METRIC_L2) {}
     IndexFlatL2() {}
+
+    // override for l2 norms cache.
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
+
+    // compute L2 norms
+    void sync_l2norms();
+    // clear L2 norms
+    void clear_l2norms();
 };
 
 /// optimized version for 1D "vectors".
 struct IndexFlat1D : IndexFlatL2 {
-    bool continuous_update; ///< is the permutation updated continuously?
+    bool continuous_update = true; ///< is the permutation updated continuously?
 
     std::vector<idx_t> perm; ///< sorted database indices
 
@@ -100,7 +121,8 @@ struct IndexFlat1D : IndexFlatL2 {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

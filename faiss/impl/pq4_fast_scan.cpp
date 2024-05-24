@@ -6,6 +6,7 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 
@@ -54,9 +55,17 @@ void pq4_pack_codes(
     FAISS_THROW_IF_NOT(nb % bbs == 0);
     FAISS_THROW_IF_NOT(nsq % 2 == 0);
 
+    if (nb == 0) {
+        return;
+    }
     memset(blocks, 0, nb * nsq / 2);
+#ifdef FAISS_BIG_ENDIAN
+    const uint8_t perm0[16] = {
+            8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
+#else
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+#endif
 
     uint8_t* codes2 = blocks;
     for (size_t i0 = 0; i0 < nb; i0 += bbs) {
@@ -88,19 +97,24 @@ void pq4_pack_codes_range(
         size_t i0,
         size_t i1,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks) {
+#ifdef FAISS_BIG_ENDIAN
+    const uint8_t perm0[16] = {
+            8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
+#else
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+#endif
 
     // range of affected blocks
     size_t block0 = i0 / bbs;
     size_t block1 = ((i1 - 1) / bbs) + 1;
 
     for (size_t b = block0; b < block1; b++) {
-        uint8_t* codes2 = blocks + b * bbs * M2 / 2;
+        uint8_t* codes2 = blocks + b * bbs * nsq / 2;
         int64_t i_base = b * bbs - i0;
-        for (int sq = 0; sq < M2; sq += 2) {
+        for (int sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
@@ -122,30 +136,114 @@ void pq4_pack_codes_range(
     }
 }
 
+namespace {
+
+// get the specific address of the vector inside a block
+// shift is used for determine the if the saved in bits 0..3 (false) or
+// bits 4..7 (true)
+size_t get_vector_specific_address(
+        size_t bbs,
+        size_t vector_id,
+        size_t sq,
+        bool& shift) {
+    // get the vector_id inside the block
+    vector_id = vector_id % bbs;
+    shift = vector_id > 15;
+    vector_id = vector_id & 15;
+
+    // get the address of the vector in sq
+    size_t address;
+    if (vector_id < 8) {
+        address = vector_id << 1;
+    } else {
+        address = ((vector_id - 8) << 1) + 1;
+    }
+    if (sq & 1) {
+        address += 16;
+    }
+    return (sq >> 1) * bbs + address;
+}
+
+} // anonymous namespace
+
 uint8_t pq4_get_packed_element(
         const uint8_t* data,
         size_t bbs,
         size_t nsq,
-        size_t i,
+        size_t vector_id,
         size_t sq) {
     // move to correct bbs-sized block
-    data += (i / bbs * (nsq / 2) + sq / 2) * bbs;
-    sq = sq & 1;
-    i = i % bbs;
-
-    // another step
-    data += (i / 32) * 32;
-    i = i % 32;
-
-    if (sq == 1) {
-        data += 16;
-    }
-    const uint8_t iperm0[16] = {
-            0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15};
-    if (i < 16) {
-        return data[iperm0[i]] & 15;
+    // number of blocks * block size
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_vector_specific_address(bbs, vector_id, sq, shift);
+    if (shift) {
+        return data[address] >> 4;
     } else {
-        return data[iperm0[i - 16]] >> 4;
+        return data[address] & 15;
+    }
+}
+
+void pq4_set_packed_element(
+        uint8_t* data,
+        uint8_t code,
+        size_t bbs,
+        size_t nsq,
+        size_t vector_id,
+        size_t sq) {
+    // move to correct bbs-sized block
+    // number of blocks * block size
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_vector_specific_address(bbs, vector_id, sq, shift);
+    if (shift) {
+        data[address] = (code << 4) | (data[address] & 15);
+    } else {
+        data[address] = code | (data[address] & ~15);
+    }
+}
+
+/***************************************************************
+ * CodePackerPQ4 implementation
+ ***************************************************************/
+
+CodePackerPQ4::CodePackerPQ4(size_t nsq, size_t bbs) {
+    this->nsq = nsq;
+    nvec = bbs;
+    code_size = (nsq * 4 + 7) / 8;
+    block_size = ((nsq + 1) / 2) * bbs;
+}
+
+void CodePackerPQ4::pack_1(
+        const uint8_t* flat_code,
+        size_t offset,
+        uint8_t* block) const {
+    size_t bbs = nvec;
+    if (offset >= nvec) {
+        block += (offset / nvec) * block_size;
+        offset = offset % nvec;
+    }
+    for (size_t i = 0; i < code_size; i++) {
+        uint8_t code = flat_code[i];
+        pq4_set_packed_element(block, code & 15, bbs, nsq, offset, 2 * i);
+        pq4_set_packed_element(block, code >> 4, bbs, nsq, offset, 2 * i + 1);
+    }
+}
+
+void CodePackerPQ4::unpack_1(
+        const uint8_t* block,
+        size_t offset,
+        uint8_t* flat_code) const {
+    size_t bbs = nvec;
+    if (offset >= nvec) {
+        block += (offset / nvec) * block_size;
+        offset = offset % nvec;
+    }
+    for (size_t i = 0; i < code_size; i++) {
+        uint8_t code0, code1;
+        code0 = pq4_get_packed_element(block, bbs, nsq, offset, 2 * i);
+        code1 = pq4_get_packed_element(block, bbs, nsq, offset, 2 * i + 1);
+        flat_code[i] = code0 | (code1 << 4);
     }
 }
 

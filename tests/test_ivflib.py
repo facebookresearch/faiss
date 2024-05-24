@@ -47,10 +47,8 @@ def search_single_scan(index, xq, k, bs=128):
         sub_assign[skip_rows, skip_cols] = -1
 
         index.search_preassigned(
-            nq, faiss.swig_ptr(xq), k,
-            faiss.swig_ptr(sub_assign), faiss.swig_ptr(coarse_dis),
-            faiss.swig_ptr(rh.D), faiss.swig_ptr(rh.I),
-            False, None
+            xq, k, sub_assign, coarse_dis,
+            D=rh.D, I=rh.I
         )
 
     rh.finalize()
@@ -127,7 +125,6 @@ class TestSearchWithParameters(unittest.TestCase):
 
         Dpre, _ = index.search(xq, 15)
         radius = float(np.median(Dpre[:, -1]))
-        print("Radius=", radius)
         stats = faiss.cvar.indexIVF_stats
         stats.reset()
         Lref, Dref, Iref = index.range_search(xq, radius)

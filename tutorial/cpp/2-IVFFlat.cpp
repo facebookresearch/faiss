@@ -13,7 +13,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 int main() {
     int d = 64;      // dimension
@@ -61,13 +61,10 @@ int main() {
             printf("\n");
         }
 
-        index.nprobe = 10;
-        index.search(nq, xq, k, D, I);
-
-        printf("I=\n");
+        printf("D=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
-                printf("%5zd ", I[i * k + j]);
+                printf("%5f ", D[i * k + j]);
             printf("\n");
         }
 

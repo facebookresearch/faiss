@@ -4,12 +4,13 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-import sys
 import numpy as np
 import faiss
 import unittest
 
 from common_faiss_tests import Randu10k
+
+from faiss.contrib.datasets import SyntheticDataset
 
 ru = Randu10k()
 
@@ -81,10 +82,8 @@ class Shards(unittest.TestCase):
         k = 32
         ref_index = faiss.IndexFlatL2(d)
 
-        print('ref search')
         ref_index.add(xb)
         _Dref, Iref = ref_index.search(xq, k)
-        print(Iref[:5, :6])
 
         shard_index = faiss.IndexShards(d)
         shard_index_2 = faiss.IndexShards(d, True, False)
@@ -108,7 +107,6 @@ class Shards(unittest.TestCase):
         for test_no in range(3):
             with_threads = test_no == 1
 
-            print('shard search test_no = %d' % test_no)
             if with_threads:
                 remember_nt = faiss.omp_get_max_threads()
                 faiss.omp_set_num_threads(1)
@@ -121,147 +119,58 @@ class Shards(unittest.TestCase):
             else:
                 _D, I = shard_index_2.search(xq, k)
 
-            print(I[:5, :6])
-
             if with_threads:
                 faiss.omp_set_num_threads(remember_nt)
 
             ndiff = (I != Iref).sum()
+            assert (ndiff < nq * k / 1000.)
 
-            print('%d / %d differences' % (ndiff, nq * k))
-            assert(ndiff < nq * k / 1000.)
+    def test_shards_ivf(self):
+        ds = SyntheticDataset(32, 1000, 100, 20)
+        ref_index = faiss.index_factory(ds.d, "IVF32,SQ8")
+        ref_index.train(ds.get_train())
+        xb = ds.get_database()
+        ref_index.add(ds.get_database())
 
+        Dref, Iref = ref_index.search(ds.get_database(), 10)
+        ref_index.reset()
 
-class Merge(unittest.TestCase):
+        sharded_index = faiss.IndexShardsIVF(
+            ref_index.quantizer, ref_index.nlist, False, True)
+        for shard in range(3):
+            index_i = faiss.clone_index(ref_index)
+            index_i.add(xb[shard * nb // 3: (shard + 1)* nb // 3])
+            sharded_index.add_shard(index_i)
 
-    def make_index_for_merge(self, quant, index_type, master_index):
-        ncent = 40
-        if index_type == 1:
-            index = faiss.IndexIVFFlat(quant, d, ncent, faiss.METRIC_L2)
-            if master_index:
-                index.is_trained = True
-        elif index_type == 2:
-            index = faiss.IndexIVFPQ(quant, d, ncent, 4, 8)
-            if master_index:
-                index.pq = master_index.pq
-                index.is_trained = True
-        elif index_type == 3:
-            index = faiss.IndexIVFPQR(quant, d, ncent, 4, 8, 8, 8)
-            if master_index:
-                index.pq = master_index.pq
-                index.refine_pq = master_index.refine_pq
-                index.is_trained = True
-        elif index_type == 4:
-            # quant used as the actual index
-            index = faiss.IndexIDMap(quant)
-        return index
+        Dnew, Inew = sharded_index.search(ds.get_database(), 10)
 
-    def do_test_merge(self, index_type):
-        k = 16
-        quant = faiss.IndexFlatL2(d)
-        ref_index = self.make_index_for_merge(quant, index_type, False)
+        np.testing.assert_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref)
 
-        # trains the quantizer
-        ref_index.train(xt)
+    def test_shards_ivf_train_add(self):
+        ds = SyntheticDataset(32, 1000, 600, 20)
+        quantizer = faiss.IndexFlatL2(ds.d)
+        sharded_index = faiss.IndexShardsIVF(quantizer, 40, False, False)
 
-        print('ref search')
-        ref_index.add(xb)
-        _Dref, Iref = ref_index.search(xq, k)
-        print(Iref[:5, :6])
+        for _ in range(3):
+            sharded_index.add_shard(faiss.index_factory(ds.d, "IVF40,Flat"))
 
-        indexes = []
-        ni = 3
-        for i in range(ni):
-            i0 = int(i * nb / ni)
-            i1 = int((i + 1) * nb / ni)
-            index = self.make_index_for_merge(quant, index_type, ref_index)
-            index.is_trained = True
-            index.add(xb[i0:i1])
-            indexes.append(index)
+        sharded_index.train(ds.get_train())
+        sharded_index.add(ds.get_database())
+        Dnew, Inew = sharded_index.search(ds.get_queries(), 10)
 
-        index = indexes[0]
+        index_ref = faiss.IndexIVFFlat(quantizer, ds.d, sharded_index.nlist)
+        index_ref.train(ds.get_train())
+        index_ref.add(ds.get_database())
+        Dref, Iref = index_ref.search(ds.get_queries(), 10)
+        np.testing.assert_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref)
 
-        for i in range(1, ni):
-            print('merge ntotal=%d other.ntotal=%d ' % (
-                index.ntotal, indexes[i].ntotal))
-            index.merge_from(indexes[i], index.ntotal)
+        # mess around with the quantizer's centroids
+        centroids = quantizer.reconstruct_n()
+        centroids = centroids[::-1].copy()
+        quantizer.reset()
+        quantizer.add(centroids)
 
-        _D, I = index.search(xq, k)
-        print(I[:5, :6])
-
-        ndiff = (I != Iref).sum()
-        print('%d / %d differences' % (ndiff, nq * k))
-        assert(ndiff < nq * k / 1000.)
-
-    def test_merge(self):
-        self.do_test_merge(1)
-        self.do_test_merge(2)
-        self.do_test_merge(3)
-
-    def do_test_remove(self, index_type):
-        k = 16
-        quant = faiss.IndexFlatL2(d)
-        index = self.make_index_for_merge(quant, index_type, None)
-
-        # trains the quantizer
-        index.train(xt)
-
-        if index_type < 4:
-            index.add(xb)
-        else:
-            gen = np.random.RandomState(1234)
-            id_list = gen.permutation(nb * 7)[:nb].astype('int64')
-            index.add_with_ids(xb, id_list)
-
-        print('ref search ntotal=%d' % index.ntotal)
-        Dref, Iref = index.search(xq, k)
-
-        toremove = np.zeros(nq * k, dtype='int64')
-        nr = 0
-        for i in range(nq):
-            for j in range(k):
-                # remove all even results (it's ok if there are duplicates
-                # in the list of ids)
-                if Iref[i, j] % 2 == 0:
-                    nr = nr + 1
-                    toremove[nr] = Iref[i, j]
-
-        print('nr=', nr)
-
-        idsel = faiss.IDSelectorBatch(
-            nr, faiss.swig_ptr(toremove))
-
-        for i in range(nr):
-            assert(idsel.is_member(int(toremove[i])))
-
-        nremoved = index.remove_ids(idsel)
-
-        print('nremoved=%d ntotal=%d' % (nremoved, index.ntotal))
-
-        D, I = index.search(xq, k)
-
-        # make sure results are in the same order with even ones removed
-        ndiff = 0
-        for i in range(nq):
-            j2 = 0
-            for j in range(k):
-                if Iref[i, j] % 2 != 0:
-                    if I[i, j2] != Iref[i, j]:
-                        ndiff += 1
-                    assert abs(D[i, j2] - Dref[i, j]) < 1e-5
-                    j2 += 1
-        # draws are ordered arbitrarily
-        assert ndiff < 5
-
-    def test_remove(self):
-        self.do_test_remove(1)
-        self.do_test_remove(2)
-        self.do_test_remove(4)
-
-
-
-
-
-
-if __name__ == '__main__':
-    unittest.main()
+        D2, I2 = sharded_index.search(ds.get_queries(), 10)
+        self.assertFalse(np.all(I2 == Inew))

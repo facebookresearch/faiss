@@ -7,11 +7,15 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/clone_index.h>
+#include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVF.h>
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/gpu/utils/Float16.cuh>
+#include <faiss/gpu/impl/IVFBase.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -21,40 +25,74 @@ GpuIndexIVF::GpuIndexIVF(
         int dims,
         faiss::MetricType metric,
         float metricArg,
-        int nlistIn,
+        idx_t nlistIn,
         GpuIndexIVFConfig config)
         : GpuIndex(provider->getResources(), dims, metric, metricArg, config),
-          nlist(nlistIn),
-          nprobe(1),
-          quantizer(nullptr),
+          IndexIVFInterface(nullptr, nlistIn),
           ivfConfig_(config) {
+    // Only IP and L2 are supported for now
+    if (!(metric_type == faiss::METRIC_L2 ||
+          metric_type == faiss::METRIC_INNER_PRODUCT)) {
+        FAISS_THROW_FMT("unsupported metric type %d", (int)metric_type);
+    }
+
     init_();
+}
+
+GpuIndexIVF::GpuIndexIVF(
+        GpuResourcesProvider* provider,
+        Index* coarseQuantizer,
+        int dims,
+        faiss::MetricType metric,
+        float metricArg,
+        idx_t nlistIn,
+        GpuIndexIVFConfig config)
+        : GpuIndex(provider->getResources(), dims, metric, metricArg, config),
+          IndexIVFInterface(coarseQuantizer, nlistIn),
+          ivfConfig_(config) {
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer, "expecting a coarse quantizer object; none provided");
+
+    // We are passed an external quantizer object that we do not own
+    own_fields = false;
 
     // Only IP and L2 are supported for now
     if (!(metric_type == faiss::METRIC_L2 ||
           metric_type == faiss::METRIC_INNER_PRODUCT)) {
         FAISS_THROW_FMT("unsupported metric type %d", (int)metric_type);
     }
+
+    init_();
 }
 
 void GpuIndexIVF::init_() {
     FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be > 0");
 
     // Spherical by default if the metric is inner_product
+    // (copying IndexIVF.cpp)
     if (metric_type == faiss::METRIC_INNER_PRODUCT) {
         cp.spherical = true;
     }
 
     // here we set a low # iterations because this is typically used
-    // for large clusterings
+    // for large clusterings (copying IndexIVF.cpp's Level1Quantizer
     cp.niter = 10;
+
     cp.verbose = verbose;
 
-    if (!quantizer) {
-        // Construct an empty quantizer
+    if (quantizer) {
+        // The passed in quantizer may be either a CPU or GPU index
+        // Same work as IndexIVF's constructor
+        is_trained = quantizer->is_trained && quantizer->ntotal == nlist;
+    } else {
+        // we have not yet been trained
+        is_trained = false;
+
+        // Construct a GPU empty flat quantizer as our coarse quantizer
         GpuIndexFlatConfig config = ivfConfig_.flatConfig;
-        // FIXME: inherit our same device
+        // inherit our same device
         config.device = config_.device;
+        config.use_raft = config_.use_raft;
 
         if (metric_type == faiss::METRIC_L2) {
             quantizer = new GpuIndexFlatL2(resources_, d, config);
@@ -64,15 +102,48 @@ void GpuIndexIVF::init_() {
             // unknown metric type
             FAISS_THROW_FMT("unsupported metric type %d", (int)metric_type);
         }
+
+        // we instantiated the coarse quantizer here, so we destroy it as well
+        own_fields = true;
     }
+
+    verifyIVFSettings_();
 }
 
-GpuIndexIVF::~GpuIndexIVF() {
-    delete quantizer;
-}
+GpuIndexIVF::~GpuIndexIVF() {}
 
-GpuIndexFlat* GpuIndexIVF::getQuantizer() {
-    return quantizer;
+void GpuIndexIVF::verifyIVFSettings_() const {
+    // We should always have a quantizer instance
+    FAISS_THROW_IF_NOT(quantizer);
+    FAISS_THROW_IF_NOT(d == quantizer->d);
+
+    if (is_trained) {
+        FAISS_THROW_IF_NOT(quantizer->is_trained);
+
+        // IVF quantizer should correspond to our set of lists
+        FAISS_THROW_IF_NOT_FMT(
+                quantizer->ntotal == nlist,
+                "IVF nlist count (%zu) does not match trained coarse quantizer size (%zu)",
+                nlist,
+                quantizer->ntotal);
+    } else {
+        // The coarse quantizer may or may not be trained, but if we are
+        // trained, then the coarse quantizer must also be trained (the check
+        // above)
+        FAISS_THROW_IF_NOT(ntotal == 0);
+    }
+
+    // If the quantizer is a GPU index, then it must be resident on the same
+    // device as us
+    auto gpuQuantizer = tryCastGpuIndex(quantizer);
+    if (gpuQuantizer && gpuQuantizer->getDevice() != getDevice()) {
+        FAISS_THROW_FMT(
+                "GpuIndexIVF: not allowed to instantiate a GPU IVF "
+                "index that is resident on a different GPU (%d) "
+                "than its GPU coarse quantizer (%d)",
+                getDevice(),
+                gpuQuantizer->getDevice());
+    }
 }
 
 void GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
@@ -81,62 +152,70 @@ void GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
     GpuIndex::copyFrom(index);
 
     FAISS_ASSERT(index->nlist > 0);
-    FAISS_THROW_IF_NOT_FMT(
-            index->nlist <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports %zu inverted lists",
-            (size_t)std::numeric_limits<int>::max());
     nlist = index->nlist;
 
-    FAISS_THROW_IF_NOT_FMT(
-            index->nprobe > 0 && index->nprobe <= getMaxKSelection(),
-            "GPU index only supports nprobe <= %zu; passed %zu",
-            (size_t)getMaxKSelection(),
-            index->nprobe);
+    validateNProbe(index->nprobe);
     nprobe = index->nprobe;
 
     // The metric type may have changed as well, so we might have to
     // change our quantizer
-    delete quantizer;
+    if (own_fields) {
+        delete quantizer;
+    }
     quantizer = nullptr;
 
-    // Construct an empty quantizer
-    GpuIndexFlatConfig config = ivfConfig_.flatConfig;
-    // FIXME: inherit our same device
-    config.device = config_.device;
+    // IVF index that we are copying from must have a coarse quantizer
+    FAISS_THROW_IF_NOT(index->quantizer);
 
-    if (index->metric_type == faiss::METRIC_L2) {
-        // FIXME: 2 different float16 options?
-        quantizer = new GpuIndexFlatL2(resources_, this->d, config);
-    } else if (index->metric_type == faiss::METRIC_INNER_PRODUCT) {
-        // FIXME: 2 different float16 options?
-        quantizer = new GpuIndexFlatIP(resources_, this->d, config);
+    if (!isGpuIndex(index->quantizer)) {
+        // The coarse quantizer used in the IndexIVF is non-GPU.
+        // If it is something that we support on the GPU, we wish to copy it
+        // over to the GPU, on the same device that we are on.
+        GpuResourcesProviderFromInstance pfi(getResources());
+
+        // Attempt to clone the index to GPU. If it fails because the coarse
+        // quantizer is not implemented on GPU and the flag to allow CPU
+        // fallback is set, retry it with CPU cloner and re-throw errors.
+        try {
+            GpuClonerOptions options;
+            auto cloner = ToGpuCloner(&pfi, getDevice(), options);
+            quantizer = cloner.clone_Index(index->quantizer);
+        } catch (const std::exception& e) {
+            if (strstr(e.what(), "not implemented on GPU")) {
+                if (ivfConfig_.allowCpuCoarseQuantizer) {
+                    Cloner cpuCloner;
+                    quantizer = cpuCloner.clone_Index(index->quantizer);
+                } else {
+                    FAISS_THROW_MSG(
+                            "This index type is not implemented on "
+                            "GPU and allowCpuCoarseQuantizer is set to false. "
+                            "Please set the flag to true to allow the CPU "
+                            "fallback in cloning.");
+                }
+            } else {
+                throw;
+            }
+        }
+        own_fields = true;
     } else {
-        // unknown metric type
-        FAISS_ASSERT(false);
+        // Otherwise, this is a GPU coarse quantizer index instance found in a
+        // CPU instance. It is unclear what we should do here, but for now we'll
+        // flag this as an error (we're expecting a pure CPU index)
+        FAISS_THROW_MSG(
+                "GpuIndexIVF::copyFrom: copying a CPU IVF index to GPU "
+                "that already contains a GPU coarse (level 1) quantizer "
+                "is not currently supported");
     }
 
-    if (!index->is_trained) {
-        // copied in GpuIndex::copyFrom
-        FAISS_ASSERT(!is_trained && ntotal == 0);
-        return;
-    }
+    // Validate equality
+    FAISS_ASSERT(is_trained == index->is_trained);
+    FAISS_ASSERT(ntotal == index->ntotal);
+    FAISS_ASSERT(nlist == index->nlist);
+    FAISS_ASSERT(quantizer->is_trained == index->quantizer->is_trained);
+    FAISS_ASSERT(quantizer->ntotal == index->quantizer->ntotal);
 
-    // copied in GpuIndex::copyFrom
-    // ntotal can exceed max int, but the number of vectors per inverted
-    // list cannot exceed this. We check this in the subclasses.
-    FAISS_ASSERT(is_trained && (ntotal == index->ntotal));
-
-    // Since we're trained, the quantizer must have data
-    FAISS_ASSERT(index->quantizer->ntotal > 0);
-
-    // Right now, we can only handle IndexFlat or derived classes
-    auto qFlat = dynamic_cast<faiss::IndexFlat*>(index->quantizer);
-    FAISS_THROW_IF_NOT_MSG(
-            qFlat,
-            "Only IndexFlat is supported for the coarse quantizer "
-            "for copying from an IndexIVF into a GpuIndexIVF");
-
-    quantizer->copyFrom(qFlat);
+    // Validate IVF/quantizer settings
+    verifyIVFSettings_();
 }
 
 void GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
@@ -153,49 +232,212 @@ void GpuIndexIVF::copyTo(faiss::IndexIVF* index) const {
     index->nlist = nlist;
     index->nprobe = nprobe;
 
-    // Construct and copy the appropriate quantizer
-    faiss::IndexFlat* q = nullptr;
-
-    if (this->metric_type == faiss::METRIC_L2) {
-        q = new faiss::IndexFlatL2(this->d);
-
-    } else if (this->metric_type == faiss::METRIC_INNER_PRODUCT) {
-        q = new faiss::IndexFlatIP(this->d);
-
-    } else {
-        // we should have one of the above metrics
-        FAISS_ASSERT(false);
-    }
-
     FAISS_ASSERT(quantizer);
-    quantizer->copyTo(q);
-
     if (index->own_fields) {
         delete index->quantizer;
+        index->quantizer = nullptr;
     }
 
-    index->quantizer = q;
-    index->quantizer_trains_alone = 0;
+    index->quantizer = index_gpu_to_cpu(quantizer);
+    FAISS_THROW_IF_NOT(index->quantizer);
+
+    // Validate consistency between the coarse quantizer and the index
+    FAISS_ASSERT(
+            index->quantizer->is_trained == quantizer->is_trained &&
+            index->quantizer->is_trained == is_trained);
+    FAISS_ASSERT(index->quantizer->ntotal == quantizer->ntotal);
+
     index->own_fields = true;
+    index->quantizer_trains_alone = 0;
     index->cp = this->cp;
     index->make_direct_map(false);
 }
 
-int GpuIndexIVF::getNumLists() const {
+idx_t GpuIndexIVF::getNumLists() const {
     return nlist;
 }
 
-void GpuIndexIVF::setNumProbes(int nprobe) {
-    FAISS_THROW_IF_NOT_FMT(
-            nprobe > 0 && nprobe <= getMaxKSelection(),
-            "GPU index only supports nprobe <= %d; passed %d",
-            getMaxKSelection(),
-            nprobe);
-    this->nprobe = nprobe;
+idx_t GpuIndexIVF::getListLength(idx_t listId) const {
+    DeviceScope scope(config_.device);
+    FAISS_ASSERT(baseIndex_);
+
+    return baseIndex_->getListLength(listId);
 }
 
-int GpuIndexIVF::getNumProbes() const {
-    return nprobe;
+std::vector<uint8_t> GpuIndexIVF::getListVectorData(
+        idx_t listId,
+        bool gpuFormat) const {
+    DeviceScope scope(config_.device);
+    FAISS_ASSERT(baseIndex_);
+
+    return baseIndex_->getListVectorData(listId, gpuFormat);
+}
+
+std::vector<idx_t> GpuIndexIVF::getListIndices(idx_t listId) const {
+    DeviceScope scope(config_.device);
+    FAISS_ASSERT(baseIndex_);
+
+    return baseIndex_->getListIndices(listId);
+}
+
+void GpuIndexIVF::addImpl_(idx_t n, const float* x, const idx_t* xids) {
+    // Device is already set in GpuIndex::add
+    FAISS_ASSERT(baseIndex_);
+    FAISS_ASSERT(n > 0);
+
+    // Data is already resident on the GPU
+    Tensor<float, 2, true> data(const_cast<float*>(x), {n, this->d});
+    Tensor<idx_t, 1, true> labels(const_cast<idx_t*>(xids), {n});
+
+    // Not all vectors may be able to be added (some may contain NaNs etc)
+    baseIndex_->addVectors(quantizer, data, labels);
+
+    // but keep the ntotal based on the total number of vectors that we
+    // attempted to add
+    ntotal += n;
+}
+
+int GpuIndexIVF::getCurrentNProbe_(const SearchParameters* params) const {
+    size_t use_nprobe = nprobe;
+    if (params) {
+        auto ivfParams = dynamic_cast<const SearchParametersIVF*>(params);
+        if (ivfParams) {
+            use_nprobe = ivfParams->nprobe;
+
+            FAISS_THROW_IF_NOT_FMT(
+                    ivfParams->max_codes == 0,
+                    "GPU IVF index does not currently support "
+                    "SearchParametersIVF::max_codes (passed %zu, must be 0)",
+                    ivfParams->max_codes);
+        } else {
+            FAISS_THROW_MSG(
+                    "GPU IVF index: passed unhandled SearchParameters "
+                    "class to search function; only SearchParametersIVF "
+                    "implemented at present");
+        }
+    }
+
+    validateNProbe(use_nprobe);
+    // We use int internally for nprobe
+    return int(use_nprobe);
+}
+
+void GpuIndexIVF::searchImpl_(
+        idx_t n,
+        const float* x,
+        int k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    // Device was already set in GpuIndex::search
+    int use_nprobe = getCurrentNProbe_(params);
+
+    // This was previously checked
+    FAISS_ASSERT(is_trained && baseIndex_);
+    FAISS_ASSERT(n > 0);
+
+    // Data is already resident on the GPU
+    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, this->d});
+    Tensor<float, 2, true> outDistances(distances, {n, k});
+    Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
+
+    baseIndex_->search(
+            quantizer, queries, use_nprobe, k, outDistances, outLabels);
+}
+
+void GpuIndexIVF::search_preassigned(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const idx_t* assign,
+        const float* centroid_dis,
+        float* distances,
+        idx_t* labels,
+        bool store_pairs,
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
+    FAISS_THROW_IF_NOT_MSG(stats == nullptr, "IVF stats not supported");
+    DeviceScope scope(config_.device);
+    auto stream = resources_->getDefaultStream(config_.device);
+
+    FAISS_THROW_IF_NOT_MSG(
+            !store_pairs,
+            "GpuIndexIVF::search_preassigned does not "
+            "currently support store_pairs");
+    FAISS_THROW_IF_NOT_MSG(this->is_trained, "GpuIndexIVF not trained");
+    FAISS_ASSERT(baseIndex_);
+
+    validateKSelect(k);
+
+    if (n == 0 || k == 0) {
+        // nothing to search
+        return;
+    }
+
+    idx_t use_nprobe = params ? params->nprobe : this->nprobe;
+    validateNProbe(use_nprobe);
+
+    size_t max_codes = params ? params->max_codes : this->max_codes;
+    FAISS_THROW_IF_NOT_FMT(
+            max_codes == 0,
+            "GPU IVF index does not currently support "
+            "SearchParametersIVF::max_codes (passed %zu, must be 0)",
+            max_codes);
+
+    // Ensure that all data/output buffers are resident on our desired device
+    auto vecsDevice = toDeviceTemporary<float, 2>(
+            resources_.get(),
+            config_.device,
+            const_cast<float*>(x),
+            stream,
+            {n, d});
+
+    auto distanceDevice = toDeviceTemporary<float, 2>(
+            resources_.get(),
+            config_.device,
+            const_cast<float*>(centroid_dis),
+            stream,
+            {n, use_nprobe});
+
+    auto assignDevice = toDeviceTemporary<idx_t, 2>(
+            resources_.get(),
+            config_.device,
+            const_cast<idx_t*>(assign),
+            stream,
+            {n, use_nprobe});
+
+    auto outDistancesDevice = toDeviceTemporary<float, 2>(
+            resources_.get(), config_.device, distances, stream, {n, k});
+
+    auto outIndicesDevice = toDeviceTemporary<idx_t, 2>(
+            resources_.get(), config_.device, labels, stream, {n, k});
+
+    baseIndex_->searchPreassigned(
+            quantizer,
+            vecsDevice,
+            distanceDevice,
+            assignDevice,
+            k,
+            outDistancesDevice,
+            outIndicesDevice,
+            store_pairs);
+
+    // If the output was not already on the GPU, copy it back
+    fromDevice<float, 2>(outDistancesDevice, distances, stream);
+    fromDevice<idx_t, 2>(outIndicesDevice, labels, stream);
+}
+
+void GpuIndexIVF::range_search_preassigned(
+        idx_t nx,
+        const float* x,
+        float radius,
+        const idx_t* keys,
+        const float* coarse_dis,
+        RangeSearchResult* result,
+        bool store_pairs,
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
+    FAISS_THROW_MSG("range search not implemented");
 }
 
 bool GpuIndexIVF::addImplRequiresIDs_() const {
@@ -203,7 +445,9 @@ bool GpuIndexIVF::addImplRequiresIDs_() const {
     return true;
 }
 
-void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
+void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
+    DeviceScope scope(config_.device);
+
     if (n == 0) {
         // nothing to do
         return;
@@ -221,16 +465,15 @@ void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
         printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
     }
 
-    DeviceScope scope(config_.device);
+    quantizer->reset();
 
     // leverage the CPU-side k-means code, which works for the GPU
     // flat index as well
-    quantizer->reset();
     Clustering clus(this->d, nlist, this->cp);
     clus.verbose = verbose;
     clus.train(n, x, *quantizer);
-    quantizer->is_trained = true;
 
+    quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }
 

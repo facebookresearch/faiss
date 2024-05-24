@@ -110,13 +110,3 @@ int faiss_IndexIVFScalarQuantizer_add_core(
     }
     CATCH_AND_HANDLE
 }
-
-int faiss_IndexIVFScalarQuantizer_train_residual(
-        FaissIndexIVFScalarQuantizer* index,
-        idx_t n,
-        const float* x) {
-    try {
-        reinterpret_cast<IndexIVFScalarQuantizer*>(index)->train_residual(n, x);
-    }
-    CATCH_AND_HANDLE
-}

@@ -64,3 +64,58 @@ class TestDistanceComputer(unittest.TestCase):
 
     def test_distance_computer_AQ_LUT_IP(self):
         self.do_test("RQ3x4_Nqint8", faiss.METRIC_INNER_PRODUCT)
+
+
+class TestIndexRefineSearchParams(unittest.TestCase):
+
+    def do_test(self, factory_string):
+        ds = datasets.SyntheticDataset(32, 256, 100, 40)
+
+        index = faiss.index_factory(32, factory_string)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 4
+        xq = ds.get_queries()
+
+        # do a search with k_factor = 1
+        D1, I1 = index.search(xq, 10)
+        inter1 = faiss.eval_intersection(I1, ds.get_groundtruth(10))
+
+        # do a search with k_factor = 1.5
+        params = faiss.IndexRefineSearchParameters(k_factor=1.1)
+        D2, I2 = index.search(xq, 10, params=params)
+        inter2 = faiss.eval_intersection(I2, ds.get_groundtruth(10))
+
+        # do a search with k_factor = 2
+        params = faiss.IndexRefineSearchParameters(k_factor=2)
+        D3, I3 = index.search(xq, 10, params=params)
+        inter3 = faiss.eval_intersection(I3, ds.get_groundtruth(10))
+
+        # make sure that the recall rate increases with k_factor
+        self.assertGreater(inter2, inter1)
+        self.assertGreater(inter3, inter2)
+
+        # make sure that the baseline k_factor is unchanged
+        self.assertEqual(index.k_factor, 1)
+
+        # try passing params for the baseline index, change nprobe
+        base_params = faiss.IVFSearchParameters(nprobe=10)
+        params = faiss.IndexRefineSearchParameters(k_factor=1, base_index_params=base_params)
+        D4, I4 = index.search(xq, 10, params=params)
+        inter4 = faiss.eval_intersection(I4, ds.get_groundtruth(10))
+
+        base_params = faiss.IVFSearchParameters(nprobe=2)
+        params = faiss.IndexRefineSearchParameters(k_factor=1, base_index_params=base_params)
+        D5, I5 = index.search(xq, 10, params=params)
+        inter5 = faiss.eval_intersection(I5, ds.get_groundtruth(10))
+
+        # make sure that the recall rate changes
+        self.assertNotEqual(inter4, inter5)
+
+    def test_rflat(self):
+        # flat is handled by the IndexRefineFlat class
+        self.do_test("IVF8,PQ2x4np,RFlat")
+
+    def test_refine_sq8(self):
+        # this case uses the IndexRefine class
+        self.do_test("IVF8,PQ2x4np,Refine(SQ8)")

@@ -46,7 +46,8 @@ struct IndexScalarQuantizer : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
@@ -64,7 +65,6 @@ struct IndexScalarQuantizer : IndexFlatCodes {
 
 struct IndexIVFScalarQuantizer : IndexIVF {
     ScalarQuantizer sq;
-    bool by_residual;
 
     IndexIVFScalarQuantizer(
             Index* quantizer,
@@ -72,11 +72,13 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             size_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric = METRIC_L2,
-            bool encode_residual = true);
+            bool by_residual = true);
 
     IndexIVFScalarQuantizer();
 
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
+
+    idx_t train_encoder_num_vectors() const override;
 
     void encode_vectors(
             idx_t n,
@@ -89,10 +91,12 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx) override;
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;

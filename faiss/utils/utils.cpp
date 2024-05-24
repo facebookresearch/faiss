@@ -28,6 +28,8 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <set>
+#include <type_traits>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -101,6 +103,9 @@ int sgemv_(
 
 namespace faiss {
 
+// this will be set at load time from GPU Faiss
+std::string gpu_compile_options;
+
 std::string get_compile_options() {
     std::string options;
 
@@ -110,12 +115,16 @@ std::string get_compile_options() {
 #endif
 
 #ifdef __AVX2__
-    options += "AVX2";
+    options += "AVX2 ";
+#elif __AVX512F__
+    options += "AVX512 ";
 #elif defined(__aarch64__)
-    options += "NEON";
+    options += "NEON ";
 #else
-    options += "GENERIC";
+    options += "GENERIC ";
 #endif
+
+    options += gpu_compile_options;
 
     return options;
 }
@@ -423,185 +432,33 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     }
 }
 
-size_t ivec_checksum(size_t n, const int* a) {
-    size_t cs = 112909;
-    while (n--)
+uint64_t ivec_checksum(size_t n, const int32_t* assigned) {
+    const uint32_t* a = reinterpret_cast<const uint32_t*>(assigned);
+    uint64_t cs = 112909;
+    while (n--) {
         cs = cs * 65713 + a[n] * 1686049;
+    }
     return cs;
 }
 
-namespace {
-struct ArgsortComparator {
-    const float* vals;
-    bool operator()(const size_t a, const size_t b) const {
-        return vals[a] < vals[b];
+uint64_t bvec_checksum(size_t n, const uint8_t* a) {
+    uint64_t cs = ivec_checksum(n / 4, (const int32_t*)a);
+    for (size_t i = n / 4 * 4; i < n; i++) {
+        cs = cs * 65713 + a[n] * 1686049;
     }
-};
-
-struct SegmentS {
-    size_t i0; // begin pointer in the permutation array
-    size_t i1; // end
-    size_t len() const {
-        return i1 - i0;
-    }
-};
-
-// see https://en.wikipedia.org/wiki/Merge_algorithm#Parallel_merge
-// extended to > 1 merge thread
-
-// merges 2 ranges that should be consecutive on the source into
-// the union of the two on the destination
-template <typename T>
-void parallel_merge(
-        const T* src,
-        T* dst,
-        SegmentS& s1,
-        SegmentS& s2,
-        int nt,
-        const ArgsortComparator& comp) {
-    if (s2.len() > s1.len()) { // make sure that s1 larger than s2
-        std::swap(s1, s2);
-    }
-
-    // compute sub-ranges for each thread
-    std::vector<SegmentS> s1s(nt), s2s(nt), sws(nt);
-    s2s[0].i0 = s2.i0;
-    s2s[nt - 1].i1 = s2.i1;
-
-    // not sure parallel actually helps here
-#pragma omp parallel for num_threads(nt)
-    for (int t = 0; t < nt; t++) {
-        s1s[t].i0 = s1.i0 + s1.len() * t / nt;
-        s1s[t].i1 = s1.i0 + s1.len() * (t + 1) / nt;
-
-        if (t + 1 < nt) {
-            T pivot = src[s1s[t].i1];
-            size_t i0 = s2.i0, i1 = s2.i1;
-            while (i0 + 1 < i1) {
-                size_t imed = (i1 + i0) / 2;
-                if (comp(pivot, src[imed])) {
-                    i1 = imed;
-                } else {
-                    i0 = imed;
-                }
-            }
-            s2s[t].i1 = s2s[t + 1].i0 = i1;
-        }
-    }
-    s1.i0 = std::min(s1.i0, s2.i0);
-    s1.i1 = std::max(s1.i1, s2.i1);
-    s2 = s1;
-    sws[0].i0 = s1.i0;
-    for (int t = 0; t < nt; t++) {
-        sws[t].i1 = sws[t].i0 + s1s[t].len() + s2s[t].len();
-        if (t + 1 < nt) {
-            sws[t + 1].i0 = sws[t].i1;
-        }
-    }
-    assert(sws[nt - 1].i1 == s1.i1);
-
-    // do the actual merging
-#pragma omp parallel for num_threads(nt)
-    for (int t = 0; t < nt; t++) {
-        SegmentS sw = sws[t];
-        SegmentS s1t = s1s[t];
-        SegmentS s2t = s2s[t];
-        if (s1t.i0 < s1t.i1 && s2t.i0 < s2t.i1) {
-            for (;;) {
-                // assert (sw.len() == s1t.len() + s2t.len());
-                if (comp(src[s1t.i0], src[s2t.i0])) {
-                    dst[sw.i0++] = src[s1t.i0++];
-                    if (s1t.i0 == s1t.i1)
-                        break;
-                } else {
-                    dst[sw.i0++] = src[s2t.i0++];
-                    if (s2t.i0 == s2t.i1)
-                        break;
-                }
-            }
-        }
-        if (s1t.len() > 0) {
-            assert(s1t.len() == sw.len());
-            memcpy(dst + sw.i0, src + s1t.i0, s1t.len() * sizeof(dst[0]));
-        } else if (s2t.len() > 0) {
-            assert(s2t.len() == sw.len());
-            memcpy(dst + sw.i0, src + s2t.i0, s2t.len() * sizeof(dst[0]));
-        }
-    }
+    return cs;
 }
 
-}; // namespace
-
-void fvec_argsort(size_t n, const float* vals, size_t* perm) {
-    for (size_t i = 0; i < n; i++)
-        perm[i] = i;
-    ArgsortComparator comp = {vals};
-    std::sort(perm, perm + n, comp);
-}
-
-void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
-    size_t* perm2 = new size_t[n];
-    // 2 result tables, during merging, flip between them
-    size_t *permB = perm2, *permA = perm;
-
-    int nt = omp_get_max_threads();
-    { // prepare correct permutation so that the result ends in perm
-      // at final iteration
-        int nseg = nt;
-        while (nseg > 1) {
-            nseg = (nseg + 1) / 2;
-            std::swap(permA, permB);
-        }
+void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
+    // MSVC can't accept unsigned index for #pragma omp parallel for
+    // so below codes only accept n <= std::numeric_limits<ssize_t>::max()
+    using ssize_t = std::make_signed<std::size_t>::type;
+    const ssize_t size = n;
+#pragma omp parallel for if (size > 1000)
+    for (ssize_t i_ = 0; i_ < size; i_++) {
+        const auto i = static_cast<std::size_t>(i_);
+        cs[i] = bvec_checksum(d, a + i * d);
     }
-
-#pragma omp parallel
-    for (size_t i = 0; i < n; i++)
-        permA[i] = i;
-
-    ArgsortComparator comp = {vals};
-
-    std::vector<SegmentS> segs(nt);
-
-    // independent sorts
-#pragma omp parallel for
-    for (int t = 0; t < nt; t++) {
-        size_t i0 = t * n / nt;
-        size_t i1 = (t + 1) * n / nt;
-        SegmentS seg = {i0, i1};
-        std::sort(permA + seg.i0, permA + seg.i1, comp);
-        segs[t] = seg;
-    }
-    int prev_nested = omp_get_nested();
-    omp_set_nested(1);
-
-    int nseg = nt;
-    while (nseg > 1) {
-        int nseg1 = (nseg + 1) / 2;
-        int sub_nt = nseg % 2 == 0 ? nt : nt - 1;
-        int sub_nseg1 = nseg / 2;
-
-#pragma omp parallel for num_threads(nseg1)
-        for (int s = 0; s < nseg; s += 2) {
-            if (s + 1 == nseg) { // otherwise isolated segment
-                memcpy(permB + segs[s].i0,
-                       permA + segs[s].i0,
-                       segs[s].len() * sizeof(size_t));
-            } else {
-                int t0 = s * sub_nt / sub_nseg1;
-                int t1 = (s + 1) * sub_nt / sub_nseg1;
-                printf("merge %d %d, %d threads\n", s, s + 1, t1 - t0);
-                parallel_merge(
-                        permA, permB, segs[s], segs[s + 1], t1 - t0, comp);
-            }
-        }
-        for (int s = 0; s < nseg; s += 2)
-            segs[s / 2] = segs[s];
-        nseg = nseg1;
-        std::swap(permA, permB);
-    }
-    assert(permA == perm);
-    omp_set_nested(prev_nested);
-    delete[] perm2;
 }
 
 const float* fvecs_maybe_subsample(
@@ -698,6 +555,83 @@ bool check_openmp() {
     }
 
     return true;
+}
+
+namespace {
+
+template <typename T>
+int64_t count_lt(int64_t n, const T* row, T threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] < threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+template <typename T>
+int64_t count_gt(int64_t n, const T* row, T threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] > threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+} // namespace
+
+template <typename T>
+void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
+    this->L_res = L_res_2;
+    L_res_2[0] = 0;
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in;
+        if (!mask || !mask[i]) {
+            const T* row = D + i * k;
+            n_in = keep_max ? count_gt(k, row, r2) : count_lt(k, row, r2);
+        } else {
+            n_in = lim_remain[j + 1] - lim_remain[j];
+            j++;
+        }
+        L_res_2[i + 1] = n_in; // L_res_2[i] + n_in;
+    }
+    // cumsum
+    for (int64_t i = 0; i < nq; i++) {
+        L_res_2[i + 1] += L_res_2[i];
+    }
+}
+
+template <typename T>
+void CombinerRangeKNN<T>::write_result(T* D_res, int64_t* I_res) {
+    FAISS_THROW_IF_NOT(L_res);
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in = L_res[i + 1] - L_res[i];
+        T* D_row = D_res + L_res[i];
+        int64_t* I_row = I_res + L_res[i];
+        if (!mask || !mask[i]) {
+            memcpy(D_row, D + i * k, n_in * sizeof(*D_row));
+            memcpy(I_row, I + i * k, n_in * sizeof(*I_row));
+        } else {
+            memcpy(D_row, D_remain + lim_remain[j], n_in * sizeof(*D_row));
+            memcpy(I_row, I_remain + lim_remain[j], n_in * sizeof(*I_row));
+            j++;
+        }
+    }
+}
+
+// explicit template instantiations
+template struct CombinerRangeKNN<float>;
+template struct CombinerRangeKNN<int16_t>;
+
+void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
+    for (size_t i = 0; i < n; i++) {
+        auto res = s.insert(
+                std::vector<uint8_t>(codes + i * d, codes + i * d + d));
+        inserted[i] = res.second;
+    }
 }
 
 } // namespace faiss

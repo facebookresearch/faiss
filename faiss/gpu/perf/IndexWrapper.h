@@ -32,7 +32,7 @@ struct IndexWrapper {
     faiss::Index* getIndex();
 
     void runOnIndices(std::function<void(GpuIndex*)> f);
-    void setNumProbes(int nprobe);
+    void setNumProbes(size_t nprobe);
 };
 
 } // namespace gpu

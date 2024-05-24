@@ -54,13 +54,7 @@ AdditiveQuantizer::AdditiveQuantizer(
         : Quantizer(d),
           M(nbits.size()),
           nbits(nbits),
-          verbose(false),
-          is_trained(false),
           search_type(search_type) {
-    norm_max = norm_min = NAN;
-    tot_bits = 0;
-    total_codebook_size = 0;
-    only_8bit = false;
     set_derived_values();
 }
 
@@ -200,7 +194,9 @@ float AdditiveQuantizer::decode_qcint(uint32_t c) const {
 uint64_t AdditiveQuantizer::encode_norm(float norm) const {
     switch (search_type) {
         case ST_norm_float:
-            return *(uint32_t*)&norm;
+            uint32_t inorm;
+            memcpy(&inorm, &norm, 4);
+            return inorm;
         case ST_norm_qint8:
             return encode_qint8(norm, norm_min, norm_max);
         case ST_norm_qint4:
@@ -265,7 +261,7 @@ void AdditiveQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
             is_trained, "The additive quantizer is not trained yet.");
 
     // standard additive quantizer decoding
-#pragma omp parallel for if (n > 1000)
+#pragma omp parallel for if (n > 100)
     for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(code + i * code_size, code_size);
         float* xi = x + i * d;
@@ -374,6 +370,8 @@ void AdditiveQuantizer::compute_LUT(
 
 namespace {
 
+/* compute inner products of one query with all centroids, given a look-up
+ * table of all inner producst with codebook entries */
 void compute_inner_prod_with_LUT(
         const AdditiveQuantizer& aq,
         const float* LUT,
@@ -513,7 +511,8 @@ float AdditiveQuantizer::
     BitstringReader bs(codes, code_size);
     float accu = accumulate_IPs(*this, bs, codes, LUT);
     uint32_t norm_i = bs.read(32);
-    float norm2 = *(float*)&norm_i;
+    float norm2;
+    memcpy(&norm2, &norm_i, 4);
     return norm2 - 2 * accu;
 }
 

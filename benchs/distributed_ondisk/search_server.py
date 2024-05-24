@@ -64,7 +64,7 @@ if __name__ == '__main__':
 # Client implementation
 ############################################################
 
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 import faiss
 import numpy as np
 

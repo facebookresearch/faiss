@@ -75,28 +75,37 @@ def main():
     k = args.k
     nrun = args.nrun
 
-    if args.lib == "faiss":
+    if not os.path.exists(cache_dir + "xb.npy"):
         # prepare cache
-        import faiss
         from datasets import load_dataset
-
         ds = load_dataset(args.db, download=args.download)
         print(ds)
-        if not os.path.exists(cache_dir + "xb.npy"):
-            # store for SCANN
-            os.system(f"rm -rf {cache_dir}; mkdir -p {cache_dir}")
-            tosave = dict(
-                # xt = ds.get_train(10),
-                xb = ds.get_database(),
-                xq = ds.get_queries(),
-                gt = ds.get_groundtruth()
-            )
-            for name, v in tosave.items():
-                fname = cache_dir + "/" + name + ".npy"
-                print("save", fname)
-                np.save(fname, v)
+        # store for SCANN
+        os.system(f"rm -rf {cache_dir}; mkdir -p {cache_dir}")
+        tosave = dict(
+            xb = ds.get_database(),
+            xq = ds.get_queries(),
+            gt = ds.get_groundtruth()
+        )
+        for name, v in tosave.items():
+            fname = cache_dir + "/" + name + ".npy"
+            print("save", fname)
+            np.save(fname, v)
 
-            open(cache_dir + "metric", "w").write(ds.metric)
+        open(cache_dir + "metric", "w").write(ds.metric)
+        
+    dataset = {}
+    for kn in "xb xq gt".split():
+        fname = cache_dir + "/" + kn + ".npy"
+        print("load", fname)
+        dataset[kn] = np.load(fname)
+    xb = dataset["xb"]
+    xq = dataset["xq"]
+    gt = dataset["gt"] 
+    distance_measure = open(cache_dir + "metric").read()
+    
+    if args.lib == "faiss":
+        import faiss
 
         name1_to_metric = {
             "IP": faiss.METRIC_INNER_PRODUCT,
@@ -106,13 +115,9 @@ def main():
         index_fname = cache_dir + "index.faiss"
         if not os.path.exists(index_fname):
             index = faiss_make_index(
-                ds.get_database(), name1_to_metric[ds.metric], index_fname)
+                xb, name1_to_metric[distance_measure], index_fname)
         else:
             index = faiss.read_index(index_fname)
-
-        xb = ds.get_database()
-        xq = ds.get_queries()
-        gt = ds.get_groundtruth()
 
         faiss_eval_search(
                 index, xq, xb, nprobe_tab, pre_reorder_k_tab, k, gt,
@@ -122,32 +127,22 @@ def main():
     if args.lib == "scann":
         from scann.scann_ops.py import scann_ops_pybind
 
-        dataset = {}
-        for kn in "xb xq gt".split():
-            fname = cache_dir + "/" + kn + ".npy"
-            print("load", fname)
-            dataset[kn] = np.load(fname)
         name1_to_name2 = {
             "IP": "dot_product",
             "L2": "squared_l2"
         }
-        distance_measure = name1_to_name2[open(cache_dir + "metric").read()]
-
-        xb = dataset["xb"]
-        xq = dataset["xq"]
-        gt = dataset["gt"]
 
         scann_dir = cache_dir + "/scann1.1.1_serialized"
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher = scann_ops_pybind.load_searcher(scann_dir)
         else:
-            searcher = scann_make_index(xb, distance_measure, scann_dir, 0)
+            searcher = scann_make_index(xb, name1_to_name2[distance_measure], scann_dir, 0)
 
         scann_dir = cache_dir + "/scann1.1.1_serialized_reorder"
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher_reo = scann_ops_pybind.load_searcher(scann_dir)
         else:
-            searcher_reo = scann_make_index(xb, distance_measure, scann_dir, 100)
+            searcher_reo = scann_make_index(xb, name1_to_name2[distance_measure], scann_dir, 100)
 
         scann_eval_search(
             searcher, searcher_reo,
@@ -256,7 +251,6 @@ def faiss_make_index(xb, metric_type, fname):
     #    index.by_residual = False
 
     print("train")
-    # index.train(ds.get_train())
     index.train(xb[:250000])
     print("add")
     index.add(xb)

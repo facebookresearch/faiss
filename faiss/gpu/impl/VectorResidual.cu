@@ -22,17 +22,17 @@ template <typename CentroidT, bool LargeDim>
 __global__ void calcResidual(
         Tensor<float, 2, true> vecs,
         Tensor<CentroidT, 2, true> centroids,
-        Tensor<int, 1, true> vecToCentroid,
+        Tensor<idx_t, 1, true> vecToCentroid,
         Tensor<float, 2, true> residuals) {
     auto vec = vecs[blockIdx.x];
     auto residual = residuals[blockIdx.x];
+    auto centroidId = vecToCentroid[blockIdx.x];
 
-    int centroidId = vecToCentroid[blockIdx.x];
     // Vector could be invalid (containing NaNs), so -1 was the
     // classified centroid
     if (centroidId == -1) {
         if (LargeDim) {
-            for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+            for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
                 residual[i] = CUDART_NAN_F;
             }
         } else {
@@ -45,7 +45,7 @@ __global__ void calcResidual(
     auto centroid = centroids[centroidId];
 
     if (LargeDim) {
-        for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
             residual[i] = vec[i] - ConvertTo<float>::to(centroid[i]);
         }
     } else {
@@ -54,27 +54,11 @@ __global__ void calcResidual(
     }
 }
 
-template <typename T>
-__global__ void gatherReconstruct(
-        Tensor<int, 1, true> listIds,
-        Tensor<T, 2, true> vecs,
-        Tensor<float, 2, true> out) {
-    auto id = listIds[blockIdx.x];
-    auto vec = vecs[id];
-    auto outVec = out[blockIdx.x];
-
-    Convert<T, float> conv;
-
-    for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
-        outVec[i] = id == -1 ? 0.0f : conv(vec[i]);
-    }
-}
-
 template <typename CentroidT>
 void calcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<CentroidT, 2, true>& centroids,
-        Tensor<int, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
     FAISS_ASSERT(vecs.getSize(1) == centroids.getSize(1));
@@ -84,7 +68,7 @@ void calcResidual(
 
     dim3 grid(vecs.getSize(0));
 
-    int maxThreads = getMaxThreadsCurrentDevice();
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
     bool largeDim = vecs.getSize(1) > maxThreads;
     dim3 block(std::min(vecs.getSize(1), maxThreads));
 
@@ -99,29 +83,10 @@ void calcResidual(
     CUDA_TEST_ERROR();
 }
 
-template <typename T>
-void gatherReconstruct(
-        Tensor<int, 1, true>& listIds,
-        Tensor<T, 2, true>& vecs,
-        Tensor<float, 2, true>& out,
-        cudaStream_t stream) {
-    FAISS_ASSERT(listIds.getSize(0) == out.getSize(0));
-    FAISS_ASSERT(vecs.getSize(1) == out.getSize(1));
-
-    dim3 grid(listIds.getSize(0));
-
-    int maxThreads = getMaxThreadsCurrentDevice();
-    dim3 block(std::min(vecs.getSize(1), maxThreads));
-
-    gatherReconstruct<T><<<grid, block, 0, stream>>>(listIds, vecs, out);
-
-    CUDA_TEST_ERROR();
-}
-
 void runCalcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& centroids,
-        Tensor<int, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
     calcResidual<float>(vecs, centroids, vecToCentroid, residuals, stream);
@@ -130,26 +95,119 @@ void runCalcResidual(
 void runCalcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<half, 2, true>& centroids,
-        Tensor<int, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
     calcResidual<half>(vecs, centroids, vecToCentroid, residuals, stream);
 }
 
-void runReconstruct(
-        Tensor<int, 1, true>& listIds,
-        Tensor<float, 2, true>& vecs,
+template <typename T>
+__global__ void gatherReconstructByIds(
+        Tensor<idx_t, 1, true> ids,
+        Tensor<T, 2, true> vecs,
+        Tensor<float, 2, true> out) {
+    auto id = ids[blockIdx.x];
+    auto vec = vecs[id];
+    auto outVec = out[blockIdx.x];
+
+    Convert<T, float> conv;
+
+    for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
+    }
+}
+
+template <typename T>
+__global__ void gatherReconstructByRange(
+        idx_t start,
+        idx_t num,
+        Tensor<T, 2, true> vecs,
+        Tensor<float, 2, true> out) {
+    auto id = start + blockIdx.x;
+    auto vec = vecs[id];
+    auto outVec = out[blockIdx.x];
+
+    Convert<T, float> conv;
+
+    for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
+    }
+}
+
+template <typename T>
+void gatherReconstructByIds(
+        Tensor<idx_t, 1, true>& ids,
+        Tensor<T, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstruct<float>(listIds, vecs, out, stream);
+    FAISS_ASSERT(ids.getSize(0) == out.getSize(0));
+    FAISS_ASSERT(vecs.getSize(1) == out.getSize(1));
+
+    dim3 grid(ids.getSize(0));
+
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
+    dim3 block(std::min(vecs.getSize(1), maxThreads));
+
+    gatherReconstructByIds<T><<<grid, block, 0, stream>>>(ids, vecs, out);
+
+    CUDA_TEST_ERROR();
+}
+
+template <typename T>
+void gatherReconstructByRange(
+        idx_t start,
+        idx_t num,
+        Tensor<T, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    FAISS_ASSERT(num > 0);
+    FAISS_ASSERT(num == out.getSize(0));
+    FAISS_ASSERT(vecs.getSize(1) == out.getSize(1));
+    FAISS_ASSERT(start + num <= vecs.getSize(0));
+
+    dim3 grid(num);
+
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
+    dim3 block(std::min(vecs.getSize(1), maxThreads));
+
+    gatherReconstructByRange<T>
+            <<<grid, block, 0, stream>>>(start, num, vecs, out);
+
+    CUDA_TEST_ERROR();
 }
 
 void runReconstruct(
-        Tensor<int, 1, true>& listIds,
+        Tensor<idx_t, 1, true>& ids,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    gatherReconstructByIds<float>(ids, vecs, out, stream);
+}
+
+void runReconstruct(
+        Tensor<idx_t, 1, true>& ids,
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstruct<half>(listIds, vecs, out, stream);
+    gatherReconstructByIds<half>(ids, vecs, out, stream);
+}
+
+void runReconstruct(
+        idx_t start,
+        idx_t num,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    gatherReconstructByRange<float>(start, num, vecs, out, stream);
+}
+
+void runReconstruct(
+        idx_t start,
+        idx_t num,
+        Tensor<half, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    gatherReconstructByRange<half>(start, num, vecs, out, stream);
 }
 
 } // namespace gpu

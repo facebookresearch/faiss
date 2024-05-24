@@ -60,6 +60,9 @@ std::vector<float> randVecs(size_t num, size_t dim);
 /// Generates a collection of random bit vectors
 std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim);
 
+// returns to_fp32(to_fp16(v)); useful in comparing fp16 results on CPU
+std::vector<float> roundToHalf(const std::vector<float>& v);
+
 /// Compare two indices via query for similarity, with a user-specified set of
 /// query vectors
 void compareIndices(
@@ -90,9 +93,9 @@ void compareIndices(
 /// Display specific differences in the two (distance, index) lists
 void compareLists(
         const float* refDist,
-        const faiss::Index::idx_t* refInd,
+        const faiss::idx_t* refInd,
         const float* testDist,
-        const faiss::Index::idx_t* testInd,
+        const faiss::idx_t* testInd,
         int dim1,
         int dim2,
         const std::string& configMsg,
@@ -127,13 +130,13 @@ void testIVFEquality(A& cpuIndex, B& gpuIndex) {
         EXPECT_EQ(cpuCodes, gpuCodes);
 
         // Index equality
-        std::vector<Index::idx_t> cpuIndices(cpuLists->list_size(i));
+        std::vector<idx_t> cpuIndices(cpuLists->list_size(i));
 
         auto si = faiss::InvertedLists::ScopedIds(cpuLists, i);
         std::memcpy(
                 cpuIndices.data(),
                 si.get(),
-                cpuLists->list_size(i) * sizeof(faiss::Index::idx_t));
+                cpuLists->list_size(i) * sizeof(faiss::idx_t));
         EXPECT_EQ(cpuIndices, gpuIndex.getListIndices(i));
     }
 }

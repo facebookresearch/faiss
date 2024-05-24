@@ -6,6 +6,9 @@
 import numpy as np
 import faiss
 
+from faiss.contrib.inspect_tools import get_invlist_sizes
+
+
 def add_preassigned(index_ivf, x, a, ids=None):
     """
     Add elements to an IVF index, where the assignment is already computed
@@ -25,8 +28,15 @@ def add_preassigned(index_ivf, x, a, ids=None):
 
 def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
     """
-    Perform a search in the IVF index, with predefined lists to search into
+    Perform a search in the IVF index, with predefined lists to search into.
+    Supports indexes with pretransforms (as opposed to the
+    IndexIVF.search_preassigned, that cannot be applied with pretransform).
     """
+    if isinstance(index_ivf, faiss.IndexPreTransform):
+        assert index_ivf.chain.size() == 1, "chain must have only one component"
+        transform = faiss.downcast_VectorTransform(index_ivf.chain.at(0))
+        xq = transform.apply(xq)
+        index_ivf = faiss.downcast_index(index_ivf.index)
     n, d = xq.shape
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
         d *= 8
@@ -37,26 +47,20 @@ def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
     assert d == index_ivf.d
     assert list_nos.shape == (n, index_ivf.nprobe)
 
-    # the coarse distances are used in IVFPQ with L2 distance and by_residual=True
-    # otherwise we provide dummy coarse_dis
+    # the coarse distances are used in IVFPQ with L2 distance and
+    # by_residual=True otherwise we provide dummy coarse_dis
     if coarse_dis is None:
         coarse_dis = np.zeros((n, index_ivf.nprobe), dtype=dis_type)
     else:
         assert coarse_dis.shape == (n, index_ivf.nprobe)
 
-    D = np.empty((n, k), dtype=dis_type)
-    I = np.empty((n, k), dtype='int64')
-
-    sp = faiss.swig_ptr
-    index_ivf.search_preassigned(
-        n, sp(xq), k,
-        sp(list_nos), sp(coarse_dis), sp(D), sp(I), False)
-    return D, I
+    return index_ivf.search_preassigned(xq, k, list_nos, coarse_dis)
 
 
 def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     """
-    Perform a range search in the IVF index, with predefined lists to search into
+    Perform a range search in the IVF index, with predefined lists to
+    search into
     """
     n, d = x.shape
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
@@ -65,8 +69,8 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     else:
         dis_type = "float32"
 
-    # the coarse distances are used in IVFPQ with L2 distance and by_residual=True
-    # otherwise we provide dummy coarse_dis
+    # the coarse distances are used in IVFPQ with L2 distance and
+    # by_residual=True otherwise we provide dummy coarse_dis
     if coarse_dis is None:
         coarse_dis = np.empty((n, index_ivf.nprobe), dtype=dis_type)
     else:
@@ -78,7 +82,7 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     res = faiss.RangeSearchResult(n)
     sp = faiss.swig_ptr
 
-    index_ivf.range_search_preassigned(
+    index_ivf.range_search_preassigned_c(
         n, sp(x), radius,
         sp(list_nos), sp(coarse_dis),
         res
@@ -89,3 +93,56 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     dist = faiss.rev_swig_ptr(res.distances, num_results).copy()
     indices = faiss.rev_swig_ptr(res.labels, num_results).copy()
     return lims, dist, indices
+
+
+def replace_ivf_quantizer(index_ivf, new_quantizer):
+    """ replace the IVF quantizer with a flat quantizer and return the
+    old quantizer"""
+    if new_quantizer.ntotal == 0:
+        centroids = index_ivf.quantizer.reconstruct_n()
+        new_quantizer.train(centroids)
+        new_quantizer.add(centroids)
+    else:
+        assert new_quantizer.ntotal == index_ivf.nlist
+
+    # cleanly dealloc old quantizer
+    old_own = index_ivf.own_fields
+    index_ivf.own_fields = False
+    old_quantizer = faiss.downcast_index(index_ivf.quantizer)
+    old_quantizer.this.own(old_own)
+    index_ivf.quantizer = new_quantizer
+
+    if hasattr(index_ivf, "referenced_objects"):
+        index_ivf.referenced_objects.append(new_quantizer)
+    else:
+        index_ivf.referenced_objects = [new_quantizer]
+    return old_quantizer
+
+
+def permute_invlists(index_ivf, perm):
+    """ Apply some permutation to the inverted lists, and modify the quantizer
+    entries accordingly.
+    Perm is an array of size nlist, where old_index = perm[new_index]
+    """
+    nlist, = perm.shape
+    assert index_ivf.nlist == nlist
+    quantizer = faiss.downcast_index(index_ivf.quantizer)
+    assert quantizer.ntotal == index_ivf.nlist
+    perm = np.ascontiguousarray(perm, dtype='int64')
+
+    # just make sure it's a permutation...
+    bc = np.bincount(perm, minlength=nlist)
+    assert np.all(bc == np.ones(nlist, dtype=int))
+
+    # handle quantizer
+    quantizer.permute_entries(perm)
+
+    # handle inverted lists
+    invlists = faiss.downcast_InvertedLists(index_ivf.invlists)
+    invlists.permute_invlists(faiss.swig_ptr(perm))
+
+
+def sort_invlists_by_size(index_ivf):
+    invlist_sizes = get_invlist_sizes(index_ivf.invlists)
+    perm = np.argsort(invlist_sizes)
+    permute_invlists(index_ivf, perm)

@@ -10,8 +10,6 @@
  */
 
 #include <faiss/index_factory.h>
-#include "faiss/MetricType.h"
-#include "faiss/impl/FaissAssert.h"
 
 #include <cinttypes>
 #include <cmath>
@@ -44,6 +42,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -141,8 +140,9 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQ4", ScalarQuantizer::QT_4bit},
         {"SQ6", ScalarQuantizer::QT_6bit},
         {"SQfp16", ScalarQuantizer::QT_fp16},
+        {"SQbf16", ScalarQuantizer::QT_bf16},
 };
-const std::string sq_pattern = "(SQ4|SQ8|SQ6|SQfp16)";
+const std::string sq_pattern = "(SQ4|SQ8|SQ6|SQfp16|SQbf16)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -217,7 +217,7 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
         return new RemapDimensionsTransform(d, std::max(d_out, d), false);
     }
     return nullptr;
-};
+}
 
 /***************************************************************
  * Parse IndexIVF
@@ -441,11 +441,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match("Flat|")) {
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {
@@ -491,11 +493,12 @@ IndexNSG* parse_IndexNSG(
     if (match("Flat|")) {
         return new IndexNSGFlat(d, nsg_R, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {
@@ -664,19 +667,19 @@ std::unique_ptr<Index> index_factory_sub(
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
         std::unique_ptr<Index> filter_index =
                 index_factory_sub(d, sm[1].str(), metric);
-        std::unique_ptr<Index> refine_index;
 
+        IndexRefine* index_rf = nullptr;
         if (sm.size() == 3) { // Refine
-            refine_index = index_factory_sub(d, sm[2].str(), metric);
+            std::unique_ptr<Index> refine_index =
+                    index_factory_sub(d, sm[2].str(), metric);
+            index_rf = new IndexRefine(
+                    filter_index.release(), refine_index.release());
+            index_rf->own_refine_index = true;
         } else { // RFlat
-            refine_index.reset(new IndexFlat(d, metric));
+            index_rf = new IndexRefineFlat(filter_index.release(), nullptr);
         }
-        IndexRefine* index_rf =
-                new IndexRefine(filter_index.get(), refine_index.get());
+        FAISS_ASSERT(index_rf != nullptr);
         index_rf->own_fields = true;
-        filter_index.release();
-        refine_index.release();
-        index_rf->own_refine_index = true;
         return std::unique_ptr<Index>(index_rf);
     }
 
@@ -737,6 +740,14 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
     // support both
+    if (re_match(description, "(.+),IDMap2", sm) ||
+        re_match(description, "IDMap2,(.+)", sm)) {
+        IndexIDMap2* idmap2 = new IndexIDMap2(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap2->own_fields = true;
+        return std::unique_ptr<Index>(idmap2);
+    }
+
     if (re_match(description, "(.+),IDMap", sm) ||
         re_match(description, "IDMap,(.+)", sm)) {
         IndexIDMap* idmap = new IndexIDMap(
@@ -795,6 +806,30 @@ std::unique_ptr<Index> index_factory_sub(
                 "could not parse NSG code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp32 version
+    if (description.compare(0, 7, "MinMax,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMax(sub_index.release());
+        index->own_fields = true;
+
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp16 version
+    if (description.compare(0, 11, "MinMaxFP16,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMaxFP16(sub_index.release());
+        index->own_fields = true;
+
         return std::unique_ptr<Index>(index);
     }
 

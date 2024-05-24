@@ -43,7 +43,7 @@ int main() {
     //
     // We here assume that its lifespan of this coarse quantizer will cover the
     // lifespan of the inverted-file quantizer IndexIVFFlat below
-    // With dynamic allocation, one may give the responsability to free the
+    // With dynamic allocation, one may give the responsibility to free the
     // quantizer to the inverted-file index (with attribute do_delete_quantizer)
     //
     // Note: a regular clustering algorithm would be defined as:
@@ -132,7 +132,7 @@ int main() {
                k,
                nq);
 
-        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<faiss::idx_t> nns(k * nq);
         std::vector<float> dis(k * nq);
 
         index.search(nq, queries.data(), k, dis.data(), nns.data());

@@ -23,8 +23,6 @@ namespace faiss {
 
 /** Product Quantizer. Implemented only for METRIC_L2 */
 struct ProductQuantizer : Quantizer {
-    using idx_t = Index::idx_t;
-
     size_t M;     ///< number of subquantizers
     size_t nbits; ///< number of bits per quantization index
 
@@ -37,9 +35,9 @@ struct ProductQuantizer : Quantizer {
     enum train_type_t {
         Train_default,
         Train_hot_start,     ///< the centroids are already initialized
-        Train_shared,        ///< share dictionary accross PQ segments
-        Train_hypercube,     ///< intialize centroids with nbits-D hypercube
-        Train_hypercube_pca, ///< intialize centroids with nbits-D hypercube
+        Train_shared,        ///< share dictionary across PQ segments
+        Train_hypercube,     ///< initialize centroids with nbits-D hypercube
+        Train_hypercube_pca, ///< initialize centroids with nbits-D hypercube
     };
     train_type_t train_type;
 
@@ -49,8 +47,17 @@ struct ProductQuantizer : Quantizer {
     /// d / M)
     Index* assign_index;
 
-    /// Centroid table, size M * ksub * dsub
+    /// Centroid table, size M * ksub * dsub.
+    /// Layout: (M, ksub, dsub)
     std::vector<float> centroids;
+
+    /// Transposed centroid table, size M * ksub * dsub.
+    /// Layout: (dsub, M, ksub)
+    std::vector<float> transposed_centroids;
+
+    /// Squared lengths of centroids, size M * ksub
+    /// Layout: (M, ksub)
+    std::vector<float> centroids_sq_lengths;
 
     /// return the centroids associated with subvector m
     float* get_centroids(size_t m, size_t i) {
@@ -165,6 +172,13 @@ struct ProductQuantizer : Quantizer {
             const size_t ncodes,
             float_maxheap_array_t* res,
             bool init_finalize_heap = true) const;
+
+    /// Sync transposed centroids with regular centroids. This call
+    /// is needed if centroids were edited directly.
+    void sync_transposed_centroids();
+
+    /// Clear transposed centroids table so ones are no longer used.
+    void clear_transposed_centroids();
 };
 
 // block size used in ProductQuantizer::compute_codes

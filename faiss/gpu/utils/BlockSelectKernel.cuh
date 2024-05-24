@@ -42,13 +42,13 @@ __global__ void blockSelect(
             heap(initK, initV, smemK, smemV, k);
 
     // Grid is exactly sized to rows available
-    int row = blockIdx.x;
+    idx_t row = blockIdx.x;
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     K* inStart = in[row][i].data();
 
     // Whole warps must participate in the selection
-    int limit = utils::roundDown(in.getSize(1), kWarpSize);
+    idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
 
     for (; i < limit; i += ThreadsPerBlock) {
         heap.add(*inStart, (IndexType)i);
@@ -99,14 +99,14 @@ __global__ void blockSelectPair(
             heap(initK, initV, smemK, smemV, k);
 
     // Grid is exactly sized to rows available
-    int row = blockIdx.x;
+    idx_t row = blockIdx.x;
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     K* inKStart = inK[row][i].data();
     IndexType* inVStart = inV[row][i].data();
 
     // Whole warps must participate in the selection
-    int limit = utils::roundDown(inK.getSize(1), kWarpSize);
+    idx_t limit = utils::roundDown(inK.getSize(1), (idx_t)kWarpSize);
 
     for (; i < limit; i += ThreadsPerBlock) {
         heap.add(*inKStart, *inVStart);
@@ -130,16 +130,16 @@ __global__ void blockSelectPair(
 void runBlockSelect(
         Tensor<float, 2, true>& in,
         Tensor<float, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);
 
 void runBlockSelectPair(
         Tensor<float, 2, true>& inKeys,
-        Tensor<int, 2, true>& inIndices,
+        Tensor<idx_t, 2, true>& inIndices,
         Tensor<float, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);
@@ -147,16 +147,16 @@ void runBlockSelectPair(
 void runBlockSelect(
         Tensor<half, 2, true>& in,
         Tensor<half, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);
 
 void runBlockSelectPair(
         Tensor<half, 2, true>& inKeys,
-        Tensor<int, 2, true>& inIndices,
+        Tensor<idx_t, 2, true>& inIndices,
         Tensor<half, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);

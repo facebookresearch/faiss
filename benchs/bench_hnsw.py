@@ -17,7 +17,7 @@ except ImportError:
 
 
 k = int(sys.argv[1])
-todo = sys.argv[1:]
+todo = sys.argv[2:]
 
 print("load data")
 

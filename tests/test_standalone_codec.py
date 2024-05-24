@@ -35,22 +35,23 @@ class TestEncodeDecode(unittest.TestCase):
 
         codes2 = codec.sa_encode(x2)
 
-        if 'IVF' not in factory_key:
-            self.assertTrue(np.all(codes == codes2))
-        else:
+        if 'IVF' in factory_key or 'RQ' in factory_key:
             # some rows are not reconstructed exactly because they
             # flip into another quantization cell
             nrowdiff = (codes != codes2).any(axis=1).sum()
             self.assertTrue(nrowdiff < 10)
+        else:
+            self.assertTrue(np.all(codes == codes2))
 
         x3 = codec.sa_decode(codes2)
-        if 'IVF' not in factory_key:
-            self.assertTrue(np.allclose(x2, x3))
-        else:
+
+        if 'IVF' in factory_key or 'RQ' in factory_key:
             diffs = np.abs(x2 - x3).sum(axis=1)
             avg = np.abs(x2).sum(axis=1).mean()
             diffs.sort()
             assert diffs[-10] < avg * 1e-5
+        else:
+            self.assertTrue(np.allclose(x2, x3))
 
     def test_SQ8(self):
         self.do_encode_twice('SQ8')
@@ -150,7 +151,6 @@ class TestAccuracy(unittest.TestCase):
             err = ((x - x2) ** 2).sum()
             errs.append(err)
 
-        print(errs)
         self.assertGreater(errs[0], errs[1])
 
         self.assertGreater(max_errs[0], errs[0])
@@ -172,6 +172,9 @@ class TestAccuracy(unittest.TestCase):
 
     def test_SQ3(self):
         self.compare_accuracy('SQ8', 'SQfp16')
+
+    def test_SQ4(self):
+        self.compare_accuracy('SQ8', 'SQbf16')
 
     def test_PQ(self):
         self.compare_accuracy('PQ6x8np', 'PQ8x8np')
@@ -213,7 +216,6 @@ class LatticeTest(unittest.TestCase):
             code = repeats.encode(swig_ptr(vec))
             vec2 = np.zeros(dim, dtype='float32')
             repeats.decode(code, swig_ptr(vec2))
-            # print(vec2)
             assert np.all(vec == vec2)
 
     def test_ZnSphereCodec_encode_centroid(self):
@@ -221,7 +223,6 @@ class LatticeTest(unittest.TestCase):
         r2 = 5
         ref_codec = faiss.ZnSphereCodec(dim, r2)
         codec = faiss.ZnSphereCodecRec(dim, r2)
-        # print(ref_codec.nv, codec.nv)
         assert ref_codec.nv == codec.nv
         s = set()
         for i in range(ref_codec.nv):
@@ -236,7 +237,6 @@ class LatticeTest(unittest.TestCase):
         dim = 16
         r2 = 6
         codec = faiss.ZnSphereCodecRec(dim, r2)
-        # print("nv=", codec.nv)
         for i in range(codec.nv):
             c = np.zeros(dim, dtype='float32')
             codec.decode(i, swig_ptr(c))
@@ -265,9 +265,9 @@ class LatticeTest(unittest.TestCase):
 
 
 class TestBitstring(unittest.TestCase):
-    """ Low-level bit string tests """
 
     def test_rw(self):
+        """ Low-level bit string tests """
         rs = np.random.RandomState(1234)
         nbyte = 1000
         sz = 0
@@ -299,16 +299,31 @@ class TestBitstring(unittest.TestCase):
         for i in range(nbyte):
             self.assertTrue(((bignum >> (i * 8)) & 255) == bs[i])
 
-        for i in range(nbyte):
-            print(bin(bs[i] + 256)[3:], end=' ')
-        print()
-
         br = faiss.BitstringReader(swig_ptr(bs), nbyte)
 
         for nbit, xref in ctrl:
             xnew = br.read(nbit)
-            print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
+
+    def test_arrays(self):
+        nbit = 5
+        M = 10
+        n = 20
+        rs = np.random.RandomState(123)
+        a = rs.randint(1<<nbit, size=(n, M), dtype='int32')
+        b = faiss.pack_bitstrings(a, nbit)
+        c = faiss.unpack_bitstrings(b, M, nbit)
+        np.testing.assert_array_equal(a, c)
+
+    def test_arrays_variable_size(self):
+        nbits = [10, 5, 3, 12, 6, 7, 4]
+        n = 20
+        rs = np.random.RandomState(123)
+        a = rs.randint(1<<16, size=(n, len(nbits)), dtype='int32')
+        a &= (1 << np.array(nbits)) - 1
+        b = faiss.pack_bitstrings(a, nbits)
+        c = faiss.unpack_bitstrings(b, nbits)
+        np.testing.assert_array_equal(a, c)
 
 
 class TestIVFTransfer(unittest.TestCase):

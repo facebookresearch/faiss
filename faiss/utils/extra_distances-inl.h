@@ -8,7 +8,9 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
+#include <faiss/MetricType.h>
 #include <faiss/utils/distances.h>
+#include <cmath>
 #include <type_traits>
 
 namespace faiss {
@@ -17,12 +19,13 @@ template <MetricType mt>
 struct VectorDistance {
     size_t d;
     float metric_arg;
+    static constexpr bool is_similarity = is_similarity_metric(mt);
 
     inline float operator()(const float* x, const float* y) const;
 
     // heap template to use for this type of metric
     using C = typename std::conditional<
-            mt == METRIC_INNER_PRODUCT,
+            is_similarity_metric(mt),
             CMin<float, int64_t>,
             CMax<float, int64_t>>::type;
 };
@@ -114,4 +117,37 @@ inline float VectorDistance<METRIC_JensenShannon>::operator()(
     return 0.5 * accu;
 }
 
+template <>
+inline float VectorDistance<METRIC_Jaccard>::operator()(
+        const float* x,
+        const float* y) const {
+    // WARNING: this distance is defined only for positive input vectors.
+    // Providing vectors with negative values would lead to incorrect results.
+    float accu_num = 0, accu_den = 0;
+    for (size_t i = 0; i < d; i++) {
+        accu_num += fmin(x[i], y[i]);
+        accu_den += fmax(x[i], y[i]);
+    }
+    return accu_num / accu_den;
+}
+
+template <>
+inline float VectorDistance<METRIC_NaNEuclidean>::operator()(
+        const float* x,
+        const float* y) const {
+    // https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.nan_euclidean_distances.html
+    float accu = 0;
+    size_t present = 0;
+    for (size_t i = 0; i < d; i++) {
+        if (!std::isnan(x[i]) && !std::isnan(y[i])) {
+            float diff = x[i] - y[i];
+            accu += diff * diff;
+            present++;
+        }
+    }
+    if (present == 0) {
+        return NAN;
+    }
+    return float(d) / float(present) * accu;
+}
 } // namespace faiss

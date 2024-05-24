@@ -12,7 +12,7 @@
 #include <faiss/IndexFlat.h>
 
 // 64-bit int
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 int main() {
     int d = 64;      // dimension
@@ -83,10 +83,10 @@ int main() {
             printf("\n");
         }
 
-        printf("I (5 last results)=\n");
+        printf("D (5 last results)=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
-                printf("%5zd ", I[i * k + j]);
+                printf("%5f ", D[i * k + j]);
             printf("\n");
         }
 

@@ -7,13 +7,14 @@
 
 #include <faiss/IndexFastScan.h>
 
-#include <limits.h>
 #include <cassert>
+#include <climits>
 #include <memory>
 
 #include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
@@ -36,22 +37,22 @@ inline size_t roundup(size_t a, size_t b) {
 
 void IndexFastScan::init_fastscan(
         int d,
-        size_t M,
-        size_t nbits,
+        size_t M_2,
+        size_t nbits_2,
         MetricType metric,
         int bbs) {
-    FAISS_THROW_IF_NOT(nbits == 4);
+    FAISS_THROW_IF_NOT(nbits_2 == 4);
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     this->d = d;
-    this->M = M;
-    this->nbits = nbits;
+    this->M = M_2;
+    this->nbits = nbits_2;
     this->metric_type = metric;
     this->bbs = bbs;
-    ksub = (1 << nbits);
+    ksub = (1 << nbits_2);
 
-    code_size = (M * nbits + 7) / 8;
+    code_size = (M_2 * nbits_2 + 7) / 8;
     ntotal = ntotal2 = 0;
-    M2 = roundup(M, 2);
+    M2 = roundup(M_2, 2);
     is_trained = false;
 }
 
@@ -72,7 +73,7 @@ void IndexFastScan::add(idx_t n, const float* x) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
             if (verbose) {
-                printf("IndexFastScan::add %zd/%zd", size_t(i1), size_t(n));
+                printf("IndexFastScan::add %zd/%zd\n", size_t(i1), size_t(n));
             }
             add(i1 - i0, x + i0 * d);
         }
@@ -97,9 +98,67 @@ void IndexFastScan::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+CodePacker* IndexFastScan::get_CodePacker() const {
+    return new CodePackerPQ4(M, bbs);
+}
+
+size_t IndexFastScan::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                packer.unpack_1(codes.data(), i, buffer.data());
+                packer.pack_1(buffer.data(), j, codes.data());
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        ntotal2 = roundup(ntotal, bbs);
+        size_t new_size = ntotal2 * M2 / 2;
+        codes.resize(new_size);
+    }
+    return nremove;
+}
+
+void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
+    const IndexFastScan* other =
+            dynamic_cast<const IndexFastScan*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->M == M);
+    FAISS_THROW_IF_NOT(other->bbs == bbs);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
+    FAISS_THROW_IF_NOT_MSG(
+            typeid(*this) == typeid(*other),
+            "can only merge indexes of the same type");
+}
+
+void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
+    ntotal2 = roundup(ntotal + other->ntotal, bbs);
+    codes.resize(ntotal2 * M2 / 2);
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
+
+    for (int i = 0; i < other->ntotal; i++) {
+        packer.unpack_1(other->codes.data(), i, buffer.data());
+        packer.pack_1(buffer.data(), ntotal + i, codes.data());
+    }
+    ntotal += other->ntotal;
+    other->reset();
+}
+
 namespace {
 
-template <class C, typename dis_t, class Scaler>
+template <class C, typename dis_t>
 void estimators_from_tables_generic(
         const IndexFastScan& index,
         const uint8_t* codes,
@@ -108,29 +167,55 @@ void estimators_from_tables_generic(
         size_t k,
         typename C::T* heap_dis,
         int64_t* heap_ids,
-        const Scaler& scaler) {
+        const NormTableScaler* scaler) {
     using accu_t = typename C::T;
 
     for (size_t j = 0; j < ncodes; ++j) {
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = 0;
         const dis_t* dt = dis_table;
-        for (size_t m = 0; m < index.M - scaler.nscale; m++) {
+        int nscale = scaler ? scaler->nscale : 0;
+
+        for (size_t m = 0; m < index.M - nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
             dis += dt[c];
             dt += index.ksub;
         }
 
-        for (size_t m = 0; m < scaler.nscale; m++) {
-            uint64_t c = bsr.read(index.nbits);
-            dis += scaler.scale_one(dt[c]);
-            dt += index.ksub;
+        if (nscale) {
+            for (size_t m = 0; m < nscale; m++) {
+                uint64_t c = bsr.read(index.nbits);
+                dis += scaler->scale_one(dt[c]);
+                dt += index.ksub;
+            }
         }
 
         if (C::cmp(heap_dis[0], dis)) {
             heap_pop<C>(k, heap_dis, heap_ids);
             heap_push<C>(k, heap_dis, heap_ids, dis, j);
         }
+    }
+}
+
+template <class C>
+ResultHandlerCompare<C, false>* make_knn_handler(
+        int impl,
+        idx_t n,
+        idx_t k,
+        size_t ntotal,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel = nullptr) {
+    using HeapHC = HeapHandler<C, false>;
+    using ReservoirHC = ReservoirHandler<C, false>;
+    using SingleResultHC = SingleResultHandler<C, false>;
+
+    if (k == 1) {
+        return new SingleResultHC(n, ntotal, distances, labels, sel);
+    } else if (impl % 2 == 0) {
+        return new HeapHC(n, ntotal, k, distances, labels, sel);
+    } else /* if (impl % 2 == 1) */ {
+        return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
     }
 }
 
@@ -176,25 +261,27 @@ void IndexFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
-    DummyScaler scaler;
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
+        search_dispatch_implem<true>(n, x, k, distances, labels, nullptr);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
+        search_dispatch_implem<false>(n, x, k, distances, labels, nullptr);
     }
 }
 
-template <bool is_max, class Scaler>
+template <bool is_max>
 void IndexFastScan::search_dispatch_implem(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         idx_t* labels,
-        const Scaler& scaler) const {
+        const NormTableScaler* scaler) const {
     using Cfloat = typename std::conditional<
             is_max,
             CMax<float, int64_t>,
@@ -257,14 +344,14 @@ void IndexFastScan::search_dispatch_implem(
     }
 }
 
-template <class Cfloat, class Scaler>
+template <class Cfloat>
 void IndexFastScan::search_implem_234(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         idx_t* labels,
-        const Scaler& scaler) const {
+        const NormTableScaler* scaler) const {
     FAISS_THROW_IF_NOT(implem == 2 || implem == 3 || implem == 4);
 
     const size_t dim12 = ksub * M;
@@ -316,7 +403,7 @@ void IndexFastScan::search_implem_234(
     }
 }
 
-template <class C, class Scaler>
+template <class C>
 void IndexFastScan::search_implem_12(
         idx_t n,
         const float* x,
@@ -324,7 +411,8 @@ void IndexFastScan::search_implem_12(
         float* distances,
         idx_t* labels,
         int impl,
-        const Scaler& scaler) const {
+        const NormTableScaler* scaler) const {
+    using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -370,63 +458,31 @@ void IndexFastScan::search_implem_12(
             pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    if (k == 1) {
-        SingleResultHandler<C> handler(n, ntotal);
-        if (skip & 4) {
-            // pass
-        } else {
-            handler.disable = bool(skip & 2);
-            pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
-        }
+    std::unique_ptr<RH> handler(
+            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+    handler->disable = bool(skip & 2);
+    handler->normalizers = normalizers.get();
 
-        handler.to_flat_arrays(distances, labels, normalizers.get());
-
-    } else if (impl == 12) {
-        std::vector<uint16_t> tmp_dis(n * k);
-        std::vector<int32_t> tmp_ids(n * k);
-
-        if (skip & 4) {
-            // skip
-        } else {
-            HeapHandler<C> handler(
-                    n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
-            handler.disable = bool(skip & 2);
-
-            pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
-
-            if (!(skip & 8)) {
-                handler.to_flat_arrays(distances, labels, normalizers.get());
-            }
-        }
-
-    } else { // impl == 13
-
-        ReservoirHandler<C> handler(n, ntotal, k, 2 * k);
-        handler.disable = bool(skip & 2);
-
-        if (skip & 4) {
-            // skip
-        } else {
-            pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
-        }
-
-        if (!(skip & 8)) {
-            handler.to_flat_arrays(distances, labels, normalizers.get());
-        }
-
-        FastScan_stats.t0 += handler.times[0];
-        FastScan_stats.t1 += handler.times[1];
-        FastScan_stats.t2 += handler.times[2];
-        FastScan_stats.t3 += handler.times[3];
+    if (skip & 4) {
+        // pass
+    } else {
+        pq4_accumulate_loop_qbs(
+                qbs,
+                ntotal2,
+                M2,
+                codes.get(),
+                LUT.get(),
+                *handler.get(),
+                scaler);
+    }
+    if (!(skip & 8)) {
+        handler->end();
     }
 }
 
 FastScanStats FastScan_stats;
 
-template <class C, class Scaler>
+template <class C>
 void IndexFastScan::search_implem_14(
         idx_t n,
         const float* x,
@@ -434,7 +490,8 @@ void IndexFastScan::search_implem_14(
         float* distances,
         idx_t* labels,
         int impl,
-        const Scaler& scaler) const {
+        const NormTableScaler* scaler) const {
+    using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     int qbs2 = qbs == 0 ? 4 : qbs;
@@ -469,90 +526,28 @@ void IndexFastScan::search_implem_14(
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    if (k == 1) {
-        SingleResultHandler<C> handler(n, ntotal);
-        if (skip & 4) {
-            // pass
-        } else {
-            handler.disable = bool(skip & 2);
-            pq4_accumulate_loop(
-                    n,
-                    ntotal2,
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    handler,
-                    scaler);
-        }
-        handler.to_flat_arrays(distances, labels, normalizers.get());
+    std::unique_ptr<RH> handler(
+            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+    handler->disable = bool(skip & 2);
+    handler->normalizers = normalizers.get();
 
-    } else if (impl == 14) {
-        std::vector<uint16_t> tmp_dis(n * k);
-        std::vector<int32_t> tmp_ids(n * k);
-
-        if (skip & 4) {
-            // skip
-        } else if (k > 1) {
-            HeapHandler<C> handler(
-                    n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
-            handler.disable = bool(skip & 2);
-
-            pq4_accumulate_loop(
-                    n,
-                    ntotal2,
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    handler,
-                    scaler);
-
-            if (!(skip & 8)) {
-                handler.to_flat_arrays(distances, labels, normalizers.get());
-            }
-        }
-
-    } else { // impl == 15
-
-        ReservoirHandler<C> handler(n, ntotal, k, 2 * k);
-        handler.disable = bool(skip & 2);
-
-        if (skip & 4) {
-            // skip
-        } else {
-            pq4_accumulate_loop(
-                    n,
-                    ntotal2,
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    handler,
-                    scaler);
-        }
-
-        if (!(skip & 8)) {
-            handler.to_flat_arrays(distances, labels, normalizers.get());
-        }
+    if (skip & 4) {
+        // pass
+    } else {
+        pq4_accumulate_loop(
+                n,
+                ntotal2,
+                bbs,
+                M2,
+                codes.get(),
+                LUT.get(),
+                *handler.get(),
+                scaler);
+    }
+    if (!(skip & 8)) {
+        handler->end();
     }
 }
-
-template void IndexFastScan::search_dispatch_implem<true, NormTableScaler>(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const NormTableScaler& scaler) const;
-
-template void IndexFastScan::search_dispatch_implem<false, NormTableScaler>(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const NormTableScaler& scaler) const;
 
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
     std::vector<uint8_t> code(code_size, 0);

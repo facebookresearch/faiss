@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #ifndef FAISS_INDEX_BINARY_H
 #define FAISS_INDEX_BINARY_H
 
@@ -16,7 +14,6 @@
 #include <typeinfo>
 
 #include <faiss/Index.h>
-#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 
@@ -32,31 +29,22 @@ struct RangeSearchResult;
  * vectors.
  */
 struct IndexBinary {
-    using idx_t = Index::idx_t; ///< all indices are this type
     using component_t = uint8_t;
     using distance_t = int32_t;
 
-    int d;         ///< vector dimension
-    int code_size; ///< number of bytes per vector ( = d / 8 )
-    idx_t ntotal;  ///< total nb of indexed vectors
-    bool verbose;  ///< verbosity level
+    int d = 0;            ///< vector dimension
+    int code_size = 0;    ///< number of bytes per vector ( = d / 8 )
+    idx_t ntotal = 0;     ///< total nb of indexed vectors
+    bool verbose = false; ///< verbosity level
 
     /// set if the Index does not require training, or if training is done
     /// already
-    bool is_trained;
+    bool is_trained = true;
 
     /// type of metric this index uses for search
-    MetricType metric_type;
+    MetricType metric_type = METRIC_L2;
 
-    explicit IndexBinary(idx_t d = 0, MetricType metric = METRIC_L2)
-            : d(d),
-              code_size(d / 8),
-              ntotal(0),
-              verbose(false),
-              is_trained(true),
-              metric_type(metric) {
-        FAISS_THROW_IF_NOT(d % 8 == 0);
-    }
+    explicit IndexBinary(idx_t d = 0, MetricType metric = METRIC_L2);
 
     virtual ~IndexBinary();
 
@@ -97,7 +85,8 @@ struct IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const = 0;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const = 0;
 
     /** Query n vectors of dimension d to the index.
      *
@@ -117,7 +106,8 @@ struct IndexBinary {
             idx_t n,
             const uint8_t* x,
             int radius,
-            RangeSearchResult* result) const;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const;
 
     /** Return the indexes of the k vectors closest to the query x.
      *
@@ -164,10 +154,23 @@ struct IndexBinary {
             idx_t k,
             int32_t* distances,
             idx_t* labels,
-            uint8_t* recons) const;
+            uint8_t* recons,
+            const SearchParameters* params = nullptr) const;
 
     /** Display the actual class name and some more info. */
     void display() const;
+
+    /** moves the entries from another dataset to self.
+     * On output, other is empty.
+     * add_id is added to all moved ids
+     * (for sequential ids, this would be this->ntotal) */
+    virtual void merge_from(IndexBinary& otherIndex, idx_t add_id = 0);
+
+    /** check that the two indexes are compatible (ie, they are
+     * trained in the same way and have the same
+     * parameters). Otherwise throw. */
+    virtual void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const;
 };
 
 } // namespace faiss

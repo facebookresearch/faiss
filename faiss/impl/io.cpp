@@ -20,11 +20,11 @@ namespace faiss {
  * IO functions
  ***********************************************************************/
 
-int IOReader::fileno() {
+int IOReader::filedescriptor() {
     FAISS_THROW_MSG("IOReader does not support memory mapping");
 }
 
-int IOWriter::fileno() {
+int IOWriter::filedescriptor() {
     FAISS_THROW_MSG("IOWriter does not support memory mapping");
 }
 
@@ -85,8 +85,12 @@ size_t FileIOReader::operator()(void* ptr, size_t size, size_t nitems) {
     return fread(ptr, size, nitems, f);
 }
 
-int FileIOReader::fileno() {
+int FileIOReader::filedescriptor() {
+#ifdef _AIX
+    return fileno(f);
+#else
     return ::fileno(f);
+#endif
 }
 
 FileIOWriter::FileIOWriter(FILE* wf) : f(wf) {}
@@ -116,8 +120,12 @@ size_t FileIOWriter::operator()(const void* ptr, size_t size, size_t nitems) {
     return fwrite(ptr, size, nitems, f);
 }
 
-int FileIOWriter::fileno() {
+int FileIOWriter::filedescriptor() {
+#ifdef _AIX
+    return fileno(f);
+#else
     return ::fileno(f);
+#endif
 }
 
 /***********************************************************************
@@ -196,13 +204,13 @@ size_t BufferedIOWriter::operator()(
     while (size > 0) {
         assert(b0 == bsz);
         // now we need to flush to add more bytes
-        size_t ofs = 0;
+        size_t ofs_2 = 0;
         do {
-            assert(ofs < 10000000);
-            size_t written = (*writer)(buffer.data() + ofs, 1, bsz - ofs);
+            assert(ofs_2 < 10000000);
+            size_t written = (*writer)(buffer.data() + ofs_2, 1, bsz - ofs_2);
             FAISS_THROW_IF_NOT(written > 0);
-            ofs += written;
-        } while (ofs != bsz);
+            ofs_2 += written;
+        } while (ofs_2 != bsz);
 
         // copy src to buffer
         size_t nb1 = std::min(bsz, size);
@@ -217,12 +225,12 @@ size_t BufferedIOWriter::operator()(
 }
 
 BufferedIOWriter::~BufferedIOWriter() {
-    size_t ofs = 0;
-    while (ofs != b0) {
-        // printf("Destructor write %zd \n", b0 - ofs);
-        size_t written = (*writer)(buffer.data() + ofs, 1, b0 - ofs);
+    size_t ofs_2 = 0;
+    while (ofs_2 != b0) {
+        // printf("Destructor write %zd \n", b0 - ofs_2);
+        size_t written = (*writer)(buffer.data() + ofs_2, 1, b0 - ofs_2);
         FAISS_THROW_IF_NOT(written > 0);
-        ofs += written;
+        ofs_2 += written;
     }
 }
 
@@ -259,7 +267,7 @@ std::string fourcc_inv_printable(uint32_t x) {
             str += c;
         } else {
             char buf[10];
-            sprintf(buf, "\\x%02x", c);
+            snprintf(buf, sizeof(buf), "\\x%02x", c);
             str += buf;
         }
     }

@@ -24,20 +24,6 @@ namespace quantize_lut {
 
 namespace {
 
-float round_uint8_and_mul(float* tab, size_t n) {
-    float max = 0;
-    for (int i = 0; i < n; i++) {
-        if (fabs(tab[i]) > max) {
-            max = fabs(tab[i]);
-        }
-    }
-    float multiplier = 127 / max;
-    for (int i = 0; i < n; i++) {
-        tab[i] = floorf(tab[i] * multiplier + 128);
-    }
-    return multiplier;
-}
-
 // there can be NaNs in tables, they should be ignored
 float tab_min(const float* tab, size_t n) {
     float min = HUGE_VAL;

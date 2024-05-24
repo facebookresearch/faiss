@@ -251,12 +251,41 @@ struct JensenShannonDistance {
     float dist;
 };
 
+struct JaccardSimilarity {
+    __host__ __device__ JaccardSimilarity() : numerator(0), denominator(0) {}
+
+    static constexpr bool kDirection = true; // maximize
+    static constexpr float kIdentityData = 0;
+    static constexpr float kMaxDistance = -std::numeric_limits<float>::max();
+
+    __host__ __device__ void handle(float a, float b) {
+        numerator += fmin(a, b);
+        denominator += fmax(a, b);
+    }
+
+    __host__ __device__ float reduce() {
+        return numerator / denominator;
+    }
+
+    __host__ __device__ void combine(const JaccardSimilarity& v) {
+        numerator += v.numerator;
+        denominator += v.denominator;
+    }
+
+    __host__ __device__ JaccardSimilarity zero() const {
+        return JaccardSimilarity();
+    }
+
+    float numerator;
+    float denominator;
+};
+
 template <typename T, bool InnerContig>
 Tensor<T, 2, InnerContig> sliceCentroids(
         Tensor<T, 2, InnerContig>& centroids,
         bool centroidsRowMajor,
-        int startCentroid,
-        int num) {
+        idx_t startCentroid,
+        idx_t num) {
     // Row major is (num, dim)
     // Col major is (dim, num)
     if (startCentroid == 0 &&
@@ -272,9 +301,11 @@ template <typename T>
 __global__ void incrementIndex(
         Tensor<T, 2, true> indices,
         int k,
-        int increment) {
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        indices[blockIdx.y][blockIdx.x * k + i] += blockIdx.x * increment;
+        idx_t increment) {
+    for (idx_t i = blockIdx.y; i < indices.getSize(0); i += gridDim.y) {
+        for (int j = threadIdx.x; j < k; j += blockDim.x) {
+            indices[i][idx_t(blockIdx.x) * k + j] += blockIdx.x * increment;
+        }
     }
 }
 
@@ -284,27 +315,28 @@ template <typename T>
 void runIncrementIndex(
         Tensor<T, 2, true>& indices,
         int k,
-        int increment,
+        idx_t increment,
         cudaStream_t stream) {
-    dim3 grid(indices.getSize(1) / k, indices.getSize(0));
-    int block = std::min(k, 512);
+    // Input should be an even divisor of k
+    FAISS_ASSERT(indices.getSize(1) % k == 0);
 
-    // should be exact
-    FAISS_ASSERT(grid.x * k == indices.getSize(1));
+    dim3 grid(indices.getSize(1) / k, indices.getSize(0));
+    auto block = std::min(k, getMaxThreadsCurrentDevice());
 
     incrementIndex<<<grid, block, 0, stream>>>(indices, k, increment);
+    CUDA_TEST_ERROR();
 }
 
 // If the inner size (dim) of the vectors is small, we want a larger query tile
 // size, like 1024
 inline void chooseTileSize(
-        int numQueries,
-        int numCentroids,
+        idx_t numQueries,
+        idx_t numCentroids,
         int dim,
-        int elementSize,
+        idx_t elementSize,
         size_t tempMemAvailable,
-        int& tileRows,
-        int& tileCols) {
+        idx_t& tileRows,
+        idx_t& tileCols) {
     // The matrix multiplication should be large enough to be efficient, but if
     // it is too large, we seem to lose efficiency as opposed to
     // double-streaming. Each tile size here defines 1/2 of the memory use due
@@ -314,7 +346,7 @@ inline void chooseTileSize(
     // prefer 768 MB of usage. Otherwise, prefer 1 GB of usage.
     auto totalMem = getCurrentDeviceProperties().totalGlobalMem;
 
-    int targetUsage = 0;
+    idx_t targetUsage = 0;
 
     if (totalMem <= ((size_t)4) * 1024 * 1024 * 1024) {
         targetUsage = 512 * 1024 * 1024;
@@ -330,7 +362,7 @@ inline void chooseTileSize(
     // If we are on float16, increase to 512.
     // If the k size (vec dim) of the matrix multiplication is small (<= 32),
     // increase to 1024.
-    int preferredTileRows = 512;
+    idx_t preferredTileRows = 512;
     if (dim <= 32) {
         preferredTileRows = 1024;
     }

@@ -1,6 +1,6 @@
 # Faiss
 
-Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed primarily at [Facebook AI Research](https://ai.facebook.com/).
+Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python/numpy. Some of the most useful algorithms are implemented on the GPU. It is developed primarily at Meta's [Fundamental AI Research](https://ai.facebook.com/) group.
 
 ## News
 
@@ -48,11 +48,23 @@ The main authors of Faiss are:
 - [Jeff Johnson](https://github.com/wickedfoo) implemented all of the GPU Faiss
 - [Lucas Hosseini](https://github.com/beauby) implemented the binary indexes and the build system
 - [Chengqi Deng](https://github.com/KinglittleQ) implemented NSG, NNdescent and much of the additive quantization code.
+- [Alexandr Guzhva](https://github.com/alexanderguzhva) many optimizations: SIMD, memory allocation and layout, fast decoding kernels for vector codecs, etc.
+- [Gergely Szilvasy](https://github.com/algoriddle) build system, benchmarking framework.
 
 ## Reference
 
-Reference to cite when you use Faiss in a research paper:
-
+References to cite when you use Faiss in a research paper:
+```
+@article{douze2024faiss,
+      title={The Faiss library},
+      author={Matthijs Douze and Alexandr Guzhva and Chengqi Deng and Jeff Johnson and Gergely Szilvasy and Pierre-Emmanuel Mazaré and Maria Lomeli and Lucas Hosseini and Hervé Jégou},
+      year={2024},
+      eprint={2401.08281},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
+For the GPU version of Faiss, please cite:
 ```
 @article{johnson2019billion,
   title={Billion-scale similarity search with {GPUs}},
@@ -73,6 +85,8 @@ For public discussion of Faiss or for questions, there is a Facebook group at ht
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.
 
-## License
+## Legal
 
-Faiss is MIT-licensed.
+Faiss is MIT-licensed, refer to the [LICENSE file](https://github.com/facebookresearch/faiss/blob/main/LICENSE) in the top level directory.
+
+Copyright © Meta Platforms, Inc. See the [Terms of Use](https://opensource.fb.com/legal/terms/) and [Privacy Policy](https://opensource.fb.com/legal/privacy/) for this project.

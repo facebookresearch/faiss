@@ -1,0 +1,117 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
+{% set number = GIT_DESCRIBE_NUMBER %}
+{% if cudatoolkit == '11.8.0' %}
+{% set cuda_constraints=">=11.8,<12" %}
+{% set libcublas_constraints=">=11.11,<12" %}
+{% elif cudatoolkit == '12.1.1' %}
+{% set cuda_constraints=">=12.1,<13" %}
+{% set libcublas_constraints=">=12.1,<13" %}
+{% endif %}
+
+package:
+  name: faiss-pkg
+  version: {{ version }}
+
+build:
+  number: {{ number }}
+
+about:
+  home: https://github.com/facebookresearch/faiss
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A library for efficient similarity search and clustering of dense vectors.
+
+source:
+  git_url: ../../
+
+outputs:
+  - name: libfaiss
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
+    script: build-lib-arm64.sh  # [not x86_64]
+    script: build-lib.bat  # [win]
+    build:
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_raft{{ suffix }}"
+      run_exports:
+        - {{ pin_compatible('libfaiss', exact=True) }}
+      script_env:
+        - CUDA_ARCHS
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - sysroot_linux-64  # [linux64]
+        - llvm-openmp  # [osx]
+        - cmake >=3.24.0
+        - make  # [not win]
+        - mkl-devel =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
+      host:
+        - mkl =2023  # [x86_64]
+        - openblas  # [not x86_64]
+        - libraft =24.04
+        - cuda-version {{ cuda_constraints }}
+      run:
+        - mkl =2023  # [x86_64]
+        - openblas  # [not x86_64]
+        - cuda-cudart {{ cuda_constraints }}
+        - libcublas {{ libcublas_constraints }}
+        - libraft =24.04
+        - cuda-version {{ cuda_constraints }}
+    test:
+      requires:
+        - conda-build
+      commands:
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+
+  - name: faiss-gpu-raft
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
+    script: build-pkg-arm64.sh # [not x86_64]
+    script: build-pkg.bat  # [win]
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - sysroot_linux-64 =2.17 # [linux64]
+        - swig
+        - cmake >=3.24.0
+        - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
+      host:
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+      run:
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - packaging
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+    test:
+      requires:
+        - numpy
+        - scipy
+        - pytorch
+        - pytorch-cuda {{ cuda_constraints }}
+      commands:
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+        - cp tests/common_faiss_tests.py faiss/gpu/test
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+        - sh test_cpu_dispatch.sh  # [linux64]
+      files:
+        - test_cpu_dispatch.sh  # [linux64]
+      source_files:
+        - tests/
+        - faiss/gpu/test/

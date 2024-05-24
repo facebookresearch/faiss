@@ -38,7 +38,8 @@ struct IndexAdditiveQuantizer : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /* The standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
@@ -176,13 +177,19 @@ struct AdditiveCoarseQuantizer : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
     void train(idx_t n, const float* x) override;
 
     /// N/A
     void reset() override;
+};
+
+struct SearchParametersResidualCoarseQuantizer : SearchParameters {
+    float beam_factor = 4.0f;
+    ~SearchParametersResidualCoarseQuantizer() {}
 };
 
 /** The ResidualCoarseQuantizer is a bit specialized compared to the
@@ -194,7 +201,7 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
 
     /// factor between the beam size and the search k
     /// if negative, use exact search-to-centroid
-    float beam_factor;
+    float beam_factor = 4.0f;
 
     /// computes centroid norms if required
     void set_beam_factor(float new_beam_factor);
@@ -221,7 +228,12 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    /** Copy the M first codebook levels from other. Useful to crop a
+     * ResidualQuantizer to its first M quantizers. */
+    void initialize_from(const ResidualCoarseQuantizer& other);
 
     ResidualCoarseQuantizer();
 };

@@ -57,7 +57,8 @@ struct Index2Layer : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     DistanceComputer* get_distance_computer() const override;
 

@@ -21,9 +21,9 @@ class BinaryFlatIndex {
     BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space);
 
     /// Returns the number of vectors we contain
-    int getSize() const;
+    idx_t getSize() const;
 
-    int getDim() const;
+    idx_t getDim() const;
 
     /// Reserve storage that can contain at least this many vectors
     void reserve(size_t numVecs, cudaStream_t stream);
@@ -35,11 +35,11 @@ class BinaryFlatIndex {
             Tensor<unsigned char, 2, true>& vecs,
             int k,
             Tensor<int, 2, true>& outDistances,
-            Tensor<int, 2, true>& outIndices);
+            Tensor<idx_t, 2, true>& outIndices);
 
     /// Add vectors to ourselves; the pointer passed can be on the host
     /// or the device
-    void add(const unsigned char* data, int numVecs, cudaStream_t stream);
+    void add(const unsigned char* data, idx_t numVecs, cudaStream_t stream);
 
     /// Free all storage
     void reset();
@@ -52,7 +52,7 @@ class BinaryFlatIndex {
     const int dim_;
 
     /// How many vectors we have
-    int num_;
+    idx_t num_;
 
     /// The underlying expandable storage
     DeviceVector<char> rawData_;

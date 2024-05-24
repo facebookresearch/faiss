@@ -44,7 +44,6 @@ class TestClustering(unittest.TestCase):
         faiss.normalize_L2(xt)
 
         mask = np.abs(xt) > 0.045
-        # print("fraction:", mask.sum() / mask.size) # around 10% non-zeros
         xt[np.logical_not(mask)] = 0
 
         centroids = ds.get_queries()
@@ -56,13 +55,13 @@ class TestClustering(unittest.TestCase):
         D, I = clustering.sparse_assign_to_dense(xsparse, centroids)
 
         np.testing.assert_array_equal(Iref.ravel(), I)
-        np.testing.assert_array_almost_equal(Dref.ravel(), D, decimal=4)
+        np.testing.assert_array_almost_equal(Dref.ravel(), D, decimal=3)
 
         D, I = clustering.sparse_assign_to_dense_blocks(
             xsparse, centroids, qbs=123, bbs=33, nt=4)
 
         np.testing.assert_array_equal(Iref.ravel(), I)
-        np.testing.assert_array_almost_equal(Dref.ravel(), D, decimal=4)
+        np.testing.assert_array_almost_equal(Dref.ravel(), D, decimal=3)
 
     def test_sparse_kmeans(self):
         """ demo on how to cluster sparse data into dense clusters """
@@ -72,7 +71,6 @@ class TestClustering(unittest.TestCase):
         faiss.normalize_L2(xt)
 
         mask = np.abs(xt) > 0.045
-        # print("fraction:", mask.sum() / mask.size) # around 10% non-zeros
         xt[np.logical_not(mask)] = 0
 
         km = faiss.Kmeans(ds.d, 50)

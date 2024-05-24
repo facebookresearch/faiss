@@ -26,6 +26,7 @@ typedef enum FaissQuantizerType {
     QT_fp16,
     QT_8bit_direct, ///< fast indexing of uint8s
     QT_6bit,        ///< 6 bits per component
+    QT_bf16,
 } FaissQuantizerType;
 
 // forward declaration
@@ -87,11 +88,6 @@ int faiss_IndexIVFScalarQuantizer_add_core(
         const float* x,
         const idx_t* xids,
         const idx_t* precomputed_idx);
-
-int faiss_IndexIVFScalarQuantizer_train_residual(
-        FaissIndexIVFScalarQuantizer* index,
-        idx_t n,
-        const float* x);
 
 #ifdef __cplusplus
 }

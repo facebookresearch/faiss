@@ -32,27 +32,36 @@ struct BinaryInvertedListScanner;
  */
 struct IndexBinaryIVF : IndexBinary {
     /// Access to the actual data
-    InvertedLists* invlists;
-    bool own_invlists;
+    InvertedLists* invlists = nullptr;
+    bool own_invlists = true;
 
-    size_t nprobe;    ///< number of probes at query time
-    size_t max_codes; ///< max nb of codes to visit to do a query
+    size_t nprobe = 1;    ///< number of probes at query time
+    size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
     /** Select between using a heap or counting to select the k smallest values
      * when scanning inverted lists.
      */
     bool use_heap = true;
 
+    /** collect computations per batch */
+    bool per_invlist_search = false;
+
     /// map for direct access to the elements. Enables reconstruct().
     DirectMap direct_map;
 
-    IndexBinary* quantizer; ///< quantizer that maps vectors to inverted lists
-    size_t nlist;           ///< number of possible key values
+    /// quantizer that maps vectors to inverted lists
+    IndexBinary* quantizer = nullptr;
 
-    bool own_fields; ///< whether object owns the quantizer
+    /// number of possible key values
+    size_t nlist = 0;
+
+    /// whether object owns the quantizer
+    bool own_fields = false;
 
     ClusteringParameters cp; ///< to override default clustering params
-    Index* clustering_index; ///< to override index used during clustering
+
+    /// to override index used during clustering
+    Index* clustering_index = nullptr;
 
     /** The Inverted file takes a quantizer (an IndexBinary) on input,
      * which implements the function mapping a vector to a list
@@ -123,13 +132,15 @@ struct IndexBinaryIVF : IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
             const uint8_t* x,
             int radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search_preassigned(
             idx_t n,
@@ -167,7 +178,8 @@ struct IndexBinaryIVF : IndexBinary {
             idx_t k,
             int32_t* distances,
             idx_t* labels,
-            uint8_t* recons) const override;
+            uint8_t* recons,
+            const SearchParameters* params = nullptr) const override;
 
     /** Reconstruct a vector given the location in terms of (inv list index +
      * inv list offset) instead of the id.
@@ -184,16 +196,16 @@ struct IndexBinaryIVF : IndexBinary {
     /// Dataset manipulation functions
     size_t remove_ids(const IDSelector& sel) override;
 
-    /** moves the entries from another dataset to self. On output,
-     * other is empty. add_id is added to all moved ids (for
-     * sequential ids, this would be this->ntotal */
-    virtual void merge_from(IndexBinaryIVF& other, idx_t add_id);
+    void merge_from(IndexBinary& other, idx_t add_id) override;
+
+    void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const override;
 
     size_t get_list_size(size_t list_no) const {
         return invlists->list_size(list_no);
     }
 
-    /** intialize a direct map
+    /** initialize a direct map
      *
      * @param new_maintain_direct_map    if true, create a direct map,
      *                                   else clear it
@@ -206,8 +218,6 @@ struct IndexBinaryIVF : IndexBinary {
 };
 
 struct BinaryInvertedListScanner {
-    using idx_t = Index::idx_t;
-
     /// from now on we handle this query.
     virtual void set_query(const uint8_t* query_vector) = 0;
 

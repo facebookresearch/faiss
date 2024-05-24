@@ -48,8 +48,6 @@ IndexIVF* try_extract_index_ivf(Index* index);
  */
 void merge_into(Index* index0, Index* index1, bool shift_ids);
 
-typedef Index::idx_t idx_t;
-
 /* Returns the cluster the embeddings belong to.
  *
  * @param index      Index, which should be an IVF index

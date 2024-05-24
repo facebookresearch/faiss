@@ -9,11 +9,88 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+### Changed
+- Previously, when moving indices to GPU with coarse quantizers that were not implemented on GPU, the cloner would silently fallback to CPU. This version will now throw an exception instead and the calling code would need to explicitly allow fallback to CPU by setting a flag in cloner config.
 
+## [1.8.0] - 2024-02-27
+### Added
+- Added a new conda package faiss-gpu-raft alongside faiss-cpu and faiss-gpu
+- Integrated IVF-Flat and IVF-PQ implementations in faiss-gpu-raft from RAFT by Nvidia [thanks Corey Nolet and Tarang Jain]
+- Added a context parameter to InvertedLists and InvertedListsIterator
+- Added Faiss on Rocksdb demo to showing how inverted lists can be persisted in a key-value store
+- Introduced Offline IVF framework powered by Faiss big batch search
+- Added SIMD NEON Optimization for QT_FP16 in Scalar Quantizer. [thanks Naveen Tatikonda]
+- Generalized ResultHandler and supported range search for HNSW and FastScan
+- Introduced avx512 optimization mode and FAISS_OPT_LEVEL env variable [thanks Alexandr Ghuzva]
+- Added search parameters for IndexRefine::search() and IndexRefineFlat::search()
+- Supported large two-level clustering
+- Added support for Python 3.11 and 3.12
+- Added support for CUDA 12
+
+### Changed
+- Used the benchmark to find Pareto optimal indices. Intentionally limited to IVF(Flat|HNSW),PQ|SQ indices
+- Splitted off RQ encoding steps to another file
+- Supported better NaN handling
+- HNSW speedup + Distance 4 points [thanks Alexandr Ghuzva]
+
+### Fixed
+- Fixed DeviceVector reallocations in Faiss GPU
+- Used efSearch from params if provided in HNSW search
+- Fixed warp synchronous behavior in Faiss GPU CUDA 12
+
+
+## [1.7.4] - 2023-04-12
+### Added
+- Added big batch IVF search for conducting efficient search with big batches of queries
+- Checkpointing in big batch search support
+- Precomputed centroids support
+- Support for iterable inverted lists for eg. key value stores
+- 64-bit indexing arithmetic support in FAISS GPU
+- IndexIVFShards now handle IVF indexes with a common quantizer
+- Jaccard distance support
+- CodePacker for non-contiguous code layouts
+- Approximate evaluation of top-k distances for ResidualQuantizer and IndexBinaryFlat
+- Added support for 12-bit PQ / IVFPQ fine quantizer decoders for standalone vector codecs (faiss/cppcontrib)
+- Conda packages for osx-arm64 (Apple M1) and linux-aarch64 (ARM64) architectures
+- Support for Python 3.10
+
+### Removed
+- CUDA 10 is no longer supported in precompiled packages
+- Removed Python 3.7 support for precompiled packages
+- Removed constraint for using fine quantizer with no greater than 8 bits for IVFPQ, for example, now it is possible to use IVF256,PQ10x12 for a CPU index
+
+### Changed
+- Various performance optimizations for PQ / IVFPQ for AVX2 and ARM for training (fused distance+nearest kernel), search (faster kernels for distance_to_code() and scan_list_*()) and vector encoding
+- A magnitude faster CPU code for LSQ/PLSQ training and vector encoding (reworked code)
+- Performance improvements for Hamming Code computations for AVX2 and ARM (reworked code)
+- Improved auto-vectorization support for IP and L2 distance computations (better handling of pragmas)
+- Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
+
+### Fixed
+- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- Faiss GPU IVF large query batch fix
+- Faiss + Torch fixes, re-enable k = 2048
+- Fix the number of distance computations to match max_codes parameter
+- Fix decoding of large fast_scan blocks
+
+
+## [1.7.3] - 2022-11-3
+### Added
 - Added sparse k-means routines and moved the generic kmeans to contrib
 - Added FlatDistanceComputer for all FlatCodes indexes
 - Support for fast accumulation of 4-bit LSQ and RQ
 - Added product additive quantization
+- Support per-query search parameters for many indexes + filtering by ids
+- write_VectorTransform and read_vectorTransform were added to the public API (by @AbdelrahmanElmeniawy)
+- Support for IDMap2 in index_factory by adding "IDMap2" to prefix or suffix of the input String (by @AbdelrahmanElmeniawy)
+- Support for merging all IndexFlatCodes descendants (by @AbdelrahmanElmeniawy)
+- Remove and merge features for IndexFastScan (by @AbdelrahmanElmeniawy)
+- Performance improvements: 1) specialized the AVX2 pieces of code speeding up certain hotspots, 2) specialized kernels for vector codecs (this can be found in faiss/cppcontrib)
+
+
+### Fixed
+- Fixed memory leak in OnDiskInvertedLists::do_mmap when the file is not closed (by @AbdelrahmanElmeniawy)
+- LSH correctly throws error for metric types other than METRIC_L2 (by @AbdelrahmanElmeniawy)
 
 ## [1.7.2] - 2021-12-15
 ### Added
@@ -211,7 +288,10 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/facebookresearch/faiss/compare/v1.7.4...v1.8.0
+[1.7.4]: https://github.com/facebookresearch/faiss/compare/v1.7.3...v1.7.4
+[1.7.3]: https://github.com/facebookresearch/faiss/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/facebookresearch/faiss/compare/v1.6.5...v1.7.0

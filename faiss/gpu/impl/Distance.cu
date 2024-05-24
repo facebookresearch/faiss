@@ -79,7 +79,7 @@ void runAllPairwiseDistance(
     // Prepare norm vector ||q||^2; ||c||^2 is already pre-computed
     //
     DeviceTensor<float, 1, true> queryNorms(
-            res, makeTempAlloc(AllocType::Other, stream), {(int)numQueries});
+            res, makeTempAlloc(AllocType::Other, stream), {numQueries});
 
     // ||q||^2
     if (computeL2) {
@@ -128,7 +128,7 @@ void runDistance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances) {
     // The # of centroids in `centroids` based on memory layout
     auto numCentroids = centroids.getSize(centroidsRowMajor ? 0 : 1);
@@ -177,7 +177,7 @@ void runDistance(
     // Prepare norm vector ||q||^2; ||c||^2 is already pre-computed
     //
     DeviceTensor<float, 1, true> queryNorms(
-            res, makeTempAlloc(AllocType::Other, stream), {(int)numQueries});
+            res, makeTempAlloc(AllocType::Other, stream), {numQueries});
 
     // ||q||^2
     if (computeL2) {
@@ -186,8 +186,8 @@ void runDistance(
 
     // By default, aim to use up to 512 MB of memory for the processing, with
     // both number of queries and number of centroids being at least 512.
-    int tileRows = 0;
-    int tileCols = 0;
+    idx_t tileRows = 0;
+    idx_t tileCols = 0;
     chooseTileSize(
             numQueries,
             numCentroids,
@@ -197,7 +197,7 @@ void runDistance(
             tileRows,
             tileCols);
 
-    int numColTiles = utils::divUp(numCentroids, tileCols);
+    idx_t numColTiles = utils::divUp(numCentroids, tileCols);
 
     // We can have any number of vectors to query against, even less than k, in
     // which case we'll return -1 for the index
@@ -222,15 +222,15 @@ void runDistance(
     DeviceTensor<float, 2, true>* outDistanceBufs[2] = {
             &outDistanceBuf1, &outDistanceBuf2};
 
-    DeviceTensor<int, 2, true> outIndexBuf1(
+    DeviceTensor<idx_t, 2, true> outIndexBuf1(
             res,
             makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
-    DeviceTensor<int, 2, true> outIndexBuf2(
+    DeviceTensor<idx_t, 2, true> outIndexBuf2(
             res,
             makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
-    DeviceTensor<int, 2, true>* outIndexBufs[2] = {
+    DeviceTensor<idx_t, 2, true>* outIndexBufs[2] = {
             &outIndexBuf1, &outIndexBuf2};
 
     auto streams = res->getAlternateStreamsCurrentDevice();
@@ -240,13 +240,13 @@ void runDistance(
     bool interrupt = false;
 
     // Tile over the input queries
-    for (int i = 0; i < numQueries; i += tileRows) {
+    for (idx_t i = 0; i < numQueries; i += tileRows) {
         if (interrupt || InterruptCallback::is_interrupted()) {
             interrupt = true;
             break;
         }
 
-        int curQuerySize = std::min(tileRows, numQueries - i);
+        idx_t curQuerySize = std::min(tileRows, numQueries - i);
 
         auto outDistanceView = outDistances.narrow(0, i, curQuerySize);
         auto outIndexView = outIndices.narrow(0, i, curQuerySize);
@@ -261,14 +261,14 @@ void runDistance(
                 outIndexBufs[curStream]->narrow(0, 0, curQuerySize);
 
         // Tile over the centroids
-        for (int j = 0; j < numCentroids; j += tileCols) {
+        for (idx_t j = 0; j < numCentroids; j += tileCols) {
             if (InterruptCallback::is_interrupted()) {
                 interrupt = true;
                 break;
             }
 
-            int curCentroidSize = std::min(tileCols, numCentroids - j);
-            int curColTile = j / tileCols;
+            auto curCentroidSize = std::min(tileCols, numCentroids - j);
+            auto curColTile = j / tileCols;
 
             auto centroidsView = sliceCentroids(
                     centroids, centroidsRowMajor, j, curCentroidSize);
@@ -415,7 +415,7 @@ void runL2Distance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances = false) {
     runDistance<T>(
             true, // L2
@@ -442,7 +442,7 @@ void runIPDistance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     runDistance<T>(
             false, // IP
             res,
@@ -554,7 +554,7 @@ void runL2Distance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances) {
     runL2Distance<float>(
             res,
@@ -580,7 +580,7 @@ void runL2Distance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances) {
     runL2Distance<half>(
             res,
@@ -605,7 +605,7 @@ void runIPDistance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     runIPDistance<float>(
             res,
             stream,
@@ -627,7 +627,7 @@ void runIPDistance(
         bool queriesRowMajor,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     runIPDistance<half>(
             res,
             stream,

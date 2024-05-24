@@ -310,3 +310,69 @@ class DatasetMusic100(Dataset):
             assert k <= 100
             gt = gt[:, :k]
         return gt
+
+class DatasetGIST1M(Dataset):
+    """
+    The original dataset is available at: http://corpus-texmex.irisa.fr/
+    (ANN_SIFT1M)
+    """
+
+    def __init__(self):
+        Dataset.__init__(self)
+        self.d, self.nt, self.nb, self.nq = 960, 100000, 1000000, 10000
+        self.basedir = dataset_basedir + 'gist1M/'
+
+    def get_queries(self):
+        return fvecs_read(self.basedir + "gist_query.fvecs")
+
+    def get_train(self, maxtrain=None):
+        maxtrain = maxtrain if maxtrain is not None else self.nt
+        return fvecs_read(self.basedir + "gist_learn.fvecs")[:maxtrain]
+
+    def get_database(self):
+        return fvecs_read(self.basedir + "gist_base.fvecs")
+
+    def get_groundtruth(self, k=None):
+        gt = ivecs_read(self.basedir + "gist_groundtruth.ivecs")
+        if k is not None:
+            assert k <= 100
+            gt = gt[:, :k]
+        return gt
+
+
+def dataset_from_name(dataset='deep1M', download=False):
+    """ converts a string describing a dataset to a Dataset object
+    Supports sift1M, bigann1M..bigann1B, deep1M..deep1B, music-100 and glove
+    """
+
+    if dataset == 'sift1M':
+        return DatasetSIFT1M()
+
+    elif dataset == 'gist1M':
+        return DatasetGIST1M()
+
+    elif dataset.startswith('bigann'):
+        dbsize = 1000 if dataset == "bigann1B" else int(dataset[6:-1])
+        return DatasetBigANN(nb_M=dbsize)
+
+    elif dataset.startswith("deep"):
+
+        szsuf = dataset[4:]
+        if szsuf[-1] == 'M':
+            dbsize = 10 ** 6 * int(szsuf[:-1])
+        elif szsuf == '1B':
+            dbsize = 10 ** 9
+        elif szsuf[-1] == 'k':
+            dbsize = 1000 * int(szsuf[:-1])
+        else:
+            assert False, "did not recognize suffix " + szsuf
+        return DatasetDeep1B(nb=dbsize)
+
+    elif dataset == "music-100":
+        return DatasetMusic100()
+
+    elif dataset == "glove":
+        return DatasetGlove(download=download)
+
+    else:
+        raise RuntimeError("unknown dataset " + dataset)

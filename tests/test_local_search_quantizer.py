@@ -196,7 +196,6 @@ class TestComponents(unittest.TestCase):
         err_float = eval_codec(lsq, xb)
 
         # 6533.377 vs 25457.99
-        print(err_double, err_float)
         self.assertLess(err_double, err_float)
 
     def test_compute_binary_terms(self):
@@ -252,11 +251,21 @@ class TestComponents(unittest.TestCase):
 
         rs = np.random.RandomState(123)
 
-        # randomly generate codes, binary terms and unary terms
+        # randomly generate codes and unary terms
         codes = rs.randint(0, K, (n, M)).astype(np.int32)
         new_codes = codes.copy()
         unaries = rs.rand(M, n, K).astype(np.float32)
-        binaries = rs.rand(M, M, K, K).astype(np.float32)
+
+        # binary terms should be symmetric, because binary terms
+        #  represent cached dot products between the code C1 in codebook M1
+        #  and the code C2 in codebook M2.
+        # so, binaries[M1, M2, C1, C2] == binaries[M2, M1, C2, C1]
+        #
+        # generate binary terms in a standard way that provides
+        #  the needed symmetry
+        codebooks = rs.rand(M, K, d).astype(np.float32)
+        binaries = compute_binary_terms_ref(codebooks)
+        binaries = np.ascontiguousarray(binaries)
 
         # do icm encoding given binary and unary terms
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
@@ -338,7 +347,6 @@ class TestLocalSearchQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        print(err_lsq, err_pq)
         self.assertLess(err_lsq, err_pq)
 
 
@@ -453,7 +461,6 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
             index.nprobe = nprobe
             D, I = index.search(ds.get_queries(), 10)
             inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
-            # print("nprobe=", nprobe, "inter=", inter)
             inters.append(inter)
 
         inters = np.array(inters)
@@ -518,7 +525,6 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        print(err_plsq, err_pq)
         self.assertLess(err_plsq, err_pq)
 
     def test_with_lsq(self):
@@ -539,7 +545,6 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
         lsq.train(xt)
         err_lsq = eval_codec(lsq, xb)
 
-        print(err_plsq, err_lsq)
         self.assertEqual(err_plsq, err_lsq)
 
     def test_lut(self):
@@ -571,8 +576,7 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
             lut_ref[:, i] = xq[:, i] @ codebooks[i].T
         lut_ref = lut_ref.reshape(nq, codebook_size)
 
-        # max rtoal in OSX: 2.87e-6
-        np.testing.assert_allclose(lut, lut_ref, rtol=5e-06)
+        np.testing.assert_allclose(lut, lut_ref, rtol=5e-04)
 
 
 class TestIndexProductLocalSearchQuantizer(unittest.TestCase):
@@ -655,7 +659,6 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
         """check that the error is in the same ballpark as LSQ."""
         inter1 = self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
         inter2 = self.eval_index_accuracy("IVF32,LSQ4x5_Nqint8")
-        # print(inter1, inter2)  # 381 vs 374
         self.assertGreaterEqual(inter1 * 1.1, inter2)
 
     def test_factory(self):

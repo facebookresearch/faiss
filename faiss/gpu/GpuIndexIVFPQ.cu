@@ -15,6 +15,13 @@
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/utils/RaftUtils.h>
+#include <faiss/gpu/impl/RaftIVFPQ.cuh>
+#include <raft/neighbors/ivf_pq.cuh>
+#include <raft/neighbors/ivf_pq_helpers.cuh>
+#endif
+
 #include <limits>
 
 namespace faiss {
@@ -43,9 +50,9 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
 GpuIndexIVFPQ::GpuIndexIVFPQ(
         GpuResourcesProvider* provider,
         int dims,
-        int nlist,
-        int subQuantizers,
-        int bitsPerCode,
+        idx_t nlist,
+        idx_t subQuantizers,
+        idx_t bitsPerCode,
         faiss::MetricType metric,
         GpuIndexIVFPQConfig config)
         : GpuIndexIVF(provider, dims, metric, 0, nlist, config),
@@ -55,10 +62,43 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
           subQuantizers_(subQuantizers),
           bitsPerCode_(bitsPerCode),
           reserveMemoryVecs_(0) {
-    verifySettings_();
+    verifyPQSettings_();
+}
 
-    // We haven't trained ourselves, so don't construct the PQ index yet
+GpuIndexIVFPQ::GpuIndexIVFPQ(
+        GpuResourcesProvider* provider,
+        Index* coarseQuantizer,
+        int dims,
+        idx_t nlist,
+        idx_t subQuantizers,
+        idx_t bitsPerCode,
+        faiss::MetricType metric,
+        GpuIndexIVFPQConfig config)
+        : GpuIndexIVF(
+                  provider,
+                  coarseQuantizer,
+                  dims,
+                  metric,
+                  0,
+                  nlist,
+                  config),
+          pq(dims, subQuantizers, bitsPerCode),
+          ivfpqConfig_(config),
+          usePrecomputedTables_(config.usePrecomputedTables),
+          subQuantizers_(subQuantizers),
+          bitsPerCode_(bitsPerCode),
+          reserveMemoryVecs_(0) {
+    // While we were passed an existing coarse quantizer instance (possibly
+    // trained or not), we have not yet trained our product quantizer, so we are
+    // not ourselves fully trained and we can not yet construct our index_
+    // instance
     this->is_trained = false;
+
+    FAISS_THROW_IF_NOT_MSG(
+            !config.use_raft,
+            "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
+
+    verifyPQSettings_();
 }
 
 GpuIndexIVFPQ::~GpuIndexIVFPQ() {}
@@ -66,10 +106,16 @@ GpuIndexIVFPQ::~GpuIndexIVFPQ() {}
 void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     DeviceScope scope(config_.device);
 
+    // This will copy GpuIndexIVF data such as the coarse quantizer
     GpuIndexIVF::copyFrom(index);
 
     // Clear out our old data
     index_.reset();
+
+    // skip base class allocations if RAFT is enabled
+    if (!should_use_raft(config_)) {
+        baseIndex_.reset();
+    }
 
     pq = index->pq;
     subQuantizers_ = index->pq.M;
@@ -84,7 +130,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     FAISS_THROW_IF_NOT_MSG(
             index->polysemous_ht == 0, "GPU: polysemous codes not supported");
 
-    verifySettings_();
+    verifyPQSettings_();
 
     // The other index might not be trained
     if (!index->is_trained) {
@@ -96,11 +142,12 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Copy our lists as well
     // The product quantizer must have data in it
     FAISS_ASSERT(index->pq.centroids.size() > 0);
-    index_.reset(new IVFPQ(
+    setIndex_(
             resources_.get(),
+            this->d,
+            this->nlist,
             index->metric_type,
             index->metric_arg,
-            quantizer->getGpuData(),
             subQuantizers_,
             bitsPerCode_,
             ivfpqConfig_.useFloat16LookupTables,
@@ -108,9 +155,14 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
             ivfpqConfig_.interleavedLayout,
             (float*)index->pq.centroids.data(),
             ivfpqConfig_.indicesOptions,
-            config_.memorySpace));
+            config_.memorySpace);
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+
     // Doesn't make sense to reserve memory here
-    index_->setPrecomputedCodes(usePrecomputedTables_);
+    FAISS_ASSERT(quantizer);
+    updateQuantizer();
+
+    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
@@ -132,7 +184,7 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
     //
     index->by_residual = true;
     index->use_precomputed_table = 0;
-    index->code_size = subQuantizers_;
+    index->code_size = utils::divUp(subQuantizers_ * bitsPerCode_, 8);
     index->pq = faiss::ProductQuantizer(this->d, subQuantizers_, bitsPerCode_);
 
     index->do_polysemous_training = false;
@@ -166,21 +218,24 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 }
 
 void GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
+    DeviceScope scope(config_.device);
+
     reserveMemoryVecs_ = numVecs;
     if (index_) {
-        DeviceScope scope(config_.device);
         index_->reserveMemory(numVecs);
     }
 }
 
 void GpuIndexIVFPQ::setPrecomputedCodes(bool enable) {
+    DeviceScope scope(config_.device);
+
     usePrecomputedTables_ = enable;
     if (index_) {
-        DeviceScope scope(config_.device);
-        index_->setPrecomputedCodes(enable);
+        FAISS_ASSERT(quantizer);
+        index_->setPrecomputedCodes(quantizer, enable);
     }
 
-    verifySettings_();
+    verifyPQSettings_();
 }
 
 bool GpuIndexIVFPQ::getPrecomputedCodes() const {
@@ -200,8 +255,9 @@ int GpuIndexIVFPQ::getCentroidsPerSubQuantizer() const {
 }
 
 size_t GpuIndexIVFPQ::reclaimMemory() {
+    DeviceScope scope(config_.device);
+
     if (index_) {
-        DeviceScope scope(config_.device);
         return index_->reclaimMemory();
     }
 
@@ -209,9 +265,9 @@ size_t GpuIndexIVFPQ::reclaimMemory() {
 }
 
 void GpuIndexIVFPQ::reset() {
-    if (index_) {
-        DeviceScope scope(config_.device);
+    DeviceScope scope(config_.device);
 
+    if (index_) {
         index_->reset();
         this->ntotal = 0;
     } else {
@@ -219,7 +275,17 @@ void GpuIndexIVFPQ::reset() {
     }
 }
 
-void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
+void GpuIndexIVFPQ::updateQuantizer() {
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer, "Calling updateQuantizer without a quantizer instance");
+
+    // Only need to do something if we are already initialized
+    if (index_) {
+        index_->updateQuantizer(quantizer);
+    }
+}
+
+void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
     // Code largely copied from faiss::IndexIVFPQ
     auto x_in = x;
 
@@ -231,21 +297,17 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
             verbose,
             pq.cp.seed);
 
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
+    std::unique_ptr<const float[]> del_x(x_in == x ? nullptr : x);
 
     if (this->verbose) {
         printf("computing residuals\n");
     }
 
-    std::vector<Index::idx_t> assign(n);
+    std::vector<idx_t> assign(n);
     quantizer->assign(n, x, assign.data());
 
     std::vector<float> residuals(n * d);
-
-    // FIXME jhj convert to _n version
-    for (idx_t i = 0; i < n; i++) {
-        quantizer->compute_residual(x + i * d, &residuals[i * d], assign[i]);
-    }
+    quantizer->compute_residual_n(n, x, residuals.data(), assign.data());
 
     if (this->verbose) {
         printf("training %d x %d product quantizer on %ld vectors in %dD\n",
@@ -261,6 +323,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
         try {
             GpuIndexFlatConfig config;
             config.device = ivfpqConfig_.device;
+            config.use_raft = false;
             GpuIndexFlatL2 pqIndex(resources_, pq.dsub, config);
 
             pq.assign_index = &pqIndex;
@@ -275,149 +338,226 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
         // use the currently assigned clustering index
         pq.train(n, residuals.data());
     }
-
-    index_.reset(new IVFPQ(
-            resources_.get(),
-            metric_type,
-            metric_arg,
-            quantizer->getGpuData(),
-            subQuantizers_,
-            bitsPerCode_,
-            ivfpqConfig_.useFloat16LookupTables,
-            ivfpqConfig_.useMMCodeDistance,
-            ivfpqConfig_.interleavedLayout,
-            pq.centroids.data(),
-            ivfpqConfig_.indicesOptions,
-            config_.memorySpace));
-    if (reserveMemoryVecs_) {
-        index_->reserveMemory(reserveMemoryVecs_);
-    }
-
-    index_->setPrecomputedCodes(usePrecomputedTables_);
 }
 
-void GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
+void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
+    // just in case someone changed us
+    verifyPQSettings_();
+    verifyIVFSettings_();
+
     if (this->is_trained) {
-        FAISS_ASSERT(quantizer->is_trained);
-        FAISS_ASSERT(quantizer->ntotal == nlist);
         FAISS_ASSERT(index_);
+        if (should_use_raft(config_)) {
+            // if RAFT is enabled, copy the IVF centroids to the RAFT index in
+            // case it has been reset. This is because reset clears the RAFT
+            // index and its centroids.
+            // TODO: change this once the coarse quantizer is separated from
+            // RAFT index
+            updateQuantizer();
+        };
         return;
     }
 
     FAISS_ASSERT(!index_);
 
-    // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
-    auto hostData = toHost<float, 2>(
-            (float*)x,
-            resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+    // RAFT does not support using an external index for assignment. Fall back
+    // to the classical GPU impl
+    if (should_use_raft(config_)) {
+#if defined USE_NVIDIA_RAFT
+        if (pq.assign_index) {
+            fprintf(stderr,
+                    "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled.\n");
+        }
+        // first initialize the index. The PQ centroids will be updated
+        // retroactively.
+        setIndex_(
+                resources_.get(),
+                this->d,
+                this->nlist,
+                metric_type,
+                metric_arg,
+                subQuantizers_,
+                bitsPerCode_,
+                ivfpqConfig_.useFloat16LookupTables,
+                ivfpqConfig_.useMMCodeDistance,
+                ivfpqConfig_.interleavedLayout,
+                pq.centroids.data(),
+                ivfpqConfig_.indicesOptions,
+                config_.memorySpace);
+        // No need to copy the data to host
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
 
-    trainQuantizer_(n, hostData.data());
-    trainResidualQuantizer_(n, hostData.data());
+        raft::neighbors::ivf_pq::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = metricFaissToRaft(metric_type, false);
+        raft_idx_params.kmeans_trainset_fraction =
+                static_cast<double>(cp.max_points_per_centroid * nlist) /
+                static_cast<double>(n);
+        raft_idx_params.kmeans_n_iters = cp.niter;
+        raft_idx_params.pq_bits = bitsPerCode_;
+        raft_idx_params.pq_dim = subQuantizers_;
+        raft_idx_params.conservative_memory_allocation = false;
+        raft_idx_params.add_data_on_build = false;
+
+        auto raftIndex_ = std::static_pointer_cast<RaftIVFPQ, IVFPQ>(index_);
+
+        raft::neighbors::ivf_pq::index<idx_t> raft_ivfpq_index =
+                raft::neighbors::ivf_pq::build<float, idx_t>(
+                        raft_handle, raft_idx_params, x, n, (idx_t)d);
+
+        auto raft_centers = raft::make_device_matrix<float>(
+                raft_handle,
+                raft_ivfpq_index.n_lists(),
+                raft_ivfpq_index.dim());
+        raft::neighbors::ivf_pq::helpers::extract_centers(
+                raft_handle, raft_ivfpq_index, raft_centers.view());
+
+        quantizer->train(nlist, raft_centers.data_handle());
+        quantizer->add(nlist, raft_centers.data_handle());
+
+        raft::copy(
+                pq.get_centroids(0, 0),
+                raft_ivfpq_index.pq_centers().data_handle(),
+                raft_ivfpq_index.pq_centers().size(),
+                raft_handle.get_stream());
+        raft_handle.sync_stream();
+        raftIndex_->setRaftIndex(std::move(raft_ivfpq_index));
+#else
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+#endif
+    } else {
+        // FIXME: GPUize more of this
+        // First, make sure that the data is resident on the CPU, if it is not
+        // on the CPU, as we depend upon parts of the CPU code
+        auto hostData = toHost<float, 2>(
+                (float*)x,
+                resources_->getDefaultStream(config_.device),
+                {n, this->d});
+
+        trainQuantizer_(n, hostData.data());
+        trainResidualQuantizer_(n, hostData.data());
+
+        setIndex_(
+                resources_.get(),
+                this->d,
+                this->nlist,
+                metric_type,
+                metric_arg,
+                subQuantizers_,
+                bitsPerCode_,
+                ivfpqConfig_.useFloat16LookupTables,
+                ivfpqConfig_.useMMCodeDistance,
+                ivfpqConfig_.interleavedLayout,
+                pq.centroids.data(),
+                ivfpqConfig_.indicesOptions,
+                config_.memorySpace);
+        updateQuantizer();
+    }
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+
+    if (reserveMemoryVecs_) {
+        index_->reserveMemory(reserveMemoryVecs_);
+    }
+
+    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 
     FAISS_ASSERT(index_);
 
     this->is_trained = true;
 }
 
-void GpuIndexIVFPQ::addImpl_(int n, const float* x, const Index::idx_t* xids) {
-    // Device is already set in GpuIndex::add
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
-
-    // Not all vectors may be able to be added (some may contain NaNs etc)
-    index_->addVectors(data, labels);
-
-    // but keep the ntotal based on the total number of vectors that we
-    // attempted to add
-    ntotal += n;
+void GpuIndexIVFPQ::setIndex_(
+        GpuResources* resources,
+        int dim,
+        idx_t nlist,
+        faiss::MetricType metric,
+        float metricArg,
+        int numSubQuantizers,
+        int bitsPerSubQuantizer,
+        bool useFloat16LookupTables,
+        bool useMMCodeDistance,
+        bool interleavedLayout,
+        float* pqCentroidData,
+        IndicesOptions indicesOptions,
+        MemorySpace space) {
+    if (should_use_raft(config_)) {
+#if defined USE_NVIDIA_RAFT
+        index_.reset(new RaftIVFPQ(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                numSubQuantizers,
+                bitsPerSubQuantizer,
+                useFloat16LookupTables,
+                useMMCodeDistance,
+                interleavedLayout,
+                pqCentroidData,
+                indicesOptions,
+                space));
+#else
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+#endif
+    } else {
+        index_.reset(new IVFPQ(
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                numSubQuantizers,
+                bitsPerSubQuantizer,
+                useFloat16LookupTables,
+                useMMCodeDistance,
+                interleavedLayout,
+                pqCentroidData,
+                indicesOptions,
+                space));
+    }
 }
 
-void GpuIndexIVFPQ::searchImpl_(
-        int n,
-        const float* x,
-        int k,
-        float* distances,
-        Index::idx_t* labels) const {
-    // Device is already set in GpuIndex::search
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<float, 2, true> outDistances(distances, {n, k});
-    Tensor<Index::idx_t, 2, true> outLabels(
-            const_cast<Index::idx_t*>(labels), {n, k});
-
-    index_->query(queries, nprobe, k, outDistances, outLabels);
-}
-
-int GpuIndexIVFPQ::getListLength(int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListLength(listId);
-}
-
-std::vector<uint8_t> GpuIndexIVFPQ::getListVectorData(
-        int listId,
-        bool gpuFormat) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListVectorData(listId, gpuFormat);
-}
-
-std::vector<Index::idx_t> GpuIndexIVFPQ::getListIndices(int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListIndices(listId);
-}
-
-void GpuIndexIVFPQ::verifySettings_() const {
+void GpuIndexIVFPQ::verifyPQSettings_() const {
     // Our implementation has these restrictions:
 
     // Must have some number of lists
     FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be >0");
 
     // up to a single byte per code
-    if (ivfpqConfig_.interleavedLayout) {
+    if (should_use_raft(config_)) {
+        if (!ivfpqConfig_.interleavedLayout) {
+            fprintf(stderr,
+                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.\n");
+        }
         FAISS_THROW_IF_NOT_FMT(
-                bitsPerCode_ == 4 || bitsPerCode_ == 5 || bitsPerCode_ == 6 ||
-                        bitsPerCode_ == 8,
-                "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
+                bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
+                "Bits per code must be within closed range [4,8] (passed %d)",
                 bitsPerCode_);
-
+        FAISS_THROW_IF_NOT_FMT(
+                (bitsPerCode_ * subQuantizers_) % 8 == 0,
+                "`Bits per code * number of sub-quantizers must be a multiple of 8, (passed %u * %u = %u).",
+                bitsPerCode_,
+                subQuantizers_,
+                bitsPerCode_ * subQuantizers_);
     } else {
-        FAISS_THROW_IF_NOT_FMT(
-                bitsPerCode_ == 8,
-                "Bits per code must be 8 (passed %d)",
-                bitsPerCode_);
+        if (ivfpqConfig_.interleavedLayout) {
+            FAISS_THROW_IF_NOT_FMT(
+                    bitsPerCode_ == 4 || bitsPerCode_ == 5 ||
+                            bitsPerCode_ == 6 || bitsPerCode_ == 8,
+                    "Bits per code must be between 4, 5, 6 or 8 (passed %d)",
+                    bitsPerCode_);
+        } else {
+            FAISS_THROW_IF_NOT_FMT(
+                    bitsPerCode_ == 8,
+                    "Bits per code must be 8 (passed %d)",
+                    bitsPerCode_);
+        }
     }
-
-    // Sub-quantizers must evenly divide dimensions available
-    FAISS_THROW_IF_NOT_FMT(
-            this->d % subQuantizers_ == 0,
-            "Number of sub-quantizers (%d) must be an "
-            "even divisor of the number of dimensions (%d)",
-            subQuantizers_,
-            this->d);
 
     // The number of bytes per encoded vector must be one we support
     FAISS_THROW_IF_NOT_FMT(
@@ -427,30 +567,40 @@ void GpuIndexIVFPQ::verifySettings_() const {
             "is not supported",
             subQuantizers_);
 
-    // We must have enough shared memory on the current device to store
-    // our lookup distances
-    int lookupTableSize = sizeof(float);
-    if (ivfpqConfig_.useFloat16LookupTables) {
-        lookupTableSize = sizeof(half);
+    if (!should_use_raft(config_)) {
+        // Sub-quantizers must evenly divide dimensions available
+        FAISS_THROW_IF_NOT_FMT(
+                this->d % subQuantizers_ == 0,
+                "Number of sub-quantizers (%d) must be an "
+                "even divisor of the number of dimensions (%d)",
+                subQuantizers_,
+                this->d);
+
+        // We must have enough shared memory on the current device to store
+        // our lookup distances
+        int lookupTableSize = sizeof(float);
+        if (ivfpqConfig_.useFloat16LookupTables) {
+            lookupTableSize = sizeof(half);
+        }
+
+        // 64 bytes per code is only supported with usage of float16, at 2^8
+        // codes per subquantizer
+        size_t requiredSmemSize =
+                lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
+        size_t smemPerBlock = getMaxSharedMemPerBlock(config_.device);
+
+        FAISS_THROW_IF_NOT_FMT(
+                requiredSmemSize <= getMaxSharedMemPerBlock(config_.device),
+                "Device %d has %zu bytes of shared memory, while "
+                "%d bits per code and %d sub-quantizers requires %zu "
+                "bytes. Consider useFloat16LookupTables and/or "
+                "reduce parameters",
+                config_.device,
+                smemPerBlock,
+                bitsPerCode_,
+                subQuantizers_,
+                requiredSmemSize);
     }
-
-    // 64 bytes per code is only supported with usage of float16, at 2^8
-    // codes per subquantizer
-    size_t requiredSmemSize =
-            lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
-    size_t smemPerBlock = getMaxSharedMemPerBlock(config_.device);
-
-    FAISS_THROW_IF_NOT_FMT(
-            requiredSmemSize <= getMaxSharedMemPerBlock(config_.device),
-            "Device %d has %zu bytes of shared memory, while "
-            "%d bits per code and %d sub-quantizers requires %zu "
-            "bytes. Consider useFloat16LookupTables and/or "
-            "reduce parameters",
-            config_.device,
-            smemPerBlock,
-            bitsPerCode_,
-            subQuantizers_,
-            requiredSmemSize);
 }
 
 } // namespace gpu

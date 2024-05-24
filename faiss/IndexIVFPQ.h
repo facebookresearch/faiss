@@ -32,8 +32,6 @@ FAISS_API extern size_t precomputed_table_max_bytes;
  * vector is encoded as a product quantizer code.
  */
 struct IndexIVFPQ : IndexIVF {
-    bool by_residual; ///< Encode residual or plain vector?
-
     ProductQuantizer pq; ///< produces the codes
 
     bool do_polysemous_training; ///< reorder PQ centroids after training?
@@ -73,7 +71,8 @@ struct IndexIVFPQ : IndexIVF {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx) override;
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
@@ -83,13 +82,13 @@ struct IndexIVFPQ : IndexIVF {
             const float* x,
             const idx_t* xids,
             float* residuals_2,
-            const idx_t* precomputed_idx = nullptr);
+            const idx_t* precomputed_idx = nullptr,
+            void* inverted_list_context = nullptr);
 
     /// trains the product quantizer
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
-    /// same as train_residual, also output 2nd level residuals
-    void train_residual_o(idx_t n, const float* x, float* residuals_2);
+    idx_t train_encoder_num_vectors() const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
@@ -134,7 +133,8 @@ struct IndexIVFPQ : IndexIVF {
             float* x) const;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     /// build precomputed table
     void precompute_table();
@@ -161,6 +161,7 @@ void initialize_IVFPQ_precomputed_table(
         const Index* quantizer,
         const ProductQuantizer& pq,
         AlignedTable<float>& precomputed_table,
+        bool by_residual,
         bool verbose);
 
 /// statistics are robust to internal threading, but not if
