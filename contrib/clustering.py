@@ -397,3 +397,53 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
         return centroids, iteration_stats
     else:
         return centroids
+
+def softmax(x):
+    """Compute softmax values for each sets of scores in x."""
+    e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+    return e_x / e_x.sum(axis=1, keepdims=True)
+
+
+def soft_prob(kmeans,data):
+    '''
+    Compute the probability of each data point belonging to each cluster.
+    Usage:
+    probabilities = soft_prob(kmeans, data)
+    
+    Args:
+        kmeans: A KMeans object.
+        data: A 2D array of data points.
+    
+    Returns:
+        A 2D array of probabilities, where each row represents a data point and each column represents a cluster.
+    
+    Example:
+    kmeans = faiss.Kmeans(d, k, niter=25, verbose=True)
+    kmeans.train(data)
+    probabilities = soft_prob(kmeans, data)
+    '''
+    centroids = kmeans.centroids
+    
+    assert centroids.ndim == 2, "Centroids must be a 2D array"
+    assert data.ndim == 2, "Data must be a 2D array"
+
+    # calculate the distance between each data point and each centroid
+    # distances = np.linalg.norm(data[:, np.newaxis, :] - centroids[np.newaxis, :, :], axis=2)
+
+    distances, assignments = kmeans.index.search(data, len(centroids))
+
+    # calculate the probability of each data point belonging to each cluster
+    probabilities = softmax(-distances)
+
+    for i in range(len(probabilities)):
+        # Get the current row of assignments
+        current_assignments = assignments[i]
+        
+        # Sort the current row of _ based on the assignments
+        sorted_row = [probabilities[i][j] for j in np.argsort(current_assignments)]
+        
+        # Update the current row of probabilities with the sorted values
+        probabilities[i] = sorted_row
+
+
+    return probabilities
