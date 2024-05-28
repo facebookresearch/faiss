@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <random>
 
-#include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
 
-// 64-bit int
 using idx_t = faiss::idx_t;
 
 int main() {
@@ -37,37 +37,10 @@ int main() {
         xq[d * i] += i / 1000.;
     }
 
-    faiss::IndexFlatL2 index(d); // call constructor
-    printf("is_trained = %s\n", index.is_trained ? "true" : "false");
-    index.add(nb, xb); // add vectors to the index
-    printf("ntotal = %zd\n", index.ntotal);
-
     int k = 4;
 
-    { // sanity check: search 5 first vectors of xb
-        idx_t* I = new idx_t[k * 5];
-        float* D = new float[k * 5];
-
-        index.search(5, xb, k, D, I);
-
-        // print results
-        printf("I=\n");
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < k; j++)
-                printf("%5zd ", I[i * k + j]);
-            printf("\n");
-        }
-
-        printf("D=\n");
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < k; j++)
-                printf("%7g ", D[i * k + j]);
-            printf("\n");
-        }
-
-        delete[] I;
-        delete[] D;
-    }
+    faiss::IndexHNSWFlat index(d, 32);
+    index.add(nb, xb);
 
     { // search xq
         idx_t* I = new idx_t[k * nq];
@@ -75,15 +48,14 @@ int main() {
 
         index.search(nq, xq, k, D, I);
 
-        // print results
-        printf("I (5 first results)=\n");
-        for (int i = 0; i < 5; i++) {
+        printf("I=\n");
+        for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
                 printf("%5zd ", I[i * k + j]);
             printf("\n");
         }
 
-        printf("D (5 last results)=\n");
+        printf("D=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
                 printf("%5f ", D[i * k + j]);

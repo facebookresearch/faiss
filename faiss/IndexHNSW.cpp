@@ -68,52 +68,6 @@ HNSWStats hnsw_stats;
 
 namespace {
 
-/* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
-
-struct NegativeDistanceComputer : DistanceComputer {
-    /// owned by this
-    DistanceComputer* basedis;
-
-    explicit NegativeDistanceComputer(DistanceComputer* basedis)
-            : basedis(basedis) {}
-
-    void set_query(const float* x) override {
-        basedis->set_query(x);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) override {
-        return -(*basedis)(i);
-    }
-
-    void distances_batch_4(
-            const idx_t idx0,
-            const idx_t idx1,
-            const idx_t idx2,
-            const idx_t idx3,
-            float& dis0,
-            float& dis1,
-            float& dis2,
-            float& dis3) override {
-        basedis->distances_batch_4(
-                idx0, idx1, idx2, idx3, dis0, dis1, dis2, dis3);
-        dis0 = -dis0;
-        dis1 = -dis1;
-        dis2 = -dis2;
-        dis3 = -dis3;
-    }
-
-    /// compute distance between two stored vectors
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return -basedis->symmetric_dis(i, j);
-    }
-
-    virtual ~NegativeDistanceComputer() {
-        delete basedis;
-    }
-};
-
 DistanceComputer* storage_distance_computer(const Index* storage) {
     if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());

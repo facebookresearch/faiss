@@ -914,10 +914,6 @@ void IndexIVFFastScan::search_implem_10(
         size_t* nlist_out,
         const NormTableScaler* scaler,
         const IVFSearchParameters* params) const {
-    const size_t max_codes = params ? params->max_codes : this->max_codes;
-    const SearchParameters* quantizer_params =
-            params ? params->quantizer_params : nullptr;
-
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> dis_tables;
     AlignedTable<uint16_t> biases;
