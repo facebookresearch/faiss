@@ -19,9 +19,9 @@ runs:
       shell: bash
       run: | 
         echo ARM stuff
-        sudo apt-get update -y && sudo apt-get install -y cpuinfo
-        cpuinfo | grep -c "Features\t: asimd"
-        cpuinfo
+        dpkg --print-architecture
+        cat /proc/cpuinfo
         echo AMX stuff
-        cpuid -1 | grep AMX and lscpu | grep amx
+        cpuid -1 | grep AMX
+        lscpu | grep amx
         cpuid -1
