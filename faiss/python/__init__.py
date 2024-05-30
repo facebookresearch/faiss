@@ -292,10 +292,10 @@ IVFSearchParameters = SearchParametersIVF
 ###########################################
 
 
-def serialize_index(index):
+def serialize_index(index, io_flags=0):
     """ convert an index to a numpy uint8 array  """
     writer = VectorIOWriter()
-    write_index(index, writer)
+    write_index(index, writer, io_flags)
     return vector_to_array(writer.data)
 
 
