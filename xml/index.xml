@@ -8722,6 +8722,7 @@
     <member refid="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" kind="variable"><name>simd_result_handlers_accept_virtual</name></member>
     <member refid="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" kind="variable"><name>index2layer_sa_encode_bs</name></member>
     <member refid="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" kind="variable"><name>index_factory_verbose</name></member>
+    <member refid="namespacefaiss_1a1b8b979f26be5ebe9a037a5144fb796e" kind="variable"><name>IO_FLAG_SKIP_STORAGE</name></member>
     <member refid="namespacefaiss_1aa75d478d14ec1ffd7b0718adf0dab26b" kind="variable"><name>IO_FLAG_READ_ONLY</name></member>
     <member refid="namespacefaiss_1a0afd2e723c83893be7aff1fa644d13b3" kind="variable"><name>IO_FLAG_ONDISK_SAME_DIR</name></member>
     <member refid="namespacefaiss_1af2f70735b00d2defcffa4c051830fd9f" kind="variable"><name>IO_FLAG_SKIP_IVF_DATA</name></member>
@@ -8780,9 +8781,9 @@
     <member refid="namespacefaiss_1abbf2bb1faef7c8072b82a7db323397a0" kind="function"><name>beam_search_encode_step_tab</name></member>
     <member refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" kind="function"><name>index_factory</name></member>
     <member refid="namespacefaiss_1a550ef4d89215226f02adad8f161457cf" kind="function"><name>index_binary_factory</name></member>
-    <member refid="namespacefaiss_1aa41490abaa2dad0dd2131150ed99ef8d" kind="function"><name>write_index</name></member>
-    <member refid="namespacefaiss_1add675e330da6a82b27101862206de6c2" kind="function"><name>write_index</name></member>
-    <member refid="namespacefaiss_1a3a8129dcbf07c731ae1b3fbb6ed7df73" kind="function"><name>write_index</name></member>
+    <member refid="namespacefaiss_1a621db8cef79acb407c178adc10a47206" kind="function"><name>write_index</name></member>
+    <member refid="namespacefaiss_1a088b572ddaa493c021deb7835c8fa328" kind="function"><name>write_index</name></member>
+    <member refid="namespacefaiss_1aa408ece2b346444fad2a88bc0568a063" kind="function"><name>write_index</name></member>
     <member refid="namespacefaiss_1a61da4238a64561284de20324b93314bb" kind="function"><name>write_index_binary</name></member>
     <member refid="namespacefaiss_1a2ac354e079e69777c2a3f4ce205372ce" kind="function"><name>write_index_binary</name></member>
     <member refid="namespacefaiss_1af2b88a1a1d4ac1d78493f085cacfb456" kind="function"><name>write_index_binary</name></member>
