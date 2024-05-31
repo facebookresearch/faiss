@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 // I/O code for indexes
 
 #ifndef FAISS_INDEX_IO_H
@@ -35,9 +33,12 @@ struct IOReader;
 struct IOWriter;
 struct InvertedLists;
 
-void write_index(const Index* idx, const char* fname);
-void write_index(const Index* idx, FILE* f);
-void write_index(const Index* idx, IOWriter* writer);
+/// skip the storage for graph-based indexes
+const int IO_FLAG_SKIP_STORAGE = 1;
+
+void write_index(const Index* idx, const char* fname, int io_flags = 0);
+void write_index(const Index* idx, FILE* f, int io_flags = 0);
+void write_index(const Index* idx, IOWriter* writer, int io_flags = 0);
 
 void write_index_binary(const IndexBinary* idx, const char* fname);
 void write_index_binary(const IndexBinary* idx, FILE* f);
