@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>
@@ -251,7 +249,8 @@ void hnsw_search(
         const SearchParameters* params_in) {
     FAISS_THROW_IF_NOT_MSG(
             index->storage,
-            "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
+            "No storage index, please use IndexHNSWFlat (or variants) "
+            "instead of IndexHNSW directly");
     const SearchParametersHNSW* params = nullptr;
     const HNSW& hnsw = index->hnsw;
 

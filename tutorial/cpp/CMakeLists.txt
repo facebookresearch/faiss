@@ -27,3 +27,6 @@ target_link_libraries(7-PQFastScan PRIVATE faiss)
 
 add_executable(8-PQFastScanRefine EXCLUDE_FROM_ALL 8-PQFastScanRefine.cpp)
 target_link_libraries(8-PQFastScanRefine PRIVATE faiss)
+
+add_executable(9-RefineComparison EXCLUDE_FROM_ALL 9-RefineComparison.cpp)
+target_link_libraries(9-RefineComparison PRIVATE faiss)
