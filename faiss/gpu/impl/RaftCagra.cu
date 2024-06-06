@@ -42,19 +42,23 @@ RaftCagra::RaftCagra(
         idx_t graph_degree,
         faiss::cagra_build_algo graph_build_algo,
         size_t nn_descent_niter,
+        bool store_dataset,
         faiss::MetricType metric,
         float metricArg,
         IndicesOptions indicesOptions,
         std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params,
         std::optional<raft::neighbors::ivf_pq::search_params>
-                ivf_pq_search_params)
+                ivf_pq_search_params,
+        float refine_rate)
         : resources_(resources),
           dim_(dim),
+          store_dataset_(store_dataset),
           metric_(metric),
           metricArg_(metricArg),
           index_params_(),
           ivf_pq_params_(ivf_pq_params),
-          ivf_pq_search_params_(ivf_pq_search_params) {
+          ivf_pq_search_params_(ivf_pq_search_params),
+          refine_rate_(refine_rate) {
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
             "CAGRA currently only supports L2 or Inner Product metric.");
@@ -113,6 +117,9 @@ RaftCagra::RaftCagra(
 
     FAISS_ASSERT(distances_on_gpu == knn_graph_on_gpu);
 
+    storage_ = distances;
+    n_ = n;
+
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
@@ -164,81 +171,50 @@ RaftCagra::RaftCagra(
 }
 
 void RaftCagra::train(idx_t n, const float* x) {
+    storage_ = x;
+    n_ = n;
+
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+
+    auto nn_descent_params = std::make_optional<
+            raft::neighbors::experimental::nn_descent::index_params>();
+    nn_descent_params->graph_degree = index_params_.intermediate_graph_degree;
+    nn_descent_params->intermediate_graph_degree =
+            1.5 * index_params_.intermediate_graph_degree;
+    nn_descent_params->max_iterations = index_params_.nn_descent_niter;
+
     if (index_params_.build_algo ==
-        raft::neighbors::cagra::graph_build_algo::IVF_PQ) {
-        std::optional<raft::host_matrix<uint32_t, int64_t>> knn_graph(
-                raft::make_host_matrix<uint32_t, int64_t>(
-                        n, index_params_.intermediate_graph_degree));
-        if (getDeviceForAddress(x) >= 0) {
-            auto dataset_d =
-                    raft::make_device_matrix_view<const float, int64_t>(
-                            x, n, dim_);
-            raft::neighbors::cagra::build_knn_graph(
-                    raft_handle,
-                    dataset_d,
-                    knn_graph->view(),
-                    1.0f,
-                    ivf_pq_params_,
-                    ivf_pq_search_params_);
-        } else {
-            auto dataset_h = raft::make_host_matrix_view<const float, int64_t>(
-                    x, n, dim_);
-            raft::neighbors::cagra::build_knn_graph(
-                    raft_handle,
-                    dataset_h,
-                    knn_graph->view(),
-                    1.0f,
-                    ivf_pq_params_,
-                    ivf_pq_search_params_);
-        }
-        auto cagra_graph = raft::make_host_matrix<uint32_t, int64_t>(
-                n, index_params_.graph_degree);
+                raft::neighbors::cagra::graph_build_algo::IVF_PQ &&
+        index_params_.graph_degree == index_params_.intermediate_graph_degree) {
+        index_params_.intermediate_graph_degree =
+                1.5 * index_params_.graph_degree;
+    }
 
-        raft::neighbors::cagra::optimize<uint32_t>(
-                raft_handle, knn_graph->view(), cagra_graph.view());
-
-        // free intermediate graph before trying to create the index
-        knn_graph.reset();
-
-        if (getDeviceForAddress(x) >= 0) {
-            auto dataset_d =
-                    raft::make_device_matrix_view<const float, int64_t>(
-                            x, n, dim_);
-            raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
-                    raft_handle,
-                    metric_ == faiss::METRIC_L2
-                            ? raft::distance::DistanceType::L2Expanded
-                            : raft::distance::DistanceType::InnerProduct,
-                    dataset_d,
-                    raft::make_const_mdspan(cagra_graph.view()));
-        } else {
-            auto dataset_h = raft::make_host_matrix_view<const float, int64_t>(
-                    x, n, dim_);
-            raft_knn_index = raft::neighbors::cagra::index<float, uint32_t>(
-                    raft_handle,
-                    metric_ == faiss::METRIC_L2
-                            ? raft::distance::DistanceType::L2Expanded
-                            : raft::distance::DistanceType::InnerProduct,
-                    dataset_h,
-                    raft::make_const_mdspan(cagra_graph.view()));
-        }
-
+    if (getDeviceForAddress(x) >= 0) {
+        auto dataset =
+                raft::make_device_matrix_view<const float, int64_t>(x, n, dim_);
+        raft_knn_index = raft::neighbors::cagra::detail::build<float, uint32_t>(
+                raft_handle,
+                index_params_,
+                dataset,
+                nn_descent_params,
+                refine_rate_,
+                ivf_pq_params_,
+                ivf_pq_search_params_,
+                store_dataset_);
     } else {
-        if (getDeviceForAddress(x) >= 0) {
-            raft_knn_index = raft::runtime::neighbors::cagra::build(
-                    raft_handle,
-                    index_params_,
-                    raft::make_device_matrix_view<const float, int64_t>(
-                            x, n, dim_));
-        } else {
-            raft_knn_index = raft::runtime::neighbors::cagra::build(
-                    raft_handle,
-                    index_params_,
-                    raft::make_host_matrix_view<const float, int64_t>(
-                            x, n, dim_));
-        }
+        auto dataset =
+                raft::make_host_matrix_view<const float, int64_t>(x, n, dim_);
+        raft_knn_index = raft::neighbors::cagra::detail::build<float, uint32_t>(
+                raft_handle,
+                index_params_,
+                dataset,
+                nn_descent_params,
+                refine_rate_,
+                ivf_pq_params_,
+                ivf_pq_search_params_,
+                store_dataset_);
     }
 }
 
@@ -269,6 +245,18 @@ void RaftCagra::search(
     FAISS_ASSERT(raft_knn_index.has_value());
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
+
+    if (!store_dataset_) {
+        if (getDeviceForAddress(storage_) >= 0) {
+            auto dataset = raft::make_device_matrix_view<const float, int64_t>(
+                    storage_, n_, dim_);
+            raft_knn_index.value().update_dataset(raft_handle, dataset);
+        } else {
+            auto dataset = raft::make_host_matrix_view<const float, int64_t>(
+                    storage_, n_, dim_);
+            raft_knn_index.value().update_dataset(raft_handle, dataset);
+        }
+    }
 
     auto queries_view = raft::make_device_matrix_view<const float, int64_t>(
             queries.data(), numQueries, cols);
@@ -342,29 +330,8 @@ std::vector<idx_t> RaftCagra::get_knngraph() const {
     return host_graph;
 }
 
-std::vector<float> RaftCagra::get_training_dataset() const {
-    FAISS_ASSERT(raft_knn_index.has_value());
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    auto device_dataset = raft_knn_index.value().dataset();
-
-    std::vector<float> host_dataset(
-            device_dataset.extent(0) * device_dataset.extent(1));
-
-    RAFT_CUDA_TRY(cudaMemcpy2DAsync(
-            host_dataset.data(),
-            sizeof(float) * dim_,
-            device_dataset.data_handle(),
-            sizeof(float) * device_dataset.stride(0),
-            sizeof(float) * dim_,
-            device_dataset.extent(0),
-            cudaMemcpyDefault,
-            raft_handle.get_stream()));
-    raft_handle.sync_stream();
-
-    return host_dataset;
+const float* RaftCagra::get_training_dataset() const {
+    return storage_;
 }
 
 } // namespace gpu

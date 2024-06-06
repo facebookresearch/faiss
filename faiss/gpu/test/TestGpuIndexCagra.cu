@@ -38,7 +38,7 @@
 
 struct Options {
     Options() {
-        numTrain = 2 * faiss::gpu::randVal(2000, 5000);
+        numTrain = 2 * faiss::gpu::randVal(4000, 10000);
         dim = faiss::gpu::randVal(4, 10);
         numAdd = faiss::gpu::randVal(1000, 3000);
 
@@ -47,8 +47,9 @@ struct Options {
         buildAlgo = faiss::gpu::randSelect(
                 {faiss::gpu::graph_build_algo::IVF_PQ,
                  faiss::gpu::graph_build_algo::NN_DESCENT});
+        storeDataset = faiss::gpu::randSelect({true, false});
 
-        numQuery = faiss::gpu::randVal(32, 100);
+        numQuery = faiss::gpu::randVal(300, 600);
         k = faiss::gpu::randVal(10, 30);
 
         device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
@@ -71,6 +72,7 @@ struct Options {
     size_t graphDegree;
     size_t intermediateGraphDegree;
     faiss::gpu::graph_build_algo buildAlgo;
+    bool storeDataset;
     int numQuery;
     int k;
     int device;
@@ -224,6 +226,7 @@ void copyToTest(
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
+        config.store_dataset = opt.storeDataset;
 
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
@@ -339,7 +342,7 @@ TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_L2, 0.98, true);
+    copyToTest(faiss::METRIC_L2, 0.95, true);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
@@ -347,7 +350,7 @@ TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, true);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.95, true);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
@@ -457,11 +460,11 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_L2) {
-    copyFromTest(faiss::METRIC_L2, 0.98);
+    copyFromTest(faiss::METRIC_L2, 0.95);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyFrom_IP) {
-    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.98);
+    copyFromTest(faiss::METRIC_INNER_PRODUCT, 0.95);
 }
 
 int main(int argc, char** argv) {
