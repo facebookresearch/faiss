@@ -133,6 +133,42 @@ class TestHNSW(unittest.TestCase):
         Dhnsw, Ihnsw = index.search(self.xq, 1)
         self.assertGreater(stats.ndis, len(self.xq) * index.hnsw.efSearch)
 
+    def test_io_no_storage(self):
+        d = self.xq.shape[1]
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(self.xb)
+
+        Dref, Iref = index.search(self.xq, 5)
+
+        # test writing without storage
+        index2 = faiss.deserialize_index(
+            faiss.serialize_index(index, faiss.IO_FLAG_SKIP_STORAGE)
+        )
+        self.assertEquals(index2.storage, None)
+        self.assertRaises(
+            RuntimeError,
+            index2.search, self.xb, 1)
+
+        # make sure we can store an index with empty storage
+        index4 = faiss.deserialize_index(
+            faiss.serialize_index(index2))
+
+        # add storage afterwards
+        index.storage = faiss.clone_index(index.storage)
+        index.own_fields = True
+
+        Dnew, Inew = index.search(self.xq, 5)
+        np.testing.assert_array_equal(Dnew, Dref)
+        np.testing.assert_array_equal(Inew, Iref)
+
+        if False:
+            # test reading without storage
+            # not implemented because it is hard to skip over an index
+            index3 = faiss.deserialize_index(
+                faiss.serialize_index(index), faiss.IO_FLAG_SKIP_STORAGE
+            )
+            self.assertEquals(index3.storage, None)
+
 
 class TestNSG(unittest.TestCase):
 

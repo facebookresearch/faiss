@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/index_io.h>
 
 #include <faiss/impl/io_macros.h>
@@ -531,7 +529,11 @@ Index* read_index(IOReader* f, int io_flags) {
     Index* idx = nullptr;
     uint32_t h;
     READ1(h);
-    if (h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
+    if (h == fourcc("null")) {
+        // denotes a missing index, useful for some cases
+        return nullptr;
+    } else if (
+            h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
         IndexFlat* idxf;
         if (h == fourcc("IxFI")) {
             idxf = new IndexFlatIP();
@@ -961,7 +963,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(idxhnsw, f);
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
-        idxhnsw->own_fields = true;
+        idxhnsw->own_fields = idxhnsw->storage != nullptr;
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
         }
