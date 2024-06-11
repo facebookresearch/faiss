@@ -6,7 +6,6 @@
 import unittest
 
 import faiss
-import numpy as np
 
 from faiss.contrib import datasets, evaluation
 
@@ -57,8 +56,9 @@ class TestInterop(unittest.TestCase):
         
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
-        faiss.write_index(cpu_index, "index_hnsw_cagra.index")
-        deserialized_index = faiss.read_index("index_hnsw_cagra.index")
+        deserialized_index = faiss.deserialize_index(
+            faiss.serialize_index(cpu_index))
+
         gpu_index = faiss.index_cpu_to_gpu(res, 0, deserialized_index)
         Dnew2, Inew2 = gpu_index.search(ds.get_queries(), k)
 

@@ -24,7 +24,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdint>
-#include "impl/HNSW.h"
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
