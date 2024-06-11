@@ -228,6 +228,7 @@ class Optimizer:
                 (None, "SQfp16"),
                 (None, "SQbf16"),
                 (None, "SQ8"),
+                (None, "SQ8_direct_signed"),
             ] + [
                 (f"OPQ{M}_{M * dim}", f"PQ{M}x{b}")
                 for M in [8, 12, 16, 32, 48, 64, 96, 128, 192, 256]
