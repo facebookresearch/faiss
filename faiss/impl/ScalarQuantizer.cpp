@@ -621,13 +621,13 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
     FAISS_ALWAYS_INLINE float32x4x2_t
     reconstruct_8_components(const uint8_t* code, int i) const {
-        float32_t result[8] = {};
-        for (size_t j = 0; j < 8; j++) {
-            result[j] = code[i + j];
-        }
-        float32x4_t res1 = vld1q_f32(result);
-        float32x4_t res2 = vld1q_f32(result + 4);
-        return {res1, res2};
+        uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
+        uint16x8_t y8 = vmovl_u8(x8);
+        uint16x4_t y8_0 = vget_low_u16(y8);
+        uint16x4_t y8_1 = vget_high_u16(y8);
+
+        // convert uint16 -> uint32 -> fp32
+        return {vcvtq_f32_u32(vmovl_u16(y8_0)), vcvtq_f32_u32(vmovl_u16(y8_1))};
     }
 };
 
