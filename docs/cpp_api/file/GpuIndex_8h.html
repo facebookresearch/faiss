@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIcmEncoder_8h.html">File GpuIcmEncoder.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexCagra_8h.html">File GpuIndexCagra.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
@@ -200,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
@@ -379,7 +381,7 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu14GpuIndexConfigE">
 <span id="_CPPv3N5faiss3gpu14GpuIndexConfigE"></span><span id="_CPPv2N5faiss3gpu14GpuIndexConfigE"></span><span id="faiss::gpu::GpuIndexConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexConfig</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html#structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"><span class="std std-ref">faiss::gpu::GpuIndexBinaryFlatConfig</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#structfaiss_1_1gpu_1_1GpuIndexFlatConfig"><span class="std std-ref">faiss::gpu::GpuIndexFlatConfig</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html#structfaiss_1_1gpu_1_1GpuIndexIVFConfig"><span class="std std-ref">faiss::gpu::GpuIndexIVFConfig</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html#structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"><span class="std std-ref">faiss::gpu::GpuIndexBinaryFlatConfig</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagraConfig.html#structfaiss_1_1gpu_1_1GpuIndexCagraConfig"><span class="std std-ref">faiss::gpu::GpuIndexCagraConfig</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html#structfaiss_1_1gpu_1_1GpuIndexFlatConfig"><span class="std std-ref">faiss::gpu::GpuIndexFlatConfig</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html#structfaiss_1_1gpu_1_1GpuIndexIVFConfig"><span class="std std-ref">faiss::gpu::GpuIndexIVFConfig</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
@@ -406,7 +408,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu8GpuIndexE">
 <span id="_CPPv3N5faiss3gpu8GpuIndexE"></span><span id="_CPPv2N5faiss3gpu8GpuIndexE"></span><span id="faiss::gpu::GpuIndex"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndex</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">faiss::gpu::GpuIndexFlat</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVF"><span class="std std-ref">faiss::gpu::GpuIndexIVF</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1gpu_1_1GpuIndexCagra"><span class="std std-ref">faiss::gpu::GpuIndexCagra</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">faiss::gpu::GpuIndexFlat</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVF"><span class="std std-ref">faiss::gpu::GpuIndexIVF</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">

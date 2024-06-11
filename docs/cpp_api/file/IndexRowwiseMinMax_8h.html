@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIcmEncoder_8h.html">File GpuIcmEncoder.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexCagra_8h.html">File GpuIndexCagra.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
@@ -200,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
@@ -367,7 +369,7 @@
 <em>#include &lt;IndexRowwiseMinMax.h&gt;</em></div>
 <p>Provides base functions for rowwise normalizing indices. </p>
 <p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> wrapper that performs rowwise normalization to [0,1], preserving the coefficients. This is a vector codec index only.</p>
-<p>Basically, this index performs a rowwise scaling to [0,1] of every row in an input dataset before calling subindex::train() and subindex::sa_encode(). <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"><span class="std std-ref">sa_encode()</span></a> call stores the scaling coefficients (scaler and minv) in the very beginning of every output code. The format: [scaler][minv][subindex::sa_encode() output] The de-scaling in <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"><span class="std std-ref">sa_decode()</span></a> is done using: output_rescaled = scaler * output + minv</p>
+<p>Basically, this index performs a rowwise scaling to [0,1] of every row in an input dataset before calling subindex::train() and subindex::sa_encode(). <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"><span class="std std-ref">sa_encode()</span></a> call stores the scaling coefficients (scaler and minv) in the very beginning of every output code. The format: [scaler][minv][subindex::sa_encode() output] The de-scaling in <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"><span class="std std-ref">sa_decode()</span></a> is done using: output_rescaled = scaler * output + minv</p>
 <p>An additional ::train_inplace() function is provided in order to do an inplace scaling before calling subindex::train() and, thus, avoiding the cloning of the input dataset, but modifying the input dataset because of the scaling and the scaling back. It is up to user to call this function instead of ::train()</p>
 <p>Derived classes provide different data types for scaling coefficients. Currently, versions with fp16 and fp32 scaling coefficients are available.<ul class="simple">
 <li><p>fp16 version adds 4 extra bytes per encoded vector</p></li>

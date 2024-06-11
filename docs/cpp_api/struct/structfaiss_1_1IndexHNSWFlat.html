@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Struct faiss::IndexHNSWPQ" href="structfaiss_1_1IndexHNSWPQ.html" />
-    <link rel="prev" title="Struct faiss::IndexHNSW2Level" href="structfaiss_1_1IndexHNSW2Level.html" /> 
+    <link rel="prev" title="Struct faiss::IndexHNSWCagra" href="structfaiss_1_1IndexHNSWCagra.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -164,6 +164,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW2Level.html">Struct faiss::IndexHNSW2Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWCagra.html">Struct faiss::IndexHNSWCagra</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexHNSWFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWPQ.html">Struct faiss::IndexHNSWPQ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWSQ.html">Struct faiss::IndexHNSWSQ</a></li>
@@ -340,6 +341,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuDistanceParams.html">Struct faiss::gpu::GpuDistanceParams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory.html">Struct faiss::gpu::GpuIcmEncoderFactory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html">Struct faiss::gpu::GpuIndexBinaryFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexCagra.html">Struct faiss::gpu::GpuIndexCagra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexCagraConfig.html">Struct faiss::gpu::GpuIndexCagraConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">Struct faiss::gpu::GpuIndexConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">Struct faiss::gpu::GpuIndexFlatConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">Struct faiss::gpu::GpuIndexIVFConfig</a></li>
@@ -350,7 +353,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">Struct faiss::gpu::GpuMultipleClonerOptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">Struct faiss::gpu::GpuParameterSpace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory.html">Struct faiss::gpu::GpuProgressiveDimIndexFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig.html">Struct faiss::gpu::IVFPQBuildCagraConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig.html">Struct faiss::gpu::IVFPQSearchCagraConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IndexWrapper.html">Struct faiss::gpu::IndexWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1SearchParametersCagra.html">Struct faiss::gpu::SearchParametersCagra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html">Struct faiss::gpu::StackDeviceMemory::Range</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html">Struct faiss::gpu::StackDeviceMemory::Stack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToCPUCloner.html">Struct faiss::gpu::ToCPUCloner</a></li>
@@ -522,8 +528,8 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tii">
-<span id="_CPPv3NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tii"></span><span id="_CPPv2NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tii"></span><span id="faiss::IndexHNSWFlat::search_level_0__idx_t.floatCP.idx_t.storage_idx_tCP.floatCP.floatP.idx_tP.i.iC"></span><span class="target" id="structfaiss_1_1IndexHNSW_1a2a98a87b1d348addb09b6ee1fbdd5692"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_level_0</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss13IndexHNSWFlat13storage_idx_tE" title="faiss::IndexHNSWFlat::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nearest</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nearest_d</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nprobe</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">search_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tiiPK16SearchParameters">
+<span id="_CPPv3NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tiiPK16SearchParameters"></span><span id="_CPPv2NK5faiss13IndexHNSWFlat14search_level_0E5idx_tPKf5idx_tPK13storage_idx_tPKfPfP5idx_tiiPK16SearchParameters"></span><span id="faiss::IndexHNSWFlat::search_level_0__idx_t.floatCP.idx_t.storage_idx_tCP.floatCP.floatP.idx_tP.i.i.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexHNSW_1a0c4947283a65855653f077531be85f05"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_level_0</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss13IndexHNSWFlat13storage_idx_tE" title="faiss::IndexHNSWFlat::storage_idx_t"><span class="n"><span class="pre">storage_idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nearest</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nearest_d</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nprobe</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">search_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Perform search only on level 0, given the starting points for each vertex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -704,7 +710,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -718,7 +724,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
@@ -753,6 +759,16 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexHNSWFlat7storageE">
 <span id="_CPPv3N5faiss13IndexHNSWFlat7storageE"></span><span id="_CPPv2N5faiss13IndexHNSWFlat7storageE"></span><span id="faiss::IndexHNSWFlat::storage__IndexP"></span><span class="target" id="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">storage</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexHNSWFlat11init_level0E">
+<span id="_CPPv3N5faiss13IndexHNSWFlat11init_level0E"></span><span id="_CPPv2N5faiss13IndexHNSWFlat11init_level0E"></span><span id="faiss::IndexHNSWFlat::init_level0__b"></span><span class="target" id="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_level0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexHNSWFlat20keep_max_size_level0E">
+<span id="_CPPv3N5faiss13IndexHNSWFlat20keep_max_size_level0E"></span><span id="_CPPv2N5faiss13IndexHNSWFlat20keep_max_size_level0E"></span><span id="faiss::IndexHNSWFlat::keep_max_size_level0__b"></span><span class="target" id="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">keep_max_size_level0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
@@ -800,7 +816,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1IndexHNSW2Level.html" class="btn btn-neutral float-left" title="Struct faiss::IndexHNSW2Level" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1IndexHNSWCagra.html" class="btn btn-neutral float-left" title="Struct faiss::IndexHNSWCagra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="structfaiss_1_1IndexHNSWPQ.html" class="btn btn-neutral float-right" title="Struct faiss::IndexHNSWPQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

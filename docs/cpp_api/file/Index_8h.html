@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIcmEncoder_8h.html">File GpuIcmEncoder.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexCagra_8h.html">File GpuIndexCagra.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
@@ -200,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
@@ -373,7 +375,7 @@
 <em>#include &lt;Index.h&gt;</em></div>
 <p>Parent class for the optional search paramenters.</p>
 <p>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexRefineSearchParameters.html#structfaiss_1_1IndexRefineSearchParameters"><span class="std std-ref">faiss::IndexRefineSearchParameters</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersHNSW.html#structfaiss_1_1SearchParametersHNSW"><span class="std std-ref">faiss::SearchParametersHNSW</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPQ.html#structfaiss_1_1SearchParametersPQ"><span class="std std-ref">faiss::SearchParametersPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersResidualCoarseQuantizer.html#structfaiss_1_1SearchParametersResidualCoarseQuantizer"><span class="std std-ref">faiss::SearchParametersResidualCoarseQuantizer</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexRefineSearchParameters.html#structfaiss_1_1IndexRefineSearchParameters"><span class="std std-ref">faiss::IndexRefineSearchParameters</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersHNSW.html#structfaiss_1_1SearchParametersHNSW"><span class="std std-ref">faiss::SearchParametersHNSW</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPQ.html#structfaiss_1_1SearchParametersPQ"><span class="std std-ref">faiss::SearchParametersPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersResidualCoarseQuantizer.html#structfaiss_1_1SearchParametersResidualCoarseQuantizer"><span class="std std-ref">faiss::SearchParametersResidualCoarseQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1SearchParametersCagra.html#structfaiss_1_1gpu_1_1SearchParametersCagra"><span class="std std-ref">faiss::gpu::SearchParametersCagra</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -657,7 +659,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -671,7 +673,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>

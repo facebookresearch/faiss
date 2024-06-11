@@ -116,7 +116,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu8GpuIndexE">
 <span id="_CPPv3N5faiss3gpu8GpuIndexE"></span><span id="_CPPv2N5faiss3gpu8GpuIndexE"></span><span id="faiss::gpu::GpuIndex"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndex</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu8GpuIndexE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">faiss::gpu::GpuIndexFlat</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVF"><span class="std std-ref">faiss::gpu::GpuIndexIVF</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1gpu_1_1GpuIndexCagra"><span class="std std-ref">faiss::gpu::GpuIndexCagra</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">faiss::gpu::GpuIndexFlat</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVF"><span class="std std-ref">faiss::gpu::GpuIndexIVF</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -315,7 +315,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -329,7 +329,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>

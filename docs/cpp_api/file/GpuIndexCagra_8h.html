@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File GpuIndexCagra.h &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
+
+  
+    <link rel="canonical" href="https://faiss.ai/cpp_api/file/GpuIndexCagra_8h.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File GpuIndexFlat.h" href="GpuIndexFlat_8h.html" />
+    <link rel="prev" title="File GpuIndexBinaryFlat.h" href="GpuIndexBinaryFlat_8h.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AdditiveQuantizer_8h.html">File AdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AlignedTable_8h.html">File AlignedTable.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AutoTune_8h.html">File AutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AuxIndexStructures_8h.html">File AuxIndexStructures.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BinaryDistance_8cuh.html">File BinaryDistance.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BinaryFlatIndex_8cuh.html">File BinaryFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockInvertedLists_8h.html">File BlockInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BroadcastSum_8cuh.html">File BroadcastSum.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoarseBitType_8h.html">File CoarseBitType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CodePacker_8h.html">File CodePacker.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceUtils_8h.html">File DeviceUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DeviceVector_8cuh.html">File DeviceVector.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DirectMap_8h.html">File DirectMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DistanceComputer_8h.html">File DistanceComputer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DistanceUtils_8cuh.html">File DistanceUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Distance_8cuh.html">File Distance.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FaissAssert_8h.html">File FaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FaissException_8h.html">File FaissException.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FlatIndex_8cuh.html">File FlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Float16_8cuh.html">File Float16.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GeneralDistance_8cuh.html">File GeneralDistance.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuAutoTune_8h.html">File GpuAutoTune.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuClonerOptions_8h.html">File GpuClonerOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuCloner_8h.html">File GpuCloner.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuDistance_8h.html">File GpuDistance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuFaissAssert_8h.html">File GpuFaissAssert.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIcmEncoder_8h.html">File GpuIcmEncoder.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexBinaryFlat_8h.html">File GpuIndexBinaryFlat.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File GpuIndexCagra.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexFlat_8h.html">File GpuIndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFFlat_8h.html">File GpuIndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFPQ_8h.html">File GpuIndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVFScalarQuantizer_8h.html">File GpuIndexIVFScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndexIVF_8h.html">File GpuIndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndex_8h.html">File GpuIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuIndicesOptions_8h.html">File GpuIndicesOptions.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuResources_8h.html">File GpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GpuScalarQuantizer_8cuh.html">File GpuScalarQuantizer.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HNSW_8h.html">File HNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Heap_8h.html">File Heap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor-inl_8cuh.html">File HostTensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IDSelector_8h.html">File IDSelector.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFAppend_8cuh.html">File IVFAppend.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFBase_8cuh.html">File IVFBase.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFFlatScan_8cuh.html">File IVFFlatScan.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFFlat_8cuh.html">File IVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFInterleavedImpl_8cuh.html">File IVFInterleavedImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFInterleaved_8cuh.html">File IVFInterleaved.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFPQ_8cuh.html">File IVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFUtils_8cuh.html">File IVFUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IcmEncoder_8cuh.html">File IcmEncoder.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizerFastScan_8h.html">File IndexAdditiveQuantizerFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizer_8h.html">File IndexAdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFastScan_8h.html">File IndexFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIDMap_8h.html">File IndexIDMap.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizerFastScan_8h.html">File IndexIVFAdditiveQuantizerFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFastScan_8h.html">File IndexIVFFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFIndependentQuantizer_8h.html">File IndexIVFIndependentQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFPQ_8h.html">File IndexIVFPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFSpectralHash_8h.html">File IndexIVFSpectralHash.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVF_8h.html">File IndexIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLSH_8h.html">File IndexLSH.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexNNDescent_8h.html">File IndexNNDescent.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexNSG_8h.html">File IndexNSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexRowwiseMinMax_8h.html">File IndexRowwiseMinMax.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShardsIVF_8h.html">File IndexShardsIVF.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexUtils_8h.html">File IndexUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InterleavedCodes_8h.html">File InterleavedCodes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="L2Norm_8cuh.html">File L2Norm.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="L2Select_8cuh.html">File L2Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-avx2-inl_8h.html">File Level2-avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-inl_8h.html">File Level2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-neon-inl_8h.html">File Level2-neon-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LocalSearchQuantizer_8h.html">File LocalSearchQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LookupTableScaler_8h.html">File LookupTableScaler.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult-inl_8cuh.html">File MatrixMult-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixMult_8cuh.html">File MatrixMult.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MatrixStats_8h.html">File MatrixStats.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkBlock_8cuh.html">File MergeNetworkBlock.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkUtils_8cuh.html">File MergeNetworkUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MergeNetworkWarp_8cuh.html">File MergeNetworkWarp.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetaIndexes_8h.html">File MetaIndexes.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MinMax-inl_8h.html">File MinMax-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MinMaxFP16-inl_8h.html">File MinMaxFP16-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NNDescent_8h.html">File NNDescent.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NSG_8h.html">File NSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQ-avx2-inl_8h.html">File PQ-avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQ-inl_8h.html">File PQ-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQ-neon-inl_8h.html">File PQ-neon-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQCodeDistances-inl_8cuh.html">File PQCodeDistances-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQCodeDistances_8cuh.html">File PQCodeDistances.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQCodeLoad_8cuh.html">File PQCodeLoad.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQScanMultiPassNoPrecomputed-inl_8cuh.html">File PQScanMultiPassNoPrecomputed-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQScanMultiPassNoPrecomputed_8cuh.html">File PQScanMultiPassNoPrecomputed.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQScanMultiPassPrecomputed_8cuh.html">File PQScanMultiPassPrecomputed.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PolysemousTraining_8h.html">File PolysemousTraining.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ProductAdditiveQuantizer_8h.html">File ProductAdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ProductQuantizer-inl_8h.html">File ProductQuantizer-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ResidualQuantizer_8h.html">File ResidualQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ResultHandler_8h.html">File ResultHandler.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SaDecodeKernels_8h.html">File SaDecodeKernels.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ScalarQuantizer_8h.html">File ScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StandardGpuResources_8h.html">File StandardGpuResources.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StaticUtils_8h.html">File StaticUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor-inl_8cuh.html">File Tensor-inl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tensor_8cuh.html">File Tensor.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestUtils_8h.html">File TestUtils.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThreadedIndex-inl_8h.html">File ThreadedIndex-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThreadedIndex_8h.html">File ThreadedIndex.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ThrustUtils_8cuh.html">File ThrustUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UintReader_8h.html">File UintReader.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorResidual_8cuh.html">File VectorResidual.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpSelectKernel_8cuh.html">File WarpSelectKernel.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WarpShuffles_8cuh.html">File WarpShuffles.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WorkerThread_8h.html">File WorkerThread.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="approx__topk_2avx2-inl_8h.html">File avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="approx__topk_8h.html">File approx_topk.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="approx__topk__hamming_8h.html">File approx_topk_hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="avx512_8h.html">File avx512.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bf16_8h.html">File bf16.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clone__index_8h.html">File clone_index.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code__distance-avx2_8h.html">File code_distance-avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code__distance-generic_8h.html">File code_distance-generic.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code__distance_8h.html">File code_distance.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code__distance__avx512_8h.html">File code_distance_avx512.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_8h.html">File common.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances_8h.html">File distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distances__fused_8h.html">File distances_fused.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances-inl_8h.html">File extra_distances-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extra__distances_8h.html">File extra_distances.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fp16-arm_8h.html">File fp16-arm.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fp16-fp16c_8h.html">File fp16-fp16c.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fp16-inl_8h.html">File fp16-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fp16_8h.html">File fp16.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic-inl_8h.html">File generic-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic_8h.html">File generic.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamdis-inl_8h.html">File hamdis-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming-inl_8h.html">File hamming-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming_8h.html">File hamming.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamming__distance_2avx2-inl_8h.html">File avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__factory_8h.html">File index_factory.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index__io_8h.html">File index_io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io_8h.html">File io.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io__macros_8h.html">File io_macros.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmeans1d_8h.html">File kmeans1d.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice__Zn_8h.html">File lattice_Zn.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mode_8h.html">File mode.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="neon-inl_8h.html">File neon-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordered__key__value_8h.html">File ordered_key_value.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partitioning_8h.html">File partitioning.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platform__macros_8h.html">File platform_macros.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pq4__fast__scan_8h.html">File pq4_fast_scan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefetch_8h.html">File prefetch.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python__callbacks_8h.html">File python_callbacks.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quantize__lut_8h.html">File quantize_lut.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random_8h.html">File random.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="residual__quantizer__encode__steps_8h.html">File residual_quantizer_encode_steps.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd__result__handlers_8h.html">File simd_result_handlers.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib_8h.html">File simdlib.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx2_8h.html">File simdlib_avx2.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__avx512_8h.html">File simdlib_avx512.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__based_8h.html">File simdlib_based.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__neon_8h.html">File simdlib_neon.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simdlib__ppc64_8h.html">File simdlib_ppc64.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sorting_8h.html">File sorting.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transpose-avx2-inl_8h.html">File transpose-avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../filelist.html">File list</a></li>
+      <li class="breadcrumb-item active">File GpuIndexCagra.h</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/file/GpuIndexCagra_8h.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-gpuindexcagra-h">
+<h1>File GpuIndexCagra.h<a class="headerlink" href="#file-gpuindexcagra-h" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
+<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implementation of k-means clustering with many variants.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a> is intended to define a subset of vectors to handle (for removal or as subset to search)</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. PQ4 SIMD packing and accumulation functions</p>
+<p>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</p>
+<p>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16graph_build_algoE">
+<span id="_CPPv3N5faiss3gpu16graph_build_algoE"></span><span id="_CPPv2N5faiss3gpu16graph_build_algoE"></span><span class="target" id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992ac"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">graph_build_algo</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16graph_build_algoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16graph_build_algo6IVF_PQE">
+<span id="_CPPv3N5faiss3gpu16graph_build_algo6IVF_PQE"></span><span id="_CPPv2N5faiss3gpu16graph_build_algo6IVF_PQE"></span><span class="target" id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992aca024a07775560847f41dcb5aa52c37418"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVF_PQ</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16graph_build_algo6IVF_PQE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Use IVF-PQ to build all-neighbors knn graph. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16graph_build_algo10NN_DESCENTE">
+<span id="_CPPv3N5faiss3gpu16graph_build_algo10NN_DESCENTE"></span><span id="_CPPv2N5faiss3gpu16graph_build_algo10NN_DESCENTE"></span><span class="target" id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992aca5c5827c864a6a539617cb236291f0285"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NN_DESCENT</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16graph_build_algo10NN_DESCENTE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Experimental, use NN-Descent to build all-neighbors knn graph. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu12codebook_genE">
+<span id="_CPPv3N5faiss3gpu12codebook_genE"></span><span id="_CPPv2N5faiss3gpu12codebook_genE"></span><span class="target" id="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook_gen</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu12codebook_genE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>A type for specifying how PQ codebooks are created. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu12codebook_gen12PER_SUBSPACEE">
+<span id="_CPPv3N5faiss3gpu12codebook_gen12PER_SUBSPACEE"></span><span id="_CPPv2N5faiss3gpu12codebook_gen12PER_SUBSPACEE"></span><span class="target" id="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39a5056773a9c21a05e14106e853dc39c42"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PER_SUBSPACE</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu12codebook_gen12PER_SUBSPACEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu12codebook_gen11PER_CLUSTERE">
+<span id="_CPPv3N5faiss3gpu12codebook_gen11PER_CLUSTERE"></span><span id="_CPPv2N5faiss3gpu12codebook_gen11PER_CLUSTERE"></span><span class="target" id="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39ab4bc06123f1a290656a492b25ebab336"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PER_CLUSTER</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu12codebook_gen11PER_CLUSTERE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11search_algoE">
+<span id="_CPPv3N5faiss3gpu11search_algoE"></span><span id="_CPPv2N5faiss3gpu11search_algoE"></span><span class="target" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_algo</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu11search_algoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11search_algo10SINGLE_CTAE">
+<span id="_CPPv3N5faiss3gpu11search_algo10SINGLE_CTAE"></span><span id="_CPPv2N5faiss3gpu11search_algo10SINGLE_CTAE"></span><span class="target" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SINGLE_CTA</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu11search_algo10SINGLE_CTAE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>For large batch sizes. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11search_algo9MULTI_CTAE">
+<span id="_CPPv3N5faiss3gpu11search_algo9MULTI_CTAE"></span><span id="_CPPv2N5faiss3gpu11search_algo9MULTI_CTAE"></span><span class="target" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MULTI_CTA</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu11search_algo9MULTI_CTAE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>For small batch sizes. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11search_algo12MULTI_KERNELE">
+<span id="_CPPv3N5faiss3gpu11search_algo12MULTI_KERNELE"></span><span id="_CPPv2N5faiss3gpu11search_algo12MULTI_KERNELE"></span><span class="target" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02a244534a9bc2ff7a11ac470ef0eff013b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MULTI_KERNEL</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu11search_algo12MULTI_KERNELE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11search_algo4AUTOE">
+<span id="_CPPv3N5faiss3gpu11search_algo4AUTOE"></span><span id="_CPPv2N5faiss3gpu11search_algo4AUTOE"></span><span class="target" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02ae1f2d5134ed2543d38a0de9751cf75d9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AUTO</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu11search_algo4AUTOE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9hash_modeE">
+<span id="_CPPv3N5faiss3gpu9hash_modeE"></span><span id="_CPPv2N5faiss3gpu9hash_modeE"></span><span class="target" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821e"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hash_mode</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9hash_modeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9hash_mode4HASHE">
+<span id="_CPPv3N5faiss3gpu9hash_mode4HASHE"></span><span id="_CPPv2N5faiss3gpu9hash_mode4HASHE"></span><span class="target" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821ea50b7748612b28db487d115f220bb77ab"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HASH</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9hash_mode4HASHE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9hash_mode5SMALLE">
+<span id="_CPPv3N5faiss3gpu9hash_mode5SMALLE"></span><span id="_CPPv2N5faiss3gpu9hash_mode5SMALLE"></span><span class="target" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821ea9b9c17e13f0e3dc9860a26e08b59b2a7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SMALL</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9hash_mode5SMALLE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9hash_mode4AUTOE">
+<span id="_CPPv3N5faiss3gpu9hash_mode4AUTOE"></span><span id="_CPPv2N5faiss3gpu9hash_mode4AUTOE"></span><span class="target" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821eae1f2d5134ed2543d38a0de9751cf75d9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AUTO</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9hash_mode4AUTOE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfigE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfigE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfigE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVFPQBuildCagraConfig</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfigE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig7n_listsE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig7n_listsE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig7n_listsE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::n_lists__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a8a01cd2c61cc670e31e90565296f0d07"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_lists</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1024</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig7n_listsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The number of inverted lists (clusters)</p>
+<p>Hint: the number of vectors per cluster (<code class="docutils literal notranslate"><span class="pre">n_rows/n_lists</span></code>) should be approximately 1,000 to 10,000. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig14kmeans_n_itersE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig14kmeans_n_itersE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig14kmeans_n_itersE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::kmeans_n_iters__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a46e1a050c0276db771da671898801fe5"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kmeans_n_iters</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">20</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig14kmeans_n_itersE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The number of iterations searching for kmeans centers (index building). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig24kmeans_trainset_fractionE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig24kmeans_trainset_fractionE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig24kmeans_trainset_fractionE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::kmeans_trainset_fraction__double"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a273fbb45a2836ae66a40ab970d4e1926"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kmeans_trainset_fraction</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.5</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig24kmeans_trainset_fractionE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The fraction of data to use during iterative kmeans building. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig7pq_bitsE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig7pq_bitsE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig7pq_bitsE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::pq_bits__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a355bae5d62b534d15f6ce190621df585"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pq_bits</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig7pq_bitsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The bit length of the vector element after compression by PQ.</p>
+<p>Possible values: [4, 5, 6, 7, 8].</p>
+<p>Hint: the smaller the ‘pq_bits’, the smaller the index size and the better the search performance, but the lower the recall. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig6pq_dimE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig6pq_dimE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig6pq_dimE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::pq_dim__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1ab15a53159033c52f39f2c3e3e2021309"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pq_dim</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig6pq_dimE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The dimensionality of the vector after compression by PQ. When zero, an optimal value is selected using a heuristic.</p>
+<p>NB: <code class="docutils literal notranslate"><span class="pre">pq_dim</span> <span class="pre">///</span> <span class="pre">pq_bits</span></code> must be a multiple of 8.</p>
+<p>Hint: a smaller ‘pq_dim’ results in a smaller index size and better search performance, but lower recall. If ‘pq_bits’ is 8, ‘pq_dim’ can be set to any number, but multiple of 8 are desirable for good performance. If ‘pq_bits’ is not 8, ‘pq_dim’ should be a multiple of 8. For good performance, it is desirable that ‘pq_dim’ is a multiple of 32. Ideally, ‘pq_dim’ should be also a divisor of the dataset dim. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig13codebook_kindE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig13codebook_kindE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig13codebook_kindE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::codebook_kind__codebook_gen"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a0c4f52f09b36894948535a41f2dee860"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu12codebook_genE" title="faiss::gpu::codebook_gen"><span class="n"><span class="pre">codebook_gen</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook_kind</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu12codebook_genE" title="faiss::gpu::codebook_gen"><span class="n"><span class="pre">codebook_gen</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu12codebook_gen12PER_SUBSPACEE" title="faiss::gpu::codebook_gen::PER_SUBSPACE"><span class="n"><span class="pre">PER_SUBSPACE</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig13codebook_kindE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>How PQ codebooks are created. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig21force_random_rotationE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig21force_random_rotationE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig21force_random_rotationE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::force_random_rotation__b"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a3e37fd29e824d40d97bd34a59d26e862"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">force_random_rotation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig21force_random_rotationE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Apply a random rotation matrix on the input data and queries even if <code class="docutils literal notranslate"><span class="pre">dim</span> <span class="pre">%</span> <span class="pre">pq_dim</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<p>Note: if <code class="docutils literal notranslate"><span class="pre">dim</span></code> is not multiple of <code class="docutils literal notranslate"><span class="pre">pq_dim</span></code>, a random rotation is always applied to the input data and queries to transform the working space from <code class="docutils literal notranslate"><span class="pre">dim</span></code> to <code class="docutils literal notranslate"><span class="pre">rot_dim</span></code>, which may be slightly larger than the original space and and is a multiple of <code class="docutils literal notranslate"><span class="pre">pq_dim</span></code> (<code class="docutils literal notranslate"><span class="pre">rot_dim</span> <span class="pre">%</span> <span class="pre">pq_dim</span> <span class="pre">==</span> <span class="pre">0</span></code>). However, this transform is not necessary when <code class="docutils literal notranslate"><span class="pre">dim</span></code> is multiple of <code class="docutils literal notranslate"><span class="pre">pq_dim</span></code> (<code class="docutils literal notranslate"><span class="pre">dim</span> <span class="pre">==</span> <span class="pre">rot_dim</span></code>, hence no need in adding “extra” data columns / features).</p>
+<p>By default, if <code class="docutils literal notranslate"><span class="pre">dim</span> <span class="pre">==</span> <span class="pre">rot_dim</span></code>, the rotation transform is initialized with the identity matrix. When <code class="docutils literal notranslate"><span class="pre">force_random_rotation</span> <span class="pre">==</span> <span class="pre">true</span></code>, a random orthogonal transform matrix is generated regardless of the values of <code class="docutils literal notranslate"><span class="pre">dim</span></code> and <code class="docutils literal notranslate"><span class="pre">pq_dim</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig30conservative_memory_allocationE">
+<span id="_CPPv3N5faiss3gpu21IVFPQBuildCagraConfig30conservative_memory_allocationE"></span><span id="_CPPv2N5faiss3gpu21IVFPQBuildCagraConfig30conservative_memory_allocationE"></span><span id="faiss::gpu::IVFPQBuildCagraConfig::conservative_memory_allocation__b"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1afa6d4e798be91d7037d80bdad690236a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">conservative_memory_allocation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfig30conservative_memory_allocationE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>By default, the algorithm allocates more space than necessary for individual clusters (<code class="docutils literal notranslate"><span class="pre">list_data</span></code>). This allows to amortize the cost of memory allocation and reduce the number of data copies during repeated calls to <code class="docutils literal notranslate"><span class="pre">extend</span></code> (extending the database).</p>
+<p>The alternative is the conservative allocation behavior; when enabled, the algorithm always allocates the minimum amount of memory required to store the given number of records. Set this flag to <code class="docutils literal notranslate"><span class="pre">true</span></code> if you prefer to use as little GPU memory for the database as possible. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu22IVFPQSearchCagraConfigE">
+<span id="_CPPv3N5faiss3gpu22IVFPQSearchCagraConfigE"></span><span id="_CPPv2N5faiss3gpu22IVFPQSearchCagraConfigE"></span><span id="faiss::gpu::IVFPQSearchCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVFPQSearchCagraConfig</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfigE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig8n_probesE">
+<span id="_CPPv3N5faiss3gpu22IVFPQSearchCagraConfig8n_probesE"></span><span id="_CPPv2N5faiss3gpu22IVFPQSearchCagraConfig8n_probesE"></span><span id="faiss::gpu::IVFPQSearchCagraConfig::n_probes__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1afeb146ff3cef908dc0fa53c50dfd10df"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_probes</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">20</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig8n_probesE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>The number of clusters to search. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig9lut_dtypeE">
+<span id="_CPPv3N5faiss3gpu22IVFPQSearchCagraConfig9lut_dtypeE"></span><span id="_CPPv2N5faiss3gpu22IVFPQSearchCagraConfig9lut_dtypeE"></span><span id="faiss::gpu::IVFPQSearchCagraConfig::lut_dtype__cudaDataType_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024"></span><span class="n"><span class="pre">cudaDataType_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lut_dtype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CUDA_R_32F</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig9lut_dtypeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Data type of look up table to be created dynamically at search time.</p>
+<p>Possible values: [CUDA_R_32F, CUDA_R_16F, CUDA_R_8U]</p>
+<p>The use of low-precision types reduces the amount of shared memory required at search time, so fast shared memory kernels can be used even for datasets with large dimansionality. Note that the recall is slightly degraded when low-precision type is selected. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig23internal_distance_dtypeE">
+<span id="_CPPv3N5faiss3gpu22IVFPQSearchCagraConfig23internal_distance_dtypeE"></span><span id="_CPPv2N5faiss3gpu22IVFPQSearchCagraConfig23internal_distance_dtypeE"></span><span id="faiss::gpu::IVFPQSearchCagraConfig::internal_distance_dtype__cudaDataType_t"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1aab0245d43c5cf89c287552e7f94c5756"></span><span class="n"><span class="pre">cudaDataType_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">internal_distance_dtype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CUDA_R_32F</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig23internal_distance_dtypeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Storage data type for distance/similarity computed at search time.</p>
+<p>Possible values: [CUDA_R_16F, CUDA_R_32F]</p>
+<p>If the performance limiter at search time is device memory access, selecting FP16 will improve performance slightly. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig24preferred_shmem_carveoutE">
+<span id="_CPPv3N5faiss3gpu22IVFPQSearchCagraConfig24preferred_shmem_carveoutE"></span><span id="_CPPv2N5faiss3gpu22IVFPQSearchCagraConfig24preferred_shmem_carveoutE"></span><span id="faiss::gpu::IVFPQSearchCagraConfig::preferred_shmem_carveout__double"></span><span class="target" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae421be4a8bc931d42a0962912f703683"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">preferred_shmem_carveout</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfig24preferred_shmem_carveoutE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Preferred fraction of SM’s unified memory / L1 cache to be used as shared memory.</p>
+<p>Possible values: [0.0 - 1.0] as a fraction of the <code class="docutils literal notranslate"><span class="pre">sharedMemPerMultiprocessor</span></code>.</p>
+<p>One wants to increase the carveout to make sure a good GPU occupancy for the main search kernel, but not to keep it too high to leave some memory to be used as L1 cache. Note, this value is interpreted only as a hint. Moreover, a GPU usually allows only a fixed set of cache configurations, so the provided value is rounded up to the nearest configuration. Refer to the NVIDIA tuning guide for the target GPU architecture.</p>
+<p>Note, this is a low-level tuning parameter that can have drastic negative effects on the search performance if tweaked incorrectly. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfigE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="faiss::gpu::GpuIndexCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig25intermediate_graph_degreeE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig25intermediate_graph_degreeE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig25intermediate_graph_degreeE"></span><span id="faiss::gpu::GpuIndexCagraConfig::intermediate_graph_degree__s"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1adf71c6aa489b10677432b0c55daa25b2"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intermediate_graph_degree</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">128</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig25intermediate_graph_degreeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Degree of input graph for pruning. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig12graph_degreeE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig12graph_degreeE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig12graph_degreeE"></span><span id="faiss::gpu::GpuIndexCagraConfig::graph_degree__s"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a87acf1279cf0b243bc435f8fb4c3855f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">graph_degree</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">64</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig12graph_degreeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Degree of output graph. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig10build_algoE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig10build_algoE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig10build_algoE"></span><span id="faiss::gpu::GpuIndexCagraConfig::build_algo__graph_build_algo"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ac6925aa5047e8a6a9924485e69d10ef2"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16graph_build_algoE" title="faiss::gpu::graph_build_algo"><span class="n"><span class="pre">graph_build_algo</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">build_algo</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu16graph_build_algoE" title="faiss::gpu::graph_build_algo"><span class="n"><span class="pre">graph_build_algo</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16graph_build_algo6IVF_PQE" title="faiss::gpu::graph_build_algo::IVF_PQ"><span class="n"><span class="pre">IVF_PQ</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig10build_algoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>ANN algorithm to build knn graph. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig16nn_descent_niterE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig16nn_descent_niterE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig16nn_descent_niterE"></span><span id="faiss::gpu::GpuIndexCagraConfig::nn_descent_niter__s"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1aa5418f19f7773b9693b6f3ef6633f0a9"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nn_descent_niter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">20</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig16nn_descent_niterE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Number of Iterations to run if building with NN_DESCENT. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig13ivf_pq_paramsE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig13ivf_pq_paramsE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig13ivf_pq_paramsE"></span><span id="faiss::gpu::GpuIndexCagraConfig::ivf_pq_params__IVFPQBuildCagraConfigP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a4bdda51bf5c1bf1893ed7ea336a6e366"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu21IVFPQBuildCagraConfigE" title="faiss::gpu::IVFPQBuildCagraConfig"><span class="n"><span class="pre">IVFPQBuildCagraConfig</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ivf_pq_params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig13ivf_pq_paramsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig20ivf_pq_search_paramsE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig20ivf_pq_search_paramsE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig20ivf_pq_search_paramsE"></span><span id="faiss::gpu::GpuIndexCagraConfig::ivf_pq_search_params__IVFPQSearchCagraConfigP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ab6411191d974fce518395829130386bd"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu22IVFPQSearchCagraConfigE" title="faiss::gpu::IVFPQSearchCagraConfig"><span class="n"><span class="pre">IVFPQSearchCagraConfig</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ivf_pq_search_params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfig20ivf_pq_search_paramsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagraE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagraE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagraE"></span><span id="faiss::gpu::SearchParametersCagra"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParametersCagra</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagraE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra11max_queriesE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra11max_queriesE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra11max_queriesE"></span><span id="faiss::gpu::SearchParametersCagra::max_queries__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a573c43dfa8f32276690fb268268ca7d6"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_queries</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra11max_queriesE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Maximum number of queries to search at the same time (batch size). Auto select when 0. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra10itopk_sizeE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra10itopk_sizeE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra10itopk_sizeE"></span><span id="faiss::gpu::SearchParametersCagra::itopk_size__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1acec1932002f8d0b6ac339ef17ec3b564"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">itopk_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">64</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra10itopk_sizeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Number of intermediate search results retained during the search.</p>
+<p>This is the main knob to adjust trade off between accuracy and search speed. Higher values improve the search accuracy. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra14max_iterationsE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra14max_iterationsE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra14max_iterationsE"></span><span id="faiss::gpu::SearchParametersCagra::max_iterations__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab8d5026128443b837b0d6c23c5cc170f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_iterations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra14max_iterationsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Upper limit of search iterations. Auto select when 0. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra4algoE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra4algoE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra4algoE"></span><span id="faiss::gpu::SearchParametersCagra::algo__search_algo"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab54130d05220deca4e0401f49203194e"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu11search_algoE" title="faiss::gpu::search_algo"><span class="n"><span class="pre">search_algo</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">algo</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu11search_algoE" title="faiss::gpu::search_algo"><span class="n"><span class="pre">search_algo</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu11search_algo4AUTOE" title="faiss::gpu::search_algo::AUTO"><span class="n"><span class="pre">AUTO</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra4algoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Which search implementation to use. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra9team_sizeE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra9team_sizeE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra9team_sizeE"></span><span id="faiss::gpu::SearchParametersCagra::team_size__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a6aab69f69c09f6fca3354ffe6f5ae6a8"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">team_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra9team_sizeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Number of threads used to calculate a single distance. 4, 8, 16, or 32. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra12search_widthE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra12search_widthE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra12search_widthE"></span><span id="faiss::gpu::SearchParametersCagra::search_width__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1aba04c09cee0301886b8ac21708fce2e3"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_width</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra12search_widthE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Number of graph nodes to select as the starting point for the search in each iteration. aka search width? </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra14min_iterationsE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra14min_iterationsE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra14min_iterationsE"></span><span id="faiss::gpu::SearchParametersCagra::min_iterations__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1acd3eb8feb8155bfc1a166a1b200d5d54"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_iterations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra14min_iterationsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Lower limit of search iterations. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra17thread_block_sizeE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra17thread_block_sizeE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra17thread_block_sizeE"></span><span id="faiss::gpu::SearchParametersCagra::thread_block_size__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a965fd5074ae1297f7a204660f07997ac"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thread_block_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra17thread_block_sizeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Thread block size. 0, 64, 128, 256, 512, 1024. Auto selection when 0. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra12hashmap_modeE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra12hashmap_modeE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra12hashmap_modeE"></span><span id="faiss::gpu::SearchParametersCagra::hashmap_mode__hash_mode"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1adbe7a16998ddb57af8de5ba1103b36bc"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9hash_modeE" title="faiss::gpu::hash_mode"><span class="n"><span class="pre">hash_mode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hashmap_mode</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu9hash_modeE" title="faiss::gpu::hash_mode"><span class="n"><span class="pre">hash_mode</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9hash_mode4AUTOE" title="faiss::gpu::hash_mode::AUTO"><span class="n"><span class="pre">AUTO</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra12hashmap_modeE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Hashmap type. Auto selection when AUTO. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra18hashmap_min_bitlenE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra18hashmap_min_bitlenE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra18hashmap_min_bitlenE"></span><span id="faiss::gpu::SearchParametersCagra::hashmap_min_bitlen__s"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ac25fa2e2789eb28a32119d02e2000533"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hashmap_min_bitlen</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra18hashmap_min_bitlenE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Lower limit of hashmap bit length. More than 8. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra21hashmap_max_fill_rateE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra21hashmap_max_fill_rateE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra21hashmap_max_fill_rateE"></span><span id="faiss::gpu::SearchParametersCagra::hashmap_max_fill_rate__float"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a5f004bbeb20928ac96c7290ad62e93d2"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hashmap_max_fill_rate</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.5</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra21hashmap_max_fill_rateE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Upper limit of hashmap fill rate. More than 0.1, less than 0.9. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra20num_random_samplingsE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra20num_random_samplingsE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra20num_random_samplingsE"></span><span id="faiss::gpu::SearchParametersCagra::num_random_samplings__uint32_t"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a852421480eb8f0885b74f7290d71f652"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_random_samplings</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra20num_random_samplingsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Number of iterations of initial random seed node selection. 1 or more. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21SearchParametersCagra4seedE">
+<span id="_CPPv3N5faiss3gpu21SearchParametersCagra4seedE"></span><span id="_CPPv2N5faiss3gpu21SearchParametersCagra4seedE"></span><span id="faiss::gpu::SearchParametersCagra::seed__uint64_t"></span><span class="target" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a21401eee8c1948876b7972f420490f8a"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x128394</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu21SearchParametersCagra4seedE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Bit mask used for initial random seed node selection. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagraE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagraE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagraE"></span><span id="faiss::gpu::GpuIndexCagra"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagra</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndexE" title="faiss::gpu::GpuIndex"><span class="n"><span class="pre">GpuIndex</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagraE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig"></span><span id="faiss::gpu::GpuIndexCagra::GpuIndexCagra__GpuResourcesProviderP.i.faiss::MetricType.GpuIndexCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a14b5fbde3bb2c8fd6623c061c2f65f4a"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagra</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="n"><span class="pre">GpuResourcesProvider</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">provider</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span>, <a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a>, <a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf"></span><span id="faiss::gpu::GpuIndexCagra::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Trains CAGRA based on the given vector data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE"></span><span id="faiss::gpu::GpuIndexCagra::copyFrom__faiss::IndexHNSWCagraCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1af944b1d92612e1f9c601bf8bb66f8cf4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyFrom</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexHNSW_8h.html#_CPPv4N5faiss14IndexHNSWCagraE" title="faiss::IndexHNSWCagra"><span class="n"><span class="pre">IndexHNSWCagra</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Initialize ourselves from the given CPU index; will overwrite all data in ourselves </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE"></span><span id="faiss::gpu::GpuIndexCagra::copyTo__faiss::IndexHNSWCagraPC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a0609eba4dffbb9168d024eed6cdc0842"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyTo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexHNSW_8h.html#_CPPv4N5faiss14IndexHNSWCagraE" title="faiss::IndexHNSWCagra"><span class="n"><span class="pre">IndexHNSWCagra</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Copy ourselves to the given CPU index; will overwrite all data in the index instance </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra5resetEv">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra5resetEv"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra5resetEv"></span><span id="faiss::gpu::GpuIndexCagra::reset"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac44c7ec1993d21f91e0c0f143459f074"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra5resetEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra12get_knngraphEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra12get_knngraphEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra12get_knngraphEv"></span><span id="faiss::gpu::GpuIndexCagra::get_knngraphC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a9a43331e54b00caeda39f7433ff8b87e"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_knngraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss3gpu13GpuIndexCagra12get_knngraphEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev"></span><span id="faiss::gpu::GpuIndexCagra::addImplRequiresIDs_C"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ad09daf76a10d203787be33e380aae192"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addImplRequiresIDs_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::addImpl___idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a13cfacf60ae95c6598a20b465a1ed96b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addImpl_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Overridden to actually perform the add All data is guaranteed to be resident on our device </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters"></span><span id="faiss::gpu::GpuIndexCagra::searchImpl___idx_t.floatCP.i.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a7e58e95c649da44551033c97402ff1ab"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">searchImpl_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">search_params</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Called from <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">GpuIndex</span></a> for search. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra12cagraConfig_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra12cagraConfig_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra12cagraConfig_E"></span><span id="faiss::gpu::GpuIndexCagra::cagraConfig___GpuIndexCagraConfigC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a1fe07efe184d5e1811aec1020d47e2ba"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cagraConfig_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra12cagraConfig_E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Our configuration options. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra6index_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra6index_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra6index_E"></span><span id="faiss::gpu::GpuIndexCagra::index___std::shared_ptr:RaftCagra:"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ae8eaf596cf45696286b8c97630c6e17c"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RaftCagra</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">index_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu13GpuIndexCagra6index_E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Instance that we own; contains the inverted lists. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GpuIndexBinaryFlat_8h.html" class="btn btn-neutral float-left" title="File GpuIndexBinaryFlat.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GpuIndexFlat_8h.html" class="btn btn-neutral float-right" title="File GpuIndexFlat.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

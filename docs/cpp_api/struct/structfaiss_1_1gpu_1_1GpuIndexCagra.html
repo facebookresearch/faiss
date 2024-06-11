@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct faiss::gpu::GpuIndexCagra &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
+
+  
+    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Struct faiss::gpu::GpuIndexCagraConfig" href="structfaiss_1_1gpu_1_1GpuIndexCagraConfig.html" />
+    <link rel="prev" title="Struct faiss::gpu::GpuIndexBinaryFlatConfig" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIDSelector.html">Struct PyCallbackIDSelector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AdditiveCoarseQuantizer.html">Struct faiss::AdditiveCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AdditiveQuantizer.html">Struct faiss::AdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTable.html">Struct faiss::AlignedTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTableTightAlloc.html">Struct faiss::AlignedTableTightAlloc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html">Struct faiss::ArrayInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AutoTuneCriterion.html">Struct faiss::AutoTuneCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BinaryInvertedListScanner.html">Struct faiss::BinaryInvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringReader.html">Struct faiss::BitstringReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockResultHandler.html">Struct faiss::BlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList.html">Struct faiss::BufferList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferList_1_1Buffer.html">Struct faiss::BufferList::Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOReader.html">Struct faiss::BufferedIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BufferedIOWriter.html">Struct faiss::BufferedIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMax.html">Struct faiss::CMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMin.html">Struct faiss::CMin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CenteringTransform.html">Struct faiss::CenteringTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Cloner.html">Struct faiss::Cloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering.html">Struct faiss::Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering1D.html">Struct faiss::Clustering1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringIterationStats.html">Struct faiss::ClusteringIterationStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringParameters.html">Struct faiss::ClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CodePacker.html">Struct faiss::CodePacker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CodePackerFlat.html">Struct faiss::CodePackerFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CodePackerPQ4.html">Struct faiss::CodePackerPQ4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CodeSet.html">Struct faiss::CodeSet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CombinerRangeKNN.html">Struct faiss::CombinerRangeKNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMap.html">Struct faiss::DirectMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMapAdd.html">Struct faiss::DirectMapAdd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DistanceComputer.html">Struct faiss::DistanceComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DummyScaler.html">Struct faiss::DummyScaler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1EnumeratedVectors.html">Struct faiss::EnumeratedVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FastScanStats.html">Struct faiss::FastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FileIOReader.html">Struct faiss::FileIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FileIOWriter.html">Struct faiss::FileIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FlatCodesDistanceComputer.html">Struct faiss::FlatCodesDistanceComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer16.html">Struct faiss::GenHammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer32.html">Struct faiss::GenHammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer8.html">Struct faiss::GenHammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputerM8.html">Struct faiss::GenHammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HCounterState.html">Struct faiss::HCounterState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HNSW.html">Struct faiss::HNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HNSWStats.html">Struct faiss::HNSWStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HNSW_1_1MinimaxHeap.html">Struct faiss::HNSW::MinimaxHeap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HNSW_1_1NodeDistCloser.html">Struct faiss::HNSW::NodeDistCloser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HNSW_1_1NodeDistFarther.html">Struct faiss::HNSW::NodeDistFarther</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HStackInvertedLists.html">Struct faiss::HStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer.html">Struct faiss::HammingComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer16.html">Struct faiss::HammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer20.html">Struct faiss::HammingComputer20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer32.html">Struct faiss::HammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer4.html">Struct faiss::HammingComputer4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer64.html">Struct faiss::HammingComputer64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler.html">Struct faiss::HeapBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::HeapBlockResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets.html">Struct faiss::HeapWithBuckets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16.html">Struct faiss::HeapWithBucketsForHamming16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming32.html">Struct faiss::HeapWithBucketsForHamming32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4.html">Struct faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4.html">Struct faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelector.html">Struct faiss::IDSelector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorAll.html">Struct faiss::IDSelectorAll</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorAnd.html">Struct faiss::IDSelectorAnd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorArray.html">Struct faiss::IDSelectorArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorBatch.html">Struct faiss::IDSelectorBatch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorBitmap.html">Struct faiss::IDSelectorBitmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorNot.html">Struct faiss::IDSelectorNot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorOr.html">Struct faiss::IDSelectorOr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorRange.html">Struct faiss::IDSelectorRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorTranslated.html">Struct faiss::IDSelectorTranslated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IDSelectorXOr.html">Struct faiss::IDSelectorXOr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IOReader.html">Struct faiss::IOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IOWriter.html">Struct faiss::IOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQMatrix.html">Struct faiss::ITQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFPQSearchParameters.html">Struct faiss::IVFPQSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizer.html">Struct faiss::IndexAdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizerFastScan.html">Struct faiss::IndexAdditiveQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinary.html">Struct faiss::IndexBinary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFlat.html">Struct faiss::IndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFromFloat.html">Struct faiss::IndexBinaryFromFloat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHNSW.html">Struct faiss::IndexBinaryHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash.html">Struct faiss::IndexBinaryHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHashStats.html">Struct faiss::IndexBinaryHashStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash_1_1InvertedList.html">Struct faiss::IndexBinaryHash::InvertedList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryIVF.html">Struct faiss::IndexBinaryIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryMultiHash.html">Struct faiss::IndexBinaryMultiHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFastScan.html">Struct faiss::IndexFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat.html">Struct faiss::IndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat1D.html">Struct faiss::IndexFlat1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatCodes.html">Struct faiss::IndexFlatCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatIP.html">Struct faiss::IndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW2Level.html">Struct faiss::IndexHNSW2Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWCagra.html">Struct faiss::IndexHNSWCagra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWFlat.html">Struct faiss::IndexHNSWFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWPQ.html">Struct faiss::IndexHNSWPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWSQ.html">Struct faiss::IndexHNSWSQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMap2Template.html">Struct faiss::IndexIDMap2Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMapTemplate.html">Struct faiss::IndexIDMapTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVF.html">Struct faiss::IndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan_1_1CoarseQuantized.html">Struct faiss::IndexIVFFastScan::CoarseQuantized</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFIndependentQuantizer.html">Struct faiss::IndexIVFIndependentQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFInterface.html">Struct faiss::IndexIVFInterface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizer.html">Struct faiss::IndexIVFLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html">Struct faiss::IndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizer.html">Struct faiss::IndexIVFProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizer.html">Struct faiss::IndexIVFProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan.html">Struct faiss::IndexIVFProductResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizer.html">Struct faiss::IndexIVFResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizerFastScan.html">Struct faiss::IndexIVFResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html">Struct faiss::IndexIVFSpectralHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFStats.html">Struct faiss::IndexIVFStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLSH.html">Struct faiss::IndexLSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLattice.html">Struct faiss::IndexLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizer.html">Struct faiss::IndexLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizerFastScan.html">Struct faiss::IndexLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescent.html">Struct faiss::IndexNNDescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescentFlat.html">Struct faiss::IndexNNDescentFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSG.html">Struct faiss::IndexNSG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGFlat.html">Struct faiss::IndexNSGFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGPQ.html">Struct faiss::IndexNSGPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGSQ.html">Struct faiss::IndexNSGSQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQ.html">Struct faiss::IndexPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQFastScan.html">Struct faiss::IndexPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQStats.html">Struct faiss::IndexPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizer.html">Struct faiss::IndexProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizer.html">Struct faiss::IndexProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizerFastScan.html">Struct faiss::IndexProductResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRandom.html">Struct faiss::IndexRandom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineSearchParameters.html">Struct faiss::IndexRefineSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizer.html">Struct faiss::IndexResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizerFastScan.html">Struct faiss::IndexResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRowwiseMinMax.html">Struct faiss::IndexRowwiseMinMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRowwiseMinMaxBase.html">Struct faiss::IndexRowwiseMinMaxBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRowwiseMinMaxFP16.html">Struct faiss::IndexRowwiseMinMaxFP16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsIVF.html">Struct faiss::IndexShardsIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsTemplate.html">Struct faiss::IndexShardsTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InterruptCallback.html">Struct faiss::InterruptCallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IntersectionCriterion.html">Struct faiss::IntersectionCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListScanner.html">Struct faiss::InvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists.html">Struct faiss::InvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIOHook.html">Struct faiss::InvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIterator.html">Struct faiss::InvertedListsIterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">Struct faiss::InvertedLists::ScopedCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LinearTransform.html">Struct faiss::LinearTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LocalSearchCoarseQuantizer.html">Struct faiss::LocalSearchCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LocalSearchQuantizer.html">Struct faiss::LocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MaskedInvertedLists.html">Struct faiss::MaskedInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats.html">Struct faiss::MatrixStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1Occurrence.html">Struct faiss::MatrixStats::Occurrence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1PerDimStats.html">Struct faiss::MatrixStats::PerDimStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer.html">Struct faiss::MultiIndexQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer2.html">Struct faiss::MultiIndexQuantizer2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NNDescent.html">Struct faiss::NNDescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NSG.html">Struct faiss::NSG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NegativeDistanceComputer.html">Struct faiss::NegativeDistanceComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NormTableScaler.html">Struct faiss::NormTableScaler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NormalizationTransform.html">Struct faiss::NormalizationTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OPQMatrix.html">Struct faiss::OPQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists.html">Struct faiss::OnDiskInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedListsIOHook.html">Struct faiss::OnDiskInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists_1_1Slot.html">Struct faiss::OnDiskInvertedLists::Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskOneList.html">Struct faiss::OnDiskOneList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OneRecallAtRCriterion.html">Struct faiss::OneRecallAtRCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoint.html">Struct faiss::OperatingPoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoints.html">Struct faiss::OperatingPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PCAMatrix.html">Struct faiss::PCAMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQDecoder16.html">Struct faiss::PQDecoder16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQDecoder8.html">Struct faiss::PQDecoder8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQDecoderGeneric.html">Struct faiss::PQDecoderGeneric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQEncoder16.html">Struct faiss::PQEncoder16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQEncoder8.html">Struct faiss::PQEncoder8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PQEncoderGeneric.html">Struct faiss::PQEncoderGeneric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterRange.html">Struct faiss::ParameterRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterSpace.html">Struct faiss::ParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PartitionStats.html">Struct faiss::PartitionStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PermutationObjective.html">Struct faiss::PermutationObjective</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PolysemousTraining.html">Struct faiss::PolysemousTraining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProductAdditiveQuantizer.html">Struct faiss::ProductAdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProductLocalSearchQuantizer.html">Struct faiss::ProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProductQuantizer.html">Struct faiss::ProductQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProductResidualQuantizer.html">Struct faiss::ProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimClustering.html">Struct faiss::ProgressiveDimClustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimClusteringParameters.html">Struct faiss::ProgressiveDimClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimIndexFactory.html">Struct faiss::ProgressiveDimIndexFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Quantizer.html">Struct faiss::Quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeQueryResult.html">Struct faiss::RangeQueryResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler.html">Struct faiss::RangeSearchBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::RangeSearchBlockResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchPartialResult.html">Struct faiss::RangeSearchPartialResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RangeSearchResult.html">Struct faiss::RangeSearchResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeat.html">Struct faiss::Repeat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Repeats.html">Struct faiss::Repeats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReproduceDistancesObjective.html">Struct faiss::ReproduceDistancesObjective</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler.html">Struct faiss::ReservoirBlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler.html">Struct faiss::ReservoirBlockResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReservoirTopN.html">Struct faiss::ReservoirTopN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualQuantizer.html">Struct faiss::ResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResultHandler.html">Struct faiss::ResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandler.html">Struct faiss::SIMDResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SIMDResultHandlerToFloat.html">Struct faiss::SIMDResultHandlerToFloat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer.html">Struct faiss::ScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer.html">Struct faiss::ScalarQuantizer::SQDistanceComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ScalarQuantizer_1_1SQuantizer.html">Struct faiss::ScalarQuantizer::SQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParameters.html">Struct faiss::SearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersHNSW.html">Struct faiss::SearchParametersHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html">Struct faiss::SearchParametersIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPQ.html">Struct faiss::SearchParametersPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html">Struct faiss::SearchParametersPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TimeoutCallback.html">Struct faiss::TimeoutCallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler.html">Struct faiss::Top1BlockResultHandler::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorIOReader.html">Struct faiss::VectorIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorIOWriter.html">Struct faiss::VectorIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VisitedTable.html">Struct faiss::VisitedTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ZnSphereCodec.html">Struct faiss::ZnSphereCodec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ZnSphereCodecAlt.html">Struct faiss::ZnSphereCodecAlt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ZnSphereCodecRec.html">Struct faiss::ZnSphereCodecRec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ZnSphereCodec_1_1CodeSegment.html">Struct faiss::ZnSphereCodec::CodeSegment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ZnSphereSearch.html">Struct faiss::ZnSphereSearch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder.html">Struct faiss::cppcontrib::Index2LevelDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder.html">Struct faiss::cppcontrib::IndexMinMaxDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder.html">Struct faiss::cppcontrib::IndexMinMaxFP16Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexPQDecoder.html">Struct faiss::cppcontrib::IndexPQDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType.html">Struct faiss::cppcontrib::detail::CoarseBitType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4.html">Struct faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4.html">Struct faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl.html">Struct faiss::detail::simdlib::binary_func_impl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit.html">Struct faiss::detail::simdlib::is_simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1set1__impl.html">Struct faiss::detail::simdlib::set1_impl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl.html">Struct faiss::detail::simdlib::unary_func_impl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocInfo.html">Struct faiss::gpu::AllocInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocRequest.html">Struct faiss::gpu::AllocRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">Struct faiss::gpu::GpuClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuDistanceParams.html">Struct faiss::gpu::GpuDistanceParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory.html">Struct faiss::gpu::GpuIcmEncoderFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html">Struct faiss::gpu::GpuIndexBinaryFlatConfig</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::gpu::GpuIndexCagra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexCagraConfig.html">Struct faiss::gpu::GpuIndexCagraConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">Struct faiss::gpu::GpuIndexConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">Struct faiss::gpu::GpuIndexFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">Struct faiss::gpu::GpuIndexIVFConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig.html">Struct faiss::gpu::GpuIndexIVFFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html">Struct faiss::gpu::GpuIndexIVFPQConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig.html">Struct faiss::gpu::GpuIndexIVFScalarQuantizerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMemoryReservation.html">Struct faiss::gpu::GpuMemoryReservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">Struct faiss::gpu::GpuMultipleClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">Struct faiss::gpu::GpuParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory.html">Struct faiss::gpu::GpuProgressiveDimIndexFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig.html">Struct faiss::gpu::IVFPQBuildCagraConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig.html">Struct faiss::gpu::IVFPQSearchCagraConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IndexWrapper.html">Struct faiss::gpu::IndexWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1SearchParametersCagra.html">Struct faiss::gpu::SearchParametersCagra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html">Struct faiss::gpu::StackDeviceMemory::Range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html">Struct faiss::gpu::StackDeviceMemory::Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToCPUCloner.html">Struct faiss::gpu::ToCPUCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuCloner.html">Struct faiss::gpu::ToGpuCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html">Struct faiss::gpu::ToGpuClonerMultiple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ivflib_1_1SlidingIndexWindow.html">Struct faiss::ivflib::SlidingIndexWindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1lsq_1_1IcmEncoder.html">Struct faiss::lsq::IcmEncoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1lsq_1_1IcmEncoderFactory.html">Struct faiss::lsq::IcmEncoderFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1lsq_1_1LSQTimer.html">Struct faiss::lsq::LSQTimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1lsq_1_1LSQTimerScope.html">Struct faiss::lsq::LSQTimerScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1nndescent_1_1Neighbor.html">Struct faiss::nndescent::Neighbor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1nndescent_1_1Nhood.html">Struct faiss::nndescent::Nhood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1nsg_1_1Graph.html">Struct faiss::nsg::Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT0MemoryPool.html">Struct faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT0MemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1rq__encode__steps_1_1ComputeCodesAddCentroidsLUT1MemoryPool.html">Struct faiss::rq_encode_steps::ComputeCodesAddCentroidsLUT1MemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1rq__encode__steps_1_1RefineBeamLUTMemoryPool.html">Struct faiss::rq_encode_steps::RefineBeamLUTMemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool.html">Struct faiss::rq_encode_steps::RefineBeamMemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd16uint16.html">Struct faiss::simd16uint16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd256bit.html">Struct faiss::simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd32uint16.html">Struct faiss::simd32uint16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd32uint8.html">Struct faiss::simd32uint8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd512bit.html">Struct faiss::simd512bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd64uint8.html">Struct faiss::simd64uint8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8float32.html">Struct faiss::simd8float32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8uint32.html">Struct faiss::simd8uint32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler.html">Struct faiss::simd_result_handlers::DummyResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler.html">Struct faiss::simd_result_handlers::FixedStorageHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1HeapHandler.html">Struct faiss::simd_result_handlers::HeapHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler.html">Struct faiss::simd_result_handlers::PartialRangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler.html">Struct faiss::simd_result_handlers::RangeHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet.html">Struct faiss::simd_result_handlers::RangeHandler::Triplet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler.html">Struct faiss::simd_result_handlers::ReservoirHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare.html">Struct faiss::simd_result_handlers::ResultHandlerCompare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler.html">Struct faiss::simd_result_handlers::SingleResultHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler.html">Struct faiss::simd_result_handlers::StoreResultHandler</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
+      <li class="breadcrumb-item active">Struct faiss::gpu::GpuIndexCagra</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1gpu_1_1GpuIndexCagra.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-faiss-gpu-gpuindexcagra">
+<h1>Struct faiss::gpu::GpuIndexCagra<a class="headerlink" href="#struct-faiss-gpu-gpuindexcagra" title="Permalink to this heading"></a></h1>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagraE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagraE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagraE"></span><span id="faiss::gpu::GpuIndexCagra"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagra</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndexE" title="faiss::gpu::GpuIndex"><span class="n"><span class="pre">GpuIndex</span></span></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra11component_tE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra11component_tE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra11component_tE"></span><span class="target" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">component_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10distance_tE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10distance_tE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10distance_tE"></span><span class="target" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">distance_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra13GpuIndexCagraEP20GpuResourcesProvideriN5faiss10MetricTypeE19GpuIndexCagraConfig"></span><span id="faiss::gpu::GpuIndexCagra::GpuIndexCagra__GpuResourcesProviderP.i.faiss::MetricType.GpuIndexCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a14b5fbde3bb2c8fd6623c061c2f65f4a"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagra</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="n"><span class="pre">GpuResourcesProvider</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">provider</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span>, <a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a>, <a class="reference internal" href="../file/GpuIndexCagra_8h.html#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">config</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/GpuIndexCagra_8h.html#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra5trainE5idx_tPKf"></span><span id="faiss::gpu::GpuIndexCagra::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Trains CAGRA based on the given vector data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss14IndexHNSWCagraE"></span><span id="faiss::gpu::GpuIndexCagra::copyFrom__faiss::IndexHNSWCagraCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1af944b1d92612e1f9c601bf8bb66f8cf4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyFrom</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss14IndexHNSWCagraE" title="faiss::IndexHNSWCagra"><span class="n"><span class="pre">IndexHNSWCagra</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Initialize ourselves from the given CPU index; will overwrite all data in ourselves </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss14IndexHNSWCagraE"></span><span id="faiss::gpu::GpuIndexCagra::copyTo__faiss::IndexHNSWCagraPC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a0609eba4dffbb9168d024eed6cdc0842"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyTo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexHNSW_8h.html#_CPPv4N5faiss14IndexHNSWCagraE" title="faiss::IndexHNSWCagra"><span class="n"><span class="pre">IndexHNSWCagra</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Copy ourselves to the given CPU index; will overwrite all data in the index instance </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra5resetEv">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra5resetEv"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra5resetEv"></span><span id="faiss::gpu::GpuIndexCagra::reset"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac44c7ec1993d21f91e0c0f143459f074"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra12get_knngraphEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra12get_knngraphEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra12get_knngraphEv"></span><span id="faiss::gpu::GpuIndexCagra::get_knngraphC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a9a43331e54b00caeda39f7433ff8b87e"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_knngraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra9getDeviceEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra9getDeviceEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra9getDeviceEv"></span><span id="faiss::gpu::GpuIndexCagra::getDeviceC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Returns the device that this index is resident on. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra12getResourcesEv">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra12getResourcesEv"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra12getResourcesEv"></span><span id="faiss::gpu::GpuIndexCagra::getResources"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a2eb235a51b0a70bdbc2c814a48a0917d"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getResources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns a reference to our <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> object that manages memory, stream and handle resources on the GPU </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra16setMinPagingSizeE6size_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra16setMinPagingSizeE6size_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra16setMinPagingSizeE6size_t"></span><span id="faiss::gpu::GpuIndexCagra::setMinPagingSize__s"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMinPagingSize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Set the minimum data size for searches (in MiB) for which we use CPU -&gt; GPU paging </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra16getMinPagingSizeEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra16getMinPagingSizeEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra16getMinPagingSizeEv"></span><span id="faiss::gpu::GpuIndexCagra::getMinPagingSizeC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a6402d93925d2a403dc187dc1a7aab1e3"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMinPagingSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Returns the current minimum data size for paged searches. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra3addE5idx_tPKf">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra3addE5idx_tPKf"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra3addE5idx_tPKf"></span><span id="faiss::gpu::GpuIndexCagra::add__idx_t.floatCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a5fcf3e9af349e17c27ce82fc0ed94966"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra12add_with_idsE5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_with_ids</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">ids</span></code> can be resident on the CPU or any GPU; copies are performed as needed Handles paged adds if the add set is too large; calls addInternal_ </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra6assignE5idx_tPKfP5idx_t5idx_t">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1ab6382636bc3f651645ee66d8744f7c0f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">labels</span></code> can be resident on the CPU or any GPU; copies are performed as needed </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="faiss::gpu::GpuIndexCagra::search__idx_t.floatCP.idx_t.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a7d7d3746b5f02be8317e142d966c7d4f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">distances</span></code> and <code class="docutils literal notranslate"><span class="pre">labels</span></code> can be resident on the CPU or any GPU; copies are performed as needed </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPfPK16SearchParameters">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPfPK16SearchParameters"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPfPK16SearchParameters"></span><span id="faiss::gpu::GpuIndexCagra::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatP.SearchParametersCPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_and_reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">distances</span></code> and <code class="docutils literal notranslate"><span class="pre">labels</span></code> and <code class="docutils literal notranslate"><span class="pre">recons</span></code> can be resident on the CPU or any GPU; copies are performed as needed </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra16compute_residualEPKfPf5idx_t">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra16compute_residualEPKfPf5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1ae076ddbcfde3e7a21879ac379ff991d9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_residual</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">residual</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Overridden to force GPU indices to provide their own GPU-friendly implementation </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra18compute_residual_nE5idx_tPKfPfPK5idx_t">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a1a1ccf88e127b613c5ef65e52d7a6428"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_residual_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xs</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">residuals</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">keys</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Overridden to force GPU indices to provide their own GPU-friendly implementation </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="faiss::gpu::GpuIndexCagra::range_search__idx_t.floatCP.float.RangeSearchResultP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radius</span></span>, <a class="reference internal" href="../file/AuxIndexStructures_8h.html#_CPPv4N5faiss17RangeSearchResultE" title="faiss::RangeSearchResult"><span class="n"><span class="pre">RangeSearchResult</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">result</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10remove_idsERK10IDSelector"></span><span id="faiss::gpu::GpuIndexCagra::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IDSelector_8h.html#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra11reconstructE5idx_tPf">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndexCagra::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra17reconstruct_batchE5idx_tPK5idx_tPf">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra17reconstruct_batchE5idx_tPK5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra17reconstruct_batchE5idx_tPK5idx_tPf"></span><span id="faiss::gpu::GpuIndexCagra::reconstruct_batch__idx_t.idx_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_batch</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Reconstruct several stored vectors (or an approximation if lossy coding)</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to reconstruct </p></li>
+<li><p><strong>keys</strong> – ids of the vectors to reconstruct (size n) </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size n * d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra13reconstruct_nE5idx_t5idx_tPf">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexCagra::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i0</strong> – index of the first vector in the sequence </p></li>
+<li><p><strong>ni</strong> – number of vectors in the sequence </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size ni * d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra21get_distance_computerEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra21get_distance_computerEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra21get_distance_computerEv"></span><span id="faiss::gpu::GpuIndexCagra::get_distance_computerC"></span><span class="target" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/DistanceComputer_8h.html#_CPPv4N5faiss16DistanceComputerE" title="faiss::DistanceComputer"><span class="n"><span class="pre">DistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get a <a class="reference internal" href="structfaiss_1_1DistanceComputer.html#structfaiss_1_1DistanceComputer"><span class="std std-ref">DistanceComputer</span></a> (defined in AuxIndexStructures) object for this kind of index.</p>
+<p><a class="reference internal" href="structfaiss_1_1DistanceComputer.html#structfaiss_1_1DistanceComputer"><span class="std std-ref">DistanceComputer</span></a> is implemented for indexes that support random access of their vectors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra12sa_code_sizeEv">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra12sa_code_sizeEv"></span><span id="faiss::gpu::GpuIndexCagra::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>size of the produced codes in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra9sa_encodeE5idx_tPKfP7uint8_t">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexCagra::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>encode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexCagra::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>decode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10merge_fromER5Index5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10merge_fromER5Index5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10merge_fromER5Index5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::merge_from__IndexR.idx_t"></span><span class="target" id="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra26check_compatible_for_mergeERK5Index">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra26check_compatible_for_mergeERK5Index"></span><span id="faiss::gpu::GpuIndexCagra::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra1dE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra1dE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra1dE"></span><span id="faiss::gpu::GpuIndexCagra::d__i"></span><span class="target" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d</span></span></span><br /></dt>
+<dd><p>vector dimension </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra6ntotalE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra6ntotalE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra6ntotalE"></span><span id="faiss::gpu::GpuIndexCagra::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd><p>total nb of indexed vectors </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra7verboseE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra7verboseE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra7verboseE"></span><span id="faiss::gpu::GpuIndexCagra::verbose__b"></span><span class="target" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><br /></dt>
+<dd><p>verbosity level </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10is_trainedE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10is_trainedE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10is_trainedE"></span><span id="faiss::gpu::GpuIndexCagra::is_trained__b"></span><span class="target" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_trained</span></span></span><br /></dt>
+<dd><p>set if the <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> does not require training, or if training is done already </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra11metric_typeE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra11metric_typeE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra11metric_typeE"></span><span id="faiss::gpu::GpuIndexCagra::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metric_type</span></span></span><br /></dt>
+<dd><p>type of metric this index uses for search </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10metric_argE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10metric_argE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10metric_argE"></span><span id="faiss::gpu::GpuIndexCagra::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metric_arg</span></span></span><br /></dt>
+<dd><p>argument of the metric type </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra19addImplRequiresIDs_Ev"></span><span id="faiss::gpu::GpuIndexCagra::addImplRequiresIDs_C"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ad09daf76a10d203787be33e380aae192"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addImplRequiresIDs_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra8addImpl_E5idx_tPKfPK5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::addImpl___idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a13cfacf60ae95c6598a20b465a1ed96b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addImpl_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Overridden to actually perform the add All data is guaranteed to be resident on our device </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra11searchImpl_E5idx_tPKfiPfP5idx_tPK16SearchParameters"></span><span id="faiss::gpu::GpuIndexCagra::searchImpl___idx_t.floatCP.i.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a7e58e95c649da44551033c97402ff1ab"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">searchImpl_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">search_params</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Called from <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">GpuIndex</span></a> for search. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss5IndexE">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss5IndexE"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra8copyFromEPKN5faiss5IndexE"></span><span id="faiss::gpu::GpuIndexCagra::copyFrom__faiss::IndexCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyFrom</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Copy what we need from the CPU equivalent. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss5IndexE">
+<span id="_CPPv3NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss5IndexE"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexCagra6copyToEPN5faiss5IndexE"></span><span id="faiss::gpu::GpuIndexCagra::copyTo__faiss::IndexPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyTo</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Copy what we have to the CPU equivalent. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra12cagraConfig_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra12cagraConfig_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra12cagraConfig_E"></span><span id="faiss::gpu::GpuIndexCagra::cagraConfig___GpuIndexCagraConfigC"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1a1fe07efe184d5e1811aec1020d47e2ba"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/GpuIndexCagra_8h.html#_CPPv4N5faiss3gpu19GpuIndexCagraConfigE" title="faiss::gpu::GpuIndexCagraConfig"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cagraConfig_</span></span></span><br /></dt>
+<dd><p>Our configuration options. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra6index_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra6index_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra6index_E"></span><span id="faiss::gpu::GpuIndexCagra::index___std::shared_ptr:RaftCagra:"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagra_1ae8eaf596cf45696286b8c97630c6e17c"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RaftCagra</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">index_</span></span></span><br /></dt>
+<dd><p>Instance that we own; contains the inverted lists. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra10resources_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra10resources_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra10resources_E"></span><span id="faiss::gpu::GpuIndexCagra::resources___std::shared_ptr:GpuResources:"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resources_</span></span></span><br /></dt>
+<dd><p>Manages streams, cuBLAS handles and scratch memory for devices. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra7config_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra7config_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra7config_E"></span><span id="faiss::gpu::GpuIndexCagra::config___GpuIndexConfigC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">config_</span></span></span><br /></dt>
+<dd><p>Our configuration options. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra13minPagedSize_E">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra13minPagedSize_E"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra13minPagedSize_E"></span><span id="faiss::gpu::GpuIndexCagra::minPagedSize___s"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minPagedSize_</span></span></span><br /></dt>
+<dd><p>Size above which we page copies from the CPU to GPU. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html" class="btn btn-neutral float-left" title="Struct faiss::gpu::GpuIndexBinaryFlatConfig" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1gpu_1_1GpuIndexCagraConfig.html" class="btn btn-neutral float-right" title="Struct faiss::gpu::GpuIndexCagraConfig" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
