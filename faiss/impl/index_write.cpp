@@ -762,10 +762,17 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWPQ*>(idx)      ? fourcc("IHNp")
                 : dynamic_cast<const IndexHNSWSQ*>(idx)      ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx)  ? fourcc("IHN2")
+                : dynamic_cast<const IndexHNSWCagra*>(idx)   ? fourcc("IHNc")
                                                              : 0;
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);
         write_index_header(idxhnsw, f);
+        if (h == fourcc("IHNc")) {
+            WRITE1(idxhnsw->keep_max_size_level0);
+            auto idx_hnsw_cagra = dynamic_cast<const IndexHNSWCagra*>(idxhnsw);
+            WRITE1(idx_hnsw_cagra->base_level_only);
+            WRITE1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+        }
         write_HNSW(&idxhnsw->hnsw, f);
         if (io_flags & IO_FLAG_SKIP_STORAGE) {
             uint32_t n4 = fourcc("null");

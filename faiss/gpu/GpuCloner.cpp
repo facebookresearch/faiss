@@ -14,6 +14,9 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
+#if defined USE_NVIDIA_RAFT
+#include <faiss/IndexHNSW.h>
+#endif
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
@@ -24,6 +27,9 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/GpuIndexCagra.h>
+#endif
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
@@ -85,7 +91,15 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         // objective is to make a single component out of them
         // (inverse op of ToGpuClonerMultiple)
 
-    } else if (auto ish = dynamic_cast<const IndexShards*>(index)) {
+    }
+#if defined USE_NVIDIA_RAFT
+    else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
+        IndexHNSWCagra* res = new IndexHNSWCagra();
+        icg->copyTo(res);
+        return res;
+    }
+#endif
+    else if (auto ish = dynamic_cast<const IndexShards*>(index)) {
         int nshard = ish->count();
         FAISS_ASSERT(nshard > 0);
         Index* res = clone_Index(ish->at(0));
@@ -215,7 +229,18 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         }
 
         return res;
-    } else {
+    }
+#if defined USE_NVIDIA_RAFT
+    else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
+        GpuIndexCagraConfig config;
+        config.device = device;
+        GpuIndexCagra* res =
+                new GpuIndexCagra(provider, icg->d, icg->metric_type, config);
+        res->copyFrom(icg);
+        return res;
+    }
+#endif
+    else {
         // use CPU cloner for IDMap and PreTransform
         auto index_idmap = dynamic_cast<const IndexIDMap*>(index);
         auto index_pt = dynamic_cast<const IndexPreTransform*>(index);

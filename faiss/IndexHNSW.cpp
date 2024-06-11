@@ -15,12 +15,16 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <limits>
+#include <memory>
 #include <queue>
+#include <random>
 #include <unordered_set>
 
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstdint>
+#include "impl/HNSW.h"
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
@@ -144,7 +148,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= !index_hnsw.init_level0;
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -180,7 +186,13 @@ void hnsw_add_vertices(
                         continue;
                     }
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
@@ -200,7 +212,11 @@ void hnsw_add_vertices(
             }
             i1 = i0;
         }
-        FAISS_ASSERT(i1 == 0);
+        if (index_hnsw.init_level0) {
+            FAISS_ASSERT(i1 == 0);
+        } else {
+            FAISS_ASSERT((i1 - hist[0]) == 0);
+        }
     }
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
@@ -404,9 +420,17 @@ void IndexHNSW::search_level_0(
         float* distances,
         idx_t* labels,
         int nprobe,
-        int search_type) const {
+        int search_type,
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
+
+    const SearchParametersHNSW* params = nullptr;
+
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
+    }
 
     storage_idx_t ntotal = hnsw.levels.size();
 
@@ -434,12 +458,20 @@ void IndexHNSW::search_level_0(
                     nearest_d + i * nprobe,
                     search_type,
                     search_stats,
-                    vt);
+                    vt,
+                    params);
             res.end();
             vt.advance();
         }
 #pragma omp critical
         { hnsw_stats.combine(search_stats); }
+    }
+    if (is_similarity_metric(this->metric_type)) {
+// we need to revert the negated distances
+#pragma omp parallel for
+        for (size_t i = 0; i < k * n; i++) {
+            distances[i] = -distances[i];
+        }
     }
 }
 
@@ -861,6 +893,88 @@ void IndexHNSW2Level::flip_to_ivf() {
 
     storage = index_ivfpq;
     delete storage2l;
+}
+
+/**************************************************************
+ * IndexHNSWCagra implementation
+ **************************************************************/
+
+IndexHNSWCagra::IndexHNSWCagra() {
+    is_trained = true;
+}
+
+IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
+        : IndexHNSW(
+                  (metric == METRIC_L2)
+                          ? static_cast<IndexFlat*>(new IndexFlatL2(d))
+                          : static_cast<IndexFlat*>(new IndexFlatIP(d)),
+                  M) {
+    FAISS_THROW_IF_NOT_MSG(
+            ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
+            "unsupported metric type for IndexHNSWCagra");
+    own_fields = true;
+    is_trained = true;
+    init_level0 = true;
+    keep_max_size_level0 = true;
+}
+
+void IndexHNSWCagra::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !base_level_only,
+            "Cannot add vectors when base_level_only is set to True");
+
+    IndexHNSW::add(n, x);
+}
+
+void IndexHNSWCagra::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (!base_level_only) {
+        IndexHNSW::search(n, x, k, distances, labels, params);
+    } else {
+        std::vector<storage_idx_t> nearest(n);
+        std::vector<float> nearest_d(n);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(this->storage));
+            dis->set_query(x + i * d);
+            nearest[i] = -1;
+            nearest_d[i] = std::numeric_limits<float>::max();
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal);
+
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                auto distance = (*dis)(idx);
+                if (distance < nearest_d[i]) {
+                    nearest[i] = idx;
+                    nearest_d[i] = distance;
+                }
+            }
+            FAISS_THROW_IF_NOT_MSG(
+                    nearest[i] >= 0, "Could not find a valid entrypoint.");
+        }
+
+        search_level_0(
+                n,
+                x,
+                k,
+                nearest.data(),
+                nearest_d.data(),
+                distances,
+                labels,
+                1, // n_probes
+                1, // search_type
+                params);
+    }
 }
 
 } // namespace faiss
