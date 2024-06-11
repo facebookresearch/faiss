@@ -844,6 +844,7 @@
         <definition>virtual void faiss::Index::train</definition>
         <argsstring>(idx_t n, const float *x)</argsstring>
         <name>train</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a4de68542fac496ecd0be85a25ecdb0d6">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a174853bbcb2c8760f9b10c7dd638827e">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324">train</reimplementedby>
@@ -991,6 +992,7 @@
         <definition>virtual void faiss::Index::reset</definition>
         <argsstring>()=0</argsstring>
         <name>reset</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac44c7ec1993d21f91e0c0f143459f074">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a67161796f274a7171a67c36bdf1ef1db">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a88676a893e9b44041e7a52327d960b54">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2">reset</reimplementedby>

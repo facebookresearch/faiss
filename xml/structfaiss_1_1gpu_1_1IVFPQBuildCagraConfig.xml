@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::IVFPQBuildCagraConfig</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a8a01cd2c61cc670e31e90565296f0d07" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::IVFPQBuildCagraConfig::n_lists</definition>
+        <argsstring></argsstring>
+        <name>n_lists</name>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The number of inverted lists (clusters)</para>
+<para>Hint: the number of vectors per cluster (<computeroutput>n_rows/n_lists</computeroutput>) should be approximately 1,000 to 10,000. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="58" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a46e1a050c0276db771da671898801fe5" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::IVFPQBuildCagraConfig::kmeans_n_iters</definition>
+        <argsstring></argsstring>
+        <name>kmeans_n_iters</name>
+        <initializer>= 20</initializer>
+        <briefdescription>
+<para>The number of iterations searching for kmeans centers (index building). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="60" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a273fbb45a2836ae66a40ab970d4e1926" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::gpu::IVFPQBuildCagraConfig::kmeans_trainset_fraction</definition>
+        <argsstring></argsstring>
+        <name>kmeans_trainset_fraction</name>
+        <initializer>= 0.5</initializer>
+        <briefdescription>
+<para>The fraction of data to use during iterative kmeans building. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="62" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a355bae5d62b534d15f6ce190621df585" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::IVFPQBuildCagraConfig::pq_bits</definition>
+        <argsstring></argsstring>
+        <name>pq_bits</name>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The bit length of the vector element after compression by PQ.</para>
+<para>Possible values: [4, 5, 6, 7, 8].</para>
+<para>Hint: the smaller the &apos;pq_bits&apos;, the smaller the index size and the better the search performance, but the lower the recall. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="71" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1ab15a53159033c52f39f2c3e3e2021309" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::IVFPQBuildCagraConfig::pq_dim</definition>
+        <argsstring></argsstring>
+        <name>pq_dim</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The dimensionality of the vector after compression by PQ. When zero, an optimal value is selected using a heuristic.</para>
+<para>NB: <computeroutput>pq_dim /// pq_bits</computeroutput> must be a multiple of 8.</para>
+<para>Hint: a smaller &apos;pq_dim&apos; results in a smaller index size and better search performance, but lower recall. If &apos;pq_bits&apos; is 8, &apos;pq_dim&apos; can be set to any number, but multiple of 8 are desirable for good performance. If &apos;pq_bits&apos; is not 8, &apos;pq_dim&apos; should be a multiple of 8. For good performance, it is desirable that &apos;pq_dim&apos; is a multiple of 32. Ideally, &apos;pq_dim&apos; should be also a divisor of the dataset dim. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="85" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a0c4f52f09b36894948535a41f2dee860" prot="public" static="no" mutable="no">
+        <type>codebook_gen</type>
+        <definition>codebook_gen faiss::gpu::IVFPQBuildCagraConfig::codebook_kind</definition>
+        <argsstring></argsstring>
+        <name>codebook_kind</name>
+        <initializer>= codebook_gen::PER_SUBSPACE</initializer>
+        <briefdescription>
+<para>How PQ codebooks are created. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="87" column="18" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a3e37fd29e824d40d97bd34a59d26e862" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::IVFPQBuildCagraConfig::force_random_rotation</definition>
+        <argsstring></argsstring>
+        <name>force_random_rotation</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply a random rotation matrix on the input data and queries even if <computeroutput>dim % pq_dim == 0</computeroutput>.</para>
+<para>Note: if <computeroutput>dim</computeroutput> is not multiple of <computeroutput>pq_dim</computeroutput>, a random rotation is always applied to the input data and queries to transform the working space from <computeroutput>dim</computeroutput> to <computeroutput>rot_dim</computeroutput>, which may be slightly larger than the original space and and is a multiple of <computeroutput>pq_dim</computeroutput> (<computeroutput>rot_dim % pq_dim == 0</computeroutput>). However, this transform is not necessary when <computeroutput>dim</computeroutput> is multiple of <computeroutput>pq_dim</computeroutput> (<computeroutput>dim == rot_dim</computeroutput>, hence no need in adding &quot;extra&quot; data columns / features).</para>
+<para>By default, if <computeroutput>dim == rot_dim</computeroutput>, the rotation transform is initialized with the identity matrix. When <computeroutput>force_random_rotation == true</computeroutput>, a random orthogonal transform matrix is generated regardless of the values of <computeroutput>dim</computeroutput> and <computeroutput>pq_dim</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="106" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1afa6d4e798be91d7037d80bdad690236a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::IVFPQBuildCagraConfig::conservative_memory_allocation</definition>
+        <argsstring></argsstring>
+        <name>conservative_memory_allocation</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>By default, the algorithm allocates more space than necessary for individual clusters (<computeroutput>list_data</computeroutput>). This allows to amortize the cost of memory allocation and reduce the number of data copies during repeated calls to <computeroutput>extend</computeroutput> (extending the database).</para>
+<para>The alternative is the conservative allocation behavior; when enabled, the algorithm always allocates the minimum amount of memory required to store the given number of records. Set this flag to <computeroutput>true</computeroutput> if you prefer to use as little GPU memory for the database as possible. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="119" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/GpuIndexCagra.h" line="51" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="51" bodyend="120"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a0c4f52f09b36894948535a41f2dee860" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>codebook_kind</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1afa6d4e798be91d7037d80bdad690236a" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>conservative_memory_allocation</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a3e37fd29e824d40d97bd34a59d26e862" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>force_random_rotation</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a46e1a050c0276db771da671898801fe5" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>kmeans_n_iters</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a273fbb45a2836ae66a40ab970d4e1926" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>kmeans_trainset_fraction</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a8a01cd2c61cc670e31e90565296f0d07" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>n_lists</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a355bae5d62b534d15f6ce190621df585" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>pq_bits</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1ab15a53159033c52f39f2c3e3e2021309" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>pq_dim</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

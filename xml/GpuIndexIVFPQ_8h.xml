@@ -6,6 +6,7 @@
     <includes refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includes>
     <includes local="no">memory</includes>
     <includes local="no">vector</includes>
+    <includedby refid="GpuIndexCagra_8h" local="no">faiss/gpu/GpuIndexCagra.h</includedby>
     <incdepgraph>
       <node id="33">
         <label>faiss/impl/FaissException.h</label>
@@ -304,6 +305,18 @@
         <label>memory</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/GpuIndexIVFPQ.h</label>
+        <link refid="GpuIndexIVFPQ_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" prot="public">faiss::gpu::GpuIndexIVFPQConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" prot="public">faiss::gpu::GpuIndexIVFPQ</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

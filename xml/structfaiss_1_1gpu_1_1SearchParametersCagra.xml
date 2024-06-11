@@ -1,0 +1,273 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu_1_1SearchParametersCagra" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::SearchParametersCagra</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a573c43dfa8f32276690fb268268ca7d6" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::max_queries</definition>
+        <argsstring></argsstring>
+        <name>max_queries</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Maximum number of queries to search at the same time (batch size). Auto select when 0. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="193" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1acec1932002f8d0b6ac339ef17ec3b564" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::itopk_size</definition>
+        <argsstring></argsstring>
+        <name>itopk_size</name>
+        <initializer>= 64</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of intermediate search results retained during the search.</para>
+<para>This is the main knob to adjust trade off between accuracy and search speed. Higher values improve the search accuracy. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="200" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab8d5026128443b837b0d6c23c5cc170f" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::max_iterations</definition>
+        <argsstring></argsstring>
+        <name>max_iterations</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Upper limit of search iterations. Auto select when 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="203" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab54130d05220deca4e0401f49203194e" prot="public" static="no" mutable="no">
+        <type>search_algo</type>
+        <definition>search_algo faiss::gpu::SearchParametersCagra::algo</definition>
+        <argsstring></argsstring>
+        <name>algo</name>
+        <initializer>= search_algo::AUTO</initializer>
+        <briefdescription>
+<para>Which search implementation to use. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="209" column="17" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a6aab69f69c09f6fca3354ffe6f5ae6a8" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::team_size</definition>
+        <argsstring></argsstring>
+        <name>team_size</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Number of threads used to calculate a single distance. 4, 8, 16, or 32. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="213" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1aba04c09cee0301886b8ac21708fce2e3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::search_width</definition>
+        <argsstring></argsstring>
+        <name>search_width</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of graph nodes to select as the starting point for the search in each iteration. aka search width? </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="217" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1acd3eb8feb8155bfc1a166a1b200d5d54" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::min_iterations</definition>
+        <argsstring></argsstring>
+        <name>min_iterations</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Lower limit of search iterations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="219" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a965fd5074ae1297f7a204660f07997ac" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::thread_block_size</definition>
+        <argsstring></argsstring>
+        <name>thread_block_size</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Thread block size. 0, 64, 128, 256, 512, 1024. Auto selection when 0. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="222" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="222" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1adbe7a16998ddb57af8de5ba1103b36bc" prot="public" static="no" mutable="no">
+        <type>hash_mode</type>
+        <definition>hash_mode faiss::gpu::SearchParametersCagra::hashmap_mode</definition>
+        <argsstring></argsstring>
+        <name>hashmap_mode</name>
+        <initializer>= hash_mode::AUTO</initializer>
+        <briefdescription>
+<para>Hashmap type. Auto selection when AUTO. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="224" column="15" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ac25fa2e2789eb28a32119d02e2000533" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::gpu::SearchParametersCagra::hashmap_min_bitlen</definition>
+        <argsstring></argsstring>
+        <name>hashmap_min_bitlen</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>Lower limit of hashmap bit length. More than 8. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="226" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a5f004bbeb20928ac96c7290ad62e93d2" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::gpu::SearchParametersCagra::hashmap_max_fill_rate</definition>
+        <argsstring></argsstring>
+        <name>hashmap_max_fill_rate</name>
+        <initializer>= 0.5</initializer>
+        <briefdescription>
+<para>Upper limit of hashmap fill rate. More than 0.1, less than 0.9. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="228" column="11" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="228" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a852421480eb8f0885b74f7290d71f652" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::SearchParametersCagra::num_random_samplings</definition>
+        <argsstring></argsstring>
+        <name>num_random_samplings</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+<para>Number of iterations of initial random seed node selection. 1 or more. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="232" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1a21401eee8c1948876b7972f420490f8a" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::gpu::SearchParametersCagra::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <initializer>= 0x128394</initializer>
+        <briefdescription>
+<para>Bit mask used for initial random seed node selection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="234" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="54" column="16" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::gpu::SearchParametersCagra</label>
+        <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::gpu::SearchParametersCagra</label>
+        <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/gpu/GpuIndexCagra.h" line="190" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="190" bodyend="235"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab54130d05220deca4e0401f49203194e" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>algo</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a5f004bbeb20928ac96c7290ad62e93d2" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>hashmap_max_fill_rate</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1ac25fa2e2789eb28a32119d02e2000533" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>hashmap_min_bitlen</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1adbe7a16998ddb57af8de5ba1103b36bc" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>hashmap_mode</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1acec1932002f8d0b6ac339ef17ec3b564" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>itopk_size</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab8d5026128443b837b0d6c23c5cc170f" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>max_iterations</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a573c43dfa8f32276690fb268268ca7d6" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>max_queries</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1acd3eb8feb8155bfc1a166a1b200d5d54" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>min_iterations</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a852421480eb8f0885b74f7290d71f652" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>num_random_samplings</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1aba04c09cee0301886b8ac21708fce2e3" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>search_width</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a21401eee8c1948876b7972f420490f8a" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>seed</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a6aab69f69c09f6fca3354ffe6f5ae6a8" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>team_size</name></member>
+      <member refid="structfaiss_1_1gpu_1_1SearchParametersCagra_1a965fd5074ae1297f7a204660f07997ac" prot="public" virt="non-virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>thread_block_size</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::gpu::SearchParametersCagra</scope><name>~SearchParameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

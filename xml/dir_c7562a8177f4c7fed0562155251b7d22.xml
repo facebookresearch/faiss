@@ -29,6 +29,7 @@
     <innerfile refid="PQScanMultiPassNoPrecomputed-inl_8cuh">PQScanMultiPassNoPrecomputed-inl.cuh</innerfile>
     <innerfile refid="PQScanMultiPassNoPrecomputed_8cuh">PQScanMultiPassNoPrecomputed.cuh</innerfile>
     <innerfile refid="PQScanMultiPassPrecomputed_8cuh">PQScanMultiPassPrecomputed.cuh</innerfile>
+    <innerfile refid="RaftCagra_8cuh">RaftCagra.cuh</innerfile>
     <innerfile refid="RaftFlatIndex_8cuh">RaftFlatIndex.cuh</innerfile>
     <innerfile refid="RaftIVFFlat_8cuh">RaftIVFFlat.cuh</innerfile>
     <innerfile refid="RaftIVFPQ_8cuh">RaftIVFPQ.cuh</innerfile>

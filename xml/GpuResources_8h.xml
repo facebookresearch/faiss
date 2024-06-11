@@ -96,29 +96,29 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="13">
+      <node id="14">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss/gpu/GpuIndexIVF.h</label>
         <link refid="GpuIndexIVF_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="5">
-        <label>faiss/gpu/GpuIndexFlat.h</label>
-        <link refid="GpuIndexFlat_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="6">
+        <label>faiss/gpu/GpuIndexFlat.h</label>
+        <link refid="GpuIndexFlat_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
       </node>
@@ -133,32 +133,38 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
       </node>
-      <node id="12">
+      <node id="5">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h_source"/>
+      </node>
+      <node id="13">
         <label>faiss/gpu/utils/RaftUtils.h</label>
         <link refid="RaftUtils_8h_source"/>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
         <link refid="GpuIndexIVFPQ_8h_source"/>
-      </node>
-      <node id="10">
-        <label>faiss/gpu/StandardGpuResources.h</label>
-        <link refid="StandardGpuResources_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="11">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
         <link refid="GpuIndexIVFFlat_8h_source"/>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
@@ -176,6 +182,8 @@
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

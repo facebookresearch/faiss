@@ -814,6 +814,7 @@
         <definition>virtual void faiss::Index::train</definition>
         <argsstring>(idx_t n, const float *x)</argsstring>
         <name>train</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a4de68542fac496ecd0be85a25ecdb0d6">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a174853bbcb2c8760f9b10c7dd638827e">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324">train</reimplementedby>

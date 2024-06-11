@@ -442,6 +442,7 @@
         <definition>virtual void faiss::Index::train</definition>
         <argsstring>(idx_t n, const float *x)</argsstring>
         <name>train</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a4de68542fac496ecd0be85a25ecdb0d6">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a174853bbcb2c8760f9b10c7dd638827e">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324">train</reimplementedby>
@@ -583,6 +584,7 @@
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1adc489649c579772c998db8c8e495d9bc">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW2Level_1a0702820667ab98a90da866ec311f39aa">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a84cb8115ea19d50c5b53be19b0dae708">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1acfb42a2f0780bff4fd1b6f05b4fff3b2">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678">search</reimplementedby>

@@ -14,6 +14,7 @@
     <innerfile refid="GpuIcmEncoder_8h">GpuIcmEncoder.h</innerfile>
     <innerfile refid="GpuIndex_8h">GpuIndex.h</innerfile>
     <innerfile refid="GpuIndexBinaryFlat_8h">GpuIndexBinaryFlat.h</innerfile>
+    <innerfile refid="GpuIndexCagra_8h">GpuIndexCagra.h</innerfile>
     <innerfile refid="GpuIndexFlat_8h">GpuIndexFlat.h</innerfile>
     <innerfile refid="GpuIndexIVF_8h">GpuIndexIVF.h</innerfile>
     <innerfile refid="GpuIndexIVFFlat_8h">GpuIndexIVFFlat.h</innerfile>

@@ -3,6 +3,7 @@
   <compounddef id="classfaiss_1_1gpu_1_1GpuIndex" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::gpu::GpuIndex</compoundname>
     <basecompoundref refid="structfaiss_1_1Index" prot="public" virt="non-virtual">faiss::Index</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexCagra" prot="public" virt="non-virtual">faiss::gpu::GpuIndexCagra</derivedcompoundref>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" prot="public" virt="non-virtual">faiss::gpu::GpuIndexFlat</derivedcompoundref>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVF</derivedcompoundref>
       <sectiondef kind="protected-attrib">
@@ -374,6 +375,7 @@
         <definition>virtual void faiss::Index::train</definition>
         <argsstring>(idx_t n, const float *x)</argsstring>
         <name>train</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac722f952671b1c16ffeb6c35c9bf9319">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a4de68542fac496ecd0be85a25ecdb0d6">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a174853bbcb2c8760f9b10c7dd638827e">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324">train</reimplementedby>
@@ -521,6 +523,7 @@
         <definition>virtual void faiss::Index::reset</definition>
         <argsstring>()=0</argsstring>
         <name>reset</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac44c7ec1993d21f91e0c0f143459f074">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a67161796f274a7171a67c36bdf1ef1db">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a88676a893e9b44041e7a52327d960b54">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2">reset</reimplementedby>
@@ -1005,6 +1008,7 @@
         <definition>virtual bool faiss::gpu::GpuIndex::addImplRequiresIDs_</definition>
         <argsstring>() const =0</argsstring>
         <name>addImplRequiresIDs_</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ad09daf76a10d203787be33e380aae192">addImplRequiresIDs_</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad42677502d391e88427b26da1ae9bd2d">addImplRequiresIDs_</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400">addImplRequiresIDs_</reimplementedby>
         <briefdescription>
@@ -1021,6 +1025,7 @@
         <definition>virtual void faiss::gpu::GpuIndex::addImpl_</definition>
         <argsstring>(idx_t n, const float *x, const idx_t *ids)=0</argsstring>
         <name>addImpl_</name>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a13cfacf60ae95c6598a20b465a1ed96b">addImpl_</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aa036d1ff8d0cfbf8ff81b53ea0a58781">addImpl_</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9">addImpl_</reimplementedby>
         <param>
@@ -1051,6 +1056,7 @@
         <name>searchImpl_</name>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad9f05629fda68df95cb828f0a7721941">searchImpl_</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c">searchImpl_</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a7e58e95c649da44551033c97402ff1ab">searchImpl_</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1334,16 +1340,16 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="7">
+      <node id="8">
         <label>faiss::gpu::GpuIndexIVFFlat</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat"/>
-        <childnode refid="6" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizer</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer"/>
-        <childnode refid="6" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
@@ -1352,19 +1358,25 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
-        <label>faiss::gpu::GpuIndexIVFPQ</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
-        <childnode refid="6" relation="public-inheritance">
+      <node id="3">
+        <label>faiss::gpu::GpuIndexCagra</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexCagra"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="9">
+        <label>faiss::gpu::GpuIndexIVFPQ</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::gpu::GpuIndexFlat</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexFlat"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss::gpu::GpuIndexIVF</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1374,16 +1386,16 @@
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::gpu::GpuIndexFlatIP</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::gpu::GpuIndexFlatL2</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexFlatL2"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::IVFPQSearchCagraConfig</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1afeb146ff3cef908dc0fa53c50dfd10df" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::gpu::IVFPQSearchCagraConfig::n_probes</definition>
+        <argsstring></argsstring>
+        <name>n_probes</name>
+        <initializer>= 20</initializer>
+        <briefdescription>
+<para>The number of clusters to search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="124" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" prot="public" static="no" mutable="no">
+        <type>cudaDataType_t</type>
+        <definition>cudaDataType_t faiss::gpu::IVFPQSearchCagraConfig::lut_dtype</definition>
+        <argsstring></argsstring>
+        <name>lut_dtype</name>
+        <initializer>= CUDA_R_32F</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Data type of look up table to be created dynamically at search time.</para>
+<para>Possible values: [CUDA_R_32F, CUDA_R_16F, CUDA_R_8U]</para>
+<para>The use of low-precision types reduces the amount of shared memory required at search time, so fast shared memory kernels can be used even for datasets with large dimansionality. Note that the recall is slightly degraded when low-precision type is selected. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="135" column="20" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1aab0245d43c5cf89c287552e7f94c5756" prot="public" static="no" mutable="no">
+        <type>cudaDataType_t</type>
+        <definition>cudaDataType_t faiss::gpu::IVFPQSearchCagraConfig::internal_distance_dtype</definition>
+        <argsstring></argsstring>
+        <name>internal_distance_dtype</name>
+        <initializer>= CUDA_R_32F</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Storage data type for distance/similarity computed at search time.</para>
+<para>Possible values: [CUDA_R_16F, CUDA_R_32F]</para>
+<para>If the performance limiter at search time is device memory access, selecting FP16 will improve performance slightly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="144" column="20" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae421be4a8bc931d42a0962912f703683" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::gpu::IVFPQSearchCagraConfig::preferred_shmem_carveout</definition>
+        <argsstring></argsstring>
+        <name>preferred_shmem_carveout</name>
+        <initializer>= 1.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Preferred fraction of SM&apos;s unified memory / L1 cache to be used as shared memory.</para>
+<para>Possible values: [0.0 - 1.0] as a fraction of the <computeroutput>sharedMemPerMultiprocessor</computeroutput>.</para>
+<para>One wants to increase the carveout to make sure a good GPU occupancy for the main search kernel, but not to keep it too high to leave some memory to be used as L1 cache. Note, this value is interpreted only as a hint. Moreover, a GPU usually allows only a fixed set of cache configurations, so the provided value is rounded up to the nearest configuration. Refer to the NVIDIA tuning guide for the target GPU architecture.</para>
+<para>Note, this is a low-level tuning parameter that can have drastic negative effects on the search performance if tweaked incorrectly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="162" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/GpuIndexCagra.h" line="122" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="122" bodyend="163"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1aab0245d43c5cf89c287552e7f94c5756" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQSearchCagraConfig</scope><name>internal_distance_dtype</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQSearchCagraConfig</scope><name>lut_dtype</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1afeb146ff3cef908dc0fa53c50dfd10df" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQSearchCagraConfig</scope><name>n_probes</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae421be4a8bc931d42a0962912f703683" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQSearchCagraConfig</scope><name>preferred_shmem_carveout</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

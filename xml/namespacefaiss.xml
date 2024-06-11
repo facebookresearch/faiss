@@ -132,6 +132,7 @@
     <innerclass refid="structfaiss_1_1IndexHNSWPQ" prot="public">faiss::IndexHNSWPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWSQ" prot="public">faiss::IndexHNSWSQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW2Level" prot="public">faiss::IndexHNSW2Level</innerclass>
+    <innerclass refid="structfaiss_1_1IndexHNSWCagra" prot="public">faiss::IndexHNSWCagra</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMapTemplate" prot="public">faiss::IndexIDMapTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorTranslated" prot="public">faiss::IDSelectorTranslated</innerclass>
@@ -574,7 +575,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="251" column="28" declfile="faiss/impl/HNSW.h" declline="251" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="255" column="28" declfile="faiss/impl/HNSW.h" declline="255" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>

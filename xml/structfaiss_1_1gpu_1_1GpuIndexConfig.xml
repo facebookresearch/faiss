@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexConfig</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryFlatConfig</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexCagraConfig</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexFlatConfig</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVFConfig</derivedcompoundref>
       <sectiondef kind="public-attrib">
@@ -57,19 +58,25 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="6">
+      <node id="7">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::gpu::GpuIndexCagraConfig</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
@@ -79,22 +86,22 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::gpu::GpuIndexIVFFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
