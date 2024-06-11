@@ -38,6 +38,11 @@ macro(configure_swigfaiss source)
     set_source_files_properties(${source} PROPERTIES
       COMPILE_DEFINITIONS GPU_WRAPPER
     )
+    if (FAISS_ENABLE_RAFT)
+      set_property(SOURCE ${source} APPEND PROPERTY
+        COMPILE_DEFINITIONS FAISS_ENABLE_RAFT
+      )
+    endif()
   endif()
 endmacro()
 
