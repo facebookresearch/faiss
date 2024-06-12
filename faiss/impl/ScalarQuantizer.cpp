@@ -1972,7 +1972,7 @@ InvertedListScanner* sel1_InvertedListScanner(
                         SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
             }
         case ScalarQuantizer::QT_8bit_direct_signed:
-            sel2_InvertedListScanner<DCTemplate<
+            return sel2_InvertedListScanner<DCTemplate<
                     Quantizer8bitDirectSigned<SIMDWIDTH>,
                     Similarity,
                     SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
