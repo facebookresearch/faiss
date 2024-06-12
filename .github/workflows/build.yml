@@ -11,6 +11,13 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
+  linux-x86_64-cmake:
+    name: Linux x86_64 (cmake)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
     runs-on: faiss-aws-m5.xlarge
