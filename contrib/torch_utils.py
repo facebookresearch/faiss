@@ -493,7 +493,7 @@ for symbol in dir(faiss_module):
             handle_torch_Index(the_class)
 
 # allows torch tensor usage with bfKnn
-def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1):
+def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1, use_raft=False):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
         return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric, device)
@@ -574,9 +574,10 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     args.outIndices = I_ptr
     args.outIndicesType = I_type
     args.device = device
+    args.use_raft = use_raft
 
     with using_stream(res):
-        faiss.bfKnn(res, args)
+       faiss.bfKnn(res, args)
 
     return D, I
 
