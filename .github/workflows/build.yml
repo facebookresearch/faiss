@@ -13,8 +13,7 @@ env:
 jobs:
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    needs: faiss-aws-m5.xlarge
-    runs-on: ubuntu-latest
+    runs-on: faiss-aws-m5.xlarge
     steps:
       - name: Checkout
         uses: actions/checkout@v4
