@@ -43,6 +43,7 @@ runs:
     - name: Build all targets
       shell: bash
       run: |
+        env
         eval "$(conda shell.bash hook)"
         conda activate
         cmake -B build \
@@ -57,10 +58,12 @@ runs:
               -DBLA_VENDOR=Intel10_64_dyn \
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
+        env
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
       run: |
+        env
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
     - name: Install Python extension
