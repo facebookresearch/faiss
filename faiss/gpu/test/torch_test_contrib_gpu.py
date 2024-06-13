@@ -331,6 +331,9 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                         self.assertTrue(torch.equal(I.cpu(), gt_I[6:8]))
                         self.assertLess((D.cpu() - gt_D[6:8]).abs().max(), 1e-4)
 
+    @unittest.skipUnless(
+        "RAFT" in faiss.get_compile_options(),
+        "only if RAFT is compiled in")
     def test_knn_gpu_raft(self):
         self.test_knn_gpu(use_raft=True)
 
