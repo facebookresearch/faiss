@@ -41,7 +41,7 @@ macro(configure_swigfaiss source)
     if (USE_ROCM)
       message(USE_ROCM="${USE_ROCM}")
       set_source_files_properties(${source} PROPERTIES
-        SWIG_FLAGS -DUSE_ROCM
+        COMPILE_DEFINITIONS USE_ROCM
       )
     endif()
   endif()
