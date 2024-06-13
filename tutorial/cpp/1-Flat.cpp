@@ -83,10 +83,10 @@ int main() {
             printf("\n");
         }
 
-        printf("I (5 last results)=\n");
+        printf("D (5 last results)=\n");
         for (int i = nq - 5; i < nq; i++) {
             for (int j = 0; j < k; j++)
-                printf("%5zd ", I[i * k + j]);
+                printf("%5f ", D[i * k + j]);
             printf("\n");
         }
 

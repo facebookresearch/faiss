@@ -44,7 +44,7 @@ runs:
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda install -y -q anaconda-client
         conda config --set anaconda_upload yes
@@ -59,7 +59,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
     - name: Conda build (GPU)
@@ -74,7 +74,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
@@ -90,7 +90,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
-        PACKAGE_TYPE: inputs.label
+        PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
