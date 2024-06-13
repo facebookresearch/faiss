@@ -144,7 +144,7 @@ class TestHNSW(unittest.TestCase):
         index2 = faiss.deserialize_index(
             faiss.serialize_index(index, faiss.IO_FLAG_SKIP_STORAGE)
         )
-        self.assertEquals(index2.storage, None)
+        self.assertEqual(index2.storage, None)
         self.assertRaises(
             RuntimeError,
             index2.search, self.xb, 1)
