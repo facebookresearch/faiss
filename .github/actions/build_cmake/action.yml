@@ -30,6 +30,7 @@ runs:
       run: |
         conda install -y -q -c conda-forge gxx_linux-64=11.2 sysroot_linux-64=2.28
         conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
+        echo "$CONDA/bin" >> $GITHUB_PATH
     - name: Install CUDA
       if: inputs.gpu == 'ON' && inputs.raft == 'OFF'
       shell: bash
@@ -43,7 +44,6 @@ runs:
     - name: Build all targets
       shell: bash
       run: |
-        env
         eval "$(conda shell.bash hook)"
         conda activate
         cmake -B build \
@@ -58,14 +58,10 @@ runs:
               -DBLA_VENDOR=Intel10_64_dyn \
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
-        env
-        which make
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
       run: |
-        env
-        which make
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
     - name: Install Python extension
@@ -77,7 +73,6 @@ runs:
       shell: bash
       run: |
         conda install -y pytest
-        echo "$CONDA/bin" >> $GITHUB_PATH
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF'
       shell: bash
