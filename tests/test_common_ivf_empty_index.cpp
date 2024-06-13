@@ -23,7 +23,7 @@ namespace {
 
 int d = 64;
 
-}; // namespace
+} // namespace
 
 std::vector<float> get_random_vectors(size_t n, int seed) {
     std::vector<float> x(n * d);

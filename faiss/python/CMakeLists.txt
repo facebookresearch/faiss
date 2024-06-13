@@ -44,6 +44,11 @@ macro(configure_swigfaiss source)
         COMPILE_DEFINITIONS USE_ROCM
       )
     endif()
+    if (FAISS_ENABLE_RAFT)
+      set_property(SOURCE ${source} APPEND PROPERTY
+        COMPILE_DEFINITIONS FAISS_ENABLE_RAFT
+      )
+    endif()
   endif()
 endmacro()
 

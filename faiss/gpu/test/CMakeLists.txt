@@ -19,7 +19,6 @@
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-
 add_library(faiss_gpu_test_helper TestUtils.cpp)
 if(USE_ROCM)
 find_package(HIP REQUIRED)
@@ -50,6 +49,10 @@ faiss_gpu_test(TestGpuSelect.hip)
 else()
 faiss_gpu_test(TestGpuDistance.cu)
 faiss_gpu_test(TestGpuSelect.cu)
+
+if(FAISS_ENABLE_RAFT)
+  faiss_gpu_test(TestGpuIndexCagra.cu)
+endif()
 endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
