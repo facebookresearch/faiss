@@ -34,7 +34,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        channels: conda-forge
+        channels: conda-forge,nodefaults
         miniconda-version:  latest
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -47,6 +47,7 @@ runs:
         echo "debug-end"
         conda update -y -q conda
         conda install -y -q conda-build
+        conda remove _openmp_mutex
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
