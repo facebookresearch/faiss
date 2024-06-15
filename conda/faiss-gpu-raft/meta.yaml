@@ -50,6 +50,7 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.24.0
         - make  # [not win]
+        - mkl =2023.1  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
@@ -87,6 +88,7 @@ outputs:
         - swig
         - cmake >=3.24.0
         - make  # [not win]
+        - mkl =2023.1  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
