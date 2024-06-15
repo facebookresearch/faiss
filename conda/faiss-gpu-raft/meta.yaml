@@ -48,20 +48,20 @@ outputs:
         - {{ compiler('cxx') }}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
-        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - _openmp_mutex =4.5=2_gnu  # [x86_64]
         - cmake >=3.24.0
         - make  # [not win]
         - mkl =2023.0  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
-        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - _openmp_mutex =4.5=2_gnu  # [x86_64]
         - mkl =2023.0  # [x86_64]
         - openblas  # [not x86_64]
         - libraft =24.04
         - cuda-version {{ cuda_constraints }}
       run:
-        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - _openmp_mutex =4.5=2_gnu  # [x86_64]
         - mkl =2023.0  # [x86_64]
         - openblas  # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
