@@ -17,9 +17,15 @@
 # the License.
 # =============================================================================
 
-set(FAISS_GPU_SRC "")
+set(FAISS_GPU_SRC 
+  utils/DeviceUtils.cu
 
-set(FAISS_GPU_HEADERS "")
+)
+
+set(FAISS_GPU_HEADERS 
+  utils/DeviceDefs.cuh
+  utils/DeviceUtils.h
+)
 
 function(generate_ivf_interleaved_code)
   set(SUB_CODEC_TYPE
