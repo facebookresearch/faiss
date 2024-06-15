@@ -90,22 +90,22 @@ endfunction()
 
 generate_ivf_interleaved_code()
 
-if(FAISS_ENABLE_RAFT)
-  list(APPEND FAISS_GPU_HEADERS
-          GpuIndexCagra.h
-          impl/RaftCagra.cuh
-          impl/RaftFlatIndex.cuh
-          impl/RaftIVFFlat.cuh
-          impl/RaftIVFPQ.cuh
-          utils/RaftUtils.h)
-  list(APPEND FAISS_GPU_SRC
-          GpuIndexCagra.cu
-          impl/RaftCagra.cu
-          impl/RaftFlatIndex.cu
-          impl/RaftIVFFlat.cu
-          impl/RaftIVFPQ.cu
-          utils/RaftUtils.cu)
-endif()
+#if(FAISS_ENABLE_RAFT)
+#  list(APPEND FAISS_GPU_HEADERS
+#          GpuIndexCagra.h
+#          impl/RaftCagra.cuh
+#         impl/RaftFlatIndex.cuh
+#          impl/RaftIVFFlat.cuh
+#          impl/RaftIVFPQ.cuh
+#          utils/RaftUtils.h)
+#  list(APPEND FAISS_GPU_SRC
+#          GpuIndexCagra.cu
+#          impl/RaftCagra.cu
+#          impl/RaftFlatIndex.cu
+#          impl/RaftIVFFlat.cu
+#          impl/RaftIVFPQ.cu
+#          utils/RaftUtils.cu)
+#endif()
 
 add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
 set_target_properties(faiss_gpu PROPERTIES
