@@ -11,7 +11,7 @@ set -e
 cmake -B _build \
       -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TESTING=OFF \
-      -DFAISS_OPT_LEVEL=generic \
+      -DFAISS_OPT_LEVEL=avx512 \
       -DFAISS_ENABLE_GPU=ON \
       -DFAISS_ENABLE_RAFT=ON \
       -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
@@ -20,7 +20,7 @@ cmake -B _build \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
-make -C _build -j$(nproc) faiss
+make -C _build -j$(nproc) faiss faiss_avx2 faiss_avx512
 
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/
