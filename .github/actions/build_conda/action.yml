@@ -90,6 +90,8 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        conda install -n base -c omegacen conda-depgraph
+        conda degraph in _openmp_mutex
         conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ RAFT) w/ anaconda upload
