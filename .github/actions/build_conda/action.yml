@@ -38,15 +38,8 @@ runs:
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        echo "debug-start"
-        conda config --show channels
-        conda config --remove channels defaults
-        conda config --add channels conda-forge
-        conda config --show channels
-        echo "debug-end"
         conda update -y -q conda
-        conda install -y -q -c conda-forge conda-build
-        conda install -c conda-forge --override-channels _openmp_mutex
+        conda install -y -q conda-build
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -90,7 +83,6 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda install -c conda-forge conda-tree
         conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ RAFT) w/ anaconda upload
