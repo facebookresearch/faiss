@@ -91,7 +91,6 @@ runs:
       working-directory: conda
       run: |
         conda install -c conda-forge conda-tree
-        conda tree whoneeds _openmp_mutex=2_gnu
         conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ RAFT) w/ anaconda upload

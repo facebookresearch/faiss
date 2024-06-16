@@ -22,5 +22,9 @@ cmake -B _build \
 
 make -C _build -j$(nproc) faiss
 
+echo "debug-2-start"
+conda tree whoneeds _openmp_mutex
+echo "debug-2-end"
+
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/
