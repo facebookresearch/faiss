@@ -468,7 +468,7 @@ void IndexHNSW::search_level_0(
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
 #pragma omp parallel for
-        for (size_t i = 0; i < k * n; i++) {
+        for (int64_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
         }
     }
