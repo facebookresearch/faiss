@@ -342,14 +342,23 @@
         <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" prot="public">
           <name>METRIC_Jaccard</name>
           <briefdescription>
+<para>sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i &gt; 0 </para>
           </briefdescription>
           <detaileddescription>
-<para>defined as: sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i &gt; 0 </para>
           </detaileddescription>
         </enumvalue>
         <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752cacb32f4fe0d27316f90eda03ffe999f85" prot="public">
           <name>METRIC_NaNEuclidean</name>
           <briefdescription>
+<para>Squared Eucliden distance, ignoring NaNs. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" prot="public">
+          <name>METRIC_ABS_INNER_PRODUCT</name>
+          <briefdescription>
+<para>abs(x | y): the distance to a hyperplane </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -362,7 +371,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="37"/>
+        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="41"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
@@ -508,7 +517,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="40" column="1" bodyfile="faiss/MetricType.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/MetricType.h" line="44" column="1" bodyfile="faiss/MetricType.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -3212,7 +3221,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="44" column="16" bodyfile="faiss/MetricType.h" bodystart="44" bodyend="47"/>
+        <location file="faiss/MetricType.h" line="48" column="16" bodyfile="faiss/MetricType.h" bodystart="48" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5348,15 +5357,10 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="23" column="6" declfile="faiss/utils/extra_distances.h" declline="23" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a82b72341bc9020feaffe1420ab8eba63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>class C</type>
-          </param>
-        </templateparamlist>
+      <memberdef kind="function" id="namespacefaiss_1a787d24f72e03ccc4cb6427eb9135b172" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::knn_extra_metrics</definition>
-        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, HeapArray&lt; C &gt; *res)</argsstring>
+        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, size_t k, float *distances, int64_t *indexes)</argsstring>
         <name>knn_extra_metrics</name>
         <param>
           <type>const float *</type>
@@ -5387,8 +5391,16 @@
           <declname>metric_arg</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; C &gt; *</type>
-          <declname>res</declname>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>indexes</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -5396,7 +5408,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="37" column="6" declfile="faiss/utils/extra_distances.h" declline="37" declcolumn="6"/>
+        <location file="faiss/utils/extra_distances.h" line="36" column="6" declfile="faiss/utils/extra_distances.h" declline="36" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -5430,7 +5442,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="49" column="27" declfile="faiss/utils/extra_distances.h" declline="49" declcolumn="27"/>
+        <location file="faiss/utils/extra_distances.h" line="50" column="27" declfile="faiss/utils/extra_distances.h" declline="50" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint16_t</type>
