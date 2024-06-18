@@ -90,10 +90,10 @@ struct ScopedSelChange {
     SearchParameters* params = nullptr;
     IDSelector* old_sel = nullptr;
 
-    void set(SearchParameters* params, IDSelector* new_sel) {
-        this->params = params;
-        old_sel = params->sel;
-        params->sel = new_sel;
+    void set(SearchParameters* params_2, IDSelector* new_sel) {
+        this->params = params_2;
+        old_sel = params_2->sel;
+        params_2->sel = new_sel;
     }
     ~ScopedSelChange() {
         if (params) {
@@ -146,9 +146,16 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
-    index->range_search(n, x, radius, result);
+    if (params) {
+        SearchParameters internal_search_parameters;
+        IDSelectorTranslated id_selector_translated(id_map, params->sel);
+        internal_search_parameters.sel = &id_selector_translated;
+
+        index->range_search(n, x, radius, result, &internal_search_parameters);
+    } else {
+        index->range_search(n, x, radius, result);
+    }
+
 #pragma omp parallel for
     for (idx_t i = 0; i < result->lims[result->nq]; i++) {
         result->labels[i] = result->labels[i] < 0 ? result->labels[i]
@@ -266,7 +273,7 @@ void IndexIDMap2Template<IndexT>::reconstruct(
         typename IndexT::component_t* recons) const {
     try {
         this->index->reconstruct(rev_map.at(key), recons);
-    } catch (const std::out_of_range& e) {
+    } catch (const std::out_of_range&) {
         FAISS_THROW_FMT("key %" PRId64 " not found", key);
     }
 }

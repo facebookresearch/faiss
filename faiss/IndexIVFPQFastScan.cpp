@@ -171,7 +171,7 @@ void IndexIVFPQFastScan::encode_vectors(
  * Look-Up Table functions
  *********************************************************/
 
-void fvec_madd_avx(
+void fvec_madd_simd(
         size_t n,
         const float* a,
         float bf,
@@ -202,12 +202,12 @@ bool IndexIVFPQFastScan::lookup_table_is_3d() const {
 void IndexIVFPQFastScan::compute_LUT(
         size_t n,
         const float* x,
-        const idx_t* coarse_ids,
-        const float* coarse_dis,
+        const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
         AlignedTable<float>& biases) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
+    size_t nprobe = this->nprobe;
 
     if (by_residual) {
         if (metric_type == METRIC_L2) {
@@ -215,7 +215,7 @@ void IndexIVFPQFastScan::compute_LUT(
 
             if (use_precomputed_table == 1) {
                 biases.resize(n * nprobe);
-                memcpy(biases.get(), coarse_dis, sizeof(float) * n * nprobe);
+                memcpy(biases.get(), cq.dis, sizeof(float) * n * nprobe);
 
                 AlignedTable<float> ip_table(n * dim12);
                 pq.compute_inner_prod_tables(n, x, ip_table.get());
@@ -224,10 +224,10 @@ void IndexIVFPQFastScan::compute_LUT(
                 for (idx_t ij = 0; ij < n * nprobe; ij++) {
                     idx_t i = ij / nprobe;
                     float* tab = dis_tables.get() + ij * dim12;
-                    idx_t cij = coarse_ids[ij];
+                    idx_t cij = cq.ids[ij];
 
                     if (cij >= 0) {
-                        fvec_madd_avx(
+                        fvec_madd_simd(
                                 dim12,
                                 precomputed_table.get() + cij * dim12,
                                 -2,
@@ -249,7 +249,7 @@ void IndexIVFPQFastScan::compute_LUT(
                 for (idx_t ij = 0; ij < n * nprobe; ij++) {
                     idx_t i = ij / nprobe;
                     float* xij = &xrel[ij * d];
-                    idx_t cij = coarse_ids[ij];
+                    idx_t cij = cq.ids[ij];
 
                     if (cij >= 0) {
                         quantizer->compute_residual(x + i * d, xij, cij);
@@ -269,7 +269,7 @@ void IndexIVFPQFastScan::compute_LUT(
             // compute_inner_prod_tables(pq, n, x, dis_tables.get());
 
             biases.resize(n * nprobe);
-            memcpy(biases.get(), coarse_dis, sizeof(float) * n * nprobe);
+            memcpy(biases.get(), cq.dis, sizeof(float) * n * nprobe);
         } else {
             FAISS_THROW_FMT("metric %d not supported", metric_type);
         }
@@ -286,9 +286,28 @@ void IndexIVFPQFastScan::compute_LUT(
     }
 }
 
-void IndexIVFPQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
+void IndexIVFPQFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
         const {
-    pq.decode(bytes, x, n);
+    size_t coarse_size = coarse_code_size();
+
+#pragma omp parallel if (n > 1)
+    {
+        std::vector<float> residual(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * (code_size + coarse_size);
+            int64_t list_no = decode_listno(code);
+            float* xi = x + i * d;
+            pq.decode(code + coarse_size, xi);
+            if (by_residual) {
+                quantizer->reconstruct(list_no, residual.data());
+                for (size_t j = 0; j < d; j++) {
+                    xi[j] += residual[j];
+                }
+            }
+        }
+    }
 }
 
 } // namespace faiss

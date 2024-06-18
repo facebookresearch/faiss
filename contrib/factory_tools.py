@@ -56,6 +56,8 @@ def get_code_size(d, indexkey):
         return (d * 6 + 7) // 8
     elif indexkey == 'SQfp16':
         return d * 2
+    elif indexkey == 'SQbf16':
+        return d * 2
 
     mo = re.match('PCAR?(\\d+),(.*)$', indexkey)
     if mo:
@@ -101,12 +103,23 @@ def reverse_index_factory(index):
             return prefix + ",SQ8"
         if isinstance(index, faiss.IndexIVFPQ):
             return prefix + f",PQ{index.pq.M}x{index.pq.nbits}"
+        if isinstance(index, faiss.IndexIVFPQFastScan):
+            return prefix + f",PQ{index.pq.M}x{index.pq.nbits}fs"
 
     elif isinstance(index, faiss.IndexPreTransform):
-        assert index.chain.size() == 1
+        if index.chain.size() != 1:
+            raise NotImplementedError()
         vt = faiss.downcast_VectorTransform(index.chain.at(0))
         if isinstance(vt, faiss.OPQMatrix):
-            return f"OPQ{vt.M}_{vt.d_out},{reverse_index_factory(index.index)}"
+            prefix = f"OPQ{vt.M}_{vt.d_out}"
+        elif isinstance(vt, faiss.ITQTransform):
+            prefix = f"ITQ{vt.itq.d_out}"
+        elif isinstance(vt, faiss.PCAMatrix):
+            assert vt.eigen_power == 0
+            prefix = "PCA" + ("R" if vt.random_rotation else "") + str(vt.d_out)
+        else:
+            raise NotImplementedError()
+        return f"{prefix},{reverse_index_factory(index.index)}"
 
     elif isinstance(index, faiss.IndexHNSW):
         return f"HNSW{get_hnsw_M(index)}"
@@ -117,12 +130,19 @@ def reverse_index_factory(index):
     elif isinstance(index, faiss.IndexPQFastScan):
         return f"PQ{index.pq.M}x{index.pq.nbits}fs"
 
+    elif isinstance(index, faiss.IndexPQ):
+        return f"PQ{index.pq.M}x{index.pq.nbits}"
+
+    elif isinstance(index, faiss.IndexLSH):
+        return "LSH" + ("r" if index.rotate_data else "") + ("t" if index.train_thresholds else "")
+
     elif isinstance(index, faiss.IndexScalarQuantizer):
         sqtypes = {
             faiss.ScalarQuantizer.QT_8bit: "8",
             faiss.ScalarQuantizer.QT_4bit: "4",
             faiss.ScalarQuantizer.QT_6bit: "6",
             faiss.ScalarQuantizer.QT_fp16: "fp16",
+            faiss.ScalarQuantizer.QT_bf16: "bf16",
         }
         return f"SQ{sqtypes[index.sq.qtype]}"
 

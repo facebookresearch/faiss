@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/index_io.h>
 
 #include <faiss/impl/io_macros.h>
@@ -398,15 +396,12 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     graph = std::make_shared<nsg::Graph<int>>(N, R);
     std::fill_n(graph->data, N * R, EMPTY_ID);
 
-    int size = 0;
-
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < R + 1; j++) {
             int id;
             READ1(id);
             if (id != EMPTY_ID) {
                 graph->at(i, j) = id;
-                size += 1;
             } else {
                 break;
             }
@@ -534,7 +529,11 @@ Index* read_index(IOReader* f, int io_flags) {
     Index* idx = nullptr;
     uint32_t h;
     READ1(h);
-    if (h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
+    if (h == fourcc("null")) {
+        // denotes a missing index, useful for some cases
+        return nullptr;
+    } else if (
+            h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
         IndexFlat* idxf;
         if (h == fourcc("IxFI")) {
             idxf = new IndexFlatIP();
@@ -951,7 +950,7 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
-            h == fourcc("IHN2")) {
+            h == fourcc("IHN2") || h == fourcc("IHNc")) {
         IndexHNSW* idxhnsw = nullptr;
         if (h == fourcc("IHNf"))
             idxhnsw = new IndexHNSWFlat();
@@ -961,11 +960,19 @@ Index* read_index(IOReader* f, int io_flags) {
             idxhnsw = new IndexHNSWSQ();
         if (h == fourcc("IHN2"))
             idxhnsw = new IndexHNSW2Level();
+        if (h == fourcc("IHNc"))
+            idxhnsw = new IndexHNSWCagra();
         read_index_header(idxhnsw, f);
+        if (h == fourcc("IHNc")) {
+            READ1(idxhnsw->keep_max_size_level0);
+            auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
+            READ1(idx_hnsw_cagra->base_level_only);
+            READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+        }
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
-        idxhnsw->own_fields = true;
-        if (h == fourcc("IHNp")) {
+        idxhnsw->own_fields = idxhnsw->storage != nullptr;
+        if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
         }
         idx = idxhnsw;

@@ -38,7 +38,17 @@ struct GpuClonerOptions {
     bool verbose = false;
 
     /// use the RAFT implementation
+#if defined USE_NVIDIA_RAFT
+    bool use_raft = true;
+#else
     bool use_raft = false;
+#endif
+
+    /// This flag controls the CPU fallback logic for coarse quantizer
+    /// component of the index. When set to false (default), the cloner will
+    /// throw an exception for indices not implemented on GPU. When set to
+    /// true, it will fallback to a CPU implementation.
+    bool allowCpuCoarseQuantizer = false;
 };
 
 struct GpuMultipleClonerOptions : public GpuClonerOptions {

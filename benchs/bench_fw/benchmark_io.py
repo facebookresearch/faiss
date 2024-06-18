@@ -16,6 +16,7 @@ from zipfile import ZipFile
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 
 import numpy as np
+import submitit
 from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib_gpu
     dataset_from_name,
 )
@@ -45,6 +46,9 @@ def merge_rcq_itq(
 @dataclass
 class BenchmarkIO:
     path: str
+
+    def clone(self):
+        return BenchmarkIO(path=self.path)
 
     def __post_init__(self):
         self.cached_ds = {}
@@ -106,7 +110,7 @@ class BenchmarkIO:
         fn = self.get_local_filename(filename)
         with ZipFile(fn, "w") as zip_file:
             for key, value in zip(keys, values, strict=True):
-                with zip_file.open(key, "w") as f:
+                with zip_file.open(key, "w", force_zip64=True) as f:
                     if key in ["D", "I", "R", "lims"]:
                         np.save(f, value)
                     elif key in ["P"]:
@@ -117,22 +121,31 @@ class BenchmarkIO:
         self.upload_file_to_blobstore(filename, overwrite=overwrite)
 
     def get_dataset(self, dataset):
-        if dataset.namespace is not None and dataset.namespace[:4] == "std_":
-            if dataset.tablename not in self.cached_ds:
-                self.cached_ds[dataset.tablename] = dataset_from_name(
-                    dataset.tablename,
-                )
-            p = dataset.namespace[4]
-            if p == "t":
-                return self.cached_ds[dataset.tablename].get_train()
-            elif p == "d":
-                return self.cached_ds[dataset.tablename].get_database()
-            elif p == "q":
-                return self.cached_ds[dataset.tablename].get_queries()
-            else:
-                raise ValueError
-        elif dataset not in self.cached_ds:
-            if dataset.namespace == "syn":
+        if dataset not in self.cached_ds:
+            if (
+                dataset.namespace is not None
+                and dataset.namespace[:4] == "std_"
+            ):
+                if dataset.tablename not in self.cached_ds:
+                    self.cached_ds[dataset.tablename] = dataset_from_name(
+                        dataset.tablename,
+                    )
+                p = dataset.namespace[4]
+                if p == "t":
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_train(dataset.num_vectors)
+                elif p == "d":
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_database()
+                elif p == "q":
+                    self.cached_ds[dataset] = self.cached_ds[
+                        dataset.tablename
+                    ].get_queries()
+                else:
+                    raise ValueError
+            elif dataset.namespace == "syn":
                 d, seed = dataset.tablename.split("_")
                 d = int(d)
                 seed = int(seed)
@@ -225,3 +238,31 @@ class BenchmarkIO:
         logger.info(f"Saving index to {fn}")
         faiss.write_index(index, fn)
         self.upload_file_to_blobstore(filename)
+        assert os.path.exists(fn)
+        return os.path.getsize(fn)
+
+    def launch_jobs(self, func, params, local=True):
+        if local:
+            results = [func(p) for p in params]
+            return results
+        logger.info(f"launching {len(params)} jobs")
+        executor = submitit.AutoExecutor(folder="/checkpoint/gsz/jobs")
+        executor.update_parameters(
+            nodes=1,
+            gpus_per_node=8,
+            cpus_per_task=80,
+            # mem_gb=640,
+            tasks_per_node=1,
+            name="faiss_benchmark",
+            slurm_array_parallelism=512,
+            slurm_partition="scavenge",
+            slurm_time=4 * 60,
+            slurm_constraint="bldg1",
+        )
+        jobs = executor.map_array(func, params)
+        logger.info(f"launched {len(jobs)} jobs")
+        for job, param in zip(jobs, params):
+            logger.info(f"{job.job_id=} {param[0]=}")
+        results = [job.result() for job in jobs]
+        print(f"received {len(results)} results")
+        return results

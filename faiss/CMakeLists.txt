@@ -147,6 +147,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/CodePacker.h
   impl/IDSelector.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
@@ -182,6 +183,7 @@ set(FAISS_HEADERS
   invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
   utils/AlignedTable.h
+  utils/bf16.h
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
@@ -189,6 +191,7 @@ set(FAISS_HEADERS
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
+  utils/fp16-arm.h
   utils/fp16.h
   utils/hamming-inl.h
   utils/hamming.h
@@ -197,6 +200,7 @@ set(FAISS_HEADERS
   utils/prefetch.h
   utils/quantize_lut.h
   utils/random.h
+  utils/sorting.h
   utils/simdlib.h
   utils/simdlib_avx2.h
   utils/simdlib_emulated.h
@@ -229,7 +233,7 @@ set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
@@ -287,7 +291,10 @@ if(WIN32)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
 endif()
 
-target_compile_definitions(faiss PRIVATE FINTEGER=int)
+string(FIND "${CMAKE_CXX_FLAGS}" "FINTEGER" finteger_idx)
+if (${finteger_idx} EQUAL -1)
+  target_compile_definitions(faiss PRIVATE FINTEGER=int)
+endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
 
@@ -328,7 +335,7 @@ if(FAISS_OPT_LEVEL STREQUAL "avx2")
   )
 endif()
 if(FAISS_OPT_LEVEL STREQUAL "avx512")
-  install(TARGETS faiss_avx512
+  install(TARGETS faiss_avx2 faiss_avx512
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

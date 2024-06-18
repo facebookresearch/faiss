@@ -1,0 +1,110 @@
+d: 256
+output: /checkpoint/marialomeli/offline_faiss/ssnpp
+index:
+  prod:
+  - 'IVF8192,PQ128'
+  non-prod:
+  - 'IVF16384,PQ128'
+  - 'IVF32768,PQ128'
+  - 'OPQ64_128,IVF4096,PQ64'
+nprobe:
+  prod:
+    - 512
+  non-prod:
+    - 256
+    - 128
+    - 1024
+    - 2048
+    - 4096
+    - 8192
+
+k: 50
+index_shard_size: 50000000
+query_batch_size: 50000000
+evaluation_sample: 10000
+training_sample: 1572864
+datasets:
+  ssnpp_1B:
+    root: /checkpoint/marialomeli/ssnpp_data
+    size: 1000000000
+    files:
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000000.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000001.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000002.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000003.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000004.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000005.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000006.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000007.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000008.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000009.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000010.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000011.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000012.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000013.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000014.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000015.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000016.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000017.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000018.npy
+      size: 50000000
+    - dtype: uint8
+      format: npy
+      name: ssnpp_0000000019.npy
+      size: 50000000

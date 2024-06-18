@@ -22,7 +22,7 @@ class TestSelector(unittest.TestCase):
     combinations as possible.
     """
 
-    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2):
+    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2, k=10):
         """ Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
         Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
@@ -30,7 +30,6 @@ class TestSelector(unittest.TestCase):
         ds = datasets.SyntheticDataset(32, 1000, 100, 20)
         index = faiss.index_factory(ds.d, index_key, mt)
         index.train(ds.get_train())
-        k = 10
 
         # reference result
         if "range" in id_selector_type:
@@ -145,6 +144,16 @@ class TestSelector(unittest.TestCase):
     def test_IVFPQ(self):
         self.do_test_id_selector("IVF32,PQ4x4np")
 
+    def test_IVFPQfs(self):
+        self.do_test_id_selector("IVF32,PQ4x4fs")
+
+    def test_IVFPQfs_k1(self):
+        self.do_test_id_selector("IVF32,PQ4x4fs", k=1)
+
+    def test_IVFPQfs_k40(self):
+        # test reservoir codepath
+        self.do_test_id_selector("IVF32,PQ4x4fs", k=40)
+
     def test_IVFSQ(self):
         self.do_test_id_selector("IVF32,SQ8")
 
@@ -256,6 +265,24 @@ class TestSelector(unittest.TestCase):
         )
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+
+    def test_bounds(self):
+        # https://github.com/facebookresearch/faiss/issues/3156
+        d = 64  # dimension
+        nb = 100000  # database size
+        xb = np.random.random((nb, d))
+        index_ip = faiss.IndexFlatIP(d)
+        index_ip.add(xb)
+        index_l2 = faiss.IndexFlatIP(d)
+        index_l2.add(xb)
+
+        out_of_bounds_id = nb + 15  # + 14 or lower will work fine
+        id_selector = faiss.IDSelectorArray([out_of_bounds_id])
+        search_params = faiss.SearchParameters(sel=id_selector)
+
+        # ignores out of bound, does not crash
+        distances, indices = index_ip.search(xb[:2], k=3, params=search_params)
+        distances, indices = index_l2.search(xb[:2], k=3, params=search_params)
 
 
 class TestSearchParams(unittest.TestCase):
@@ -438,7 +465,6 @@ class TestSortedIDSelectorRange(unittest.TestCase):
         sp = faiss.swig_ptr
         selr.find_sorted_ids_bounds(
             len(ids), sp(ids), sp(j01[:1]), sp(j01[1:]))
-        print(j01)
         assert j01[0] >= j01[1]
 
 

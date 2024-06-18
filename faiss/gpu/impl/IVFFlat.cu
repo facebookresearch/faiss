@@ -283,6 +283,53 @@ void IVFFlat::searchPreassigned(
             storePairs);
 }
 
+void IVFFlat::reconstruct_n(idx_t i0, idx_t ni, float* out) {
+    if (ni == 0) {
+        // nothing to do
+        return;
+    }
+
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
+    for (idx_t list_no = 0; list_no < numLists_; list_no++) {
+        size_t list_size = deviceListData_[list_no]->numVecs;
+
+        auto idlist = getListIndices(list_no);
+
+        for (idx_t offset = 0; offset < list_size; offset++) {
+            idx_t id = idlist[offset];
+            if (!(id >= i0 && id < i0 + ni)) {
+                continue;
+            }
+
+            // vector data in the non-interleaved format is laid out like:
+            // v0d0 v0d1 ... v0d(dim-1) v1d0 v1d1 ... v1d(dim-1)
+
+            // vector data in the interleaved format is laid out like:
+            // (v0d0 v1d0 ... v31d0) (v0d1 v1d1 ... v31d1)
+            // (v0d(dim - 1) ... v31d(dim-1))
+            // (v32d0 v33d0 ... v63d0) (... v63d(dim-1)) (v64d0 ...)
+
+            // where vectors are chunked into groups of 32, and each dimension
+            // for each of the 32 vectors is contiguous
+
+            auto vectorChunk = offset / 32;
+            auto vectorWithinChunk = offset % 32;
+
+            auto listDataPtr = (float*)deviceListData_[list_no]->data.data();
+            listDataPtr += vectorChunk * 32 * dim_ + vectorWithinChunk;
+
+            for (int d = 0; d < dim_; ++d) {
+                fromDevice<float>(
+                        listDataPtr + 32 * d,
+                        out + (id - i0) * dim_ + d,
+                        1,
+                        stream);
+            }
+        }
+    }
+}
+
 void IVFFlat::searchImpl_(
         Tensor<float, 2, true>& queries,
         Tensor<float, 2, true>& coarseDistances,

@@ -31,7 +31,7 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
 #if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/error.hpp>
@@ -50,6 +50,17 @@ namespace gpu {
 using namespace raft::distance;
 using namespace raft::neighbors;
 #endif
+
+bool should_use_raft(GpuDistanceParams args) {
+    cudaDeviceProp prop;
+    int dev = args.device >= 0 ? args.device : getCurrentDevice();
+    cudaGetDeviceProperties(&prop, dev);
+
+    if (prop.major < 7)
+        return false;
+
+    return args.use_raft;
+}
 
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
@@ -228,8 +239,8 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
 #if defined USE_NVIDIA_RAFT
     // Note: For now, RAFT bfknn requires queries and vectors to be same layout
-    if (args.use_raft && args.queriesRowMajor == args.vectorsRowMajor) {
-        DistanceType distance = faiss_to_raft(args.metric, false);
+    if (should_use_raft(args) && args.queriesRowMajor == args.vectorsRowMajor) {
+        DistanceType distance = metricFaissToRaft(args.metric, false);
 
         auto resImpl = prov->getResources();
         auto res = resImpl.get();
@@ -316,7 +327,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     int64_t,
                     raft::col_major>>
                     index_vec = {index.view()};
-            RAFT_LOG_INFO("Invoking flat bfknn");
+
             brute_force::knn(
                     handle,
                     index_vec,
@@ -343,15 +354,12 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     [] __device__(const float& a) { return powf(a, 2); });
         }
 
-        RAFT_LOG_INFO("Done.");
-
         handle.sync_stream();
-        RAFT_LOG_INFO("All synced.");
     } else
 #else
-    if (args.use_raft) {
+    if (should_use_raft(args)) {
         FAISS_THROW_IF_NOT_MSG(
-                !args.use_raft,
+                !should_use_raft(args),
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif

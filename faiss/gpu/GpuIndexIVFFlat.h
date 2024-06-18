@@ -87,8 +87,11 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     /// Trains the coarse quantizer based on the given vector data
     void train(idx_t n, const float* x) override;
 
+    void reconstruct_n(idx_t i0, idx_t n, float* out) const override;
+
    protected:
-    void set_index_(
+    /// Initialize appropriate index
+    void setIndex_(
             GpuResources* resources,
             int dim,
             int nlist,
@@ -101,6 +104,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
             IndicesOptions indicesOptions,
             MemorySpace space);
 
+   protected:
     /// Our configuration options
     const GpuIndexIVFFlatConfig ivfFlatConfig_;
 

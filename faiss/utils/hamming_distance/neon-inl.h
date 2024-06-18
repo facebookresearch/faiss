@@ -260,7 +260,6 @@ struct HammingComputer32 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
         uint8x16_t b0 = vld1q_u8(b8);
         uint8x16_t b1 = vld1q_u8(b8 + 16);
 
@@ -338,24 +337,31 @@ struct HammingComputerDefault {
                     len -= 8;
                     accu += popcount64(a64[i] ^ b64[i]);
                     i++;
+                    [[fallthrough]];
                     case 7:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 6:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 5:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 4:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 3:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 2:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 1:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
@@ -367,18 +373,25 @@ struct HammingComputerDefault {
             switch (remainder8) {
                 case 7:
                     accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
+                    [[fallthrough]];
                 case 6:
                     accu += hamdis_tab_ham_bytes[a[5] ^ b[5]];
+                    [[fallthrough]];
                 case 5:
                     accu += hamdis_tab_ham_bytes[a[4] ^ b[4]];
+                    [[fallthrough]];
                 case 4:
                     accu += hamdis_tab_ham_bytes[a[3] ^ b[3]];
+                    [[fallthrough]];
                 case 3:
                     accu += hamdis_tab_ham_bytes[a[2] ^ b[2]];
+                    [[fallthrough]];
                 case 2:
                     accu += hamdis_tab_ham_bytes[a[1] ^ b[1]];
+                    [[fallthrough]];
                 case 1:
                     accu += hamdis_tab_ham_bytes[a[0] ^ b[0]];
+                    [[fallthrough]];
                 default:
                     break;
             }

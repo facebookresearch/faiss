@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from distutils.version import LooseVersion
+from packaging.version import Version
 import platform
 import subprocess
 import logging
@@ -25,7 +25,7 @@ def supported_instruction_sets():
     {"NEON", "ASIMD", ...}
     """
     import numpy
-    if LooseVersion(numpy.__version__) >= "1.19":
+    if Version(numpy.__version__) >= Version("1.19"):
         # use private API as next-best thing until numpy/numpy#18058 is solved
         from numpy.core._multiarray_umath import __cpu_features__
         # __cpu_features__ is a dictionary with CPU features

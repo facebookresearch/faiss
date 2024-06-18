@@ -33,7 +33,7 @@ def swig_ptr_from_UInt8Tensor(x):
     assert x.is_contiguous()
     assert x.dtype == torch.uint8
     return faiss.cast_integer_to_uint8_ptr(
-        x.storage().data_ptr() + x.storage_offset())
+        x.untyped_storage().data_ptr() + x.storage_offset())
 
 def swig_ptr_from_HalfTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -41,28 +41,28 @@ def swig_ptr_from_HalfTensor(x):
     assert x.dtype == torch.float16
     # no canonical half type in C/C++
     return faiss.cast_integer_to_void_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 2)
+        x.untyped_storage().data_ptr() + x.storage_offset() * 2)
 
 def swig_ptr_from_FloatTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.float32
     return faiss.cast_integer_to_float_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 4)
+        x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
 def swig_ptr_from_IntTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.int32, 'dtype=%s' % x.dtype
     return faiss.cast_integer_to_int_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 4)
+        x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
 def swig_ptr_from_IndicesTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.int64, 'dtype=%s' % x.dtype
     return faiss.cast_integer_to_idx_t_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 8)
+        x.untyped_storage().data_ptr() + x.storage_offset() * 8)
 
 @contextlib.contextmanager
 def using_stream(res, pytorch_stream=None):
@@ -492,8 +492,9 @@ for symbol in dir(faiss_module):
         if issubclass(the_class, faiss.Index):
             handle_torch_Index(the_class)
 
+
 # allows torch tensor usage with bfKnn
-def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1):
+def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1, use_raft=False):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
         return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric, device)
@@ -574,6 +575,7 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     args.outIndices = I_ptr
     args.outIndicesType = I_type
     args.device = device
+    args.use_raft = use_raft
 
     with using_stream(res):
         faiss.bfKnn(res, args)

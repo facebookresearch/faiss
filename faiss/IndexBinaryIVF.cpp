@@ -119,16 +119,16 @@ void IndexBinaryIVF::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
-    const size_t nprobe = std::min(nlist, this->nprobe);
-    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
-    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
+    const size_t nprobe_2 = std::min(nlist, this->nprobe);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe_2]);
+    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe_2]);
 
     double t0 = getmillisecs();
-    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(n, x, nprobe_2, coarse_dis.get(), idx.get());
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(idx.get(), n * nprobe);
+    invlists->prefetch_lists(idx.get(), n * nprobe_2);
 
     search_preassigned(
             n, x, k, idx.get(), coarse_dis.get(), distances, labels, false);
@@ -169,16 +169,16 @@ void IndexBinaryIVF::search_and_reconstruct(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             !params, "search params not supported for this index");
-    const size_t nprobe = std::min(nlist, this->nprobe);
+    const size_t nprobe_2 = std::min(nlist, this->nprobe);
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT(nprobe > 0);
+    FAISS_THROW_IF_NOT(nprobe_2 > 0);
 
-    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
-    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe_2]);
+    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe_2]);
 
-    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(n, x, nprobe_2, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx.get(), n * nprobe);
+    invlists->prefetch_lists(idx.get(), n * nprobe_2);
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -321,8 +321,8 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
     }
 
     idx_t list_no;
-    void set_list(idx_t list_no, uint8_t /* coarse_dis */) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_2, uint8_t /* coarse_dis */) override {
+        this->list_no = list_no_2;
     }
 
     uint32_t distance_to_code(const uint8_t* code) const override {
@@ -357,7 +357,6 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             const idx_t* __restrict ids,
             int radius,
             RangeQueryResult& result) const override {
-        size_t nup = 0;
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming(codes);
             if (dis < radius) {
@@ -457,7 +456,7 @@ void search_knn_hamming_heap(
             }
 
         } // parallel for
-    }     // parallel
+    } // parallel
 
     indexIVF_stats.nq += n;
     indexIVF_stats.nlist += nlistv;
@@ -651,7 +650,6 @@ void search_knn_hamming_per_invlist(
     idx_t max_codes = params ? params->max_codes : ivf->max_codes;
     FAISS_THROW_IF_NOT(max_codes == 0);
     FAISS_THROW_IF_NOT(!store_pairs);
-    MetricType metric_type = ivf->metric_type;
 
     // reorder buckets
     std::vector<int64_t> lims(n + 1);
@@ -812,16 +810,16 @@ void IndexBinaryIVF::range_search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             !params, "search params not supported for this index");
-    const size_t nprobe = std::min(nlist, this->nprobe);
-    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
-    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
+    const size_t nprobe_2 = std::min(nlist, this->nprobe);
+    std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe_2]);
+    std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe_2]);
 
     double t0 = getmillisecs();
-    quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(n, x, nprobe_2, coarse_dis.get(), idx.get());
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(idx.get(), n * nprobe);
+    invlists->prefetch_lists(idx.get(), n * nprobe_2);
 
     range_search_preassigned(n, x, radius, idx.get(), coarse_dis.get(), res);
 
@@ -835,7 +833,7 @@ void IndexBinaryIVF::range_search_preassigned(
         const idx_t* __restrict assign,
         const int32_t* __restrict centroid_dis,
         RangeSearchResult* __restrict res) const {
-    const size_t nprobe = std::min(nlist, this->nprobe);
+    const size_t nprobe_2 = std::min(nlist, this->nprobe);
     bool store_pairs = false;
     size_t nlistv = 0, ndis = 0;
 
@@ -851,7 +849,7 @@ void IndexBinaryIVF::range_search_preassigned(
         all_pres[omp_get_thread_num()] = &pres;
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
-            idx_t key = assign[i * nprobe + ik]; /* select the list  */
+            idx_t key = assign[i * nprobe_2 + ik]; /* select the list  */
             if (key < 0)
                 return;
             FAISS_THROW_IF_NOT_FMT(
@@ -868,7 +866,7 @@ void IndexBinaryIVF::range_search_preassigned(
             InvertedLists::ScopedCodes scodes(invlists, key);
             InvertedLists::ScopedIds ids(invlists, key);
 
-            scanner->set_list(key, assign[i * nprobe + ik]);
+            scanner->set_list(key, assign[i * nprobe_2 + ik]);
             nlistv++;
             ndis += list_size;
             scanner->scan_codes_range(
@@ -881,7 +879,7 @@ void IndexBinaryIVF::range_search_preassigned(
 
             RangeQueryResult& qres = pres.new_result(i);
 
-            for (size_t ik = 0; ik < nprobe; ik++) {
+            for (size_t ik = 0; ik < nprobe_2; ik++) {
                 scan_list_func(i, ik, qres);
             }
         }

@@ -780,10 +780,6 @@ void ProductQuantizer::search_ip(
             init_finalize_heap);
 }
 
-static float sqr(float x) {
-    return x * x;
-}
-
 void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 

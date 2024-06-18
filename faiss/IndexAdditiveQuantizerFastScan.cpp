@@ -35,30 +35,30 @@ IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
 }
 
 void IndexAdditiveQuantizerFastScan::init(
-        AdditiveQuantizer* aq,
+        AdditiveQuantizer* aq_2,
         MetricType metric,
         int bbs) {
-    FAISS_THROW_IF_NOT(aq != nullptr);
-    FAISS_THROW_IF_NOT(!aq->nbits.empty());
-    FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
+    FAISS_THROW_IF_NOT(aq_2 != nullptr);
+    FAISS_THROW_IF_NOT(!aq_2->nbits.empty());
+    FAISS_THROW_IF_NOT(aq_2->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
-                aq->search_type == AdditiveQuantizer::ST_LUT_nonorm,
+                aq_2->search_type == AdditiveQuantizer::ST_LUT_nonorm,
                 "Search type must be ST_LUT_nonorm for IP metric");
     } else {
         FAISS_THROW_IF_NOT_MSG(
-                aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
-                        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
+                aq_2->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+                        aq_2->search_type == AdditiveQuantizer::ST_norm_rq2x4,
                 "Search type must be lsq2x4 or rq2x4 for L2 metric");
     }
 
-    this->aq = aq;
+    this->aq = aq_2;
     if (metric == METRIC_L2) {
-        M = aq->M + 2; // 2x4 bits AQ
+        M = aq_2->M + 2; // 2x4 bits AQ
     } else {
-        M = aq->M;
+        M = aq_2->M;
     }
-    init_fastscan(aq->d, M, 4, metric, bbs);
+    init_fastscan(aq_2->d, M, 4, metric, bbs);
 
     max_train_points = 1024 * ksub * M;
 }
@@ -203,9 +203,9 @@ void IndexAdditiveQuantizerFastScan::search(
 
     NormTableScaler scaler(norm_scale);
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
+        search_dispatch_implem<true>(n, x, k, distances, labels, &scaler);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
+        search_dispatch_implem<false>(n, x, k, distances, labels, &scaler);
     }
 }
 

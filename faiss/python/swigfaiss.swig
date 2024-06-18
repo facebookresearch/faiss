@@ -81,6 +81,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simd_result_handlers.h>
+
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -301,6 +304,7 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
+#include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
@@ -490,6 +494,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+
+// NOTE(matthijs) let's not go into wrapping simdlib
+struct faiss::simd16uint16 {};
+
+%include  <faiss/impl/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -549,6 +558,9 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
+#ifdef FAISS_ENABLE_RAFT
+%include  <faiss/gpu/GpuIndexCagra.h>
+#endif
 %include  <faiss/gpu/GpuIndexFlat.h>
 %include  <faiss/gpu/GpuIndexIVF.h>
 %include  <faiss/gpu/GpuIndexIVFPQ.h>
@@ -665,6 +677,9 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
+#ifdef FAISS_ENABLE_RAFT
+    DOWNCAST_GPU ( GpuIndexCagra )
+#endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
     DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
@@ -1014,14 +1029,17 @@ PyObject *swig_ptr (PyObject *a)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_bool, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
-#ifdef SWIGWORDSIZE64
+    // Convert npy64 either long or long long  and it depends on how compiler define int64_t.
+    // In the 64bit machine, typically the int64_t should be long but it is not hold for Apple osx.
+    // In this case, we want to convert npy64 to long_Long in osx
+#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
 #endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
-#ifdef SWIGWORDSIZE64
+#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
@@ -1030,7 +1048,9 @@ PyObject *swig_ptr (PyObject *a)
     PyErr_SetString(PyExc_ValueError, "did not recognize array type");
     return NULL;
 }
+%}
 
+%inline %{
 
 struct PythonInterruptCallback: faiss::InterruptCallback {
 
@@ -1045,18 +1065,18 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
         return err == -1;
     }
 
+    static void reset() {
+        faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
+    }
 };
 
-
 %}
-
 
 %init %{
     /* needed, else crash at runtime */
     import_array();
 
-    faiss::InterruptCallback::instance.reset(new PythonInterruptCallback());
-
+    PythonInterruptCallback::reset();
 %}
 
 // return a pointer usable as input for functions that expect pointers
@@ -1113,14 +1133,7 @@ int * cast_integer_to_int_ptr (int64_t x) {
 void * cast_integer_to_void_ptr (int64_t x) {
     return (void*)x;
 }
-
 %}
-
-
-
-
-
-
 
 %inline %{
     void wait() {

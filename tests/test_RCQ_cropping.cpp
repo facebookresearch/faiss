@@ -28,7 +28,6 @@ TEST(RCQCropping, test_cropping) {
     faiss::ResidualCoarseQuantizer rcq(d, nbits);
 
     rcq.train(nt, xt);
-    // fprintf(stderr, "nb centroids: %zd\n", rcq.ntotal);
 
     // the test below works only for beam size == nprobe
     rcq.set_beam_factor(1.0);
@@ -44,7 +43,6 @@ TEST(RCQCropping, test_cropping) {
     nbits.pop_back();
     faiss::ResidualCoarseQuantizer rcq_cropped(d, nbits);
     rcq_cropped.initialize_from(rcq);
-    // fprintf(stderr, "cropped nb centroids: %zd\n", rcq_cropped.ntotal);
 
     EXPECT_EQ(rcq_cropped.ntotal, rcq.ntotal >> last_nbits);
 

@@ -238,21 +238,64 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
+          GpuIndexCagra.h
+          impl/RaftCagra.cuh
+          impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh
-          impl/RaftFlatIndex.cuh)
+          impl/RaftIVFPQ.cuh
+          utils/RaftUtils.h)
   list(APPEND FAISS_GPU_SRC
+          GpuIndexCagra.cu
+          impl/RaftCagra.cu
           impl/RaftFlatIndex.cu
-	  impl/RaftIVFFlat.cu)
+          impl/RaftIVFFlat.cu
+          impl/RaftIVFPQ.cu
+          utils/RaftUtils.cu)
+endif()
 
+add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+set_target_properties(faiss_gpu PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+target_include_directories(faiss_gpu PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+
+if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_RAFT=1)
+
+  # Mark all functions as hidden so that we don't generate
+  # global 'public' functions that also exist in libraft.so
+  #
+  # This ensures that faiss functions will call the local version
+  # inside libfaiss.so . This is needed to ensure that things
+  # like raft cublas resources are created and used within the same
+  # dynamic library + CUDA runtime context which are requirements
+  # for valid execution
+  #
+  # To still allow these classes to be used by consumers, the
+  # respective classes/types in the headers are explicitly marked
+  # as 'public' so they can be used by consumers
+  set_source_files_properties(
+    GpuDistance.cu
+    StandardGpuResources.cpp
+    impl/RaftFlatIndex.cu
+    impl/RaftIVFFlat.cu
+    impl/RaftIVFPQ.cu
+    utils/RaftUtils.cu
+    TARGET_DIRECTORY faiss
+    PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
+  target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-target_sources(faiss PRIVATE ${FAISS_GPU_SRC})
-target_sources(faiss_avx2 PRIVATE ${FAISS_GPU_SRC})
+target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
@@ -274,11 +317,8 @@ __nv_relfatbin : { *(__nv_relfatbin) }
 }
 ]=]
 )
-target_link_options(faiss PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
-target_link_options(faiss_avx2 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
 
 find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>  $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)
-target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)
+target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass> $<$<BOOL:${FAISS_ENABLE_RAFT}>:OpenMP::OpenMP_CXX>)
+target_compile_options(faiss_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr $<$<BOOL:${FAISS_ENABLE_RAFT}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)

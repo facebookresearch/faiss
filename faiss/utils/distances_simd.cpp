@@ -439,14 +439,14 @@ void fvec_op_ny_D2<ElementOpIP>(
 
     if (ny8 > 0) {
         // process 8 D2-vectors per loop.
-        _mm_prefetch(y, _MM_HINT_T0);
-        _mm_prefetch(y + 16, _MM_HINT_T0);
+        _mm_prefetch((const char*)y, _MM_HINT_T0);
+        _mm_prefetch((const char*)(y + 16), _MM_HINT_T0);
 
         const __m256 m0 = _mm256_set1_ps(x[0]);
         const __m256 m1 = _mm256_set1_ps(x[1]);
 
         for (i = 0; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_T0);
+            _mm_prefetch((const char*)(y + 32), _MM_HINT_T0);
 
             // load 8x2 matrix and transpose it in registers.
             // the typical bottleneck is memory access, so
@@ -496,14 +496,14 @@ void fvec_op_ny_D2<ElementOpL2>(
 
     if (ny8 > 0) {
         // process 8 D2-vectors per loop.
-        _mm_prefetch(y, _MM_HINT_T0);
-        _mm_prefetch(y + 16, _MM_HINT_T0);
+        _mm_prefetch((const char*)y, _MM_HINT_T0);
+        _mm_prefetch((const char*)(y + 16), _MM_HINT_T0);
 
         const __m256 m0 = _mm256_set1_ps(x[0]);
         const __m256 m1 = _mm256_set1_ps(x[1]);
 
         for (i = 0; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_T0);
+            _mm_prefetch((const char*)(y + 32), _MM_HINT_T0);
 
             // load 8x2 matrix and transpose it in registers.
             // the typical bottleneck is memory access, so
@@ -969,7 +969,6 @@ void fvec_L2sqr_ny_y_transposed_D(
 
     // squared length of x
     float x_sqlen = 0;
-    ;
     for (size_t j = 0; j < DIM; j++) {
         x_sqlen += x[j] * x[j];
     }
@@ -1085,8 +1084,8 @@ size_t fvec_L2sqr_ny_nearest_D2(
     // process 8 D2-vectors per loop.
     const size_t ny8 = ny / 8;
     if (ny8 > 0) {
-        _mm_prefetch(y, _MM_HINT_T0);
-        _mm_prefetch(y + 16, _MM_HINT_T0);
+        _mm_prefetch((const char*)y, _MM_HINT_T0);
+        _mm_prefetch((const char*)(y + 16), _MM_HINT_T0);
 
         // track min distance and the closest vector independently
         // for each of 8 AVX2 components.
@@ -1101,7 +1100,7 @@ size_t fvec_L2sqr_ny_nearest_D2(
         const __m256 m1 = _mm256_set1_ps(x[1]);
 
         for (; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_T0);
+            _mm_prefetch((const char*)(y + 32), _MM_HINT_T0);
 
             __m256 v0;
             __m256 v1;
@@ -1631,21 +1630,6 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
 
 #ifdef USE_AVX
 
-// reads 0 <= d < 8 floats as __m256
-static inline __m256 masked_read_8(int d, const float* x) {
-    assert(0 <= d && d < 8);
-    if (d < 4) {
-        __m256 res = _mm256_setzero_ps();
-        res = _mm256_insertf128_ps(res, masked_read(d, x), 0);
-        return res;
-    } else {
-        __m256 res = _mm256_setzero_ps();
-        res = _mm256_insertf128_ps(res, _mm_loadu_ps(x), 0);
-        res = _mm256_insertf128_ps(res, masked_read(d - 4, x + 4), 1);
-        return res;
-    }
-}
-
 float fvec_L1(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
     __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
@@ -1864,7 +1848,7 @@ void fvec_inner_products_ny(
  * heavily optimized table computations
  ***************************************************************************/
 
-static inline void fvec_madd_ref(
+[[maybe_unused]] static inline void fvec_madd_ref(
         size_t n,
         const float* a,
         float bf,
@@ -1931,7 +1915,7 @@ static inline void fvec_madd_avx2(
 
 #ifdef __SSE3__
 
-static inline void fvec_madd_sse(
+[[maybe_unused]] static inline void fvec_madd_sse(
         size_t n,
         const float* a,
         float bf,

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #pragma once
 
 #include <queue>
@@ -42,6 +40,8 @@ namespace faiss {
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
+template <class C>
+struct ResultHandler;
 
 struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
@@ -53,6 +53,9 @@ struct SearchParametersHNSW : SearchParameters {
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
+
+    // for now we do only these distances
+    using C = CMax<float, int64_t>;
 
     typedef std::pair<float, storage_idx_t> Node;
 
@@ -181,7 +184,8 @@ struct HNSW {
             float d_nearest,
             int level,
             omp_lock_t* locks,
-            VisitedTable& vt);
+            VisitedTable& vt,
+            bool keep_max_size_level0 = false);
 
     /** add point pt_id on all levels <= pt_level and build the link
      * structure for them. */
@@ -190,29 +194,27 @@ struct HNSW {
             int pt_level,
             int pt_id,
             std::vector<omp_lock_t>& locks,
-            VisitedTable& vt);
+            VisitedTable& vt,
+            bool keep_max_size_level0 = false);
 
     /// search interface for 1 point, single thread
     HNSWStats search(
             DistanceComputer& qdis,
-            int k,
-            idx_t* I,
-            float* D,
+            ResultHandler<C>& res,
             VisitedTable& vt,
             const SearchParametersHNSW* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
             DistanceComputer& qdis,
-            int k,
-            idx_t* idxi,
-            float* simi,
+            ResultHandler<C>& res,
             idx_t nprobe,
             const storage_idx_t* nearest_i,
             const float* nearest_d,
             int search_type,
             HNSWStats& search_stats,
-            VisitedTable& vt) const;
+            VisitedTable& vt,
+            const SearchParametersHNSW* params = nullptr) const;
 
     void reset();
 
@@ -225,36 +227,27 @@ struct HNSW {
             DistanceComputer& qdis,
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
-            int max_size);
+            int max_size,
+            bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);
 };
 
 struct HNSWStats {
-    size_t n1, n2, n3;
-    size_t ndis;
-    size_t nreorder;
-
-    HNSWStats(
-            size_t n1 = 0,
-            size_t n2 = 0,
-            size_t n3 = 0,
-            size_t ndis = 0,
-            size_t nreorder = 0)
-            : n1(n1), n2(n2), n3(n3), ndis(ndis), nreorder(nreorder) {}
+    size_t n1 = 0; /// numbner of vectors searched
+    size_t n2 =
+            0; /// number of queries for which the candidate list is exhasted
+    size_t ndis = 0; /// number of distances computed
 
     void reset() {
-        n1 = n2 = n3 = 0;
+        n1 = n2 = 0;
         ndis = 0;
-        nreorder = 0;
     }
 
     void combine(const HNSWStats& other) {
         n1 += other.n1;
         n2 += other.n2;
-        n3 += other.n3;
         ndis += other.ndis;
-        nreorder += other.nreorder;
     }
 };
 
