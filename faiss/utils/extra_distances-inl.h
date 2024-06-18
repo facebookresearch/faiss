@@ -150,4 +150,16 @@ inline float VectorDistance<METRIC_NaNEuclidean>::operator()(
     }
     return float(d) / float(present) * accu;
 }
+
+template <>
+inline float VectorDistance<METRIC_ABS_INNER_PRODUCT>::operator()(
+        const float* x,
+        const float* y) const {
+    float accu = 0;
+    for (size_t i = 0; i < d; i++) {
+        accu += fabs(x[i] * y[i]);
+    }
+    return accu;
+}
+
 } // namespace faiss

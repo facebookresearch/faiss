@@ -114,6 +114,13 @@ class TestExtraDistances(unittest.TestCase):
         new_dis = faiss.pairwise_distances(x, q, faiss.METRIC_NaNEuclidean)
         self.assertTrue(np.isnan(new_dis[0]))
 
+    def test_abs_inner_product(self):
+        xq, yb = self.make_example()
+        dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_ABS_INNER_PRODUCT)
+
+        gt_dis = np.abs(xq @ yb.T)
+        np.testing.assert_allclose(dis, gt_dis, atol=1e-5)
+
 
 class TestKNN(unittest.TestCase):
     """ test that the knn search gives the same as distance matrix + argmin """
