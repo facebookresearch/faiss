@@ -67,6 +67,8 @@ def supported_instruction_sets():
             result.add("AVX512")
         if is_sve_supported():
             result.add("SVE")
+        for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
+            result.discard(f)
         return result
     return set()
 
