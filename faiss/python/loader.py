@@ -24,6 +24,28 @@ def supported_instruction_sets():
     >>> supported_instruction_sets()  # for ARM
     {"NEON", "ASIMD", ...}
     """
+
+    # Currently numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
+    # so let's read Features in /proc/cpuinfo and search 'sve' entry
+    def is_sve_supported():
+        if platform.machine() != "aarch64":
+            return False
+        # Currently SVE is only supported on Linux
+        if platform.system() != "Linux":
+            return False
+        if not os.path.exists('/proc/cpuinfo'):
+            return False
+        proc = subprocess.Popen(['cat', '/proc/cpuinfo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        so, _se = proc.communicate()
+        if proc.returncode != 0:
+            return False
+        for line in so.decode(encoding='UTF-8').splitlines():
+            if ':' in line:
+                l, r = line.split(':', 1)
+                if l.strip() == 'Features' and "sve" in r.strip().split():
+                    return True
+        return False
+
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
         # use private API as next-best thing until numpy/numpy#18058 is solved
@@ -31,6 +53,8 @@ def supported_instruction_sets():
         # __cpu_features__ is a dictionary with CPU features
         # as keys, and True / False as values
         supported = {k for k, v in __cpu_features__.items() if v}
+        if is_sve_supported():
+            supported.add("SVE")
         for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
             supported.discard(f)
         return supported
@@ -46,29 +70,10 @@ def supported_instruction_sets():
             result.add("AVX2")
         if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
             result.add("AVX512")
+        if is_sve_supported():
+            result.add("SVE")
         return result
     return set()
-
-# Currently numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
-# so let's read Features in /proc/cpuinfo and search 'sve' entry
-def is_sve_supported():
-    if platform.machine() != "aarch64":
-        return False
-    # Currently SVE is only supported on Linux
-    if platform.system() != "Linux":
-        return False
-    if not os.path.exists('/proc/cpuinfo'):
-        return False
-    proc = subprocess.Popen(['cat', '/proc/cpuinfo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    so, _se = proc.communicate()
-    if proc.returncode != 0:
-        return False
-    for line in so.decode(encoding='UTF-8').splitlines():
-        if ':' in line:
-            l, r = line.split(':', 1)
-            if l.strip() == 'Features' and "sve" in r.strip().split():
-                return True
-    return False
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +117,7 @@ if has_AVX2 and not loaded:
         # reset so that we load without AVX2 below
         loaded = False
 
-has_SVE = is_sve_supported() and not "SVE" in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r")
+has_SVE = "SVE" in instruction_sets
 if has_SVE and not loaded:
     try:
         logger.info("Loading faiss with SVE support.")
