@@ -9,10 +9,7 @@ import os
 
 from faiss.benchs.bench_fw.benchmark import Benchmark
 from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
-from faiss.benchs.bench_fw.descriptors import (
-    DatasetDescriptor,
-    IndexDescriptor,
-)
+from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptor
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,15 +17,9 @@ logging.basicConfig(level=logging.INFO)
 def sift1M(bio):
     benchmark = Benchmark(
         num_threads=32,
-        training_vectors=DatasetDescriptor(
-            namespace="std_d", tablename="sift1M"
-        ),
-        database_vectors=DatasetDescriptor(
-            namespace="std_d", tablename="sift1M"
-        ),
-        query_vectors=DatasetDescriptor(
-            namespace="std_q", tablename="sift1M"
-        ),
+        training_vectors=DatasetDescriptor(namespace="std_d", tablename="sift1M"),
+        database_vectors=DatasetDescriptor(namespace="std_d", tablename="sift1M"),
+        query_vectors=DatasetDescriptor(namespace="std_q", tablename="sift1M"),
         index_descs=[
             IndexDescriptor(
                 factory=f"IVF{2 ** nlist},Flat",
@@ -39,59 +30,71 @@ def sift1M(bio):
         distance_metric="L2",
     )
     benchmark.set_io(bio)
-    benchmark.benchmark(result_file="result.json", local=False, train=True, reconstruct=False, knn=True, range=False)
+    benchmark.benchmark(
+        result_file="result.json",
+        local=False,
+        train=True,
+        reconstruct=False,
+        knn=True,
+        range=False,
+    )
 
 
 def bigann(bio):
     for scale in [1, 2, 5, 10, 20, 50]:
         benchmark = Benchmark(
             num_threads=32,
-            training_vectors=DatasetDescriptor(
-                namespace="std_t", tablename="bigann1M"
-            ),
+            training_vectors=DatasetDescriptor(namespace="std_t", tablename="bigann1M"),
             database_vectors=DatasetDescriptor(
                 namespace="std_d", tablename=f"bigann{scale}M"
             ),
-            query_vectors=DatasetDescriptor(
-                namespace="std_q", tablename="bigann1M"
-            ),
+            query_vectors=DatasetDescriptor(namespace="std_q", tablename="bigann1M"),
             index_descs=[
                 IndexDescriptor(
                     factory=f"IVF{2 ** nlist},Flat",
-                ) for nlist in range(11, 19)
-            ] + [
+                )
+                for nlist in range(11, 19)
+            ]
+            + [
                 IndexDescriptor(
                     factory=f"IVF{2 ** nlist}_HNSW32,Flat",
                     construction_params=[None, {"efConstruction": 200, "efSearch": 40}],
-                ) for nlist in range(11, 19)
+                )
+                for nlist in range(11, 19)
             ],
             k=1,
             distance_metric="L2",
         )
         benchmark.set_io(bio)
-        benchmark.benchmark(f"result{scale}.json", local=False, train=True, reconstruct=False, knn=True, range=False)
+        benchmark.benchmark(
+            f"result{scale}.json",
+            local=False,
+            train=True,
+            reconstruct=False,
+            knn=True,
+            range=False,
+        )
+
 
 def ssnpp(bio):
     benchmark = Benchmark(
         num_threads=32,
-        training_vectors=DatasetDescriptor(
-            tablename="ssnpp_training_5M.npy"
-        ),
-        database_vectors=DatasetDescriptor(
-            tablename="ssnpp_database_5M.npy"
-        ),
-        query_vectors=DatasetDescriptor(
-            tablename="ssnpp_queries_10K.npy"
-        ),
+        training_vectors=DatasetDescriptor(tablename="ssnpp_training_5M.npy"),
+        database_vectors=DatasetDescriptor(tablename="ssnpp_database_5M.npy"),
+        query_vectors=DatasetDescriptor(tablename="ssnpp_queries_10K.npy"),
         index_descs=[
             IndexDescriptor(
                 factory=f"IVF{2 ** nlist},PQ256x4fs,Refine(SQfp16)",
-            ) for nlist in range(9, 16)
-        ] + [
+            )
+            for nlist in range(9, 16)
+        ]
+        + [
             IndexDescriptor(
                 factory=f"IVF{2 ** nlist},Flat",
-            ) for nlist in range(9, 16)
-        ] + [
+            )
+            for nlist in range(9, 16)
+        ]
+        + [
             IndexDescriptor(
                 factory=f"PQ256x4fs,Refine(SQfp16)",
             ),
@@ -103,12 +106,15 @@ def ssnpp(bio):
         distance_metric="L2",
     )
     benchmark.set_io(bio)
-    benchmark.benchmark("result.json", local=False, train=True, reconstruct=False, knn=True, range=False)
+    benchmark.benchmark(
+        "result.json", local=False, train=True, reconstruct=False, knn=True, range=False
+    )
 
-if __name__ == "__main__":
+
+def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('experiment')
-    parser.add_argument('path')
+    parser.add_argument("experiment")
+    parser.add_argument("path")
     args = parser.parse_args()
     assert os.path.exists(args.path)
     path = os.path.join(args.path, args.experiment)
@@ -123,3 +129,8 @@ if __name__ == "__main__":
         bigann(bio)
     elif args.experiment == "ssnpp":
         ssnpp(bio)
+
+
+if __name__ == "__main__":
+    # Do not add code here, it won't be run. Add them to the function called below.
+    main()  # pragma: no cover
