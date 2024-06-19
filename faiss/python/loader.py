@@ -26,25 +26,16 @@ def supported_instruction_sets():
     """
 
     # Currently numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
-    # so let's read Features in /proc/cpuinfo and search 'sve' entry
+    # so let's read Features in numpy.distutils.cpuinfo and search 'sve' entry
     def is_sve_supported():
         if platform.machine() != "aarch64":
             return False
         # Currently SVE is only supported on Linux
         if platform.system() != "Linux":
             return False
-        if not os.path.exists('/proc/cpuinfo'):
-            return False
-        proc = subprocess.Popen(['cat', '/proc/cpuinfo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        so, _se = proc.communicate()
-        if proc.returncode != 0:
-            return False
-        for line in so.decode(encoding='UTF-8').splitlines():
-            if ':' in line:
-                l, r = line.split(':', 1)
-                if l.strip() == 'Features' and "sve" in r.strip().split():
-                    return True
-        return False
+        # platform-dependent legacy fallback using numpy.distutils.cpuinfo
+        import numpy.distutils.cpuinfo
+        return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
 
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
