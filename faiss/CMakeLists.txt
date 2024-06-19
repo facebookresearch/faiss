@@ -183,6 +183,7 @@ set(FAISS_HEADERS
   invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
   utils/AlignedTable.h
+  utils/bf16.h
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
@@ -299,7 +300,10 @@ if(WIN32)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
 endif()
 
-target_compile_definitions(faiss PRIVATE FINTEGER=int)
+string(FIND "${CMAKE_CXX_FLAGS}" "FINTEGER" finteger_idx)
+if (${finteger_idx} EQUAL -1)
+  target_compile_definitions(faiss PRIVATE FINTEGER=int)
+endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
 

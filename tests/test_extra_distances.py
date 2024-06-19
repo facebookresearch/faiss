@@ -94,6 +94,33 @@ class TestExtraDistances(unittest.TestCase):
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_Jaccard)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
+    def test_nan_euclidean(self):
+        xq, yb = self.make_example()
+        ref_dis = np.array([
+            [scipy.spatial.distance.sqeuclidean(x, y) for y in yb]
+            for x in xq
+        ])
+        new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_NaNEuclidean)
+        self.assertTrue(np.allclose(ref_dis, new_dis))
+
+        x = [[3, np.nan, np.nan, 6]]
+        q = [[1, np.nan, np.nan, 5]]
+        dis = [(4 / 2 * ((3 - 1)**2 + (6 - 5)**2))]
+        new_dis = faiss.pairwise_distances(x, q, faiss.METRIC_NaNEuclidean)
+        self.assertTrue(np.allclose(new_dis, dis))
+
+        x = [[np.nan] * 4]
+        q = [[np.nan] * 4]
+        new_dis = faiss.pairwise_distances(x, q, faiss.METRIC_NaNEuclidean)
+        self.assertTrue(np.isnan(new_dis[0]))
+
+    def test_abs_inner_product(self):
+        xq, yb = self.make_example()
+        dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_ABS_INNER_PRODUCT)
+
+        gt_dis = np.abs(xq @ yb.T)
+        np.testing.assert_allclose(dis, gt_dis, atol=1e-5)
+
 
 class TestKNN(unittest.TestCase):
     """ test that the knn search gives the same as distance matrix + argmin """

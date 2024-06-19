@@ -208,9 +208,11 @@ class Benchmark:
         self.io.distance_metric = self.distance_metric
         self.io.distance_metric_type = self.distance_metric_type
 
-    def get_index_desc(self, factory: str) -> Optional[IndexDescriptor]:
+    def get_index_desc(self, factory_or_codec: str) -> Optional[IndexDescriptor]:
         for desc in self.index_descs:
-            if desc.factory == factory:
+            if desc.factory == factory_or_codec:
+                return desc
+            if desc.codec_alias == factory_or_codec:
                 return desc
         return None
 
@@ -232,7 +234,7 @@ class Benchmark:
             parameters,
             radius=m_radius,
         )
-        flat = index.factory == "Flat"
+        flat = index.is_flat_index()
         (
             gt_radius,
             range_search_metric_function,
@@ -650,6 +652,7 @@ class Benchmark:
                     f"Range index {index_desc.factory} has no radius_score"
                 )
             results["metrics"] = {}
+            self.build_index_wrapper(index_desc)
             for metric_key, range_metric in index_desc.range_metrics.items():
                 (
                     gt_radius,

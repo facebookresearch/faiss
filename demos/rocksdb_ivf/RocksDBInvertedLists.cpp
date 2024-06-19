@@ -101,7 +101,8 @@ void RocksDBInvertedLists::resize(size_t /*list_no*/, size_t /*new_size*/) {
 }
 
 InvertedListsIterator* RocksDBInvertedLists::get_iterator(
-        size_t list_no) const {
+        size_t list_no,
+        void* inverted_list_context) const {
     return new RocksDBInvertedListsIterator(db_.get(), list_no, code_size);
 }
 

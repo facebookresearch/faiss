@@ -43,12 +43,13 @@ outputs:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
+        - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
-        - cmake >=3.23.1
+        - cmake >=3.24.0
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
@@ -81,8 +82,9 @@ outputs:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig
-        - cmake >=3.23.1
+        - cmake >=3.24.0
         - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
         - numpy >=1.19,<2

@@ -11,6 +11,7 @@ import faiss
 import random
 from common_faiss_tests import get_dataset_2
 
+
 class ReferencedObject(unittest.TestCase):
 
     d = 16

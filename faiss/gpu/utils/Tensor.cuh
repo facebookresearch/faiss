@@ -232,13 +232,12 @@ class Tensor {
     }
 
     /// Returns a read/write view of a portion of our tensor.
-    __host__ __device__ inline detail::SubTensor<TensorType, Dim - 1, PtrTraits>
-    operator[](IndexT);
+    __host__ __device__ inline detail::
+            SubTensor<TensorType, Dim - 1, PtrTraits> operator[](IndexT);
 
     /// Returns a read/write view of a portion of our tensor (const).
     __host__ __device__ inline const detail::
-            SubTensor<TensorType, Dim - 1, PtrTraits>
-            operator[](IndexT) const;
+            SubTensor<TensorType, Dim - 1, PtrTraits> operator[](IndexT) const;
 
     /// Returns the size of a given dimension, `[0, Dim - 1]`. No bounds
     /// checking.

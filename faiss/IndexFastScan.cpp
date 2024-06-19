@@ -189,6 +189,7 @@ void estimators_from_tables_generic(
                 dt += index.ksub;
             }
         }
+
         if (C::cmp(heap_dis[0], dis)) {
             heap_pop<C>(k, heap_dis, heap_ids);
             heap_push<C>(k, heap_dis, heap_ids, dis, j);
@@ -203,17 +204,18 @@ ResultHandlerCompare<C, false>* make_knn_handler(
         idx_t k,
         size_t ntotal,
         float* distances,
-        idx_t* labels) {
+        idx_t* labels,
+        const IDSelector* sel = nullptr) {
     using HeapHC = HeapHandler<C, false>;
     using ReservoirHC = ReservoirHandler<C, false>;
     using SingleResultHC = SingleResultHandler<C, false>;
 
     if (k == 1) {
-        return new SingleResultHC(n, ntotal, distances, labels);
+        return new SingleResultHC(n, ntotal, distances, labels, sel);
     } else if (impl % 2 == 0) {
-        return new HeapHC(n, ntotal, k, distances, labels);
+        return new HeapHC(n, ntotal, k, distances, labels, sel);
     } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels);
+        return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
     }
 }
 

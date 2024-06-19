@@ -151,7 +151,6 @@ class TestAccuracy(unittest.TestCase):
             err = ((x - x2) ** 2).sum()
             errs.append(err)
 
-        print(errs)
         self.assertGreater(errs[0], errs[1])
 
         self.assertGreater(max_errs[0], errs[0])
@@ -173,6 +172,9 @@ class TestAccuracy(unittest.TestCase):
 
     def test_SQ3(self):
         self.compare_accuracy('SQ8', 'SQfp16')
+
+    def test_SQ4(self):
+        self.compare_accuracy('SQ8', 'SQbf16')
 
     def test_PQ(self):
         self.compare_accuracy('PQ6x8np', 'PQ8x8np')
@@ -214,7 +216,6 @@ class LatticeTest(unittest.TestCase):
             code = repeats.encode(swig_ptr(vec))
             vec2 = np.zeros(dim, dtype='float32')
             repeats.decode(code, swig_ptr(vec2))
-            # print(vec2)
             assert np.all(vec == vec2)
 
     def test_ZnSphereCodec_encode_centroid(self):
@@ -222,7 +223,6 @@ class LatticeTest(unittest.TestCase):
         r2 = 5
         ref_codec = faiss.ZnSphereCodec(dim, r2)
         codec = faiss.ZnSphereCodecRec(dim, r2)
-        # print(ref_codec.nv, codec.nv)
         assert ref_codec.nv == codec.nv
         s = set()
         for i in range(ref_codec.nv):
@@ -237,7 +237,6 @@ class LatticeTest(unittest.TestCase):
         dim = 16
         r2 = 6
         codec = faiss.ZnSphereCodecRec(dim, r2)
-        # print("nv=", codec.nv)
         for i in range(codec.nv):
             c = np.zeros(dim, dtype='float32')
             codec.decode(i, swig_ptr(c))
@@ -300,15 +299,10 @@ class TestBitstring(unittest.TestCase):
         for i in range(nbyte):
             self.assertTrue(((bignum >> (i * 8)) & 255) == bs[i])
 
-        #for i in range(nbyte):
-        #    print(bin(bs[i] + 256)[3:], end=' ')
-        # print()
-
         br = faiss.BitstringReader(swig_ptr(bs), nbyte)
 
         for nbit, xref in ctrl:
             xnew = br.read(nbit)
-            # print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
 
     def test_arrays(self):

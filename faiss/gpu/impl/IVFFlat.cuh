@@ -51,6 +51,8 @@ class IVFFlat : public IVFBase {
             Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) override;
 
+    void reconstruct_n(idx_t i0, idx_t n, float* out) override;
+
    protected:
     /// Returns the number of bytes in which an IVF list containing numVecs
     /// vectors is encoded on the device. Note that due to padding this is not
