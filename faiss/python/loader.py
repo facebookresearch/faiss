@@ -25,13 +25,17 @@ def supported_instruction_sets():
     {"NEON", "ASIMD", ...}
     """
 
-    # Currently numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
+    # Old numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
     # so let's read Features in numpy.distutils.cpuinfo and search 'sve' entry
     def is_sve_supported():
         if platform.machine() != "aarch64":
             return False
         # Currently SVE is only supported on Linux
         if platform.system() != "Linux":
+            return False
+        # Numpy 2.0 supports SVE detection by __cpu_features__, so just skip
+        import numpy
+        if Version(numpy.__version__) >= Version("2.0"):
             return False
         # platform-dependent legacy fallback using numpy.distutils.cpuinfo
         import numpy.distutils.cpuinfo
