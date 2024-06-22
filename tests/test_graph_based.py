@@ -144,7 +144,7 @@ class TestHNSW(unittest.TestCase):
         index2 = faiss.deserialize_index(
             faiss.serialize_index(index, faiss.IO_FLAG_SKIP_STORAGE)
         )
-        self.assertEquals(index2.storage, None)
+        self.assertEqual(index2.storage, None)
         self.assertRaises(
             RuntimeError,
             index2.search, self.xb, 1)
@@ -169,6 +169,21 @@ class TestHNSW(unittest.TestCase):
             )
             self.assertEquals(index3.storage, None)
 
+    def test_abs_inner_product(self):
+        """Test HNSW with abs inner product (not a real distance, so dubious that triangular inequality works)"""
+        d = self.xq.shape[1]
+        xb = self.xb - self.xb.mean(axis=0)  # need to be centered to give interesting directions
+        xq = self.xq - self.xq.mean(axis=0)
+        Dref, Iref = faiss.knn(xq, xb, 10, faiss.METRIC_ABS_INNER_PRODUCT)
+        
+        index = faiss.IndexHNSWFlat(d, 32, faiss.METRIC_ABS_INNER_PRODUCT)
+        index.add(xb)
+        Dnew, Inew = index.search(xq, 10)
+
+        inter = faiss.eval_intersection(Iref, Inew)
+        # 4769 vs. 500*10
+        self.assertGreater(inter, Iref.size * 0.9)
+ 
 
 class TestNSG(unittest.TestCase):
 

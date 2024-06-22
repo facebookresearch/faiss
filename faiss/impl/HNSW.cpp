@@ -7,6 +7,7 @@
 
 #include <faiss/impl/HNSW.h>
 
+#include <cstddef>
 #include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -215,8 +216,8 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         if (pt_level > max_level)
             max_level = pt_level;
         offsets.push_back(offsets.back() + cum_nb_neighbors(pt_level + 1));
-        neighbors.resize(offsets.back(), -1);
     }
+    neighbors.resize(offsets.back(), -1);
 
     return max_level;
 }
@@ -229,7 +230,14 @@ void HNSW::shrink_neighbor_list(
         DistanceComputer& qdis,
         std::priority_queue<NodeDistFarther>& input,
         std::vector<NodeDistFarther>& output,
-        int max_size) {
+        int max_size,
+        bool keep_max_size_level0) {
+    // This prevents number of neighbors at
+    // level 0 from being shrunk to less than 2 * M.
+    // This is essential in making sure
+    // `faiss::gpu::GpuIndexCagra::copyFrom(IndexHNSWCagra*)` is functional
+    std::vector<NodeDistFarther> outsiders;
+
     while (input.size() > 0) {
         NodeDistFarther v1 = input.top();
         input.pop();
@@ -250,7 +258,14 @@ void HNSW::shrink_neighbor_list(
             if (output.size() >= max_size) {
                 return;
             }
+        } else if (keep_max_size_level0) {
+            outsiders.push_back(v1);
         }
+    }
+    size_t idx = 0;
+    while (keep_max_size_level0 && (output.size() < max_size) &&
+           (idx < outsiders.size())) {
+        output.push_back(outsiders[idx++]);
     }
 }
 
@@ -268,7 +283,8 @@ using NodeDistFarther = HNSW::NodeDistFarther;
 void shrink_neighbor_list(
         DistanceComputer& qdis,
         std::priority_queue<NodeDistCloser>& resultSet1,
-        int max_size) {
+        int max_size,
+        bool keep_max_size_level0 = false) {
     if (resultSet1.size() < max_size) {
         return;
     }
@@ -280,7 +296,8 @@ void shrink_neighbor_list(
         resultSet1.pop();
     }
 
-    HNSW::shrink_neighbor_list(qdis, resultSet, returnlist, max_size);
+    HNSW::shrink_neighbor_list(
+            qdis, resultSet, returnlist, max_size, keep_max_size_level0);
 
     for (NodeDistFarther curen2 : returnlist) {
         resultSet1.emplace(curen2.d, curen2.id);
@@ -294,7 +311,8 @@ void add_link(
         DistanceComputer& qdis,
         storage_idx_t src,
         storage_idx_t dest,
-        int level) {
+        int level,
+        bool keep_max_size_level0 = false) {
     size_t begin, end;
     hnsw.neighbor_range(src, level, &begin, &end);
     if (hnsw.neighbors[end - 1] == -1) {
@@ -319,7 +337,7 @@ void add_link(
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(qdis, resultSet, end - begin);
+    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
@@ -429,7 +447,8 @@ void HNSW::add_links_starting_from(
         float d_nearest,
         int level,
         omp_lock_t* locks,
-        VisitedTable& vt) {
+        VisitedTable& vt,
+        bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
 
     search_neighbors_to_add(
@@ -438,13 +457,13 @@ void HNSW::add_links_starting_from(
     // but we can afford only this many neighbors
     int M = nb_neighbors(level);
 
-    ::faiss::shrink_neighbor_list(ptdis, link_targets, M);
+    ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
 
     std::vector<storage_idx_t> neighbors;
     neighbors.reserve(link_targets.size());
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
-        add_link(*this, ptdis, pt_id, other_id, level);
+        add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
         neighbors.push_back(other_id);
         link_targets.pop();
     }
@@ -452,7 +471,7 @@ void HNSW::add_links_starting_from(
     omp_unset_lock(&locks[pt_id]);
     for (storage_idx_t other_id : neighbors) {
         omp_set_lock(&locks[other_id]);
-        add_link(*this, ptdis, other_id, pt_id, level);
+        add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         omp_unset_lock(&locks[other_id]);
     }
     omp_set_lock(&locks[pt_id]);
@@ -467,7 +486,8 @@ void HNSW::add_with_locks(
         int pt_level,
         int pt_id,
         std::vector<omp_lock_t>& locks,
-        VisitedTable& vt) {
+        VisitedTable& vt,
+        bool keep_max_size_level0) {
     //  greedy search on upper levels
 
     storage_idx_t nearest;
@@ -496,7 +516,14 @@ void HNSW::add_with_locks(
 
     for (; level >= 0; level--) {
         add_links_starting_from(
-                ptdis, pt_id, nearest, d_nearest, level, locks.data(), vt);
+                ptdis,
+                pt_id,
+                nearest,
+                d_nearest,
+                level,
+                locks.data(),
+                vt,
+                keep_max_size_level0);
     }
 
     omp_unset_lock(&locks[pt_id]);
@@ -910,9 +937,12 @@ void HNSW::search_level_0(
         const float* nearest_d,
         int search_type,
         HNSWStats& search_stats,
-        VisitedTable& vt) const {
+        VisitedTable& vt,
+        const SearchParametersHNSW* params) const {
     const HNSW& hnsw = *this;
+    auto efSearch = params ? params->efSearch : hnsw.efSearch;
     int k = extract_k_from_ResultHandler(res);
+
     if (search_type == 1) {
         int nres = 0;
 
@@ -925,16 +955,24 @@ void HNSW::search_level_0(
             if (vt.get(cj))
                 continue;
 
-            int candidates_size = std::max(hnsw.efSearch, k);
+            int candidates_size = std::max(efSearch, k);
             MinimaxHeap candidates(candidates_size);
 
             candidates.push(cj, nearest_d[j]);
 
             nres = search_from_candidates(
-                    hnsw, qdis, res, candidates, vt, search_stats, 0, nres);
+                    hnsw,
+                    qdis,
+                    res,
+                    candidates,
+                    vt,
+                    search_stats,
+                    0,
+                    nres,
+                    params);
         }
     } else if (search_type == 2) {
-        int candidates_size = std::max(hnsw.efSearch, int(k));
+        int candidates_size = std::max(efSearch, int(k));
         candidates_size = std::max(candidates_size, int(nprobe));
 
         MinimaxHeap candidates(candidates_size);
@@ -947,7 +985,7 @@ void HNSW::search_level_0(
         }
 
         search_from_candidates(
-                hnsw, qdis, res, candidates, vt, search_stats, 0);
+                hnsw, qdis, res, candidates, vt, search_stats, 0, 0, params);
     }
 }
 
