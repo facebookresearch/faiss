@@ -7593,6 +7593,7 @@
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eab03999c03af6350eaf490acd4b37c3be" kind="enumvalue"><name>QT_8bit_direct</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eaf654ce120baf92b9ac3c43592744fbf8" kind="enumvalue"><name>QT_6bit</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eae6cdb226519ce240694da1a4f21232cd" kind="enumvalue"><name>QT_bf16</name></member>
+    <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eaab5c903ada4c52a308aae478d9e40452" kind="enumvalue"><name>QT_8bit_direct_signed</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kind="enum"><name>RangeStat</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06aa52f2f14616c61c04baf6323d43588fd" kind="enumvalue"><name>RS_minmax</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06afb4b9f4ee9003fa0193e6de69632f7a0" kind="enumvalue"><name>RS_meanstd</name></member>
