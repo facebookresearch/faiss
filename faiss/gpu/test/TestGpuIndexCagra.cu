@@ -198,7 +198,7 @@ void copyToTest(
         faiss::MetricType metric,
         double expected_recall,
         bool base_level_only) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 500; ++tries) {
         Options opt;
         if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
             metric == faiss::METRIC_INNER_PRODUCT) {

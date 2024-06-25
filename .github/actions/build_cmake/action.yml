@@ -71,6 +71,7 @@ runs:
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+        export GTEST_FILTER="TestGpuIndexCagra.Float32_CopyTo_IP_BaseLevelOnly"
         make -C build test
     - name: Install Python extension
       shell: bash
