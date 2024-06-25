@@ -23,7 +23,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <cstddef>
-#include <faiss/gpu/impl/RaftCagra.cuh>
+#include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <optional>
 
 namespace faiss {
@@ -47,13 +47,13 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params =
+    std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
             std::nullopt;
-    std::optional<raft::neighbors::ivf_pq::search_params> ivf_pq_search_params =
+    std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params =
             std::nullopt;
-    if (cagraConfig_.ivf_pq_params != nullptr) {
+    if (cagraConfig_.graph_build_params != nullptr) {
         ivf_pq_params =
-                std::make_optional<raft::neighbors::ivf_pq::index_params>();
+                std::make_optional<cuvs::neighbors::ivf_pq::index_params>();
         ivf_pq_params->n_lists = cagraConfig_.ivf_pq_params->n_lists;
         ivf_pq_params->kmeans_n_iters =
                 cagraConfig_.ivf_pq_params->kmeans_n_iters;
@@ -62,7 +62,7 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
         ivf_pq_params->pq_bits = cagraConfig_.ivf_pq_params->pq_bits;
         ivf_pq_params->pq_dim = cagraConfig_.ivf_pq_params->pq_dim;
         ivf_pq_params->codebook_kind =
-                static_cast<raft::neighbors::ivf_pq::codebook_gen>(
+                static_cast<cuvs::neighbors::ivf_pq::codebook_gen>(
                         cagraConfig_.ivf_pq_params->codebook_kind);
         ivf_pq_params->force_random_rotation =
                 cagraConfig_.ivf_pq_params->force_random_rotation;
@@ -71,7 +71,7 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
     }
     if (cagraConfig_.ivf_pq_search_params != nullptr) {
         ivf_pq_search_params =
-                std::make_optional<raft::neighbors::ivf_pq::search_params>();
+                std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
         ivf_pq_search_params->n_probes =
                 cagraConfig_.ivf_pq_search_params->n_probes;
         ivf_pq_search_params->lut_dtype =
@@ -79,7 +79,7 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
         ivf_pq_search_params->preferred_shmem_carveout =
                 cagraConfig_.ivf_pq_search_params->preferred_shmem_carveout;
     }
-    index_ = std::make_shared<RaftCagra>(
+    index_ = std::make_shared<CuvsCagra>(
             this->resources_.get(),
             this->d,
             cagraConfig_.intermediate_graph_degree,
@@ -179,7 +179,7 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
         }
     }
 
-    index_ = std::make_shared<RaftCagra>(
+    index_ = std::make_shared<CuvsCagra>(
             this->resources_.get(),
             this->d,
             index->ntotal,

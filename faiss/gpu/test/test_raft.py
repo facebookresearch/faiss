@@ -25,13 +25,13 @@ class TestBfKnn(unittest.TestCase):
 
         # Faiss internal implementation
         Dnew, Inew = faiss.knn_gpu(
-            res, ds.get_queries(), ds.get_database(), 12, use_raft=False)
+            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=False)
         np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
         np.testing.assert_array_equal(Iref, Inew)
 
         # RAFT version
         Dnew, Inew = faiss.knn_gpu(
-            res, ds.get_queries(), ds.get_database(), 12, use_raft=True)
+            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=True)
         np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
         np.testing.assert_array_equal(Iref, Inew)
 
@@ -46,7 +46,7 @@ class TestBfKnn(unittest.TestCase):
 
         res = faiss.StandardGpuResources()
         co = faiss.GpuClonerOptions()
-        co.use_raft = True
+        co.use_cuvs = True
         index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
         Dnew, Inew = index_gpu.search(ds.get_queries(), 13)
         np.testing.assert_allclose(Dref, Dnew, atol=1e-5)

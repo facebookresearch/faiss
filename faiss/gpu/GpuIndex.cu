@@ -42,14 +42,14 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 // FIXME: parameterize based on algorithm need
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
-bool should_use_raft(GpuIndexConfig config_) {
+bool should_use_cuvs(GpuIndexConfig config_) {
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, config_.device);
 
     if (prop.major < 7)
         return false;
 
-    return config_.use_raft;
+    return config_.use_cuvs;
 }
 
 GpuIndex::GpuIndex(
@@ -142,7 +142,7 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
     if (n > 0) {
         idx_t totalSize = n * this->d * sizeof(float);
 
-        if (!should_use_raft(config_) &&
+        if (!should_use_cuvs(config_) &&
             (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
@@ -534,7 +534,7 @@ extern std::string gpu_compile_options;
 struct InitGpuCompileOptions {
     InitGpuCompileOptions() {
         gpu_compile_options = "GPU ";
-#ifdef USE_NVIDIA_RAFT
+#ifdef USE_NVIDIA_RAPIDS
         gpu_compile_options += "NVIDIA_RAFT ";
 #endif
     }

@@ -108,12 +108,12 @@ struct GpuDistanceParams {
 
     /// Should the index dispatch down to RAFT?
     /// TODO: change default to true if RAFT is enabled
-    bool use_raft = false;
+    bool use_cuvs = false;
 };
 
 /// A function that determines whether RAFT should be used based on various
 /// conditions (such as unsupported architecture)
-bool should_use_raft(GpuDistanceParams args);
+bool should_use_cuvs(GpuDistanceParams args);
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest
 /// neighbor searches on an externally-provided region of memory (e.g., from a

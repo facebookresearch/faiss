@@ -29,9 +29,12 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <optional>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
+#if defined USE_NVIDIA_RAPIDS
+#include <raft/neighbors/brute_force.cuh>
+#include <cuvs/neighbors/brute_force.hpp>
+#include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/error.hpp>
@@ -39,19 +42,17 @@
 #include <raft/core/operators.hpp>
 #include <raft/core/temporary_device_buffer.hpp>
 #include <raft/linalg/unary_op.cuh>
-#include <raft/neighbors/brute_force.cuh>
-#define RAFT_NAME "raft"
+// #define RAFT_NAME "raft"
 #endif
 
 namespace faiss {
 namespace gpu {
 
-#if defined USE_NVIDIA_RAFT
-using namespace raft::distance;
-using namespace raft::neighbors;
-#endif
+// #if defined USE_NVIDIA_RAPIDS
+// using namespace cuvs::neighbors;
+// #endif
 
-bool should_use_raft(GpuDistanceParams args) {
+bool should_use_cuvs(GpuDistanceParams args) {
     cudaDeviceProp prop;
     int dev = args.device >= 0 ? args.device : getCurrentDevice();
     cudaGetDeviceProperties(&prop, dev);
@@ -59,7 +60,7 @@ bool should_use_raft(GpuDistanceParams args) {
     if (prop.major < 7)
         return false;
 
-    return args.use_raft;
+    return args.use_cuvs;
 }
 
 template <typename T>
@@ -237,10 +238,10 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 or F16");
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
     // Note: For now, RAFT bfknn requires queries and vectors to be same layout
-    if (should_use_raft(args) && args.queriesRowMajor == args.vectorsRowMajor) {
-        DistanceType distance = metricFaissToRaft(args.metric, false);
+    if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor) {
+        cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);
 
         auto resImpl = prov->getResources();
         auto res = resImpl.get();
@@ -299,10 +300,15 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         raft::vector_extent<int64_t>(num_queries));
                 norms_view = norms->view();
             }
-            raft::neighbors::brute_force::index idx(
+            cuvs::neighbors::brute_force::index idx(
                     handle, index.view(), norms_view, distance, metric_arg);
-            raft::neighbors::brute_force::search<float, idx_t>(
-                    handle, idx, search.view(), inds.view(), dists.view());
+            cuvs::neighbors::brute_force::search(
+                    handle,
+                    idx,
+                    search.view(),
+                    inds.view(),
+                    dists.view(),
+                    std::nullopt);
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
                     const float,
@@ -328,13 +334,13 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     raft::col_major>>
                     index_vec = {index.view()};
 
-            brute_force::knn(
+            raft::neighbors::brute_force::knn(
                     handle,
                     index_vec,
                     search.view(),
                     inds.view(),
                     dists.view(),
-                    distance,
+                    raft::distance::DistanceType::L2Expanded,
                     metric_arg);
         }
 
@@ -357,9 +363,9 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         handle.sync_stream();
     } else
 #else
-    if (should_use_raft(args)) {
+    if (should_use_cuvs(args)) {
         FAISS_THROW_IF_NOT_MSG(
-                !should_use_raft(args),
+                !should_use_cuvs(args),
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif

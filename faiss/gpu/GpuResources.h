@@ -30,7 +30,7 @@
 #include <utility>
 #include <vector>
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
 #include <raft/core/device_resources.hpp>
 #include <rmm/mr/device/device_memory_resource.hpp>
 #endif
@@ -161,7 +161,7 @@ struct AllocRequest : public AllocInfo {
     /// The size in bytes of the allocation
     size_t size = 0;
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
     rmm::mr::device_memory_resource* mr = nullptr;
 #endif
 };
@@ -211,7 +211,7 @@ class GpuResources {
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
     virtual raft::device_resources& getRaftHandle(int device) = 0;

@@ -39,9 +39,9 @@ class GpuResources;
 /// the vectors in float32.
 /// If float16, we store the vectors in both float16 and float32, where float32
 /// data is possibly needed for certain residual operations
-class RaftFlatIndex : public FlatIndex {
+class CuvsFlatIndex : public FlatIndex {
    public:
-    RaftFlatIndex(
+    CuvsFlatIndex(
             GpuResources* res,
             int dim,
             bool useFloat16,

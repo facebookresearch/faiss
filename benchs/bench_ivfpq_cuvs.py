@@ -41,13 +41,13 @@ def aa(*args, **kwargs):
 
 
 group = parser.add_argument_group('benchmarking options')
-aa('--raft_only', default=False, action='store_true',
-   help='whether to only produce RAFT enabled benchmarks')
+aa('--cuvs_only', default=False, action='store_true',
+   help='whether to only produce CUVS enabled benchmarks')
 
 group = parser.add_argument_group('IVF options')
 aa('--bits_per_code', default=8, type=int, help='bits per code. Note that < 8 is only supported when RAFT is enabled')
 aa('--pq_len', default=2, type=int, help='number of vector elements represented by one PQ code')
-aa('--use_precomputed', default=True, type=bool, help='use precomputed codes (not with RAFT enabled)')
+aa('--use_precomputed', default=True, type=bool, help='use precomputed codes (not with CUVS enabled)')
 
 group = parser.add_argument_group('searching')
 aa('--k', default=10, type=int, help='nb of nearest neighbors')
@@ -73,11 +73,11 @@ def compute_nlist(numVecs):
     return int(nlist)
 
 
-def bench_train_milliseconds(index, trainVecs, use_raft):
+def bench_train_milliseconds(index, trainVecs, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
     # use float 16 lookup tables to save space
     co.useFloat16LookupTables = True
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     t0 = time.time()
     index_gpu.train(trainVecs)
@@ -93,21 +93,21 @@ print("=" * 40)
 print("GPU Train Benchmarks")
 print("=" * 40)
 raft_gpu_train_time = bench_train_milliseconds(index, xt, True)
-if args.raft_only:
-    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, RAFT enabled GPU train time: %.3f milliseconds" % (
+if args.cuvs_only:
+    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, CUVS enabled GPU train time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_train, raft_gpu_train_time))
 else:
     classical_gpu_train_time = bench_train_milliseconds(
         index, xt, False)
-    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, classical GPU train time: %.3f milliseconds, RAFT enabled GPU train time: %.3f milliseconds" % (
+    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, classical GPU train time: %.3f milliseconds, CUVS enabled GPU train time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_train, classical_gpu_train_time, raft_gpu_train_time))
 
 
-def bench_add_milliseconds(index, addVecs, use_raft):
+def bench_add_milliseconds(index, addVecs, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
     # use float 16 lookup tables to save space
     co.useFloat16LookupTables = True
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     index_gpu.copyFrom(index)
     t0 = time.time()
@@ -119,19 +119,19 @@ print("GPU Add Benchmarks")
 print("=" * 40)
 index.train(xt)
 raft_gpu_add_time = bench_add_milliseconds(index, xb, True)
-if args.raft_only:
-    print("Method: IVFPQ, Operation: ADD, dim: %d, n_centroids %d numSubQuantizers %d, bitsPerCode %d, numAdd %d, RAFT enabled GPU add time: %.3f milliseconds" % (
+if args.cuvs_only:
+    print("Method: IVFPQ, Operation: ADD, dim: %d, n_centroids %d numSubQuantizers %d, bitsPerCode %d, numAdd %d, CUVS enabled GPU add time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_rows, raft_gpu_add_time))
 else:
     classical_gpu_add_time = bench_add_milliseconds(
         index, xb, False)
-    print("Method: IVFFPQ, Operation: ADD, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numAdd %d, classical GPU add time: %.3f milliseconds, RAFT enabled GPU add time: %.3f milliseconds" % (
+    print("Method: IVFFPQ, Operation: ADD, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numAdd %d, classical GPU add time: %.3f milliseconds, CUVS enabled GPU add time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_rows, classical_gpu_add_time, raft_gpu_add_time))
 
 
-def bench_search_milliseconds(index, addVecs, queryVecs, nprobe, k, use_raft):
+def bench_search_milliseconds(index, addVecs, queryVecs, nprobe, k, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     co.useFloat16LookupTables = True
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     index_gpu.copyFrom(index)
@@ -158,11 +158,11 @@ if args.bm_search:
         queryVecs = xq[np.random.choice(xq.shape[0], n_rows, replace=False)]
         raft_gpu_search_time = bench_search_milliseconds(
             index, xb, queryVecs, args.nprobe, args.k, True)
-        if args.raft_only:
-            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, RAFT enabled GPU search time: %.3f milliseconds" % (
+        if args.cuvs_only:
+            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, CUVS enabled GPU search time: %.3f milliseconds" % (
                 n_cols, nlist, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, raft_gpu_search_time))
         else:
             classical_gpu_search_time = bench_search_milliseconds(
                 index, xb, queryVecs, args.nprobe, args.k, False)
-            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, RAFT enabled GPU search time: %.3f milliseconds" % (
+            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, CUVS enabled GPU search time: %.3f milliseconds" % (
                 n_cols, nlist, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, raft_gpu_search_time))

@@ -26,7 +26,7 @@ if(FAISS_ENABLE_GPU)
   list(APPEND FAISS_LANGUAGES CUDA)
 endif()
 
-if(FAISS_ENABLE_RAFT)
+if(FAISS_ENABLE_CUVS)
 include(cmake/thirdparty/fetch_rapids.cmake)
 include(rapids-cmake)
 include(rapids-cpm)
@@ -53,7 +53,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Valid values are "generic", "avx2", "avx512".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
-option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_CUVS "Enable CUVS for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 
@@ -62,8 +62,8 @@ if(FAISS_ENABLE_GPU)
   enable_language(CUDA)
 endif()
 
-if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
-   find_package(raft COMPONENTS compiled distributed)
+if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
+   find_package(cuvs)
  endif()
 
 add_subdirectory(faiss)
