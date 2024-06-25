@@ -18,7 +18,7 @@ class TestGpuIndexIvfflat(unittest.TestCase):
         res = faiss.StandardGpuResources()
         res.noTempMemory()
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_raft = False
+        config.use_cuvs = False
         index2 = faiss.GpuIndexIVFFlat(res, index, config)
         recons = index2.reconstruct_n(0, 10)
 

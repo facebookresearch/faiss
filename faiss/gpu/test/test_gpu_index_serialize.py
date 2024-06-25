@@ -35,7 +35,7 @@ class TestGpuSerialize(unittest.TestCase):
 
         # IVFSQ
         config = faiss.GpuIndexIVFScalarQuantizerConfig()
-        config.use_raft = False
+        config.use_cuvs = False
         indexes.append(faiss.GpuIndexIVFScalarQuantizer(res, d, nlist, faiss.ScalarQuantizer.QT_fp16, faiss.METRIC_L2, True, config))
 
         # IVFPQ
@@ -52,7 +52,7 @@ class TestGpuSerialize(unittest.TestCase):
              
             gpu_cloner_options = faiss.GpuClonerOptions()
             if isinstance(index, faiss.GpuIndexIVFScalarQuantizer):
-                gpu_cloner_options.use_raft = False
+                gpu_cloner_options.use_cuvs = False
             gpu_index_restore = faiss.index_cpu_to_gpu(res, 0, cpu_index, gpu_cloner_options)
 
             restore_d, restore_i = gpu_index_restore.search(query, k)

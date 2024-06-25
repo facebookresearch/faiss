@@ -558,7 +558,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
-#ifdef FAISS_ENABLE_RAFT
+#ifdef FAISS_ENABLE_CUVS
 %include  <faiss/gpu/GpuIndexCagra.h>
 #endif
 %include  <faiss/gpu/GpuIndexFlat.h>
@@ -677,7 +677,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
-#ifdef FAISS_ENABLE_RAFT
+#ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
 #endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )

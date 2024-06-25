@@ -156,7 +156,7 @@ void queryTest(Options opt, faiss::MetricType metricType) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_raft = opt.useRaft;
+    config.use_cuvs = opt.useRaft;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -235,7 +235,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         config.usePrecomputedTables = false;
         config.useMMCodeDistance = true;
         config.indicesOptions = opt.indicesOpt;
-        config.use_raft = false;
+        config.use_cuvs = false;
 
         // Make sure that the float16 version works as well
         config.useFloat16LookupTables = (tries % 2 == 0);
@@ -286,7 +286,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         config.device = opt.device;
         config.usePrecomputedTables = false;
         config.indicesOptions = opt.indicesOpt;
-        config.use_raft = false;
+        config.use_cuvs = false;
 
         // Make sure that the float16 version works as well
         config.useFloat16LookupTables = (dimPerSubQ == 7);
@@ -340,7 +340,7 @@ TEST(TestGpuIndexIVFPQ, Float16Coarse) {
     config.usePrecomputedTables = opt.usePrecomputed;
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
-    config.use_raft = false;
+    config.use_cuvs = false;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -386,7 +386,7 @@ void addTest(Options opt, faiss::MetricType metricType) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_raft = opt.useRaft;
+    config.use_cuvs = opt.useRaft;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -436,7 +436,7 @@ void copyToTest(Options opt) {
         config.indicesOptions = opt.indicesOpt;
         config.useFloat16LookupTables = opt.useFloat16;
         config.interleavedLayout = opt.interleavedLayout;
-        config.use_raft = opt.useRaft;
+        config.use_cuvs = opt.useRaft;
 
         faiss::gpu::GpuIndexIVFPQ gpuIndex(
                 &res,
@@ -513,7 +513,7 @@ void copyFromTest(Options opt) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_raft = opt.useRaft;
+    config.use_cuvs = opt.useRaft;
 
     // Use garbage values to see if we overwrite them
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
@@ -567,7 +567,7 @@ void queryNaNTest(Options opt) {
     config.usePrecomputedTables = opt.usePrecomputed;
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
-    config.use_raft = opt.useRaft;
+    config.use_cuvs = opt.useRaft;
     config.interleavedLayout = opt.useRaft ? true : opt.interleavedLayout;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
@@ -620,7 +620,7 @@ void addNaNTest(Options opt) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_raft = opt.useRaft;
+    config.use_cuvs = opt.useRaft;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
@@ -668,7 +668,7 @@ TEST(TestGpuIndexIVFPQ, AddNaN) {
     addNaNTest(opt);
 }
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
 TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
@@ -824,7 +824,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = device;
     config.memorySpace = faiss::gpu::MemorySpace::Unified;
-    config.use_raft = false;
+    config.use_cuvs = false;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
@@ -848,9 +848,9 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.1f,
             0.015f);
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_RAPIDS
     config.interleavedLayout = true;
-    config.use_raft = true;
+    config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
 
     faiss::gpu::GpuIndexIVFPQ raftGpuIndex(

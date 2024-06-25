@@ -33,7 +33,7 @@ struct IndexHNSWCagra;
 namespace faiss {
 namespace gpu {
 
-class RaftCagra;
+class CuvsCagra;
 
 enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
@@ -275,7 +275,7 @@ struct GpuIndexCagra : public GpuIndex {
     const GpuIndexCagraConfig cagraConfig_;
 
     /// Instance that we own; contains the inverted lists
-    std::shared_ptr<RaftCagra> index_;
+    std::shared_ptr<CuvsCagra> index_;
 };
 
 } // namespace gpu
