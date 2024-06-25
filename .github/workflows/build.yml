@@ -12,7 +12,7 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-AVX512-cmake:
-    name: Linux x86_64 AVX512 (cmake) on custom runner
+    name: TEST JOB: Linux x86_64 AVX512 (cmake) on custom runner
     if: true  # TODO: enable when GitHub Actions adds AVX-512 hosts
       # needs: linux-x86_64-cmake
     runs-on: faiss-aws-m5.xlarge
