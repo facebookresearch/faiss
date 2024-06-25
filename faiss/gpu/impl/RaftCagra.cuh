@@ -53,15 +53,13 @@ class RaftCagra {
             idx_t graph_degree,
             faiss::cagra_build_algo graph_build_algo,
             size_t nn_descent_niter,
-            bool store_dataset,
             faiss::MetricType metric,
             float metricArg,
             IndicesOptions indicesOptions,
             std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params =
                     std::nullopt,
             std::optional<raft::neighbors::ivf_pq::search_params>
-                    ivf_pq_search_params = std::nullopt,
-            float refine_rate = 2.0f);
+                    ivf_pq_search_params = std::nullopt);
 
     RaftCagra(
             GpuResources* resources,
@@ -103,22 +101,14 @@ class RaftCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const float* get_training_dataset() const;
+    std::vector<float> get_training_dataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
-    /// Training dataset
-    const float* storage_;
-    int n_;
-
     /// Expected dimensionality of the vectors
     const int dim_;
-
-    /// Controls the underlying RAFT index if it should store the dataset in
-    /// device memory
-    bool store_dataset_;
 
     /// Metric type of the index
     faiss::MetricType metric_;
@@ -132,7 +122,6 @@ class RaftCagra {
     /// Parameters to build CAGRA graph using IVF PQ
     std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params_;
     std::optional<raft::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
-    std::optional<float> refine_rate_;
 
     /// Instance of trained RAFT CAGRA index
     std::optional<raft::neighbors::cagra::index<float, uint32_t>>
