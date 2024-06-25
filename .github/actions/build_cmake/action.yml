@@ -58,7 +58,7 @@ runs:
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
-              -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_ENABLE_CUVS=${{ inputs.raft }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \

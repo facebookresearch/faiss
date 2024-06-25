@@ -48,7 +48,7 @@ jobs:
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=ON \
                   -DFAISS_ENABLE_GPU=OFF \
-                  -DFAISS_ENABLE_RAFT=OFF \
+                  -DFAISS_ENABLE_CUVS=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DPYTHON_EXECUTABLE=$(which python) \
