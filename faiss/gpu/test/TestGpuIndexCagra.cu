@@ -198,7 +198,7 @@ void copyToTest(
         faiss::MetricType metric,
         double expected_recall,
         bool base_level_only) {
-    for (int tries = 0; tries < 5; ++tries) {
+    for (int tries = 0; tries < 100; ++tries) {
         Options opt;
         if (opt.buildAlgo == faiss::gpu::graph_build_algo::NN_DESCENT &&
             metric == faiss::METRIC_INNER_PRODUCT) {
@@ -330,24 +330,27 @@ void copyToTest(
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
+        std::cout << "run: " << tries
+                  << ", recall_score: " << *recall_score.data_handle()
+                  << std::endl;
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
-    copyToTest(faiss::METRIC_L2, 0.95, false);
+    copyToTest(faiss::METRIC_L2, 0.98, false);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_L2, 0.95, true);
+    copyToTest(faiss::METRIC_L2, 0.98, true);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.95, false);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, false);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.95, true);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, true);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
@@ -468,7 +471,7 @@ int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 
     // just run with a fixed test seed
-    faiss::gpu::setTestSeed(100);
+    faiss::gpu::setTestSeed(101);
 
     return RUN_ALL_TESTS();
 }
