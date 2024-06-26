@@ -72,7 +72,7 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         export GTEST_FILTER="TestGpuIndexCagra.Float32_CopyTo_IP_BaseLevelOnly"
-        make -C build test || echo "<test-output>" || cat /home/runner/work/faiss/faiss/build/Testing/Temporary/LastTest.log || echo "</test-output>"
+        make -C build test || echo "<test-output>" && cat /home/runner/work/faiss/faiss/build/Testing/Temporary/LastTest.log && echo "</test-output>"
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
