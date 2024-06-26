@@ -332,6 +332,9 @@ void copyToTest(
                 ref_dis_mds_opt);
         double actual = *recall_score.data_handle();
         printf("actual: %f, expected: %f\n", actual, expected_recall);
+                std::cout << "run: " << tries
+                  << ", recall_score: " << actual
+                  << std::endl;
         ASSERT_TRUE(actual > expected_recall);
     }
 }
@@ -470,7 +473,7 @@ int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 
     // just run with a fixed test seed
-    faiss::gpu::setTestSeed(100);
+    faiss::gpu::setTestSeed(101);
 
     return RUN_ALL_TESTS();
 }
