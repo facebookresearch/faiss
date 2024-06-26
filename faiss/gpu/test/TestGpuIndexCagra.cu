@@ -330,7 +330,9 @@ void copyToTest(
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
+        double actual = *recall_score.data_handle();
+        printf("actual: %f, expected: %f\n", actual, expected_recall);
+        ASSERT_TRUE(actual > expected_recall);
     }
 }
 
