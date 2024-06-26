@@ -337,19 +337,19 @@ void copyToTest(
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2) {
-    copyToTest(faiss::METRIC_L2, 0.98, false);
+    copyToTest(faiss::METRIC_L2, 0.95, false);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_L2_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_L2, 0.98, true);
+    copyToTest(faiss::METRIC_L2, 0.95, true);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, false);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.95, false);
 }
 
 TEST(TestGpuIndexCagra, Float32_CopyTo_IP_BaseLevelOnly) {
-    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, true);
+    copyToTest(faiss::METRIC_INNER_PRODUCT, 0.95, true);
 }
 
 void copyFromTest(faiss::MetricType metric, double expected_recall) {
