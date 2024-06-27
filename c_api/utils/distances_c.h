@@ -103,6 +103,18 @@ void faiss_set_distance_compute_min_k_reservoir(int value);
 /// rather than a heap
 int faiss_get_distance_compute_min_k_reservoir();
 
+/// Setter of block sizes value for oneDNN/AMX distance computations
+void faiss_set_distance_compute_dnnl_query_bs(int value);
+
+/// Getter of block sizes value for oneDNN/AMX distance computations
+int faiss_get_distance_compute_dnnl_query_bs();
+
+/// Setter of block sizes value for oneDNN/AMX distance computations
+void faiss_set_distance_compute_dnnl_database_bs(int value);
+
+/// Getter of block sizes value for oneDNN/AMX distance computations
+int faiss_get_distance_compute_dnnl_database_bs();
+
 #ifdef __cplusplus
 }
 #endif

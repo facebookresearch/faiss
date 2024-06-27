@@ -227,6 +227,15 @@ if(NOT WIN32)
   list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
 endif()
 
+if(FAISS_ENABLE_DNNL)
+  list(APPEND FAISS_HEADERS utils/onednn/onednn_utils.h)
+endif()
+
+if(FAISS_ENABLE_DNNL)
+   add_compile_definitions(ENABLE_DNNL)
+endif()
+
+
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
@@ -297,6 +306,15 @@ if (${finteger_idx} EQUAL -1)
 endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
+
+if(FAISS_ENABLE_DNNL)
+  find_library(RT_LIB rt)
+  find_library(DNNL_LIB dnnl)
+  message(DNNL_LIB=${DNNL_LIB})
+  target_link_libraries(faiss PRIVATE ${RT_LIB} ${DNNL_LIB})
+  target_link_libraries(faiss_avx2 PRIVATE ${RT_LIB} ${DNNL_LIB})
+  target_link_libraries(faiss_avx512 PRIVATE ${RT_LIB} ${DNNL_LIB})
+endif()
 
 find_package(OpenMP REQUIRED)
 target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
