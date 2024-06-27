@@ -20,8 +20,10 @@ jobs:
     runs-on: faiss-aws-m5.xlarge
     steps:
       - name: Checkout
+        continue-on-error: true
         uses: actions/checkout@v4
       - name: Try to fail
+        continue-on-error: true
         run: exit 1
       - name: Print message if we don't fail
         run: echo Should not get here
