@@ -56,7 +56,7 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
 # allows numpy ndarray usage with bfKnn
 
 
-def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2, device=-1, use_raft=False, vectorsMemoryLimit=0, queriesMemoryLimit=0):
+def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2, device=-1, use_cuvs=False, vectorsMemoryLimit=0, queriesMemoryLimit=0):
     """
     Compute the k nearest neighbors of a vector on one GPU without constructing an index
 
@@ -178,7 +178,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2, device=-1, use_raf
     args.outIndices = I_ptr
     args.outIndicesType = I_type
     args.device = device
-    args.use_raft = use_raft
+    args.use_cuvs = use_cuvs
 
     # no stream synchronization needed, inputs and outputs are guaranteed to
     # be on the CPU (numpy arrays)

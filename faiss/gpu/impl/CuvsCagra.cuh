@@ -30,8 +30,8 @@
 
 #include <faiss/MetricType.h>
 
-#include <raft/neighbors/cagra_types.hpp>
-#include <raft/neighbors/ivf_pq_types.hpp>
+#include <cuvs/neighbors/cagra.hpp>
+#include <cuvs/neighbors/ivf_pq.hpp>
 
 namespace faiss {
 
@@ -44,9 +44,9 @@ enum class cagra_hash_mode { HASH, SMALL, AUTO };
 
 namespace gpu {
 
-class RaftCagra {
+class CuvsCagra {
    public:
-    RaftCagra(
+    CuvsCagra(
             GpuResources* resources,
             int dim,
             idx_t intermediate_graph_degree,
@@ -56,12 +56,12 @@ class RaftCagra {
             faiss::MetricType metric,
             float metricArg,
             IndicesOptions indicesOptions,
-            std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params =
+            std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
                     std::nullopt,
-            std::optional<raft::neighbors::ivf_pq::search_params>
+            std::optional<cuvs::neighbors::ivf_pq::search_params>
                     ivf_pq_search_params = std::nullopt);
 
-    RaftCagra(
+    CuvsCagra(
             GpuResources* resources,
             int dim,
             idx_t n,
@@ -72,7 +72,7 @@ class RaftCagra {
             float metricArg,
             IndicesOptions indicesOptions);
 
-    ~RaftCagra() = default;
+    ~CuvsCagra() = default;
 
     void train(idx_t n, const float* x);
 
@@ -117,15 +117,15 @@ class RaftCagra {
     float metricArg_;
 
     /// Parameters to build RAFT CAGRA index
-    raft::neighbors::cagra::index_params index_params_;
+    cuvs::neighbors::cagra::index_params index_params_;
 
     /// Parameters to build CAGRA graph using IVF PQ
-    std::optional<raft::neighbors::ivf_pq::index_params> ivf_pq_params_;
-    std::optional<raft::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
+    std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params_;
+    std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
 
     /// Instance of trained RAFT CAGRA index
-    std::optional<raft::neighbors::cagra::index<float, uint32_t>>
-            raft_knn_index{std::nullopt};
+    std::optional<cuvs::neighbors::cagra::index<float, uint32_t>>
+            cuvs_index{std::nullopt};
 };
 
 } // namespace gpu
