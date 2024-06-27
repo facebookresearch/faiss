@@ -23,5 +23,5 @@ jobs:
         continue-on-error: true
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
-       with:
-         opt_level: avx512
+        with:
+           opt_level: avx512
