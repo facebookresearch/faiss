@@ -330,9 +330,6 @@ void copyToTest(
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-        std::cout << "run: " << tries
-                  << ", recall_score: " << *recall_score.data_handle()
-                  << std::endl;
         ASSERT_GT(*recall_score.data_handle() > expected_recall);
     }
 }
