@@ -17,6 +17,8 @@ jobs:
     if: true  # TODO: enable when GitHub Actions adds AVX-512 hosts
       # needs: linux-x86_64-cmake
     runs-on: faiss-aws-m5.xlarge
+    container:
+        image: ubuntu:latest
     steps:
       - name: Checkout
         continue-on-error: true
