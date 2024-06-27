@@ -62,92 +62,95 @@ __global__ void pass2SelectLists(
         IndicesOptions opt,
         Tensor<float, 2, true> outDistances,
         Tensor<idx_t, 2, true> outIndices) {
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    __shared__ float smemK[kNumWarps * NumWarpQ];
-    __shared__ IndexT smemV[kNumWarps * NumWarpQ];
+        __shared__ float smemK[kNumWarps * NumWarpQ];
+        __shared__ IndexT smemV[kNumWarps * NumWarpQ];
 
-    constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
-    BlockSelect<
-            float,
-            IndexT,
-            Dir,
-            Comparator<float>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(kInit, -1, smemK, smemV, k);
+        constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
+        BlockSelect<
+                float,
+                IndexT,
+                Dir,
+                Comparator<float>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(kInit, -1, smemK, smemV, k);
 
-    auto queryId = blockIdx.x;
-    idx_t num = heapDistances.getSize(1);
-    idx_t limit = utils::roundDown(num, kWarpSize);
+        auto queryId = blockIdx.x;
+        idx_t num = heapDistances.getSize(1);
+        idx_t limit = utils::roundDown(num, kWarpSize);
 
-    idx_t i = threadIdx.x;
-    auto heapDistanceStart = heapDistances[queryId];
+        idx_t i = threadIdx.x;
+        auto heapDistanceStart = heapDistances[queryId];
 
-    // BlockSelect add cannot be used in a warp divergent circumstance; we
-    // handle the remainder warp below
-    for (; i < limit; i += blockDim.x) {
-        heap.add(heapDistanceStart[i], IndexT(i));
-    }
-
-    // Handle warp divergence separately
-    if (i < num) {
-        heap.addThreadQ(heapDistanceStart[i], IndexT(i));
-    }
-
-    // Merge all final results
-    heap.reduce();
-
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        outDistances[queryId][i] = smemK[i];
-
-        // `v` is the index in `heapIndices`
-        // We need to translate this into an original user index. The
-        // reason why we don't maintain intermediate results in terms of
-        // user indices is to substantially reduce temporary memory
-        // requirements and global memory write traffic for the list
-        // scanning.
-        // This code is highly divergent, but it's probably ok, since this
-        // is the very last step and it is happening a small number of
-        // times (#queries x k).
-        idx_t v = smemV[i];
-        idx_t index = -1;
-
-        if (v != -1) {
-            // `offset` is the offset of the intermediate result, as
-            // calculated by the original scan.
-            idx_t offset = heapIndices[queryId][v];
-
-            // In order to determine the actual user index, we need to first
-            // determine what list it was in.
-            // We do this by binary search in the prefix sum list.
-            idx_t probe = binarySearchForBucket(
-                    prefixSumOffsets[queryId].data(),
-                    prefixSumOffsets.getSize(1),
-                    offset);
-
-            // This is then the probe for the query; we can find the actual
-            // list ID from this
-            idx_t listId = ivfListIds[queryId][probe];
-
-            // Now, we need to know the offset within the list
-            // We ensure that before the array (at offset -1), there is a 0
-            // value
-            idx_t listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
-            idx_t listOffset = offset - listStart;
-
-            // This gives us our final index
-            if (opt == INDICES_32_BIT) {
-                index = (idx_t)((int*)listIndices[listId])[listOffset];
-            } else if (opt == INDICES_64_BIT) {
-                index = ((idx_t*)listIndices[listId])[listOffset];
-            } else {
-                index = (listId << 32 | (idx_t)listOffset);
-            }
+        // BlockSelect add cannot be used in a warp divergent circumstance; we
+        // handle the remainder warp below
+        for (; i < limit; i += blockDim.x) {
+            heap.add(heapDistanceStart[i], IndexT(i));
         }
 
-        outIndices[queryId][i] = index;
+        // Handle warp divergence separately
+        if (i < num) {
+            heap.addThreadQ(heapDistanceStart[i], IndexT(i));
+        }
+
+        // Merge all final results
+        heap.reduce();
+
+        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            outDistances[queryId][i] = smemK[i];
+
+            // `v` is the index in `heapIndices`
+            // We need to translate this into an original user index. The
+            // reason why we don't maintain intermediate results in terms of
+            // user indices is to substantially reduce temporary memory
+            // requirements and global memory write traffic for the list
+            // scanning.
+            // This code is highly divergent, but it's probably ok, since this
+            // is the very last step and it is happening a small number of
+            // times (#queries x k).
+            idx_t v = smemV[i];
+            idx_t index = -1;
+
+            if (v != -1) {
+                // `offset` is the offset of the intermediate result, as
+                // calculated by the original scan.
+                idx_t offset = heapIndices[queryId][v];
+
+                // In order to determine the actual user index, we need to first
+                // determine what list it was in.
+                // We do this by binary search in the prefix sum list.
+                idx_t probe = binarySearchForBucket(
+                        prefixSumOffsets[queryId].data(),
+                        prefixSumOffsets.getSize(1),
+                        offset);
+
+                // This is then the probe for the query; we can find the actual
+                // list ID from this
+                idx_t listId = ivfListIds[queryId][probe];
+
+                // Now, we need to know the offset within the list
+                // We ensure that before the array (at offset -1), there is a 0
+                // value
+                idx_t listStart =
+                        *(prefixSumOffsets[queryId][probe].data() - 1);
+                idx_t listOffset = offset - listStart;
+
+                // This gives us our final index
+                if (opt == INDICES_32_BIT) {
+                    index = (idx_t)((int*)listIndices[listId])[listOffset];
+                } else if (opt == INDICES_64_BIT) {
+                    index = ((idx_t*)listIndices[listId])[listOffset];
+                } else {
+                    index = (listId << 32 | (idx_t)listOffset);
+                }
+            }
+
+            outIndices[queryId][i] = index;
+        }
     }
 }
 
@@ -187,46 +190,46 @@ void runPass2SelectLists(
 #if GPU_MAX_SELECTION_K >= 2048
 
     // block size 128 for k <= 1024, 64 for k = 2048
-#define RUN_PASS_DIR(INDEX_T, DIR)                \
-    do {                                          \
-        if (k == 1) {                             \
-            RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
-        } else if (k <= 32) {                     \
-            RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
-        } else if (k <= 64) {                     \
-            RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \
-        } else if (k <= 128) {                    \
-            RUN_PASS(INDEX_T, 128, 128, 3, DIR);  \
-        } else if (k <= 256) {                    \
-            RUN_PASS(INDEX_T, 128, 256, 4, DIR);  \
-        } else if (k <= 512) {                    \
-            RUN_PASS(INDEX_T, 128, 512, 8, DIR);  \
-        } else if (k <= 1024) {                   \
-            RUN_PASS(INDEX_T, 128, 1024, 8, DIR); \
-        } else if (k <= 2048) {                   \
-            RUN_PASS(INDEX_T, 64, 2048, 8, DIR);  \
-        }                                         \
+#define RUN_PASS_DIR(INDEX_T, DIR)                                \
+    do {                                                          \
+        if (k == 1) {                                             \
+            RUN_PASS(INDEX_T, 128, 1, 1, DIR);                    \
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) { \
+            RUN_PASS(INDEX_T, 128, 32, 2, DIR);                   \
+        } else if (k <= 64) {                                     \
+            RUN_PASS(INDEX_T, 128, 64, 3, DIR);                   \
+        } else if (k <= 128) {                                    \
+            RUN_PASS(INDEX_T, 128, 128, 3, DIR);                  \
+        } else if (k <= 256) {                                    \
+            RUN_PASS(INDEX_T, 128, 256, 4, DIR);                  \
+        } else if (k <= 512) {                                    \
+            RUN_PASS(INDEX_T, 128, 512, 8, DIR);                  \
+        } else if (k <= 1024) {                                   \
+            RUN_PASS(INDEX_T, 128, 1024, 8, DIR);                 \
+        } else if (k <= 2048) {                                   \
+            RUN_PASS(INDEX_T, 64, 2048, 8, DIR);                  \
+        }                                                         \
     } while (0)
 
 #else
 
-#define RUN_PASS_DIR(INDEX_T, DIR)                \
-    do {                                          \
-        if (k == 1) {                             \
-            RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
-        } else if (k <= 32) {                     \
-            RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
-        } else if (k <= 64) {                     \
-            RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \
-        } else if (k <= 128) {                    \
-            RUN_PASS(INDEX_T, 128, 128, 3, DIR);  \
-        } else if (k <= 256) {                    \
-            RUN_PASS(INDEX_T, 128, 256, 4, DIR);  \
-        } else if (k <= 512) {                    \
-            RUN_PASS(INDEX_T, 128, 512, 8, DIR);  \
-        } else if (k <= 1024) {                   \
-            RUN_PASS(INDEX_T, 128, 1024, 8, DIR); \
-        }                                         \
+#define RUN_PASS_DIR(INDEX_T, DIR)                                \
+    do {                                                          \
+        if (k == 1) {                                             \
+            RUN_PASS(INDEX_T, 128, 1, 1, DIR);                    \
+        } else if (k <= 32 && getWarpSizeCurrentDevice() == 32) { \
+            RUN_PASS(INDEX_T, 128, 32, 2, DIR);                   \
+        } else if (k <= 64) {                                     \
+            RUN_PASS(INDEX_T, 128, 64, 3, DIR);                   \
+        } else if (k <= 128) {                                    \
+            RUN_PASS(INDEX_T, 128, 128, 3, DIR);                  \
+        } else if (k <= 256) {                                    \
+            RUN_PASS(INDEX_T, 128, 256, 4, DIR);                  \
+        } else if (k <= 512) {                                    \
+            RUN_PASS(INDEX_T, 128, 512, 8, DIR);                  \
+        } else if (k <= 1024) {                                   \
+            RUN_PASS(INDEX_T, 128, 1024, 8, DIR);                 \
+        }                                                         \
     } while (0)
 
 #endif // GPU_MAX_SELECTION_K

@@ -26,45 +26,47 @@ __global__ void blockSelect(
         K initK,
         IndexType initV,
         int k) {
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    __shared__ K smemK[kNumWarps * NumWarpQ];
-    __shared__ IndexType smemV[kNumWarps * NumWarpQ];
+        __shared__ K smemK[kNumWarps * NumWarpQ];
+        __shared__ IndexType smemV[kNumWarps * NumWarpQ];
 
-    BlockSelect<
-            K,
-            IndexType,
-            Dir,
-            Comparator<K>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(initK, initV, smemK, smemV, k);
+        BlockSelect<
+                K,
+                IndexType,
+                Dir,
+                Comparator<K>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(initK, initV, smemK, smemV, k);
 
-    // Grid is exactly sized to rows available
-    idx_t row = blockIdx.x;
+        // Grid is exactly sized to rows available
+        idx_t row = blockIdx.x;
 
-    idx_t i = threadIdx.x;
-    K* inStart = in[row][i].data();
+        idx_t i = threadIdx.x;
+        K* inStart = in[row][i].data();
 
-    // Whole warps must participate in the selection
-    idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
+        // Whole warps must participate in the selection
+        idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
 
-    for (; i < limit; i += ThreadsPerBlock) {
-        heap.add(*inStart, (IndexType)i);
-        inStart += ThreadsPerBlock;
-    }
+        for (; i < limit; i += ThreadsPerBlock) {
+            heap.add(*inStart, (IndexType)i);
+            inStart += ThreadsPerBlock;
+        }
 
-    // Handle last remainder fraction of a warp of elements
-    if (i < in.getSize(1)) {
-        heap.addThreadQ(*inStart, (IndexType)i);
-    }
+        // Handle last remainder fraction of a warp of elements
+        if (i < in.getSize(1)) {
+            heap.addThreadQ(*inStart, (IndexType)i);
+        }
 
-    heap.reduce();
+        heap.reduce();
 
-    for (int i = threadIdx.x; i < k; i += ThreadsPerBlock) {
-        outK[row][i] = smemK[i];
-        outV[row][i] = smemV[i];
+        for (int i = threadIdx.x; i < k; i += ThreadsPerBlock) {
+            outK[row][i] = smemK[i];
+            outV[row][i] = smemV[i];
+        }
     }
 }
 
@@ -83,47 +85,49 @@ __global__ void blockSelectPair(
         K initK,
         IndexType initV,
         int k) {
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    __shared__ K smemK[kNumWarps * NumWarpQ];
-    __shared__ IndexType smemV[kNumWarps * NumWarpQ];
+        __shared__ K smemK[kNumWarps * NumWarpQ];
+        __shared__ IndexType smemV[kNumWarps * NumWarpQ];
 
-    BlockSelect<
-            K,
-            IndexType,
-            Dir,
-            Comparator<K>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(initK, initV, smemK, smemV, k);
+        BlockSelect<
+                K,
+                IndexType,
+                Dir,
+                Comparator<K>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(initK, initV, smemK, smemV, k);
 
-    // Grid is exactly sized to rows available
-    idx_t row = blockIdx.x;
+        // Grid is exactly sized to rows available
+        idx_t row = blockIdx.x;
 
-    idx_t i = threadIdx.x;
-    K* inKStart = inK[row][i].data();
-    IndexType* inVStart = inV[row][i].data();
+        idx_t i = threadIdx.x;
+        K* inKStart = inK[row][i].data();
+        IndexType* inVStart = inV[row][i].data();
 
-    // Whole warps must participate in the selection
-    idx_t limit = utils::roundDown(inK.getSize(1), (idx_t)kWarpSize);
+        // Whole warps must participate in the selection
+        idx_t limit = utils::roundDown(inK.getSize(1), (idx_t)kWarpSize);
 
-    for (; i < limit; i += ThreadsPerBlock) {
-        heap.add(*inKStart, *inVStart);
-        inKStart += ThreadsPerBlock;
-        inVStart += ThreadsPerBlock;
-    }
+        for (; i < limit; i += ThreadsPerBlock) {
+            heap.add(*inKStart, *inVStart);
+            inKStart += ThreadsPerBlock;
+            inVStart += ThreadsPerBlock;
+        }
 
-    // Handle last remainder fraction of a warp of elements
-    if (i < inK.getSize(1)) {
-        heap.addThreadQ(*inKStart, *inVStart);
-    }
+        // Handle last remainder fraction of a warp of elements
+        if (i < inK.getSize(1)) {
+            heap.addThreadQ(*inKStart, *inVStart);
+        }
 
-    heap.reduce();
+        heap.reduce();
 
-    for (int i = threadIdx.x; i < k; i += ThreadsPerBlock) {
-        outK[row][i] = smemK[i];
-        outV[row][i] = smemV[i];
+        for (int i = threadIdx.x; i < k; i += ThreadsPerBlock) {
+            outK[row][i] = smemK[i];
+            outV[row][i] = smemV[i];
+        }
     }
 }
 

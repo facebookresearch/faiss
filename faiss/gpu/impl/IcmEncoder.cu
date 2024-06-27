@@ -313,9 +313,10 @@ void IcmEncoderImpl::encode(
             res.get(), makeTempAlloc(AllocType::Other, stream), {n});
 
     // compute how much shared memory we need
-    const int evaluateSmem = sizeof(float) * (dims + kWarpSize - 1) / kWarpSize;
+    int warpSize = getWarpSizeCurrentDevice();
+    const int evaluateSmem = sizeof(float) * (dims + warpSize - 1) / warpSize;
     const int encodeSmem =
-            sizeof(Pair<float, int>) * (K + kWarpSize - 1) / kWarpSize;
+            sizeof(Pair<float, int>) * (K + warpSize - 1) / warpSize;
 
     // compute the reconstruction error for each vector
     runEvaluation<<<n, dims, evaluateSmem, stream>>>(
