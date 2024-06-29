@@ -568,7 +568,7 @@ int search_from_candidates(
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
-        if (!sel || sel->is_member(v1)) {
+        if (!sel || sel->is_member(v1, d)) {
             if (d < threshold) {
                 if (res.add_result(d, v1)) {
                     threshold = res.threshold;
@@ -637,7 +637,7 @@ int search_from_candidates(
         threshold = res.threshold;
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
-            if (!sel || sel->is_member(idx)) {
+            if (!sel || sel->is_member(idx, dis)) {
                 if (dis < threshold) {
                     if (res.add_result(dis, idx)) {
                         threshold = res.threshold;

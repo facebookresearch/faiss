@@ -20,6 +20,11 @@ namespace faiss {
 /** Encapsulates a set of ids to handle. */
 struct IDSelector {
     virtual bool is_member(idx_t id) const = 0;
+    virtual bool is_member(idx_t id, float distance) const {
+        (void)id;
+        (void)distance;
+        return true;
+    }
     virtual ~IDSelector() {}
 };
 
