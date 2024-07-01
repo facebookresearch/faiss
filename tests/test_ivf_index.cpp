@@ -6,6 +6,7 @@
  */
 
 #include <omp.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -13,7 +14,6 @@
 #include <map>
 #include <random>
 #include <set>
-#include <algorithm>
 
 #include <gtest/gtest.h>
 
