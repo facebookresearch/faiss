@@ -12,6 +12,8 @@
 #include <cstring>
 #include <map>
 #include <random>
+#include <set>
+#include <algorithm>
 
 #include <gtest/gtest.h>
 
