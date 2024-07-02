@@ -14,11 +14,8 @@ jobs:
   linux-x86_64-AVX512-cmake:
     name: TEST JOB2 Linux x86_64 AVX512 (cmake) on custom runner
     runs-on: devserver
-    
     steps:
       - name: Checkout
         continue-on-error: true
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
-       with:
-         opt_level: avx512
