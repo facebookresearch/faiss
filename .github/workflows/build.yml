@@ -13,7 +13,7 @@ env:
 jobs:
   linux-x86_64-AVX512-cmake:
     name: TEST JOB2 Linux x86_64 AVX512 (cmake) on custom runner
-    runs-on: devserver
+    runs-on: faiss-aws-m7i.xlarge
     steps:
       - name: Checkout
         continue-on-error: true
