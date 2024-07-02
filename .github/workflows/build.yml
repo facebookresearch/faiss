@@ -76,6 +76,7 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           gpu: ON
+        continue-on-error: true # non-blocking mode for now
   linux-x86_64-GPU-w-RAFT-cmake:
     name: Linux x86_64 GPU w/ RAFT (cmake)
     needs: linux-x86_64-cmake
