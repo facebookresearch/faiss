@@ -26,10 +26,12 @@ prefix = "Release/" * (platform.system() == 'Windows')
 swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
 swigfaiss_avx2_lib = f"{prefix}_swigfaiss_avx2{ext}"
 swigfaiss_avx512_lib = f"{prefix}_swigfaiss_avx512{ext}"
+callbacks_lib = f"{prefix}libfaiss_python_callbacks{ext}"
 
 found_swigfaiss_generic = os.path.exists(swigfaiss_generic_lib)
 found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
 found_swigfaiss_avx512 = os.path.exists(swigfaiss_avx512_lib)
+found_callbacks = os.path.exists(callbacks_lib)
 
 assert (found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512), \
     f"Could not find {swigfaiss_generic_lib} or " \
@@ -49,6 +51,10 @@ if found_swigfaiss_avx512:
     print(f"Copying {swigfaiss_avx512_lib}")
     shutil.copyfile("swigfaiss_avx512.py", "faiss/swigfaiss_avx512.py")
     shutil.copyfile(swigfaiss_avx512_lib, f"faiss/_swigfaiss_avx512{ext}")
+
+if found_callbacks:
+    print(f"Copying {callbacks_lib}")
+    shutil.copyfile(callbacks_lib, f"faiss/{callbacks_lib}")
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense
