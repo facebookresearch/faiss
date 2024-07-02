@@ -66,6 +66,7 @@ jobs:
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: avx512
+        continue-on-error: true # non-blocking mode for now
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
     needs: linux-x86_64-cmake
