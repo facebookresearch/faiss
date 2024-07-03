@@ -177,8 +177,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(b.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(b.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
