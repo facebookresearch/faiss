@@ -24,6 +24,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
+#include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
 
 extern "C" {
