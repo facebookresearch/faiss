@@ -10,7 +10,7 @@ on:
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
-jobs:
+jobs: # test
   linux-x86_64-AVX512-cmake:
     name: TEST JOB2 Linux x86_64 AVX512 (cmake) on custom runner
     runs-on: faiss-aws-m7i.xlarge
