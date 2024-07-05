@@ -51,7 +51,7 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             std::nullopt;
     std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params =
             std::nullopt;
-    if (cagraConfig_.graph_build_params != nullptr) {
+    if (cagraConfig_.ivf_pq_params != nullptr) {
         ivf_pq_params =
                 std::make_optional<cuvs::neighbors::ivf_pq::index_params>();
         ivf_pq_params->n_lists = cagraConfig_.ivf_pq_params->n_lists;
@@ -86,11 +86,13 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             cagraConfig_.graph_degree,
             static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
             cagraConfig_.nn_descent_niter,
+            cagraConfig_.store_dataset,
             this->metric_type,
             this->metric_arg,
             INDICES_64_BIT,
             ivf_pq_params,
-            ivf_pq_search_params);
+            ivf_pq_search_params,
+            cagraConfig_.refine_rate);
 
     index_->train(n, x);
 
@@ -225,16 +227,32 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     auto n_train = this->ntotal;
-    auto train_dataset = index_->get_training_dataset();
+    float* train_dataset;
+    auto dataset = index_->get_training_dataset();
+    bool allocation = false;
+    if (getDeviceForAddress(dataset) >= 0) {
+        train_dataset = new float[n_train * index->d];
+        allocation = true;
+        raft::copy(
+                train_dataset,
+                dataset,
+                n_train * index->d,
+                this->resources_->getRaftHandleCurrentDevice().get_stream());
+    } else {
+        train_dataset = const_cast<float*>(dataset);
+    }
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
     if (!index->base_level_only) {
-        index->add(n_train, train_dataset.data());
+        index->add(n_train, train_dataset);
     } else {
         index->hnsw.prepare_level_tab(n_train, false);
-        index->storage->add(n_train, train_dataset.data());
+        index->storage->add(n_train, train_dataset);
         index->ntotal = n_train;
+    }
+    if (allocation) {
+        delete[] train_dataset;
     }
 
     auto graph = get_knngraph();

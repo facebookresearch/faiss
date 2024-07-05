@@ -174,6 +174,8 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
 
     IVFPQBuildCagraConfig* ivf_pq_params = nullptr;
     IVFPQSearchCagraConfig* ivf_pq_search_params = nullptr;
+    float refine_rate = 2.0f;
+    bool store_dataset = true;
 };
 
 enum class search_algo {

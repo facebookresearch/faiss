@@ -20,17 +20,14 @@
  * limitations under the License.
  */
 
+#include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <cstddef>
-#include <cstdint>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
-#include <raft_runtime/neighbors/cagra.hpp>
-#include <optional>
 
 namespace faiss {
 namespace gpu {
@@ -42,32 +39,32 @@ CuvsCagra::CuvsCagra(
         idx_t graph_degree,
         faiss::cagra_build_algo graph_build_algo,
         size_t nn_descent_niter,
+        bool store_dataset,
         faiss::MetricType metric,
         float metricArg,
         IndicesOptions indicesOptions,
         std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params,
         std::optional<cuvs::neighbors::ivf_pq::search_params>
-                ivf_pq_search_params)
+                ivf_pq_search_params,
+        float refine_rate)
         : resources_(resources),
           dim_(dim),
+          store_dataset_(store_dataset),
           metric_(metric),
           metricArg_(metricArg),
           index_params_(),
           ivf_pq_params_(ivf_pq_params),
-          ivf_pq_search_params_(ivf_pq_search_params) {
+          ivf_pq_search_params_(ivf_pq_search_params),
+          refine_rate_(refine_rate) {
     FAISS_THROW_IF_NOT_MSG(
             metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
             "CAGRA currently only supports L2 or Inner Product metric.");
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
-            "only INDICES_64_BIT is supported for RAFT CAGRA index");
+            "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
     index_params_.intermediate_graph_degree = intermediate_graph_degree;
     index_params_.graph_degree = graph_degree;
-    index_params_.build_algo =
-            static_cast<cuvs::neighbors::cagra::graph_build_algo>(
-                    graph_build_algo);
-    index_params_.nn_descent_niter = nn_descent_niter;
 
     if (!ivf_pq_params_) {
         ivf_pq_params_ =
@@ -77,12 +74,22 @@ CuvsCagra::CuvsCagra(
         ivf_pq_search_params_ =
                 std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
     }
-    index_params_.metric = metric_ == faiss::METRIC_L2
-            ? cuvsDistanceType::L2Expanded
-            : cuvsDistanceType::InnerProduct;
-    ivf_pq_params_->metric = metric_ == faiss::METRIC_L2
-            ? cuvsDistanceType::L2Expanded
-            : cuvsDistanceType::InnerProduct;
+    index_params_.metric = metricFaissToCuvs(metric_, false);
+    ivf_pq_params_->metric = metricFaissToCuvs(metric_, false);
+
+    if (graph_build_algo == faiss::cagra_build_algo::IVF_PQ) {
+        cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
+                graph_build_params;
+        graph_build_params.build_params = ivf_pq_params_.value();
+        graph_build_params.search_params = ivf_pq_search_params_.value();
+        graph_build_params.refinement_rate = refine_rate;
+        index_params_.graph_build_params = graph_build_params;
+    } else {
+        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
+                graph_build_params;
+        graph_build_params.max_iterations = nn_descent_niter;
+        index_params_.graph_build_params = graph_build_params;
+    }
 
     reset();
 }
@@ -106,12 +113,15 @@ CuvsCagra::CuvsCagra(
             "CAGRA currently only supports L2 or Inner Product metric.");
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
-            "only INDICES_64_BIT is supported for RAFT CAGRA index");
+            "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
     auto distances_on_gpu = getDeviceForAddress(distances) >= 0;
     auto knn_graph_on_gpu = getDeviceForAddress(knn_graph) >= 0;
 
     FAISS_ASSERT(distances_on_gpu == knn_graph_on_gpu);
+
+    storage_ = distances;
+    n_ = n;
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -131,10 +141,10 @@ CuvsCagra::CuvsCagra(
                 raft::make_device_matrix_view<const float, int64_t>(
                         distances, n, dim);
 
-        cuvs_index = cuvs::neighbors::cagra::index<float, uint32_t>(
+        cuvs_index = std::make_shared<
+                cuvs::neighbors::cagra::index<float, uint32_t>>(
                 raft_handle,
-                metric_ == faiss::METRIC_L2 ? cuvsDistanceType::L2Expanded
-                                            : cuvsDistanceType::InnerProduct,
+                metricFaissToCuvs(metric_, false),
                 distances_mds,
                 raft::make_const_mdspan(knn_graph_copy.view()));
     } else if (!distances_on_gpu && !knn_graph_on_gpu) {
@@ -149,10 +159,10 @@ CuvsCagra::CuvsCagra(
         auto distances_mds = raft::make_host_matrix_view<const float, int64_t>(
                 distances, n, dim);
 
-        cuvs_index = cuvs::neighbors::cagra::index<float, uint32_t>(
+        cuvs_index = std::make_shared<
+                cuvs::neighbors::cagra::index<float, uint32_t>>(
                 raft_handle,
-                metric_ == faiss::METRIC_L2 ? cuvsDistanceType::L2Expanded
-                                            : cuvsDistanceType::InnerProduct,
+                metricFaissToCuvs(metric_, false),
                 distances_mds,
                 raft::make_const_mdspan(knn_graph_copy.view()));
     } else {
@@ -162,19 +172,42 @@ CuvsCagra::CuvsCagra(
 }
 
 void CuvsCagra::train(idx_t n, const float* x) {
+    storage_ = x;
+    n_ = n;
+
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
+
+    //     auto nn_descent_params = std::make_optional<
+    //             cuvs::neighbors::nn_descent::index_params>();
+    //     nn_descent_params->graph_degree =
+    //     index_params_.intermediate_graph_degree;
+    //     nn_descent_params->intermediate_graph_degree =
+    //             1.5 * index_params_.intermediate_graph_degree;
+    //     nn_descent_params->max_iterations = index_params_.nn_descent_niter;
+
+    if (std::holds_alternative<
+                cuvs::neighbors::cagra::graph_build_params::ivf_pq_params>(
+                index_params_.graph_build_params) &&
+        index_params_.graph_degree == index_params_.intermediate_graph_degree) {
+        index_params_.intermediate_graph_degree =
+                1.5 * index_params_.graph_degree;
+    }
+
     if (getDeviceForAddress(x) >= 0) {
-        cuvs_index = raft::runtime::neighbors::cagra::build(
-                raft_handle,
-                index_params_,
-                raft::make_device_matrix_view<const float, int64_t>(
-                        x, n, dim_));
+        auto dataset =
+                raft::make_device_matrix_view<const float, int64_t>(x, n, dim_);
+        cuvs_index = std::make_shared<
+                cuvs::neighbors::cagra::index<float, uint32_t>>(
+                cuvs::neighbors::cagra::build(
+                        raft_handle, index_params_, dataset));
     } else {
-        cuvs_index = raft::runtime::neighbors::cagra::build(
-                raft_handle,
-                index_params_,
-                raft::make_host_matrix_view<const float, int64_t>(x, n, dim_));
+        auto dataset =
+                raft::make_host_matrix_view<const float, int64_t>(x, n, dim_);
+        cuvs_index = std::make_shared<
+                cuvs::neighbors::cagra::index<float, uint32_t>>(
+                cuvs::neighbors::cagra::build(
+                        raft_handle, index_params_, dataset));
     }
 }
 
@@ -202,9 +235,21 @@ void CuvsCagra::search(
     idx_t cols = queries.getSize(1);
     idx_t k_ = k;
 
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
+
+    if (!store_dataset_) {
+        if (getDeviceForAddress(storage_) >= 0) {
+            auto dataset = raft::make_device_matrix_view<const float, int64_t>(
+                    storage_, n_, dim_);
+            cuvs_index->update_dataset(raft_handle, dataset);
+        } else {
+            auto dataset = raft::make_host_matrix_view<const float, int64_t>(
+                    storage_, n_, dim_);
+            cuvs_index->update_dataset(raft_handle, dataset);
+        }
+    }
 
     auto queries_view = raft::make_device_matrix_view<const float, int64_t>(
             queries.data(), numQueries, cols);
@@ -233,7 +278,7 @@ void CuvsCagra::search(
     auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
             raft_handle, numQueries, k_);
 
-    raft::runtime::neighbors::cagra::search(
+    cuvs::neighbors::cagra::search(
             raft_handle,
             search_pams,
             *cuvs_index,
@@ -252,12 +297,12 @@ void CuvsCagra::reset() {
 }
 
 idx_t CuvsCagra::get_knngraph_degree() const {
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index);
     return static_cast<idx_t>(cuvs_index->graph_degree());
 }
 
 std::vector<idx_t> CuvsCagra::get_knngraph() const {
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     auto stream = raft_handle.get_stream();
@@ -278,29 +323,8 @@ std::vector<idx_t> CuvsCagra::get_knngraph() const {
     return host_graph;
 }
 
-std::vector<float> CuvsCagra::get_training_dataset() const {
-    FAISS_ASSERT(cuvs_index.has_value());
-    const raft::device_resources& raft_handle =
-            resources_->getRaftHandleCurrentDevice();
-    auto stream = raft_handle.get_stream();
-
-    auto device_dataset = cuvs_index->dataset();
-
-    std::vector<float> host_dataset(
-            device_dataset.extent(0) * device_dataset.extent(1));
-
-    RAFT_CUDA_TRY(cudaMemcpy2DAsync(
-            host_dataset.data(),
-            sizeof(float) * dim_,
-            device_dataset.data_handle(),
-            sizeof(float) * device_dataset.stride(0),
-            sizeof(float) * dim_,
-            device_dataset.extent(0),
-            cudaMemcpyDefault,
-            raft_handle.get_stream()));
-    raft_handle.sync_stream();
-
-    return host_dataset;
+const float* CuvsCagra::get_training_dataset() const {
+    return storage_;
 }
 
 } // namespace gpu

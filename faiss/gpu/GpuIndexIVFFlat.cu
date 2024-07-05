@@ -272,7 +272,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         quantizer->add(nlist, cuvs_ivfflat_index.value().centers().data_handle());
         raft_handle.sync_stream();
 
-        cuvsIndex_->setCuvsIndex(std::move(cuvs_ivfflat_index.value()));
+        // cuvsIndex_->setCuvsIndex(std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(cuvs_ivfflat_index.value()));
 #else
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");

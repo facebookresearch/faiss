@@ -22,10 +22,11 @@
 
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
-#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
+#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
+#include <cuvs/neighbors/common.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/linalg/map.cuh>
 
@@ -121,7 +122,8 @@ void CuvsIVFPQ::updateQuantizer(Index* quantizer) {
     pams.n_lists = numLists_;
     pams.pq_bits = bitsPerSubQuantizer_;
     pams.pq_dim = numSubQuantizers_;
-    cuvs_index = std::make_shared<>(raft_handle, pams, static_cast<uint32_t>(dim_));
+    cuvs_index = std::make_shared<cuvs::neighbors::ivf_pq::index<idx_t>>(
+            raft_handle, pams, static_cast<uint32_t>(dim_));
 
     cuvs::neighbors::ivf_pq::helpers::reset_index(
             raft_handle, cuvs_index.get());
@@ -202,9 +204,7 @@ std::vector<idx_t> CuvsIVFPQ::getListIndices(idx_t listId) const {
 
     raft::update_host(
             &list_indices_ptr,
-            const_cast<idx_t**>(
-                    cuvs_index->inds_ptrs().data_handle()) +
-                    listId,
+            const_cast<idx_t**>(cuvs_index->inds_ptrs().data_handle()) + listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -230,8 +230,7 @@ void CuvsIVFPQ::searchPreassigned(
 }
 
 size_t CuvsIVFPQ::getGpuListEncodingSize_(idx_t listId) {
-    return static_cast<size_t>(
-            cuvs_index->get_list_size_in_bytes(listId));
+    return static_cast<size_t>(cuvs_index->get_list_size_in_bytes(listId));
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
@@ -264,13 +263,14 @@ std::vector<uint8_t> CuvsIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
         auto codes_d = raft::make_device_vector<uint8_t>(
                 raft_handle, static_cast<uint32_t>(bufferSize));
 
-        cuvs::neighbors::ivf_pq::helpers::unpack_contiguous_list_data(
-                raft_handle,
-                cuvs_index.value(),
-                codes_d.data_handle(),
-                batchSize,
-                listId,
-                offset_b);
+        cuvs::neighbors::ivf_pq::helpers::codepacker::
+                unpack_contiguous_list_data(
+                        raft_handle,
+                        *cuvs_index,
+                        codes_d.data_handle(),
+                        batchSize,
+                        listId,
+                        offset_b);
 
         // Copy the flat PQ codes to host
         raft::update_host(
@@ -319,7 +319,7 @@ void CuvsIVFPQ::search(
     cuvs::neighbors::ivf_pq::search(
             raft_handle,
             pams,
-            cuvs_index.value(),
+            *cuvs_index,
             queries_view,
             out_inds_view,
             out_dists_view);
@@ -373,14 +373,13 @@ idx_t CuvsIVFPQ::addVectors(
     /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
-    cuvs_index.emplace(cuvs::neighbors::ivf_pq::extend(
+    cuvs::neighbors::ivf_pq::extend(
             raft_handle,
             raft::make_device_matrix_view<const float, idx_t>(
                     vecs.data(), n_rows_valid, dim_),
-            std::make_optional<raft::device_vector_view<const idx_t, idx_t>>(
-                    raft::make_device_vector_view<const idx_t, idx_t>(
-                            indices.data(), n_rows_valid)),
-            cuvs_index.value()));
+            raft::make_device_vector_view<const idx_t, idx_t>(
+                    indices.data(), n_rows_valid),
+            cuvs_index.get());
 
     return n_rows_valid;
 }
@@ -401,7 +400,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     auto& raft_lists = cuvs_index->lists();
 
     // conservative memory alloc for cloning cpu inverted lists
-    cuvs::neighbors::ivf_pq::list_spec<uint32_t, idx_t> raft_list_spec{
+    cuvs::neighbors::ivf_pq::list_spec<uint32_t, idx_t> ivf_list_spec{
             static_cast<uint32_t>(bitsPerSubQuantizer_),
             static_cast<uint32_t>(numSubQuantizers_),
             true};
@@ -426,7 +425,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
         cuvs::neighbors::ivf::resize_list(
                 raft_handle,
                 raft_lists[i],
-                raft_list_spec,
+                ivf_list_spec,
                 static_cast<uint32_t>(listSize),
                 static_cast<uint32_t>(0));
     }
@@ -448,9 +447,8 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 }
 
-void CuvsIVFPQ::setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx) {
-    cuvs_index.emplace(std::move(idx));
-    setBasePQCentroids_();
+void CuvsIVFPQ::setCuvsIndex(std::shared_ptr<cuvs::neighbors::ivf_pq::index<idx_t>> idx) {
+    cuvs_index = idx;
 }
 
 void CuvsIVFPQ::addEncodedVectorsToList_(
@@ -489,7 +487,7 @@ void CuvsIVFPQ::addEncodedVectorsToList_(
                 bufferSize,
                 stream);
 
-        cuvs::neighbors::ivf_pq::helpers::pack_contiguous_list_data(
+        cuvs::neighbors::ivf_pq::helpers::codepacker::pack_contiguous_list_data(
                 raft_handle,
                 cuvs_index.get(),
                 codes_d.data_handle(),

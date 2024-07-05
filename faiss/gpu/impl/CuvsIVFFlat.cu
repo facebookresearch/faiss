@@ -102,7 +102,7 @@ void CuvsIVFFlat::search(
     uint32_t k_ = k;
 
     // Device is already set in GpuIndex::search
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
@@ -122,7 +122,7 @@ void CuvsIVFFlat::search(
     cuvs::neighbors::ivf_flat::search(
             raft_handle,
             pams,
-            cuvs_index.value(),
+            *cuvs_index,
             queries_view,
             out_inds_view,
             out_dists_view);
@@ -167,7 +167,7 @@ idx_t CuvsIVFFlat::addVectors(
     /// called updateQuantizer() to update the RAFT index if the quantizer was
     /// modified externally
 
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -191,7 +191,7 @@ idx_t CuvsIVFFlat::addVectors(
 }
 
 idx_t CuvsIVFFlat::getListLength(idx_t listId) const {
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
@@ -208,7 +208,7 @@ idx_t CuvsIVFFlat::getListLength(idx_t listId) const {
 
 /// Return the list indices of a particular list back to the CPU
 std::vector<idx_t> CuvsIVFFlat::getListIndices(idx_t listId) const {
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     auto stream = raft_handle.get_stream();
@@ -240,7 +240,7 @@ std::vector<uint8_t> CuvsIVFFlat::getListVectorData(
     if (gpuFormat) {
         FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
     }
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -310,10 +310,11 @@ void CuvsIVFFlat::updateQuantizer(Index* quantizer) {
     pams.add_data_on_build = false;
     pams.metric = metricFaissToCuvs(metric_, false);
     pams.n_lists = numLists_;
-    cuvs_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim_));
-
+    auto new_index = cuvs::neighbors::ivf_flat::index<float, idx_t>(
+            raft_handle, pams, static_cast<uint32_t>(dim_));
     cuvs::neighbors::ivf_flat::helpers::reset_index(
-            raft_handle, cuvs_index.get());
+            raft_handle, &new_index);
+    cuvs_index.reset(&new_index);
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
@@ -372,7 +373,7 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     std::vector<idx_t> indices_(ntotal);
 
     // the index must already exist
-    FAISS_ASSERT(cuvs_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
     auto& raft_lists = cuvs_index->lists();
 
@@ -529,11 +530,7 @@ void CuvsIVFFlatCodePackerInterleaved::pack_1(
         size_t offset,
         uint8_t* block) const {
     cuvs::neighbors::ivf_flat::helpers::codepacker::pack_1(
-            reinterpret_cast<const uint32_t*>(flat_code),
-            reinterpret_cast<uint32_t*>(block),
-            dim,
-            chunk_size,
-            static_cast<uint32_t>(offset));
+            flat_code, block, dim, chunk_size, static_cast<uint32_t>(offset));
 }
 
 void CuvsIVFFlatCodePackerInterleaved::unpack_1(
@@ -541,11 +538,7 @@ void CuvsIVFFlatCodePackerInterleaved::unpack_1(
         size_t offset,
         uint8_t* flat_code) const {
     cuvs::neighbors::ivf_flat::helpers::codepacker::unpack_1(
-            reinterpret_cast<const uint32_t*>(block),
-            reinterpret_cast<uint32_t*>(flat_code),
-            dim,
-            chunk_size,
-            static_cast<uint32_t>(offset));
+            block, flat_code, dim, chunk_size, static_cast<uint32_t>(offset));
 }
 
 } // namespace gpu

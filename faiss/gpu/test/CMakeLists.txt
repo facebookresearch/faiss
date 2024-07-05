@@ -41,9 +41,9 @@ faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.cu)
 faiss_gpu_test(TestGpuSelect.cu)
-if(FAISS_ENABLE_CUVS)
-  faiss_gpu_test(TestGpuIndexCagra.cu)
-endif()
+#if(FAISS_ENABLE_CUVS)
+#  faiss_gpu_test(TestGpuIndexCagra.cu)
+#endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)

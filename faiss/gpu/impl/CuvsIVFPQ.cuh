@@ -101,7 +101,7 @@ class CuvsIVFPQ : public IVFPQ {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the Raft index
-    void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx);
+    void setCuvsIndex(std::shared_ptr<cuvs::neighbors::ivf_pq::index<idx_t>> idx);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
