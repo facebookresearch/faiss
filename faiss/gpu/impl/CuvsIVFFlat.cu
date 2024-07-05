@@ -30,9 +30,8 @@
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
-// #include <cuvs/neighbors/ivf_flat_codepacker.hpp>
 #include <cuvs/neighbors/ivf_flat.hpp>
-// #include <cuvs/neighbors/ivf_flat_helpers.cuh>
+#include <cuvs/neighbors/common.hpp>
 #include <raft/linalg/map.cuh>
 #include <raft/linalg/norm.cuh>
 
@@ -310,11 +309,11 @@ void CuvsIVFFlat::updateQuantizer(Index* quantizer) {
     pams.add_data_on_build = false;
     pams.metric = metricFaissToCuvs(metric_, false);
     pams.n_lists = numLists_;
-    auto new_index = cuvs::neighbors::ivf_flat::index<float, idx_t>(
-            raft_handle, pams, static_cast<uint32_t>(dim_));
+    cuvs_index =
+            std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(
+                    raft_handle, pams, static_cast<uint32_t>(dim_));
     cuvs::neighbors::ivf_flat::helpers::reset_index(
-            raft_handle, &new_index);
-    cuvs_index.reset(&new_index);
+            raft_handle, cuvs_index.get());
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
