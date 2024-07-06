@@ -46,6 +46,10 @@ runs:
           conda install -y -q libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
         fi
 
+       if [ "${{ inputs.dnnl }}" = "ON" ]; then
+          conda install -y -q -c conda-forge onednn
+        fi
+
         # install test packages
         conda install -y pytest
         if [ "${{ inputs.gpu }}" = "ON" ]; then
