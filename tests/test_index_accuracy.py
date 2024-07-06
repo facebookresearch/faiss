@@ -312,7 +312,7 @@ class TestSQFlavors(unittest.TestCase):
 
 
 class TestSQByte(unittest.TestCase):
-    def subtest_8bit_direct(self, metric_type, d):
+    def subtest_8bit_direct(self, metric_type, d, quantizer_type):
         xt, xb, xq = get_dataset_2(d, 500, 1000, 30)
 
         # rescale everything to get integer
@@ -324,16 +324,28 @@ class TestSQByte(unittest.TestCase):
             x[x > 255] = 255
             return x
 
-        xt = rescale(xt)
-        xb = rescale(xb)
-        xq = rescale(xq)
+        def rescale_signed(x):
+            x = np.floor((x - tmin) * 256 / (tmax - tmin))
+            x[x < 0] = 0
+            x[x > 255] = 255
+            x -= 128
+            return x
+
+        if quantizer_type == faiss.ScalarQuantizer.QT_8bit_direct_signed:
+            xt = rescale_signed(xt)
+            xb = rescale_signed(xb)
+            xq = rescale_signed(xq)
+        else:
+            xt = rescale(xt)
+            xb = rescale(xb)
+            xq = rescale(xq)
 
         gt_index = faiss.IndexFlat(d, metric_type)
         gt_index.add(xb)
         Dref, Iref = gt_index.search(xq, 10)
 
         index = faiss.IndexScalarQuantizer(
-            d, faiss.ScalarQuantizer.QT_8bit_direct, metric_type
+            d, quantizer_type, metric_type
         )
         index.add(xb)
         D, I = index.search(xq, 10)
@@ -353,7 +365,7 @@ class TestSQByte(unittest.TestCase):
         Dref, Iref = gt_index.search(xq, 10)
 
         index = faiss.IndexIVFScalarQuantizer(
-            quantizer, d, nlist, faiss.ScalarQuantizer.QT_8bit_direct,
+            quantizer, d, nlist, quantizer_type,
             metric_type
         )
         index.nprobe = 4
@@ -366,9 +378,10 @@ class TestSQByte(unittest.TestCase):
         assert np.all(D == Dref)
 
     def test_8bit_direct(self):
-        for d in 13, 16, 24:
-            for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
-                self.subtest_8bit_direct(metric_type, d)
+        for quantizer in faiss.ScalarQuantizer.QT_8bit_direct, faiss.ScalarQuantizer.QT_8bit_direct_signed:
+            for d in 13, 16, 24:
+                for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+                    self.subtest_8bit_direct(metric_type, d, quantizer)
 
 
 class TestNNDescent(unittest.TestCase):

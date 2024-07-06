@@ -948,7 +948,7 @@ void IndexHNSWCagra::search(
 
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal);
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal - 1);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
                 auto idx = distrib(gen);

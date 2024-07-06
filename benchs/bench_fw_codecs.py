@@ -7,10 +7,10 @@ import logging
 import argparse
 import os
 
-from bench_fw.benchmark import Benchmark
-from bench_fw.benchmark_io import BenchmarkIO
-from bench_fw.descriptors import DatasetDescriptor, IndexDescriptor
-from bench_fw.index import IndexFromFactory
+from faiss.benchs.bench_fw.benchmark import Benchmark
+from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
+from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptorClassic
+from faiss.benchs.bench_fw.index import IndexFromFactory
 
 logging.basicConfig(level=logging.INFO)
 
@@ -107,7 +107,7 @@ def run_local(rp):
         database_vectors=database_vectors,
         query_vectors=query_vectors,
         index_descs=[
-            IndexDescriptor(
+            IndexDescriptorClassic(
                 factory=factory,
                 construction_params=construction_params,
                 training_size=training_size,
