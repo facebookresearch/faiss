@@ -14,3 +14,9 @@ jobs:
   sve-cmake:
     name: SVE CMake on Arm64
     runs-on: faiss-arm-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        with:
+          sve: ON
