@@ -19,4 +19,4 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
-          sve: ON
+          opt_level: sve
