@@ -12,6 +12,10 @@ inputs:
     description: 'Enable RAFT support.'
     required: false
     default: OFF
+  sve:
+    description: 'Enable SVE support.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -60,6 +64,7 @@ runs:
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
               -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_OPT_LEVEL=${{ inputs.sve }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
