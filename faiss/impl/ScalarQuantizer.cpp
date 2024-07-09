@@ -621,13 +621,90 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
     FAISS_ALWAYS_INLINE float32x4x2_t
     reconstruct_8_components(const uint8_t* code, int i) const {
-        float32_t result[8] = {};
-        for (size_t j = 0; j < 8; j++) {
-            result[j] = code[i + j];
+        uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
+        uint16x8_t y8 = vmovl_u8(x8);
+        uint16x4_t y8_0 = vget_low_u16(y8);
+        uint16x4_t y8_1 = vget_high_u16(y8);
+
+        // convert uint16 -> uint32 -> fp32
+        return {vcvtq_f32_u32(vmovl_u16(y8_0)), vcvtq_f32_u32(vmovl_u16(y8_1))};
+    }
+};
+
+#endif
+
+/*******************************************************************
+ * 8bit_direct_signed quantizer
+ *******************************************************************/
+
+template <int SIMDWIDTH>
+struct Quantizer8bitDirectSigned {};
+
+template <>
+struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
+    const size_t d;
+
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& /* unused */)
+            : d(d) {}
+
+    void encode_vector(const float* x, uint8_t* code) const final {
+        for (size_t i = 0; i < d; i++) {
+            code[i] = (uint8_t)(x[i] + 128);
         }
-        float32x4_t res1 = vld1q_f32(result);
-        float32x4_t res2 = vld1q_f32(result + 4);
-        return {res1, res2};
+    }
+
+    void decode_vector(const uint8_t* code, float* x) const final {
+        for (size_t i = 0; i < d; i++) {
+            x[i] = code[i] - 128;
+        }
+    }
+
+    FAISS_ALWAYS_INLINE float reconstruct_component(const uint8_t* code, int i)
+            const {
+        return code[i] - 128;
+    }
+};
+
+#ifdef __AVX2__
+
+template <>
+struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m256
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
+        __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
+        __m256i c8 = _mm256_set1_epi32(128);
+        __m256i z8 = _mm256_sub_epi32(y8, c8); // subtract 128 from all lanes
+        return _mm256_cvtepi32_ps(z8);         // 8 * float32
+    }
+};
+
+#endif
+
+#ifdef __aarch64__
+
+template <>
+struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE float32x4x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
+        uint16x8_t y8 = vmovl_u8(x8); // convert uint8 -> uint16
+        uint16x4_t y8_0 = vget_low_u16(y8);
+        uint16x4_t y8_1 = vget_high_u16(y8);
+
+        float32x4_t z8_0 = vcvtq_f32_u32(
+                vmovl_u16(y8_0)); // convert uint16 -> uint32 -> fp32
+        float32x4_t z8_1 = vcvtq_f32_u32(vmovl_u16(y8_1));
+
+        // subtract 128 to convert into signed numbers
+        return {vsubq_f32(z8_0, vmovq_n_f32(128.0)),
+                vsubq_f32(z8_1, vmovq_n_f32(128.0))};
     }
 };
 
@@ -660,6 +737,8 @@ ScalarQuantizer::SQuantizer* select_quantizer_1(
             return new QuantizerBF16<SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_8bit_direct:
             return new Quantizer8bitDirect<SIMDWIDTH>(d, trained);
+        case ScalarQuantizer::QT_8bit_direct_signed:
+            return new Quantizer8bitDirectSigned<SIMDWIDTH>(d, trained);
     }
     FAISS_THROW_MSG("unknown qtype");
 }
@@ -1460,6 +1539,11 @@ SQDistanceComputer* select_distance_computer(
                         Sim,
                         SIMDWIDTH>(d, trained);
             }
+        case ScalarQuantizer::QT_8bit_direct_signed:
+            return new DCTemplate<
+                    Quantizer8bitDirectSigned<SIMDWIDTH>,
+                    Sim,
+                    SIMDWIDTH>(d, trained);
     }
     FAISS_THROW_MSG("unknown qtype");
     return nullptr;
@@ -1483,6 +1567,7 @@ void ScalarQuantizer::set_derived_sizes() {
         case QT_8bit:
         case QT_8bit_uniform:
         case QT_8bit_direct:
+        case QT_8bit_direct_signed:
             code_size = d;
             bits = 8;
             break;
@@ -1540,6 +1625,7 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_fp16:
         case QT_8bit_direct:
         case QT_bf16:
+        case QT_8bit_direct_signed:
             // no training necessary
             break;
     }
@@ -1885,6 +1971,11 @@ InvertedListScanner* sel1_InvertedListScanner(
                         Similarity,
                         SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
             }
+        case ScalarQuantizer::QT_8bit_direct_signed:
+            return sel2_InvertedListScanner<DCTemplate<
+                    Quantizer8bitDirectSigned<SIMDWIDTH>,
+                    Similarity,
+                    SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
     }
 
     FAISS_THROW_MSG("unknown qtype");

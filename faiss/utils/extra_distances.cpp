@@ -50,16 +50,18 @@ void pairwise_extra_distances_template(
     }
 }
 
-template <class VD, class C>
+template <class VD>
 void knn_extra_metrics_template(
         VD vd,
         const float* x,
         const float* y,
         size_t nx,
         size_t ny,
-        HeapArray<C>* res) {
-    size_t k = res->k;
+        size_t k,
+        float* distances,
+        int64_t* labels) {
     size_t d = vd.d;
+    using C = typename VD::C;
     size_t check_period = InterruptCallback::get_period_hint(ny * d);
     check_period *= omp_get_max_threads();
 
@@ -71,18 +73,15 @@ void knn_extra_metrics_template(
             const float* x_i = x + i * d;
             const float* y_j = y;
             size_t j;
-            float* simi = res->get_val(i);
-            int64_t* idxi = res->get_ids(i);
+            float* simi = distances + k * i;
+            int64_t* idxi = labels + k * i;
 
             // maxheap_heapify(k, simi, idxi);
             heap_heapify<C>(k, simi, idxi);
             for (j = 0; j < ny; j++) {
                 float disij = vd(x_i, y_j);
 
-                // if (disij < simi[0]) {
-                if ((!vd.is_similarity && (disij < simi[0])) ||
-                    (vd.is_similarity && (disij > simi[0]))) {
-                    // maxheap_replace_top(k, simi, idxi, disij, j);
+                if (C::cmp(simi[0], disij)) {
                     heap_replace_top<C>(k, simi, idxi, disij, j);
                 }
                 y_j += d;
@@ -165,13 +164,13 @@ void pairwise_extra_distances(
         HANDLE_VAR(Lp);
         HANDLE_VAR(Jaccard);
         HANDLE_VAR(NaNEuclidean);
+        HANDLE_VAR(ABS_INNER_PRODUCT);
 #undef HANDLE_VAR
         default:
             FAISS_THROW_MSG("metric type not implemented");
     }
 }
 
-template <class C>
 void knn_extra_metrics(
         const float* x,
         const float* y,
@@ -180,13 +179,15 @@ void knn_extra_metrics(
         size_t ny,
         MetricType mt,
         float metric_arg,
-        HeapArray<C>* res) {
+        size_t k,
+        float* distances,
+        int64_t* indexes) {
     switch (mt) {
-#define HANDLE_VAR(kw)                                            \
-    case METRIC_##kw: {                                           \
-        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg}; \
-        knn_extra_metrics_template(vd, x, y, nx, ny, res);        \
-        break;                                                    \
+#define HANDLE_VAR(kw)                                                       \
+    case METRIC_##kw: {                                                      \
+        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg};            \
+        knn_extra_metrics_template(vd, x, y, nx, ny, k, distances, indexes); \
+        break;                                                               \
     }
         HANDLE_VAR(L2);
         HANDLE_VAR(L1);
@@ -197,31 +198,12 @@ void knn_extra_metrics(
         HANDLE_VAR(Lp);
         HANDLE_VAR(Jaccard);
         HANDLE_VAR(NaNEuclidean);
+        HANDLE_VAR(ABS_INNER_PRODUCT);
 #undef HANDLE_VAR
         default:
             FAISS_THROW_MSG("metric type not implemented");
     }
 }
-
-template void knn_extra_metrics<CMax<float, int64_t>>(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        MetricType mt,
-        float metric_arg,
-        HeapArray<CMax<float, int64_t>>* res);
-
-template void knn_extra_metrics<CMin<float, int64_t>>(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        MetricType mt,
-        float metric_arg,
-        HeapArray<CMin<float, int64_t>>* res);
 
 FlatCodesDistanceComputer* get_extra_distance_computer(
         size_t d,
@@ -245,6 +227,7 @@ FlatCodesDistanceComputer* get_extra_distance_computer(
         HANDLE_VAR(Lp);
         HANDLE_VAR(Jaccard);
         HANDLE_VAR(NaNEuclidean);
+        HANDLE_VAR(ABS_INNER_PRODUCT);
 #undef HANDLE_VAR
         default:
             FAISS_THROW_MSG("metric type not implemented");
