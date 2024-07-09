@@ -66,8 +66,8 @@ void Level1Quantizer::train_q1(
     } else if (quantizer_trains_alone == 1) {
         if (verbose)
             printf("IVF quantizer trains alone...\n");
-        quantizer->train(n, x);
         quantizer->verbose = verbose;
+        quantizer->train(n, x);
         FAISS_THROW_IF_NOT_MSG(
                 quantizer->ntotal == nlist,
                 "nlist not consistent with quantizer size");
