@@ -24,6 +24,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <optional>
 
 namespace faiss {

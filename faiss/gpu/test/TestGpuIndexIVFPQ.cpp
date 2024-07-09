@@ -85,7 +85,7 @@ struct Options {
         device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
 
         interleavedLayout = false;
-        useRaft = false;
+        useCuvs = false;
     }
 
     std::string toString() const {
@@ -126,7 +126,7 @@ struct Options {
     bool useFloat16;
     int device;
     bool interleavedLayout;
-    bool useRaft;
+    bool useCuvs;
 };
 
 void queryTest(Options opt, faiss::MetricType metricType) {
@@ -156,7 +156,7 @@ void queryTest(Options opt, faiss::MetricType metricType) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_cuvs = opt.useRaft;
+    config.use_cuvs = opt.useCuvs;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -386,7 +386,7 @@ void addTest(Options opt, faiss::MetricType metricType) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_cuvs = opt.useRaft;
+    config.use_cuvs = opt.useCuvs;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
     gpuIndex.nprobe = opt.nprobe;
@@ -436,7 +436,7 @@ void copyToTest(Options opt) {
         config.indicesOptions = opt.indicesOpt;
         config.useFloat16LookupTables = opt.useFloat16;
         config.interleavedLayout = opt.interleavedLayout;
-        config.use_cuvs = opt.useRaft;
+        config.use_cuvs = opt.useCuvs;
 
         faiss::gpu::GpuIndexIVFPQ gpuIndex(
                 &res,
@@ -513,7 +513,7 @@ void copyFromTest(Options opt) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_cuvs = opt.useRaft;
+    config.use_cuvs = opt.useCuvs;
 
     // Use garbage values to see if we overwrite them
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
@@ -567,8 +567,8 @@ void queryNaNTest(Options opt) {
     config.usePrecomputedTables = opt.usePrecomputed;
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
-    config.use_cuvs = opt.useRaft;
-    config.interleavedLayout = opt.useRaft ? true : opt.interleavedLayout;
+    config.use_cuvs = opt.useCuvs;
+    config.interleavedLayout = opt.useCuvs ? true : opt.interleavedLayout;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
@@ -606,7 +606,7 @@ void queryNaNTest(Options opt) {
 
 TEST(TestGpuIndexIVFPQ, QueryNaN) {
     Options opt;
-    opt.useRaft = false;
+    opt.useCuvs = false;
     queryNaNTest(opt);
 }
 
@@ -620,7 +620,7 @@ void addNaNTest(Options opt) {
     config.indicesOptions = opt.indicesOpt;
     config.useFloat16LookupTables = opt.useFloat16;
     config.interleavedLayout = opt.interleavedLayout;
-    config.use_cuvs = opt.useRaft;
+    config.use_cuvs = opt.useCuvs;
 
     faiss::gpu::GpuIndexIVFPQ gpuIndex(
             &res,
@@ -664,7 +664,7 @@ void addNaNTest(Options opt) {
 
 TEST(TestGpuIndexIVFPQ, AddNaN) {
     Options opt;
-    opt.useRaft = false;
+    opt.useCuvs = false;
     addNaNTest(opt);
 }
 
@@ -673,7 +673,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.useRaft = true;
+        opt.useCuvs = true;
         opt.interleavedLayout = true;
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
@@ -686,7 +686,7 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.useRaft = true;
+        opt.useCuvs = true;
         opt.interleavedLayout = true;
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
@@ -703,7 +703,7 @@ TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
     opt.dim = 4;
     opt.numQuery = 100000;
     opt.codes = 2;
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.usePrecomputed = false;
     opt.useFloat16 = false;
@@ -715,7 +715,7 @@ TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
 
 TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {
     Options opt;
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
@@ -727,7 +727,7 @@ TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {
 TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
-        opt.useRaft = true;
+        opt.useCuvs = true;
         opt.interleavedLayout = true;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.usePrecomputed = false;
@@ -740,7 +740,7 @@ TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
 TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
-        opt.useRaft = true;
+        opt.useCuvs = true;
         opt.interleavedLayout = true;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.usePrecomputed = false;
@@ -752,7 +752,7 @@ TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
 
 TEST(TestGpuIndexIVFPQ, QueryNaN_Raft) {
     Options opt;
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
@@ -763,7 +763,7 @@ TEST(TestGpuIndexIVFPQ, QueryNaN_Raft) {
 
 TEST(TestGpuIndexIVFPQ, AddNaN_Raft) {
     Options opt;
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
@@ -774,7 +774,7 @@ TEST(TestGpuIndexIVFPQ, AddNaN_Raft) {
 
 TEST(TestGpuIndexIVFPQ, CopyTo_Raft) {
     Options opt;
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;

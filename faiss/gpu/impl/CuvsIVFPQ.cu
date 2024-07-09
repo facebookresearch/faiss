@@ -25,6 +25,7 @@
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
+#include <faiss/gpu/StandardGpuResources.h>
 
 #include <cuvs/neighbors/common.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
@@ -397,7 +398,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     // the index must already exist
     FAISS_ASSERT(cuvs_index);
 
-    auto& raft_lists = cuvs_index->lists();
+    auto& cuvs_index_lists = cuvs_index->lists();
 
     // conservative memory alloc for cloning cpu inverted lists
     cuvs::neighbors::ivf_pq::list_spec<uint32_t, idx_t> ivf_list_spec{
@@ -424,7 +425,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
 
         cuvs::neighbors::ivf::resize_list(
                 raft_handle,
-                raft_lists[i],
+                cuvs_index_lists[i],
                 ivf_list_spec,
                 static_cast<uint32_t>(listSize),
                 static_cast<uint32_t>(0));
@@ -447,8 +448,8 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 }
 
-void CuvsIVFPQ::setCuvsIndex(std::shared_ptr<cuvs::neighbors::ivf_pq::index<idx_t>> idx) {
-    cuvs_index = idx;
+void CuvsIVFPQ::setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>* idx) {
+    cuvs_index.reset(idx);
 }
 
 void CuvsIVFPQ::addEncodedVectorsToList_(

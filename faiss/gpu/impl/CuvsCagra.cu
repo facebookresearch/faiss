@@ -23,6 +23,7 @@
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
+#include <faiss/gpu/StandardGpuResources.h>
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <raft/core/device_mdspan.hpp>

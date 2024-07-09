@@ -242,14 +242,14 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        cuvs::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = metricFaissToCuvs(metric_type, false);
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction =
+        cuvs::neighbors::ivf_flat::index_params cuvs_index_params;
+        cuvs_index_params.n_lists = nlist;
+        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
+        cuvs_index_params.add_data_on_build = false;
+        cuvs_index_params.kmeans_trainset_fraction =
                 static_cast<double>(cp.max_points_per_centroid * nlist) /
                 static_cast<double>(n);
-        raft_idx_params.kmeans_n_iters = cp.niter;
+        cuvs_index_params.kmeans_n_iters = cp.niter;
 
         auto cuvsIndex_ =
                 std::static_pointer_cast<CuvsIVFFlat, IVFFlat>(index_);
@@ -260,19 +260,19 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             auto dataset_d =
                     raft::make_device_matrix_view<const float, idx_t>(x, n, d);
             cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
-                    raft_handle, raft_idx_params, dataset_d);
+                    raft_handle, cuvs_index_params, dataset_d);
         } else {
             auto x_view =
                     raft::make_host_matrix_view<const float, idx_t>(x, n, d);
             cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
-                    raft_handle, raft_idx_params, x_view);
+                    raft_handle, cuvs_index_params, x_view);
         }
 
         quantizer->train(nlist, cuvs_ivfflat_index.value().centers().data_handle());
         quantizer->add(nlist, cuvs_ivfflat_index.value().centers().data_handle());
         raft_handle.sync_stream();
 
-        // cuvsIndex_->setCuvsIndex(std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(cuvs_ivfflat_index.value()));
+        cuvsIndex_->setCuvsIndex(&cuvs_ivfflat_index.value());
 #else
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");

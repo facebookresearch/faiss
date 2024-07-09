@@ -107,7 +107,7 @@ class CuvsIVFFlat : public IVFFlat {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the CUVS index
-    void setCuvsIndex(std::shared_ptr<cuvs::neighbors::ivf_flat::index<float, idx_t>> idx);
+    void setCuvsIndex(cuvs::neighbors::ivf_flat::index<float, idx_t>* idx);
 
    private:
     /// Adds a set of codes and indices to a list, with the representation

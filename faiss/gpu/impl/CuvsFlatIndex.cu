@@ -32,8 +32,6 @@
 #include <raft/distance/distance_types.hpp>
 #include <raft/linalg/unary_op.cuh>
 
-// #define RAFT_NAME "raft"
-
 namespace faiss {
 namespace gpu {
 

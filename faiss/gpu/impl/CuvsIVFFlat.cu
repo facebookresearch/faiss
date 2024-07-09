@@ -29,6 +29,7 @@
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
+#include <faiss/gpu/StandardGpuResources.h>
 
 #include <cuvs/neighbors/ivf_flat.hpp>
 #include <cuvs/neighbors/common.hpp>
@@ -81,8 +82,8 @@ void CuvsIVFFlat::reset() {
 }
 
 void CuvsIVFFlat::setCuvsIndex(
-        std::shared_ptr<cuvs::neighbors::ivf_flat::index<float, idx_t>> idx) {
-    cuvs_index = idx;
+        cuvs::neighbors::ivf_flat::index<float, idx_t>* idx) {
+    cuvs_index.reset(idx);
 }
 
 void CuvsIVFFlat::search(
@@ -374,10 +375,10 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     // the index must already exist
     FAISS_ASSERT(cuvs_index != nullptr);
 
-    auto& raft_lists = cuvs_index->lists();
+    auto& cuvs_index_lists = cuvs_index->lists();
 
     // conservative memory alloc for cloning cpu inverted lists
-    cuvs::neighbors::ivf_flat::list_spec<uint32_t, float, idx_t> raft_list_spec{
+    cuvs::neighbors::ivf_flat::list_spec<uint32_t, float, idx_t> ivf_list_spec{
             static_cast<uint32_t>(dim_), true};
 
     for (size_t i = 0; i < nlist; ++i) {
@@ -399,8 +400,8 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
 
         cuvs::neighbors::ivf::resize_list(
                 raft_handle,
-                raft_lists[i],
-                raft_list_spec,
+                cuvs_index_lists[i],
+                ivf_list_spec,
                 (uint32_t)listSize,
                 (uint32_t)0);
     }

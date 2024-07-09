@@ -433,7 +433,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 cuvs_ivfpq_index.value().pq_centers().size(),
                 raft_handle.get_stream());
         raft_handle.sync_stream();
-        // cuvsIndex_->setCuvsIndex(std::make_shared<cuvs::neighbors::ivf_pq::index<idx_t>>(cuvs_ivfpq_index.value()));
+        cuvsIndex_->setCuvsIndex(&cuvs_ivfpq_index.value());
 #else
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");

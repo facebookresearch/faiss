@@ -42,7 +42,6 @@
 #include <raft/core/operators.hpp>
 #include <raft/core/temporary_device_buffer.hpp>
 #include <raft/linalg/unary_op.cuh>
-// #define RAFT_NAME "raft"
 #endif
 
 namespace faiss {

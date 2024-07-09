@@ -57,7 +57,7 @@ struct Options {
 
         device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
 
-        useRaft = false;
+        useCuvs = false;
     }
 
     std::string toString() const {
@@ -65,7 +65,7 @@ struct Options {
         str << "IVFFlat device " << device << " numVecs " << numAdd << " dim "
             << dim << " numCentroids " << numCentroids << " nprobe " << nprobe
             << " numQuery " << numQuery << " k " << k << " indicesOpt "
-            << indicesOpt << " useRaft " << useRaft;
+            << indicesOpt << " useCuvs " << useCuvs;
 
         return str.str();
     }
@@ -79,7 +79,7 @@ struct Options {
     int k;
     int device;
     faiss::gpu::IndicesOptions indicesOpt;
-    bool useRaft;
+    bool useCuvs;
 };
 
 void queryTest(
@@ -110,7 +110,7 @@ void queryTest(
         config.device = opt.device;
         config.indicesOptions = opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.use_cuvs = opt.useRaft;
+        config.use_cuvs = opt.useCuvs;
 
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
@@ -137,7 +137,7 @@ void queryTest(
 void addTest(
         faiss::MetricType metricType,
         bool useFloat16CoarseQuantizer,
-        bool useRaft) {
+        bool useCuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
 
@@ -162,9 +162,9 @@ void addTest(
         faiss::gpu::GpuIndexIVFFlatConfig config;
         config.device = opt.device;
         config.indicesOptions =
-                useRaft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+                useCuvs ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.use_cuvs = useRaft;
+        config.use_cuvs = useCuvs;
 
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
@@ -188,7 +188,7 @@ void addTest(
     }
 }
 
-void copyToTest(bool useFloat16CoarseQuantizer, bool useRaft) {
+void copyToTest(bool useFloat16CoarseQuantizer, bool useCuvs) {
     Options opt;
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
     std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
@@ -199,9 +199,9 @@ void copyToTest(bool useFloat16CoarseQuantizer, bool useRaft) {
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
     config.indicesOptions =
-            useRaft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+            useCuvs ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-    config.use_cuvs = useRaft;
+    config.use_cuvs = useCuvs;
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
@@ -241,7 +241,7 @@ void copyToTest(bool useFloat16CoarseQuantizer, bool useRaft) {
             compFloat16 ? 0.30f : 0.015f);
 }
 
-void copyFromTest(bool useFloat16CoarseQuantizer, bool useRaft) {
+void copyFromTest(bool useFloat16CoarseQuantizer, bool useCuvs) {
     Options opt;
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
     std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
@@ -260,9 +260,9 @@ void copyFromTest(bool useFloat16CoarseQuantizer, bool useRaft) {
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = opt.device;
     config.indicesOptions =
-            useRaft ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
+            useCuvs ? faiss::gpu::INDICES_64_BIT : opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-    config.use_cuvs = useRaft;
+    config.use_cuvs = useCuvs;
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(&res, 1, 1, faiss::METRIC_L2, config);
     gpuIndex.nprobe = 1;
@@ -334,7 +334,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2) {
     queryTest(opt, faiss::METRIC_L2, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
@@ -345,7 +345,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP) {
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
@@ -358,7 +358,7 @@ TEST(TestGpuIndexIVFFlat, LargeBatch) {
     queryTest(opt, faiss::METRIC_L2, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
@@ -371,7 +371,7 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Query_L2) {
     queryTest(opt, faiss::METRIC_L2, true);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, true);
 #endif
@@ -382,7 +382,7 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Query_IP) {
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, true);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, true);
 #endif
@@ -399,7 +399,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2_64) {
     queryTest(opt, faiss::METRIC_L2, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
@@ -411,7 +411,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP_64) {
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
@@ -423,7 +423,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_L2_128) {
     queryTest(opt, faiss::METRIC_L2, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
@@ -435,7 +435,7 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP_128) {
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 
 #if defined USE_NVIDIA_RAPIDS
-    opt.useRaft = true;
+    opt.useCuvs = true;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 #endif
