@@ -12,6 +12,10 @@ inputs:
     description: 'Enable RAFT support.'
     required: false
     default: OFF
+  rocm:
+    description: 'Enable ROCm support.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -59,6 +63,7 @@ runs:
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
               -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
@@ -101,5 +106,5 @@ runs:
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
+        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}-${{ inputs.rocm }}
         path: test-results
