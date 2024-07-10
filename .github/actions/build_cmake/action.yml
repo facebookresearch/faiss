@@ -53,6 +53,8 @@ runs:
         else
           conda install -y -q pytorch -c pytorch
         fi
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Install ROCm
       if: inputs.rocm == 'ON'
       shell: bash
