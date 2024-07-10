@@ -13,8 +13,10 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
+#include <algorithm>
 #include <iostream>
 
 namespace faiss {
@@ -26,16 +28,21 @@ namespace faiss {
  * - by instanciating a SingleResultHandler that tracks results for a single
  *   query
  * - with begin_multiple/add_results/end_multiple calls where a whole block of
- *   resutls is submitted
+ *   results is submitted
  * All classes are templated on C which to define wheter the min or the max of
- * results is to be kept.
+ * results is to be kept, and on sel, so that the codepaths for with / without
+ * selector can be separated at compile time.
  *****************************************************************/
 
-template <class C>
+template <class C, bool use_sel = false>
 struct BlockResultHandler {
     size_t nq; // number of queries for which we search
+    const IDSelector* sel;
 
-    explicit BlockResultHandler(size_t nq) : nq(nq) {}
+    explicit BlockResultHandler(size_t nq, const IDSelector* sel = nullptr)
+            : nq(nq), sel(sel) {
+        assert(!use_sel || sel);
+    }
 
     // currently handled query range
     size_t i0 = 0, i1 = 0;
@@ -53,13 +60,17 @@ struct BlockResultHandler {
     virtual void end_multiple() {}
 
     virtual ~BlockResultHandler() {}
+
+    bool is_in_selection(idx_t i) const {
+        return !use_sel || sel->is_member(i);
+    }
 };
 
 // handler for a single query
 template <class C>
 struct ResultHandler {
     // if not better than threshold, then not necessary to call add_result
-    typename C::T threshold = 0;
+    typename C::T threshold = C::neutral();
 
     // return whether threshold was updated
     virtual bool add_result(typename C::T dis, typename C::TI idx) = 0;
@@ -73,20 +84,26 @@ struct ResultHandler {
  * some temporary data in memory.
  *****************************************************************/
 
-template <class C>
-struct Top1BlockResultHandler : BlockResultHandler<C> {
+template <class C, bool use_sel = false>
+struct Top1BlockResultHandler : BlockResultHandler<C, use_sel> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using BlockResultHandler<C>::i0;
-    using BlockResultHandler<C>::i1;
+    using BlockResultHandler<C, use_sel>::i0;
+    using BlockResultHandler<C, use_sel>::i1;
 
     // contains exactly nq elements
     T* dis_tab;
     // contains exactly nq elements
     TI* ids_tab;
 
-    Top1BlockResultHandler(size_t nq, T* dis_tab, TI* ids_tab)
-            : BlockResultHandler<C>(nq), dis_tab(dis_tab), ids_tab(ids_tab) {}
+    Top1BlockResultHandler(
+            size_t nq,
+            T* dis_tab,
+            TI* ids_tab,
+            const IDSelector* sel = nullptr)
+            : BlockResultHandler<C, use_sel>(nq, sel),
+              dis_tab(dis_tab),
+              ids_tab(ids_tab) {}
 
     struct SingleResultHandler : ResultHandler<C> {
         Top1BlockResultHandler& hr;
@@ -165,12 +182,12 @@ struct Top1BlockResultHandler : BlockResultHandler<C> {
  * Heap based result handler
  *****************************************************************/
 
-template <class C>
-struct HeapBlockResultHandler : BlockResultHandler<C> {
+template <class C, bool use_sel = false>
+struct HeapBlockResultHandler : BlockResultHandler<C, use_sel> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using BlockResultHandler<C>::i0;
-    using BlockResultHandler<C>::i1;
+    using BlockResultHandler<C, use_sel>::i0;
+    using BlockResultHandler<C, use_sel>::i1;
 
     T* heap_dis_tab;
     TI* heap_ids_tab;
@@ -181,8 +198,9 @@ struct HeapBlockResultHandler : BlockResultHandler<C> {
             size_t nq,
             T* heap_dis_tab,
             TI* heap_ids_tab,
-            size_t k)
-            : BlockResultHandler<C>(nq),
+            size_t k,
+            const IDSelector* sel = nullptr)
+            : BlockResultHandler<C, use_sel>(nq, sel),
               heap_dis_tab(heap_dis_tab),
               heap_ids_tab(heap_ids_tab),
               k(k) {}
@@ -347,12 +365,12 @@ struct ReservoirTopN : ResultHandler<C> {
     }
 };
 
-template <class C>
-struct ReservoirBlockResultHandler : BlockResultHandler<C> {
+template <class C, bool use_sel = false>
+struct ReservoirBlockResultHandler : BlockResultHandler<C, use_sel> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using BlockResultHandler<C>::i0;
-    using BlockResultHandler<C>::i1;
+    using BlockResultHandler<C, use_sel>::i0;
+    using BlockResultHandler<C, use_sel>::i1;
 
     T* heap_dis_tab;
     TI* heap_ids_tab;
@@ -364,8 +382,9 @@ struct ReservoirBlockResultHandler : BlockResultHandler<C> {
             size_t nq,
             T* heap_dis_tab,
             TI* heap_ids_tab,
-            size_t k)
-            : BlockResultHandler<C>(nq),
+            size_t k,
+            const IDSelector* sel = nullptr)
+            : BlockResultHandler<C, use_sel>(nq, sel),
               heap_dis_tab(heap_dis_tab),
               heap_ids_tab(heap_ids_tab),
               k(k) {
@@ -460,18 +479,23 @@ struct ReservoirBlockResultHandler : BlockResultHandler<C> {
  * Result handler for range searches
  *****************************************************************/
 
-template <class C>
-struct RangeSearchBlockResultHandler : BlockResultHandler<C> {
+template <class C, bool use_sel = false>
+struct RangeSearchBlockResultHandler : BlockResultHandler<C, use_sel> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using BlockResultHandler<C>::i0;
-    using BlockResultHandler<C>::i1;
+    using BlockResultHandler<C, use_sel>::i0;
+    using BlockResultHandler<C, use_sel>::i1;
 
     RangeSearchResult* res;
     T radius;
 
-    RangeSearchBlockResultHandler(RangeSearchResult* res, float radius)
-            : BlockResultHandler<C>(res->nq), res(res), radius(radius) {}
+    RangeSearchBlockResultHandler(
+            RangeSearchResult* res,
+            float radius,
+            const IDSelector* sel = nullptr)
+            : BlockResultHandler<C, use_sel>(res->nq, sel),
+              res(res),
+              radius(radius) {}
 
     /******************************************************
      * API for 1 result at a time (each SingleResultHandler is
@@ -581,5 +605,82 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C> {
         }
     }
 };
+
+/*****************************************************************
+ * Dispatcher function to choose the right knn result handler depending on k
+ *****************************************************************/
+
+// declared in distances.cpp
+FAISS_API extern int distance_compute_min_k_reservoir;
+
+template <class Consumer, class... Types>
+typename Consumer::T dispatch_knn_ResultHandler(
+        size_t nx,
+        float* vals,
+        int64_t* ids,
+        size_t k,
+        MetricType metric,
+        const IDSelector* sel,
+        Consumer& consumer,
+        Types... args) {
+#define DISPATCH_C_SEL(C, use_sel)                                          \
+    if (k == 1) {                                                           \
+        Top1BlockResultHandler<C, use_sel> res(nx, vals, ids, sel);         \
+        return consumer.template f<>(res, args...);                         \
+    } else if (k < distance_compute_min_k_reservoir) {                      \
+        HeapBlockResultHandler<C, use_sel> res(nx, vals, ids, k, sel);      \
+        return consumer.template f<>(res, args...);                         \
+    } else {                                                                \
+        ReservoirBlockResultHandler<C, use_sel> res(nx, vals, ids, k, sel); \
+        return consumer.template f<>(res, args...);                         \
+    }
+
+    if (is_similarity_metric(metric)) {
+        using C = CMin<float, int64_t>;
+        if (sel) {
+            DISPATCH_C_SEL(C, true);
+        } else {
+            DISPATCH_C_SEL(C, false);
+        }
+    } else {
+        using C = CMax<float, int64_t>;
+        if (sel) {
+            DISPATCH_C_SEL(C, true);
+        } else {
+            DISPATCH_C_SEL(C, false);
+        }
+    }
+#undef DISPATCH_C_SEL
+}
+
+template <class Consumer, class... Types>
+typename Consumer::T dispatch_range_ResultHandler(
+        RangeSearchResult* res,
+        float radius,
+        MetricType metric,
+        const IDSelector* sel,
+        Consumer& consumer,
+        Types... args) {
+#define DISPATCH_C_SEL(C, use_sel)                                    \
+    RangeSearchBlockResultHandler<C, use_sel> resb(res, radius, sel); \
+    return consumer.template f<>(resb, args...);
+
+    if (is_similarity_metric(metric)) {
+        using C = CMin<float, int64_t>;
+        if (sel) {
+            DISPATCH_C_SEL(C, true);
+        } else {
+            DISPATCH_C_SEL(C, false);
+        }
+    } else {
+        using C = CMax<float, int64_t>;
+        if (sel) {
+            DISPATCH_C_SEL(C, true);
+        } else {
+            DISPATCH_C_SEL(C, false);
+        }
+    }
+#undef DISPATCH_C_SEL
+}
 
 } // namespace faiss

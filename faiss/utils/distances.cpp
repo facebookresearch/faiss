@@ -130,20 +130,17 @@ void fvec_renorm_L2(size_t d, size_t nx, float* __restrict x) {
 namespace {
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
-template <class BlockResultHandler, bool use_sel = false>
+template <class BlockResultHandler>
 void exhaustive_inner_product_seq(
         const float* x,
         const float* y,
         size_t d,
         size_t nx,
         size_t ny,
-        BlockResultHandler& res,
-        const IDSelector* sel = nullptr) {
+        BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
-
-    FAISS_ASSERT(use_sel == (sel != nullptr));
 
 #pragma omp parallel num_threads(nt)
     {
@@ -156,7 +153,7 @@ void exhaustive_inner_product_seq(
             resi.begin(i);
 
             for (size_t j = 0; j < ny; j++, y_j += d) {
-                if (use_sel && !sel->is_member(j)) {
+                if (!res.is_in_selection(j)) {
                     continue;
                 }
                 float ip = fvec_inner_product(x_i, y_j, d);
@@ -167,20 +164,17 @@ void exhaustive_inner_product_seq(
     }
 }
 
-template <class BlockResultHandler, bool use_sel = false>
+template <class BlockResultHandler>
 void exhaustive_L2sqr_seq(
         const float* x,
         const float* y,
         size_t d,
         size_t nx,
         size_t ny,
-        BlockResultHandler& res,
-        const IDSelector* sel = nullptr) {
+        BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
-
-    FAISS_ASSERT(use_sel == (sel != nullptr));
 
 #pragma omp parallel num_threads(nt)
     {
@@ -191,7 +185,7 @@ void exhaustive_L2sqr_seq(
             const float* y_j = y;
             resi.begin(i);
             for (size_t j = 0; j < ny; j++, y_j += d) {
-                if (use_sel && !sel->is_member(j)) {
+                if (!res.is_in_selection(j)) {
                     continue;
                 }
                 float disij = fvec_L2sqr(x_i, y_j, d);
@@ -326,6 +320,9 @@ void exhaustive_L2sqr_blas_default_impl(
                     float ip = *ip_line;
                     float dis = x_norms[i] + y_norms[j] - 2 * ip;
 
+                    if (!res.is_in_selection(j)) {
+                        dis = HUGE_VALF;
+                    }
                     // negative values can occur for identical vectors
                     // due to roundoff errors
                     if (dis < 0)
@@ -601,44 +598,40 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
 #endif
 }
 
-template <class BlockResultHandler>
-void knn_L2sqr_select(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        BlockResultHandler& res,
-        const float* y_norm2,
-        const IDSelector* sel) {
-    if (sel) {
-        exhaustive_L2sqr_seq<BlockResultHandler, true>(
-                x, y, d, nx, ny, res, sel);
-    } else if (nx < distance_compute_blas_threshold) {
-        exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
-    } else {
-        exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
+struct Run_search_inner_product {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           size_t d,
+           size_t nx,
+           size_t ny) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq(x, y, d, nx, ny, res);
+        } else {
+            exhaustive_inner_product_blas(x, y, d, nx, ny, res);
+        }
     }
-}
+};
 
-template <class BlockResultHandler>
-void knn_inner_product_select(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        BlockResultHandler& res,
-        const IDSelector* sel) {
-    if (sel) {
-        exhaustive_inner_product_seq<BlockResultHandler, true>(
-                x, y, d, nx, ny, res, sel);
-    } else if (nx < distance_compute_blas_threshold) {
-        exhaustive_inner_product_seq(x, y, d, nx, ny, res);
-    } else {
-        exhaustive_inner_product_blas(x, y, d, nx, ny, res);
+struct Run_search_L2sqr {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           size_t d,
+           size_t nx,
+           size_t ny,
+           const float* y_norm2) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
+        } else {
+            exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
+        }
     }
-}
+};
 
 } // anonymous namespace
 
@@ -675,16 +668,9 @@ void knn_inner_product(
         return;
     }
 
-    if (k == 1) {
-        Top1BlockResultHandler<CMin<float, int64_t>> res(nx, vals, ids);
-        knn_inner_product_select(x, y, d, nx, ny, res, sel);
-    } else if (k < distance_compute_min_k_reservoir) {
-        HeapBlockResultHandler<CMin<float, int64_t>> res(nx, vals, ids, k);
-        knn_inner_product_select(x, y, d, nx, ny, res, sel);
-    } else {
-        ReservoirBlockResultHandler<CMin<float, int64_t>> res(nx, vals, ids, k);
-        knn_inner_product_select(x, y, d, nx, ny, res, sel);
-    }
+    Run_search_inner_product r;
+    dispatch_knn_ResultHandler(
+            nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
 
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {
@@ -730,16 +716,11 @@ void knn_L2sqr(
         knn_L2sqr_by_idx(x, y, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
         return;
     }
-    if (k == 1) {
-        Top1BlockResultHandler<CMax<float, int64_t>> res(nx, vals, ids);
-        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
-    } else if (k < distance_compute_min_k_reservoir) {
-        HeapBlockResultHandler<CMax<float, int64_t>> res(nx, vals, ids, k);
-        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
-    } else {
-        ReservoirBlockResultHandler<CMax<float, int64_t>> res(nx, vals, ids, k);
-        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
-    }
+
+    Run_search_L2sqr r;
+    dispatch_knn_ResultHandler(
+            nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
+
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {
             if (ids[i] >= 0) {
@@ -766,6 +747,7 @@ void knn_L2sqr(
  * Range search
  ***************************************************************************/
 
+// TODO accept a y_norm2 as well
 void range_search_L2sqr(
         const float* x,
         const float* y,
@@ -775,15 +757,9 @@ void range_search_L2sqr(
         float radius,
         RangeSearchResult* res,
         const IDSelector* sel) {
-    using RH = RangeSearchBlockResultHandler<CMax<float, int64_t>>;
-    RH resh(res, radius);
-    if (sel) {
-        exhaustive_L2sqr_seq<RH, true>(x, y, d, nx, ny, resh, sel);
-    } else if (nx < distance_compute_blas_threshold) {
-        exhaustive_L2sqr_seq(x, y, d, nx, ny, resh, sel);
-    } else {
-        exhaustive_L2sqr_blas(x, y, d, nx, ny, resh);
-    }
+    Run_search_L2sqr r;
+    dispatch_range_ResultHandler(
+            res, radius, METRIC_L2, sel, r, x, y, d, nx, ny, nullptr);
 }
 
 void range_search_inner_product(
@@ -795,15 +771,9 @@ void range_search_inner_product(
         float radius,
         RangeSearchResult* res,
         const IDSelector* sel) {
-    using RH = RangeSearchBlockResultHandler<CMin<float, int64_t>>;
-    RH resh(res, radius);
-    if (sel) {
-        exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, resh, sel);
-    } else if (nx < distance_compute_blas_threshold) {
-        exhaustive_inner_product_seq(x, y, d, nx, ny, resh);
-    } else {
-        exhaustive_inner_product_blas(x, y, d, nx, ny, resh);
-    }
+    Run_search_inner_product r;
+    dispatch_range_ResultHandler(
+            res, radius, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
 }
 
 /***************************************************************************
