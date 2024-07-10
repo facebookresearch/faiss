@@ -46,11 +46,6 @@ runs:
           conda install -y -q libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
         fi
 
-        # install ROCm packages
-        if [ "${{ inputs.rocm }}" = "ON" ]; then
-          conda install -y -q hip -c conda-forge
-        fi
-
         # install test packages
         conda install -y pytest
         if [ "${{ inputs.gpu }}" = "ON" ]; then
@@ -58,6 +53,55 @@ runs:
         else
           conda install -y -q pytorch -c pytorch
         fi
+    - name: Install ROCm
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        # Update repos and install kmod, wget
+        apt-get update
+        apt-get install -y kmod wget
+
+        # Pin ROCm version for testing
+        export ROCM_VERSION="6.1"
+
+        # Add amdgpu repository
+        UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
+        # TODO: change to "deb [arch=amd64] ..." on AMD runners
+        echo "deb https://repo.radeon.com/amdgpu/${ROCM_VERSION}/ubuntu ${UBUNTU_VERSION_NAME} main" > /etc/apt/sources.list.d/amdgpu.list
+
+        # Add rocm repository
+        wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | apt-key add -
+        local rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        # TODO: change to "deb [arch=amd64] ..." on AMD runners
+        echo "deb ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" > /etc/apt/sources.list.d/rocm.list
+        apt-get update --allow-insecure-repositories
+
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated \
+            rocm-dev rocm-utils rocm-libs rccl rocprofiler-dev roctracer-dev amd-smi-lib
+
+        if [[ $(ver $ROCM_VERSION) -ge $(ver 6.1) ]]; then
+            DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated rocm-llvm-dev
+        fi
+
+        # precompiled miopen kernels added in ROCm 3.5, renamed in ROCm 5.5
+        # search for all unversioned packages
+        # if search fails it will abort this script; use true to avoid case where search fails
+        MIOPENHIPGFX=$(apt-cache search --names-only miopen-hip-gfx | awk '{print $1}' | grep -F -v . || true)
+        if [[ "x${MIOPENHIPGFX}" = x ]]; then
+          echo "miopen-hip-gfx package not available" && exit 1
+        else
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated ${MIOPENHIPGFX}
+        fi
+
+        # ROCm 6.0 had a regression where journal_mode was enabled on the kdb files resulting in permission errors at runtime
+        for kdb in /opt/rocm/share/miopen/db/*.kdb
+        do
+            sqlite3 $kdb "PRAGMA journal_mode=off; PRAGMA VACUUM;"
+        done
+
+        # Cleanup
+        apt-get autoclean && apt-get clean
+        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     - name: Build all targets
       shell: bash
       run: |
