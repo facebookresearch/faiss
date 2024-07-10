@@ -25,8 +25,8 @@ runs:
       if: runner.arch == 'ARM64'
       run: |
         # initialize Conda
-        conda config --set solver libmamba
         conda update -y -q conda
+        conda create -n faiss_env
         conda activate faiss_env
         echo "$CONDA/bin" >> $GITHUB_PATH
         conda install -y -q python=3.11 cmake>=3.24.0 make swig numpy scipy pytest
