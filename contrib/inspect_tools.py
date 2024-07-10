@@ -98,6 +98,12 @@ def get_flat_data(index):
     return xb.reshape(index.ntotal, index.d)
 
 
+def get_flat_codes(index_flat): 
+    """ get the codes from an indexFlatCodes as an array """
+    return faiss.vector_to_array(index_flat.codes).reshape(
+        index_flat.ntotal, index_flat.code_size)
+
+
 def get_NSG_neighbors(nsg):
     """ get the neighbor list for the vectors stored in the NSG structure, as
     a N-by-K matrix of indices """

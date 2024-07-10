@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #pragma once
 
 #include <faiss/Index.h>
@@ -45,12 +43,31 @@ struct IndexFlatCodes : Index {
      * different from the usual ones: the new ids are shifted */
     size_t remove_ids(const IDSelector& sel) override;
 
-    /** a FlatCodesDistanceComputer offers a distance_to_code method */
+    /** a FlatCodesDistanceComputer offers a distance_to_code method
+     *
+     * The default implementation explicitly decodes the vector with sa_decode.
+     */
     virtual FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const;
 
     DistanceComputer* get_distance_computer() const override {
         return get_FlatCodesDistanceComputer();
     }
+
+    /** Search implemented by decoding */
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     // returns a new instance of a CodePacker
     CodePacker* get_CodePacker() const;
