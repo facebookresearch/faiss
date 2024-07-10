@@ -71,7 +71,7 @@ runs:
 
         # Add rocm repository
         wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-        local rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         # TODO: change to "deb [arch=amd64] ..." on AMD runners
         echo "deb ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
         sudo apt-get update --allow-insecure-repositories
