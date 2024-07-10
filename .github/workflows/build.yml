@@ -38,7 +38,7 @@ jobs:
               exit 1
             fi
   linux-arm64-conda:
-    name: Linux arm64 (conda) 2
+    name: Linux arm64 (conda)
     runs-on: faiss-aws-r6g.large
     steps:
       - name: Checkout
