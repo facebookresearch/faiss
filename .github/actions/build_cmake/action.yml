@@ -30,7 +30,6 @@ runs:
         echo "$CONDA/bin" >> $GITHUB_PATH
         conda install -y -q python=3.11 cmake>=3.24.0 make swig numpy scipy pytest
         conda install -y -q -c conda-forge openblas lapackpp gxx_linux-aarch64 sysroot_linux-aarch64
-        conda install -y -q pytorch -c pytorch
     - name: Configure build environment in Linux x86_64
       shell: bash
       if: runner.arch != 'ARM64'
