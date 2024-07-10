@@ -67,13 +67,13 @@ runs:
         # Add amdgpu repository
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
         # TODO: change to "deb [arch=amd64] ..." on AMD runners
-        sudo echo "deb https://repo.radeon.com/amdgpu/${ROCM_VERSION}/ubuntu ${UBUNTU_VERSION_NAME} main" > /etc/apt/sources.list.d/amdgpu.list
+        echo "deb https://repo.radeon.com/amdgpu/${ROCM_VERSION}/ubuntu ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/amdgpu.list
 
         # Add rocm repository
         wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | apt-key add -
         local rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         # TODO: change to "deb [arch=amd64] ..." on AMD runners
-        sudo echo "deb ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" > /etc/apt/sources.list.d/rocm.list
+        echo "deb ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
         sudo apt-get update --allow-insecure-repositories
 
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
@@ -100,7 +100,7 @@ runs:
         done
 
         # Fake presence of MI200-class accelerators
-        sudo echo "gfx90a" > /opt/rocm/bin/target.lst
+        echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
         sudo apt-get autoclean && sudo apt-get clean
