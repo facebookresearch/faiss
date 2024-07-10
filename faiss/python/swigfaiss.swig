@@ -145,6 +145,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/NeuralNet.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -164,6 +165,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/lattice_Zn.h>
 #include <faiss/IndexLattice.h>
 
+#include <faiss/IndexNeuralNetCodec.h>
 
 %}
 
@@ -256,7 +258,6 @@ namespace std {
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 %template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
-
 
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
@@ -529,6 +530,12 @@ struct faiss::simd16uint16 {};
 %include  <faiss/MetaIndexes.h>
 
 %include  <faiss/IndexRowwiseMinMax.h>
+
+%include <faiss/utils/NeuralNet.h>
+%template(Tensor2D) faiss::nn::Tensor2DTemplate<float>;
+%template(Int32Tensor2D) faiss::nn::Tensor2DTemplate<int32_t>;
+
+%include <faiss/IndexNeuralNetCodec.h>
 
 
 %ignore faiss::BufferList::Buffer;

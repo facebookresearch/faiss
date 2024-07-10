@@ -44,6 +44,14 @@ class_wrappers.handle_IDSelectorSubset(IDSelectorArray, class_owns=False)
 class_wrappers.handle_IDSelectorSubset(IDSelectorBitmap, class_owns=False, force_int64=False)
 class_wrappers.handle_CodeSet(CodeSet)
 
+class_wrappers.handle_Tensor2D(Tensor2D)
+class_wrappers.handle_Tensor2D(Int32Tensor2D)
+class_wrappers.handle_Embedding(Embedding)
+class_wrappers.handle_Linear(Linear)
+class_wrappers.handle_QINCo(QINCo)
+class_wrappers.handle_QINCoStep(QINCoStep)
+
+
 this_module = sys.modules[__name__]
 
 # handle sub-classes
