@@ -14,6 +14,7 @@ from common_faiss_tests import get_dataset_2
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
+
 class TestEncodeDecode(unittest.TestCase):
 
     def do_encode_twice(self, factory_key):
@@ -262,6 +263,19 @@ class LatticeTest(unittest.TestCase):
 
     def test_ZnSphereCodecAlt24(self):
         self.run_ZnSphereCodecAlt(24, 14)
+
+    def test_lattice_index(self):
+        index = faiss.index_factory(96, "ZnLattice3x10_4")
+        rs = np.random.RandomState(123)
+        xq = rs.randn(10, 96).astype('float32')
+        xb = rs.randn(20, 96).astype('float32')
+        index.train(xb)
+        index.add(xb)
+        D, I = index.search(xq, 5)
+        for i in range(10):
+            recons = index.reconstruct_batch(I[i, :])
+            ref_dis = ((recons - xq[i]) ** 2).sum(1)
+            np.testing.assert_allclose(D[i, :], ref_dis, atol=1e-4)
 
 
 class TestBitstring(unittest.TestCase):
