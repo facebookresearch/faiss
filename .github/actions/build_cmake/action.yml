@@ -25,8 +25,8 @@ runs:
       if: runner.arch == 'ARM64'
       run: |
         # initialize Conda
+        conda config --set solver libmamba
         conda update -y -q conda
-        conda activate 
         echo "$CONDA/bin" >> $GITHUB_PATH
         conda install -y -q python=3.11 cmake>=3.24.0 make swig numpy scipy pytest
         conda install -y -q pytorch -c pytorch
@@ -36,6 +36,8 @@ runs:
       if: runner.arch == 'ARM64'
       shell: bash
       run: |
+        eval "$(conda shell.bash hook)"
+        conda activate 
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
