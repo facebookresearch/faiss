@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNNDescent_8h.html">File IndexNNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNSG_8h.html">File IndexNSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexNeuralNetCodec_8h.html">File IndexNeuralNetCodec.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
@@ -183,6 +184,7 @@
 <li class="toctree-l2"><a class="reference internal" href="MinMaxFP16-inl_8h.html">File MinMaxFP16-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NNDescent_8h.html">File NNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NSG_8h.html">File NSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralNet_8h.html">File NeuralNet.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PQ-avx2-inl_8h.html">File PQ-avx2-inl.h</a></li>
@@ -319,6 +321,14 @@
              
   <section id="file-extra-distances-inl-h">
 <h1>File extra_distances-inl.h<a class="headerlink" href="#file-extra-distances-inl-h" title="Permalink to this heading"></a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DISPATCH_VD">
+<span class="target" id="extra__distances-inl_8h_1af990036faf8f50ab6ab2f9994084662f"></span><span class="sig-name descname"><span class="n"><span class="pre">DISPATCH_VD</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DISPATCH_VD" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45faiss">
 <span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
@@ -347,7 +357,17 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN5faiss23dispatch_VectorDistanceEN8Consumer1TE6size_t10MetricTypefR8ConsumerDp5Types">
+<span id="_CPPv3I0DpEN5faiss23dispatch_VectorDistanceE6size_t10MetricTypefR8ConsumerDp5Types"></span><span id="_CPPv2I0DpEN5faiss23dispatch_VectorDistanceE6size_t10MetricTypefR8ConsumerDp5Types"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Consumer</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Types</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacefaiss_1af795517ea8f2270421341a93eb528c52"></span><a class="reference internal" href="#_CPPv4I0DpEN5faiss23dispatch_VectorDistanceEN8Consumer1TE6size_t10MetricTypefR8ConsumerDp5Types" title="faiss::dispatch_VectorDistance::Consumer"><span class="n"><span class="pre">Consumer</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dispatch_VectorDistance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">metric_arg</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN5faiss23dispatch_VectorDistanceEN8Consumer1TE6size_t10MetricTypefR8ConsumerDp5Types" title="faiss::dispatch_VectorDistance::Consumer"><span class="n"><span class="pre">Consumer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">consumer</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN5faiss23dispatch_VectorDistanceEN8Consumer1TE6size_t10MetricTypefR8ConsumerDp5Types" title="faiss::dispatch_VectorDistance::Types"><span class="n"><span class="pre">Types</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN5faiss23dispatch_VectorDistanceEN8Consumer1TE6size_t10MetricTypefR8ConsumerDp5Types" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4I_10MetricTypeEN5faiss14VectorDistanceE">
 <span id="_CPPv3I_10MetricTypeEN5faiss14VectorDistanceE"></span><span id="_CPPv2I_10MetricTypeEN5faiss14VectorDistanceE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mt</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1VectorDistance"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorDistance</span></span></span><a class="headerlink" href="#_CPPv4I_10MetricTypeEN5faiss14VectorDistanceE" title="Permalink to this definition"></a><br /></dt>

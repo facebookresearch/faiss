@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexLattice_8h.html">File IndexLattice.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNNDescent_8h.html">File IndexNNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNSG_8h.html">File IndexNSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexNeuralNetCodec_8h.html">File IndexNeuralNetCodec.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
@@ -183,6 +184,7 @@
 <li class="toctree-l2"><a class="reference internal" href="MinMaxFP16-inl_8h.html">File MinMaxFP16-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NNDescent_8h.html">File NNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NSG_8h.html">File NSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralNet_8h.html">File NeuralNet.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PQ-avx2-inl_8h.html">File PQ-avx2-inl.h</a></li>
@@ -347,6 +349,8 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizerE">
@@ -421,7 +425,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv">
 <span id="_CPPv3NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexAdditiveQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="DistanceComputer_8h.html#_CPPv4N5faiss25FlatCodesDistanceComputerE" title="faiss::FlatCodesDistanceComputer"><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method </p>
+<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method</p>
+<p>The default implementation explicitly decodes the vector with sa_decode. </p>
 </dd></dl>
 
 </div>
@@ -544,7 +549,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexResidualQuantizer29get_FlatCodesDistanceComputerEv">
 <span id="_CPPv3NK5faiss22IndexResidualQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss22IndexResidualQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexResidualQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="DistanceComputer_8h.html#_CPPv4N5faiss25FlatCodesDistanceComputerE" title="faiss::FlatCodesDistanceComputer"><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexResidualQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method </p>
+<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method</p>
+<p>The default implementation explicitly decodes the vector with sa_decode. </p>
 </dd></dl>
 
 </div>
@@ -665,7 +671,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexLocalSearchQuantizer29get_FlatCodesDistanceComputerEv">
 <span id="_CPPv3NK5faiss25IndexLocalSearchQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss25IndexLocalSearchQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexLocalSearchQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="DistanceComputer_8h.html#_CPPv4N5faiss25FlatCodesDistanceComputerE" title="faiss::FlatCodesDistanceComputer"><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss25IndexLocalSearchQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method </p>
+<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method</p>
+<p>The default implementation explicitly decodes the vector with sa_decode. </p>
 </dd></dl>
 
 </div>
@@ -790,7 +797,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss29IndexProductResidualQuantizer29get_FlatCodesDistanceComputerEv">
 <span id="_CPPv3NK5faiss29IndexProductResidualQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss29IndexProductResidualQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexProductResidualQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="DistanceComputer_8h.html#_CPPv4N5faiss25FlatCodesDistanceComputerE" title="faiss::FlatCodesDistanceComputer"><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss29IndexProductResidualQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method </p>
+<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method</p>
+<p>The default implementation explicitly decodes the vector with sa_decode. </p>
 </dd></dl>
 
 </div>
@@ -916,7 +924,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss32IndexProductLocalSearchQuantizer29get_FlatCodesDistanceComputerEv">
 <span id="_CPPv3NK5faiss32IndexProductLocalSearchQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss32IndexProductLocalSearchQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexProductLocalSearchQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="DistanceComputer_8h.html#_CPPv4N5faiss25FlatCodesDistanceComputerE" title="faiss::FlatCodesDistanceComputer"><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss32IndexProductLocalSearchQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method </p>
+<dd><p>a <a class="reference internal" href="../struct/structfaiss_1_1FlatCodesDistanceComputer.html#structfaiss_1_1FlatCodesDistanceComputer"><span class="std std-ref">FlatCodesDistanceComputer</span></a> offers a distance_to_code method</p>
+<p>The default implementation explicitly decodes the vector with sa_decode. </p>
 </dd></dl>
 
 </div>

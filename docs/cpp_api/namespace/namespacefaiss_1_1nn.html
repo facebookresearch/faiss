@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace faiss::nn &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
+
+  
+    <link rel="canonical" href="https://faiss.ai/cpp_api/namespace/namespacefaiss_1_1nn.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Namespace faiss::nndescent" href="namespacefaiss_1_1nndescent.html" />
+    <link rel="prev" title="Namespace faiss::lsq" href="namespacefaiss_1_1lsq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d133.html">Namespace faiss::&#64;133</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d142.html">Namespace faiss::&#64;142</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d159.html">Namespace faiss::&#64;159</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d161.html">Namespace faiss::&#64;161</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d162.html">Namespace faiss::&#64;162</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d163.html">Namespace faiss::&#64;163</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib.html">Namespace faiss::cppcontrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d10.html">Namespace faiss::cppcontrib::&#64;10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d12.html">Namespace faiss::cppcontrib::&#64;12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d5.html">Namespace faiss::cppcontrib::&#64;5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d7.html">Namespace faiss::cppcontrib::&#64;7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail.html">Namespace faiss::cppcontrib::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail_1_1_0d4.html">Namespace faiss::cppcontrib::detail::&#64;4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail.html">Namespace faiss::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1lsq.html">Namespace faiss::lsq</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::nn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nndescent.html">Namespace faiss::nndescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nsg.html">Namespace faiss::nsg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1quantize__lut.html">Namespace faiss::quantize_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1rq__encode__steps.html">Namespace faiss::rq_encode_steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers.html">Namespace faiss::simd_result_handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacestd.html">Namespace std</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../namespacelist.html">Namespace list</a></li>
+      <li class="breadcrumb-item active">Namespace faiss::nn</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1nn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-faiss-nn">
+<h1>Namespace faiss::nn<a class="headerlink" href="#namespace-faiss-nn" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nnE">
+<span id="_CPPv3N5faiss2nnE"></span><span id="_CPPv2N5faiss2nnE"></span><span id="faiss::nn"></span><span class="target" id="namespacefaiss_1_1nn"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nn</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn8Tensor2DE">
+<span id="_CPPv3N5faiss2nn8Tensor2DE"></span><span id="_CPPv2N5faiss2nn8Tensor2DE"></span><span class="target" id="NeuralNet_8h_1aef3e097827c05b9249e0addd5c16f29e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Tensor2D</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate"><span class="n"><span class="pre">Tensor2DTemplate</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn13Int32Tensor2DE">
+<span id="_CPPv3N5faiss2nn13Int32Tensor2DE"></span><span id="_CPPv2N5faiss2nn13Int32Tensor2DE"></span><span class="target" id="NeuralNet_8h_1ab1a6434b6b0e7089c89b59b8be69438d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Int32Tensor2D</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate"><span class="n"><span class="pre">Tensor2DTemplate</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss2nn16Tensor2DTemplateE">
+<span id="_CPPv3I0EN5faiss2nn16Tensor2DTemplateE"></span><span id="_CPPv2I0EN5faiss2nn16Tensor2DTemplateE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Tensor2DTemplate</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn16Tensor2DTemplate16Tensor2DTemplateE6size_t6size_tPK1T">
+<span id="_CPPv3N5faiss2nn16Tensor2DTemplate16Tensor2DTemplateE6size_t6size_tPK1T"></span><span id="_CPPv2N5faiss2nn16Tensor2DTemplate16Tensor2DTemplateE6size_t6size_tPK1T"></span><span id="faiss::nn::Tensor2DTemplate::Tensor2DTemplate__s.s.TCP"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a978b31bd74dcd9f49aa61e0cc0ebd66a"></span><span class="sig-name descname"><span class="n"><span class="pre">Tensor2DTemplate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n1</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn16Tensor2DTemplatepLERK16Tensor2DTemplate">
+<span id="_CPPv3N5faiss2nn16Tensor2DTemplatepLERK16Tensor2DTemplate"></span><span id="_CPPv2N5faiss2nn16Tensor2DTemplatepLERK16Tensor2DTemplate"></span><span id="faiss::nn::Tensor2DTemplate::add-assign-operator__Tensor2DTemplateCR"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a99c1c7fece86c198b9d0ee9099a9bdf6"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate"><span class="n"><span class="pre">Tensor2DTemplate</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate"><span class="n"><span class="pre">Tensor2DTemplate</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn16Tensor2DTemplate6columnE6size_t">
+<span id="_CPPv3NK5faiss2nn16Tensor2DTemplate6columnE6size_t"></span><span id="_CPPv2NK5faiss2nn16Tensor2DTemplate6columnE6size_t"></span><span id="faiss::nn::Tensor2DTemplate::column__sC"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1aa15131e677ab30193ec1d60d041f7325"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate"><span class="n"><span class="pre">Tensor2DTemplate</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">column</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>get column #j as a 1-column Tensor2D </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn16Tensor2DTemplate5numelEv">
+<span id="_CPPv3NK5faiss2nn16Tensor2DTemplate5numelEv"></span><span id="_CPPv2NK5faiss2nn16Tensor2DTemplate5numelEv"></span><span id="faiss::nn::Tensor2DTemplate::numelC"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a1b02660e29dae42bf294a970e36f6a58"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">numel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn16Tensor2DTemplate4dataEv">
+<span id="_CPPv3N5faiss2nn16Tensor2DTemplate4dataEv"></span><span id="_CPPv2N5faiss2nn16Tensor2DTemplate4dataEv"></span><span id="faiss::nn::Tensor2DTemplate::data"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a910ec4d422b24d71e12f70a651367348"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn16Tensor2DTemplate4dataEv">
+<span id="_CPPv3NK5faiss2nn16Tensor2DTemplate4dataEv"></span><span id="_CPPv2NK5faiss2nn16Tensor2DTemplate4dataEv"></span><span id="faiss::nn::Tensor2DTemplate::dataC"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a332646046ca503d5c348014ad587b06b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn16Tensor2DTemplate5shapeE">
+<span id="_CPPv3N5faiss2nn16Tensor2DTemplate5shapeE"></span><span id="_CPPv2N5faiss2nn16Tensor2DTemplate5shapeE"></span><span id="faiss::nn::Tensor2DTemplate::shape__sA"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a29281a69927dd6b140690dfbdbd87cfb"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shape</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn16Tensor2DTemplate1vE">
+<span id="_CPPv3N5faiss2nn16Tensor2DTemplate1vE"></span><span id="_CPPv2N5faiss2nn16Tensor2DTemplate1vE"></span><span id="faiss::nn::Tensor2DTemplate::v__std::vector:T:"></span><span class="target" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a7fe379fb1606acb25874ccd2962849aa"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4I0EN5faiss2nn16Tensor2DTemplateE" title="faiss::nn::Tensor2DTemplate::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">v</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6LinearE">
+<span id="_CPPv3N5faiss2nn6LinearE"></span><span id="_CPPv2N5faiss2nn6LinearE"></span><span id="faiss::nn::Linear"></span><span class="target" id="structfaiss_1_1nn_1_1Linear"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Linear</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;NeuralNet.h&gt;</em></div>
+<p>minimal translation of <a class="reference internal" href="../struct/structfaiss_1_1nn_1_1Linear.html#structfaiss_1_1nn_1_1Linear"><span class="std std-ref">nn.Linear</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6Linear6LinearE6size_t6size_tb">
+<span id="_CPPv3N5faiss2nn6Linear6LinearE6size_t6size_tb"></span><span id="_CPPv2N5faiss2nn6Linear6LinearE6size_t6size_tb"></span><span id="faiss::nn::Linear::Linear__s.s.b"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1a3b477a50edce990c0a567b629e6d0770"></span><span class="sig-name descname"><span class="n"><span class="pre">Linear</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in_features</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out_features</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bias</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn6LinearclERK8Tensor2D">
+<span id="_CPPv3NK5faiss2nn6LinearclERK8Tensor2D"></span><span id="_CPPv2NK5faiss2nn6LinearclERK8Tensor2D"></span><span id="faiss::nn::Linear::call-operator__Tensor2DCRC"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1a45ff3a95c45683e6509c535ed19fb8fe"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn8Tensor2DE" title="faiss::nn::Tensor2D"><span class="n"><span class="pre">Tensor2D</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn8Tensor2DE" title="faiss::nn::Tensor2D"><span class="n"><span class="pre">Tensor2D</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6Linear11in_featuresE">
+<span id="_CPPv3N5faiss2nn6Linear11in_featuresE"></span><span id="_CPPv2N5faiss2nn6Linear11in_featuresE"></span><span id="faiss::nn::Linear::in_features__s"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1a1b89904f1cacf3a90f7827df74525c93"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">in_features</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6Linear12out_featuresE">
+<span id="_CPPv3N5faiss2nn6Linear12out_featuresE"></span><span id="_CPPv2N5faiss2nn6Linear12out_featuresE"></span><span id="faiss::nn::Linear::out_features__s"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1ad8c4223f47748547696edd6728141224"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">out_features</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6Linear6weightE">
+<span id="_CPPv3N5faiss2nn6Linear6weightE"></span><span id="_CPPv2N5faiss2nn6Linear6weightE"></span><span id="faiss::nn::Linear::weight__std::vector:float:"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1a204ad8caab153bd6f1ca06e34dd66013"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn6Linear4biasE">
+<span id="_CPPv3N5faiss2nn6Linear4biasE"></span><span id="_CPPv2N5faiss2nn6Linear4biasE"></span><span id="faiss::nn::Linear::bias__std::vector:float:"></span><span class="target" id="structfaiss_1_1nn_1_1Linear_1acd4be433020399d46c7f6464cda5cde3"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bias</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9EmbeddingE">
+<span id="_CPPv3N5faiss2nn9EmbeddingE"></span><span id="_CPPv2N5faiss2nn9EmbeddingE"></span><span id="faiss::nn::Embedding"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Embedding</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;NeuralNet.h&gt;</em></div>
+<p>minimal translation of <a class="reference internal" href="../struct/structfaiss_1_1nn_1_1Embedding.html#structfaiss_1_1nn_1_1Embedding"><span class="std std-ref">nn.Embedding</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9Embedding9EmbeddingE6size_t6size_t">
+<span id="_CPPv3N5faiss2nn9Embedding9EmbeddingE6size_t6size_t"></span><span id="_CPPv2N5faiss2nn9Embedding9EmbeddingE6size_t6size_t"></span><span id="faiss::nn::Embedding::Embedding__s.s"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1a8d98663bfa8f5c452283aabe64ecb3f8"></span><span class="sig-name descname"><span class="n"><span class="pre">Embedding</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_embeddings</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">embedding_dim</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn9EmbeddingclERK13Int32Tensor2D">
+<span id="_CPPv3NK5faiss2nn9EmbeddingclERK13Int32Tensor2D"></span><span id="_CPPv2NK5faiss2nn9EmbeddingclERK13Int32Tensor2D"></span><span id="faiss::nn::Embedding::call-operator__Int32Tensor2DCRC"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1af1e58dee67f4a34636fbff7c2c0bf7f3"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn8Tensor2DE" title="faiss::nn::Tensor2D"><span class="n"><span class="pre">Tensor2D</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn13Int32Tensor2DE" title="faiss::nn::Int32Tensor2D"><span class="n"><span class="pre">Int32Tensor2D</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9Embedding4dataEv">
+<span id="_CPPv3N5faiss2nn9Embedding4dataEv"></span><span id="_CPPv2N5faiss2nn9Embedding4dataEv"></span><span id="faiss::nn::Embedding::data"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1a1b07de983f55108afab49910111d5905"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn9Embedding4dataEv">
+<span id="_CPPv3NK5faiss2nn9Embedding4dataEv"></span><span id="_CPPv2NK5faiss2nn9Embedding4dataEv"></span><span id="faiss::nn::Embedding::dataC"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1ab689fba1eaa84c39e3ea62caa463588c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9Embedding14num_embeddingsE">
+<span id="_CPPv3N5faiss2nn9Embedding14num_embeddingsE"></span><span id="_CPPv2N5faiss2nn9Embedding14num_embeddingsE"></span><span id="faiss::nn::Embedding::num_embeddings__s"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1ae5235f1074d366e1947a4668ad43d069"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_embeddings</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9Embedding13embedding_dimE">
+<span id="_CPPv3N5faiss2nn9Embedding13embedding_dimE"></span><span id="_CPPv2N5faiss2nn9Embedding13embedding_dimE"></span><span id="faiss::nn::Embedding::embedding_dim__s"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1a227ca3484ff7304a34734290f42bb59a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">embedding_dim</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn9Embedding6weightE">
+<span id="_CPPv3N5faiss2nn9Embedding6weightE"></span><span id="_CPPv2N5faiss2nn9Embedding6weightE"></span><span id="faiss::nn::Embedding::weight__std::vector:float:"></span><span class="target" id="structfaiss_1_1nn_1_1Embedding_1a190c25139f385e5feaa5f48c903b293a"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn3FFNE">
+<span id="_CPPv3N5faiss2nn3FFNE"></span><span id="_CPPv2N5faiss2nn3FFNE"></span><span id="faiss::nn::FFN"></span><span class="target" id="structfaiss_1_1nn_1_1FFN"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFN</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;NeuralNet.h&gt;</em></div>
+<p>Feed forward layer that expands to a hidden dimension, applies a ReLU non linearity and maps back to the orignal dimension </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn3FFN3FFNEii">
+<span id="_CPPv3N5faiss2nn3FFN3FFNEii"></span><span id="_CPPv2N5faiss2nn3FFN3FFNEii"></span><span id="faiss::nn::FFN::FFN__i.i"></span><span class="target" id="structfaiss_1_1nn_1_1FFN_1a63cb46c78923e2f13fff5b61536d276e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFN</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss2nn3FFNclERK8Tensor2D">
+<span id="_CPPv3NK5faiss2nn3FFNclERK8Tensor2D"></span><span id="_CPPv2NK5faiss2nn3FFNclERK8Tensor2D"></span><span id="faiss::nn::FFN::call-operator__Tensor2DCRC"></span><span class="target" id="structfaiss_1_1nn_1_1FFN_1a0b27690893ada2ea167008cfdc67d719"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn8Tensor2DE" title="faiss::nn::Tensor2D"><span class="n"><span class="pre">Tensor2D</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn8Tensor2DE" title="faiss::nn::Tensor2D"><span class="n"><span class="pre">Tensor2D</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn3FFN7linear1E">
+<span id="_CPPv3N5faiss2nn3FFN7linear1E"></span><span id="_CPPv2N5faiss2nn3FFN7linear1E"></span><span id="faiss::nn::FFN::linear1__Linear"></span><span class="target" id="structfaiss_1_1nn_1_1FFN_1ad5ba56bb01a18ea27b31ab40ab543e25"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn6LinearE" title="faiss::nn::Linear"><span class="n"><span class="pre">Linear</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">linear1</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss2nn3FFN7linear2E">
+<span id="_CPPv3N5faiss2nn3FFN7linear2E"></span><span id="_CPPv2N5faiss2nn3FFN7linear2E"></span><span id="faiss::nn::FFN::linear2__Linear"></span><span class="target" id="structfaiss_1_1nn_1_1FFN_1ac452f94d977c8c13e62fbf94dbee1dc4"></span><a class="reference internal" href="../file/NeuralNet_8h.html#_CPPv4N5faiss2nn6LinearE" title="faiss::nn::Linear"><span class="n"><span class="pre">Linear</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">linear2</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespacefaiss_1_1lsq.html" class="btn btn-neutral float-left" title="Namespace faiss::lsq" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespacefaiss_1_1nndescent.html" class="btn btn-neutral float-right" title="Namespace faiss::nndescent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

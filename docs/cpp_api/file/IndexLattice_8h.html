@@ -145,6 +145,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">File IndexLattice.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNNDescent_8h.html">File IndexNNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexNSG_8h.html">File IndexNSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexNeuralNetCodec_8h.html">File IndexNeuralNetCodec.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQFastScan_8h.html">File IndexPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPQ_8h.html">File IndexPQ.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
@@ -183,6 +184,7 @@
 <li class="toctree-l2"><a class="reference internal" href="MinMaxFP16-inl_8h.html">File MinMaxFP16-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NNDescent_8h.html">File NNDescent.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NSG_8h.html">File NSG.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralNet_8h.html">File NeuralNet.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PQ-avx2-inl_8h.html">File PQ-avx2-inl.h</a></li>
@@ -347,10 +349,12 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLatticeE">
-<span id="_CPPv3N5faiss12IndexLatticeE"></span><span id="_CPPv2N5faiss12IndexLatticeE"></span><span id="faiss::IndexLattice"></span><span class="target" id="structfaiss_1_1IndexLattice"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexLattice</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><a class="headerlink" href="#_CPPv4N5faiss12IndexLatticeE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss12IndexLatticeE"></span><span id="_CPPv2N5faiss12IndexLatticeE"></span><span id="faiss::IndexLattice"></span><span class="target" id="structfaiss_1_1IndexLattice"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexLattice</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexFlatCodes_8h.html#_CPPv4N5faiss14IndexFlatCodesE" title="faiss::IndexFlatCodes"><span class="n"><span class="pre">IndexFlatCodes</span></span></a><a class="headerlink" href="#_CPPv4N5faiss12IndexLatticeE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;IndexLattice.h&gt;</em></div>
 <p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> that encodes a vector with a series of Zn lattice quantizers </p>
@@ -411,36 +415,6 @@
 </dl>
 </dd></dl>
 
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLattice3addE5idx_tPKf">
-<span id="_CPPv3N5faiss12IndexLattice3addE5idx_tPKf"></span><span id="_CPPv2N5faiss12IndexLattice3addE5idx_tPKf"></span><span id="faiss::IndexLattice::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexLattice_1a174ccb3a272fa38dd9adfb78757ece76"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss12IndexLattice3addE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>not implemented </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss12IndexLattice6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters">
-<span id="_CPPv3NK5faiss12IndexLattice6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss12IndexLattice6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="faiss::IndexLattice::search__idx_t.floatCP.idx_t.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexLattice_1a8b6ff22a9e19217cf7ac52ca1552b380"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss12IndexLattice6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters" title="Permalink to this definition"></a><br /></dt>
-<dd><p>query n vectors of dimension d to the index.</p>
-<p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
-<li><p><strong>k</strong> – number of extracted vectors </p></li>
-<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
-<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLattice5resetEv">
-<span id="_CPPv3N5faiss12IndexLattice5resetEv"></span><span id="_CPPv2N5faiss12IndexLattice5resetEv"></span><span id="faiss::IndexLattice::reset"></span><span class="target" id="structfaiss_1_1IndexLattice_1a5282d7f60eecbd5f552f184944a36b06"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss12IndexLattice5resetEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -472,12 +446,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLattice12lattice_nbitE">
 <span id="_CPPv3N5faiss12IndexLattice12lattice_nbitE"></span><span id="_CPPv2N5faiss12IndexLattice12lattice_nbitE"></span><span id="faiss::IndexLattice::lattice_nbit__i"></span><span class="target" id="structfaiss_1_1IndexLattice_1a596863f4c2c06a476669f450da1359d5"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lattice_nbit</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12IndexLattice12lattice_nbitE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLattice9code_sizeE">
-<span id="_CPPv3N5faiss12IndexLattice9code_sizeE"></span><span id="_CPPv2N5faiss12IndexLattice9code_sizeE"></span><span id="faiss::IndexLattice::code_size__s"></span><span class="target" id="structfaiss_1_1IndexLattice_1aabf1d37c71bc881b52b544820514c0de"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12IndexLattice9code_sizeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>total, in bytes </p>
-</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12IndexLattice7trainedE">
