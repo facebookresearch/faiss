@@ -41,6 +41,7 @@ runs:
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
+              -DFAISS_ENABLE_GPU=OFF \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$(which python) \
