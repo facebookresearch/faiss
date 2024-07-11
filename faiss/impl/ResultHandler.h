@@ -16,6 +16,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
+
 #include <algorithm>
 #include <iostream>
 
