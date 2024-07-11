@@ -165,6 +165,8 @@
     <innerclass refid="structfaiss_1_1IndexIVFSpectralHash" prot="public">faiss::IndexIVFSpectralHash</innerclass>
     <innerclass refid="structfaiss_1_1IndexLattice" prot="public">faiss::IndexLattice</innerclass>
     <innerclass refid="structfaiss_1_1IndexLSH" prot="public">faiss::IndexLSH</innerclass>
+    <innerclass refid="structfaiss_1_1IndexNeuralNetCodec" prot="public">faiss::IndexNeuralNetCodec</innerclass>
+    <innerclass refid="structfaiss_1_1IndexQINCo" prot="public">faiss::IndexQINCo</innerclass>
     <innerclass refid="structfaiss_1_1IndexNNDescent" prot="public">faiss::IndexNNDescent</innerclass>
     <innerclass refid="structfaiss_1_1IndexNNDescentFlat" prot="public">faiss::IndexNNDescentFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexNSG" prot="public">faiss::IndexNSG</innerclass>
@@ -235,6 +237,9 @@
     <innerclass refid="structfaiss_1_1GenHammingComputerM8" prot="public">faiss::GenHammingComputerM8</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
     <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
+    <innerclass refid="structfaiss_1_1QINCoStep" prot="public">faiss::QINCoStep</innerclass>
+    <innerclass refid="structfaiss_1_1NeuralNetCodec" prot="public">faiss::NeuralNetCodec</innerclass>
+    <innerclass refid="structfaiss_1_1QINCo" prot="public">faiss::QINCo</innerclass>
     <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
     <innerclass refid="structfaiss_1_1CMin" prot="public">faiss::CMin</innerclass>
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
@@ -265,6 +270,7 @@
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <innernamespace refid="namespacefaiss_1_1ivflib">faiss::ivflib</innernamespace>
     <innernamespace refid="namespacefaiss_1_1lsq">faiss::lsq</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1nn">faiss::nn</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nndescent">faiss::nndescent</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
@@ -598,6 +604,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="185" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="185" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::distance_compute_min_k_reservoir</definition>
+        <argsstring></argsstring>
+        <name>distance_compute_min_k_reservoir</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="615" column="22" bodyfile="faiss/utils/distances.h" bodystart="286" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="615" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" prot="public" static="no" mutable="no">
         <type>FAISS_API bool</type>
@@ -933,19 +952,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="282" column="22" declfile="faiss/utils/distances.h" declline="282" declcolumn="22"/>
-      </memberdef>
-      <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" mutable="no">
-        <type>FAISS_API int</type>
-        <definition>FAISS_API int faiss::distance_compute_min_k_reservoir</definition>
-        <argsstring></argsstring>
-        <name>distance_compute_min_k_reservoir</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/distances.h" line="286" column="22" declfile="faiss/utils/distances.h" declline="286" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" prot="public" static="no" mutable="no">
         <type>FAISS_API size_t</type>
@@ -2577,6 +2583,108 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/residual_quantizer_encode_steps.h" line="69" column="6" declfile="faiss/impl/residual_quantizer_encode_steps.h" declline="69" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae298d588e823c407f64b5a0aab4c9148" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Consumer</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Types</declname>
+            <defname>Types</defname>
+          </param>
+        </templateparamlist>
+        <type>Consumer::T</type>
+        <definition>Consumer::T faiss::dispatch_knn_ResultHandler</definition>
+        <argsstring>(size_t nx, float *vals, int64_t *ids, size_t k, MetricType metric, const IDSelector *sel, Consumer &amp;consumer, Types... args)</argsstring>
+        <name>dispatch_knn_ResultHandler</name>
+        <param>
+          <type>size_t</type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>Consumer &amp;</type>
+          <declname>consumer</declname>
+        </param>
+        <param>
+          <type>Types...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="618" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="618" bodyend="655"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Consumer</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Types</declname>
+            <defname>Types</defname>
+          </param>
+        </templateparamlist>
+        <type>Consumer::T</type>
+        <definition>Consumer::T faiss::dispatch_range_ResultHandler</definition>
+        <argsstring>(RangeSearchResult *res, float radius, MetricType metric, const IDSelector *sel, Consumer &amp;consumer, Types... args)</argsstring>
+        <name>dispatch_range_ResultHandler</name>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>Consumer &amp;</type>
+          <declname>consumer</declname>
+        </param>
+        <param>
+          <type>Types...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="658" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="658" bodyend="685"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -5297,6 +5405,49 @@
         </inbodydescription>
         <location file="faiss/utils/distances_fused/distances_fused.h" line="31" column="6" declfile="faiss/utils/distances_fused/distances_fused.h" declline="31" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af795517ea8f2270421341a93eb528c52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Consumer</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Types</declname>
+            <defname>Types</defname>
+          </param>
+        </templateparamlist>
+        <type>Consumer::T</type>
+        <definition>Consumer::T faiss::dispatch_VectorDistance</definition>
+        <argsstring>(size_t d, MetricType metric, float metric_arg, Consumer &amp;consumer, Types... args)</argsstring>
+        <name>dispatch_VectorDistance</name>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>metric_arg</declname>
+        </param>
+        <param>
+          <type>Consumer &amp;</type>
+          <declname>consumer</declname>
+        </param>
+        <param>
+          <type>Types...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances-inl.h" line="173" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="173" bodyend="198"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pairwise_extra_distances</definition>
@@ -6737,7 +6888,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="62" column="22" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="62" bodyend="79"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="62" column="22" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="62" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d40aec5723474516de576263cc03048" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -9843,6 +9994,8 @@
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>.</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</para>
+<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <ref refid="structfaiss_1_1QINCo" kindref="compound">QINCo</ref></para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </para>
     </detaileddescription>

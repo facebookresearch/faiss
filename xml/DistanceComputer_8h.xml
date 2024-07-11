@@ -57,12 +57,12 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="23">
+      <node id="25">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -100,8 +100,16 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="23">
+        <label>faiss/IndexNeuralNetCodec.h</label>
+        <link refid="IndexNeuralNetCodec_8h_source"/>
       </node>
       <node id="12">
         <label>faiss/IndexFlat.h</label>
@@ -115,18 +123,18 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="24">
         <label>faiss/IndexPQ.h</label>
         <link refid="IndexPQ_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -145,6 +153,10 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
+      <node id="21">
+        <label>faiss/IndexLattice.h</label>
+        <link refid="IndexLattice_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/impl/DistanceComputer.h</label>
         <link refid="DistanceComputer_8h"/>
@@ -153,7 +165,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="28">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
       </node>
@@ -167,7 +179,7 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="24">
+      <node id="26">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
       </node>
@@ -191,7 +203,7 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="27">
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
       </node>
@@ -237,7 +249,7 @@
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
       </node>

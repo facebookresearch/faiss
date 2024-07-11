@@ -23,7 +23,6 @@
     <includedby refid="IndexIVFIndependentQuantizer_8h" local="no">faiss/IndexIVFIndependentQuantizer.h</includedby>
     <includedby refid="IndexIVFPQ_8h" local="no">faiss/IndexIVFPQ.h</includedby>
     <includedby refid="IndexIVFSpectralHash_8h" local="no">faiss/IndexIVFSpectralHash.h</includedby>
-    <includedby refid="IndexLattice_8h" local="no">faiss/IndexLattice.h</includedby>
     <includedby refid="IndexScalarQuantizer_8h" local="no">faiss/IndexScalarQuantizer.h</includedby>
     <includedby refid="IndexShardsIVF_8h" local="no">faiss/IndexShardsIVF.h</includedby>
     <includedby refid="OnDiskInvertedLists_8h" local="no">faiss/invlists/OnDiskInvertedLists.h</includedby>
@@ -212,7 +211,7 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="20">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
@@ -241,16 +240,14 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
       </node>
-      <node id="20">
+      <node id="19">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
@@ -262,17 +259,13 @@
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="23">
+      <node id="22">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="22">
+      <node id="21">
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
-      </node>
-      <node id="18">
-        <label>faiss/IndexLattice.h</label>
-        <link refid="IndexLattice_8h_source"/>
       </node>
       <node id="11">
         <label>faiss/IndexIVFFastScan.h</label>
@@ -294,14 +287,14 @@
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
       </node>
-      <node id="19">
+      <node id="18">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -336,7 +329,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="24">
+      <node id="23">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
       </node>

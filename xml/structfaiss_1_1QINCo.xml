@@ -1,0 +1,253 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1QINCo" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::QINCo</compoundname>
+    <basecompoundref refid="structfaiss_1_1NeuralNetCodec" prot="public" virt="non-virtual">faiss::NeuralNetCodec</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::QINCo::K</definition>
+        <argsstring></argsstring>
+        <name>K</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="130" column="9" bodyfile="faiss/utils/NeuralNet.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1QINCo_1a2432eb6c40747240ea37778cf4d38c7c" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::QINCo::L</definition>
+        <argsstring></argsstring>
+        <name>L</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="130" column="11" bodyfile="faiss/utils/NeuralNet.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1QINCo_1ae9bedf580e3089d5e91100ee4fe0fbcc" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::QINCo::h</definition>
+        <argsstring></argsstring>
+        <name>h</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="130" column="13" bodyfile="faiss/utils/NeuralNet.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1QINCo_1a15bedf15ba72986145e9a1e48e8050fe" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1nn_1_1Embedding" kindref="compound">nn::Embedding</ref></type>
+        <definition>nn::Embedding faiss::QINCo::codebook0</definition>
+        <argsstring></argsstring>
+        <name>codebook0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="131" column="19" bodyfile="faiss/utils/NeuralNet.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1QINCo_1ac69a89d773eff0bda446b57cd24164c8" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1QINCoStep" kindref="compound">QINCoStep</ref> &gt;</type>
+        <definition>std::vector&lt;QINCoStep&gt; faiss::QINCo::steps</definition>
+        <argsstring></argsstring>
+        <name>steps</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="132" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NeuralNetCodec_1afee6748e6adca5e03949b947e3bf75b4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NeuralNetCodec::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="119" column="9" bodyfile="faiss/utils/NeuralNet.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NeuralNetCodec_1afdcfae65efb97a08f453a1a150d53e89" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NeuralNetCodec::M</definition>
+        <argsstring></argsstring>
+        <name>M</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="119" column="11" bodyfile="faiss/utils/NeuralNet.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1a4542c765bad0b90648edde4767d72580" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::QINCo::QINCo</definition>
+        <argsstring>(int d, int K, int L, int M, int h)</argsstring>
+        <name>QINCo</name>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>L</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>h</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="134" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1ac05f3622421687c90e028134870fa348" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1QINCoStep" kindref="compound">QINCoStep</ref> &amp;</type>
+        <definition>QINCoStep&amp; faiss::QINCo::get_step</definition>
+        <argsstring>(int i)</argsstring>
+        <name>get_step</name>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="136" column="15" bodyfile="faiss/utils/NeuralNet.h" bodystart="136" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1ab414b534e68ed382680065fe5eaf05bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref></type>
+        <definition>nn::Tensor2D faiss::QINCo::decode</definition>
+        <argsstring>(const nn::Int32Tensor2D &amp;codes) const override</argsstring>
+        <name>decode</name>
+        <reimplements refid="structfaiss_1_1NeuralNetCodec_1ae0be71b6ac01d05c8fbe866ee70b1db9">decode</reimplements>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref> &amp;</type>
+          <declname>codes</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="140" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1aeb42b4ded979a726a15fad6ef8725042" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref></type>
+        <definition>nn::Int32Tensor2D faiss::QINCo::encode</definition>
+        <argsstring>(const nn::Tensor2D &amp;x) const override</argsstring>
+        <name>encode</name>
+        <reimplements refid="structfaiss_1_1NeuralNetCodec_1aa88836faaca529db2783938ce16e3208">encode</reimplements>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="142" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1a309aeeda34fc54c41061603d89fbc10b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::QINCo::~QINCo</definition>
+        <argsstring>()</argsstring>
+        <name>~QINCo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="144" column="13" bodyfile="faiss/utils/NeuralNet.h" bodystart="144" bodyend="144"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::QINCo</label>
+        <link refid="structfaiss_1_1QINCo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::NeuralNetCodec</label>
+        <link refid="structfaiss_1_1NeuralNetCodec"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::QINCo</label>
+        <link refid="structfaiss_1_1QINCo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>codebook0</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::nn::Embedding</label>
+        <link refid="structfaiss_1_1nn_1_1Embedding"/>
+      </node>
+      <node id="2">
+        <label>faiss::NeuralNetCodec</label>
+        <link refid="structfaiss_1_1NeuralNetCodec"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/utils/NeuralNet.h" line="129" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="129" bodyend="145"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1QINCo_1a15bedf15ba72986145e9a1e48e8050fe" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>codebook0</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1afee6748e6adca5e03949b947e3bf75b4" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>d</name></member>
+      <member refid="structfaiss_1_1QINCo_1ab414b534e68ed382680065fe5eaf05bb" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1QINCo_1aeb42b4ded979a726a15fad6ef8725042" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1QINCo_1ac05f3622421687c90e028134870fa348" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>get_step</name></member>
+      <member refid="structfaiss_1_1QINCo_1ae9bedf580e3089d5e91100ee4fe0fbcc" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>h</name></member>
+      <member refid="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>K</name></member>
+      <member refid="structfaiss_1_1QINCo_1a2432eb6c40747240ea37778cf4d38c7c" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>L</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1afdcfae65efb97a08f453a1a150d53e89" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>M</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1a58f10cbc99e5b1a00e46b49413e43b8a" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>NeuralNetCodec</name></member>
+      <member refid="structfaiss_1_1QINCo_1a4542c765bad0b90648edde4767d72580" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>QINCo</name></member>
+      <member refid="structfaiss_1_1QINCo_1ac69a89d773eff0bda446b57cd24164c8" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>steps</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1a36ab5714e1db84b4cdd3a625102299ba" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~NeuralNetCodec</name></member>
+      <member refid="structfaiss_1_1QINCo_1a309aeeda34fc54c41061603d89fbc10b" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~QINCo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

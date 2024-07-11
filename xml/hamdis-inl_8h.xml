@@ -162,7 +162,7 @@
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
 <codeline lineno="56"><highlight class="comment"><sp/>*<sp/>Dispatching<sp/>function<sp/>that<sp/>takes<sp/>a<sp/>code<sp/>size<sp/>and<sp/>a<sp/>consumer<sp/>object</highlight></codeline>
 <codeline lineno="57"><highlight class="comment"><sp/>*<sp/>the<sp/>consumer<sp/>object<sp/>should<sp/>contain<sp/>a<sp/>retun<sp/>type<sp/>t<sp/>and<sp/>a<sp/>operation<sp/>template</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>function<sp/>f()<sp/>that<sp/>to<sp/>be<sp/>called<sp/>to<sp/>perform<sp/>the<sp/>operation.</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>function<sp/>f()<sp/>that<sp/>must<sp/>be<sp/>called<sp/>to<sp/>perform<sp/>the<sp/>operation.</highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/>**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Consumer,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal">...<sp/>Types&gt;</highlight></codeline>
@@ -183,11 +183,12 @@
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>consumer.template<sp/>f&lt;HammingComputerDefault&gt;(args...);</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="79"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>DISPATCH_HC</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/utils/hamming_distance/hamdis-inl.h"/>
   </compounddef>

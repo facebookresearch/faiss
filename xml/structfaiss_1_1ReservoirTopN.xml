@@ -3,7 +3,7 @@
   <compounddef id="structfaiss_1_1ReservoirTopN" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ReservoirTopN</compoundname>
     <basecompoundref refid="structfaiss_1_1ResultHandler" prot="public" virt="non-virtual">faiss::ResultHandler&lt; C &gt;</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::ReservoirBlockResultHandler&lt; C &gt;::SingleResultHandler</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
     <includes refid="ResultHandler_8h" local="no">ResultHandler.h</includes>
     <templateparamlist>
       <param>
@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="282" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="282" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="301" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="301" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1ReservoirTopN_1a1177b732a5a783a10e2bcf9a575558ca" prot="public" static="no">
         <type>typename C::TI</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="283" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="283" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="302" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="302" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="286" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="286" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="305" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="305" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1abfb7e50f5e60feb25eee99e1abe3698a" prot="public" static="no" mutable="no">
         <type>TI *</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="287" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="287" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="306" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="306" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1a251b7eaf31199ab93b7d421d9451a76c" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="289" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="289" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="308" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="308" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1ab1c6355a289cd09717c65372f2864ad1" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="290" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="290" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="309" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="309" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1af1917705e1d452fde77df5433e197c47" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -102,21 +102,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="291" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="291" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="310" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="310" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643" prot="public" static="no" mutable="no">
         <type>C::T</type>
         <definition>C::T faiss::ResultHandler&lt; C &gt;::threshold</definition>
         <argsstring></argsstring>
         <name>threshold</name>
-        <initializer>= 0</initializer>
+        <initializer>= C::neutral()</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="62" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="62" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="74" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="74" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -131,7 +131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="293" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="293" bodyend="293"/>
+        <location file="faiss/impl/ResultHandler.h" line="312" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="312" bodyend="312"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1acda43e03ac0b5da6b3eb46d115ec79d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -160,7 +160,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="295" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="295" bodyend="299"/>
+        <location file="faiss/impl/ResultHandler.h" line="314" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="314" bodyend="318"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
@@ -182,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="301" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="301" bodyend="313"/>
+        <location file="faiss/impl/ResultHandler.h" line="320" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="320" bodyend="332"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -203,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="315" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="315" bodyend="317"/>
+        <location file="faiss/impl/ResultHandler.h" line="334" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="334" bodyend="336"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a245c853afda40ce193a7f39944bb82c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -216,7 +216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="321" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="321" bodyend="326"/>
+        <location file="faiss/impl/ResultHandler.h" line="340" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="340" bodyend="345"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1ac2089937fa4314560faec451e42f471d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -229,7 +229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="328" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="328" bodyend="331"/>
+        <location file="faiss/impl/ResultHandler.h" line="347" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="347" bodyend="350"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a7a14b612f7b55a1034d9ff85568b1d68" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -250,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="333" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="333" bodyend="347"/>
+        <location file="faiss/impl/ResultHandler.h" line="352" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="352" bodyend="366"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -259,6 +259,12 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::ReservoirTopN&lt; C &gt;</label>
         <link refid="structfaiss_1_1ReservoirTopN"/>
@@ -268,12 +274,6 @@
       <node id="2">
         <label>faiss::ResultHandler&lt; C &gt;</label>
         <link refid="structfaiss_1_1ResultHandler"/>
-      </node>
-      <node id="3">
-        <label>faiss::ReservoirBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
-        <link refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
@@ -288,7 +288,7 @@
         <link refid="structfaiss_1_1ResultHandler"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="281" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="281" bodyend="348"/>
+    <location file="faiss/impl/ResultHandler.h" line="300" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="300" bodyend="367"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ReservoirTopN_1a2b64dda02a0af6485c6bf5cfd306f7df" prot="public" virt="non-virtual"><scope>faiss::ReservoirTopN</scope><name>add</name></member>
       <member refid="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8" prot="public" virt="virtual"><scope>faiss::ReservoirTopN</scope><name>add_result</name></member>

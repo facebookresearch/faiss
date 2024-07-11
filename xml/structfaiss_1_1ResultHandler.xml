@@ -2,10 +2,10 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ResultHandler" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::ResultHandler</compoundname>
-    <derivedcompoundref refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::HeapBlockResultHandler&lt; C &gt;::SingleResultHandler</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ReservoirTopN" prot="public" virt="non-virtual">faiss::ReservoirTopN&lt; C &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::Top1BlockResultHandler&lt; C &gt;::SingleResultHandler</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::Top1BlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
     <templateparamlist>
       <param>
         <type>class C</type>
@@ -17,14 +17,14 @@
         <definition>C::T faiss::ResultHandler&lt; C &gt;::threshold</definition>
         <argsstring></argsstring>
         <name>threshold</name>
-        <initializer>= 0</initializer>
+        <initializer>= C::neutral()</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="62" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="62" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="74" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="74" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -33,9 +33,9 @@
         <definition>virtual bool faiss::ResultHandler&lt; C &gt;::add_result</definition>
         <argsstring>(typename C::T dis, typename C::TI idx)=0</argsstring>
         <name>add_result</name>
-        <reimplementedby refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a10eaa9a99e97f7670d7b2b705f1f0287">add_result</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler_1a747160455723aae9d7f0ecf2f5d22e20">add_result</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a02e40e25a434ee3b01c86957ca20b260">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a8d918544348ba16d33943a92a53da093">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler_1ab98a91883800580623fecc8732c72c32">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1ab0afb28d5a67cca854c4f01b6d9746cd">add_result</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8">add_result</reimplementedby>
         <param>
           <type>typename C::T</type>
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="65" column="18"/>
+        <location file="faiss/impl/ResultHandler.h" line="77" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResultHandler_1afb7fe7e6ac1b2aa5d41a4d06c3cc58da" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="67" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="67" bodyend="67"/>
+        <location file="faiss/impl/ResultHandler.h" line="79" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="79" bodyend="79"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -72,10 +72,22 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="6">
-        <label>faiss::Top1BlockResultHandler&lt; C &gt;::SingleResultHandler</label>
+        <label>faiss::Top1BlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
         <link refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
@@ -89,25 +101,13 @@
         <link refid="structfaiss_1_1ResultHandler"/>
       </node>
       <node id="2">
-        <label>faiss::HeapBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
+        <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
         <link refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::RangeSearchBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
-        <link refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::ReservoirBlockResultHandler&lt; C &gt;::SingleResultHandler</label>
-        <link refid="structfaiss_1_1ReservoirBlockResultHandler_1_1SingleResultHandler"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
     </inheritancegraph>
-    <location file="faiss/impl/ResultHandler.h" line="60" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="60" bodyend="68"/>
+    <location file="faiss/impl/ResultHandler.h" line="72" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="72" bodyend="80"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ResultHandler_1a3cf97e0bcb27feb310bebd35407fc47b" prot="public" virt="pure-virtual"><scope>faiss::ResultHandler</scope><name>add_result</name></member>
       <member refid="structfaiss_1_1ResultHandler_1a94d1d229ac4781ece7ffa28240429643" prot="public" virt="non-virtual"><scope>faiss::ResultHandler</scope><name>threshold</name></member>

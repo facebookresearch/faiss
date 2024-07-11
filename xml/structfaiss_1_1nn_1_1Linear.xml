@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1nn_1_1Linear" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::nn::Linear</compoundname>
+    <includes refid="NeuralNet_8h" local="no">NeuralNet.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Linear_1a1b89904f1cacf3a90f7827df74525c93" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::nn::Linear::in_features</definition>
+        <argsstring></argsstring>
+        <name>in_features</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="50" column="12" bodyfile="faiss/utils/NeuralNet.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Linear_1ad8c4223f47748547696edd6728141224" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::nn::Linear::out_features</definition>
+        <argsstring></argsstring>
+        <name>out_features</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="50" column="24" bodyfile="faiss/utils/NeuralNet.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Linear_1a204ad8caab153bd6f1ca06e34dd66013" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::nn::Linear::weight</definition>
+        <argsstring></argsstring>
+        <name>weight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="51" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Linear_1acd4be433020399d46c7f6464cda5cde3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::nn::Linear::bias</definition>
+        <argsstring></argsstring>
+        <name>bias</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="52" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Linear_1a3b477a50edce990c0a567b629e6d0770" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nn::Linear::Linear</definition>
+        <argsstring>(size_t in_features, size_t out_features, bool bias=true)</argsstring>
+        <name>Linear</name>
+        <param>
+          <type>size_t</type>
+          <declname>in_features</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>out_features</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>bias</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="54" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Linear_1a45ff3a95c45683e6509c535ed19fb8fe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2D</ref></type>
+        <definition>Tensor2D faiss::nn::Linear::operator()</definition>
+        <argsstring>(const Tensor2D &amp;x) const</argsstring>
+        <name>operator()</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2D</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="56" column="14"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>minimal translation of <ref refid="structfaiss_1_1nn_1_1Linear" kindref="compound">nn.Linear</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/NeuralNet.h" line="49" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="49" bodyend="57"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1nn_1_1Linear_1acd4be433020399d46c7f6464cda5cde3" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>bias</name></member>
+      <member refid="structfaiss_1_1nn_1_1Linear_1a1b89904f1cacf3a90f7827df74525c93" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>in_features</name></member>
+      <member refid="structfaiss_1_1nn_1_1Linear_1a3b477a50edce990c0a567b629e6d0770" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>Linear</name></member>
+      <member refid="structfaiss_1_1nn_1_1Linear_1a45ff3a95c45683e6509c535ed19fb8fe" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1nn_1_1Linear_1ad8c4223f47748547696edd6728141224" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>out_features</name></member>
+      <member refid="structfaiss_1_1nn_1_1Linear_1a204ad8caab153bd6f1ca06e34dd66013" prot="public" virt="non-virtual"><scope>faiss::nn::Linear</scope><name>weight</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1nn_1_1Tensor2DTemplate" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::nn::Tensor2DTemplate</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a29281a69927dd6b140690dfbdbd87cfb" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::nn::Tensor2DTemplate&lt; T &gt;::shape[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>shape</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="24" column="12" bodyfile="faiss/utils/NeuralNet.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a7fe379fb1606acb25874ccd2962849aa" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt;T&gt; faiss::nn::Tensor2DTemplate&lt; T &gt;::v</definition>
+        <argsstring></argsstring>
+        <name>v</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="25" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a978b31bd74dcd9f49aa61e0cc0ebd66a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nn::Tensor2DTemplate&lt; T &gt;::Tensor2DTemplate</definition>
+        <argsstring>(size_t n0, size_t n1, const T *data=nullptr)</argsstring>
+        <name>Tensor2DTemplate</name>
+        <param>
+          <type>size_t</type>
+          <declname>n0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n1</declname>
+        </param>
+        <param>
+          <type>const T *</type>
+          <declname>data</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="27" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a99c1c7fece86c198b9d0ee9099a9bdf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2DTemplate</ref> &amp;</type>
+        <definition>Tensor2DTemplate&amp; faiss::nn::Tensor2DTemplate&lt; T &gt;::operator+=</definition>
+        <argsstring>(const Tensor2DTemplate &amp;)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2DTemplate</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="29" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1aa15131e677ab30193ec1d60d041f7325" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2DTemplate</ref></type>
+        <definition>Tensor2DTemplate faiss::nn::Tensor2DTemplate&lt; T &gt;::column</definition>
+        <argsstring>(size_t j) const</argsstring>
+        <name>column</name>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>get column #j as a 1-column Tensor2D </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="32" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a1b02660e29dae42bf294a970e36f6a58" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::nn::Tensor2DTemplate&lt; T &gt;::numel</definition>
+        <argsstring>() const</argsstring>
+        <name>numel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="34" column="12" bodyfile="faiss/utils/NeuralNet.h" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a910ec4d422b24d71e12f70a651367348" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T *</type>
+        <definition>T* faiss::nn::Tensor2DTemplate&lt; T &gt;::data</definition>
+        <argsstring>()</argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="37" column="7" bodyfile="faiss/utils/NeuralNet.h" bodystart="37" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Tensor2DTemplate_1a332646046ca503d5c348014ad587b06b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const T *</type>
+        <definition>const T* faiss::nn::Tensor2DTemplate&lt; T &gt;::data</definition>
+        <argsstring>() const</argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/NeuralNet.h" line="40" column="13" bodyfile="faiss/utils/NeuralNet.h" bodystart="40" bodyend="42"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/NeuralNet.h" line="23" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="23" bodyend="43"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1aa15131e677ab30193ec1d60d041f7325" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>column</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a910ec4d422b24d71e12f70a651367348" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>data</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a332646046ca503d5c348014ad587b06b" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>data</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a1b02660e29dae42bf294a970e36f6a58" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>numel</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a99c1c7fece86c198b9d0ee9099a9bdf6" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>operator+=</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a29281a69927dd6b140690dfbdbd87cfb" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>shape</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a978b31bd74dcd9f49aa61e0cc0ebd66a" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>Tensor2DTemplate</name></member>
+      <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a7fe379fb1606acb25874ccd2962849aa" prot="public" virt="non-virtual"><scope>faiss::nn::Tensor2DTemplate</scope><name>v</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

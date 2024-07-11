@@ -168,8 +168,6 @@
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
       </node>
       <node id="9">
         <label>faiss/impl/PolysemousTraining.h</label>
@@ -189,17 +187,13 @@
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="33">
+      <node id="32">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="32">
+      <node id="31">
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
-      </node>
-      <node id="30">
-        <label>faiss/IndexLattice.h</label>
-        <link refid="IndexLattice_8h_source"/>
       </node>
       <node id="26">
         <label>faiss/IndexIVFFastScan.h</label>
@@ -225,7 +219,7 @@
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
       </node>
-      <node id="31">
+      <node id="30">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="7" relation="include">
@@ -299,7 +293,7 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="33">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
       </node>

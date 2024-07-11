@@ -2,17 +2,23 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HeapBlockResultHandler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapBlockResultHandler</compoundname>
-    <basecompoundref refid="structfaiss_1_1BlockResultHandler" prot="public" virt="non-virtual">faiss::BlockResultHandler&lt; C &gt;</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1BlockResultHandler" prot="public" virt="non-virtual">faiss::BlockResultHandler&lt; C, false &gt;</basecompoundref>
     <innerclass refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" prot="public">faiss::HeapBlockResultHandler::SingleResultHandler</innerclass>
     <templateparamlist>
       <param>
         <type>class C</type>
       </param>
+      <param>
+        <type>bool</type>
+        <declname>use_sel</declname>
+        <defname>use_sel</defname>
+        <defval>false</defval>
+      </param>
     </templateparamlist>
       <sectiondef kind="public-type">
-      <memberdef kind="typedef" id="structfaiss_1_1HeapBlockResultHandler_1af8b11fb68537bde200828599634d08d1" prot="public" static="no">
+      <memberdef kind="typedef" id="structfaiss_1_1HeapBlockResultHandler_1a9cdcd8ef0585a3c52a479ca83a0048b2" prot="public" static="no">
         <type>typename C::T</type>
-        <definition>using faiss::HeapBlockResultHandler&lt; C &gt;::T =  typename C::T</definition>
+        <definition>using faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::T =  typename C::T</definition>
         <argsstring></argsstring>
         <name>T</name>
         <briefdescription>
@@ -21,11 +27,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="170" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="170" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="188" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="188" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="structfaiss_1_1HeapBlockResultHandler_1ae695cddf833e63820cf7eb7ec42234c6" prot="public" static="no">
+      <memberdef kind="typedef" id="structfaiss_1_1HeapBlockResultHandler_1a594209b72bbddd8e8097ccadca111d9d" prot="public" static="no">
         <type>typename C::TI</type>
-        <definition>using faiss::HeapBlockResultHandler&lt; C &gt;::TI =  typename C::TI</definition>
+        <definition>using faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::TI =  typename C::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
         <briefdescription>
@@ -34,13 +40,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="171" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="171" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="189" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="189" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1a7969638797c4e63441975c1c5910e509" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1a81012d963d5563f2098a79cf24614bbc" prot="public" static="no" mutable="no">
         <type>T *</type>
-        <definition>T* faiss::HeapBlockResultHandler&lt; C &gt;::heap_dis_tab</definition>
+        <definition>T* faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::heap_dis_tab</definition>
         <argsstring></argsstring>
         <name>heap_dis_tab</name>
         <briefdescription>
@@ -49,11 +55,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="175" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="175" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="193" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="193" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1aa2408ca108beef834224ad8dd9ae0e24" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1a5706e7739deb3e187d39a85a46e227c1" prot="public" static="no" mutable="no">
         <type>TI *</type>
-        <definition>TI* faiss::HeapBlockResultHandler&lt; C &gt;::heap_ids_tab</definition>
+        <definition>TI* faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::heap_ids_tab</definition>
         <argsstring></argsstring>
         <name>heap_ids_tab</name>
         <briefdescription>
@@ -62,11 +68,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="176" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="176" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="194" column="8" bodyfile="faiss/impl/ResultHandler.h" bodystart="194" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1a2a2eeb30aacb254a87808d9370f49af1" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1a72548e4b4776f5b5348a28f2b8978263" prot="public" static="no" mutable="no">
         <type>int64_t</type>
-        <definition>int64_t faiss::HeapBlockResultHandler&lt; C &gt;::k</definition>
+        <definition>int64_t faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::k</definition>
         <argsstring></argsstring>
         <name>k</name>
         <briefdescription>
@@ -75,11 +81,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="178" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="178" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="196" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="196" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::nq</definition>
+        <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
         <briefdescription>
@@ -88,42 +94,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="36" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="40" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="40" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::BlockResultHandler&lt; C, use_sel &gt;::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="41" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::i0</definition>
+        <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::i0</definition>
         <argsstring></argsstring>
         <name>i0</name>
-        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="41" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="49" column="12" bodyfile="faiss/impl/ResultHandler.h" bodystart="49" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::BlockResultHandler&lt; C &gt;::i1</definition>
+        <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::i1</definition>
         <argsstring></argsstring>
         <name>i1</name>
-        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="41" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/impl/ResultHandler.h" line="49" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1ad70d49bca1c8644129033fb8bb0f57a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1a85d6dc4b6db3b3eb2f08d932b1f0fdac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>faiss::HeapBlockResultHandler&lt; C &gt;::HeapBlockResultHandler</definition>
-        <argsstring>(size_t nq, T *heap_dis_tab, TI *heap_ids_tab, size_t k)</argsstring>
+        <definition>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::HeapBlockResultHandler</definition>
+        <argsstring>(size_t nq, T *heap_dis_tab, TI *heap_ids_tab, size_t k, const IDSelector *sel=nullptr)</argsstring>
         <name>HeapBlockResultHandler</name>
         <param>
           <type>size_t</type>
@@ -141,20 +158,25 @@
           <type>size_t</type>
           <declname>k</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="180" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="180" bodyend="188"/>
+        <location file="faiss/impl/ResultHandler.h" line="198" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="198" bodyend="207"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1a307dd9861bdec90f18ebb17c1710b5e9" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1a10e5ce933348f3f2b9d03500b6acf4bd" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::HeapBlockResultHandler&lt; C &gt;::begin_multiple</definition>
+        <definition>void faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::begin_multiple</definition>
         <argsstring>(size_t i0_2, size_t i1_2) final</argsstring>
         <name>begin_multiple</name>
-        <reimplements refid="structfaiss_1_1BlockResultHandler_1aa6ad904b25be73e7f32c2f8daa2a5a68">begin_multiple</reimplements>
+        <reimplements refid="structfaiss_1_1BlockResultHandler_1a6fdfd97929109943fec48be75f50f61b">begin_multiple</reimplements>
         <param>
           <type>size_t</type>
           <declname>i0_2</declname>
@@ -170,11 +192,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="235" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="235" bodyend="241"/>
+        <location file="faiss/impl/ResultHandler.h" line="254" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="254" bodyend="260"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1a7b11f133242b3e42ef792857be5f9cf3" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1adca82a0eaf5e3043019bbabfd495ba62" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::HeapBlockResultHandler&lt; C &gt;::add_results</definition>
+        <definition>void faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::add_results</definition>
         <argsstring>(size_t j0, size_t j1, const T *dis_tab) final</argsstring>
         <name>add_results</name>
         <param>
@@ -196,14 +218,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="244" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="244" bodyend="259"/>
+        <location file="faiss/impl/ResultHandler.h" line="263" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="263" bodyend="278"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1a6b71c55d3af4094c0cac586aaa89b187" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1ac195e5664ea4c2e286ee60f88ac42d89" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::HeapBlockResultHandler&lt; C &gt;::end_multiple</definition>
+        <definition>void faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::end_multiple</definition>
         <argsstring>() final</argsstring>
         <name>end_multiple</name>
-        <reimplements refid="structfaiss_1_1BlockResultHandler_1a4cd78859a05a11f3f63ba3290e5276de">end_multiple</reimplements>
+        <reimplements refid="structfaiss_1_1BlockResultHandler_1a6839e4eb6d26a994dac3d248918f9f97">end_multiple</reimplements>
         <briefdescription>
 <para>series of results for queries i0..i1 is done </para>
         </briefdescription>
@@ -211,11 +233,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="262" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="262" bodyend="267"/>
+        <location file="faiss/impl/ResultHandler.h" line="281" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="281" bodyend="286"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::BlockResultHandler&lt; C &gt;::add_results</definition>
+        <definition>virtual void faiss::BlockResultHandler&lt; C, use_sel &gt;::add_results</definition>
         <argsstring>(size_t, size_t, const typename C::T *)</argsstring>
         <name>add_results</name>
         <param>
@@ -233,7 +255,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="50" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="50" bodyend="50"/>
+        <location file="faiss/impl/ResultHandler.h" line="58" column="18" bodyfile="faiss/impl/ResultHandler.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::BlockResultHandler&lt; C, use_sel &gt;::is_in_selection</definition>
+        <argsstring>(idx_t i) const</argsstring>
+        <name>is_in_selection</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="65" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="65" bodyend="67"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -241,46 +280,48 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C, false &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+      </node>
       <node id="1">
-        <label>faiss::HeapBlockResultHandler&lt; C &gt;</label>
+        <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1HeapBlockResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::BlockResultHandler&lt; C &gt;</label>
-        <link refid="structfaiss_1_1BlockResultHandler"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C, false &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+      </node>
       <node id="1">
-        <label>faiss::HeapBlockResultHandler&lt; C &gt;</label>
+        <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1HeapBlockResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss::BlockResultHandler&lt; C &gt;</label>
-        <link refid="structfaiss_1_1BlockResultHandler"/>
-      </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="169" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="169" bodyend="268"/>
+    <location file="faiss/impl/ResultHandler.h" line="187" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="187" bodyend="287"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1a7b11f133242b3e42ef792857be5f9cf3" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a7225b14fcbc11aad0c339f6eb987dc91" prot="public" virt="virtual" ambiguityscope="faiss::BlockResultHandler::"><scope>faiss::HeapBlockResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1a307dd9861bdec90f18ebb17c1710b5e9" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>begin_multiple</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1afd2cc09fc87d365e63fc4e153bd9c45f" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>BlockResultHandler</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1a6b71c55d3af4094c0cac586aaa89b187" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>end_multiple</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1a7969638797c4e63441975c1c5910e509" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>heap_dis_tab</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1aa2408ca108beef834224ad8dd9ae0e24" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>heap_ids_tab</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1ad70d49bca1c8644129033fb8bb0f57a9" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>HeapBlockResultHandler</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a895b93cda42a9a723732e41f8edc2f72" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>i0</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a7086488e78bc680e6a97306aa168585f" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>i1</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1a2a2eeb30aacb254a87808d9370f49af1" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>k</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1ac1aa59ddd328c0df1004892542ccb980" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>nq</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1af8b11fb68537bde200828599634d08d1" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>T</name></member>
-      <member refid="structfaiss_1_1HeapBlockResultHandler_1ae695cddf833e63820cf7eb7ec42234c6" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>TI</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a0b3f386e400cb4814980f11eb6050e0e" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>~BlockResultHandler</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1adca82a0eaf5e3043019bbabfd495ba62" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" virt="virtual" ambiguityscope="BlockResultHandler&lt; C, false &gt;::"><scope>faiss::HeapBlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a10e5ce933348f3f2b9d03500b6acf4bd" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>begin_multiple</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a3c3be3087bc96f44dc6297771e24d18c" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>BlockResultHandler</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1ac195e5664ea4c2e286ee60f88ac42d89" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>end_multiple</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a81012d963d5563f2098a79cf24614bbc" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>heap_dis_tab</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a5706e7739deb3e187d39a85a46e227c1" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>heap_ids_tab</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a85d6dc4b6db3b3eb2f08d932b1f0fdac" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>HeapBlockResultHandler</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>i1</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>is_in_selection</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a72548e4b4776f5b5348a28f2b8978263" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>k</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>nq</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a9cdcd8ef0585a3c52a479ca83a0048b2" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>T</name></member>
+      <member refid="structfaiss_1_1HeapBlockResultHandler_1a594209b72bbddd8e8097ccadca111d9d" prot="public" virt="non-virtual"><scope>faiss::HeapBlockResultHandler</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a529bd74715fa0fe77834725a70e92427" prot="public" virt="virtual"><scope>faiss::HeapBlockResultHandler</scope><name>~BlockResultHandler</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
