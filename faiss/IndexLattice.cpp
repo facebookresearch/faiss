@@ -15,7 +15,7 @@
 namespace faiss {
 
 IndexLattice::IndexLattice(idx_t d, int nsq, int scale_nbit, int r2)
-        : Index(d),
+        : IndexFlatCodes(0, d, METRIC_L2),
           nsq(nsq),
           dsq(d / nsq),
           zn_sphere_codec(dsq, r2),
@@ -112,24 +112,6 @@ void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
             xi += dsq;
         }
     }
-}
-
-void IndexLattice::add(idx_t, const float*) {
-    FAISS_THROW_MSG("not implemented");
-}
-
-void IndexLattice::search(
-        idx_t,
-        const float*,
-        idx_t,
-        float*,
-        idx_t*,
-        const SearchParameters*) const {
-    FAISS_THROW_MSG("not implemented");
-}
-
-void IndexLattice::reset() {
-    FAISS_THROW_MSG("not implemented");
 }
 
 } // namespace faiss
