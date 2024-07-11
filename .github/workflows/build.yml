@@ -47,6 +47,8 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - uses: ./.github/actions/build_conda
+        with:
+          opt_level: sve
   # linux-x86_64-cmake:
   #   name: Linux x86_64 (cmake)
   #   runs-on: faiss-aws-r6g.large
