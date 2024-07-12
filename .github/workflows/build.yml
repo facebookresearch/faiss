@@ -44,8 +44,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
-        with:
-          opt_level: sve
+        # with:
+        #   opt_level: sve
   # linux-x86_64-cmake:
   #   name: Linux x86_64 (cmake)
   #   runs-on: faiss-aws-r6g.large
