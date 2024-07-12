@@ -80,7 +80,6 @@ runs:
         conda install -y -q python=3.11 cmake>=3.24.0 make swig numpy scipy pytest
         conda install -y -q pytorch -c pytorch
         conda install conda-forge::openblas
-        conda install conda-forge::lapackpp
         conda install conda-forge::gxx_linux-aarch64
         conda install conda-forge::sysroot_linux-aarch64
     - name: Build all targets on Linux aarch64
@@ -135,3 +134,4 @@ runs:
       with:
         name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
         path: test-results
+      options: --user root
