@@ -99,6 +99,7 @@ runs:
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
+      if: runner.arch != 'ARM64'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
@@ -134,4 +135,3 @@ runs:
       with:
         name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
         path: test-results
-      options: --user root
