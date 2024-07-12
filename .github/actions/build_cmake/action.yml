@@ -81,7 +81,7 @@ runs:
         sudo apt-get update --allow-insecure-repositories
 
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
-            "rocm-dev${ROCM_VERSION}" rocm-utils "rocm-libs${ROCM_VERSION}" rccl rocprofiler-dev roctracer-dev amd-smi-lib
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" rccl rocprofiler-dev roctracer-dev amd-smi-lib
 
         if [[ $(ver $ROCM_VERSION) -ge $(ver 6.1) ]]; then
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated rocm-llvm-dev
