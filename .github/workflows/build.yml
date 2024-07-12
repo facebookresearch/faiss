@@ -41,8 +41,7 @@ jobs:
     name: Linux arm64 (cmake)
     runs-on: faiss-aws-r8g.large
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Print Hello World
         run: |
             echo "Hello world!"
       # - uses: ./.github/actions/build_cmake
