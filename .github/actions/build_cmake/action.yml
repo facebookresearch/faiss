@@ -68,45 +68,14 @@ runs:
         mkdir --parents --mode=0755 /etc/apt/keyrings
         wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
 
-        # Add amdgpu repository
-        UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
-        # TODO: change to "deb [arch=amd64] ..." on AMD runners
-        echo "deb [arch=amd64] https://repo.radeon.com/amdgpu/${ROCM_VERSION}/ubuntu ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/amdgpu.list
-
         # Add rocm repository
         wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
         rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
-        # TODO: change to "deb [arch=amd64] ..." on AMD runners
         echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
         sudo apt-get update --allow-insecure-repositories
 
-        df -H
-        sudo apt-get autoclean
-        sudo apt-get clean
-        df -H
-
-        DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
+        sudo apt-get install -y --allow-unauthenticated \
             "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}"
-
-        if [[ $(ver $ROCM_VERSION) -ge $(ver 6.1) ]]; then
-            DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated rocm-llvm-dev
-        fi
-
-        # precompiled miopen kernels added in ROCm 3.5, renamed in ROCm 5.5
-        # search for all unversioned packages
-        # if search fails it will abort this script; use true to avoid case where search fails
-        MIOPENHIPGFX=$(apt-cache search --names-only miopen-hip-gfx | awk '{print $1}' | grep -F -v . || true)
-        if [[ "x${MIOPENHIPGFX}" = x ]]; then
-          echo "miopen-hip-gfx package not available" && exit 1
-        else
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated ${MIOPENHIPGFX}
-        fi
-
-        # ROCm 6.0 had a regression where journal_mode was enabled on the kdb files resulting in permission errors at runtime
-        for kdb in /opt/rocm/share/miopen/db/*.kdb
-        do
-            sqlite3 $kdb "PRAGMA journal_mode=off; PRAGMA VACUUM;"
-        done
 
         # Fake presence of MI200-class accelerators
         echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
