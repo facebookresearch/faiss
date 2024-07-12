@@ -89,7 +89,10 @@ runs:
     - name: Hipify
       if: inputs.rocm == 'ON'
       shell: bash
-      run: ./gpu/hipify.sh
+      run: |
+        pwd
+        ls
+        # ./gpu/hipify.sh
     - name: Build all targets
       shell: bash
       run: |
