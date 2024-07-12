@@ -38,15 +38,12 @@ jobs:
               exit 1
             fi
   linux-arm64-conda:
-    name: Linux arm64 (conda)
-    runs-on: faiss-aws-r6g.large
+    name: Linux arm64 (cmake)
+    runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - uses: ./.github/actions/build_cmake
         with:
           opt_level: sve
   # linux-x86_64-cmake:
