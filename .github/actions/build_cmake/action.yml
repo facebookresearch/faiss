@@ -64,6 +64,10 @@ runs:
         # Pin ROCm version for testing
         export ROCM_VERSION="6.1"
 
+        # Download, prepare, and install the package signing key
+        mkdir --parents --mode=0755 /etc/apt/keyrings
+        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+
         # Add amdgpu repository
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
         # TODO: change to "deb [arch=amd64] ..." on AMD runners
@@ -77,7 +81,7 @@ runs:
         sudo apt-get update --allow-insecure-repositories
 
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
-            rocm-dev rocm-utils rocm-libs rccl rocprofiler-dev roctracer-dev amd-smi-lib
+            "rocm-dev${ROCM_VERSION}" rocm-utils "rocm-libs${ROCM_VERSION}" rccl rocprofiler-dev roctracer-dev amd-smi-lib
 
         if [[ $(ver $ROCM_VERSION) -ge $(ver 6.1) ]]; then
             DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated rocm-llvm-dev
