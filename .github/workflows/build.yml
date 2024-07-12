@@ -38,7 +38,7 @@ jobs:
               exit 1
             fi
   linux-arm64-conda:
-    name: Linux arm64 (cmake) 2
+    name: Linux arm64 (cmake)
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
