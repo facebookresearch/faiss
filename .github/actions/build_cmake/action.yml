@@ -86,6 +86,10 @@ runs:
         # Cleanup
         sudo apt-get autoclean && sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    - name: Hipify
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: ./gpu/hipify.sh
     - name: Build all targets
       shell: bash
       run: |
