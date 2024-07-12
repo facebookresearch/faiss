@@ -81,11 +81,11 @@ runs:
         sudo apt-get update --allow-insecure-repositories
 
         df -H
-        du -sh /*
+        sudo du -sh /*
         sudo apt-get autoclean
         sudo apt-get clean
         df -H
-        du -sh /*
+        sudo du -sh /*
 
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
             "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" rccl rocprofiler-dev roctracer-dev amd-smi-lib
