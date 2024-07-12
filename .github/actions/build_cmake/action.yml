@@ -80,6 +80,10 @@ runs:
         echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
         sudo apt-get update --allow-insecure-repositories
 
+        df -H
+        sudo apt-get autoclean
+        df -H
+
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
             "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" rccl rocprofiler-dev roctracer-dev amd-smi-lib
 
