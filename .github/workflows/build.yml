@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Print Hello World
         run: |
-            echo "Hello world!"
+            echo "Hello world2!"
       # - name: Checkout
       #   uses: actions/checkout@v4
       # - uses: ./.github/actions/build_cmake
