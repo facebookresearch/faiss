@@ -19,6 +19,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Hipify
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        pwd
+        ls
+        # ./gpu/hipify.sh
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -86,13 +93,6 @@ runs:
         # Cleanup
         sudo apt-get autoclean && sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-    - name: Hipify
-      if: inputs.rocm == 'ON'
-      shell: bash
-      run: |
-        pwd
-        ls
-        # ./gpu/hipify.sh
     - name: Build all targets
       shell: bash
       run: |
