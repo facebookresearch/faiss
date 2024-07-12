@@ -82,6 +82,7 @@ runs:
 
         df -H
         sudo apt-get autoclean
+        sudo apt-get clean
         df -H
 
         DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --allow-unauthenticated \
