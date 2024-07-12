@@ -61,6 +61,9 @@ runs:
         sudo apt-get update
         sudo apt-get install -y kmod wget
 
+        # Get UBUNTU version name
+        UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
+
         # Pin ROCm version for testing
         export ROCM_VERSION="6.1"
 
