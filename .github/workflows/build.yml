@@ -44,6 +44,9 @@ jobs:
       - name: Print Hello World
         # run: |
         #     echo "Hello world!"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: sve
