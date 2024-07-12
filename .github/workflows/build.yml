@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/build_cmake
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
-    runs-on: ubuntu-latest
+    runs-on: 4-core-ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
