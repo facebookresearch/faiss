@@ -81,6 +81,8 @@ runs:
         conda install -y -q pytorch -c pytorch
         conda install conda-forge::openblas
         conda install conda-forge::lapackpp
+        conda install conda-forge::gxx_linux-aarch64
+        conda install conda-forge::sysroot_linux-aarch64
     - name: Build all targets on Linux aarch64
       if: runner.arch == 'ARM64'
       shell: bash
