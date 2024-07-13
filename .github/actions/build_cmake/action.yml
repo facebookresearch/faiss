@@ -91,6 +91,8 @@ runs:
         echo "Looking for HIP cmake files"
         find /opt/rocm -name "FindHIP.cmake"
         echo "Done looking for HIP cmake files"
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Hipify
       if: inputs.rocm == 'ON'
       shell: bash
