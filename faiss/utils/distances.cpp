@@ -157,7 +157,7 @@ void exhaustive_inner_product_seq(
                     continue;
                 }
                 float ip = fvec_inner_product(x_i, y_j, d);
-                if (use_sel && !sel->is_member(j, 1.f - ip)) {
+                if (use_sel && !sel->is_member(j, ip)) {
                     continue;
                 }
                 resi.add_result(ip, j);

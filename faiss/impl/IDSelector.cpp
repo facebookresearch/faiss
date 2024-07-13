@@ -17,7 +17,8 @@ namespace faiss {
 IDSelectorRange::IDSelectorRange(idx_t imin, idx_t imax, bool assume_sorted)
         : imin(imin), imax(imax), assume_sorted(assume_sorted) {}
 
-bool IDSelectorRange::is_member(idx_t id) const {
+bool IDSelectorRange::is_member(idx_t id, std::optional<float> d) const {
+    (void)d;
     return id >= imin && id < imax;
 }
 
@@ -69,7 +70,8 @@ void IDSelectorRange::find_sorted_ids_bounds(
 
 IDSelectorArray::IDSelectorArray(size_t n, const idx_t* ids) : n(n), ids(ids) {}
 
-bool IDSelectorArray::is_member(idx_t id) const {
+bool IDSelectorArray::is_member(idx_t id, std::optional<float> d) const {
+    (void)d;
     for (idx_t i = 0; i < n; i++) {
         if (ids[i] == id)
             return true;
@@ -99,7 +101,8 @@ IDSelectorBatch::IDSelectorBatch(size_t n, const idx_t* indices) {
     }
 }
 
-bool IDSelectorBatch::is_member(idx_t i) const {
+bool IDSelectorBatch::is_member(idx_t i, std::optional<float> d) const {
+    (void)d;
     long im = i & mask;
     if (!(bloom[im >> 3] & (1 << (im & 7)))) {
         return 0;
@@ -114,7 +117,8 @@ bool IDSelectorBatch::is_member(idx_t i) const {
 IDSelectorBitmap::IDSelectorBitmap(size_t n, const uint8_t* bitmap)
         : n(n), bitmap(bitmap) {}
 
-bool IDSelectorBitmap::is_member(idx_t ii) const {
+bool IDSelectorBitmap::is_member(idx_t ii, std::optional<float> d) const {
+    (void)d;
     uint64_t i = ii;
     if ((i >> 3) >= n) {
         return false;

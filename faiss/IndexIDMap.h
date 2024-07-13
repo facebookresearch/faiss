@@ -119,11 +119,10 @@ struct IDSelectorTranslated : IDSelector {
     IDSelectorTranslated(IndexIDMap& index_idmap, const IDSelector* sel)
             : id_map(index_idmap.id_map), sel(sel) {}
 
-    bool is_member(idx_t id) const override {
-        return sel->is_member(id_map[id]);
-    }
-    bool is_member(idx_t id, float distance) const override {
-        return sel->is_member(id_map[id], distance);
+    bool is_member(
+        idx_t id,
+        std::optional<float> d = std::nullopt) const override {
+        return sel->is_member(id_map[id], d);
     }
 };
 
