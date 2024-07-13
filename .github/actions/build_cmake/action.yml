@@ -86,6 +86,11 @@ runs:
         # Cleanup
         sudo apt-get autoclean && sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+        # Check if we can find HIP cmake files
+        echo "Looking for HIP cmake files"
+        find /opt/rocm -name "FindHIP.cmake"
+        echo "Done looking for HIP cmake files"
     - name: Hipify
       if: inputs.rocm == 'ON'
       shell: bash
