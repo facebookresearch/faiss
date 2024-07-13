@@ -22,10 +22,10 @@ namespace faiss {
 struct IDSelector {
     virtual bool is_member(idx_t id) const = 0;
     virtual bool is_member(idx_t id, std::optional<float> d) const {
-        if (!d.has_value()) {
-            return is_member(id);
-        }
-        return true;
+        (void)d;
+        // default implementation ignores the distance for backward 
+        // compatibility
+        return is_member(id);
     }
     virtual ~IDSelector() {}
 };
