@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <optional>
 
 namespace faiss {
 
@@ -62,8 +63,8 @@ struct BlockResultHandler {
 
     virtual ~BlockResultHandler() {}
 
-    bool is_in_selection(idx_t i) const {
-        return !use_sel || sel->is_member(i);
+    bool is_in_selection(idx_t i, std::optional<float> d = std::nullopt) const {
+        return !use_sel || sel->is_member(i, d);
     }
 };
 

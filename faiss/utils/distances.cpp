@@ -157,7 +157,7 @@ void exhaustive_inner_product_seq(
                     continue;
                 }
                 float ip = fvec_inner_product(x_i, y_j, d);
-                if (use_sel && !sel->is_member(j, ip)) {
+                if (!res.is_in_selection(j, ip)) {
                     continue;
                 }
                 resi.add_result(ip, j);
@@ -192,7 +192,7 @@ void exhaustive_L2sqr_seq(
                     continue;
                 }
                 float disij = fvec_L2sqr(x_i, y_j, d);
-                if (use_sel && !sel->is_member(j, disij)) {
+                if (!res.is_in_selection(j, disij)) {
                     continue;
                 }
                 resi.add_result(disij, j);

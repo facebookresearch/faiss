@@ -20,9 +20,13 @@ namespace faiss {
 
 /** Encapsulates a set of ids to handle. */
 struct IDSelector {
-    virtual bool is_member(
-        idx_t id, 
-        std::optional<float> d = std::nullopt) const = 0;
+    virtual bool is_member(idx_t id) const = 0;
+    virtual bool is_member(idx_t id, std::optional<float> d) const {
+        if (!d.has_value()) {
+            return is_member(id);
+        }
+        return true;
+    }
     virtual ~IDSelector() {}
 };
 
@@ -36,7 +40,10 @@ struct IDSelectorRange : IDSelector {
 
     IDSelectorRange(idx_t imin, idx_t imax, bool assume_sorted = false);
 
-    bool is_member(idx_t id, std::optional<float> d = std::nullopt) const final;
+    bool is_member(idx_t id) const final {
+        return is_member(id, std::nullopt);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final;
 
     /// for sorted ids, find the range of list indices where the valid ids are
     /// stored
@@ -65,7 +72,10 @@ struct IDSelectorArray : IDSelector {
      *            IDSelectorArray's lifetime
      */
     IDSelectorArray(size_t n, const idx_t* ids);
-    bool is_member(idx_t id, std::optional<float> d = std::nullopt) const final;
+    bool is_member(idx_t id) const final {
+        return is_member(id, std::nullopt);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final;
     ~IDSelectorArray() override {}
 };
 
@@ -95,7 +105,10 @@ struct IDSelectorBatch : IDSelector {
      *            construction
      */
     IDSelectorBatch(size_t n, const idx_t* indices);
-    bool is_member(idx_t id, std::optional<float> d = std::nullopt) const final;
+    bool is_member(idx_t id) const final {
+        return is_member(id, std::nullopt);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final;
     ~IDSelectorBatch() override {}
 };
 
@@ -112,7 +125,10 @@ struct IDSelectorBitmap : IDSelector {
      *               (i%8) of bitmap[floor(i / 8)] is 1.
      */
     IDSelectorBitmap(size_t n, const uint8_t* bitmap);
-    bool is_member(idx_t id, std::optional<float> d = std::nullopt) const final;
+    bool is_member(idx_t id) const final {
+        return is_member(id, std::nullopt);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final;
     ~IDSelectorBitmap() override {}
 };
 
@@ -120,20 +136,22 @@ struct IDSelectorBitmap : IDSelector {
 struct IDSelectorNot : IDSelector {
     const IDSelector* sel;
     IDSelectorNot(const IDSelector* sel) : sel(sel) {}
-    bool is_member(
-        idx_t id,
-        std::optional<float> d = std::nullopt) const final {
-        (void)d;
+    bool is_member(idx_t id) const final {
         return !sel->is_member(id);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final {
+        return !sel->is_member(id, d);
     }
     virtual ~IDSelectorNot() {}
 };
 
 /// selects all entries (useful for benchmarking)
 struct IDSelectorAll : IDSelector {
-    bool is_member(
-        idx_t id,
-        std::optional<float> d = std::nullopt) const final {
+    bool is_member(idx_t id) const final {
+        (void)id;
+        return true;
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final {
         (void)id;
         (void)d;
         return true;
@@ -148,9 +166,10 @@ struct IDSelectorAnd : IDSelector {
     const IDSelector* rhs;
     IDSelectorAnd(const IDSelector* lhs, const IDSelector* rhs)
             : lhs(lhs), rhs(rhs) {}
-    bool is_member(
-        idx_t id,
-        std::optional<float> d = std::nullopt) const final {
+    bool is_member(idx_t id) const final {
+        return lhs->is_member(id) && rhs->is_member(id);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final {
         return lhs->is_member(id, d) && rhs->is_member(id, d);
     }
     virtual ~IDSelectorAnd() {}
@@ -163,9 +182,10 @@ struct IDSelectorOr : IDSelector {
     const IDSelector* rhs;
     IDSelectorOr(const IDSelector* lhs, const IDSelector* rhs)
             : lhs(lhs), rhs(rhs) {}
-    bool is_member(
-        idx_t id,
-        std::optional<float> d = std::nullopt) const final {
+    bool is_member(idx_t id) const final {
+        return lhs->is_member(id) || rhs->is_member(id);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final {
         return lhs->is_member(id, d) || rhs->is_member(id, d);
     }
     virtual ~IDSelectorOr() {}
@@ -178,9 +198,10 @@ struct IDSelectorXOr : IDSelector {
     const IDSelector* rhs;
     IDSelectorXOr(const IDSelector* lhs, const IDSelector* rhs)
             : lhs(lhs), rhs(rhs) {}
-    bool is_member(
-        idx_t id,
-        std::optional<float> d = std::nullopt) const final {
+    bool is_member(idx_t id) const final {
+        return lhs->is_member(id) ^ rhs->is_member(id);
+    }
+    bool is_member(idx_t id, std::optional<float> d) const final {
         return lhs->is_member(id, d) ^ rhs->is_member(id, d);
     }
     virtual ~IDSelectorXOr() {}
