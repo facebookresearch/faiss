@@ -5,21 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
-#ifndef FAISS_INDEX_LATTICE_H
-#define FAISS_INDEX_LATTICE_H
+#pragma once
 
 #include <vector>
 
-#include <faiss/IndexIVF.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/lattice_Zn.h>
 
 namespace faiss {
 
 /** Index that encodes a vector with a series of Zn lattice quantizers
  */
-struct IndexLattice : Index {
+struct IndexLattice : IndexFlatCodes {
     /// number of sub-vectors
     int nsq;
     /// dimension of sub-vectors
@@ -30,8 +27,6 @@ struct IndexLattice : Index {
 
     /// nb bits used to encode the scale, per subvector
     int scale_nbit, lattice_nbit;
-    /// total, in bytes
-    size_t code_size;
 
     /// mins and maxes of the vector norms, per subquantizer
     std::vector<float> trained;
@@ -46,20 +41,6 @@ struct IndexLattice : Index {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
-
-    /// not implemented
-    void add(idx_t n, const float* x) override;
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
-
-    void reset() override;
 };
 
 } // namespace faiss
-
-#endif
