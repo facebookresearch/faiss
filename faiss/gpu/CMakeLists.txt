@@ -320,7 +320,7 @@ endforeach()
 
 if (USE_ROCM)
 message("CMAKE_MODULE_PATH: = ${CMAKE_MODULE_PATH}")
-set(CMAKE_MODULE_PATH "/opt/rocm/hip/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "/opt/rocm-6.1.0/lib/cmake/hip/" ${CMAKE_MODULE_PATH})
 message("CMAKE_MODULE_PATH: = ${CMAKE_MODULE_PATH}")
 find_package(HIP REQUIRED)
 find_package(hipBLAS REQUIRED)
