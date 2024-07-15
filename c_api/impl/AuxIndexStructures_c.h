@@ -53,6 +53,10 @@ FAISS_DECLARE_CLASS(IDSelector)
 FAISS_DECLARE_DESTRUCTOR(IDSelector)
 
 int faiss_IDSelector_is_member(const FaissIDSelector* sel, idx_t id);
+int faiss_IDSelector_is_member_with_dist(
+        const FaissIDSelector* sel,
+        idx_t id,
+        float dist);
 
 /** remove ids between [imni, imax) */
 FAISS_DECLARE_CLASS(IDSelectorRange)

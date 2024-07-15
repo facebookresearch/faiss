@@ -130,6 +130,25 @@ bool PyCallbackIDSelector::is_member(faiss::idx_t id) const {
     return b;
 }
 
+bool PyCallbackIDSelector::is_member(
+        faiss::idx_t id,
+        std::optional<float> d) const {
+    if (!d.has_value()) {
+        return is_member(id);
+    }
+
+    FAISS_THROW_IF_NOT((id >> 32) == 0);
+    PyThreadLock gil;
+    PyObject* result = PyObject_CallFunction(
+        callback, "(nf)", int(id), d.value());
+    if (result == nullptr) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    bool b = PyObject_IsTrue(result);
+    Py_DECREF(result);
+    return b;
+}
+
 PyCallbackIDSelector::~PyCallbackIDSelector() {
     PyThreadLock gil;
     Py_DECREF(callback);

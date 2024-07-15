@@ -88,6 +88,13 @@ int faiss_IDSelector_is_member(const FaissIDSelector* sel, idx_t id) {
     return reinterpret_cast<const IDSelector*>(sel)->is_member(id);
 }
 
+int faiss_IDSelector_is_member_with_dist(
+        const FaissIDSelector* sel,
+        idx_t id,
+        float dist) {
+    return reinterpret_cast<const IDSelector*>(sel)->is_member(id, dist);
+}
+
 DEFINE_DESTRUCTOR(IDSelectorRange)
 
 DEFINE_GETTER(IDSelectorRange, idx_t, imin)
