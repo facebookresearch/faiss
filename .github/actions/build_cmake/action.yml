@@ -115,6 +115,7 @@ runs:
               .
         make -k -C build -j$(nproc)
     - name: Setup tmate session
+      if: always()
       uses: mxschmitt/action-tmate@v3
     - name: C++ tests
       shell: bash
