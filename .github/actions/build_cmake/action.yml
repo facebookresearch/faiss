@@ -114,6 +114,8 @@ runs:
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
         make -k -C build -j$(nproc)
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: C++ tests
       shell: bash
       run: |
