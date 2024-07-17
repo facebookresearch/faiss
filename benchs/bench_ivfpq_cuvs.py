@@ -42,12 +42,12 @@ def aa(*args, **kwargs):
 
 group = parser.add_argument_group('benchmarking options')
 aa('--cuvs_only', default=False, action='store_true',
-   help='whether to only produce CUVS enabled benchmarks')
+   help='whether to only produce cuVS enabled benchmarks')
 
 group = parser.add_argument_group('IVF options')
-aa('--bits_per_code', default=8, type=int, help='bits per code. Note that < 8 is only supported when RAFT is enabled')
+aa('--bits_per_code', default=8, type=int, help='bits per code. Note that < 8 is only supported when cuVS is enabled')
 aa('--pq_len', default=2, type=int, help='number of vector elements represented by one PQ code')
-aa('--use_precomputed', default=True, type=bool, help='use precomputed codes (not with CUVS enabled)')
+aa('--use_precomputed', default=True, type=bool, help='use precomputed codes (not with cuVS enabled)')
 
 group = parser.add_argument_group('searching')
 aa('--k', default=10, type=int, help='nb of nearest neighbors')
@@ -94,12 +94,12 @@ print("GPU Train Benchmarks")
 print("=" * 40)
 cuvs_gpu_train_time = bench_train_milliseconds(index, xt, True)
 if args.cuvs_only:
-    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, CUVS enabled GPU train time: %.3f milliseconds" % (
+    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, cuVS enabled GPU train time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_train, cuvs_gpu_train_time))
 else:
     classical_gpu_train_time = bench_train_milliseconds(
         index, xt, False)
-    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, classical GPU train time: %.3f milliseconds, CUVS enabled GPU train time: %.3f milliseconds" % (
+    print("Method: IVFPQ, Operation: TRAIN, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_train, classical_gpu_train_time, cuvs_gpu_train_time))
 
 
@@ -120,12 +120,12 @@ print("=" * 40)
 index.train(xt)
 cuvs_gpu_add_time = bench_add_milliseconds(index, xb, True)
 if args.cuvs_only:
-    print("Method: IVFPQ, Operation: ADD, dim: %d, n_centroids %d numSubQuantizers %d, bitsPerCode %d, numAdd %d, CUVS enabled GPU add time: %.3f milliseconds" % (
+    print("Method: IVFPQ, Operation: ADD, dim: %d, n_centroids %d numSubQuantizers %d, bitsPerCode %d, numAdd %d, cuVS enabled GPU add time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_rows, cuvs_gpu_add_time))
 else:
     classical_gpu_add_time = bench_add_milliseconds(
         index, xb, False)
-    print("Method: IVFFPQ, Operation: ADD, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numAdd %d, classical GPU add time: %.3f milliseconds, CUVS enabled GPU add time: %.3f milliseconds" % (
+    print("Method: IVFFPQ, Operation: ADD, dim: %d, n_centroids %d, numSubQuantizers %d, bitsPerCode %d, numAdd %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds" % (
         n_cols, nlist, M, args.bits_per_code, n_rows, classical_gpu_add_time, cuvs_gpu_add_time))
 
 
@@ -159,10 +159,10 @@ if args.bm_search:
         cuvs_gpu_search_time = bench_search_milliseconds(
             index, xb, queryVecs, args.nprobe, args.k, True)
         if args.cuvs_only:
-            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, CUVS enabled GPU search time: %.3f milliseconds" % (
+            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, cuVS enabled GPU search time: %.3f milliseconds" % (
                 n_cols, nlist, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, cuvs_gpu_search_time))
         else:
             classical_gpu_search_time = bench_search_milliseconds(
                 index, xb, queryVecs, args.nprobe, args.k, False)
-            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, CUVS enabled GPU search time: %.3f milliseconds" % (
+            print("Method: IVFPQ, Operation: SEARCH, dim: %d, n_centroids: %d, numSubQuantizers %d, bitsPerCode %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, cuVS enabled GPU search time: %.3f milliseconds" % (
                 n_cols, nlist, M, args.bits_per_code, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, cuvs_gpu_search_time))

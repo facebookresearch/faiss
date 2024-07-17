@@ -44,7 +44,7 @@ aa('--bm_add', default=False, action='store_true',
 aa('--bm_search', default=True,
    help='whether to benchmark search operation on GPU index')
 aa('--cuvs_only', default=False, action='store_true',
-   help='whether to only produce CUVS enabled benchmarks')
+   help='whether to only produce cuVS enabled benchmarks')
 
 
 group = parser.add_argument_group('IVF options')
@@ -91,12 +91,12 @@ if args.bm_train:
             cuvs_gpu_train_time = bench_train_milliseconds(
                 index, trainVecs, True)
             if args.cuvs_only:
-                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, CUVS enabled GPU train time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, cuVS enabled GPU train time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, n_rows, cuvs_gpu_train_time))
             else:
                 classical_gpu_train_time = bench_train_milliseconds(
                     index, trainVecs, False)
-                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, classical GPU train time: %.3f milliseconds, CUVS enabled GPU train time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, n_rows, classical_gpu_train_time, cuvs_gpu_train_time))
 
 
@@ -126,12 +126,12 @@ if args.bm_add:
             addVecs = rs.rand(n_rows, n_cols).astype('float32')
             cuvs_gpu_add_time = bench_add_milliseconds(index, addVecs, True)
             if args.cuvs_only:
-                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, CUVS enabled GPU add time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, cuVS enabled GPU add time: %.3f milliseconds" % (
                     n_train, n_rows, n_cols, args.n_centroids, cuvs_gpu_add_time))
             else:
                 classical_gpu_add_time = bench_add_milliseconds(
                     index, addVecs, False)
-                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, classical GPU add time: %.3f milliseconds, CUVS enabled GPU add time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds" % (
                     n_train, n_rows, n_cols, args.n_centroids, classical_gpu_add_time, cuvs_gpu_add_time))
 
 
@@ -165,16 +165,16 @@ if args.bm_search:
             cuvs_gpu_search_time = bench_search_milliseconds(
                 index, addVecs, queryVecs, args.nprobe, args.k, True)
             if args.cuvs_only:
-                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, CUVS enabled GPU search time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, cuVS enabled GPU search time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, cuvs_gpu_search_time))
             else:
                 classical_gpu_search_time = bench_search_milliseconds(
                     index, addVecs, queryVecs, args.nprobe, args.k, False)
-                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, CUVS enabled GPU search time: %.3f milliseconds" % (
+                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, cuVS enabled GPU search time: %.3f milliseconds" % (
                     n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, cuvs_gpu_search_time))
 
     print("=" * 40)
-    print("Large CUVS Enabled Benchmarks")
+    print("Large cuVS Enabled Benchmarks")
     print("=" * 40)
     # Avoid classical GPU Benchmarks for large datasets because of OOM for more than 500000 queries and/or large dims as well as for large k
     queryset_sizes = [100000, 500000, 1000000]
@@ -189,5 +189,5 @@ if args.bm_search:
             queryVecs = rs.rand(n_rows, n_cols).astype('float32')
             cuvs_gpu_search_time = bench_search_milliseconds(
                 index, addVecs, queryVecs, args.nprobe, args.k, True)
-            print("Method: IVFFlat, Operation: SEARCH, numTrain: %d, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, CUVS enabled GPU search time: %.3f milliseconds" % (
+            print("Method: IVFFlat, Operation: SEARCH, numTrain: %d, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, cuVS enabled GPU search time: %.3f milliseconds" % (
                 n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, cuvs_gpu_search_time))
