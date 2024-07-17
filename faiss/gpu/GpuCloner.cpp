@@ -148,7 +148,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.useFloat16 = true;
         FAISS_THROW_IF_NOT_MSG(
-                !use_cuvs, "this type of index is not implemented for CUVS");
+                !use_cuvs, "this type of index is not implemented for cuVS");
         GpuIndexFlat* gif = new GpuIndexFlat(
                 provider, index->d, index->metric_type, config);
         // transfer data by blocks
@@ -185,7 +185,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
         FAISS_THROW_IF_NOT_MSG(
-                !use_cuvs, "this type of index is not implemented for CUVS");
+                !use_cuvs, "this type of index is not implemented for cuVS");
 
         GpuIndexIVFScalarQuantizer* res = new GpuIndexIVFScalarQuantizer(
                 provider,

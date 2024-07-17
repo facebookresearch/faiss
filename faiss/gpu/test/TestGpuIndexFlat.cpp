@@ -344,7 +344,7 @@ TEST(TestGpuIndexFlat, CopyFrom) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, CopyFrom) {
+TEST(TestCuvsGpuIndexFlat, CopyFrom) {
     testCopyFrom(true);
 }
 #endif
@@ -395,7 +395,7 @@ TEST(TestGpuIndexFlat, CopyTo) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, CopyTo) {
+TEST(TestCuvsGpuIndexFlat, CopyTo) {
     testCopyTo(true);
 }
 #endif
@@ -453,7 +453,7 @@ TEST(TestGpuIndexFlat, UnifiedMemory) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, UnifiedMemory) {
+TEST(TestCuvsGpuIndexFlat, UnifiedMemory) {
     testUnifiedMemory(true);
 }
 #endif
@@ -514,7 +514,7 @@ TEST(TestGpuIndexFlat, LargeIndex) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, LargeIndex) {
+TEST(TestCuvsGpuIndexFlat, LargeIndex) {
     testLargeIndex(true);
 }
 #endif
@@ -567,7 +567,7 @@ TEST(TestGpuIndexFlat, Residual) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, Residual) {
+TEST(TestCuvsGpuIndexFlat, Residual) {
     testResidual(true);
 }
 #endif
@@ -658,7 +658,7 @@ TEST(TestGpuIndexFlat, Reconstruct) {
     testReconstruct(false);
 }
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, Reconstruct) {
+TEST(TestCuvsGpuIndexFlat, Reconstruct) {
     testReconstruct(true);
 }
 #endif
@@ -755,7 +755,7 @@ TEST(TestGpuIndexFlat, SearchAndReconstruct) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestRaftGpuIndexFlat, SearchAndReconstruct) {
+TEST(TestCuvsGpuIndexFlat, SearchAndReconstruct) {
     testSearchAndReconstruct(true);
 }
 #endif

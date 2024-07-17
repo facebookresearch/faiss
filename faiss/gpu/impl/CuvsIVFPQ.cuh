@@ -93,15 +93,16 @@ class CuvsIVFPQ : public IVFPQ {
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
-    /// Update our Raft index with this quantizer instance; may be a CPU
+    /// Update our cuVS index with this quantizer instance; may be a CPU
     /// or GPU quantizer
     void updateQuantizer(Index* quantizer) override;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    /// Replace the Raft index
-    void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>* idx);
+    /// Replace the cuVS index
+//     void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>* idx);
+    void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
@@ -133,7 +134,7 @@ class CuvsIVFPQ : public IVFPQ {
     /// Returns the encoding size for a PQ-encoded IVF list
     size_t getGpuListEncodingSize_(idx_t listId);
 
-    /// Copy the PQ centroids to the Raft index. The data is already in the
+    /// Copy the PQ centroids to the cuVS index. The data is already in the
     /// preferred format with the transpose performed by the IVFPQ class helper.
     void setPQCentroids_();
 
@@ -141,7 +142,7 @@ class CuvsIVFPQ : public IVFPQ {
     /// Used when the RAFT index was updated externally.
     void setBasePQCentroids_();
 
-    /// CUVS IVF-PQ index
+    /// cuVS IVF-PQ index
     std::shared_ptr<cuvs::neighbors::ivf_pq::index<idx_t>> cuvs_index{nullptr};
 };
 

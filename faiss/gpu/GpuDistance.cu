@@ -32,7 +32,6 @@
 #include <optional>
 
 #if defined USE_NVIDIA_RAPIDS
-#include <raft/neighbors/brute_force.cuh>
 #include <cuvs/neighbors/brute_force.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdspan.hpp>
@@ -42,6 +41,7 @@
 #include <raft/core/operators.hpp>
 #include <raft/core/temporary_device_buffer.hpp>
 #include <raft/linalg/unary_op.cuh>
+#include <raft/neighbors/brute_force.cuh>
 #endif
 
 namespace faiss {
@@ -238,7 +238,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             "be the same (F32 or F16");
 
 #if defined USE_NVIDIA_RAPIDS
-    // Note: For now, RAFT bfknn requires queries and vectors to be same layout
+    // Note: For now, cuVS bfknn requires queries and vectors to be same layout
     if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor) {
         cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);
 
@@ -299,7 +299,8 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         raft::vector_extent<int64_t>(num_queries));
                 norms_view = norms->view();
             }
-            cuvs::neighbors::brute_force::index idx(
+
+            cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
             cuvs::neighbors::brute_force::search(
                     handle,
@@ -326,21 +327,32 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     const_cast<float*>(
                             reinterpret_cast<const float*>(args.queries)),
                     raft::matrix_extent<int64_t>(num_queries, dims));
-
-            std::vector<raft::device_matrix_view<
+            
+            std::optional<raft::temporary_device_buffer<
                     const float,
-                    int64_t,
-                    raft::col_major>>
-                    index_vec = {index.view()};
+                    raft::vector_extent<int64_t>>>
+                    norms;
+            std::optional<raft::device_vector_view<const float, int64_t>>
+                    norms_view;
+            if (args.vectorNorms) {
+                norms = raft::make_readonly_temporary_device_buffer<
+                        const float,
+                        int64_t>(
+                        handle,
+                        args.vectorNorms,
+                        raft::vector_extent<int64_t>(num_queries));
+                norms_view = norms->view();
+            }
 
-            raft::neighbors::brute_force::knn(
+            cuvs::neighbors::brute_force::index<float> idx(
+                    handle, index.view(), norms_view, distance, metric_arg);
+            cuvs::neighbors::brute_force::search(
                     handle,
-                    index_vec,
+                    idx,
                     search.view(),
                     inds.view(),
                     dists.view(),
-                    raft::distance::DistanceType::L2Expanded,
-                    metric_arg);
+                    std::nullopt);
         }
 
         if (args.metric == MetricType::METRIC_Lp) {

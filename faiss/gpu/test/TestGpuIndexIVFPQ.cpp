@@ -35,7 +35,7 @@ void pickEncoding(int& codes, int& dim) {
     }
 }
 
-void pickRaftEncoding(int& codes, int& dim, int bitsPerCode) {
+void pickCuvsEncoding(int& codes, int& dim, int bitsPerCode) {
     // Above 32 doesn't work with no precomputed codes
     std::vector<int> dimSizes{4, 8, 10, 12, 16, 20, 24, 28, 32};
 
@@ -669,7 +669,7 @@ TEST(TestGpuIndexIVFPQ, AddNaN) {
 }
 
 #if defined USE_NVIDIA_RAPIDS
-TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
+TEST(TestGpuIndexIVFPQ, Query_L2_Cuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
@@ -677,12 +677,12 @@ TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
         opt.interleavedLayout = true;
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+        pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
         queryTest(opt, faiss::MetricType::METRIC_L2);
     }
 }
 
-TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
+TEST(TestGpuIndexIVFPQ, Query_IP_Cuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
@@ -690,13 +690,13 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
         opt.interleavedLayout = true;
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+        pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
         queryTest(opt, faiss::MetricType::METRIC_INNER_PRODUCT);
     }
 }
 
 // Large batch sizes (>= 65536) should also work
-TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
+TEST(TestGpuIndexIVFPQ, LargeBatch_Cuvs) {
     Options opt;
 
     // override for large sizes
@@ -713,18 +713,18 @@ TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
     queryTest(opt, faiss::MetricType::METRIC_L2);
 }
 
-TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {
+TEST(TestGpuIndexIVFPQ, CopyFrom_Cuvs) {
     Options opt;
     opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+    pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
     copyFromTest(opt);
 }
 
-TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
+TEST(TestGpuIndexIVFPQ, Add_L2_Cuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.useCuvs = true;
@@ -732,12 +732,12 @@ TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+        pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
         addTest(opt, faiss::METRIC_L2);
     }
 }
 
-TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
+TEST(TestGpuIndexIVFPQ, Add_IP_Cuvs) {
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
         opt.useCuvs = true;
@@ -745,41 +745,41 @@ TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
         opt.bitsPerCode = faiss::gpu::randVal(4, 8);
         opt.usePrecomputed = false;
         opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+        pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
         addTest(opt, faiss::METRIC_INNER_PRODUCT);
     }
 }
 
-TEST(TestGpuIndexIVFPQ, QueryNaN_Raft) {
+TEST(TestGpuIndexIVFPQ, QueryNaN_Cuvs) {
     Options opt;
     opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+    pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
     queryNaNTest(opt);
 }
 
-TEST(TestGpuIndexIVFPQ, AddNaN_Raft) {
+TEST(TestGpuIndexIVFPQ, AddNaN_Cuvs) {
     Options opt;
     opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+    pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
     addNaNTest(opt);
 }
 
-TEST(TestGpuIndexIVFPQ, CopyTo_Raft) {
+TEST(TestGpuIndexIVFPQ, CopyTo_Cuvs) {
     Options opt;
     opt.useCuvs = true;
     opt.interleavedLayout = true;
     opt.bitsPerCode = faiss::gpu::randVal(4, 8);
     opt.usePrecomputed = false;
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
+    pickCuvsEncoding(opt.codes, opt.dim, opt.bitsPerCode);
     copyToTest(opt);
 }
 #endif

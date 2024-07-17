@@ -85,7 +85,7 @@ class CuvsIVFFlat : public IVFFlat {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
 
-    /// Clear out the Raft index
+    /// Clear out the cuVS index
     void reset() override;
 
     /// For debugging purposes, return the list length of a particular
@@ -99,15 +99,15 @@ class CuvsIVFFlat : public IVFFlat {
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
-    /// Update our Raft index with this quantizer instance; may be a CPU
+    /// Update our cuVS index with this quantizer instance; may be a CPU
     /// or GPU quantizer
     void updateQuantizer(Index* quantizer) override;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    /// Replace the CUVS index
-    void setCuvsIndex(cuvs::neighbors::ivf_flat::index<float, idx_t>* idx);
+    /// Replace the cuVS index
+    void setCuvsIndex(cuvs::neighbors::ivf_flat::index<float, idx_t>&& idx);
 
    private:
     /// Adds a set of codes and indices to a list, with the representation

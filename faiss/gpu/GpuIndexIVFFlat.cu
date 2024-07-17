@@ -102,7 +102,7 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 
     if (should_use_cuvs(config_)) {
         FAISS_THROW_MSG(
-                "Pre-allocation of IVF lists is not supported with CUVS enabled.");
+                "Pre-allocation of IVF lists is not supported with cuVS enabled.");
     }
 
     reserveMemoryVecs_ = numVecs;
@@ -214,11 +214,11 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     if (this->is_trained) {
         FAISS_ASSERT(index_);
         if (should_use_cuvs(config_)) {
-            // copy the IVF centroids to the CUVS index
+            // copy the IVF centroids to the cuVS index
             // in case it has been reset. This is because `reset` clears the
-            // CUVS index and its centroids.
+            // cuVS index and its centroids.
             // TODO: change this once the coarse quantizer is separated from
-            // CUVS index
+            // cuVS index
             updateQuantizer();
         };
         return;
@@ -272,7 +272,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         quantizer->add(nlist, cuvs_ivfflat_index.value().centers().data_handle());
         raft_handle.sync_stream();
 
-        cuvsIndex_->setCuvsIndex(&cuvs_ivfflat_index.value());
+        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfflat_index));
 #else
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
@@ -307,7 +307,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     if (reserveMemoryVecs_) {
         if (should_use_cuvs(config_)) {
             FAISS_THROW_MSG(
-                    "Pre-allocation of IVF lists is not supported with CUVS enabled.");
+                    "Pre-allocation of IVF lists is not supported with cuVS enabled.");
         } else
             index_->reserveMemory(reserveMemoryVecs_);
     }
@@ -334,7 +334,7 @@ void GpuIndexIVFFlat::setIndex_(
                 "RAFT only supports INDICES_64_BIT");
         if (!ivfFlatConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with CUVS enabled. This will be ignored.\n");
+                    "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
         }
         index_.reset(new CuvsIVFFlat(
                 resources,

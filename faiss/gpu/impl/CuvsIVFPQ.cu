@@ -75,7 +75,7 @@ CuvsIVFPQ::~CuvsIVFPQ() {}
 
 void CuvsIVFPQ::reserveMemory(idx_t numVecs) {
     fprintf(stderr,
-            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with CUVS enabled.\n");
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with cuVS enabled.\n");
 }
 
 void CuvsIVFPQ::reset() {
@@ -84,7 +84,7 @@ void CuvsIVFPQ::reset() {
 
 size_t CuvsIVFPQ::reclaimMemory() {
     fprintf(stderr,
-            "WARN: reclaimMemory is NOP. reclaimMemory is not supported with CUVS enabled.\n");
+            "WARN: reclaimMemory is NOP. reclaimMemory is not supported with cuVS enabled.\n");
     return 0;
 }
 
@@ -448,8 +448,9 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 }
 
-void CuvsIVFPQ::setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>* idx) {
-    cuvs_index.reset(idx);
+void CuvsIVFPQ::setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx) {
+    cuvs_index = std::make_shared<cuvs::neighbors::ivf_pq::index<idx_t>>(std::move(idx));
+    setBasePQCentroids_();
 }
 
 void CuvsIVFPQ::addEncodedVectorsToList_(

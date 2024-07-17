@@ -367,7 +367,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 #if defined USE_NVIDIA_RAPIDS
         if (pq.assign_index) {
             fprintf(stderr,
-                    "WARN: The Product Quantizer's assign_index will be ignored with CUVS enabled.\n");
+                    "WARN: The Product Quantizer's assign_index will be ignored with cuVS enabled.\n");
         }
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
@@ -433,7 +433,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                 cuvs_ivfpq_index.value().pq_centers().size(),
                 raft_handle.get_stream());
         raft_handle.sync_stream();
-        cuvsIndex_->setCuvsIndex(&cuvs_ivfpq_index.value());
+        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfpq_index));
 #else
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
@@ -541,7 +541,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
     if (should_use_cuvs(config_)) {
         if (!ivfpqConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with CUVS enabled. This will be ignored.\n");
+                    "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
         }
         FAISS_THROW_IF_NOT_FMT(
                 bitsPerCode_ >= 4 && bitsPerCode_ <= 8,

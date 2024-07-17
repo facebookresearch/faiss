@@ -24,15 +24,15 @@
 #include <cstdint>
 
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFFlat.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
-#include <faiss/gpu/StandardGpuResources.h>
 
-#include <cuvs/neighbors/ivf_flat.hpp>
 #include <cuvs/neighbors/common.hpp>
+#include <cuvs/neighbors/ivf_flat.hpp>
 #include <raft/linalg/map.cuh>
 #include <raft/linalg/norm.cuh>
 
@@ -74,7 +74,7 @@ CuvsIVFFlat::~CuvsIVFFlat() {}
 
 void CuvsIVFFlat::reserveMemory(idx_t numVecs) {
     fprintf(stderr,
-            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with CUVS enabled.\n");
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with cuVS enabled.\n");
 }
 
 void CuvsIVFFlat::reset() {
@@ -82,8 +82,10 @@ void CuvsIVFFlat::reset() {
 }
 
 void CuvsIVFFlat::setCuvsIndex(
-        cuvs::neighbors::ivf_flat::index<float, idx_t>* idx) {
-    cuvs_index.reset(idx);
+        cuvs::neighbors::ivf_flat::index<float, idx_t>&& idx) {
+    cuvs_index =
+            std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(
+                    std::move(idx));
 }
 
 void CuvsIVFFlat::search(
