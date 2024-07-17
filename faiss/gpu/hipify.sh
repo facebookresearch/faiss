@@ -210,3 +210,11 @@ do
         cp $src $dst
     fi
 done
+
+# symlink required libraries to help the linker
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libm.so /lib64/libm.so
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 /lib64/libm.so.6
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libmvec_nonshared.a /usr/lib64/libmvec_nonshared.a
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libmvec.so.1 /lib64/libmvec.so.1
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libc.so.6 /lib64/libc.so.6
+sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libc_nonshared.a /usr/lib64/libc_nonshared.a
