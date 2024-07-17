@@ -101,7 +101,7 @@ runs:
         eval "$(conda shell.bash hook)"
         conda activate
         cmake -B build \
-              -DBUILD_TESTING=OFF \
+              -DBUILD_TESTING=${{ inputs.rocm == 'ON' && 'OFF' || 'ON' }} \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
               -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
@@ -128,13 +128,13 @@ runs:
       run: |
         $CONDA/bin/python setup.py install
     - name: Python tests (CPU only)
-      if: inputs.gpu == 'OFF'
+      if: inputs.gpu == 'OFF' && inputs.rocm == 'OFF'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
-      if: inputs.gpu == 'ON'
+      if: inputs.gpu == 'ON' && inputs.rocm == 'OFF'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
@@ -143,12 +143,13 @@ runs:
         pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
     - name: Test avx2 loading
-      if: inputs.opt_level == 'avx2'
+      if: inputs.opt_level == 'avx2' && inputs.rocm == 'OFF'
       shell: bash
       run: |
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
+      if: inputs.rocm == 'OFF'
       uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}-${{ inputs.rocm }}
