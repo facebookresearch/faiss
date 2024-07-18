@@ -41,18 +41,11 @@ jobs:
     name: Linux arm64 (cmake)
     runs-on: faiss-aws-r8g.large
     steps:
-      - name: Print Hello World
-        run: |
-            echo "Hello world10!"
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      # - uses: ./.github/actions/build_cmake
-      #   with:
-      #     opt_level: sve
-  # linux-x86_64-cmake:
-  #   name: Linux x86_64 (cmake)
-  #   runs-on: faiss-aws-r6g.large
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #     - uses: ./.github/actions/build_cmake
+      # - name: Print Hello World
+      #   run: |
+      #       echo "Hello world10!"
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        with:
+          opt_level: sve
