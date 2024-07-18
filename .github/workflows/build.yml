@@ -13,10 +13,10 @@ env:
 jobs:
   AMX-DNNL-cmake:
     name: AMX DNNL (cmake)
-    runs-on: faiss-aws-m7i.xlarge
+    runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
-          dnnl: ON
+          opt_level: avx512
