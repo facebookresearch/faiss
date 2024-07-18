@@ -21,7 +21,7 @@ runs:
         python-version: '3.11'
         miniconda-version: latest
     - name: Configure build environment on Linux x86
-      if: runner.arch == 'X86'
+      if: runner.arch == 'X64'
       shell: bash
       run: |
         # initialize Conda
@@ -51,7 +51,7 @@ runs:
           conda install -y -q pytorch -c pytorch
         fi
     - name: Build all targets on Linux x86
-      if: runner.arch == 'X86'
+      if: runner.arch == 'X64'
       shell: bash
       run: |
         eval "$(conda shell.bash hook)"
@@ -99,7 +99,7 @@ runs:
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
-      if: runner.arch != 'ARM64'
+      if: runner.arch == 'X64'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
