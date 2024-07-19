@@ -8,8 +8,8 @@ inputs:
     description: 'Enable GPU support.'
     required: false
     default: OFF
-  raft:
-    description: 'Enable RAFT support.'
+  cuvs:
+    description: 'Enable cuVS support.'
     required: false
     default: OFF
 runs:
@@ -33,13 +33,13 @@ runs:
         conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
 
         # install CUDA packages
-        if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
+        if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-11.8.0"
         fi
 
-        # install RAFT packages
-        if [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
+        # install cuVS packages
+        if [ "${{ inputs.cuvs }}" = "ON" ]; then
+          conda install -y -q libcuvs cuda-version=11.8 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-11.8.0" -c conda-forge
         fi
 
         # install test packages
@@ -58,7 +58,7 @@ runs:
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
-              -DFAISS_ENABLE_CUVS=${{ inputs.raft }} \
+              -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
@@ -101,5 +101,5 @@ runs:
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
+        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.cuvs }}
         path: test-results

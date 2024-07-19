@@ -254,7 +254,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         auto cuvsIndex_ =
                 std::static_pointer_cast<CuvsIVFFlat, IVFFlat>(index_);
 
-        std::optional<cuvs::neighbors::ivf_flat::index<float, idx_t>> cuvs_ivfflat_index;
+        std::optional<cuvs::neighbors::ivf_flat::index<float, idx_t>>
+                cuvs_ivfflat_index;
 
         if (getDeviceForAddress(x) >= 0) {
             auto dataset_d =
@@ -268,14 +269,16 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
                     raft_handle, cuvs_index_params, x_view);
         }
 
-        quantizer->train(nlist, cuvs_ivfflat_index.value().centers().data_handle());
-        quantizer->add(nlist, cuvs_ivfflat_index.value().centers().data_handle());
+        quantizer->train(
+                nlist, cuvs_ivfflat_index.value().centers().data_handle());
+        quantizer->add(
+                nlist, cuvs_ivfflat_index.value().centers().data_handle());
         raft_handle.sync_stream();
 
         cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfflat_index));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         // FIXME: GPUize more of this
@@ -349,7 +352,7 @@ void GpuIndexIVFFlat::setIndex_(
                 space));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         index_.reset(new IVFFlat(

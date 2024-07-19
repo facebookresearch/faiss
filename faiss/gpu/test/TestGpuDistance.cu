@@ -173,7 +173,7 @@ void testTransposition(
 #else
     FAISS_THROW_IF_NOT_MSG(
             !use_cuvs,
-            "RAFT has not been compiled into the current version so it cannot be used.");
+            "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
 
     evaluate_bfknn(

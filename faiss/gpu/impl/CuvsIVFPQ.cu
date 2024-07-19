@@ -21,11 +21,11 @@
  */
 
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
-#include <faiss/gpu/StandardGpuResources.h>
 
 #include <cuvs/neighbors/common.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
@@ -449,7 +449,8 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
 }
 
 void CuvsIVFPQ::setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx) {
-    cuvs_index = std::make_shared<cuvs::neighbors::ivf_pq::index<idx_t>>(std::move(idx));
+    cuvs_index = std::make_shared<cuvs::neighbors::ivf_pq::index<idx_t>>(
+            std::move(idx));
     setBasePQCentroids_();
 }
 

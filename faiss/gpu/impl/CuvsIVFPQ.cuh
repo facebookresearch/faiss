@@ -101,7 +101,6 @@ class CuvsIVFPQ : public IVFPQ {
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
     /// Replace the cuVS index
-//     void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>* idx);
     void setCuvsIndex(cuvs::neighbors::ivf_pq::index<idx_t>&& idx);
 
     /// Classify and encode/add vectors to our IVF lists.

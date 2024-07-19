@@ -402,7 +402,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         cuvs_index_params.add_data_on_build = false;
 
         auto cuvsIndex_ = std::static_pointer_cast<CuvsIVFPQ, IVFPQ>(index_);
-        
+
         std::optional<cuvs::neighbors::ivf_pq::index<idx_t>> cuvs_ivfpq_index;
 
         if (getDeviceForAddress(x) >= 0) {
@@ -436,7 +436,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfpq_index));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         // FIXME: GPUize more of this
@@ -511,7 +511,7 @@ void GpuIndexIVFPQ::setIndex_(
                 space));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         index_.reset(new IVFPQ(
