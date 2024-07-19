@@ -105,7 +105,7 @@ void GpuIndexFlat::resetIndex_(int dims) {
 #else
     if (should_use_cuvs(config_)) {
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
     } else
 #endif
     {
