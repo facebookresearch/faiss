@@ -38,7 +38,7 @@ jobs:
               exit 1
             fi
   linux-x86_64-cmake:
-    name: Linux x86_64 (cmake)
+    name: Linux x86_64 (cmake) Leak Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
