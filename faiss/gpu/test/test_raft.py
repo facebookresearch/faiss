@@ -11,8 +11,8 @@ from faiss.contrib.datasets import SyntheticDataset
 
 
 @unittest.skipIf(
-    "RAFT" not in faiss.get_compile_options(),
-    "only if RAFT is compiled in")
+    "CUVS" not in faiss.get_compile_options(),
+    "only if CUVS is compiled in")
 class TestBfKnn(unittest.TestCase):
 
     def test_bfKnn(self):
@@ -29,7 +29,7 @@ class TestBfKnn(unittest.TestCase):
         np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
         np.testing.assert_array_equal(Iref, Inew)
 
-        # RAFT version
+        # cuVS version
         Dnew, Inew = faiss.knn_gpu(
             res, ds.get_queries(), ds.get_database(), 12, use_cuvs=True)
         np.testing.assert_allclose(Dref, Dnew, atol=1e-5)

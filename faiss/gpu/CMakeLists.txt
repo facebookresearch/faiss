@@ -262,9 +262,9 @@ target_include_directories(faiss_gpu PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
 if(FAISS_ENABLE_CUVS)
-  target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAPIDS=1)
-  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAPIDS=1)
-  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_RAPIDS=1)
+  target_compile_definitions(faiss PUBLIC USE_NVIDIA_CUVS=1)
+  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_CUVS=1)
+  target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_CUVS=1)
 
   # Mark all functions as hidden so that we don't generate
   # global 'public' functions that also exist in libraft.so
@@ -287,7 +287,7 @@ if(FAISS_ENABLE_CUVS)
     utils/CuvsUtils.cu
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
-  target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAPIDS=1)
+  target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_CUVS=1)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
