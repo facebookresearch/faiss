@@ -151,7 +151,7 @@ void exhaustive_inner_product_seq(
 #ifdef ENABLE_DNNL
     // use AMX to accelerate if available
     if (is_amxbf16_supported()) {
-        float* res_arr = (float*)malloc(nx * ny * sizeof(float));
+        float* res_arr = new float[nx * ny];
         comput_f32bf16f32_inner_product(
                 nx,
                 d,
