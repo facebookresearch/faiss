@@ -47,6 +47,7 @@ runs:
         fi
 
         if [ "${{ inputs.dnnl }}" = "ON" ]; then
+          # resurrect
           conda install -y -q conda-forge::onednn
         fi
 
