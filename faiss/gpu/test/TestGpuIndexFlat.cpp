@@ -114,7 +114,7 @@ TEST(TestGpuIndexFlat, IP_Float32) {
 
         testFlat(opt);
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -128,7 +128,7 @@ TEST(TestGpuIndexFlat, L1_Float32) {
 
     testFlat(opt);
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     opt.use_cuvs = true;
     testFlat(opt);
 #endif
@@ -141,7 +141,7 @@ TEST(TestGpuIndexFlat, Lp_Float32) {
     opt.useFloat16 = false;
 
     testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     opt.use_cuvs = true;
     testFlat(opt);
 #endif
@@ -155,7 +155,7 @@ TEST(TestGpuIndexFlat, L2_Float32) {
         opt.useFloat16 = false;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -173,7 +173,7 @@ TEST(TestGpuIndexFlat, L2_k_2048) {
         opt.numVecsOverride = 10000;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -189,7 +189,7 @@ TEST(TestGpuIndexFlat, L2_Float32_K1) {
         opt.kOverride = 1;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -203,7 +203,7 @@ TEST(TestGpuIndexFlat, IP_Float16) {
         opt.useFloat16 = true;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -217,7 +217,7 @@ TEST(TestGpuIndexFlat, L2_Float16) {
         opt.useFloat16 = true;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -233,7 +233,7 @@ TEST(TestGpuIndexFlat, L2_Float16_K1) {
         opt.kOverride = 1;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -254,7 +254,7 @@ TEST(TestGpuIndexFlat, L2_Tiling) {
         opt.kOverride = 64;
 
         testFlat(opt);
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         opt.use_cuvs = true;
         testFlat(opt);
 #endif
@@ -343,7 +343,7 @@ TEST(TestGpuIndexFlat, CopyFrom) {
     testCopyFrom(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, CopyFrom) {
     testCopyFrom(true);
 }
@@ -394,7 +394,7 @@ TEST(TestGpuIndexFlat, CopyTo) {
     testCopyTo(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, CopyTo) {
     testCopyTo(true);
 }
@@ -452,7 +452,7 @@ TEST(TestGpuIndexFlat, UnifiedMemory) {
     testUnifiedMemory(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, UnifiedMemory) {
     testUnifiedMemory(true);
 }
@@ -513,7 +513,7 @@ TEST(TestGpuIndexFlat, LargeIndex) {
     testLargeIndex(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, LargeIndex) {
     testLargeIndex(true);
 }
@@ -566,7 +566,7 @@ TEST(TestGpuIndexFlat, Residual) {
     testResidual(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, Residual) {
     testResidual(true);
 }
@@ -657,7 +657,7 @@ void testReconstruct(bool use_cuvs) {
 TEST(TestGpuIndexFlat, Reconstruct) {
     testReconstruct(false);
 }
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, Reconstruct) {
     testReconstruct(true);
 }
@@ -754,7 +754,7 @@ TEST(TestGpuIndexFlat, SearchAndReconstruct) {
     testSearchAndReconstruct(false);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, SearchAndReconstruct) {
     testSearchAndReconstruct(true);
 }

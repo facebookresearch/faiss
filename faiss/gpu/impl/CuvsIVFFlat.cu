@@ -532,7 +532,7 @@ void CuvsIVFFlatCodePackerInterleaved::pack_1(
         size_t offset,
         uint8_t* block) const {
     cuvs::neighbors::ivf_flat::helpers::codepacker::pack_1(
-            flat_code, block, dim, chunk_size, static_cast<uint32_t>(offset));
+            reinterpret_cast<const float*>(flat_code), reinterpret_cast<float*>(block), dim, chunk_size, static_cast<uint32_t>(offset));
 }
 
 void CuvsIVFFlatCodePackerInterleaved::unpack_1(
@@ -540,7 +540,7 @@ void CuvsIVFFlatCodePackerInterleaved::unpack_1(
         size_t offset,
         uint8_t* flat_code) const {
     cuvs::neighbors::ivf_flat::helpers::codepacker::unpack_1(
-            block, flat_code, dim, chunk_size, static_cast<uint32_t>(offset));
+            reinterpret_cast<const float*>(block), reinterpret_cast<float*>(flat_code), dim, chunk_size, static_cast<uint32_t>(offset));
 }
 
 } // namespace gpu

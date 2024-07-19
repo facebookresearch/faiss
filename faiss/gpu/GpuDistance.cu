@@ -31,7 +31,7 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <optional>
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <cuvs/neighbors/brute_force.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdspan.hpp>
@@ -47,7 +47,7 @@
 namespace faiss {
 namespace gpu {
 
-// #if defined USE_NVIDIA_RAPIDS
+// #if defined USE_NVIDIA_CUVS
 // using namespace cuvs::neighbors;
 // #endif
 
@@ -237,7 +237,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 or F16");
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     // Note: For now, cuVS bfknn requires queries and vectors to be same layout
     if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor) {
         cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);

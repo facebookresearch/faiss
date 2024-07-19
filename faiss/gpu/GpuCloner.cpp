@@ -14,7 +14,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <faiss/IndexHNSW.h>
 #endif
 #include <faiss/IndexIVF.h>
@@ -27,7 +27,7 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <faiss/gpu/GpuIndexCagra.h>
 #endif
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -92,7 +92,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         // (inverse op of ToGpuClonerMultiple)
 
     }
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
         icg->copyTo(res);
@@ -230,7 +230,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 
         return res;
     }
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const faiss::IndexHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;

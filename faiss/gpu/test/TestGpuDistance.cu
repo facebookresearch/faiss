@@ -168,7 +168,7 @@ void testTransposition(
     args.outIndices = gpuIndices.data();
     args.device = device;
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     args.use_cuvs = use_cuvs;
 #else
     FAISS_THROW_IF_NOT_MSG(
@@ -196,7 +196,7 @@ TEST(TestGpuDistance, Transposition_RR) {
     testTransposition(false, false, faiss::MetricType::METRIC_INNER_PRODUCT);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Transposition_RR) {
     testTransposition(false, false, faiss::MetricType::METRIC_L2, true);
     testTransposition(
@@ -208,7 +208,7 @@ TEST(TestGpuDistance, Transposition_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L2);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Transposition_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L2, true);
 }
@@ -218,7 +218,7 @@ TEST(TestGpuDistance, Transposition_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L2);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Transposition_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L2, true);
 }
@@ -228,7 +228,7 @@ TEST(TestGpuDistance, Transposition_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L2);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Transposition_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L2, true);
 }
@@ -238,7 +238,7 @@ TEST(TestGpuDistance, L1) {
     testTransposition(false, false, faiss::MetricType::METRIC_L1);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, L1) {
     testTransposition(false, false, faiss::MetricType::METRIC_L1, true);
 }
@@ -249,7 +249,7 @@ TEST(TestGpuDistance, L1_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L1);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 // Test other transpositions with the general distance kernel
 TEST(TestCuvsGpuDistance, L1_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L1, true);
@@ -260,7 +260,7 @@ TEST(TestGpuDistance, L1_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L1);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, L1_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L1, true);
 }
@@ -270,7 +270,7 @@ TEST(TestGpuDistance, L1_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L1);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, L1_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L1, true);
 }
@@ -281,7 +281,7 @@ TEST(TestGpuDistance, Linf) {
     testTransposition(false, false, faiss::MetricType::METRIC_Linf);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 // Test remainder of metric types
 TEST(TestCuvsGpuDistance, Linf) {
     testTransposition(false, false, faiss::MetricType::METRIC_Linf, true);
@@ -292,7 +292,7 @@ TEST(TestGpuDistance, Lp) {
     testTransposition(false, false, faiss::MetricType::METRIC_Lp, false, 3);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Lp) {
     testTransposition(false, false, faiss::MetricType::METRIC_Lp, true, 3);
 }
@@ -302,7 +302,7 @@ TEST(TestGpuDistance, Canberra) {
     testTransposition(false, false, faiss::MetricType::METRIC_Canberra);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, Canberra) {
     testTransposition(false, false, faiss::MetricType::METRIC_Canberra, true);
 }
@@ -316,7 +316,7 @@ TEST(TestGpuDistance, JensenShannon) {
     testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon);
 }
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuDistance, JensenShannon) {
     testTransposition(
             false, false, faiss::MetricType::METRIC_JensenShannon, true);

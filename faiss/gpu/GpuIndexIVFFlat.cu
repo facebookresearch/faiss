@@ -15,7 +15,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <cuvs/neighbors/ivf_flat.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFFlat.cuh>
@@ -227,7 +227,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     FAISS_ASSERT(!index_);
 
     if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         setIndex_(
                 resources_.get(),
                 this->d,
@@ -328,10 +328,10 @@ void GpuIndexIVFFlat::setIndex_(
         IndicesOptions indicesOptions,
         MemorySpace space) {
     if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         FAISS_THROW_IF_NOT_MSG(
                 ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
-                "RAFT only supports INDICES_64_BIT");
+                "cuVS only supports INDICES_64_BIT");
         if (!ivfFlatConfig_.interleavedLayout) {
             fprintf(stderr,
                     "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");

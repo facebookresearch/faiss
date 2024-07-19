@@ -37,8 +37,8 @@ struct GpuClonerOptions {
     /// Set verbose options on the index
     bool verbose = false;
 
-    /// use the CUVS implementation
-#if defined USE_NVIDIA_RAPIDS
+    /// use the cuVS implementation
+#if defined USE_NVIDIA_CUVS
     bool use_cuvs = true;
 #else
     bool use_cuvs = false;

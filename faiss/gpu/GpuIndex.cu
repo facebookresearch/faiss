@@ -534,8 +534,8 @@ extern std::string gpu_compile_options;
 struct InitGpuCompileOptions {
     InitGpuCompileOptions() {
         gpu_compile_options = "GPU ";
-#ifdef USE_NVIDIA_RAPIDS
-        gpu_compile_options += "NVIDIA_RAFT ";
+#ifdef USE_NVIDIA_CUVS
+        gpu_compile_options += "NVIDIA_CUVS ";
 #endif
     }
 };

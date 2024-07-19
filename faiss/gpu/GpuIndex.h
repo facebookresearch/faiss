@@ -38,7 +38,7 @@ struct GpuIndexConfig {
     MemorySpace memorySpace = MemorySpace::Device;
 
     /// Should the index dispatch down to RAFT?
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
     bool use_cuvs = true;
 #else
     bool use_cuvs = false;

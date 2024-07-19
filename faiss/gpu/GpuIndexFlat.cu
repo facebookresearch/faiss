@@ -18,7 +18,7 @@
 #include <faiss/gpu/utils/Float16.cuh>
 #include <limits>
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #endif
 
@@ -93,7 +93,7 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 
     if (should_use_cuvs(config_)) {
         data_.reset(new CuvsFlatIndex(

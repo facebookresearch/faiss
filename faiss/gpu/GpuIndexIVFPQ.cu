@@ -15,7 +15,7 @@
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
@@ -364,7 +364,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     // RAFT does not support using an external index for assignment. Fall back
     // to the classical GPU impl
     if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         if (pq.assign_index) {
             fprintf(stderr,
                     "WARN: The Product Quantizer's assign_index will be ignored with cuVS enabled.\n");
@@ -494,7 +494,7 @@ void GpuIndexIVFPQ::setIndex_(
         IndicesOptions indicesOptions,
         MemorySpace space) {
     if (should_use_cuvs(config_)) {
-#if defined USE_NVIDIA_RAPIDS
+#if defined USE_NVIDIA_CUVS
         index_.reset(new CuvsIVFPQ(
                 resources,
                 dim,
