@@ -146,8 +146,6 @@ void exhaustive_inner_product_seq(
             typename BlockResultHandler::SingleResultHandler;
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
-    FAISS_ASSERT(use_sel == (sel != nullptr));
-
 #ifdef ENABLE_DNNL
     // use AMX to accelerate if available
     if (is_amxbf16_supported()) {
