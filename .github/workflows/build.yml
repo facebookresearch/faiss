@@ -88,6 +88,19 @@ jobs:
         with:
           gpu: ON
           raft: ON
+  linux-arm64-SVE-cmake:
+    name: Linux arm64 SVE (cmake)
+    runs-on: faiss-aws-r8g.large
+    continue-on-error: true # non-blocking mode for now
+    steps:
+      - name: Checkout
+        continue-on-error: true # non-blocking mode for now
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        continue-on-error: true # non-blocking mode for now
+      # TODO: uncomment this once SVE PR is merged
+      #   with:
+      #     opt_level: sve
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
     needs: linux-x86_64-cmake
