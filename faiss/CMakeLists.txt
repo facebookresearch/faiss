@@ -46,6 +46,7 @@ set(FAISS_SRC
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
+  IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
   VectorTransform.cpp
@@ -81,6 +82,7 @@ set(FAISS_SRC
   invlists/InvertedLists.cpp
   invlists/InvertedListsIOHook.cpp
   utils/Heap.cpp
+  utils/NeuralNet.cpp
   utils/WorkerThread.cpp
   utils/distances.cpp
   utils/distances_simd.cpp

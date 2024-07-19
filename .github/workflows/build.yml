@@ -19,4 +19,16 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
+          opt_level: avx2
+  linux-x86_64-AVX512-cmake:
+    name: Linux x86_64 AVX512 (cmake)
+    continue-on-error: true # non-blocking mode for now
+    needs: linux-x86_64-cmake
+    runs-on: faiss-aws-m7i.large
+    steps:
+      - name: Checkout
+        continue-on-error: true # non-blocking mode for now
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        with:
           opt_level: avx512
