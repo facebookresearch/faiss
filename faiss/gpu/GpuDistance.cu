@@ -327,7 +327,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     const_cast<float*>(
                             reinterpret_cast<const float*>(args.queries)),
                     raft::matrix_extent<int64_t>(num_queries, dims));
-            
+
             std::optional<raft::temporary_device_buffer<
                     const float,
                     raft::vector_extent<int64_t>>>
