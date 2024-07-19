@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
-          opt_level: dnnl
+          dnnl: ON
   # linux-x86_64-AVX512-cmake:
   #   name: Linux x86_64 AVX512 (cmake)
   #   continue-on-error: true # non-blocking mode for now
