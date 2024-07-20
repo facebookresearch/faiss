@@ -64,25 +64,32 @@ runs:
       shell: bash
       run: |
         eval "$(conda shell.bash hook)"
-
-        args=(
-          -DBUILD_TESTING=ON 
-          -DBUILD_SHARED_LIBS=ON 
-          -DFAISS_ENABLE_GPU=${{ inputs.gpu }} 
-          -DFAISS_ENABLE_RAFT=${{ inputs.raft }} 
-          -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} 
-          -DFAISS_ENABLE_C_API=ON 
-          -DPYTHON_EXECUTABLE=$CONDA/bin/python 
-          -DCMAKE_BUILD_TYPE=Release 
-        )
-        if [ "${{ runner.arch }}" = "X64" ]; then
-          args+=(
-            -DBLA_VENDOR=Intel10_64_dyn 
-            -DCMAKE_CUDA_FLAGS=\"-gencode arch=compute_75,code=sm_75\"
-          )
-        fi
         conda activate
-        cmake -B build "${args[@]}" .
+
+        if [ "${{ runner.arch }}" = "X64" ]; then
+          cmake -B build -DBUILD_TESTING=ON \
+            -DBUILD_SHARED_LIBS=ON  \
+            -DFAISS_ENABLE_GPU=${{ inputs.gpu }}  \
+            -DFAISS_ENABLE_RAFT=${{ inputs.raft }}  \
+            -DFAISS_OPT_LEVEL=${{ inputs.opt_level }}  \
+            -DFAISS_ENABLE_C_API=ON  \
+            -DPYTHON_EXECUTABLE=$CONDA/bin/python  \
+            -DCMAKE_BUILD_TYPE=Release  \
+            -DBLA_VENDOR=Intel10_64_dyn \
+            -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+            .
+        fi
+        if [ "${{ runner.arch }}" = "ARM64" ]; then
+          cmake -B build -DBUILD_TESTING=ON \
+            -DBUILD_SHARED_LIBS=ON  \
+            -DFAISS_ENABLE_GPU=${{ inputs.gpu }}  \
+            -DFAISS_ENABLE_RAFT=${{ inputs.raft }}  \
+            -DFAISS_OPT_LEVEL=${{ inputs.opt_level }}  \
+            -DFAISS_ENABLE_C_API=ON  \
+            -DPYTHON_EXECUTABLE=$CONDA/bin/python  \
+            -DCMAKE_BUILD_TYPE=Release  \
+            .
+        fi
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
