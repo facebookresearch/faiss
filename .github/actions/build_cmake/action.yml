@@ -82,7 +82,7 @@ runs:
           )
         fi
         conda activate
-        cmake -B build "${args[@]}" .
+        cmake -B build "${args[*]}" .
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
