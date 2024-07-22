@@ -69,7 +69,7 @@ jobs:
         continue-on-error: true # non-blocking mode for now
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
-    # needs: linux-x86_64-cmake
+    needs: linux-x86_64-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -79,7 +79,7 @@ jobs:
           gpu: ON
   linux-x86_64-GPU-w-RAFT-cmake:
     name: Linux x86_64 GPU w/ RAFT (cmake)
-    # needs: linux-x86_64-cmake
+    needs: linux-x86_64-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
