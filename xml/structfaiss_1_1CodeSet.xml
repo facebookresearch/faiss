@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="196" column="12" bodyfile="faiss/utils/utils.h" bodystart="196" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="199" column="12" bodyfile="faiss/utils/utils.h" bodystart="199" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CodeSet_1afedcaf6cc25213d3d442d0f2f14f60cc" prot="public" static="no" mutable="no">
         <type>std::set&lt; std::vector&lt; uint8_t &gt; &gt;</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="197" column="14" bodyfile="faiss/utils/utils.h" bodystart="197" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="200" column="14" bodyfile="faiss/utils/utils.h" bodystart="200" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="199" column="14" bodyfile="faiss/utils/utils.h" bodystart="199" bodyend="199"/>
+        <location file="faiss/utils/utils.h" line="202" column="14" bodyfile="faiss/utils/utils.h" bodystart="202" bodyend="202"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CodeSet_1a427b0b7caf3bd66c1f27e841ce95d23b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -71,14 +71,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="200" column="10"/>
+        <location file="faiss/utils/utils.h" line="203" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/utils.h" line="195" column="1" bodyfile="faiss/utils/utils.h" bodystart="195" bodyend="201"/>
+    <location file="faiss/utils/utils.h" line="198" column="1" bodyfile="faiss/utils/utils.h" bodystart="198" bodyend="204"/>
     <listofallmembers>
       <member refid="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>CodeSet</name></member>
       <member refid="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>d</name></member>

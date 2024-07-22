@@ -9280,6 +9280,7 @@
     <member refid="namespacefaiss_1a619e1b624d0c6b0a5f833a4744f325a1" kind="function"><name>hashtable_int64_to_int64_add</name></member>
     <member refid="namespacefaiss_1a8e9fac1f36f69b1b18b64cc3e4147101" kind="function"><name>hashtable_int64_to_int64_lookup</name></member>
     <member refid="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" kind="function"><name>get_compile_options</name></member>
+    <member refid="namespacefaiss_1a7492814a6d7dd80de1e5a375758534b5" kind="function"><name>get_version</name></member>
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
     <member refid="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" kind="function"><name>get_mem_usage_kb</name></member>
     <member refid="namespacefaiss_1a090355c2725c425a511a367cbfe41262" kind="function"><name>get_cycles</name></member>
@@ -9853,6 +9854,9 @@
     <member refid="Index_8h_1af06a83d9492fb1ed5751a5b618c71ea3" kind="define"><name>FAISS_VERSION_MAJOR</name></member>
     <member refid="Index_8h_1a49e6fc2ba70a6aaa5043a657b0b53ca8" kind="define"><name>FAISS_VERSION_MINOR</name></member>
     <member refid="Index_8h_1abaa30cb4993a34c8e9b3b5057529613a" kind="define"><name>FAISS_VERSION_PATCH</name></member>
+    <member refid="Index_8h_1a224ce263210941bfad72a6393dddc717" kind="define"><name>FAISS_STRINGIFY</name></member>
+    <member refid="Index_8h_1a1adf987d3a209a2b288b0828a31ccb0c" kind="define"><name>FAISS_TOSTRING</name></member>
+    <member refid="Index_8h_1a698acb89e1bf5837b33c30ef35c30044" kind="define"><name>VERSION_STRING</name></member>
   </compound>
   <compound refid="Index2Layer_8h" kind="file"><name>Index2Layer.h</name>
   </compound>

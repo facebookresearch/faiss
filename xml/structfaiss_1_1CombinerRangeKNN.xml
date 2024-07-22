@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="166" column="13" bodyfile="faiss/utils/utils.h" bodystart="166" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="169" column="13" bodyfile="faiss/utils/utils.h" bodystart="169" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a512c0573e1f6d06edbd52efc713bd87e" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="167" column="12" bodyfile="faiss/utils/utils.h" bodystart="167" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="170" column="12" bodyfile="faiss/utils/utils.h" bodystart="170" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a533c4abee4eda14e5d3d7c1aa9ae00fa" prot="public" static="no" mutable="no">
         <type>T</type>
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="168" column="7" bodyfile="faiss/utils/utils.h" bodystart="168" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="171" column="7" bodyfile="faiss/utils/utils.h" bodystart="171" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a2bfdb0e40d08040b47b2684fec5f0674" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="169" column="10" bodyfile="faiss/utils/utils.h" bodystart="169" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="172" column="10" bodyfile="faiss/utils/utils.h" bodystart="172" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a092c91d01f6227c4acc437d0d2805e2e" prot="public" static="no" mutable="no">
         <type>const int64_t *</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="175" column="19" bodyfile="faiss/utils/utils.h" bodystart="175" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="178" column="19" bodyfile="faiss/utils/utils.h" bodystart="178" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1adb040f0aab9e0822cf97b7ae8f77554c" prot="public" static="no" mutable="no">
         <type>const T *</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="176" column="13" bodyfile="faiss/utils/utils.h" bodystart="176" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="179" column="13" bodyfile="faiss/utils/utils.h" bodystart="179" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a99ffc825bff4b6bc07b5e3f3087d5a4d" prot="public" static="no" mutable="no">
         <type>const bool *</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="179" column="16" bodyfile="faiss/utils/utils.h" bodystart="179" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="182" column="16" bodyfile="faiss/utils/utils.h" bodystart="182" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1af170c7fc6b3ff56a93f0a0141a49265d" prot="public" static="no" mutable="no">
         <type>const int64_t *</type>
@@ -124,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="182" column="19" bodyfile="faiss/utils/utils.h" bodystart="182" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="185" column="19" bodyfile="faiss/utils/utils.h" bodystart="185" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a8a4621b4b68545cbd08269086be63fa6" prot="public" static="no" mutable="no">
         <type>const T *</type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="183" column="13" bodyfile="faiss/utils/utils.h" bodystart="183" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="186" column="13" bodyfile="faiss/utils/utils.h" bodystart="186" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a328ba7a9c54628328b3594d3e767abff" prot="public" static="no" mutable="no">
         <type>const int64_t *</type>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="184" column="19" bodyfile="faiss/utils/utils.h" bodystart="184" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="187" column="19" bodyfile="faiss/utils/utils.h" bodystart="187" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1aa14fedf775fc3f0a1f060d693be75430" prot="public" static="no" mutable="no">
         <type>const int64_t *</type>
@@ -169,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="186" column="19" bodyfile="faiss/utils/utils.h" bodystart="186" bodyend="-1"/>
+        <location file="faiss/utils/utils.h" line="189" column="19" bodyfile="faiss/utils/utils.h" bodystart="189" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -201,7 +201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="171" column="5" bodyfile="faiss/utils/utils.h" bodystart="171" bodyend="172"/>
+        <location file="faiss/utils/utils.h" line="174" column="5" bodyfile="faiss/utils/utils.h" bodystart="174" bodyend="175"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1adbefea1de2c511a05d0980eaa7134fca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -219,7 +219,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="188" column="10"/>
+        <location file="faiss/utils/utils.h" line="191" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1ae4dc62c36a66b7ebfc3076f2a35a911f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -241,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="192" column="10"/>
+        <location file="faiss/utils/utils.h" line="195" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -249,7 +249,7 @@
     <detaileddescription>
 <para>This class is used to combine range and knn search results in contrib.exhaustive_search.range_search_gpu </para>
     </detaileddescription>
-    <location file="faiss/utils/utils.h" line="165" column="1" bodyfile="faiss/utils/utils.h" bodystart="165" bodyend="193"/>
+    <location file="faiss/utils/utils.h" line="168" column="1" bodyfile="faiss/utils/utils.h" bodystart="168" bodyend="196"/>
     <listofallmembers>
       <member refid="structfaiss_1_1CombinerRangeKNN_1a74330b6afb5296263e2a53482178c35d" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>CombinerRangeKNN</name></member>
       <member refid="structfaiss_1_1CombinerRangeKNN_1adbefea1de2c511a05d0980eaa7134fca" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>compute_sizes</name></member>
