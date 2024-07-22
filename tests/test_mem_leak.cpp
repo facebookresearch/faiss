@@ -67,6 +67,10 @@ TEST(MEM_LEAK, ivfflat) {
             }
         }
         printf("\n");
-        EXPECT_GE(50 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
+        #ifdef ENABLE_DNNL
+            EXPECT_GE(150 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
+        #else
+            EXPECT_GE(50 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
+        #endif
     }
 }

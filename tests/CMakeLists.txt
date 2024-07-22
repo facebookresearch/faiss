@@ -39,6 +39,10 @@ set(FAISS_TEST_SRC
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
+if(FAISS_ENABLE_DNNL)
+   add_compile_definitions(ENABLE_DNNL)
+endif()
+
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
   target_link_libraries(faiss_test PRIVATE faiss)
 endif()
