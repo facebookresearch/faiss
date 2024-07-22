@@ -94,6 +94,7 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -1521,6 +1522,8 @@
       <li><a href="cpp_api/file/utils_8h.html#_CPPv4N5faiss16get_mem_usage_kbEv">faiss::get_mem_usage_kb (C++ function)</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss16get_mem_usage_kbEv">[1]</a>
 </li>
       <li><a href="cpp_api/file/simdlib__avx2_8h.html#_CPPv4N5faiss8get_MSBsE11simd32uint8">faiss::get_MSBs (C++ function)</a>, <a href="cpp_api/file/simdlib__emulated_8h.html#_CPPv4N5faiss8get_MSBsERK11simd32uint8">[1]</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss8get_MSBsE11simd32uint8">[2]</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss8get_MSBsERK11simd32uint8">[3]</a>
+</li>
+      <li><a href="cpp_api/file/utils_8h.html#_CPPv4N5faiss11get_versionEv">faiss::get_version (C++ function)</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss11get_versionEv">[1]</a>
 </li>
       <li><a href="cpp_api/file/utils_8h.html#_CPPv4N5faiss12getmillisecsEv">faiss::getmillisecs (C++ function)</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss12getmillisecsEv">[1]</a>
 </li>
@@ -8520,10 +8523,10 @@
 </li>
       <li><a href="cpp_api/namespace/namespacefaiss.html#_CPPv4N5faiss32IndexIVFProductResidualQuantizer5resetEv">faiss::IndexIVFProductResidualQuantizer::reset (C++ function)</a>, <a href="cpp_api/struct/structfaiss_1_1IndexIVFProductResidualQuantizer.html#_CPPv4N5faiss32IndexIVFProductResidualQuantizer5resetEv">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/namespace/namespacefaiss.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer12sa_code_sizeEv">faiss::IndexIVFProductResidualQuantizer::sa_code_size (C++ function)</a>, <a href="cpp_api/struct/structfaiss_1_1IndexIVFProductResidualQuantizer.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer12sa_code_sizeEv">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/IndexIVFAdditiveQuantizer_8h.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer9sa_decodeE5idx_tPK7uint8_tPf">faiss::IndexIVFProductResidualQuantizer::sa_decode (C++ function)</a>, <a href="cpp_api/namespace/namespacefaiss.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer9sa_decodeE5idx_tPK7uint8_tPf">[1]</a>, <a href="cpp_api/struct/structfaiss_1_1IndexIVFProductResidualQuantizer.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer9sa_decodeE5idx_tPK7uint8_tPf">[2]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacefaiss.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t">faiss::IndexIVFProductResidualQuantizer::sa_encode (C++ function)</a>, <a href="cpp_api/struct/structfaiss_1_1IndexIVFProductResidualQuantizer.html#_CPPv4NK5faiss32IndexIVFProductResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t">[1]</a>
@@ -16862,6 +16865,8 @@
 </li>
       <li><a href="cpp_api/file/platform__macros_8h.html#c.FAISS_PRAGMA_IMPRECISE_LOOP">FAISS_PRAGMA_IMPRECISE_LOOP (C macro)</a>
 </li>
+      <li><a href="cpp_api/file/Index_8h.html#c.FAISS_STRINGIFY">FAISS_STRINGIFY (C macro)</a>
+</li>
       <li><a href="cpp_api/file/FaissAssert_8h.html#c.FAISS_THROW_FMT">FAISS_THROW_FMT (C macro)</a>
 </li>
       <li><a href="cpp_api/file/FaissAssert_8h.html#c.FAISS_THROW_IF_MSG">FAISS_THROW_IF_MSG (C macro)</a>
@@ -16873,6 +16878,8 @@
       <li><a href="cpp_api/file/FaissAssert_8h.html#c.FAISS_THROW_IF_NOT_MSG">FAISS_THROW_IF_NOT_MSG (C macro)</a>
 </li>
       <li><a href="cpp_api/file/FaissAssert_8h.html#c.FAISS_THROW_MSG">FAISS_THROW_MSG (C macro)</a>
+</li>
+      <li><a href="cpp_api/file/Index_8h.html#c.FAISS_TOSTRING">FAISS_TOSTRING (C macro)</a>
 </li>
       <li><a href="cpp_api/file/Index_8h.html#c.FAISS_VERSION_MAJOR">FAISS_VERSION_MAJOR (C macro)</a>
 </li>
@@ -16993,6 +17000,14 @@
       <li><a href="cpp_api/file/platform__macros_8h.html#c.Swap2Bytes">Swap2Bytes (C macro)</a>
 </li>
       <li><a href="cpp_api/file/platform__macros_8h.html#c.Swap4Bytes">Swap4Bytes (C macro)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cpp_api/file/Index_8h.html#c.VERSION_STRING">VERSION_STRING (C macro)</a>
 </li>
   </ul></td>
 </tr></table>
