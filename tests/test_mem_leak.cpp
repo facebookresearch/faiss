@@ -15,12 +15,6 @@
 using namespace faiss;
 
 TEST(MEM_LEAK, ivfflat) {
-    #ifdef ENABLE_DNNL
-        // This test is flakey. Skipping the test for DNNL mode. It tracks the deltas of RSS which 
-        // shows how much memory is allocated to the process and is in RAM. Turning on DNNL feature means 
-        // the process now utilizes more RSS memory than before.
-        GTEST_SKIP()
-    #endif
     size_t num_tfidf_faiss_cells = 20;
     size_t max_tfidf_features = 500;
 
@@ -68,6 +62,7 @@ TEST(MEM_LEAK, ivfflat) {
         }
         printf("\n");
         #ifdef ENABLE_DNNL
+            // Turning on DNNL feature means the process now utilizes more RSS memory than before.
             EXPECT_GE(150 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
         #else
             EXPECT_GE(50 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
