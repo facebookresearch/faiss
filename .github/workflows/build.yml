@@ -22,8 +22,8 @@ jobs:
   #         dnnl: ON
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    continue-on-error: true # non-blocking mode for now
-    # needs: linux-x86_64-cmake
+    continue-on-error: true # non-blocking mode for now test
+    # needs: linux-x86_64-cmake 
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
