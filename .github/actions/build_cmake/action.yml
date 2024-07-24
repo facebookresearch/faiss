@@ -87,10 +87,11 @@ runs:
         sudo apt-get autoclean && sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-        # Check if we can find HIP cmake files
-        echo "Looking for HIP cmake files"
-        find /opt/rocm -name "FindHIP.cmake"
-        echo "Done looking for HIP cmake files"
+        # symblink system libraries for HIP compiler
+        sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
+        sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
+        sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
     - name: Hipify
       if: inputs.rocm == 'ON'
       shell: bash
@@ -114,11 +115,10 @@ runs:
               -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
               .
         make -k -C build -j$(nproc)
-    - name: Setup tmate session
-      if: always()
-      uses: mxschmitt/action-tmate@v3
+#    - name: Setup tmate session
+#      if: always()
+#      uses: mxschmitt/action-tmate@v3
     - name: C++ tests
-      if: inputs.rocm == 'OFF'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
@@ -129,7 +129,7 @@ runs:
       run: |
         $CONDA/bin/python setup.py install
     - name: Python tests (CPU only)
-      if: inputs.gpu == 'OFF' && inputs.rocm == 'OFF'
+      if: inputs.gpu == 'OFF'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
