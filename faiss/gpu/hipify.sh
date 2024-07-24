@@ -216,7 +216,7 @@ sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libm
 sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 /lib64/libm.so.6
 sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libmvec_nonshared.a /usr/lib64/libmvec_nonshared.a
 sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libmvec.so.1 /lib64/libmvec.so.1
-sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libc.so.6 /lib64/libc.so.6
-sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libc_nonshared.a /usr/lib64/libc_nonshared.a
+sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
+sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
 sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/lib64/libpthread.so.0 /lib64/libpthread.so.0
 sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
