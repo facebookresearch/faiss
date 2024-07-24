@@ -22,7 +22,7 @@ find_package(CUDAToolkit REQUIRED)
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
