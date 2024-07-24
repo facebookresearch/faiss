@@ -33,8 +33,8 @@ runs:
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         # install base packages
-        conda install -y -q -c conda-forge gxx_linux-64=${{ inputs.rocm == 'ON' && '14.1' || '11.2' }} sysroot_linux-64=2.28
-        conda install -y -q python=3.11 conda-forge::cmake-3.24 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
+        conda install -y -q -c conda-forge gxx_linux-64=${{ inputs.rocm == 'ON' && '14.1' || '11.2' }} sysroot_linux-64=2.28 cmake-3.24
+        conda install -y -q python=3.11 make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
 
         # install CUDA packages
         if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
