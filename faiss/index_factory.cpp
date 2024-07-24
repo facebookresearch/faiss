@@ -531,7 +531,15 @@ Index* parse_other_indexes(
 
     // IndexLSH
     if (match("LSH([0-9]*)(r?)(t?)")) {
-        int nbits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : d;
+        int nbits;
+        if (sm[1].length() > 0) {
+            nbits = std::stoi(sm[1].str());
+        } else {
+            nbits = d;
+            fprintf(stderr,
+                    "WARN: nbits not specified, defaulting to d = %d\n",
+                    d);
+        }
         bool rotate_data = sm[2].length() > 0;
         bool train_thresholds = sm[3].length() > 0;
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
