@@ -53,6 +53,7 @@ class BenchmarkIO:
     def __post_init__(self):
         self.cached_ds = {}
 
+    # TODO(kuarora): rename it as get_local_file
     def get_local_filename(self, filename):
         if len(filename) > 184:
             fn, ext = os.path.splitext(filename)
@@ -60,6 +61,9 @@ class BenchmarkIO:
                 fn[:184] + hashlib.sha256(filename.encode()).hexdigest() + ext
             )
         return os.path.join(self.path, filename)
+
+    def get_remote_filepath(self, filename) -> Optional[str]:
+        return None
 
     def download_file_from_blobstore(
         self,
@@ -219,7 +223,7 @@ class BenchmarkIO:
         fn = self.download_file_from_blobstore(filename, bucket, path)
         logger.info(f"Loading index {fn}")
         ext = os.path.splitext(fn)[1]
-        if ext in [".faiss", ".codec"]:
+        if ext in [".faiss", ".codec", ".index"]:
             index = faiss.read_index(fn)
         elif ext == ".pkl":
             with open(fn, "rb") as model_file:

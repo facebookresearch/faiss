@@ -7,9 +7,9 @@ import argparse
 import logging
 import os
 
-from bench_fw.benchmark_io import BenchmarkIO
-from bench_fw.descriptors import DatasetDescriptor
-from bench_fw.optimize import Optimizer
+from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
+from faiss.benchs.bench_fw.descriptors import DatasetDescriptor
+from faiss.benchs.bench_fw.optimize import Optimizer
 
 logging.basicConfig(level=logging.INFO)
 
