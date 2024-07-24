@@ -35,6 +35,7 @@ set(FAISS_TEST_SRC
   test_disable_pq_sdc_tables.cpp
   test_common_ivf_empty_index.cpp
   test_callback.cpp
+  test_utils.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

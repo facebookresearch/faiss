@@ -950,7 +950,7 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
-            h == fourcc("IHN2")) {
+            h == fourcc("IHN2") || h == fourcc("IHNc")) {
         IndexHNSW* idxhnsw = nullptr;
         if (h == fourcc("IHNf"))
             idxhnsw = new IndexHNSWFlat();
@@ -960,7 +960,15 @@ Index* read_index(IOReader* f, int io_flags) {
             idxhnsw = new IndexHNSWSQ();
         if (h == fourcc("IHN2"))
             idxhnsw = new IndexHNSW2Level();
+        if (h == fourcc("IHNc"))
+            idxhnsw = new IndexHNSWCagra();
         read_index_header(idxhnsw, f);
+        if (h == fourcc("IHNc")) {
+            READ1(idxhnsw->keep_max_size_level0);
+            auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
+            READ1(idx_hnsw_cagra->base_level_only);
+            READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+        }
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
