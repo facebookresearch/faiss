@@ -119,6 +119,12 @@ class TestFactory(unittest.TestCase):
         assert index.nlist == 65536 and index_nsg.nsg.R == 64
         assert index.pq.M == 2 and index.pq.nbits == 8
 
+    def test_factory_lsh(self):
+        index = faiss.index_factory(128, 'LSHrt')
+        self.assertEqual(index.nbits, 128)
+        index = faiss.index_factory(128, 'LSH16rt')
+        self.assertEqual(index.nbits, 16)
+
     def test_factory_fast_scan(self):
         index = faiss.index_factory(56, "PQ28x4fs")
         self.assertEqual(index.bbs, 32)
