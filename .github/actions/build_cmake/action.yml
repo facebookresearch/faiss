@@ -33,7 +33,7 @@ runs:
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         # install base packages
-        conda install -y -q -c conda-forge gxx_linux-64 sysroot_linux-64=2.28
+        conda install -y -q -c conda-forge gxx_linux-64 sysroot_linux-64
         conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
 
         # install CUDA packages
