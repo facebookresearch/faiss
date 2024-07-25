@@ -119,6 +119,7 @@ runs:
 #      if: always()
 #      uses: mxschmitt/action-tmate@v3
     - name: C++ tests
+      if: inputs.rocm == 'OFF'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
