@@ -26,8 +26,8 @@ Welcome to Faiss Documentation
 .. image:: https://img.shields.io/github/license/facebookresearch/faiss
    :target: https://github.com/facebookresearch/faiss/blob/main/LICENSE
 
-.. image:: https://circleci.com/gh/facebookresearch/faiss/tree/main.svg?style=shield
-   :target: https://circleci.com/gh/facebookresearch/faiss/tree/main
+.. image:: https://github.com/facebookresearch/faiss/actions/workflows/nightly.yml/badge.svg
+   :target: https://github.com/facebookresearch/faiss/actions/workflows/nightly.yml
 
 .. image:: https://img.shields.io/github/stars/facebookresearch/faiss?style=social
    :target: https://github.com/facebookresearch/faiss
@@ -194,3 +194,8 @@ Methods that are implemented in Faiss are highlighted in red.
    Zhang+, “Efficient Large-scale Approximate Nearest Neighbor Search on OpenCL FPGA”, CVPR 18
    </pre>
    </details>
+
+Legal
+-----
+
+See the `Terms of Use <https://opensource.fb.com/legal/terms/>`_ and `Privacy Policy <https://opensource.fb.com/legal/privacy>`_.
