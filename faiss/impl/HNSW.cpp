@@ -409,18 +409,22 @@ void search_neighbors_to_add(
  **************************************************************/
 
 /// greedily update a nearest vector at a given level
-void greedy_update_nearest(
+HNSWStats greedy_update_nearest(
         const HNSW& hnsw,
         DistanceComputer& qdis,
         int level,
         storage_idx_t& nearest,
         float& d_nearest) {
+    HNSWStats stats;
+
     for (;;) {
         storage_idx_t prev_nearest = nearest;
 
         size_t begin, end;
         hnsw.neighbor_range(nearest, level, &begin, &end);
-        for (size_t i = begin; i < end; i++) {
+
+        size_t ndis = 0;
+        for (size_t i = begin; i < end; i++, ndis++) {
             storage_idx_t v = hnsw.neighbors[i];
             if (v < 0)
                 break;
@@ -430,8 +434,13 @@ void greedy_update_nearest(
                 d_nearest = dis;
             }
         }
+
+        // update stats
+        stats.ndis += ndis;
+        stats.nhops += 1;
+
         if (nearest == prev_nearest) {
-            return;
+            return stats;
         }
     }
 }
@@ -641,6 +650,7 @@ int search_from_candidates(
                 if (dis < threshold) {
                     if (res.add_result(dis, idx)) {
                         threshold = res.threshold;
+                        nres += 1;
                     }
                 }
             }
@@ -692,6 +702,7 @@ int search_from_candidates(
             stats.n2++;
         }
         stats.ndis += ndis;
+        stats.nhops += nstep;
     }
 
     return nres;
@@ -814,6 +825,8 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             float dis = qdis(saved_j[icnt]);
             add_to_heap(saved_j[icnt], dis);
         }
+
+        stats.nhops += 1;
     }
 
     ++stats.n1;
@@ -850,84 +863,43 @@ HNSWStats HNSW::search(
     bool bounded_queue =
             params ? params->bounded_queue : this->search_bounded_queue;
 
-    if (upper_beam == 1) {
-        //  greedy search on upper levels
-        storage_idx_t nearest = entry_point;
-        float d_nearest = qdis(nearest);
+    //  greedy search on upper levels
+    storage_idx_t nearest = entry_point;
+    float d_nearest = qdis(nearest);
 
-        for (int level = max_level; level >= 1; level--) {
-            greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
-        }
+    for (int level = max_level; level >= 1; level--) {
+        HNSWStats local_stats =
+                greedy_update_nearest(*this, qdis, level, nearest, d_nearest);
+        stats.combine(local_stats);
+    }
 
-        int ef = std::max(params ? params->efSearch : efSearch, k);
-        if (bounded_queue) { // this is the most common branch
-            MinimaxHeap candidates(ef);
+    int ef = std::max(params ? params->efSearch : efSearch, k);
+    if (bounded_queue) { // this is the most common branch
+        MinimaxHeap candidates(ef);
 
-            candidates.push(nearest, d_nearest);
+        candidates.push(nearest, d_nearest);
 
-            search_from_candidates(
-                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
-        } else {
-            std::priority_queue<Node> top_candidates =
-                    search_from_candidate_unbounded(
-                            *this,
-                            Node(d_nearest, nearest),
-                            qdis,
-                            ef,
-                            &vt,
-                            stats);
-
-            while (top_candidates.size() > k) {
-                top_candidates.pop();
-            }
-
-            while (!top_candidates.empty()) {
-                float d;
-                storage_idx_t label;
-                std::tie(d, label) = top_candidates.top();
-                res.add_result(d, label);
-                top_candidates.pop();
-            }
-        }
-
-        vt.advance();
-
+        search_from_candidates(
+                *this, qdis, res, candidates, vt, stats, 0, 0, params);
     } else {
-        int candidates_size = upper_beam;
-        MinimaxHeap candidates(candidates_size);
+        std::priority_queue<Node> top_candidates =
+                search_from_candidate_unbounded(
+                        *this, Node(d_nearest, nearest), qdis, ef, &vt, stats);
 
-        std::vector<idx_t> I_to_next(candidates_size);
-        std::vector<float> D_to_next(candidates_size);
+        while (top_candidates.size() > k) {
+            top_candidates.pop();
+        }
 
-        HeapBlockResultHandler<C> block_resh(
-                1, D_to_next.data(), I_to_next.data(), candidates_size);
-        HeapBlockResultHandler<C>::SingleResultHandler resh(block_resh);
-
-        int nres = 1;
-        I_to_next[0] = entry_point;
-        D_to_next[0] = qdis(entry_point);
-
-        for (int level = max_level; level >= 0; level--) {
-            // copy I, D -> candidates
-
-            candidates.clear();
-
-            for (int i = 0; i < nres; i++) {
-                candidates.push(I_to_next[i], D_to_next[i]);
-            }
-
-            if (level == 0) {
-                nres = search_from_candidates(
-                        *this, qdis, res, candidates, vt, stats, 0);
-            } else {
-                resh.begin(0);
-                nres = search_from_candidates(
-                        *this, qdis, resh, candidates, vt, stats, level);
-                resh.end();
-            }
-            vt.advance();
+        while (!top_candidates.empty()) {
+            float d;
+            storage_idx_t label;
+            std::tie(d, label) = top_candidates.top();
+            res.add_result(d, label);
+            top_candidates.pop();
         }
     }
+
+    vt.advance();
 
     return stats;
 }
@@ -973,6 +945,7 @@ void HNSW::search_level_0(
                     0,
                     nres,
                     params);
+            nres = std::min(nres, candidates_size);
         }
     } else if (search_type == 2) {
         int candidates_size = std::max(efSearch, int(k));
@@ -1054,7 +1027,99 @@ void HNSW::MinimaxHeap::clear() {
     nvalid = k = 0;
 }
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
+    assert(k > 0);
+    static_assert(
+            std::is_same<storage_idx_t, int32_t>::value,
+            "This code expects storage_idx_t to be int32_t");
+
+    int32_t min_idx = -1;
+    float min_dis = std::numeric_limits<float>::infinity();
+
+    __m512i min_indices = _mm512_set1_epi32(-1);
+    __m512 min_distances =
+            _mm512_set1_ps(std::numeric_limits<float>::infinity());
+    __m512i current_indices = _mm512_setr_epi32(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+    __m512i offset = _mm512_set1_epi32(16);
+
+    // The following loop tracks the rightmost index with the min distance.
+    // -1 index values are ignored.
+    const int k16 = (k / 16) * 16;
+    for (size_t iii = 0; iii < k16; iii += 16) {
+        __m512i indices =
+                _mm512_loadu_si512((const __m512i*)(ids.data() + iii));
+        __m512 distances = _mm512_loadu_ps(dis.data() + iii);
+
+        // This mask filters out -1 values among indices.
+        __mmask16 m1mask =
+                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
+
+        __mmask16 dmask =
+                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
+        __mmask16 finalmask = m1mask | dmask;
+
+        const __m512i min_indices_new = _mm512_mask_blend_epi32(
+                finalmask, current_indices, min_indices);
+        const __m512 min_distances_new =
+                _mm512_mask_blend_ps(finalmask, distances, min_distances);
+
+        min_indices = min_indices_new;
+        min_distances = min_distances_new;
+
+        current_indices = _mm512_add_epi32(current_indices, offset);
+    }
+
+    // leftovers
+    if (k16 != k) {
+        const __mmask16 kmask = (1 << (k - k16)) - 1;
+
+        __m512i indices = _mm512_mask_loadu_epi32(
+                _mm512_set1_epi32(-1), kmask, ids.data() + k16);
+        __m512 distances = _mm512_maskz_loadu_ps(kmask, dis.data() + k16);
+
+        // This mask filters out -1 values among indices.
+        __mmask16 m1mask =
+                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
+
+        __mmask16 dmask =
+                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
+        __mmask16 finalmask = m1mask | dmask;
+
+        const __m512i min_indices_new = _mm512_mask_blend_epi32(
+                finalmask, current_indices, min_indices);
+        const __m512 min_distances_new =
+                _mm512_mask_blend_ps(finalmask, distances, min_distances);
+
+        min_indices = min_indices_new;
+        min_distances = min_distances_new;
+    }
+
+    // grab min distance
+    min_dis = _mm512_reduce_min_ps(min_distances);
+    // blend
+    __mmask16 mindmask =
+            _mm512_cmpeq_ps_mask(min_distances, _mm512_set1_ps(min_dis));
+    // pick the max one
+    min_idx = _mm512_mask_reduce_max_epi32(mindmask, min_indices);
+
+    if (min_idx == -1) {
+        return -1;
+    }
+
+    if (vmin_out) {
+        *vmin_out = min_dis;
+    }
+    int ret = ids[min_idx];
+    ids[min_idx] = -1;
+    --nvalid;
+    return ret;
+}
+
+#elif __AVX2__
+
 int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
     assert(k > 0);
     static_assert(

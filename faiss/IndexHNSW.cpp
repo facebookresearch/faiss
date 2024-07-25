@@ -255,7 +255,7 @@ void hnsw_search(
         FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
         efSearch = params->efSearch;
     }
-    size_t n1 = 0, n2 = 0, ndis = 0;
+    size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -263,7 +263,7 @@ void hnsw_search(
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
 
-#pragma omp parallel
+#pragma omp parallel if (i1 - i0 > 1)
         {
             VisitedTable vt(index->ntotal);
             typename BlockResultHandler::SingleResultHandler res(bres);
@@ -271,7 +271,7 @@ void hnsw_search(
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(index->storage));
 
-#pragma omp for reduction(+ : n1, n2, ndis) schedule(guided)
+#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 res.begin(i);
                 dis->set_query(x + i * index->d);
@@ -280,13 +280,14 @@ void hnsw_search(
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;
+                nhops += stats.nhops;
                 res.end();
             }
         }
         InterruptCallback::check();
     }
 
-    hnsw_stats.combine({n1, n2, ndis});
+    hnsw_stats.combine({n1, n2, ndis, nhops});
 }
 
 } // anonymous namespace
@@ -612,6 +613,10 @@ void IndexHNSW::permute_entries(const idx_t* perm) {
     hnsw.permute_entries(perm);
 }
 
+DistanceComputer* IndexHNSW::get_distance_computer() const {
+    return storage->get_distance_computer();
+}
+
 /**************************************************************
  * IndexHNSWFlat implementation
  **************************************************************/
@@ -635,8 +640,13 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
 
 IndexHNSWPQ::IndexHNSWPQ() = default;
 
-IndexHNSWPQ::IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits)
-        : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits), M) {
+IndexHNSWPQ::IndexHNSWPQ(
+        int d,
+        int pq_m,
+        int M,
+        int pq_nbits,
+        MetricType metric)
+        : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits, metric), M) {
     own_fields = true;
     is_trained = false;
 }
@@ -762,7 +772,7 @@ void IndexHNSW2Level::search(
         IndexHNSW::search(n, x, k, distances, labels);
 
     } else { // "mixed" search
-        size_t n1 = 0, n2 = 0, ndis = 0;
+        size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
 
         const IndexIVFPQ* index_ivfpq =
                 dynamic_cast<const IndexIVFPQ*>(storage);
@@ -791,10 +801,10 @@ void IndexHNSW2Level::search(
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
 
-            int candidates_size = hnsw.upper_beam;
+            constexpr int candidates_size = 1;
             MinimaxHeap candidates(candidates_size);
 
-#pragma omp for reduction(+ : n1, n2, ndis)
+#pragma omp for reduction(+ : n1, n2, ndis, nhops)
             for (idx_t i = 0; i < n; i++) {
                 idx_t* idxi = labels + i * k;
                 float* simi = distances + i * k;
@@ -816,7 +826,7 @@ void IndexHNSW2Level::search(
 
                 candidates.clear();
 
-                for (int j = 0; j < hnsw.upper_beam && j < k; j++) {
+                for (int j = 0; j < k; j++) {
                     if (idxi[j] < 0)
                         break;
                     candidates.push(idxi[j], simi[j]);
@@ -840,6 +850,7 @@ void IndexHNSW2Level::search(
                 n1 += search_stats.n1;
                 n2 += search_stats.n2;
                 ndis += search_stats.ndis;
+                nhops += search_stats.nhops;
 
                 vt.advance();
                 vt.advance();
@@ -848,7 +859,7 @@ void IndexHNSW2Level::search(
             }
         }
 
-        hnsw_stats.combine({n1, n2, ndis});
+        hnsw_stats.combine({n1, n2, ndis, nhops});
     }
 }
 
