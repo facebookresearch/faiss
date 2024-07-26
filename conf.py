@@ -18,7 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Faiss'
-copyright = 'Facebook, Inc. and its affiliates.'
+copyright = 'Meta Platforms, Inc. and affiliates'
+
 author = 'Hervé Jégou, Matthijs Douze, Jeff Johnson, Lucas Hosseini'
 
 
