@@ -37,7 +37,7 @@ runs:
         if [ "${{ runner.arch }}" = "ARM64" ]; then
           # OpenBlas requires a openmp build type (https://github.com/facebookresearch/faiss/issues/3700)
           # conda install -y -q -c conda-forge openblas[build=*openmp*]
-          conda install -y -q -c conda-forge openblas[build=*openmp*]  
+          conda install -y -q -c conda-forge openblas[build!=*pthreads*]  
           conda install -y -q -c conda-forge gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
