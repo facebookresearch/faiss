@@ -32,8 +32,7 @@ runs:
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q openblas='*=*openmp*' 
-          conda install -y -q -c conda-forge gxx_linux-aarch64 sysroot_linux-aarch64
+          conda install -y -q -c conda-forge libopenblas='*=*openmp*' gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
         # install base packages for X86_64
