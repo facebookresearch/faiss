@@ -35,26 +35,6 @@
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
-extern "C" {
-
-/* declare BLAS functions, see http://www.netlib.org/clapack/cblas/ */
-
-int sgemm_(
-        const char* transa,
-        const char* transb,
-        FINTEGER* m,
-        FINTEGER* n,
-        FINTEGER* k,
-        const float* alpha,
-        const float* a,
-        FINTEGER* lda,
-        const float* b,
-        FINTEGER* ldb,
-        float* beta,
-        float* c,
-        FINTEGER* ldc);
-}
-
 namespace faiss {
 
 using MinimaxHeap = HNSW::MinimaxHeap;
@@ -340,7 +320,7 @@ void IndexHNSW::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     using RH = RangeSearchBlockResultHandler<HNSW::C>;
-    RH bres(result, radius);
+    RH bres(result, is_similarity_metric(metric_type) ? -radius : radius);
 
     hnsw_search(this, n, x, bres, params);
 
