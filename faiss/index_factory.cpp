@@ -530,11 +530,12 @@ Index* parse_other_indexes(
     }
 
     // IndexLSH
-    if (match("LSH(r?)(t?)")) {
-        bool rotate_data = sm[1].length() > 0;
-        bool train_thresholds = sm[2].length() > 0;
+    if (match("LSH([0-9]*)(r?)(t?)")) {
+        int nbits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : d;
+        bool rotate_data = sm[2].length() > 0;
+        bool train_thresholds = sm[3].length() > 0;
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
-        return new IndexLSH(d, d, rotate_data, train_thresholds);
+        return new IndexLSH(d, nbits, rotate_data, train_thresholds);
     }
 
     // IndexLattice
