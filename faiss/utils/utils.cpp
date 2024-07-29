@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <faiss/Index.h>
 #include <faiss/utils/utils.h>
 
 #include <cassert>
@@ -129,6 +130,10 @@ std::string get_compile_options() {
     options += gpu_compile_options;
 
     return options;
+}
+
+std::string get_version() {
+    return VERSION_STRING;
 }
 
 #ifdef _MSC_VER

@@ -11,9 +11,10 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  sve-cmake:
-    name: SVE CMake on Arm64
-    runs-on: faiss-arm-runner
+  linux-arm64-SVE-cmake:
+    name: Linux arm64 SVE (cmake)
+    runs-on: faiss-aws-r8g.large
+    continue-on-error: true # non-blocking mode for now
     steps:
       - name: Checkout
         uses: actions/checkout@v4
