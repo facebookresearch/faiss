@@ -124,6 +124,7 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
   generate code using optimized SIMD instructions (possible values are `generic`,
   `avx2` and `avx512`, by increasing order of optimization),
+  - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`)
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
