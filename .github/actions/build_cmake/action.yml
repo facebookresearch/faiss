@@ -24,13 +24,10 @@ runs:
       shell: bash
       run: |
         # initialize Conda
-        eval "$(conda shell.bash hook)"
-        conda activate test
-        conda config --set solver libmamba
+        # conda config --set solver libmamba
         conda update -y -q conda
 
         echo "$CONDA/bin" >> $GITHUB_PATH
-
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
