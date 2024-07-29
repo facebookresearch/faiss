@@ -26,6 +26,7 @@ runs:
         # initialize Conda
         conda config --set solver libmamba
         conda update -y -q conda
+        conda activate
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.11 cmake make swig numpy scipy pytest
