@@ -24,8 +24,10 @@ runs:
       shell: bash
       run: |
         # initialize Conda
-        # conda config --set solver libmamba
+        conda config --set solver libmamba
         conda update -y -q conda
+        conda update --all --yes
+
 
         echo "$CONDA/bin" >> $GITHUB_PATH
 
