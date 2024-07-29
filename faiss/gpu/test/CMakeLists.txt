@@ -21,11 +21,10 @@
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
 if(USE_ROCM)
-find_package(HIP REQUIRED)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest $<$<BOOL:${USE_ROCM}>:hip::host>)
 else()
-find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
+  find_package(CUDAToolkit REQUIRED)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
 endif()
 
 macro(faiss_gpu_test file)
@@ -43,25 +42,20 @@ faiss_gpu_test(TestGpuIndexBinaryFlat.cpp)
 faiss_gpu_test(TestGpuMemoryException.cpp)
 faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
-if(USE_ROCM)
-faiss_gpu_test(TestGpuDistance.hip)
-faiss_gpu_test(TestGpuSelect.hip)
-else()
-faiss_gpu_test(TestGpuDistance.cu)
-faiss_gpu_test(TestGpuSelect.cu)
+faiss_gpu_test(TestGpuDistance.${GPU_EXT_PREFIX})
+faiss_gpu_test(TestGpuSelect.${GPU_EXT_PREFIX})
 
 if(FAISS_ENABLE_RAFT)
   faiss_gpu_test(TestGpuIndexCagra.cu)
-endif()
 endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
 
 if (USE_ROCM)
-target_link_libraries(demo_ivfpq_indexing_gpu
-  PRIVATE faiss gtest_main hip::host)
+  target_link_libraries(demo_ivfpq_indexing_gpu
+    PRIVATE faiss gtest_main $<$<BOOL:${USE_ROCM}>:hip::host>)
 else()
-target_link_libraries(demo_ivfpq_indexing_gpu
-  PRIVATE faiss gtest_main CUDA::cudart)
+  target_link_libraries(demo_ivfpq_indexing_gpu
+    PRIVATE faiss gtest_main CUDA::cudart)
 endif()
