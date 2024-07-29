@@ -24,14 +24,18 @@ runs:
       shell: bash
       run: |
         # initialize Conda
+        eval "$(conda shell.bash hook)"
+        conda activate
         conda config --set solver libmamba
         conda update -y -q conda
+
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.11 cmake make swig numpy scipy pytest
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
+          # OpenBlas requires a openmp build type (https://github.com/facebookresearch/faiss/issues/3700)
           conda install -y -q -c conda-forge openblas=*=*openmp* gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
