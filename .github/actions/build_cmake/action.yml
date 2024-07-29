@@ -26,14 +26,14 @@ runs:
         # initialize Conda
         conda config --set solver libmamba
         conda update -y -q conda
-        conda activate
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.11 cmake make swig numpy scipy pytest
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas='*=*openmp*' gxx_linux-aarch64 sysroot_linux-aarch64
+          conda install -y -q openblas='*=*openmp*' 
+          conda install -y -q -c conda-forge gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
         # install base packages for X86_64
