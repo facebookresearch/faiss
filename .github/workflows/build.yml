@@ -99,9 +99,8 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         continue-on-error: true # non-blocking mode for now
-      # TODO(T197096427): uncomment this once SVE PR is merged
-      #   with:
-      #     opt_level: sve
+        with:
+          opt_level: sve
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
     needs: linux-x86_64-cmake
