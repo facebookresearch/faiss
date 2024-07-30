@@ -65,35 +65,18 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
-
-        if [ "${{ runner.arch }}" = "X64" ]; then
-          cmake -B build \
-                -DBUILD_TESTING=ON \
-                -DBUILD_SHARED_LIBS=ON  \
-                -DFAISS_ENABLE_GPU=${{ inputs.gpu }}  \
-                -DFAISS_ENABLE_RAFT=${{ inputs.raft }}  \
-                -DFAISS_OPT_LEVEL=${{ inputs.opt_level }}  \
-                -DFAISS_ENABLE_C_API=ON  \
-                -DPYTHON_EXECUTABLE=$CONDA/bin/python  \
-                -DCMAKE_BUILD_TYPE=Release  \
-                -DBLA_VENDOR=Intel10_64_dyn \
-                -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
-                .
-        elif [ "${{ runner.arch }}" = "ARM64" ]; then
-          cmake -B build \
-                -DBUILD_TESTING=ON \
-                -DBUILD_SHARED_LIBS=ON  \
-                -DFAISS_ENABLE_GPU=${{ inputs.gpu }}  \
-                -DFAISS_ENABLE_RAFT=${{ inputs.raft }}  \
-                -DFAISS_OPT_LEVEL=${{ inputs.opt_level }}  \
-                -DFAISS_ENABLE_C_API=ON  \
-                -DPYTHON_EXECUTABLE=$CONDA/bin/python  \
-                -DCMAKE_BUILD_TYPE=Release  \
-                .
-        else
-          echo "Encountered unexpected platform ${{ runner.arch }}"
-          exit 1
-        fi
+        cmake -B build \
+              -DBUILD_TESTING=ON \
+              -DBUILD_SHARED_LIBS=ON \
+              -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
+              -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_C_API=ON \
+              -DPYTHON_EXECUTABLE=$CONDA/bin/python \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
+              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
+              .
         make -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
