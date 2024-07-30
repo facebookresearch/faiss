@@ -46,6 +46,22 @@ typedef uint64_t size_t;
  * the language includes for their respective matrix libraries.
  *******************************************************************/
 
+%typemap(in, noblock=1) faiss::IDSelector * sel(void  *argp = 0, int res = 0) {
+  printf("IN TYPEMAP. Prints last, but gets parsed first. Setting $1 = NULL shows that.\n");
+  int own;
+  SwigPyObject *sobj;
+  own = 0;
+  res = SWIG_ConvertPtrAndOwn($input, &argp, $descriptor, 0, &own);
+  sobj = SWIG_Python_GetSwigThis($input);
+  printf("sobj own? %d\n", sobj->own); // TODO: what about ownership after conversion?
+  printf("OWN after conversion: %d\n", own);
+  if (!SWIG_IsOK(res)) { 
+    %argument_fail(res, "$type", $symname, $argnum); 
+  }
+  $1 = %reinterpret_cast(argp, $ltype);
+  printf("$1 pointer:  %p  %s\n", $1, $ltype);
+}
+
 %{
 
 

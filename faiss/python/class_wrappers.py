@@ -1227,6 +1227,9 @@ def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):
             if not class_owns:
                 add_to_referenced_objects(self, subset)
         self.original_init(*args)
+        print("inside replacement_init 1: " + str(self.this.own()))
+        self.this.own(True)
+        print("inside replacement_init 2: " + str(self.this.own()))
 
     the_class.__init__ = replacement_init
 

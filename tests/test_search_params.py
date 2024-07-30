@@ -397,6 +397,31 @@ class TestSearchParams(unittest.TestCase):
         self.assertTrue(sel1.this.own())
         self.assertTrue(sel2.this.own())
 
+    def test_ownership_2(self):
+        res = []
+        params = faiss.SearchParameters()
+        subset = np.arange(0, 5000000)
+        print("creating temp")
+        # temp = faiss.IDSelectorBatch(subset)
+        # print("temp result: " + str(temp))
+        print("creating params.sel")
+        params.sel = faiss.IDSelectorBatch(subset)
+        print("params.sel result: " + str(params.sel))
+        print("outside in test: " + str(params.sel.this.own()) + "   " + str(params.sel.thisown))
+        # params.sel = temp # With this line, NO PRINT AT ALL. Without this line, prints JUST hi2
+        # for _ in range(20):
+        #     params = faiss.SearchParameters()
+        #     subset = np.arange(0, 5000000)
+        #     params.sel = faiss.IDSelectorBatch(subset)
+        #     # print("outside in test: " + str(params.sel.this.own()) + "   " + str(params.sel.thisown))
+        #     # params.sel.this.own(True)
+        #     mem_usage = faiss.get_mem_usage_kb() / 1024 ** 2
+        #     res.append(round(mem_usage, 2))
+        print(res)
+        gc.collect()
+        print("last line?")
+        self.assertTrue(False)
+
 
 class TestSelectorCallback(unittest.TestCase):
 
