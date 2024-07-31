@@ -95,7 +95,7 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
 
     FAISS_THROW_IF_NOT_MSG(
             !config.use_cuvs,
-            "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
+            "GpuIndexIVFPQ: cuVS does not support separate coarseQuantizer");
 
     verifyPQSettings_();
 }
@@ -361,7 +361,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // RAFT does not support using an external index for assignment. Fall back
+    // cuVS does not support using an external index for assignment. Fall back
     // to the classical GPU impl
     if (should_use_cuvs(config_)) {
 #if defined USE_NVIDIA_CUVS

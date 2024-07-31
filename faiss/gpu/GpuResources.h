@@ -163,7 +163,6 @@ struct AllocRequest : public AllocInfo {
 
 #if defined USE_NVIDIA_CUVS
     rmm::mr::device_memory_resource* mr = nullptr;
-    // rmm::device_async_resource_ref mr;
 #endif
 };
 

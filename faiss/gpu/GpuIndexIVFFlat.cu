@@ -74,7 +74,7 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
           reserveMemoryVecs_(0) {
     FAISS_THROW_IF_NOT_MSG(
             !should_use_cuvs(config),
-            "GpuIndexIVFFlat: RAFT does not support separate coarseQuantizer");
+            "GpuIndexIVFFlat: cuVS does not support separate coarseQuantizer");
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
     if (this->is_trained) {
@@ -263,10 +263,10 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
                     raft_handle, cuvs_index_params, dataset_d);
         } else {
-            auto x_view =
+            auto dataset_h =
                     raft::make_host_matrix_view<const float, idx_t>(x, n, d);
             cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
-                    raft_handle, cuvs_index_params, x_view);
+                    raft_handle, cuvs_index_params, dataset_h);
         }
 
         quantizer->train(

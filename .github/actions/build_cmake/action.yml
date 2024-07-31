@@ -112,5 +112,5 @@ runs:
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.cuvs }}
+        name: test-results-${{ runner.arch }}-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.cuvs }}
         path: test-results
