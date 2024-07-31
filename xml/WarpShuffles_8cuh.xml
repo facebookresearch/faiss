@@ -111,6 +111,22 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl_xor(v,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl(half<sp/>v,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>__half2uint_rn(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vu<sp/>=<sp/>__shfl(vu,<sp/>srcLane,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__uint2half_rn(vu);</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl_xor(half<sp/>v,<sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>__half2uint_rn(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vu<sp/>=<sp/>__shfl_xor(vu,<sp/>laneMask,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__uint2half_rn(vu);</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>9.0+<sp/>has<sp/>half<sp/>shuffle</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl(half<sp/>v,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
@@ -131,6 +147,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>CUDA_VERSION</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

@@ -21,6 +21,23 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>__AMDGCN_WAVEFRONT_SIZE<sp/>==<sp/>32u</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>64;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>is<sp/>a<sp/>memory<sp/>barrier<sp/>for<sp/>intra-warp<sp/>writes<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>
+<codeline><highlight class="normal">__forceinline__<sp/>__device__<sp/>void<sp/>warpFence()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__threadfence_block();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#define<sp/>GPU_MAX_SELECTION_K<sp/>2048</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#else<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">//<sp/>We<sp/>require<sp/>at<sp/>least<sp/>CUDA<sp/>8.0<sp/>for<sp/>compilation</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>8000</highlight></codeline>
 <codeline><highlight class="normal">#error<sp/>&quot;CUDA<sp/>&gt;=<sp/>8.0<sp/>is<sp/>required&quot;</highlight></codeline>
@@ -47,6 +64,8 @@
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>GPU_MAX_SELECTION_K<sp/>1024</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

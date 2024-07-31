@@ -93,7 +93,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>inputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>DimInput&gt;::get(input,<sp/>i);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>outputOffset<sp/>=<sp/>TensorInfoOffset&lt;T,<sp/>DimOutput&gt;::get(output,<sp/>i);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.data[outputOffset]<sp/>=<sp/>__ldg(&amp;input.data[inputOffset]);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.data[outputOffset]<sp/>=<sp/>input.data[inputOffset];</highlight></codeline>

@@ -1741,6 +1741,38 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="77" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="77" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="DeviceUtils_8h_1a4f1b25409e96c8fee1814a0631470a23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::getWarpSize</definition>
+        <argsstring>(int device)</argsstring>
+        <name>getWarpSize</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the warp size of the given GPU device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="80" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="80" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="DeviceUtils_8h_1a59e67ef6dc543409cc9f981d755df14b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::getWarpSizeCurrentDevice</definition>
+        <argsstring>()</argsstring>
+        <name>getWarpSizeCurrentDevice</name>
+        <briefdescription>
+<para>Equivalent to getWarpSize(getCurrentDevice()) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="83" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="83" declcolumn="5"/>
+      </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::gpu::getFreeMemory</definition>
@@ -1757,7 +1789,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="80" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="80" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="86" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="86" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5a1d0d4863e18f7c0c154089d57dd61a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1771,7 +1803,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="83" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="83" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="89" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="89" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1801,7 +1833,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="164" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="164" bodyend="184"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="170" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="170" bodyend="190"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1828,7 +1860,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="189" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="189" bodyend="191"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="195" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="195" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1854,7 +1886,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="194" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="194" bodyend="196"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="200" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="200" bodyend="202"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1875,7 +1907,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="198" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="198" bodyend="202"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="204" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="204" bodyend="208"/>
       </memberdef>
       <memberdef kind="function" id="RaftUtils_8h_1a09ddc3176b613dae5b8cd9a61c6b3d4f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>raft::distance::DistanceType</type>

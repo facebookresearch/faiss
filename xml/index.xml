@@ -9465,6 +9465,8 @@
     <member refid="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kind="function"><name>getFullUnifiedMemSupportCurrentDevice</name></member>
     <member refid="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37" kind="function"><name>getTensorCoreSupport</name></member>
     <member refid="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817" kind="function"><name>getTensorCoreSupportCurrentDevice</name></member>
+    <member refid="DeviceUtils_8h_1a4f1b25409e96c8fee1814a0631470a23" kind="function"><name>getWarpSize</name></member>
+    <member refid="DeviceUtils_8h_1a59e67ef6dc543409cc9f981d755df14b" kind="function"><name>getWarpSizeCurrentDevice</name></member>
     <member refid="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732" kind="function"><name>getFreeMemory</name></member>
     <member refid="DeviceUtils_8h_1a5a1d0d4863e18f7c0c154089d57dd61a" kind="function"><name>getFreeMemoryCurrentDevice</name></member>
     <member refid="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" kind="function"><name>streamWaitBase</name></member>

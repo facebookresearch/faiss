@@ -137,7 +137,7 @@
 <codeline lineno="15"><highlight class="comment">///<sp/>Assertions</highlight></codeline>
 <codeline lineno="16"><highlight class="comment">///</highlight></codeline>
 <codeline lineno="17"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__CUDA_ARCH__)<sp/>||<sp/>defined(USE_ROCM)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT(X)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_MSG(X,<sp/>MSG)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPU_FAISS_ASSERT_FMT(X,<sp/>FMT,<sp/>...)<sp/>assert(X)</highlight><highlight class="normal"></highlight></codeline>

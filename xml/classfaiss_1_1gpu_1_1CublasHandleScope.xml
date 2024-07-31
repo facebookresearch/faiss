@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="107" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="113" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="99" column="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="105" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CublasHandleScope_1aebc00829e05d127f84f6502c61911109" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="100" column="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="106" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CublasHandleScope_1ad72c3f76d76df0a5b8947b4a07a37cb5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>cublasHandle_t</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="102" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="102" bodyend="104"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="108" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="108" bodyend="110"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -64,7 +64,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/DeviceUtils.h" line="97" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="97" bodyend="108"/>
+    <location file="faiss/gpu/utils/DeviceUtils.h" line="103" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="103" bodyend="114"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1" prot="private" virt="non-virtual"><scope>faiss::gpu::CublasHandleScope</scope><name>blasHandle_</name></member>
       <member refid="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7" prot="public" virt="non-virtual"><scope>faiss::gpu::CublasHandleScope</scope><name>CublasHandleScope</name></member>

@@ -5446,7 +5446,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="173" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="173" bodyend="198"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="174" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="174" bodyend="201"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

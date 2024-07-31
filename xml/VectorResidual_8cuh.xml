@@ -19,6 +19,8 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/Index.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda_fp16.h&gt;</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>

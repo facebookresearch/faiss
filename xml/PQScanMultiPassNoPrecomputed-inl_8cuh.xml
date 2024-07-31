@@ -70,11 +70,11 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vecsBase<sp/>=<sp/>(EncodeT*)listCodes[listId];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>numVecs<sp/>=<sp/>listLengths[listId];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>many<sp/>vector<sp/>blocks<sp/>of<sp/>32<sp/>are<sp/>in<sp/>this<sp/>list?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>numBlocks<sp/>=<sp/>utils::divUp(numVecs,<sp/>(idx_t)32);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>How<sp/>many<sp/>vector<sp/>blocks<sp/>of<sp/>kWarpSize<sp/>are<sp/>in<sp/>this<sp/>list?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>numBlocks<sp/>=<sp/>utils::divUp(numVecs,<sp/>(idx_t)kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Number<sp/>of<sp/>EncodeT<sp/>words<sp/>per<sp/>each<sp/>dimension<sp/>of<sp/>block<sp/>of<sp/>32<sp/>vecs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>bytesPerVectorBlockDim<sp/>=<sp/>EncodeBits<sp/>*<sp/>32<sp/>/<sp/>8;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Number<sp/>of<sp/>EncodeT<sp/>words<sp/>per<sp/>each<sp/>dimension<sp/>of<sp/>block<sp/>of<sp/>kWarpSize<sp/>vecs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>bytesPerVectorBlockDim<sp/>=<sp/>EncodeBits<sp/>*<sp/>kWarpSize<sp/>/<sp/>8;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>wordsPerVectorBlockDim<sp/>=</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bytesPerVectorBlockDim<sp/>/<sp/>sizeof(EncodeT);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>wordsPerVectorBlock<sp/>=<sp/>wordsPerVectorBlockDim<sp/>*<sp/>numSubQuantizers;</highlight></codeline>

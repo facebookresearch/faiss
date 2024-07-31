@@ -291,7 +291,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>0;</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>

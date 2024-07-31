@@ -7,7 +7,7 @@
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includes refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includes>
     <incdepgraph>
-      <node id="19">
+      <node id="25">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
         <childnode refid="2" relation="include">
@@ -15,6 +15,18 @@
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="16">
@@ -50,9 +62,11 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -67,11 +81,20 @@
       <node id="9">
         <label>string</label>
       </node>
+      <node id="21">
+        <label>exception</label>
+      </node>
       <node id="10">
         <label>typeinfo</label>
       </node>
       <node id="7">
         <label>cstdio</label>
+      </node>
+      <node id="23">
+        <label>vector</label>
+      </node>
+      <node id="22">
+        <label>utility</label>
       </node>
       <node id="8">
         <label>sstream</label>
@@ -106,6 +129,9 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
+      <node id="24">
+        <label>cstdlib</label>
+      </node>
       <node id="12">
         <label>climits</label>
       </node>
@@ -129,11 +155,25 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="26">
         <label>type_traits</label>
       </node>
       <node id="14">
         <label>cstring</label>
+      </node>
+      <node id="19">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

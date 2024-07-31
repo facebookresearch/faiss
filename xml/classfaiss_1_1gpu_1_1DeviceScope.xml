@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="93" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="99" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="89" column="14"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="95" column="14"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1DeviceScope_1a418b10428f83a90c6b7fc4aad6cd9cfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="90" column="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="96" column="5"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -55,7 +55,7 @@
     <detaileddescription>
 <para>RAII object to set the current device, and restore the previous device upon destruction </para>
     </detaileddescription>
-    <location file="faiss/gpu/utils/DeviceUtils.h" line="87" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="87" bodyend="94"/>
+    <location file="faiss/gpu/utils/DeviceUtils.h" line="93" column="1" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="93" bodyend="100"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9" prot="public" virt="non-virtual"><scope>faiss::gpu::DeviceScope</scope><name>DeviceScope</name></member>
       <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c" prot="private" virt="non-virtual"><scope>faiss::gpu::DeviceScope</scope><name>prevDevice_</name></member>

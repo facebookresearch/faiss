@@ -229,15 +229,15 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Coarse<sp/>quantizer<sp/>centroids<sp/>available<sp/>on<sp/>GPU</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>2,<sp/>true&gt;<sp/>ivfCentroids_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Whether<sp/>or<sp/>not<sp/>our<sp/>index<sp/>uses<sp/>an<sp/>interleaved<sp/>by<sp/>32<sp/>layout:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Whether<sp/>or<sp/>not<sp/>our<sp/>index<sp/>uses<sp/>an<sp/>interleaved<sp/>by<sp/>kWarpSize<sp/>layout:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>default<sp/>memory<sp/>layout<sp/>is<sp/>[vector][PQ/SQ<sp/>component]:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(v0<sp/>d0)<sp/>(v0<sp/>d1)<sp/>...<sp/>(v0<sp/>dD-1)<sp/>(v1<sp/>d0)<sp/>(v1<sp/>d1)<sp/>...</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>interleaved<sp/>by<sp/>32<sp/>memory<sp/>layout<sp/>is:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>[vector<sp/>/<sp/>32][PQ/SQ<sp/>component][vector<sp/>%<sp/>32]<sp/>with<sp/>padding:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>interleaved<sp/>by<sp/>kWarpSize<sp/>memory<sp/>layout<sp/>is:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>[vector<sp/>/<sp/>kWarpSize][PQ/SQ<sp/>component][vector<sp/>%<sp/>kWarpSize]<sp/>with<sp/>padding:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(v0<sp/>d0)<sp/>(v1<sp/>d0)<sp/>...<sp/>(v31<sp/>d0)<sp/>(v0<sp/>d1)<sp/>(v1<sp/>d1)<sp/>...<sp/>(v31<sp/>dD-1)<sp/>(v32<sp/>d0)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(v33<sp/>d0)<sp/>...<sp/>so<sp/>the<sp/>list<sp/>length<sp/>is<sp/>always<sp/>a<sp/>multiple<sp/>of<sp/>num<sp/>quantizers<sp/>*</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>32</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>kWarpSize</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>interleavedLayout_;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>How<sp/>are<sp/>user<sp/>indices<sp/>stored<sp/>on<sp/>the<sp/>GPU?</highlight></codeline>

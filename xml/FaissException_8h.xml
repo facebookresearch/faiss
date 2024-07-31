@@ -35,7 +35,7 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="40">
+      <node id="42">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
@@ -44,7 +44,7 @@
         <link refid="FaissException_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -75,6 +75,10 @@
         <childnode refid="23" relation="include">
         </childnode>
       </node>
+      <node id="39">
+        <label>faiss/utils/extra_distances.h</label>
+        <link refid="extra__distances_8h_source"/>
+      </node>
       <node id="33">
         <label>faiss/IndexShards.h</label>
         <link refid="IndexShards_8h_source"/>
@@ -101,6 +105,12 @@
         <label>faiss/gpu/utils/DeviceUtils.h</label>
         <link refid="DeviceUtils_8h_source"/>
         <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="39" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -133,11 +143,11 @@
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
       </node>
-      <node id="42">
+      <node id="44">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="41">
+      <node id="43">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
@@ -149,7 +159,7 @@
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
-      <node id="38">
+      <node id="40">
         <label>faiss/utils/simdlib_neon.h</label>
         <link refid="simdlib__neon_8h_source"/>
       </node>
@@ -251,16 +261,16 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="41">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h_source"/>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
-        </childnode>
         <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -291,6 +301,8 @@
         <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
         </childnode>
       </node>
       <node id="29">

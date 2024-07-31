@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="363" column="5" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="363" bodyend="366"/>
+        <location file="faiss/utils/hamming_distance/generic-inl.h" line="366" column="5" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="366" bodyend="369"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="368" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="368" bodyend="370"/>
+        <location file="faiss/utils/hamming_distance/generic-inl.h" line="371" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="371" bodyend="373"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="372" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="372" bodyend="374"/>
+        <location file="faiss/utils/hamming_distance/generic-inl.h" line="375" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="375" bodyend="377"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

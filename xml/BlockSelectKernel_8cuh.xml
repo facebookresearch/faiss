@@ -35,45 +35,47 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>initK,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>initV,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>((NumWarpQ<sp/>==<sp/>1<sp/>&amp;&amp;<sp/>NumThreadQ<sp/>==<sp/>1)<sp/>||<sp/>NumWarpQ<sp/>&gt;=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>K<sp/>smemK[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>IndexType<sp/>smemV[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__shared__<sp/>K<sp/>smemK[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__shared__<sp/>IndexType<sp/>smemV[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BlockSelect&lt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comparator&lt;K&gt;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ThreadsPerBlock&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>BlockSelect&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comparator&lt;K&gt;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)i);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Handle<sp/>last<sp/>remainder<sp/>fraction<sp/>of<sp/>a<sp/>warp<sp/>of<sp/>elements</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>in.getSize(1))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.addThreadQ(*inStart,<sp/>(IndexType)i);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Handle<sp/>last<sp/>remainder<sp/>fraction<sp/>of<sp/>a<sp/>warp<sp/>of<sp/>elements</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>in.getSize(1))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.addThreadQ(*inStart,<sp/>(IndexType)i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.reduce();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.reduce();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[row][i]<sp/>=<sp/>smemK[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[row][i]<sp/>=<sp/>smemV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[row][i]<sp/>=<sp/>smemK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[row][i]<sp/>=<sp/>smemV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
@@ -92,47 +94,49 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>initK,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>initV,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>((NumWarpQ<sp/>==<sp/>1<sp/>&amp;&amp;<sp/>NumThreadQ<sp/>==<sp/>1)<sp/>||<sp/>NumWarpQ<sp/>&gt;=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>K<sp/>smemK[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>IndexType<sp/>smemV[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__shared__<sp/>K<sp/>smemK[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__shared__<sp/>IndexType<sp/>smemV[kNumWarps<sp/>*<sp/>NumWarpQ];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BlockSelect&lt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comparator&lt;K&gt;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ThreadsPerBlock&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>BlockSelect&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comparator&lt;K&gt;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inKStart<sp/>=<sp/>inK[row][i].data();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexType*<sp/>inVStart<sp/>=<sp/>inV[row][i].data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K*<sp/>inKStart<sp/>=<sp/>inK[row][i].data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType*<sp/>inVStart<sp/>=<sp/>inV[row][i].data();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(inK.getSize(1),<sp/>(idx_t)kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(inK.getSize(1),<sp/>(idx_t)kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inKStart,<sp/>*inVStart);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inKStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inVStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inKStart,<sp/>*inVStart);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inKStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inVStart<sp/>+=<sp/>ThreadsPerBlock;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Handle<sp/>last<sp/>remainder<sp/>fraction<sp/>of<sp/>a<sp/>warp<sp/>of<sp/>elements</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>inK.getSize(1))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.addThreadQ(*inKStart,<sp/>*inVStart);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Handle<sp/>last<sp/>remainder<sp/>fraction<sp/>of<sp/>a<sp/>warp<sp/>of<sp/>elements</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>inK.getSize(1))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.addThreadQ(*inKStart,<sp/>*inVStart);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.reduce();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.reduce();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[row][i]<sp/>=<sp/>smemK[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[row][i]<sp/>=<sp/>smemV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[row][i]<sp/>=<sp/>smemK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[row][i]<sp/>=<sp/>smemV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>

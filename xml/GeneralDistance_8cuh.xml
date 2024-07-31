@@ -39,6 +39,12 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Initially<sp/>kWarpSize<sp/>was<sp/>used<sp/>for<sp/>the<sp/>x<sp/>and<sp/>y<sp/>tile<sp/>shape.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>works<sp/>when<sp/>kWarpSize<sp/>is<sp/>32<sp/>but<sp/>for<sp/>kWarpSize<sp/>64,</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>this<sp/>results<sp/>in<sp/>an<sp/>invalid<sp/>launch<sp/>configuration<sp/>of<sp/>64x64<sp/>block<sp/>size.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>32<sp/>is<sp/>a<sp/>reasonable<sp/>tile<sp/>size<sp/>for<sp/>both<sp/>kWarpSize<sp/>options.</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>int<sp/>TILE_SIZE<sp/>=<sp/>32;</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Reduction<sp/>tree<sp/>operator</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>DistanceOp,<sp/>int<sp/>N&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ReduceDistanceOp<sp/>{</highlight></codeline>
@@ -65,8 +71,8 @@
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Unroll,<sp/>int<sp/>DimMultiple,<sp/>typename<sp/>DistanceOp&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>DistanceOp</highlight></codeline>
 <codeline><highlight class="normal">reduce(const<sp/>DistanceOp&amp;<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>T<sp/>queryTile[kWarpSize][DimMultiple<sp/>*<sp/>kWarpSize<sp/>+<sp/>1],</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>T<sp/>vecTile[kWarpSize][DimMultiple<sp/>*<sp/>kWarpSize<sp/>+<sp/>1])<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>T<sp/>queryTile[TILE_SIZE][DimMultiple<sp/>*<sp/>TILE_SIZE<sp/>+<sp/>1],</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>T<sp/>vecTile[TILE_SIZE][DimMultiple<sp/>*<sp/>TILE_SIZE<sp/>+<sp/>1])<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DistanceOp<sp/>accs[Unroll];</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Unroll;<sp/>++i)<sp/>{</highlight></codeline>
@@ -79,8 +85,8 @@
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Unroll;<sp/>++i)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>(kWarpSize<sp/>*<sp/>DimMultiple<sp/>/<sp/>Unroll);<sp/>++j)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>idx<sp/>=<sp/>i<sp/>*<sp/>(kWarpSize<sp/>*<sp/>DimMultiple<sp/>/<sp/>Unroll)<sp/>+<sp/>j;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>(TILE_SIZE<sp/>*<sp/>DimMultiple<sp/>/<sp/>Unroll);<sp/>++j)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>idx<sp/>=<sp/>i<sp/>*<sp/>(TILE_SIZE<sp/>*<sp/>DimMultiple<sp/>/<sp/>Unroll)<sp/>+<sp/>j;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>accs[i].handle(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ConvertTo&lt;float&gt;::to(queryTileBase[idx]),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ConvertTo&lt;float&gt;::to(vecTileBase[idx]));</highlight></codeline>
@@ -92,23 +98,23 @@
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Our<sp/>general<sp/>distance<sp/>matrix<sp/>&quot;multiplication&quot;<sp/>kernel</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>DistanceOp,<sp/>bool<sp/>InnerContig&gt;</highlight></codeline>
-<codeline><highlight class="normal">__launch_bounds__(kWarpSize*<sp/>kWarpSize)<sp/>__global__<sp/>void<sp/>generalDistance(</highlight></codeline>
+<codeline><highlight class="normal">__launch_bounds__(TILE_SIZE*<sp/>TILE_SIZE)<sp/>__global__<sp/>void<sp/>generalDistance(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>2,<sp/>InnerContig&gt;<sp/>query,<sp/>//<sp/>m<sp/>x<sp/>k</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>2,<sp/>InnerContig&gt;<sp/>vec,<sp/><sp/><sp/>//<sp/>n<sp/>x<sp/>k</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceOp<sp/>op,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;<sp/>out)<sp/>{<sp/>//<sp/>m<sp/>x<sp/>n</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kDimMultiple<sp/>=<sp/>1;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>T<sp/>queryTile[kWarpSize][kWarpSize<sp/>*<sp/>kDimMultiple<sp/>+<sp/>1];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>T<sp/>vecTile[kWarpSize][kWarpSize<sp/>*<sp/>kDimMultiple<sp/>+<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>T<sp/>queryTile[TILE_SIZE][TILE_SIZE<sp/>*<sp/>kDimMultiple<sp/>+<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shared__<sp/>T<sp/>vecTile[TILE_SIZE][TILE_SIZE<sp/>*<sp/>kDimMultiple<sp/>+<sp/>1];</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>block<sp/>y<sp/>-&gt;<sp/>query</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>block<sp/>x<sp/>-&gt;<sp/>vector</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>queryBlock<sp/>=<sp/>idx_t(blockIdx.y)<sp/>*<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>queryBlock<sp/>=<sp/>idx_t(blockIdx.y)<sp/>*<sp/>TILE_SIZE;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>queryThread<sp/>=<sp/>queryBlock<sp/>+<sp/>threadIdx.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>vecBlock<sp/>=<sp/>idx_t(blockIdx.x)<sp/>*<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>vecBlock<sp/>=<sp/>idx_t(blockIdx.x)<sp/>*<sp/>TILE_SIZE;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>vecThreadLoad<sp/>=<sp/>vecBlock<sp/>+<sp/>threadIdx.y;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>vecThreadSave<sp/>=<sp/>vecBlock<sp/>+<sp/>threadIdx.x;</highlight></codeline>
 <codeline></codeline>
@@ -125,16 +131,16 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Interior<sp/>tile</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::roundDown(query.getSize(1),<sp/>kWarpSize<sp/>*<sp/>kDimMultiple);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::roundDown(query.getSize(1),<sp/>TILE_SIZE<sp/>*<sp/>kDimMultiple);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>k<sp/>=<sp/>threadIdx.x;<sp/>k<sp/>&lt;<sp/>limit;<sp/>k<sp/>+=<sp/>kWarpSize<sp/>*<sp/>kDimMultiple)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>k<sp/>=<sp/>threadIdx.x;<sp/>k<sp/>&lt;<sp/>limit;<sp/>k<sp/>+=<sp/>TILE_SIZE<sp/>*<sp/>kDimMultiple)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Load<sp/>query<sp/>tile</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kDimMultiple;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>kWarpSize]<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryBase[k<sp/>+<sp/>i<sp/>*<sp/>kWarpSize];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>kWarpSize]<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecBase[k<sp/>+<sp/>i<sp/>*<sp/>kWarpSize];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE]<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryBase[k<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE]<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecBase[k<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
@@ -150,13 +156,13 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(limit<sp/>&lt;<sp/>query.getSize(1))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kDimMultiple;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>k<sp/>=<sp/>limit<sp/>+<sp/>threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>k<sp/>=<sp/>limit<sp/>+<sp/>threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>kInBounds<sp/>=<sp/>k<sp/>&lt;<sp/>query.getSize(1);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>kWarpSize]<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE]<sp/>=</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kInBounds<sp/>?<sp/>queryBase[k]<sp/>:<sp/>ConvertTo&lt;T&gt;::to(0);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>kWarpSize]<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vecTileBase[threadIdx.x<sp/>+<sp/>i<sp/>*<sp/>TILE_SIZE]<sp/>=</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kInBounds<sp/>?<sp/>vecBase[k]<sp/>:<sp/>ConvertTo&lt;T&gt;::to(0);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
@@ -183,9 +189,9 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queryThreadInBounds<sp/>=<sp/>queryThread<sp/>&lt;<sp/>query.getSize(0);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vecThreadInBoundsLoad<sp/>=<sp/>vecThreadLoad<sp/>&lt;<sp/>vec.getSize(0);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vecThreadInBoundsSave<sp/>=<sp/>vecThreadSave<sp/>&lt;<sp/>vec.getSize(0);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(query.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(query.getSize(1),<sp/>TILE_SIZE);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>k<sp/>=<sp/>threadIdx.x;<sp/>k<sp/>&lt;<sp/>limit;<sp/>k<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>k<sp/>=<sp/>threadIdx.x;<sp/>k<sp/>&lt;<sp/>limit;<sp/>k<sp/>+=<sp/>TILE_SIZE)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Load<sp/>query<sp/>tile</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryTileBase[threadIdx.x]<sp/>=</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryThreadInBounds<sp/>?<sp/>queryBase[k]<sp/>:<sp/>ConvertTo&lt;T&gt;::to(0);</highlight></codeline>
@@ -197,7 +203,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>thread<sp/>(y,<sp/>x)<sp/>does<sp/>(query<sp/>y,<sp/>vec<sp/>x)</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kWarpSize;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>TILE_SIZE;<sp/>++i)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>acc.handle(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ConvertTo&lt;float&gt;::to(queryTileBase[i]),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ConvertTo&lt;float&gt;::to(vecTile[threadIdx.x][i]));</highlight></codeline>
@@ -251,10 +257,10 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(out.getSize(1)<sp/>==<sp/>vecs.getSize(0));</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>dim3<sp/>grid(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::divUp(vecs.getSize(0),<sp/>kWarpSize),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::divUp(query.getSize(0),<sp/>kWarpSize));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::divUp(vecs.getSize(0),<sp/>TILE_SIZE),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::divUp(query.getSize(0),<sp/>TILE_SIZE));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(grid.y<sp/>&lt;=<sp/>getMaxGridCurrentDevice().y);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>dim3<sp/>block(kWarpSize,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>dim3<sp/>block(TILE_SIZE,<sp/>TILE_SIZE);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>generalDistance&lt;&lt;&lt;grid,<sp/>block,<sp/>0,<sp/>stream&gt;&gt;&gt;(query,<sp/>vecs,<sp/>op,<sp/>out);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>

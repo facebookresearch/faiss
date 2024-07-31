@@ -173,7 +173,11 @@
 <codeline><highlight class="normal">struct<sp/>BitonicMergeStep&lt;K,<sp/>V,<sp/>1,<sp/>Dir,<sp/>Comp,<sp/>Low,<sp/>true&gt;<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K<sp/>k[1],<sp/>V<sp/>v[1])<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Use<sp/>warp<sp/>shuffles</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>16,<sp/>Dir,<sp/>Comp,<sp/>true&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(kWarpSize<sp/>==<sp/>32)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>16,<sp/>Dir,<sp/>Comp,<sp/>true&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>32,<sp/>Dir,<sp/>Comp,<sp/>true&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
@@ -538,13 +542,17 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>sort(K<sp/>k[1],<sp/>V<sp/>v[1])<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Update<sp/>this<sp/>code<sp/>if<sp/>this<sp/>changes</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>should<sp/>go<sp/>from<sp/>1<sp/>-&gt;<sp/>kWarpSize<sp/>in<sp/>multiples<sp/>of<sp/>2</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(kWarpSize<sp/>==<sp/>32,<sp/>&quot;unexpected<sp/>warp<sp/>size&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kWarpSize<sp/>==<sp/>32<sp/>||<sp/>kWarpSize<sp/>==<sp/>64,<sp/>&quot;unexpected<sp/>warp<sp/>size&quot;);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>1,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>2,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>4,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>8,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>16,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(kWarpSize<sp/>==<sp/>64)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpBitonicMergeLE16&lt;K,<sp/>V,<sp/>32,<sp/>Dir,<sp/>Comp,<sp/>false&gt;(k[0],<sp/>v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>

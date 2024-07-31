@@ -21,7 +21,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceUtils.h&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Some<sp/>compute<sp/>capabilities<sp/>have<sp/>full<sp/>float16<sp/>ALUs.</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>530</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>530<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>FAISS_USE_FULL_FLOAT16<sp/>1</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__<sp/>types</highlight></codeline>
 <codeline></codeline>

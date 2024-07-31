@@ -17,9 +17,50 @@
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;device_functions.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>OUT<sp/>=<sp/>getBitfield((uint32_t)VAL,<sp/>POS,<sp/>LEN);<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U64(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>OUT<sp/>=<sp/>getBitfield((uint64_t)VAL,<sp/>POS,<sp/>LEN);<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>uint32_t</highlight></codeline>
+<codeline><highlight class="normal">getBitfield(uint32_t<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__bitextract_u32(val,<sp/>pos,<sp/>len);</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>uint64_t</highlight></codeline>
+<codeline><highlight class="normal">getBitfield(uint64_t<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__bitextract_u64(val,<sp/>pos,<sp/>len);</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>int<sp/>setBitfield(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>toInsert,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>ret{0};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>printf(&quot;Runtime<sp/>Error<sp/>of<sp/>%s:<sp/>Unimplemented\n&quot;,<sp/>__PRETTY_FUNCTION__);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>int<sp/>getLaneId()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>::__lane_id();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#else<sp/>//<sp/>USE_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>defines<sp/>to<sp/>simplify<sp/>the<sp/>SASS<sp/>assembly<sp/>structure<sp/>file/line<sp/>in<sp/>the<sp/>profiler</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/>\</highlight></codeline>
@@ -96,6 +137,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;r&quot;(name),<sp/>&quot;r&quot;(numThreads)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
