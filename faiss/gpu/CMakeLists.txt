@@ -313,26 +313,23 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
-if (USE_ROCM)
-  target_link_libraries(faiss_gpu PRIVATE $<$<BOOL:${USE_ROCM}>:hip::host> $<$<BOOL:${USE_ROCM}>:roc::hipblas>)
-  target_compile_options(faiss_gpu PRIVATE)
-else()
-  # Prepares a host linker script and enables host linker to support
-  # very large device object files.
-  # This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
-  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld"
-  [=[
-  SECTIONS
-  {
-    .nvFatBinSegment : { *(.nvFatBinSegment) }
-    __nv_relfatbin : { *(__nv_relfatbin) }
-    .nv_fatbin : { *(.nv_fatbin) }
-  }
-  ]=]
-  )
-  target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+# Prepares a host linker script and enables host linker to support
+# very large device object files.
+# This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld"
+[=[
+SECTIONS
+{
+  .nvFatBinSegment : { *(.nvFatBinSegment) }
+  __nv_relfatbin : { *(__nv_relfatbin) }
+  .nv_fatbin : { *(.nv_fatbin) }
+}
+]=]
+)
+target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
 
+if (NOT USE_ROCM)
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass> $<$<BOOL:${FAISS_ENABLE_RAFT}>:OpenMP::OpenMP_CXX>)
-  target_compile_options(faiss_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr $<$<BOOL:${FAISS_ENABLE_RAFT}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
 endif()
+target_link_libraries(faiss_gpu PRIVATE $<$<NOT:${USE_ROCM}>:CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass> $<$<BOOL:${FAISS_ENABLE_RAFT}>:OpenMP::OpenMP_CXX>> $<$<BOOL:${USE_ROCM}>:hip::host> $<$<BOOL:${USE_ROCM}>:roc::hipblas>)
+target_compile_options(faiss_gpu PRIVATE $<$<NOT:${USE_ROCM}>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr $<$<BOOL:${FAISS_ENABLE_RAFT}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)

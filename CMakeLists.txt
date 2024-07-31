@@ -25,7 +25,7 @@ set(FAISS_LANGUAGES CXX)
 if(FAISS_ENABLE_GPU)
   # if ROCm install detected, assume ROCm/HIP is GPU device
   if (EXISTS /opt/rocm)
-    set(USE_ROCM TRUE)
+    set(USE_ROCM 1)
     list(APPEND FAISS_LANGUAGES HIP)
   else()
     list(APPEND FAISS_LANGUAGES CUDA)

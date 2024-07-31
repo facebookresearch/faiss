@@ -20,12 +20,11 @@
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-if(USE_ROCM)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest $<$<BOOL:${USE_ROCM}>:hip::host>)
-else()
+
+if(NOT USE_ROCM)
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
 endif()
+target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest $<$<NOT:${USE_ROCM}>:CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>> $<$<BOOL:${USE_ROCM}>:hip::host>)
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
@@ -52,10 +51,5 @@ endif()
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
 
-if (USE_ROCM)
-  target_link_libraries(demo_ivfpq_indexing_gpu
-    PRIVATE faiss gtest_main $<$<BOOL:${USE_ROCM}>:hip::host>)
-else()
-  target_link_libraries(demo_ivfpq_indexing_gpu
-    PRIVATE faiss gtest_main CUDA::cudart)
-endif()
+target_link_libraries(demo_ivfpq_indexing_gpu
+  PRIVATE faiss gtest_main $<$<NOT:${USE_ROCM}>:CUDA::cudart> $<$<BOOL:${USE_ROCM}>:hip::host>)
