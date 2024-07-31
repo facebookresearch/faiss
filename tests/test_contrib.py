@@ -147,7 +147,6 @@ class TestExhaustiveSearch(unittest.TestCase):
         xb = ds.get_database()
         D, I = faiss.knn(xq, xb, 10, metric=metric)
         threshold = float(D[:, -1].mean())
-        print(threshold)
 
         index = faiss.IndexFlat(32, metric)
         index.add(xb)
@@ -251,7 +250,6 @@ class TestRangeEval(unittest.TestCase):
         Inew = np.hstack(Inew)
 
         precision, recall = evaluation.range_PR(lims_ref, Iref, lims_new, Inew)
-        print(precision, recall)
 
         self.assertEqual(precision, 0.6)
         self.assertEqual(recall, 0.6)

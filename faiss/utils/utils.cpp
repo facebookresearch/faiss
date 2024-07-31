@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <faiss/Index.h>
 #include <faiss/utils/utils.h>
 
 #include <cassert>
@@ -118,6 +119,8 @@ std::string get_compile_options() {
     options += "AVX2 ";
 #elif __AVX512F__
     options += "AVX512 ";
+#elif defined(__ARM_FEATURE_SVE)
+    options += "SVE NEON ";
 #elif defined(__aarch64__)
     options += "NEON ";
 #else
@@ -127,6 +130,10 @@ std::string get_compile_options() {
     options += gpu_compile_options;
 
     return options;
+}
+
+std::string get_version() {
+    return VERSION_STRING;
 }
 
 #ifdef _MSC_VER

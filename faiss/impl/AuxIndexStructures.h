@@ -161,6 +161,14 @@ struct FAISS_API InterruptCallback {
     static size_t get_period_hint(size_t flops);
 };
 
+struct TimeoutCallback : InterruptCallback {
+    std::chrono::time_point<std::chrono::steady_clock> start;
+    double timeout;
+    bool want_interrupt() override;
+    void set_timeout(double timeout_in_seconds);
+    static void reset(double timeout_in_seconds);
+};
+
 /// set implementation optimized for fast access.
 struct VisitedTable {
     std::vector<uint8_t> visited;

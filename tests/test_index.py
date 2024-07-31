@@ -327,7 +327,7 @@ class TestScalarQuantizer(unittest.TestCase):
         D, I = index.search(xq, 10)
         nok['flat'] = (I[:, 0] == I_ref[:, 0]).sum()
 
-        for qname in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16".split():
+        for qname in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexIVFScalarQuantizer(quantizer, d, ncent,
                                                   qtype, faiss.METRIC_L2)
@@ -338,7 +338,6 @@ class TestScalarQuantizer(unittest.TestCase):
             D, I = index.search(xq, 10)
 
             nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
-        print(nok, nq)
 
         self.assertGreaterEqual(nok['flat'], nq * 0.6)
         # The tests below are a bit fragile, it happens that the
@@ -350,6 +349,7 @@ class TestScalarQuantizer(unittest.TestCase):
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
         self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
         self.assertGreaterEqual(nok['QT_fp16'], nok['QT_8bit'])
+        self.assertGreaterEqual(nok['QT_bf16'], nok['QT_8bit'])
 
     def test_4variants(self):
         d = 32
@@ -365,7 +365,7 @@ class TestScalarQuantizer(unittest.TestCase):
 
         nok = {}
 
-        for qname in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16".split():
+        for qname in "QT_4bit QT_4bit_uniform QT_8bit QT_8bit_uniform QT_fp16 QT_bf16".split():
             qtype = getattr(faiss.ScalarQuantizer, qname)
             index = faiss.IndexScalarQuantizer(d, qtype, faiss.METRIC_L2)
             index.train(xt)
@@ -373,13 +373,12 @@ class TestScalarQuantizer(unittest.TestCase):
             D, I = index.search(xq, 10)
             nok[qname] = (I[:, 0] == I_ref[:, 0]).sum()
 
-        print(nok, nq)
-
         self.assertGreaterEqual(nok['QT_8bit'], nq * 0.9)
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_4bit'])
         self.assertGreaterEqual(nok['QT_8bit'], nok['QT_8bit_uniform'])
         self.assertGreaterEqual(nok['QT_4bit'], nok['QT_4bit_uniform'])
         self.assertGreaterEqual(nok['QT_fp16'], nok['QT_8bit'])
+        self.assertGreaterEqual(nok['QT_bf16'], nq * 0.9)
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -442,7 +441,6 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         recons_err = np.mean(norm1(R_flat - xb[I_flat]))
 
-        print('Reconstruction error = %.3f' % recons_err)
         if eps is not None:
             self.assertLessEqual(recons_err, eps)
 
@@ -638,7 +636,6 @@ class TestReconsException(unittest.TestCase):
 
         # should not raise an exception
         index.reconstruct(5)
-        print(index.ntotal)
         index.reconstruct(150)
 
 

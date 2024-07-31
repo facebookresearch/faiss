@@ -40,11 +40,11 @@ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8
 ```
 In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
 
-A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-03-01):
+A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-05-15):
 ```
 conda create --name faiss_1.8.0
 conda activate faiss_1.8.0
-conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch pytorch-cuda numpy
+conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch=*=*cuda* pytorch-cuda=11 numpy
 ```
 
 ## Installing from conda-forge
@@ -122,8 +122,10 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `avx2` and `avx512`, by increasing order of optimization),
+  generate code using optimized SIMD/Vector instructions. possible values are
+  below:
+    - On x86\_64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
+    - On aarch64, `generic` and `sve` , by increasing order of optimization,
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS

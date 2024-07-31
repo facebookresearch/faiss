@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>
@@ -17,7 +15,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <limits>
+#include <memory>
 #include <queue>
+#include <random>
 #include <unordered_set>
 
 #include <sys/stat.h>
@@ -34,26 +35,6 @@
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
-extern "C" {
-
-/* declare BLAS functions, see http://www.netlib.org/clapack/cblas/ */
-
-int sgemm_(
-        const char* transa,
-        const char* transb,
-        FINTEGER* m,
-        FINTEGER* n,
-        FINTEGER* k,
-        const float* alpha,
-        const float* a,
-        FINTEGER* lda,
-        const float* b,
-        FINTEGER* ldb,
-        float* beta,
-        float* c,
-        FINTEGER* ldc);
-}
-
 namespace faiss {
 
 using MinimaxHeap = HNSW::MinimaxHeap;
@@ -67,52 +48,6 @@ HNSWStats hnsw_stats;
  **************************************************************/
 
 namespace {
-
-/* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
-
-struct NegativeDistanceComputer : DistanceComputer {
-    /// owned by this
-    DistanceComputer* basedis;
-
-    explicit NegativeDistanceComputer(DistanceComputer* basedis)
-            : basedis(basedis) {}
-
-    void set_query(const float* x) override {
-        basedis->set_query(x);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) override {
-        return -(*basedis)(i);
-    }
-
-    void distances_batch_4(
-            const idx_t idx0,
-            const idx_t idx1,
-            const idx_t idx2,
-            const idx_t idx3,
-            float& dis0,
-            float& dis1,
-            float& dis2,
-            float& dis3) override {
-        basedis->distances_batch_4(
-                idx0, idx1, idx2, idx3, dis0, dis1, dis2, dis3);
-        dis0 = -dis0;
-        dis1 = -dis1;
-        dis2 = -dis2;
-        dis3 = -dis3;
-    }
-
-    /// compute distance between two stored vectors
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return -basedis->symmetric_dis(i, j);
-    }
-
-    virtual ~NegativeDistanceComputer() {
-        delete basedis;
-    }
-};
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
     if (is_similarity_metric(storage->metric_type)) {
@@ -192,7 +127,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= !index_hnsw.init_level0;
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -228,7 +165,13 @@ void hnsw_add_vertices(
                         continue;
                     }
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
@@ -248,7 +191,11 @@ void hnsw_add_vertices(
             }
             i1 = i0;
         }
-        FAISS_ASSERT(i1 == 0);
+        if (index_hnsw.init_level0) {
+            FAISS_ASSERT(i1 == 0);
+        } else {
+            FAISS_ASSERT((i1 - hist[0]) == 0);
+        }
     }
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
@@ -297,7 +244,8 @@ void hnsw_search(
         const SearchParameters* params_in) {
     FAISS_THROW_IF_NOT_MSG(
             index->storage,
-            "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
+            "No storage index, please use IndexHNSWFlat (or variants) "
+            "instead of IndexHNSW directly");
     const SearchParametersHNSW* params = nullptr;
     const HNSW& hnsw = index->hnsw;
 
@@ -372,7 +320,7 @@ void IndexHNSW::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     using RH = RangeSearchBlockResultHandler<HNSW::C>;
-    RH bres(result, radius);
+    RH bres(result, is_similarity_metric(metric_type) ? -radius : radius);
 
     hnsw_search(this, n, x, bres, params);
 
@@ -451,9 +399,17 @@ void IndexHNSW::search_level_0(
         float* distances,
         idx_t* labels,
         int nprobe,
-        int search_type) const {
+        int search_type,
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
+
+    const SearchParametersHNSW* params = nullptr;
+
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
+    }
 
     storage_idx_t ntotal = hnsw.levels.size();
 
@@ -481,12 +437,20 @@ void IndexHNSW::search_level_0(
                     nearest_d + i * nprobe,
                     search_type,
                     search_stats,
-                    vt);
+                    vt,
+                    params);
             res.end();
             vt.advance();
         }
 #pragma omp critical
         { hnsw_stats.combine(search_stats); }
+    }
+    if (is_similarity_metric(this->metric_type)) {
+// we need to revert the negated distances
+#pragma omp parallel for
+        for (int64_t i = 0; i < k * n; i++) {
+            distances[i] = -distances[i];
+        }
     }
 }
 
@@ -908,6 +872,88 @@ void IndexHNSW2Level::flip_to_ivf() {
 
     storage = index_ivfpq;
     delete storage2l;
+}
+
+/**************************************************************
+ * IndexHNSWCagra implementation
+ **************************************************************/
+
+IndexHNSWCagra::IndexHNSWCagra() {
+    is_trained = true;
+}
+
+IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
+        : IndexHNSW(
+                  (metric == METRIC_L2)
+                          ? static_cast<IndexFlat*>(new IndexFlatL2(d))
+                          : static_cast<IndexFlat*>(new IndexFlatIP(d)),
+                  M) {
+    FAISS_THROW_IF_NOT_MSG(
+            ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
+            "unsupported metric type for IndexHNSWCagra");
+    own_fields = true;
+    is_trained = true;
+    init_level0 = true;
+    keep_max_size_level0 = true;
+}
+
+void IndexHNSWCagra::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !base_level_only,
+            "Cannot add vectors when base_level_only is set to True");
+
+    IndexHNSW::add(n, x);
+}
+
+void IndexHNSWCagra::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (!base_level_only) {
+        IndexHNSW::search(n, x, k, distances, labels, params);
+    } else {
+        std::vector<storage_idx_t> nearest(n);
+        std::vector<float> nearest_d(n);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(this->storage));
+            dis->set_query(x + i * d);
+            nearest[i] = -1;
+            nearest_d[i] = std::numeric_limits<float>::max();
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal - 1);
+
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                auto distance = (*dis)(idx);
+                if (distance < nearest_d[i]) {
+                    nearest[i] = idx;
+                    nearest_d[i] = distance;
+                }
+            }
+            FAISS_THROW_IF_NOT_MSG(
+                    nearest[i] >= 0, "Could not find a valid entrypoint.");
+        }
+
+        search_level_0(
+                n,
+                x,
+                k,
+                nearest.data(),
+                nearest_d.data(),
+                distances,
+                labels,
+                1, // n_probes
+                1, // search_type
+                params);
+    }
 }
 
 } // namespace faiss

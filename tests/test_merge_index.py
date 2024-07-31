@@ -72,7 +72,6 @@ class TestMerge1(unittest.TestCase):
             index.merge_from(indexes[i], index.ntotal)
 
         _D, I = index.search(xq, k)
-        print(I[:5, :6])
 
         ndiff = (I != Iref).sum()
         print('%d / %d differences' % (ndiff, nq * k))

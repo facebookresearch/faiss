@@ -184,7 +184,8 @@ struct HNSW {
             float d_nearest,
             int level,
             omp_lock_t* locks,
-            VisitedTable& vt);
+            VisitedTable& vt,
+            bool keep_max_size_level0 = false);
 
     /** add point pt_id on all levels <= pt_level and build the link
      * structure for them. */
@@ -193,7 +194,8 @@ struct HNSW {
             int pt_level,
             int pt_id,
             std::vector<omp_lock_t>& locks,
-            VisitedTable& vt);
+            VisitedTable& vt,
+            bool keep_max_size_level0 = false);
 
     /// search interface for 1 point, single thread
     HNSWStats search(
@@ -211,7 +213,8 @@ struct HNSW {
             const float* nearest_d,
             int search_type,
             HNSWStats& search_stats,
-            VisitedTable& vt) const;
+            VisitedTable& vt,
+            const SearchParametersHNSW* params = nullptr) const;
 
     void reset();
 
@@ -224,7 +227,8 @@ struct HNSW {
             DistanceComputer& qdis,
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
-            int max_size);
+            int max_size,
+            bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);
 };

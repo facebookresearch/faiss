@@ -17,6 +17,7 @@
 #include <vector>
 
 #include <cuda_profiler_api.h>
+#include <faiss/impl/AuxIndexStructures.h>
 
 DEFINE_int32(num, 10000, "# of vecs");
 DEFINE_int32(k, 100, "# of clusters");
@@ -34,6 +35,7 @@ DEFINE_int64(
         "minimum size to use CPU -> GPU paged copies");
 DEFINE_int64(pinned_mem, -1, "pinned memory allocation to use");
 DEFINE_int32(max_points, -1, "max points per centroid");
+DEFINE_double(timeout, 0, "timeout in seconds");
 
 using namespace faiss::gpu;
 
@@ -99,10 +101,14 @@ int main(int argc, char** argv) {
         cp.max_points_per_centroid = FLAGS_max_points;
     }
 
+    auto tc = new faiss::TimeoutCallback();
+    faiss::InterruptCallback::instance.reset(tc);
+
     faiss::Clustering kmeans(FLAGS_dim, FLAGS_k, cp);
 
     // Time k-means
     {
+        tc->set_timeout(FLAGS_timeout);
         CpuTimer timer;
 
         kmeans.train(FLAGS_num, vecs.data(), *(gpuIndex.getIndex()));

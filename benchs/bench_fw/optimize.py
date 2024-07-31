@@ -14,7 +14,7 @@ import faiss  # @manual=//faiss/python:pyfaiss_gpu
 # )
 
 from .benchmark import Benchmark
-from .descriptors import DatasetDescriptor, IndexDescriptor
+from .descriptors import DatasetDescriptor, IndexDescriptorClassic
 from .utils import dict_merge, filter_results, ParetoMetric, ParetoMode
 
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class Optimizer:
         )
         assert filtered
         index_descs = [
-            IndexDescriptor(
+            IndexDescriptorClassic(
                 factory=v["factory"],
                 construction_params=v["construction_params"],
                 search_params=v["search_params"],
@@ -103,8 +103,8 @@ class Optimizer:
                 dry_run=False,
             )
 
-            descs = [IndexDescriptor(factory="Flat"),] + [
-                IndexDescriptor(
+            descs = [IndexDescriptorClassic(factory="Flat"),] + [
+                IndexDescriptorClassic(
                     factory="HNSW32",
                     construction_params=[{"efConstruction": 2**i}],
                 )
@@ -131,7 +131,7 @@ class Optimizer:
         training_vectors: DatasetDescriptor,
         database_vectors: DatasetDescriptor,
         query_vectors: DatasetDescriptor,
-        quantizers: Dict[int, List[IndexDescriptor]],
+        quantizers: Dict[int, List[IndexDescriptorClassic]],
         codecs: List[Tuple[str, str]],
         min_accuracy: float,
     ):
@@ -159,7 +159,7 @@ class Optimizer:
                                 quantizer_desc.search_params,
                             )
                     ivf_descs.append(
-                        IndexDescriptor(
+                        IndexDescriptorClassic(
                             factory=f"{pretransform}IVF{nlist}({quantizer_desc.factory}),{fine_ivf}",
                             construction_params=construction_params,
                         )
@@ -188,7 +188,7 @@ class Optimizer:
     ):
         _, results = self.benchmark_and_filter_candidates(
             index_descs=[
-                IndexDescriptor(factory=f"IVF{nlist}(Flat),Flat"),
+                IndexDescriptorClassic(factory=f"IVF{nlist}(Flat),Flat"),
             ],
             training_vectors=training_vectors,
             database_vectors=database_vectors,
@@ -226,7 +226,9 @@ class Optimizer:
             [
                 (None, "Flat"),
                 (None, "SQfp16"),
+                (None, "SQbf16"),
                 (None, "SQ8"),
+                (None, "SQ8_direct_signed"),
             ] + [
                 (f"OPQ{M}_{M * dim}", f"PQ{M}x{b}")
                 for M in [8, 12, 16, 32, 48, 64, 96, 128, 192, 256]
@@ -254,7 +256,7 @@ class Optimizer:
 
         _, filtered = self.benchmark_and_filter_candidates(
             index_descs=[
-                IndexDescriptor(
+                IndexDescriptorClassic(
                     factory=f"IVF{nlist},{pq}"
                     if opq is None
                     else f"{opq},IVF{nlist},{pq}",

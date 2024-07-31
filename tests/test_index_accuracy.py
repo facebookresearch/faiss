@@ -56,7 +56,6 @@ class IndexAccuracy(unittest.TestCase):
         Dref, Iref = ivfk.search(ev.xq, 100)
         ivfk.parallel_mode = 1
         Dnew, Inew = ivfk.search(ev.xq, 100)
-        print((Iref != Inew).sum(), Iref.size)
         assert (Iref != Inew).sum() < Iref.size / 5000.0
         assert np.all(Dref == Dnew)
 
@@ -136,8 +135,6 @@ class IndexAccuracy(unittest.TestCase):
 
         res = ev.launch("Polysemous ht=%d" % index.polysemous_ht, index)
         e_polysemous = ev.evalres(res)
-        print(e_baseline, e_polysemous, index.polysemous_ht)
-        print(stats.n_hamming_pass, stats.ncode)
         # The randu dataset is difficult, so we are not too picky on
         # the results. Here we assert that we have < 10 % loss when
         # computing full PQ on fewer than 20% of the data.
@@ -248,7 +245,6 @@ class TestSQFlavors(unittest.TestCase):
             index.nprobe = 4  # hopefully more robust than 1
             D, I = index.search(xq, 10)
             ninter = faiss.eval_intersection(I, gt_I)
-            print("(%d, %s): %d, " % (mt, repr(qname), ninter))
             assert abs(ninter - self.ref_results[(mt, qname)]) <= 10
 
             if qname == "6bit":
@@ -264,7 +260,6 @@ class TestSQFlavors(unittest.TestCase):
                 radius = float(D[:, -1].max())
             else:
                 radius = float(D[:, -1].min())
-            # print("radius", radius)
 
             lims, D3, I3 = index.range_search(xq, radius)
             ntot = ndiff = 0
@@ -278,14 +273,11 @@ class TestSQFlavors(unittest.TestCase):
                 Iref = set(I2[i, mask])
                 ndiff += len(Inew ^ Iref)
                 ntot += len(Iref)
-            # print("ndiff %d / %d" % (ndiff, ntot))
             assert ndiff < ntot * 0.01
 
             for pm in 1, 2:
-                # print("parallel_mode=%d" % pm)
                 index.parallel_mode = pm
                 lims4, D4, I4 = index.range_search(xq, radius)
-                # print("sizes", lims4[1:] - lims4[:-1])
                 for qno in range(len(lims) - 1):
                     Iref = I3[lims[qno]: lims[qno + 1]]
                     Inew = I4[lims4[qno]: lims4[qno + 1]]
@@ -320,7 +312,7 @@ class TestSQFlavors(unittest.TestCase):
 
 
 class TestSQByte(unittest.TestCase):
-    def subtest_8bit_direct(self, metric_type, d):
+    def subtest_8bit_direct(self, metric_type, d, quantizer_type):
         xt, xb, xq = get_dataset_2(d, 500, 1000, 30)
 
         # rescale everything to get integer
@@ -332,16 +324,28 @@ class TestSQByte(unittest.TestCase):
             x[x > 255] = 255
             return x
 
-        xt = rescale(xt)
-        xb = rescale(xb)
-        xq = rescale(xq)
+        def rescale_signed(x):
+            x = np.floor((x - tmin) * 256 / (tmax - tmin))
+            x[x < 0] = 0
+            x[x > 255] = 255
+            x -= 128
+            return x
+
+        if quantizer_type == faiss.ScalarQuantizer.QT_8bit_direct_signed:
+            xt = rescale_signed(xt)
+            xb = rescale_signed(xb)
+            xq = rescale_signed(xq)
+        else:
+            xt = rescale(xt)
+            xb = rescale(xb)
+            xq = rescale(xq)
 
         gt_index = faiss.IndexFlat(d, metric_type)
         gt_index.add(xb)
         Dref, Iref = gt_index.search(xq, 10)
 
         index = faiss.IndexScalarQuantizer(
-            d, faiss.ScalarQuantizer.QT_8bit_direct, metric_type
+            d, quantizer_type, metric_type
         )
         index.add(xb)
         D, I = index.search(xq, 10)
@@ -361,7 +365,7 @@ class TestSQByte(unittest.TestCase):
         Dref, Iref = gt_index.search(xq, 10)
 
         index = faiss.IndexIVFScalarQuantizer(
-            quantizer, d, nlist, faiss.ScalarQuantizer.QT_8bit_direct,
+            quantizer, d, nlist, quantizer_type,
             metric_type
         )
         index.nprobe = 4
@@ -374,9 +378,10 @@ class TestSQByte(unittest.TestCase):
         assert np.all(D == Dref)
 
     def test_8bit_direct(self):
-        for d in 13, 16, 24:
-            for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
-                self.subtest_8bit_direct(metric_type, d)
+        for quantizer in faiss.ScalarQuantizer.QT_8bit_direct, faiss.ScalarQuantizer.QT_8bit_direct_signed:
+            for d in 13, 16, 24:
+                for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+                    self.subtest_8bit_direct(metric_type, d, quantizer)
 
 
 class TestNNDescent(unittest.TestCase):
@@ -485,7 +490,6 @@ class TestPQFlavors(unittest.TestCase):
             D, I = index.search(xq, 10)
 
             ninter = faiss.eval_intersection(I, gt_I)
-            print("(%d, %s): %d, " % (mt, by_residual, ninter))
 
             assert abs(ninter - self.ref_results[mt, by_residual]) <= 3
 
@@ -499,10 +503,6 @@ class TestPQFlavors(unittest.TestCase):
                 index.polysemous_ht = 20
                 D, I = index.search(xq, 10)
                 ninter = faiss.eval_intersection(I, gt_I)
-                print(
-                    "(%d, %s, %d): %d, "
-                    % (mt, by_residual, index.polysemous_ht, ninter)
-                )
 
                 # polysemous behaves bizarrely on ARM
                 assert (
@@ -516,7 +516,6 @@ class TestPQFlavors(unittest.TestCase):
                 radius = float(D[:, -1].max())
             else:
                 radius = float(D[:, -1].min())
-            print("radius", radius)
 
             lims, D3, I3 = index.range_search(xq, radius)
             ntot = ndiff = 0
@@ -530,7 +529,6 @@ class TestPQFlavors(unittest.TestCase):
                 Iref = set(I2[i, mask])
                 ndiff += len(Inew ^ Iref)
                 ntot += len(Iref)
-            print("ndiff %d / %d" % (ndiff, ntot))
             assert ndiff < ntot * 0.02
 
     def test_IVFPQ_non8bit(self):
@@ -555,7 +553,6 @@ class TestPQFlavors(unittest.TestCase):
 
             D, I = index.search(xq, 10)
             ninter[v] = faiss.eval_intersection(I, gt_I)
-        print("ninter=", ninter)
         # this should be the case but we don't observe
         # that... Probavly too few test points
         #  assert ninter['2x8'] > ninter['8x2']
@@ -623,9 +620,6 @@ class OPQRelativeAccuracy(unittest.TestCase):
         res = ev.launch("OPQ", index)
         e_opq = ev.evalres(res)
 
-        print("e_pq=%s" % e_pq)
-        print("e_opq=%s" % e_opq)
-
         # verify that OPQ better than PQ
         for r in 1, 10, 100:
             assert e_opq[r] > e_pq[r]
@@ -656,7 +650,6 @@ class OPQRelativeAccuracy(unittest.TestCase):
 
         # verify same on OIVFPQ
         for r in 1, 10, 100:
-            print(e_oivfpq[r], e_ivfpq[r])
             assert e_oivfpq[r] >= e_ivfpq[r]
 
 
@@ -758,9 +751,6 @@ class TestSpectralHash(unittest.TestCase):
                     ninter = faiss.eval_intersection(I, gt_I)
                     key = (nbit, tt, period)
 
-                    print("(%d, %s, %g): %d, " % (nbit, repr(tt), period,
-                                                  ninter))
-                    print(abs(ninter - self.ref_results[key]))
                     assert abs(ninter - self.ref_results[key]) <= 14
 
 
@@ -799,7 +789,6 @@ class TestRefine(unittest.TestCase):
         # check that with refinement, the recall@10 is the same as
         # the original recall@100
         recall2 = (I2 == Iref[:, :1]).sum()
-        # print("recalls", recall1, recall2)
         self.assertEqual(recall1, recall2)
 
     def test_IP(self):

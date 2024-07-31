@@ -127,6 +127,13 @@ inline int __builtin_clzll(uint64_t x) {
     __pragma(float_control(precise, off, push))
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
 #elif defined(__clang__)
+#if defined(__PPC__)
+#define FAISS_PRAGMA_IMPRECISE_LOOP \
+    _Pragma("clang loop vectorize_width(4) interleave_count(8)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    _Pragma("float_control(precise, off, push)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END _Pragma("float_control(pop)")
+#else
 #define FAISS_PRAGMA_IMPRECISE_LOOP \
     _Pragma("clang loop vectorize(enable) interleave(enable)")
 
@@ -143,6 +150,7 @@ inline int __builtin_clzll(uint64_t x) {
 #else
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#endif
 #endif
 #elif defined(__GNUC__)
 // Unfortunately, GCC does not provide a pragma for detecting it.

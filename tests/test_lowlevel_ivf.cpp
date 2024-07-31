@@ -364,21 +364,8 @@ void test_lowlevel_access_binary(const char* index_key) {
             }
         }
 
-        printf("new before reroder: [");
-        for (int j = 0; j < k; j++)
-            printf("%" PRId64 ",%d ", I[j], D[j]);
-        printf("]\n");
-
         // re-order heap
         heap_reorder<CMax<int32_t, idx_t>>(k, D.data(), I.data());
-
-        printf("ref: [");
-        for (int j = 0; j < k; j++)
-            printf("%" PRId64 ",%d ", I_ref[j], D_ref[j]);
-        printf("]\nnew: [");
-        for (int j = 0; j < k; j++)
-            printf("%" PRId64 ",%d ", I[j], D[j]);
-        printf("]\n");
 
         // check that we have the same results as the reference search
         for (int j = 0; j < k; j++) {

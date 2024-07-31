@@ -13,6 +13,7 @@ from typing import ClassVar, Dict, List, Optional
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
 import numpy as np
+from faiss.benchs.bench_fw.descriptors import IndexBaseDescriptor
 
 from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
     knn_intersection_measure,
@@ -48,35 +49,6 @@ logger = logging.getLogger(__name__)
 class IndexBase:
     def set_io(self, benchmark_io):
         self.io = benchmark_io
-
-    @staticmethod
-    def param_dict_list_to_name(param_dict_list):
-        if not param_dict_list:
-            return ""
-        l = 0
-        n = ""
-        for param_dict in param_dict_list:
-            n += IndexBase.param_dict_to_name(param_dict, f"cp{l}")
-            l += 1
-        return n
-
-    @staticmethod
-    def param_dict_to_name(param_dict, prefix="sp"):
-        if not param_dict:
-            return ""
-        n = prefix
-        for name, val in param_dict.items():
-            if name == "snap":
-                continue
-            if name == "lsq_gpu" and val == 0:
-                continue
-            if name == "use_beam_LUT" and val == 0:
-                continue
-            n += f"_{name}_{val}"
-        if n == prefix:
-            return ""
-        n += "."
-        return n
 
     @staticmethod
     def set_index_param_dict_list(index, param_dict_list, assert_same=False):
@@ -282,7 +254,7 @@ class IndexBase:
         reconstruct: bool = False,
     ):
         name = self.get_index_name()
-        name += Index.param_dict_to_name(search_parameters)
+        name += IndexBaseDescriptor.param_dict_to_name(search_parameters)
         name += query_vectors.get_filename("q")
         name += f"k_{k}."
         name += f"t_{self.num_threads}."
@@ -582,14 +554,21 @@ class Index(IndexBase):
     num_threads: int
     d: int
     metric: str
-    database_vectors: DatasetDescriptor
-    construction_params: List[Dict[str, int]]
-    search_params: Dict[str, int]
+    codec_name: Optional[str] = None
+    index_name: Optional[str] = None
+    database_vectors: Optional[DatasetDescriptor] = None
+    construction_params: Optional[List[Dict[str, int]]] = None
+    search_params: Optional[Dict[str, int]] = None
+    serialize_full_index: bool = False
+
+    bucket: Optional[str] = None
+    index_path: Optional[str] = None
 
     cached_codec: ClassVar[OrderedDict[str, faiss.Index]] = OrderedDict()
     cached_index: ClassVar[OrderedDict[str, faiss.Index]] = OrderedDict()
 
     def __post_init__(self):
+        logger.info(f"Initializing metric_type to {self.metric}")
         if isinstance(self.metric, str):
             if self.metric == "IP":
                 self.metric_type = faiss.METRIC_INNER_PRODUCT
@@ -628,13 +607,31 @@ class Index(IndexBase):
                 Index.cached_codec.popitem(last=False)
         return Index.cached_codec[codec_name]
 
-    def get_index_name(self):
-        name = self.get_codec_name()
-        assert self.database_vectors is not None
-        name += self.database_vectors.get_filename("xb")
-        return name
+    def get_codec_name(self) -> Optional[str]:
+        return self.codec_name
+
+    def get_index_name(self) -> Optional[str]:
+        return self.index_name
 
     def fetch_index(self):
+        # read index from file if it is already available
+        if self.index_path:
+            index_filename = os.path.basename(self.index_path)
+        else:
+            index_filename = self.index_name + "index"
+        if self.io.file_exist(index_filename):
+            if self.index_path:
+                index = self.io.read_index(
+                    index_filename,
+                    self.bucket,
+                    os.path.dirname(self.index_path),
+                )
+            else:
+                index = self.io.read_index(index_filename)
+            assert self.d == index.d
+            assert self.metric_type == index.metric_type
+            return index, 0
+
         index = self.get_codec()
         index.reset()
         assert index.ntotal == 0
@@ -664,10 +661,15 @@ class Index(IndexBase):
             )
         assert index.ntotal == xb.shape[0] or index_ivf.ntotal == xb.shape[0]
         logger.info("Added vectors to index")
+        if self.serialize_full_index:
+            codec_size = self.io.write_index(index, index_filename)
+            assert codec_size is not None
+
         return index, t
 
     def get_index(self):
-        index_name = self.get_index_name()
+        index_name = self.index_name
+        # TODO(kuarora) : retrieve file from bucket and path.
         if index_name not in Index.cached_index:
             Index.cached_index[index_name], _ = self.fetch_index()
             if len(Index.cached_index) > 3:
@@ -784,8 +786,12 @@ class Index(IndexBase):
 # are used to wrap pre-trained Faiss indices (codecs)
 @dataclass
 class IndexFromCodec(Index):
-    path: str
-    bucket: Optional[str] = None
+    path: Optional[str] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.path is None:
+            raise ValueError("path is not set")
 
     def get_quantizer(self):
         if not self.is_ivf():
@@ -803,12 +809,6 @@ class IndexFromCodec(Index):
 
     def get_model_name(self):
         return os.path.basename(self.path)
-
-    def get_codec_name(self):
-        assert self.path is not None
-        name = os.path.basename(self.path)
-        name += Index.param_dict_list_to_name(self.construction_params)
-        return name
 
     def fetch_meta(self, dry_run=False):
         return None, None
@@ -871,20 +871,15 @@ class IndexFromPreTransform(IndexBase):
 # IndexFromFactory is for creating and training indices from scratch
 @dataclass
 class IndexFromFactory(Index):
-    factory: str
-    training_vectors: DatasetDescriptor
+    factory: Optional[str] = None
+    training_vectors: Optional[DatasetDescriptor] = None
 
-    def get_codec_name(self):
-        assert self.factory is not None
-        name = f"{self.factory.replace(',', '_')}."
-        assert self.d is not None
-        assert self.metric is not None
-        name += f"d_{self.d}.{self.metric.upper()}."
-        if self.factory != "Flat":
-            assert self.training_vectors is not None
-            name += self.training_vectors.get_filename("xt")
-        name += Index.param_dict_list_to_name(self.construction_params)
-        return name
+    def __post_init__(self):
+        super().__post_init__()
+        if self.factory is None:
+            raise ValueError("factory is not set")
+        if self.factory != "Flat" and self.training_vectors is None:
+            raise ValueError(f"training_vectors is not set for {self.factory}")
 
     def fetch_meta(self, dry_run=False):
         meta_filename = self.get_codec_name() + "json"

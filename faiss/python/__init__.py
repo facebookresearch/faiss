@@ -44,6 +44,14 @@ class_wrappers.handle_IDSelectorSubset(IDSelectorArray, class_owns=False)
 class_wrappers.handle_IDSelectorSubset(IDSelectorBitmap, class_owns=False, force_int64=False)
 class_wrappers.handle_CodeSet(CodeSet)
 
+class_wrappers.handle_Tensor2D(Tensor2D)
+class_wrappers.handle_Tensor2D(Int32Tensor2D)
+class_wrappers.handle_Embedding(Embedding)
+class_wrappers.handle_Linear(Linear)
+class_wrappers.handle_QINCo(QINCo)
+class_wrappers.handle_QINCoStep(QINCoStep)
+
+
 this_module = sys.modules[__name__]
 
 # handle sub-classes
@@ -292,10 +300,10 @@ IVFSearchParameters = SearchParametersIVF
 ###########################################
 
 
-def serialize_index(index):
+def serialize_index(index, io_flags=0):
     """ convert an index to a numpy uint8 array  """
     writer = VectorIOWriter()
-    write_index(index, writer)
+    write_index(index, writer, io_flags)
     return vector_to_array(writer.data)
 
 
@@ -316,3 +324,14 @@ def deserialize_index_binary(data):
     reader = VectorIOReader()
     copy_array_to_vector(data, reader.data)
     return read_index_binary(reader)
+
+
+class TimeoutGuard:
+    def __init__(self, timeout_in_seconds: float):
+        self.timeout = timeout_in_seconds
+
+    def __enter__(self):
+        TimeoutCallback.reset(self.timeout)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        PythonInterruptCallback.reset()

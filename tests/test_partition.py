@@ -49,7 +49,6 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
-        # print("seed=", seed)
         rs = np.random.RandomState(seed)
         if maxval is None:
             vals = rs.rand(n).astype('float32')
@@ -95,7 +94,6 @@ class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
-        # print("seed=", seed)
         rs = np.random.RandomState(seed)
         if maxval is None:
             vals = rs.rand(n).astype('float32')
@@ -148,7 +146,6 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
 
-        # print("seed=", seed)
         rs = np.random.RandomState(seed)
         vals = rs.randint(maxval, size=n).astype('uint16')
         ids = (rs.permutation(n) + 12345).astype('int64')
@@ -160,7 +157,6 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
         tab_a = faiss.AlignedTableUint16()
         faiss.copy_array_to_AlignedTable(vals, tab_a)
 
-        # print("tab a type", tab_a.get())
         if type(q) == int:
             faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
@@ -196,7 +192,6 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
-        # print("seed=", seed)
         rs = np.random.RandomState(seed)
         vals = rs.randint(maxval, size=n).astype('uint16')
         ids = (rs.permutation(n) + 12345).astype('int64')
@@ -209,7 +204,6 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
         vals_inv = (65535 - vals).astype('uint16')
         faiss.copy_array_to_AlignedTable(vals_inv, tab_a)
 
-        # print("tab a type", tab_a.get())
         if type(q) == int:
             faiss.CMin_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)

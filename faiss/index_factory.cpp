@@ -140,8 +140,12 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQ4", ScalarQuantizer::QT_4bit},
         {"SQ6", ScalarQuantizer::QT_6bit},
         {"SQfp16", ScalarQuantizer::QT_fp16},
+        {"SQbf16", ScalarQuantizer::QT_bf16},
+        {"SQ8_direct_signed", ScalarQuantizer::QT_8bit_direct_signed},
+        {"SQ8_direct", ScalarQuantizer::QT_8bit_direct},
 };
-const std::string sq_pattern = "(SQ4|SQ8|SQ6|SQfp16)";
+const std::string sq_pattern =
+        "(SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -526,11 +530,12 @@ Index* parse_other_indexes(
     }
 
     // IndexLSH
-    if (match("LSH(r?)(t?)")) {
-        bool rotate_data = sm[1].length() > 0;
-        bool train_thresholds = sm[2].length() > 0;
+    if (match("LSH([0-9]*)(r?)(t?)")) {
+        int nbits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : d;
+        bool rotate_data = sm[2].length() > 0;
+        bool train_thresholds = sm[3].length() > 0;
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
-        return new IndexLSH(d, d, rotate_data, train_thresholds);
+        return new IndexLSH(d, nbits, rotate_data, train_thresholds);
     }
 
     // IndexLattice
