@@ -690,6 +690,18 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11getWarpSizeEi">
+<span id="_CPPv3N5faiss3gpu11getWarpSizeEi"></span><span id="_CPPv2N5faiss3gpu11getWarpSizeEi"></span><span id="faiss::gpu::getWarpSize__i"></span><span class="target" id="DeviceUtils_8h_1a4f1b25409e96c8fee1814a0631470a23"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getWarpSize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns the warp size of the given GPU device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24getWarpSizeCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu24getWarpSizeCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu24getWarpSizeCurrentDeviceEv"></span><span id="faiss::gpu::getWarpSizeCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a59e67ef6dc543409cc9f981d755df14b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getWarpSizeCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Equivalent to getWarpSize(getCurrentDevice()) </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13getFreeMemoryEi">
 <span id="_CPPv3N5faiss3gpu13getFreeMemoryEi"></span><span id="_CPPv2N5faiss3gpu13getFreeMemoryEi"></span><span id="faiss::gpu::getFreeMemory__i"></span><span class="target" id="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFreeMemory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Returns the amount of currently available memory on the given device. </p>
