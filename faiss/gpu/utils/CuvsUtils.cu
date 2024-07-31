@@ -21,7 +21,7 @@
  */
 
 #include <faiss/gpu/GpuIndex.h>
-#include <faiss/gpu/utils/RaftUtils.h>
+#include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdarray.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/linalg/coalesced_reduction.cuh>
