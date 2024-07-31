@@ -44,7 +44,7 @@ int main() {
     //
     // We here assume that its lifespan of this coarse quantizer will cover the
     // lifespan of the inverted-file quantizer IndexIVFFlat below
-    // With dynamic allocation, one may give the responsability to free the
+    // With dynamic allocation, one may give the responsibility to free the
     // quantizer to the inverted-file index (with attribute do_delete_quantizer)
     //
     // Note: a regular clustering algorithm would be defined as:
@@ -77,7 +77,6 @@ int main() {
     // the coarse quantizer should not be dealloced before the index
     // 4 = nb of bytes per code (d must be a multiple of this)
     // 8 = nb of bits per sub-code (almost always 8)
-    faiss::MetricType metric = faiss::METRIC_L2; // can be METRIC_INNER_PRODUCT
     faiss::IndexIVFPQ index(
             &coarse_quantizer, d, ncentroids, bytes_per_code, 8);
     index.quantizer_trains_alone = true;

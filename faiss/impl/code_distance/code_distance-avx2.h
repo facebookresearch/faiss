@@ -16,6 +16,11 @@
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/code_distance/code_distance-generic.h>
 
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78782
+#if defined(__GNUC__) && __GNUC__ < 9
+#define _mm_loadu_si64(x) (_mm_loadl_epi64((__m128i_u*)x))
+#endif
+
 namespace {
 
 inline float horizontal_sum(const __m128 v) {

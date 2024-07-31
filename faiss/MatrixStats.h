@@ -10,6 +10,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <cmath>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -26,20 +27,31 @@ struct MatrixStats {
     std::string comments;
 
     // raw statistics
-    size_t n, d;
-    size_t n_collision, n_valid, n0;
-    double min_norm2, max_norm2;
+    size_t n = 0, d = 0;
+    size_t n_collision = 0;
+    size_t n_valid = 0;
+    size_t n0 = 0;
+    double min_norm2 = HUGE_VALF;
+    double max_norm2 = 0;
+    uint64_t hash_value = 0;
 
     struct PerDimStats {
-        size_t n, n_nan, n_inf, n0;
+        /// counts of various special entries
+        size_t n = 0;
+        size_t n_nan = 0;
+        size_t n_inf = 0;
+        size_t n0 = 0;
 
-        float min, max;
-        double sum, sum2;
+        /// to get min/max and stddev values
+        float min = HUGE_VALF;
+        float max = -HUGE_VALF;
+        double sum = 0;
+        double sum2 = 0;
 
-        size_t n_valid;
-        double mean, stddev;
+        size_t n_valid = 0;
+        double mean = NAN;
+        double stddev = NAN;
 
-        PerDimStats();
         void add(float x);
         void compute_mean_std();
     };

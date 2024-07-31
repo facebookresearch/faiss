@@ -455,7 +455,7 @@ void ZnSphereCodec::decode(uint64_t code, float* c) const {
     int nnz = 0;
     for (int i = 0; i < dim; i++) {
         if (c[i] != 0) {
-            if (signs & (1UL << nnz)) {
+            if (signs & (uint64_t(1) << nnz)) {
                 c[i] = -c[i];
             }
             nnz++;

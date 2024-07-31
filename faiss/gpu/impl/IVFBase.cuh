@@ -41,47 +41,48 @@ class IVFBase {
     virtual ~IVFBase();
 
     /// Reserve GPU memory in our inverted lists for this number of vectors
-    void reserveMemory(idx_t numVecs);
+    virtual void reserveMemory(idx_t numVecs);
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
-    void reset();
+    virtual void reset();
 
     /// Return the number of dimensions we are indexing
     idx_t getDim() const;
 
     /// After adding vectors, one can call this to reclaim device memory
     /// to exactly the amount needed. Returns space reclaimed in bytes
-    size_t reclaimMemory();
+    virtual size_t reclaimMemory();
 
     /// Returns the number of inverted lists
     idx_t getNumLists() const;
 
     /// For debugging purposes, return the list length of a particular
     /// list
-    idx_t getListLength(idx_t listId) const;
+    virtual idx_t getListLength(idx_t listId) const;
 
     /// Return the list indices of a particular list back to the CPU
-    std::vector<idx_t> getListIndices(idx_t listId) const;
+    virtual std::vector<idx_t> getListIndices(idx_t listId) const;
 
     /// Return the encoded vectors of a particular list back to the CPU
-    std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat) const;
+    virtual std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
+            const;
 
     /// Copy all inverted lists from a CPU representation to ourselves
-    void copyInvertedListsFrom(const InvertedLists* ivf);
+    virtual void copyInvertedListsFrom(const InvertedLists* ivf);
 
     /// Copy all inverted lists from ourselves to a CPU representation
-    void copyInvertedListsTo(InvertedLists* ivf);
+    virtual void copyInvertedListsTo(InvertedLists* ivf);
 
     /// Update our coarse quantizer with this quantizer instance; may be a CPU
     /// or GPU quantizer
-    void updateQuantizer(Index* quantizer);
+    virtual void updateQuantizer(Index* quantizer);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
     /// Returns the number of vectors successfully added. Vectors may
     /// not be able to be added because they contain NaNs.
-    idx_t addVectors(
+    virtual idx_t addVectors(
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices);
@@ -108,10 +109,19 @@ class IVFBase {
             Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) = 0;
 
+    /*  It is used to reconstruct a given number of vectors in an Inverted File
+     * (IVF) index
+     *  @param i0          index of the first vector to reconstruct
+     *  @param n           number of vectors to reconstruct
+     *  @param out         This is a pointer to a buffer where the reconstructed
+     * vectors will be stored.
+     */
+    virtual void reconstruct_n(idx_t i0, idx_t n, float* out);
+
    protected:
-    /// Adds a set of codes and indices to a list, with the representation
-    /// coming from the CPU equivalent
-    void addEncodedVectorsToList_(
+    /// Adds a set of codes and indices to a list, with the
+    /// representation coming from the CPU equivalent
+    virtual void addEncodedVectorsToList_(
             idx_t listId,
             // resident on the host
             const void* codes,

@@ -27,20 +27,6 @@
 
 namespace faiss {
 
-ClusteringParameters::ClusteringParameters()
-        : niter(25),
-          nredo(1),
-          verbose(false),
-          spherical(false),
-          int_centroids(false),
-          update_index(false),
-          frozen_centroids(false),
-          min_points_per_centroid(39),
-          max_points_per_centroid(256),
-          seed(1234),
-          decode_block_size(32768) {}
-// 39 corresponds to 10000 / 256 -> to avoid warnings on PQ tests with randu10k
-
 Clustering::Clustering(int d, int k) : d(d), k(k) {}
 
 Clustering::Clustering(int d, int k, const ClusteringParameters& cp)
@@ -231,7 +217,7 @@ int split_clusters(
     for (size_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
             size_t cj;
-            for (cj = 0; 1; cj = (cj + 1) % k) {
+            for (cj = 0; true; cj = (cj + 1) % k) {
                 /* probability to pick this cluster for split */
                 float p = (hassign[cj] - 1.0) / (float)(n - k);
                 float r = rng.rand_float();
@@ -264,7 +250,7 @@ int split_clusters(
     return nsplit;
 }
 
-}; // namespace
+} // namespace
 
 void Clustering::train_encoded(
         idx_t nx,
@@ -590,7 +576,7 @@ float kmeans_clustering(
         const float* x,
         float* centroids) {
     Clustering clus(d, k);
-    clus.verbose = d * n * k > (1L << 30);
+    clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
     IndexFlatL2 index(d);
     clus.train(n, x, index);
@@ -631,7 +617,7 @@ void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
     }
 }
 
-}; // namespace
+} // namespace
 
 void ProgressiveDimClustering::train(
         idx_t n,

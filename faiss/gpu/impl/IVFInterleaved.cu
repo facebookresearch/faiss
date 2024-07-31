@@ -192,24 +192,41 @@ void runIVFInterleavedScan(
     // caught for exceptions at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
+    const auto ivf_interleaved_call = [&](const auto func) {
+        func(queries,
+             listIds,
+             listData,
+             listIndices,
+             indicesOptions,
+             listLengths,
+             k,
+             metric,
+             useResidual,
+             residualBase,
+             scalarQ,
+             outDistances,
+             outIndices,
+             res);
+    };
+
     if (k == 1) {
-        IVF_INTERLEAVED_CALL(1);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 1, 1>);
     } else if (k <= 32) {
-        IVF_INTERLEAVED_CALL(32);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 32, 2>);
     } else if (k <= 64) {
-        IVF_INTERLEAVED_CALL(64);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 64, 3>);
     } else if (k <= 128) {
-        IVF_INTERLEAVED_CALL(128);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 128, 3>);
     } else if (k <= 256) {
-        IVF_INTERLEAVED_CALL(256);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 256, 4>);
     } else if (k <= 512) {
-        IVF_INTERLEAVED_CALL(512);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 512, 8>);
     } else if (k <= 1024) {
-        IVF_INTERLEAVED_CALL(1024);
+        ivf_interleaved_call(ivfInterleavedScanImpl<128, 1024, 8>);
     }
 #if GPU_MAX_SELECTION_K >= 2048
     else if (k <= 2048) {
-        IVF_INTERLEAVED_CALL(2048);
+        ivf_interleaved_call(ivfInterleavedScanImpl<64, 2048, 8>);
     }
 #endif
 }

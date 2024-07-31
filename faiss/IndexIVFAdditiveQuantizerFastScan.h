@@ -93,8 +93,7 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
     void compute_LUT(
             size_t n,
             const float* x,
-            const idx_t* coarse_ids,
-            const float* coarse_dis,
+            const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
             AlignedTable<float>& biases) const override;
 

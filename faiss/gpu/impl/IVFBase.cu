@@ -340,6 +340,10 @@ void IVFBase::copyInvertedListsTo(InvertedLists* ivf) {
     }
 }
 
+void IVFBase::reconstruct_n(idx_t i0, idx_t n, float* out) {
+    FAISS_THROW_MSG("not implemented");
+}
+
 void IVFBase::addEncodedVectorsToList_(
         idx_t listId,
         const void* codes,

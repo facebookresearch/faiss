@@ -132,7 +132,7 @@ class DeviceVector {
     bool resize(size_t newSize, cudaStream_t stream) {
         bool mem = false;
 
-        if (num_ < newSize) {
+        if (newSize > capacity_) {
             mem = reserve(getNewCapacity_(newSize), stream);
         }
 
@@ -169,6 +169,8 @@ class DeviceVector {
         T out;
         CUDA_VERIFY(cudaMemcpyAsync(
                 &out, data() + idx, sizeof(T), cudaMemcpyDeviceToHost, stream));
+
+        return out;
     }
 
     // Clean up after oversized allocations, while leaving some space to
@@ -249,7 +251,7 @@ class DeviceVector {
         if (preferredSize <= kDeviceVector_2x_Limit) {
             return utils::nextHighestPowerOf2(preferredSize);
         } else if (preferredSize <= kDeviceVector_1_25x_Limit) {
-            return preferredSize + (preferredSize << 2);
+            return preferredSize + (preferredSize >> 2);
         } else {
             return preferredSize;
         }

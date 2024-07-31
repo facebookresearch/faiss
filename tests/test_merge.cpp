@@ -6,47 +6,22 @@
  */
 
 #include <cstdio>
-#include <cstdlib>
 #include <random>
-
-#include <unistd.h>
 
 #include <gtest/gtest.h>
 
 #include <faiss/IVFlib.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
-#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/invlists/OnDiskInvertedLists.h>
 
+#include "test_util.h"
+
 namespace {
 
-struct Tempfilename {
-    static pthread_mutex_t mutex;
-
-    std::string filename = "/tmp/faiss_tmp_XXXXXX";
-
-    Tempfilename() {
-        pthread_mutex_lock(&mutex);
-        int fd = mkstemp(&filename[0]);
-        close(fd);
-        pthread_mutex_unlock(&mutex);
-    }
-
-    ~Tempfilename() {
-        if (access(filename.c_str(), F_OK)) {
-            unlink(filename.c_str());
-        }
-    }
-
-    const char* c_str() {
-        return filename.c_str();
-    }
-};
-
-pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef faiss::idx_t idx_t;
 
@@ -57,6 +32,7 @@ size_t nq = 100;
 int nindex = 4;
 int k = 10;
 int nlist = 40;
+int shard_size = nb / nindex;
 
 struct CommonData {
     std::vector<float> database;
@@ -95,7 +71,7 @@ int compare_merged(
     std::vector<float> refD(k * nq);
 
     index_shards->search(nq, cd.queries.data(), k, refD.data(), refI.data());
-    Tempfilename filename;
+    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
 
     std::vector<idx_t> newI(k * nq);
     std::vector<float> newD(k * nq);
@@ -125,7 +101,7 @@ int compare_merged(
         auto il = new faiss::OnDiskInvertedLists(
                 index0->nlist, index0->code_size, filename.c_str());
 
-        il->merge_from(lists.data(), lists.size());
+        il->merge_from_multiple(lists.data(), lists.size(), shift_ids);
 
         index0->replace_invlists(il, true);
         index0->ntotal = ntotal;
@@ -135,11 +111,14 @@ int compare_merged(
             nq, cd.queries.data(), k, newD.data(), newI.data());
 
     size_t ndiff = 0;
+    bool adjust_ids = shift_ids && !standard_merge;
     for (size_t i = 0; i < k * nq; i++) {
-        if (refI[i] != newI[i]) {
+        idx_t new_id = adjust_ids ? refI[i] % shard_size : refI[i];
+        if (refI[i] != new_id) {
             ndiff++;
         }
     }
+
     return ndiff;
 }
 
@@ -212,7 +191,7 @@ TEST(MERGE, merge_flat_vt) {
 TEST(MERGE, merge_flat_ondisk) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_indices = true;
-    Tempfilename filename;
+    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
 
     for (int i = 0; i < nindex; i++) {
         auto ivf = new faiss::IndexIVFFlat(&cd.quantizer, d, nlist);
@@ -243,5 +222,25 @@ TEST(MERGE, merge_flat_ondisk_2) {
     EXPECT_TRUE(index_shards.is_trained);
     index_shards.add_with_ids(nb, cd.database.data(), cd.ids.data());
     int ndiff = compare_merged(&index_shards, false, false);
+    EXPECT_GE(0, ndiff);
+}
+
+// now use ondisk specific merge and use shift ids
+TEST(MERGE, merge_flat_ondisk_3) {
+    faiss::IndexShards index_shards(d, false, false);
+    index_shards.own_indices = true;
+
+    std::vector<idx_t> ids;
+    for (int i = 0; i < nb; ++i) {
+        int id = i % shard_size;
+        ids.push_back(id);
+    }
+    for (int i = 0; i < nindex; i++) {
+        index_shards.add_shard(
+                new faiss::IndexIVFFlat(&cd.quantizer, d, nlist));
+    }
+    EXPECT_TRUE(index_shards.is_trained);
+    index_shards.add_with_ids(nb, cd.database.data(), ids.data());
+    int ndiff = compare_merged(&index_shards, true, false);
     EXPECT_GE(0, ndiff);
 }

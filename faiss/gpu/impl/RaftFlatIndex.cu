@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/RaftUtils.h>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
@@ -77,41 +77,30 @@ void RaftFlatIndex::query(
         raft::device_resources& handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        auto index = raft::make_device_matrix_view<const float, idx_t>(
+        auto index = raft::make_device_matrix_view<const float, int64_t>(
                 vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
-        auto search = raft::make_device_matrix_view<const float, idx_t>(
+        auto search = raft::make_device_matrix_view<const float, int64_t>(
                 input.data(), input.getSize(0), input.getSize(1));
-        auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
+
+        auto inds = raft::make_device_matrix_view<idx_t, int64_t>(
                 outIndices.data(),
                 outIndices.getSize(0),
                 outIndices.getSize(1));
-        auto dists = raft::make_device_matrix_view<float, idx_t>(
+        auto dists = raft::make_device_matrix_view<float, int64_t>(
                 outDistances.data(),
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        DistanceType distance = faiss_to_raft(metric, exactDistance);
+        DistanceType distance = metricFaissToRaft(metric, exactDistance);
 
-        std::vector<raft::device_matrix_view<const float, idx_t>> index_vec = {
-                index};
+        std::optional<raft::device_vector_view<const float, int64_t>>
+                norms_view = raft::make_device_vector_view(
+                        norms_.data(), norms_.getSize(0));
 
-        // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
-        if (k <= 64 && metric == MetricType::METRIC_L2 &&
-            vectors_.getSize(0) > 0) {
-            RAFT_LOG_INFO("Invoking flat fused_l2_knn");
-            brute_force::fused_l2_knn(
-                    handle, index, search, inds, dists, distance);
-        } else {
-            RAFT_LOG_INFO("Invoking flat bfknn");
-            brute_force::knn(
-                    handle,
-                    index_vec,
-                    search,
-                    inds,
-                    dists,
-                    distance,
-                    metricArg);
-        }
+        raft::neighbors::brute_force::index idx(
+                handle, index, norms_view, distance, metricArg);
+        raft::neighbors::brute_force::search<float, int64_t>(
+                handle, idx, search, inds, dists);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(

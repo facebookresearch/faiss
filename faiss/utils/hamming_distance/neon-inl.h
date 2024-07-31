@@ -260,7 +260,6 @@ struct HammingComputer32 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
         uint8x16_t b0 = vld1q_u8(b8);
         uint8x16_t b1 = vld1q_u8(b8 + 16);
 
@@ -338,24 +337,31 @@ struct HammingComputerDefault {
                     len -= 8;
                     accu += popcount64(a64[i] ^ b64[i]);
                     i++;
+                    [[fallthrough]];
                     case 7:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 6:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 5:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 4:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 3:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 2:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
+                        [[fallthrough]];
                     case 1:
                         accu += popcount64(a64[i] ^ b64[i]);
                         i++;
@@ -367,18 +373,25 @@ struct HammingComputerDefault {
             switch (remainder8) {
                 case 7:
                     accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
+                    [[fallthrough]];
                 case 6:
                     accu += hamdis_tab_ham_bytes[a[5] ^ b[5]];
+                    [[fallthrough]];
                 case 5:
                     accu += hamdis_tab_ham_bytes[a[4] ^ b[4]];
+                    [[fallthrough]];
                 case 4:
                     accu += hamdis_tab_ham_bytes[a[3] ^ b[3]];
+                    [[fallthrough]];
                 case 3:
                     accu += hamdis_tab_ham_bytes[a[2] ^ b[2]];
+                    [[fallthrough]];
                 case 2:
                     accu += hamdis_tab_ham_bytes[a[1] ^ b[1]];
+                    [[fallthrough]];
                 case 1:
                     accu += hamdis_tab_ham_bytes[a[0] ^ b[0]];
+                    [[fallthrough]];
                 default:
                     break;
             }
@@ -391,109 +404,6 @@ struct HammingComputerDefault {
         return quotient8 * 8 + remainder8;
     }
 };
-
-// more inefficient than HammingComputerDefault (obsolete)
-struct HammingComputerM8 {
-    const uint64_t* a;
-    int n;
-
-    HammingComputerM8() {}
-
-    HammingComputerM8(const uint8_t* a8, int code_size) {
-        set(a8, code_size);
-    }
-
-    void set(const uint8_t* a8, int code_size) {
-        assert(code_size % 8 == 0);
-        a = (uint64_t*)a8;
-        n = code_size / 8;
-    }
-
-    int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
-        int n4 = (n / 4) * 4;
-        int accu = 0;
-
-        int i = 0;
-        for (; i < n4; i += 4) {
-            accu += ::faiss::hamming<256>(a + i, b + i);
-        }
-        for (; i < n; i++) {
-            accu += popcount64(a[i] ^ b[i]);
-        }
-        return accu;
-    }
-
-    inline int get_code_size() const {
-        return n * 8;
-    }
-};
-
-// more inefficient than HammingComputerDefault (obsolete)
-struct HammingComputerM4 {
-    const uint32_t* a;
-    int n;
-
-    HammingComputerM4() {}
-
-    HammingComputerM4(const uint8_t* a4, int code_size) {
-        set(a4, code_size);
-    }
-
-    void set(const uint8_t* a4, int code_size) {
-        assert(code_size % 4 == 0);
-        a = (uint32_t*)a4;
-        n = code_size / 4;
-    }
-
-    int hamming(const uint8_t* b8) const {
-        const uint32_t* b = (uint32_t*)b8;
-
-        int n8 = (n / 8) * 8;
-        int accu = 0;
-
-        int i = 0;
-        for (; i < n8; i += 8) {
-            accu += ::faiss::hamming<256>(
-                    (const uint64_t*)(a + i), (const uint64_t*)(b + i));
-        }
-        for (; i < n; i++) {
-            accu += popcount64(a[i] ^ b[i]);
-        }
-        return accu;
-    }
-
-    inline int get_code_size() const {
-        return n * 4;
-    }
-};
-
-/***************************************************************************
- * Equivalence with a template class when code size is known at compile time
- **************************************************************************/
-
-// default template
-template <int CODE_SIZE>
-struct HammingComputer : HammingComputerDefault {
-    HammingComputer(const uint8_t* a, int code_size)
-            : HammingComputerDefault(a, code_size) {}
-};
-
-#define SPECIALIZED_HC(CODE_SIZE)                                    \
-    template <>                                                      \
-    struct HammingComputer<CODE_SIZE> : HammingComputer##CODE_SIZE { \
-        HammingComputer(const uint8_t* a)                            \
-                : HammingComputer##CODE_SIZE(a, CODE_SIZE) {}        \
-    }
-
-SPECIALIZED_HC(4);
-SPECIALIZED_HC(8);
-SPECIALIZED_HC(16);
-SPECIALIZED_HC(20);
-SPECIALIZED_HC(32);
-SPECIALIZED_HC(64);
-
-#undef SPECIALIZED_HC
 
 /***************************************************************************
  * generalized Hamming = number of bytes that are different between

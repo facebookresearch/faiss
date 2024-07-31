@@ -9,6 +9,7 @@
 
 #include <condition_variable>
 #include <deque>
+#include <functional>
 #include <future>
 #include <thread>
 

@@ -6,5 +6,6 @@
 
 set -e
 
-FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss.so
-LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx2.so
+FAISS_OPT_LEVEL= LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss.so
+FAISS_OPT_LEVEL=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx2.so
+FAISS_OPT_LEVEL=AVX512 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx512.so

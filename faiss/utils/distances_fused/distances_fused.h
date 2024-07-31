@@ -34,7 +34,7 @@ bool exhaustive_L2sqr_fused_cmax(
         size_t d,
         size_t nx,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms);
 
 } // namespace faiss

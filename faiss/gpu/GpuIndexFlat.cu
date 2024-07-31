@@ -6,17 +6,21 @@
  */
 
 #include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
-#include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 #include <limits>
+
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#endif
 
 namespace faiss {
 namespace gpu {
@@ -91,7 +95,7 @@ GpuIndexFlat::~GpuIndexFlat() {}
 void GpuIndexFlat::resetIndex_(int dims) {
 #if defined USE_NVIDIA_RAFT
 
-    if (flatConfig_.use_raft) {
+    if (should_use_raft(config_)) {
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
                 dims,
@@ -99,7 +103,7 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 config_.memorySpace));
     } else
 #else
-    if (flatConfig_.use_raft) {
+    if (should_use_raft(config_)) {
         FAISS_THROW_MSG(
                 "RAFT has not been compiled into the current version so it cannot be used.");
     } else

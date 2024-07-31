@@ -9,8 +9,8 @@
 
 #include <faiss/IndexIVFSpectralHash.h>
 
-#include <stdint.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 
 #include <faiss/IndexLSH.h>
@@ -157,7 +157,7 @@ void binarize_with_freq(
     }
 }
 
-}; // namespace
+} // namespace
 
 void IndexIVFSpectralHash::encode_vectors(
         idx_t n,
@@ -224,6 +224,7 @@ struct IVFScanner : InvertedListScanner {
               hc(qcode.data(), index->code_size) {
         this->store_pairs = store_pairs;
         this->code_size = index->code_size;
+        this->keep_max = is_similarity_metric(index->metric_type);
     }
 
     void set_query(const float* query) override {
@@ -288,26 +289,23 @@ struct IVFScanner : InvertedListScanner {
     }
 };
 
+struct BuildScanner {
+    using T = InvertedListScanner*;
+
+    template <class HammingComputer>
+    static T f(const IndexIVFSpectralHash* index, bool store_pairs) {
+        return new IVFScanner<HammingComputer>(index, store_pairs);
+    }
+};
+
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel) const {
     FAISS_THROW_IF_NOT(!sel);
-    switch (code_size) {
-#define HANDLE_CODE_SIZE(cs) \
-    case cs:                 \
-        return new IVFScanner<HammingComputer##cs>(this, store_pairs)
-        HANDLE_CODE_SIZE(4);
-        HANDLE_CODE_SIZE(8);
-        HANDLE_CODE_SIZE(16);
-        HANDLE_CODE_SIZE(20);
-        HANDLE_CODE_SIZE(32);
-        HANDLE_CODE_SIZE(64);
-#undef HANDLE_CODE_SIZE
-        default:
-            return new IVFScanner<HammingComputerDefault>(this, store_pairs);
-    }
+    BuildScanner bs;
+    return dispatch_HammingComputer(code_size, bs, this, store_pairs);
 }
 
 void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {

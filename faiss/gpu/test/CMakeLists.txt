@@ -21,9 +21,8 @@ find_package(CUDAToolkit REQUIRED)
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>)
+target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
@@ -42,6 +41,9 @@ faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.cu)
 faiss_gpu_test(TestGpuSelect.cu)
+if(FAISS_ENABLE_RAFT)
+  faiss_gpu_test(TestGpuIndexCagra.cu)
+endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)

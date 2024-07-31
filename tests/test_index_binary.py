@@ -6,7 +6,6 @@
 """this is a basic test script for simple indices work"""
 
 import os
-import sys
 import numpy as np
 import unittest
 import faiss
@@ -101,6 +100,9 @@ class TestBinaryFlat(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
+        I2 = index.assign(x=self.xq, k=3, labels=None)
+        assert np.all(I == I2)
+
         for i in range(nq):
             for j, dj in zip(I[i], D[i]):
                 ref_dis = binary_dis(self.xq[i], self.xb[j])
@@ -140,9 +142,17 @@ class TestBinaryFlat(unittest.TestCase):
                 self.assertTrue(set(range_res) <= set(I[i]))
                 nt2 += 1
             # in case of equality we have a problem with ties
-        print('nb tests', nt1, nt2)
         # nb tests is actually low...
         self.assertTrue(nt1 > 19 and nt2 > 19)
+
+    def test_reconstruct(self):
+        index = faiss.IndexBinaryFlat(64)
+        input_vector = np.random.randint(0, 255, size=(10, index.code_size)).astype("uint8")
+        index.add(input_vector)
+
+        reconstructed_vector = index.reconstruct_n(0, 4)
+        assert reconstructed_vector.shape == (4, index.code_size)
+        assert np.all(input_vector[:4] == reconstructed_vector)
 
 
 class TestBinaryIVF(unittest.TestCase):
@@ -276,8 +286,6 @@ class TestBinaryIVF(unittest.TestCase):
         ref_index.add(xb)
         ref_D, ref_I = ref_index.search(xq, k)
 
-        print(D[0], ref_D[0])
-        print(I[0], ref_I[0])
         assert np.all(D == ref_D)
         # assert np.all(I == ref_I)  # id may be different
 
@@ -374,6 +382,7 @@ class TestReplicasAndShards(unittest.TestCase):
             sub_idx = faiss.IndexBinaryFlat(d)
             sub_idx.add(xb)
             index.addIndex(sub_idx)
+        self.assertEqual(index_ref.code_size, index.code_size)
 
         D, I = index.search(xq, 10)
 

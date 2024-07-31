@@ -101,9 +101,10 @@ struct OnDiskInvertedLists : InvertedLists {
 
     // copy all inverted lists into *this, in compact form (without
     // allocating slots)
-    size_t merge_from(
+    size_t merge_from_multiple(
             const InvertedLists** ils,
             int n_il,
+            bool shift_ids = false,
             bool verbose = false);
 
     /// same as merge_from for a single invlist

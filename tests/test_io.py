@@ -80,7 +80,7 @@ class TestCallbacks(unittest.TestCase):
             faiss.vector_to_array(index2.codes)
         )
 
-        # This is not a callable function: shoudl raise an exception
+        # This is not a callable function: should raise an exception
         writer = faiss.PyCallbackIOWriter("blabla")
         self.assertRaises(
             Exception,
@@ -102,7 +102,6 @@ class TestCallbacks(unittest.TestCase):
                 reader = faiss.BufferedIOReader(reader, bsz)
 
                 y = np.zeros_like(x)
-                print('nbytes=', y.nbytes)
                 reader(faiss.swig_ptr(y), y.nbytes, 1)
 
             np.testing.assert_array_equal(x, y)

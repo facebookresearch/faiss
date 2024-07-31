@@ -206,7 +206,8 @@ typename C::T partition_fuzzy_median3(
         assert(n_eq_1 <= n_eq);
     }
 
-    int wp = compress_array<C>(vals, ids, n, thresh, n_eq_1);
+    [[maybe_unused]] const int wp =
+            compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
     assert(wp == q);
     if (q_out) {
@@ -750,8 +751,6 @@ typename C::T partition_fuzzy(
         size_t q_min,
         size_t q_max,
         size_t* q_out) {
-    // the code below compiles and runs without AVX2 but it's slower than
-    // the scalar implementation
 #ifdef __AVX2__
     constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
     if (is_uint16 && is_aligned_pointer(vals)) {
@@ -882,7 +881,7 @@ static const simd32uint8 shifts = simd32uint8::create<
 // 2-bit accumulator: we can add only up to 3 elements
 // on output we return 2*4-bit results
 // preproc returns either an index in 0..7 or 0xffff
-// that yeilds a 0 when used in the table look-up
+// that yields a 0 when used in the table look-up
 template <int N, class Preproc>
 void compute_accu2(
         const uint16_t*& data,

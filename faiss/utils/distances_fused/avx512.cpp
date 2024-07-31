@@ -9,7 +9,7 @@
 
 #include <faiss/utils/distances_fused/avx512.h>
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
 
 #include <immintrin.h>
 
@@ -68,7 +68,7 @@ void kernel(
         const float* const __restrict y,
         const float* const __restrict y_transposed,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* __restrict y_norms,
         size_t i) {
     const size_t ny_p =
@@ -231,7 +231,7 @@ void exhaustive_L2sqr_fused_cmax(
         const float* const __restrict y,
         size_t nx,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* __restrict y_norms) {
     // BLAS does not like empty matrices
     if (nx == 0 || ny == 0) {
@@ -275,7 +275,7 @@ void exhaustive_L2sqr_fused_cmax(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
     }
 
-    // Does nothing for SingleBestResultHandler, but
+    // Does nothing for Top1BlockResultHandler, but
     // keeping the call for the consistency.
     res.end_multiple();
     InterruptCallback::check();
@@ -289,7 +289,7 @@ bool exhaustive_L2sqr_fused_cmax_AVX512(
         size_t d,
         size_t nx,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms) {
     // process only cases with certain dimensionalities
 

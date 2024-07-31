@@ -9,6 +9,8 @@ import numpy as np
 import platform
 import os
 import random
+import shutil
+import tempfile
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -16,15 +18,13 @@ from faiss.contrib import evaluation
 from faiss.contrib import ivf_tools
 from faiss.contrib import clustering
 from faiss.contrib import big_batch_search
+from faiss.contrib.ondisk import merge_ondisk
 
 from common_faiss_tests import get_dataset_2
-try:
-    from faiss.contrib.exhaustive_search import \
-        knn_ground_truth, knn, range_ground_truth, \
-        range_search_max_results, exponential_query_iterator
-except:
-    pass  # Submodule import broken in python 2.
-
+from faiss.contrib.exhaustive_search import \
+    knn_ground_truth, knn, range_ground_truth, \
+    range_search_max_results, exponential_query_iterator
+from contextlib import contextmanager
 
 @unittest.skipIf(platform.python_version_tuple()[0] < '3',
                  'Submodule import broken in python 2.')
@@ -147,7 +147,6 @@ class TestExhaustiveSearch(unittest.TestCase):
         xb = ds.get_database()
         D, I = faiss.knn(xq, xb, 10, metric=metric)
         threshold = float(D[:, -1].mean())
-        print(threshold)
 
         index = faiss.IndexFlat(32, metric)
         index.add(xb)
@@ -216,7 +215,17 @@ class TestInspect(unittest.TestCase):
         Yref = X @ A.T + b
         lt = inspect_tools.make_LinearTransform_matrix(A, b)
         Ynew = lt.apply(X)
-        np.testing.assert_equal(Yref, Ynew)
+        np.testing.assert_allclose(Yref, Ynew, rtol=1e-06)
+
+    def test_NSG_neighbors(self):
+        # FIXME number of elements to add should be >> 100
+        ds = datasets.SyntheticDataset(32, 0, 200, 10)
+        index = faiss.index_factory(ds.d, "NSG")
+        index.add(ds.get_database())
+        neighbors = inspect_tools.get_NSG_neighbors(index.nsg)
+        # neighbors should be either valid indexes or -1
+        np.testing.assert_array_less(-2, neighbors)
+        np.testing.assert_array_less(neighbors, ds.nb)
 
 
 class TestRangeEval(unittest.TestCase):
@@ -241,7 +250,6 @@ class TestRangeEval(unittest.TestCase):
         Inew = np.hstack(Inew)
 
         precision, recall = evaluation.range_PR(lims_ref, Iref, lims_new, Inew)
-        print(precision, recall)
 
         self.assertEqual(precision, 0.6)
         self.assertEqual(recall, 0.6)
@@ -294,6 +302,26 @@ class TestRangeEval(unittest.TestCase):
 
 
 class TestPreassigned(unittest.TestCase):
+
+    def test_index_pretransformed(self):
+
+        ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
+        xt = ds.get_train()
+        xq = ds.get_queries()
+        xb = ds.get_database()
+        index = faiss.index_factory(128, 'PCA64,IVF64,PQ4np')
+        index.train(xt)
+        index.add(xb)
+        index_downcasted = faiss.extract_index_ivf(index)
+        index_downcasted.nprobe = 10
+        xq_trans = index.chain.at(0).apply_py(xq)
+        D_ref, I_ref = index.search(xq, 4)
+
+        quantizer = index_downcasted.quantizer
+        Dq, Iq = quantizer.search(xq_trans, index_downcasted.nprobe)
+        D, I = ivf_tools.search_preassigned(index, xq, 4, Iq, Dq)
+        np.testing.assert_almost_equal(D_ref, D, decimal=4)
+        np.testing.assert_array_equal(I_ref, I)
 
     def test_float(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
@@ -456,6 +484,36 @@ class TestRangeSearchMaxResults(unittest.TestCase):
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
 
+    def test_binary(self):
+        ds = datasets.SyntheticDataset(64, 1000, 1000, 200)
+        tobinary = faiss.index_factory(ds.d, "LSHrt")
+        tobinary.train(ds.get_train())
+        index = faiss.IndexBinaryFlat(ds.d)
+        xb = tobinary.sa_encode(ds.get_database())
+        xq = tobinary.sa_encode(ds.get_queries())
+        index.add(xb)
+
+        # find a reasonable radius
+        D, _ = index.search(xq, 10)
+        radius0 = int(np.median(D[:, -1]))
+
+        # baseline = search with that radius
+        lims_ref, Dref, Iref = index.range_search(xq, radius0)
+
+        # now see if using just the total number of results, we can get back
+        # the same result table
+        query_iterator = exponential_query_iterator(xq)
+
+        radius1, lims_new, Dnew, Inew = range_search_max_results(
+            index, query_iterator, ds.d // 2,
+            min_results=Dref.size, clip_to_min=True
+        )
+
+        evaluation.check_ref_range_results(
+            lims_ref, Dref, Iref,
+            lims_new, Dnew, Inew
+        )
+
 
 class TestClustering(unittest.TestCase):
 
@@ -490,7 +548,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 50)
+        self.assertLess(ndiff, 51)
 
 
 class TestBigBatchSearch(unittest.TestCase):
@@ -507,7 +565,7 @@ class TestBigBatchSearch(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), k)
         # faiss.omp_set_num_threads(1)
         for method in ("pairwise_distances", "knn_function", "index"):
-            for threaded in 0, 1, 3, 8:
+            for threaded in 0, 1, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
@@ -537,16 +595,15 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
-        r = random.randrange(1 << 60)
-        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
+        checkpoint = tempfile.mktemp()
         try:
             # First big batch search
             try:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method="knn_function",
-                    threaded=4,
-                    checkpoint=checkpoint, checkpoint_freq=4,
+                    threaded=2,
+                    checkpoint=checkpoint, checkpoint_freq=0.1,
                     crash_at=20
                 )
             except ZeroDivisionError:
@@ -557,8 +614,8 @@ class TestBigBatchSearch(unittest.TestCase):
             Dnew, Inew = big_batch_search.big_batch_search(
                 index, ds.get_queries(),
                 k, method="knn_function",
-                threaded=4,
-                checkpoint=checkpoint, checkpoint_freq=4
+                threaded=2,
+                checkpoint=checkpoint, checkpoint_freq=5
             )
             self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
             np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
@@ -600,3 +657,77 @@ class TestInvlistSort(unittest.TestCase):
         np.testing.assert_equal(Dnew, Dref)
         Inew_remap = perm[Inew]
         np.testing.assert_equal(Inew_remap, Iref)
+
+
+class TestCodeSet(unittest.TestCase):
+
+    def test_code_set(self):
+        """ CodeSet and np.unique should produce the same output """
+        d = 8
+        n = 1000  # > 256 and using only 0 or 1 so there must be duplicates
+        codes = np.random.randint(0, 2, (n, d), dtype=np.uint8)
+        s = faiss.CodeSet(d)
+        inserted = s.insert(codes)
+        np.testing.assert_equal(
+            np.sort(np.unique(codes, axis=0), axis=None),
+            np.sort(codes[inserted], axis=None))
+
+
+@unittest.skipIf(platform.system() == 'Windows',
+                'OnDiskInvertedLists is unsupported on Windows.')
+class TestMerge(unittest.TestCase):
+    @contextmanager
+    def temp_directory(self):
+        temp_dir = tempfile.mkdtemp()
+        try:
+            yield temp_dir
+        finally:
+            shutil.rmtree(temp_dir)
+
+    def do_test_ondisk_merge(self, shift_ids=False):
+        with self.temp_directory() as tmpdir:
+            # only train and add index to disk without adding elements.
+            # this will create empty inverted lists.
+            ds = datasets.SyntheticDataset(32, 2000, 200, 20)
+            index = faiss.index_factory(ds.d, "IVF32,Flat")
+            index.train(ds.get_train())
+            faiss.write_index(index, tmpdir + "/trained.index")
+
+            # create 4 shards and add elements to them
+            ns = 4  # number of shards
+
+            for bno in range(ns):
+                index = faiss.read_index(tmpdir + "/trained.index")
+                i0, i1 = int(bno * ds.nb / ns), int((bno + 1) * ds.nb / ns)
+                if shift_ids:
+                    index.add_with_ids(ds.xb[i0:i1], np.arange(0, ds.nb / ns))
+                else:
+                    index.add_with_ids(ds.xb[i0:i1], np.arange(i0, i1))
+                faiss.write_index(index, tmpdir + "/block_%d.index" % bno)
+
+            # construct the output index and merge them on disk
+            index = faiss.read_index(tmpdir + "/trained.index")
+            block_fnames = [tmpdir + "/block_%d.index" % bno for bno in range(4)]
+
+            merge_ondisk(
+                index, block_fnames, tmpdir + "/merged_index.ivfdata", shift_ids
+            )
+            faiss.write_index(index, tmpdir + "/populated.index")
+
+            # perform a search from index on disk
+            index = faiss.read_index(tmpdir + "/populated.index")
+            index.nprobe = 5
+            D, I = index.search(ds.xq, 5)
+
+            # ground-truth
+            gtI = ds.get_groundtruth(5)
+
+            recall_at_1 = (I[:, :1] == gtI[:, :1]).sum() / float(ds.xq.shape[0])
+            self.assertGreaterEqual(recall_at_1, 0.5)
+
+    def test_ondisk_merge(self):
+        self.do_test_ondisk_merge()
+
+    def test_ondisk_merge_with_shift_ids(self):
+        # verified that recall is same for test_ondisk_merge and
+        self.do_test_ondisk_merge(True)

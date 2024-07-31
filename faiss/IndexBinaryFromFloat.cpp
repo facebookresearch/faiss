@@ -9,13 +9,14 @@
 
 #include <faiss/IndexBinaryFromFloat.h>
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
 #include <memory>
 
 namespace faiss {
 
-IndexBinaryFromFloat::IndexBinaryFromFloat() {}
+IndexBinaryFromFloat::IndexBinaryFromFloat() = default;
 
 IndexBinaryFromFloat::IndexBinaryFromFloat(Index* index)
         : IndexBinary(index->d), index(index), own_fields(false) {

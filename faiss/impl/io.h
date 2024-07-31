@@ -32,7 +32,7 @@ struct IOReader {
     virtual size_t operator()(void* ptr, size_t size, size_t nitems) = 0;
 
     // return a file number that can be memory-mapped
-    virtual int fileno();
+    virtual int filedescriptor();
 
     virtual ~IOReader() {}
 };
@@ -45,7 +45,7 @@ struct IOWriter {
     virtual size_t operator()(const void* ptr, size_t size, size_t nitems) = 0;
 
     // return a file number that can be memory-mapped
-    virtual int fileno();
+    virtual int filedescriptor();
 
     virtual ~IOWriter() noexcept(false) {}
 };
@@ -73,7 +73,7 @@ struct FileIOReader : IOReader {
 
     size_t operator()(void* ptr, size_t size, size_t nitems) override;
 
-    int fileno() override;
+    int filedescriptor() override;
 };
 
 struct FileIOWriter : IOWriter {
@@ -88,7 +88,7 @@ struct FileIOWriter : IOWriter {
 
     size_t operator()(const void* ptr, size_t size, size_t nitems) override;
 
-    int fileno() override;
+    int filedescriptor() override;
 };
 
 /*******************************************************

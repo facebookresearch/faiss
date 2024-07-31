@@ -7,9 +7,12 @@
 Simplistic RPC implementation.
 Exposes all functions of a Server object.
 
-Uses pickle for serialization and the socket interface.
+This code is for demonstration purposes only, and does not include certain
+security protections. It is not meant to be run on an untrusted network or
+in a production environment.
 """
 
+import importlib
 import os
 import pickle
 import sys
@@ -23,22 +26,21 @@ LOG = logging.getLogger(__name__)
 # default
 PORT = 12032
 
-
-#########################################################################
-# simple I/O functions
-
-
-def inline_send_handle(f, conn):
-    st = os.fstat(f.fileno())
-    size = st.st_size
-    pickle.dump(size, conn)
-    conn.write(f.read(size))
+safe_modules = {
+    'numpy',
+    'numpy.core.multiarray',
+}
 
 
-def inline_send_string(s, conn):
-    size = len(s)
-    pickle.dump(size, conn)
-    conn.write(s)
+class RestrictedUnpickler(pickle.Unpickler):
+
+    def find_class(self, module, name):
+        # Only allow safe modules.
+        if module in safe_modules:
+            return getattr(importlib.import_module(module), name)
+        # Forbid everything else.
+        raise pickle.UnpicklingError("global '%s.%s' is forbidden" %
+                                     (module, name))
 
 
 class FileSock:
@@ -123,7 +125,7 @@ class Server:
         """
 
         try:
-            (fname,args)=pickle.load(self.fs)
+            (fname, args) = RestrictedUnpickler(self.fs).load()
         except EOFError:
             raise ClientExit("read args")
         self.log("executing method %s"%(fname))
@@ -214,7 +216,7 @@ class Client:
         return self.get_result()
 
     def get_result(self):
-        (st, ret) = pickle.load(self.fs)
+        (st, ret) = RestrictedUnpickler(self.fs).load()
         if st!=None:
             raise ServerException(st)
         else:

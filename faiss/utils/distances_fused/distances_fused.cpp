@@ -20,14 +20,14 @@ bool exhaustive_L2sqr_fused_cmax(
         size_t d,
         size_t nx,
         size_t ny,
-        SingleBestResultHandler<CMax<float, int64_t>>& res,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms) {
     if (nx == 0 || ny == 0) {
         // nothing to do
         return true;
     }
 
-#ifdef __AVX512__
+#ifdef __AVX512F__
     // avx512 kernel
     return exhaustive_L2sqr_fused_cmax_AVX512(x, y, d, nx, ny, res, y_norms);
 #elif defined(__AVX2__) || defined(__aarch64__)

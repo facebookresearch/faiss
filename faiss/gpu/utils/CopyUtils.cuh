@@ -119,6 +119,7 @@ inline void fromDevice(T* src, T* dst, size_t num, cudaStream_t stream) {
     if (dev == -1) {
         CUDA_VERIFY(cudaMemcpyAsync(
                 dst, src, num * sizeof(T), cudaMemcpyDeviceToHost, stream));
+        cudaStreamSynchronize(stream);
     } else {
         CUDA_VERIFY(cudaMemcpyAsync(
                 dst, src, num * sizeof(T), cudaMemcpyDeviceToDevice, stream));

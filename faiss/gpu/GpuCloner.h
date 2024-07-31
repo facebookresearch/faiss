@@ -11,10 +11,12 @@
 
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
 #include <faiss/clone_index.h>
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
+
 namespace faiss {
 namespace gpu {
 
@@ -94,6 +96,26 @@ struct GpuProgressiveDimIndexFactory : ProgressiveDimIndexFactory {
 
     virtual ~GpuProgressiveDimIndexFactory() override;
 };
+
+/*********************************************
+ * Cloning binary indexes
+ *********************************************/
+
+faiss::IndexBinary* index_binary_gpu_to_cpu(
+        const faiss::IndexBinary* gpu_index);
+
+/// converts any CPU index that can be converted to GPU
+faiss::IndexBinary* index_binary_cpu_to_gpu(
+        GpuResourcesProvider* provider,
+        int device,
+        const faiss::IndexBinary* index,
+        const GpuClonerOptions* options = nullptr);
+
+faiss::IndexBinary* index_binary_cpu_to_gpu_multiple(
+        std::vector<GpuResourcesProvider*>& provider,
+        std::vector<int>& devices,
+        const faiss::IndexBinary* index,
+        const GpuMultipleClonerOptions* options = nullptr);
 
 } // namespace gpu
 } // namespace faiss

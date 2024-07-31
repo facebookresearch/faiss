@@ -261,7 +261,7 @@ void AdditiveQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
             is_trained, "The additive quantizer is not trained yet.");
 
     // standard additive quantizer decoding
-#pragma omp parallel for if (n > 1000)
+#pragma omp parallel for if (n > 100)
     for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(code + i * code_size, code_size);
         float* xi = x + i * d;
@@ -370,6 +370,8 @@ void AdditiveQuantizer::compute_LUT(
 
 namespace {
 
+/* compute inner products of one query with all centroids, given a look-up
+ * table of all inner producst with codebook entries */
 void compute_inner_prod_with_LUT(
         const AdditiveQuantizer& aq,
         const float* LUT,

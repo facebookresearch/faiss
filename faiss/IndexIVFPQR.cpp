@@ -91,18 +91,18 @@ void IndexIVFPQR::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* precomputed_idx) {
-    float* residual_2 = new float[n * d];
-    ScopeDeleter<float> del(residual_2);
+        const idx_t* precomputed_idx,
+        void* /*inverted_list_context*/) {
+    std::unique_ptr<float[]> residual_2(new float[n * d]);
 
     idx_t n0 = ntotal;
 
-    add_core_o(n, x, xids, residual_2, precomputed_idx);
+    add_core_o(n, x, xids, residual_2.get(), precomputed_idx);
 
     refine_codes.resize(ntotal * refine_pq.code_size);
 
     refine_pq.compute_codes(
-            residual_2, &refine_codes[n0 * refine_pq.code_size], n);
+            residual_2.get(), &refine_codes[n0 * refine_pq.code_size], n);
 }
 #define TIC t0 = get_cycles()
 #define TOC get_cycles() - t0
@@ -121,11 +121,10 @@ void IndexIVFPQR::search_preassigned(
     uint64_t t0;
     TIC;
     size_t k_coarse = long(k * k_factor);
-    idx_t* coarse_labels = new idx_t[k_coarse * n];
-    ScopeDeleter<idx_t> del1(coarse_labels);
-    { // query with quantizer levels 1 and 2.
-        float* coarse_distances = new float[k_coarse * n];
-        ScopeDeleter<float> del(coarse_distances);
+    std::unique_ptr<idx_t[]> coarse_labels(new idx_t[k_coarse * n]);
+    {
+        // query with quantizer levels 1 and 2.
+        std::unique_ptr<float[]> coarse_distances(new float[k_coarse * n]);
 
         IndexIVFPQ::search_preassigned(
                 n,
@@ -133,8 +132,8 @@ void IndexIVFPQR::search_preassigned(
                 k_coarse,
                 idx,
                 L1_dis,
-                coarse_distances,
-                coarse_labels,
+                coarse_distances.get(),
+                coarse_labels.get(),
                 true,
                 params);
     }
@@ -148,13 +147,12 @@ void IndexIVFPQR::search_preassigned(
 #pragma omp parallel reduction(+ : n_refine)
     {
         // tmp buffers
-        float* residual_1 = new float[2 * d];
-        ScopeDeleter<float> del(residual_1);
-        float* residual_2 = residual_1 + d;
+        std::unique_ptr<float[]> residual_1(new float[2 * d]);
+        float* residual_2 = residual_1.get() + d;
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
             const float* xq = x + i * d;
-            const idx_t* shortlist = coarse_labels + k_coarse * i;
+            const idx_t* shortlist = coarse_labels.get() + k_coarse * i;
             float* heap_sim = distances + k * i;
             idx_t* heap_ids = labels + k * i;
             maxheap_heapify(k, heap_sim, heap_ids);
@@ -172,7 +170,7 @@ void IndexIVFPQR::search_preassigned(
                 assert(ofs >= 0 && ofs < invlists->list_size(list_no));
 
                 // 1st level residual
-                quantizer->compute_residual(xq, residual_1, list_no);
+                quantizer->compute_residual(xq, residual_1.get(), list_no);
 
                 // 2nd level residual
                 const uint8_t* l2code = invlists->get_single_code(list_no, ofs);
@@ -185,9 +183,10 @@ void IndexIVFPQR::search_preassigned(
                 idx_t id = invlists->get_single_id(list_no, ofs);
                 assert(0 <= id && id < ntotal);
                 refine_pq.decode(
-                        &refine_codes[id * refine_pq.code_size], residual_1);
+                        &refine_codes[id * refine_pq.code_size],
+                        residual_1.get());
 
-                float dis = fvec_L2sqr(residual_1, residual_2, d);
+                float dis = fvec_L2sqr(residual_1.get(), residual_2, d);
 
                 if (dis < heap_sim[0]) {
                     idx_t id_or_pair = store_pairs ? sl : id;

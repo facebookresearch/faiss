@@ -151,4 +151,4 @@ struct ProductResidualQuantizer : ProductAdditiveQuantizer {
     ProductResidualQuantizer();
 };
 
-}; // namespace faiss
+} // namespace faiss

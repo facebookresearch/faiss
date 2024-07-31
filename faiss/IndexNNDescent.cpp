@@ -58,35 +58,6 @@ using storage_idx_t = NNDescent::storage_idx_t;
 
 namespace {
 
-/* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
-
-struct NegativeDistanceComputer : DistanceComputer {
-    /// owned by this
-    DistanceComputer* basedis;
-
-    explicit NegativeDistanceComputer(DistanceComputer* basedis)
-            : basedis(basedis) {}
-
-    void set_query(const float* x) override {
-        basedis->set_query(x);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) override {
-        return -(*basedis)(i);
-    }
-
-    /// compute distance between two stored vectors
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return -basedis->symmetric_dis(i, j);
-    }
-
-    ~NegativeDistanceComputer() override {
-        delete basedis;
-    }
-};
-
 DistanceComputer* storage_distance_computer(const Index* storage) {
     if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
@@ -158,8 +129,8 @@ void IndexNNDescent::search(
         {
             VisitedTable vt(ntotal);
 
-            DistanceComputer* dis = storage_distance_computer(storage);
-            ScopeDeleter1<DistanceComputer> del(dis);
+            std::unique_ptr<DistanceComputer> dis(
+                    storage_distance_computer(storage));
 
 #pragma omp for
             for (idx_t i = i0; i < i1; i++) {
@@ -197,8 +168,7 @@ void IndexNNDescent::add(idx_t n, const float* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    DistanceComputer* dis = storage_distance_computer(storage);
-    ScopeDeleter1<DistanceComputer> del(dis);
+    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
     nndescent.build(*dis, ntotal, verbose);
 }
 

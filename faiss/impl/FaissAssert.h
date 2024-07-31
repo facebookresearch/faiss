@@ -94,12 +94,14 @@
         }                                              \
     } while (false)
 
-#define FAISS_THROW_IF_NOT_MSG(X, MSG)                       \
+#define FAISS_THROW_IF_MSG(X, MSG)                           \
     do {                                                     \
-        if (!(X)) {                                          \
+        if (X) {                                             \
             FAISS_THROW_FMT("Error: '%s' failed: " MSG, #X); \
         }                                                    \
     } while (false)
+
+#define FAISS_THROW_IF_NOT_MSG(X, MSG) FAISS_THROW_IF_MSG(!(X), MSG)
 
 #define FAISS_THROW_IF_NOT_FMT(X, FMT, ...)                               \
     do {                                                                  \

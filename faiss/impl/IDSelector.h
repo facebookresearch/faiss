@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 
 /** IDSelector is intended to define a subset of vectors to handle (for removal
  * or as subset to search) */
@@ -140,7 +140,7 @@ struct IDSelectorAnd : IDSelector {
             : lhs(lhs), rhs(rhs) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) && rhs->is_member(id);
-    };
+    }
     virtual ~IDSelectorAnd() {}
 };
 
@@ -153,7 +153,7 @@ struct IDSelectorOr : IDSelector {
             : lhs(lhs), rhs(rhs) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) || rhs->is_member(id);
-    };
+    }
     virtual ~IDSelectorOr() {}
 };
 
@@ -166,7 +166,7 @@ struct IDSelectorXOr : IDSelector {
             : lhs(lhs), rhs(rhs) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) ^ rhs->is_member(id);
-    };
+    }
     virtual ~IDSelectorXOr() {}
 };
 

@@ -33,7 +33,8 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
     bool usePrecomputedTables = false;
 
     /// Use the alternative memory layout for the IVF lists
-    /// WARNING: this is a feature under development, do not use!
+    /// WARNING: this is a feature under development, and is only supported with
+    /// RAFT enabled for the index. Do not use if RAFT is not enabled.
     bool interleavedLayout = false;
 
     /// Use GEMM-backed computation of PQ code distances for the no precomputed
@@ -133,6 +134,22 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     ProductQuantizer pq;
 
    protected:
+    /// Initialize appropriate index
+    void setIndex_(
+            GpuResources* resources,
+            int dim,
+            idx_t nlist,
+            faiss::MetricType metric,
+            float metricArg,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool useFloat16LookupTables,
+            bool useMMCodeDistance,
+            bool interleavedLayout,
+            float* pqCentroidData,
+            IndicesOptions indicesOptions,
+            MemorySpace space);
+
     /// Throws errors if configuration settings are improper
     void verifyPQSettings_() const;
 

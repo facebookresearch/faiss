@@ -13,7 +13,7 @@
 /* This test creates a 3-level RCQ and performs a search on it.
  * Then it crops the RCQ to just the 2 first levels and verifies that
  * the 3-level vectors are in a subtree that was visited in the 2-level RCQ. */
-TEST(RCQ_cropping, test_cropping) {
+TEST(RCQCropping, test_cropping) {
     size_t nq = 10, nt = 2000, nb = 1000, d = 32;
 
     using idx_t = faiss::idx_t;
@@ -28,7 +28,6 @@ TEST(RCQ_cropping, test_cropping) {
     faiss::ResidualCoarseQuantizer rcq(d, nbits);
 
     rcq.train(nt, xt);
-    // fprintf(stderr, "nb centroids: %zd\n", rcq.ntotal);
 
     // the test below works only for beam size == nprobe
     rcq.set_beam_factor(1.0);
@@ -44,7 +43,6 @@ TEST(RCQ_cropping, test_cropping) {
     nbits.pop_back();
     faiss::ResidualCoarseQuantizer rcq_cropped(d, nbits);
     rcq_cropped.initialize_from(rcq);
-    // fprintf(stderr, "cropped nb centroids: %zd\n", rcq_cropped.ntotal);
 
     EXPECT_EQ(rcq_cropped.ntotal, rcq.ntotal >> last_nbits);
 
@@ -74,7 +72,7 @@ TEST(RCQ_cropping, test_cropping) {
     }
 }
 
-TEST(RCQ_cropping, search_params) {
+TEST(RCQCropping, search_params) {
     size_t nq = 10, nt = 2000, nb = 1000, d = 32;
 
     using idx_t = faiss::idx_t;

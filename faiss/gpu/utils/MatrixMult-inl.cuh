@@ -168,8 +168,8 @@ void runMatrixMult(
     FAISS_ASSERT(c.getSize(0) <= std::numeric_limits<int>::max());
     FAISS_ASSERT(c.getSize(1) <= std::numeric_limits<int>::max());
 
-    FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
-    FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(b.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(b.getSize(1) <= std::numeric_limits<int>::max());
 
     FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
     FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());

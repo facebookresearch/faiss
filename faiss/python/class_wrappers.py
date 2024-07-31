@@ -402,6 +402,74 @@ def handle_Index(the_class):
         )
         return D, I, R
 
+    def replacement_search_and_return_codes(
+            self, x, k, *,
+            include_listnos=False, params=None, D=None, I=None, codes=None):
+        """Find the k nearest neighbors of the set of vectors x in the index,
+        and return the codes stored for these vectors
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
+        include_listnos : bool, optional
+            whether to include the list ids in the first bytes of each code
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the result.
+        codes : array_like, optional
+            codes array to store
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
+            the label is set to -1
+        R : array_like
+            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+
+        assert k > 0
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+
+        code_size_1 = self.code_size
+        if include_listnos:
+            code_size_1 += self.coarse_code_size()
+
+        if codes is None:
+            codes = np.empty((n, k, code_size_1), dtype=np.uint8)
+        else:
+            assert codes.shape == (n, k, code_size_1)
+
+        self.search_and_return_codes_c(
+            n, swig_ptr(x),
+            k, swig_ptr(D),
+            swig_ptr(I), swig_ptr(codes), include_listnos,
+            params
+        )
+        return D, I, codes
+
     def replacement_remove_ids(self, x):
         """Remove some ids from the index.
         This is a O(ntotal) operation by default, so could be expensive.
@@ -495,7 +563,7 @@ def handle_Index(the_class):
             Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
         """
         if ni == -1:
-            ni = self.ntotal
+            ni = self.ntotal - n0
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -734,6 +802,8 @@ def handle_Index(the_class):
                    ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
+    replace_method(the_class, 'search_and_return_codes',
+                   replacement_search_and_return_codes, ignore_missing=True)
 
     # these ones are IVF-specific
     replace_method(the_class, 'search_preassigned',
@@ -767,32 +837,43 @@ def handle_IndexBinary(the_class):
     def replacement_add(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
         x = _check_dtype_uint8(x)
         ids = np.ascontiguousarray(ids, dtype='int64')
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         self.train_c(n, swig_ptr(x))
 
     def replacement_reconstruct(self, key):
-        x = np.empty(self.d // 8, dtype=np.uint8)
+        x = np.empty(self.code_size, dtype=np.uint8)
         self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
+        if ni == -1:
+            ni = self.ntotal - n0
+        if x is None:
+            x = np.empty((ni, self.code_size), dtype=np.uint8)
+        else:
+            assert x.shape == (ni, self.code_size)
+
+        self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
 
     def replacement_search(self, x, k):
         x = _check_dtype_uint8(x)
         n, d = x.shape
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
         labels = np.empty((n, k), dtype=np.int64)
@@ -804,7 +885,7 @@ def handle_IndexBinary(the_class):
     def replacement_search_preassigned(self, x, k, Iq, Dq):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         assert k > 0
 
         D = np.empty((n, k), dtype=np.int32)
@@ -829,7 +910,7 @@ def handle_IndexBinary(the_class):
     def replacement_range_search(self, x, thresh):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res)
         # get pointers and copy them
@@ -842,7 +923,7 @@ def handle_IndexBinary(the_class):
     def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
         n, d = x.shape
         x = _check_dtype_uint8(x)
-        assert d * 8 == self.d
+        assert d == self.code_size
 
         Iq = np.ascontiguousarray(Iq, dtype='int64')
         assert params is None, "params not supported"
@@ -866,9 +947,6 @@ def handle_IndexBinary(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
-
-
-
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
             sel = x
@@ -878,12 +956,47 @@ def handle_IndexBinary(the_class):
             sel = IDSelectorBatch(x.size, swig_ptr(x))
         return self.remove_ids_c(sel)
 
+    def replacement_assign(self, x, k, labels=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+        This is the same as the `search` method, but discards the distances.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be uint8.
+        k : int
+            Number of nearest neighbors.
+        labels : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        labels: array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d == self.code_size
+        assert k > 0
+
+        if labels is None:
+            labels = np.empty((n, k), dtype=np.int64)
+        else:
+            assert labels.shape == (n, k)
+
+        self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
+        return labels
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'assign', replacement_assign)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)
@@ -1057,6 +1170,28 @@ def add_to_referenced_objects(self, ref):
     else:
         self.referenced_objects.append(ref)
 
+class RememberSwigOwnership:
+    """
+    SWIG's seattr transfers ownership of SWIG wrapped objects to the class
+    (btw this seems to contradict https://www.swig.org/Doc1.3/Python.html#Python_nn22
+    31.4.2)
+    This interferes with how we manage ownership: with the referenced_objects
+    table. Therefore, we reset the thisown field in this context manager.
+    """
+
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __enter__(self):
+        if hasattr(self.obj, "thisown"):
+            self.old_thisown = self.obj.thisown
+        else:
+            self.old_thisown = None
+
+    def __exit__(self, *ignored):
+        if self.old_thisown is not None:
+            self.obj.thisown = self.old_thisown
+
 
 def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
@@ -1071,8 +1206,9 @@ def handle_SearchParameters(the_class):
         self.original_init()
         for k, v in args.items():
             assert hasattr(self, k)
-            setattr(self, k, v)
-            if inspect.isclass(v):
+            with RememberSwigOwnership(v):
+                setattr(self, k, v)
+            if type(v) not in (int, float, bool, str):
                 add_to_referenced_objects(self, v)
 
     the_class.__init__ = replacement_init
@@ -1093,3 +1229,170 @@ def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):
         self.original_init(*args)
 
     the_class.__init__ = replacement_init
+
+
+def handle_CodeSet(the_class):
+
+    def replacement_insert(self, codes, inserted=None):
+        n, d = codes.shape
+        assert d == self.d
+        codes = np.ascontiguousarray(codes, dtype=np.uint8)
+
+        if inserted is None:
+            inserted = np.empty(n, dtype=bool)
+        else:
+            assert inserted.shape == (n, )
+
+        self.insert_c(n, swig_ptr(codes), swig_ptr(inserted))
+        return inserted
+
+    replace_method(the_class, 'insert', replacement_insert)
+
+######################################################
+# Syntatic sugar for NeuralNet classes
+######################################################
+
+
+def handle_Tensor2D(the_class):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) == 1:
+            array, = args
+            n, d = array.shape
+            self.original_init(n, d)
+            faiss.copy_array_to_vector(
+                np.ascontiguousarray(array).ravel(), self.v)
+        else:
+            self.original_init(*args)
+
+    def numpy(self):
+        shape = np.zeros(2, dtype=np.int64)
+        faiss.memcpy(faiss.swig_ptr(shape), self.shape, shape.nbytes)
+        return faiss.vector_to_array(self.v).reshape(shape[0], shape[1])
+
+    the_class.__init__ = replacement_init
+    the_class.numpy = numpy
+
+
+def handle_Embedding(the_class):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) != 1 or args[0].__class__ == the_class:
+            self.original_init(*args)
+            return
+        # assume it's a torch.Embedding
+        emb = args[0]
+        self.original_init(emb.num_embeddings, emb.embedding_dim)
+        self.from_torch(emb)
+
+    def from_torch(self, emb):
+        """ copy weights from torch.Embedding """
+        assert emb.weight.shape == (self.num_embeddings, self.embedding_dim)
+        faiss.copy_array_to_vector(
+            np.ascontiguousarray(emb.weight.data).ravel(), self.weight)
+
+    def from_array(self, array):
+        """ copy weights from numpy array """
+        assert array.shape == (self.num_embeddings, self.embedding_dim)
+        faiss.copy_array_to_vector(
+            np.ascontiguousarray(array).ravel(), self.weight)
+
+    the_class.from_array = from_array
+    the_class.from_torch = from_torch
+    the_class.__init__ = replacement_init
+
+
+def handle_Linear(the_class):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) != 1 or args[0].__class__ == the_class:
+            self.original_init(*args)
+            return
+        # assume it's a torch.Linear
+        linear = args[0]
+        bias = linear.bias is not None
+        self.original_init(linear.in_features, linear.out_features, bias)
+        self.from_torch(linear)
+
+    def from_torch(self, linear):
+        """ copy weights from torch.Linear """
+        assert linear.weight.shape == (self.out_features, self.in_features)
+        faiss.copy_array_to_vector(
+            linear.weight.data.numpy().ravel(), self.weight)
+        if linear.bias is not None:
+            assert linear.bias.shape == (self.out_features,)
+            faiss.copy_array_to_vector(linear.bias.data.numpy(), self.bias)
+
+    def from_array(self, array, bias=None):
+        """ copy weights from numpy array """
+        assert array.shape == (self.out_features, self.in_features)
+        faiss.copy_array_to_vector(
+            np.ascontiguousarray(array).ravel(), self.weight)
+        if bias is not None:
+            assert bias.shape == (self.out_features,)
+            faiss.copy_array_to_vector(bias, self.bias)
+
+    the_class.__init__ = replacement_init
+    the_class.from_array = from_array
+    the_class.from_torch = from_torch
+
+######################################################
+# Syntatic sugar for QINCo and QINCoStep
+######################################################
+
+def handle_QINCoStep(the_class):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) != 1 or args[0].__class__ == the_class:
+            self.original_init(*args)
+            return
+        step = args[0]
+        # assume it's a Torch QINCoStep
+        self.original_init(step.d, step.K, step.L, step.h)
+        self.from_torch(step)
+
+    def from_torch(self, step):
+        """ copy weights from torch.QINCoStep """
+        assert (step.d, step.K, step.L, step.h) == (self.d, self.K, self.L, self.h)
+        self.codebook.from_torch(step.codebook)
+        self.MLPconcat.from_torch(step.MLPconcat)
+
+        for l in range(step.L):
+            src = step.residual_blocks[l]
+            dest = self.get_residual_block(l)
+            dest.linear1.from_torch(src[0])
+            dest.linear2.from_torch(src[2])
+
+    the_class.__init__ = replacement_init
+    the_class.from_torch = from_torch
+
+
+def handle_QINCo(the_class):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) != 1 or args[0].__class__ == the_class:
+            self.original_init(*args)
+            return
+
+        # assume it's a Torch QINCo
+        qinco = args[0]
+        self.original_init(qinco.d, qinco.K, qinco.L, qinco.M, qinco.h)
+        self.from_torch(qinco)
+
+    def from_torch(self, qinco):
+        """ copy weights from torch.QINCo """
+        assert (
+            (qinco.d, qinco.K, qinco.L, qinco.M, qinco.h) ==
+            (self.d, self.K, self.L, self.M, self.h)
+        )
+        self.codebook0.from_torch(qinco.codebook0)
+        for m in range(qinco.M - 1):
+            self.get_step(m).from_torch(qinco.steps[m])
+
+    the_class.__init__ = replacement_init
+    the_class.from_torch = from_torch

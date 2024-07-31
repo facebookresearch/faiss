@@ -116,7 +116,7 @@ void IndexIVFAdditiveQuantizer::sa_decode(
     }
 }
 
-IndexIVFAdditiveQuantizer::~IndexIVFAdditiveQuantizer() {}
+IndexIVFAdditiveQuantizer::~IndexIVFAdditiveQuantizer() = default;
 
 /*********************************************
  * AQInvertedListScanner
@@ -149,6 +149,7 @@ struct AQInvertedListScanner : InvertedListScanner {
     const float* q;
     /// following codes come from this inverted list
     void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
         if (ia.metric_type == METRIC_L2 && ia.by_residual) {
             ia.quantizer->compute_residual(q0, tmp.data(), list_no);
             q = tmp.data();
@@ -157,7 +158,7 @@ struct AQInvertedListScanner : InvertedListScanner {
         }
     }
 
-    ~AQInvertedListScanner() {}
+    ~AQInvertedListScanner() = default;
 };
 
 template <bool is_IP>
@@ -188,7 +189,7 @@ struct AQInvertedListScannerDecompress : AQInvertedListScanner {
                      : fvec_L2sqr(q, b.data(), aq.d);
     }
 
-    ~AQInvertedListScannerDecompress() override {}
+    ~AQInvertedListScannerDecompress() override = default;
 };
 
 template <bool is_IP, Search_type_t search_type>
@@ -231,7 +232,7 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
                 aq.compute_1_distance_LUT<is_IP, search_type>(code, LUT.data());
     }
 
-    ~AQInvertedListScannerLUT() override {}
+    ~AQInvertedListScannerLUT() override = default;
 };
 
 } // anonymous namespace
@@ -310,7 +311,7 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
                   metric,
                   search_type) {}
 
-IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() {}
+IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() = default;
 
 /**************************************************************************************
  * IndexIVFLocalSearchQuantizer
@@ -332,7 +333,7 @@ IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer(
 IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer()
         : IndexIVFAdditiveQuantizer(&lsq) {}
 
-IndexIVFLocalSearchQuantizer::~IndexIVFLocalSearchQuantizer() {}
+IndexIVFLocalSearchQuantizer::~IndexIVFLocalSearchQuantizer() = default;
 
 /**************************************************************************************
  * IndexIVFProductResidualQuantizer
@@ -355,7 +356,7 @@ IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer(
 IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer()
         : IndexIVFAdditiveQuantizer(&prq) {}
 
-IndexIVFProductResidualQuantizer::~IndexIVFProductResidualQuantizer() {}
+IndexIVFProductResidualQuantizer::~IndexIVFProductResidualQuantizer() = default;
 
 /**************************************************************************************
  * IndexIVFProductLocalSearchQuantizer
@@ -378,6 +379,7 @@ IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer(
 IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer()
         : IndexIVFAdditiveQuantizer(&plsq) {}
 
-IndexIVFProductLocalSearchQuantizer::~IndexIVFProductLocalSearchQuantizer() {}
+IndexIVFProductLocalSearchQuantizer::~IndexIVFProductLocalSearchQuantizer() =
+        default;
 
 } // namespace faiss

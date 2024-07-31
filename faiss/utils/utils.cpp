@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <faiss/Index.h>
 #include <faiss/utils/utils.h>
 
 #include <cassert>
@@ -28,6 +29,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <set>
 #include <type_traits>
 #include <vector>
 
@@ -115,6 +117,10 @@ std::string get_compile_options() {
 
 #ifdef __AVX2__
     options += "AVX2 ";
+#elif __AVX512F__
+    options += "AVX512 ";
+#elif defined(__ARM_FEATURE_SVE)
+    options += "SVE NEON ";
 #elif defined(__aarch64__)
     options += "NEON ";
 #else
@@ -124,6 +130,10 @@ std::string get_compile_options() {
     options += gpu_compile_options;
 
     return options;
+}
+
+std::string get_version() {
+    return VERSION_STRING;
 }
 
 #ifdef _MSC_VER
@@ -429,8 +439,8 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     }
 }
 
-uint64_t ivec_checksum(size_t n, const int32_t* asigned) {
-    const uint32_t* a = reinterpret_cast<const uint32_t*>(asigned);
+uint64_t ivec_checksum(size_t n, const int32_t* assigned) {
+    const uint32_t* a = reinterpret_cast<const uint32_t*>(assigned);
     uint64_t cs = 112909;
     while (n--) {
         cs = cs * 65713 + a[n] * 1686049;
@@ -556,7 +566,8 @@ bool check_openmp() {
 
 namespace {
 
-int64_t count_lt(int64_t n, const float* row, float threshold) {
+template <typename T>
+int64_t count_lt(int64_t n, const T* row, T threshold) {
     for (int64_t i = 0; i < n; i++) {
         if (!(row[i] < threshold)) {
             return i;
@@ -565,7 +576,8 @@ int64_t count_lt(int64_t n, const float* row, float threshold) {
     return n;
 }
 
-int64_t count_gt(int64_t n, const float* row, float threshold) {
+template <typename T>
+int64_t count_gt(int64_t n, const T* row, T threshold) {
     for (int64_t i = 0; i < n; i++) {
         if (!(row[i] > threshold)) {
             return i;
@@ -576,33 +588,35 @@ int64_t count_gt(int64_t n, const float* row, float threshold) {
 
 } // namespace
 
-void CombinerRangeKNN::compute_sizes(int64_t* L_res) {
-    this->L_res = L_res;
-    L_res[0] = 0;
+template <typename T>
+void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
+    this->L_res = L_res_2;
+    L_res_2[0] = 0;
     int64_t j = 0;
     for (int64_t i = 0; i < nq; i++) {
         int64_t n_in;
         if (!mask || !mask[i]) {
-            const float* row = D + i * k;
+            const T* row = D + i * k;
             n_in = keep_max ? count_gt(k, row, r2) : count_lt(k, row, r2);
         } else {
             n_in = lim_remain[j + 1] - lim_remain[j];
             j++;
         }
-        L_res[i + 1] = n_in; // L_res[i] + n_in;
+        L_res_2[i + 1] = n_in; // L_res_2[i] + n_in;
     }
     // cumsum
     for (int64_t i = 0; i < nq; i++) {
-        L_res[i + 1] += L_res[i];
+        L_res_2[i + 1] += L_res_2[i];
     }
 }
 
-void CombinerRangeKNN::write_result(float* D_res, int64_t* I_res) {
+template <typename T>
+void CombinerRangeKNN<T>::write_result(T* D_res, int64_t* I_res) {
     FAISS_THROW_IF_NOT(L_res);
     int64_t j = 0;
     for (int64_t i = 0; i < nq; i++) {
         int64_t n_in = L_res[i + 1] - L_res[i];
-        float* D_row = D_res + L_res[i];
+        T* D_row = D_res + L_res[i];
         int64_t* I_row = I_res + L_res[i];
         if (!mask || !mask[i]) {
             memcpy(D_row, D + i * k, n_in * sizeof(*D_row));
@@ -612,6 +626,18 @@ void CombinerRangeKNN::write_result(float* D_res, int64_t* I_res) {
             memcpy(I_row, I_remain + lim_remain[j], n_in * sizeof(*I_row));
             j++;
         }
+    }
+}
+
+// explicit template instantiations
+template struct CombinerRangeKNN<float>;
+template struct CombinerRangeKNN<int16_t>;
+
+void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
+    for (size_t i = 0; i < n; i++) {
+        auto res = s.insert(
+                std::vector<uint8_t>(codes + i * d, codes + i * d + d));
+        inserted[i] = res.second;
     }
 }
 

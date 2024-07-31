@@ -1,25 +1,30 @@
 # Installing Faiss via conda
 
-The recommended way to install Faiss is through [conda](https://docs.conda.io).
+The supported way to install Faiss is through [conda](https://docs.conda.io).
 Stable releases are pushed regularly to the pytorch conda channel, as well as
 pre-release nightly builds.
 
-The CPU-only `faiss-cpu` conda package is currently available on Linux, OSX, and
-Windows. The `faiss-gpu`, containing both CPU and GPU indices, is available on
-Linux systems, for various versions of CUDA.
+- The CPU-only faiss-cpu conda package is currently available on Linux (x86_64 and arm64), OSX (arm64 only), and Windows (x86_64)
+- faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86_64 only) for CUDA 11.4 and 12.1
+- NEW: faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86_64 only) for CUDA 11.8 and 12.1.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu
+$ conda install -c pytorch faiss-cpu=1.8.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch faiss-gpu
+$ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 
-# or for a specific CUDA version
-$ conda install -c pytorch faiss-gpu cudatoolkit=10.2 # for CUDA 10.2
+# GPU(+CPU) version with NVIDIA RAFT
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
 ```
+
+For faiss-gpu, the nvidia channel is required for CUDA, which is not
+published in the main anaconda channel.
+
+For faiss-gpu-raft, the nvidia, rapidsai and conda-forge channels are required.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -28,17 +33,18 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly faiss-gpu
-```
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
 
-A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-05-08):
+# GPU(+CPU) version with NVIDIA RAFT
+conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
 ```
-conda create --name faiss_1.7.4 python=3.10
-conda activate faiss_1.7.4
-conda install faiss-gpu=1.7.4 -c pytorch -c nvidia
-conda install faiss-gpu pytorch pytorch-cuda -c pytorch -c nvidia
-conda install -c conda-forge notebook
-conda install -y matplotlib
+In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
+
+A combination of versions that installs GPU Faiss with CUDA and Pytorch (as of 2024-05-15):
+```
+conda create --name faiss_1.8.0
+conda activate faiss_1.8.0
+conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch=*=*cuda* pytorch-cuda=11 numpy
 ```
 
 ## Installing from conda-forge
@@ -73,8 +79,8 @@ found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
 The basic requirements are:
-- a C++11 compiler (with support for OpenMP support version 2 or higher),
-- a BLAS implementation (we strongly recommend using Intel MKL for best
+- a C++17 compiler (with support for OpenMP support version 2 or higher),
+- a BLAS implementation (on Intel machines we strongly recommend using Intel MKL for best
 performance).
 
 The optional requirements are:
@@ -111,13 +117,15 @@ Several options can be passed to CMake, among which:
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
   - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
-    are `ON` and `OFF`), 
+    are `ON` and `OFF`),
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`
-  and `avx2`, by increasing order of optimization),
+  generate code using optimized SIMD/Vector instructions. possible values are
+  below:
+    - On x86\_64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
+    - On aarch64, `generic` and `sve` , by increasing order of optimization,
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS

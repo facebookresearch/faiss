@@ -9,10 +9,10 @@
 
 #include <faiss/IndexIVFPQ.h>
 
-#include <stdint.h>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 
 #include <algorithm>
@@ -135,24 +135,25 @@ void IndexIVFPQ::add_core(
         idx_t n,
         const float* x,
         const idx_t* xids,
-        const idx_t* coarse_idx) {
-    add_core_o(n, x, xids, nullptr, coarse_idx);
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
+    add_core_o(n, x, xids, nullptr, coarse_idx, inverted_list_context);
 }
 
-static float* compute_residuals(
+static std::unique_ptr<float[]> compute_residuals(
         const Index* quantizer,
         idx_t n,
         const float* x,
         const idx_t* list_nos) {
     size_t d = quantizer->d;
-    float* residuals = new float[n * d];
+    std::unique_ptr<float[]> residuals(new float[n * d]);
     // TODO: parallelize?
     for (size_t i = 0; i < n; i++) {
         if (list_nos[i] < 0)
-            memset(residuals + i * d, 0, sizeof(*residuals) * d);
+            memset(residuals.get() + i * d, 0, sizeof(float) * d);
         else
             quantizer->compute_residual(
-                    x + i * d, residuals + i * d, list_nos[i]);
+                    x + i * d, residuals.get() + i * d, list_nos[i]);
     }
     return residuals;
 }
@@ -164,9 +165,9 @@ void IndexIVFPQ::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     if (by_residual) {
-        float* to_encode = compute_residuals(quantizer, n, x, list_nos);
-        ScopeDeleter<float> del(to_encode);
-        pq.compute_codes(to_encode, codes, n);
+        std::unique_ptr<float[]> to_encode =
+                compute_residuals(quantizer, n, x, list_nos);
+        pq.compute_codes(to_encode.get(), codes, n);
     } else {
         pq.compute_codes(x, codes, n);
     }
@@ -212,7 +213,8 @@ void IndexIVFPQ::add_core_o(
         const float* x,
         const idx_t* xids,
         float* residuals_2,
-        const idx_t* precomputed_idx) {
+        const idx_t* precomputed_idx,
+        void* inverted_list_context) {
     idx_t bs = index_ivfpq_add_core_o_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
@@ -229,7 +231,8 @@ void IndexIVFPQ::add_core_o(
                     x + i0 * d,
                     xids ? xids + i0 : nullptr,
                     residuals_2 ? residuals_2 + i0 * d : nullptr,
-                    precomputed_idx ? precomputed_idx + i0 : nullptr);
+                    precomputed_idx ? precomputed_idx + i0 : nullptr,
+                    inverted_list_context);
         }
         return;
     }
@@ -241,31 +244,30 @@ void IndexIVFPQ::add_core_o(
     FAISS_THROW_IF_NOT(is_trained);
     double t0 = getmillisecs();
     const idx_t* idx;
-    ScopeDeleter<idx_t> del_idx;
+    std::unique_ptr<idx_t[]> del_idx;
 
     if (precomputed_idx) {
         idx = precomputed_idx;
     } else {
         idx_t* idx0 = new idx_t[n];
-        del_idx.set(idx0);
+        del_idx.reset(idx0);
         quantizer->assign(n, x, idx0);
         idx = idx0;
     }
 
     double t1 = getmillisecs();
-    uint8_t* xcodes = new uint8_t[n * code_size];
-    ScopeDeleter<uint8_t> del_xcodes(xcodes);
+    std::unique_ptr<uint8_t[]> xcodes(new uint8_t[n * code_size]);
 
     const float* to_encode = nullptr;
-    ScopeDeleter<float> del_to_encode;
+    std::unique_ptr<const float[]> del_to_encode;
 
     if (by_residual) {
-        to_encode = compute_residuals(quantizer, n, x, idx);
-        del_to_encode.set(to_encode);
+        del_to_encode = compute_residuals(quantizer, n, x, idx);
+        to_encode = del_to_encode.get();
     } else {
         to_encode = x;
     }
-    pq.compute_codes(to_encode, xcodes, n);
+    pq.compute_codes(to_encode, xcodes.get(), n);
 
     double t2 = getmillisecs();
     // TODO: parallelize?
@@ -281,8 +283,9 @@ void IndexIVFPQ::add_core_o(
             continue;
         }
 
-        uint8_t* code = xcodes + i * code_size;
-        size_t offset = invlists->add_entry(key, id, code);
+        uint8_t* code = xcodes.get() + i * code_size;
+        size_t offset =
+                invlists->add_entry(key, id, code, inverted_list_context);
 
         if (residuals_2) {
             float* res2 = residuals_2 + i * d;
@@ -750,7 +753,7 @@ struct QueryTables {
     }
 };
 
-// This way of handling the sleector is not optimal since all distances
+// This way of handling the selector is not optimal since all distances
 // are computed even if the id would filter it out.
 template <class C, bool use_sel>
 struct KnnSearchResults {
@@ -1043,7 +1046,7 @@ struct IVFPQScannerT : QueryTables {
             const uint8_t* codes,
             SearchResultType& res) const {
         int ht = ivfpq.polysemous_ht;
-        size_t n_hamming_pass = 0, nup = 0;
+        size_t n_hamming_pass = 0;
 
         int code_size = pq.code_size;
 
@@ -1155,29 +1158,22 @@ struct IVFPQScannerT : QueryTables {
     }
 
     template <class SearchResultType>
+    struct Run_scan_list_polysemous_hc {
+        using T = void;
+        template <class HammingComputer, class... Types>
+        void f(const IVFPQScannerT* scanner, Types... args) {
+            scanner->scan_list_polysemous_hc<HammingComputer, SearchResultType>(
+                    args...);
+        }
+    };
+
+    template <class SearchResultType>
     void scan_list_polysemous(
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        switch (pq.code_size) {
-#define HANDLE_CODE_SIZE(cs)                                            \
-    case cs:                                                            \
-        scan_list_polysemous_hc<HammingComputer##cs, SearchResultType>( \
-                ncode, codes, res);                                     \
-        break
-            HANDLE_CODE_SIZE(4);
-            HANDLE_CODE_SIZE(8);
-            HANDLE_CODE_SIZE(16);
-            HANDLE_CODE_SIZE(20);
-            HANDLE_CODE_SIZE(32);
-            HANDLE_CODE_SIZE(64);
-#undef HANDLE_CODE_SIZE
-            default:
-                scan_list_polysemous_hc<
-                        HammingComputerDefault,
-                        SearchResultType>(ncode, codes, res);
-                break;
-        }
+        Run_scan_list_polysemous_hc<SearchResultType> r;
+        dispatch_HammingComputer(pq.code_size, r, this, ncode, codes, res);
     }
 };
 
@@ -1207,6 +1203,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
               precompute_mode(precompute_mode),
               sel(sel) {
         this->store_pairs = store_pairs;
+        this->keep_max = is_similarity_metric(METRIC_TYPE);
     }
 
     void set_query(const float* query) override {

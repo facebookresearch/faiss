@@ -169,7 +169,7 @@ TEST(ThreadedIndex, TestReplica) {
     int k = 6;
 
     // Try with threading and without
-    for (bool threaded : {true, false}) {
+    for ([[maybe_unused]] const bool threaded : {true, false}) {
         std::vector<std::unique_ptr<MockIndex>> idxs;
         faiss::IndexReplicas replica(d);
 
@@ -247,8 +247,6 @@ TEST(ThreadedIndex, TestShards) {
         shards.search(n, x.data(), k, distances.data(), labels.data());
 
         for (int i = 0; i < idxs.size(); ++i) {
-            auto perShard = n / idxs.size();
-
             EXPECT_EQ(idxs[i]->nCalled, n);
             EXPECT_EQ(idxs[i]->xCalled, x.data());
             EXPECT_EQ(idxs[i]->kCalled, k);

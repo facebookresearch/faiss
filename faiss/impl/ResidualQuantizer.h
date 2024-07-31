@@ -144,73 +144,15 @@ struct ResidualQuantizer : AdditiveQuantizer {
      */
     size_t memory_per_point(int beam_size = -1) const;
 
-    /** Cross products used in codebook tables
-     *
-     * These are used to keep trak of norms of centroids.
+    /** Cross products used in codebook tables used for beam_LUT = 1
      */
     void compute_codebook_tables();
 
-    /// dot products of all codebook vectors with each other
-    /// size total_codebook_size * total_codebook_size
+    /// dot products of all codebook entries with the previous codebooks
+    /// size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1)
     std::vector<float> codebook_cross_products;
-    /// norms of all vectors
+    /// norms of all codebook entries (size total_codebook_size)
     std::vector<float> cent_norms;
 };
 
-/** Encode a residual by sampling from a centroid table.
- *
- * This is a single encoding step the residual quantizer.
- * It allows low-level access to the encoding function, exposed mainly for unit
- * tests.
- *
- * @param n              number of vectors to hanlde
- * @param residuals      vectors to encode, size (n, beam_size, d)
- * @param cent           centroids, size (K, d)
- * @param beam_size      input beam size
- * @param m              size of the codes for the previous encoding steps
- * @param codes          code array for the previous steps of the beam (n,
- * beam_size, m)
- * @param new_beam_size  output beam size (should be <= K * beam_size)
- * @param new_codes      output codes, size (n, new_beam_size, m + 1)
- * @param new_residuals  output residuals, size (n, new_beam_size, d)
- * @param new_distances  output distances, size (n, new_beam_size)
- * @param assign_index   if non-NULL, will be used to perform assignment
- */
-void beam_search_encode_step(
-        size_t d,
-        size_t K,
-        const float* cent,
-        size_t n,
-        size_t beam_size,
-        const float* residuals,
-        size_t m,
-        const int32_t* codes,
-        size_t new_beam_size,
-        int32_t* new_codes,
-        float* new_residuals,
-        float* new_distances,
-        Index* assign_index = nullptr,
-        ApproxTopK_mode_t approx_topk = ApproxTopK_mode_t::EXACT_TOPK);
-
-/** Encode a set of vectors using their dot products with the codebooks
- *
- */
-void beam_search_encode_step_tab(
-        size_t K,
-        size_t n,
-        size_t beam_size,                  // input sizes
-        const float* codebook_cross_norms, // size K * ldc
-        size_t ldc,                        // >= K
-        const uint64_t* codebook_offsets,  // m
-        const float* query_cp,             // size n * ldqc
-        size_t ldqc,                       // >= K
-        const float* cent_norms_i,         // size K
-        size_t m,
-        const int32_t* codes,   // n * beam_size * m
-        const float* distances, // n * beam_size
-        size_t new_beam_size,
-        int32_t* new_codes,   // n * new_beam_size * (m + 1)
-        float* new_distances, // n * new_beam_size
-        ApproxTopK_mode_t approx_topk = ApproxTopK_mode_t::EXACT_TOPK);
-
-}; // namespace faiss
+} // namespace faiss

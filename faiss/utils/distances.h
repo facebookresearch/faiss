@@ -198,8 +198,16 @@ void fvec_sub(size_t d, const float* a, const float* b, float* c);
  * Compute a subset of  distances
  ***************************************************************************/
 
-/* compute the inner product between x and a subset y of ny vectors,
-  whose indices are given by idy.  */
+/** compute the inner product between x and a subset y of ny vectors defined by
+ * ids
+ *
+ * ip(i, j) = inner_product(x(i, :), y(ids(i, j), :))
+ *
+ * @param ip    output array, size nx * ny
+ * @param x     first-term vector, size nx * d
+ * @param y     second-term vector, size (max(ids) + 1) * d
+ * @param ids   ids to sample from y, size nx * ny
+ */
 void fvec_inner_products_by_idx(
         float* ip,
         const float* x,
@@ -209,7 +217,16 @@ void fvec_inner_products_by_idx(
         size_t nx,
         size_t ny);
 
-/* same but for a subset in y indexed by idsy (ny vectors in total) */
+/** compute the squared L2 distances between x and a subset y of ny vectors
+ * defined by ids
+ *
+ * dis(i, j) = inner_product(x(i, :), y(ids(i, j), :))
+ *
+ * @param dis   output array, size nx * ny
+ * @param x     first-term vector, size nx * d
+ * @param y     second-term vector, size (max(ids) + 1) * d
+ * @param ids   ids to sample from y, size nx * ny
+ */
 void fvec_L2sqr_by_idx(
         float* dis,
         const float* x,
@@ -236,7 +253,14 @@ void pairwise_indexed_L2sqr(
         const int64_t* iy,
         float* dis);
 
-/* same for inner product */
+/** compute dis[j] = inner_product(x[ix[j]], y[iy[j]]) forall j=0..n-1
+ *
+ * @param x  size (max(ix) + 1, d)
+ * @param y  size (max(iy) + 1, d)
+ * @param ix size n
+ * @param iy size n
+ * @param dis size n
+ */
 void pairwise_indexed_inner_product(
         size_t d,
         size_t n,
@@ -352,6 +376,7 @@ void knn_inner_products_by_idx(
         const int64_t* subset,
         size_t d,
         size_t nx,
+        size_t ny,
         size_t nsubset,
         size_t k,
         float* vals,
@@ -374,6 +399,7 @@ void knn_L2sqr_by_idx(
         const int64_t* subset,
         size_t d,
         size_t nx,
+        size_t ny,
         size_t nsubset,
         size_t k,
         float* vals,
@@ -433,5 +459,28 @@ void compute_PQ_dis_tables_dsub2(
 /***************************************************************************
  * Templatized versions of distance functions
  ***************************************************************************/
+
+/***************************************************************************
+ * Misc  matrix and vector manipulation functions
+ ***************************************************************************/
+
+/** compute c := a + bf * b for a, b and c tables
+ *
+ * @param n   size of the tables
+ * @param a   size n
+ * @param b   size n
+ * @param c   restult table, size n
+ */
+void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
+
+/** same as fvec_madd, also return index of the min of the result table
+ * @return    index of the min of table c
+ */
+int fvec_madd_and_argmin(
+        size_t n,
+        const float* a,
+        float bf,
+        const float* b,
+        float* c);
 
 } // namespace faiss

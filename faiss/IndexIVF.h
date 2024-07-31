@@ -72,6 +72,8 @@ struct SearchParametersIVF : SearchParameters {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
     SearchParameters* quantizer_params = nullptr;
+    /// context object to pass to InvertedLists
+    void* inverted_list_context = nullptr;
 
     virtual ~SearchParametersIVF() {}
 };
@@ -232,7 +234,8 @@ struct IndexIVF : Index, IndexIVFInterface {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx);
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr);
 
     /** Encodes a set of vectors as they would appear in the inverted lists
      *
@@ -357,6 +360,24 @@ struct IndexIVF : Index, IndexIVFInterface {
             float* recons,
             const SearchParameters* params = nullptr) const override;
 
+    /** Similar to search, but also returns the codes corresponding to the
+     * stored vectors for the search results.
+     *
+     * @param codes      codes (n, k, code_size)
+     * @param include_listno
+     *                   include the list ids in the code (in this case add
+     *                   ceil(log8(nlist)) to the code size)
+     */
+    void search_and_return_codes(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            uint8_t* recons,
+            bool include_listno = false,
+            const SearchParameters* params = nullptr) const;
+
     /** Reconstruct a vector given the location in terms of (inv list index +
      * inv list offset) instead of the id.
      *
@@ -412,6 +433,14 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /* The standalone codec interface (except sa_decode that is specific) */
     size_t sa_code_size() const override;
+
+    /** encode a set of vectors
+     * sa_encode will call encode_vector with include_listno=true
+     * @param n      nb of vectors to encode
+     * @param x      the vectors to encode
+     * @param bytes  output array for the codes
+     * @return nb of bytes written to codes
+     */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     IndexIVF();

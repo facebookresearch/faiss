@@ -32,6 +32,7 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
+#include <rmm/mr/device/device_memory_resource.hpp>
 #endif
 
 namespace faiss {
@@ -159,6 +160,10 @@ struct AllocRequest : public AllocInfo {
 
     /// The size in bytes of the allocation
     size_t size = 0;
+
+#if defined USE_NVIDIA_RAFT
+    rmm::mr::device_memory_resource* mr = nullptr;
+#endif
 };
 
 /// A RAII object that manages a temporary memory request

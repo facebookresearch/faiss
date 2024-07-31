@@ -14,6 +14,9 @@ from faiss.loader import *
 
 import faiss
 
+import collections.abc
+
+
 ###########################################
 # Wrapper for a few functions
 ###########################################
@@ -108,7 +111,7 @@ def checksum(a):
     """ compute a checksum for quick-and-dirty comparisons of arrays """
     a = a.view('uint8')
     if a.ndim == 1:
-        return bvec_checksum(s.size, swig_ptr(a))
+        return bvec_checksum(a.size, swig_ptr(a))
     n, d = a.shape
     cs = np.zeros(n, dtype='uint64')
     bvecs_checksum(n, d, swig_ptr(a), swig_ptr(cs))
@@ -327,7 +330,7 @@ class MapInt64ToInt64:
 # KNN function
 ######################################################
 
-def knn(xq, xb, k, metric=METRIC_L2):
+def knn(xq, xb, k, metric=METRIC_L2, metric_arg=0.0):
     """
     Compute the k nearest neighbors of a vector without constructing an index
 
@@ -335,10 +338,10 @@ def knn(xq, xb, k, metric=METRIC_L2):
     Parameters
     ----------
     xq : array_like
-        Query vectors, shape (nq, d) where d is appropriate for the index.
+        Query vectors, shape (nq, d) where the dimension d is that same as xb
         `dtype` must be float32.
     xb : array_like
-        Database vectors, shape (nb, d) where d is appropriate for the index.
+        Database vectors, shape (nb, d) where dimension d is the same as xq
         `dtype` must be float32.
     k : int
         Number of nearest neighbors.
@@ -371,8 +374,64 @@ def knn(xq, xb, k, metric=METRIC_L2):
             swig_ptr(xq), swig_ptr(xb),
             d, nq, nb, k, swig_ptr(D), swig_ptr(I)
         )
+    else: 
+        knn_extra_metrics(
+            swig_ptr(xq), swig_ptr(xb),
+            d, nq, nb, metric, metric_arg, k, 
+            swig_ptr(D), swig_ptr(I)
+        )
+
+    return D, I
+
+
+def knn_hamming(xq, xb, k, variant="hc"):
+    """
+    Compute the k nearest neighbors of a set of vectors without constructing an index.
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is the number of bits / 8
+        `dtype` must be uint8.
+    k : int
+        Number of nearest neighbors.
+    variant : string
+        Function variant to use, either "mc" (counter) or "hc" (heap)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
+    # other variant is "mc"
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+    D = np.empty((nq, k), dtype='int32')
+    I = np.empty((nq, k), dtype='int64')
+
+    if variant == "hc":
+        heap = faiss.int_maxheap_array_t()
+        heap.k = k
+        heap.nh = nq
+        heap.ids = faiss.swig_ptr(I)
+        heap.val = faiss.swig_ptr(D)
+        faiss.hammings_knn_hc(
+            heap, faiss.swig_ptr(xq), faiss.swig_ptr(xb), nb,
+            d, 1
+        )
+    elif variant == "mc":
+        faiss.hammings_knn_mc(
+            faiss.swig_ptr(xq), faiss.swig_ptr(xb), nq, nb, k, d,
+            faiss.swig_ptr(D), faiss.swig_ptr(I)
+        )
     else:
-        raise NotImplementedError("only L2 and INNER_PRODUCT are supported")
+        raise NotImplementedError
     return D, I
 
 
@@ -529,3 +588,72 @@ class Kmeans:
         self.index.add(self.centroids)
         D, I = self.index.search(x, 1)
         return D.ravel(), I.ravel()
+
+
+###########################################
+# Packing and unpacking bistrings
+###########################################
+
+def is_sequence(x):
+    return isinstance(x, collections.abc.Sequence)
+
+pack_bitstrings_c = pack_bitstrings
+
+def pack_bitstrings(a, nbit):
+    """
+    Pack a set integers (i, j) where i=0:n and j=0:M into
+    n bitstrings.
+    Output is an uint8 array of size (n, code_size), where code_size is
+    such that at most 7 bits per code are wasted.
+
+    If nbit is an integer: all entries takes nbit bits.
+    If nbit is an array: entry (i, j) takes nbit[j] bits.
+    """
+    n, M = a.shape
+    a = np.ascontiguousarray(a, dtype='int32')
+    if is_sequence(nbit):
+        nbit = np.ascontiguousarray(nbit, dtype='int32')
+        assert nbit.shape == (M,)
+        code_size = int((nbit.sum() + 7) // 8)
+        b = np.empty((n, code_size), dtype='uint8')
+        pack_bitstrings_c(
+            n, M, swig_ptr(nbit), swig_ptr(a), swig_ptr(b), code_size)
+    else:
+        code_size = (M * nbit + 7) // 8
+        b = np.empty((n, code_size), dtype='uint8')
+        pack_bitstrings_c(n, M, nbit, swig_ptr(a), swig_ptr(b), code_size)
+    return b
+
+unpack_bitstrings_c = unpack_bitstrings
+
+def unpack_bitstrings(b, M_or_nbits, nbit=None):
+    """
+    Unpack a set integers (i, j) where i=0:n and j=0:M from
+    n bitstrings (encoded as uint8s).
+    Input is an uint8 array of size (n, code_size), where code_size is
+    such that at most 7 bits per code are wasted.
+
+    Two forms:
+    - when called with (array, M, nbit): there are M entries of size
+      nbit per row
+    - when called with (array, nbits): element (i, j) is encoded in
+      nbits[j] bits
+    """
+    n, code_size = b.shape
+    if nbit is None:
+        nbit = np.ascontiguousarray(M_or_nbits, dtype='int32')
+        M = len(nbit)
+        min_code_size = int((nbit.sum() + 7) // 8)
+        assert code_size >= min_code_size
+        a = np.empty((n, M), dtype='int32')
+        unpack_bitstrings_c(
+            n, M, swig_ptr(nbit),
+            swig_ptr(b), code_size, swig_ptr(a))
+    else:
+        M = M_or_nbits
+        min_code_size = (M * nbit + 7) // 8
+        assert code_size >= min_code_size
+        a = np.empty((n, M), dtype='int32')
+        unpack_bitstrings_c(
+            n, M, nbit, swig_ptr(b), code_size, swig_ptr(a))
+    return a

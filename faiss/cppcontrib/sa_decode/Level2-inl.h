@@ -12,9 +12,18 @@
 #include <cstdint>
 
 #include <faiss/cppcontrib/detail/CoarseBitType.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 namespace cppcontrib {
+
+bool isBigEndian() {
+#ifdef FAISS_BIG_ENDIAN
+    return true;
+#else
+    return false;
+#endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// Index2LevelDecoder
@@ -72,9 +81,14 @@ struct Index2LevelDecoder {
             const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
-
-            const intptr_t coarseCode = coarse[coarseCentroidIdx];
-            const intptr_t fineCode = fine[fineCentroidIdx];
+            intptr_t coarseCode, fineCode;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
+                fineCode = Swap2Bytes(fine[fineCentroidIdx]);
+            } else {
+                coarseCode = coarse[coarseCentroidIdx];
+                fineCode = fine[fineCentroidIdx];
+            }
 
             const float* const __restrict coarsePtr = pqCoarseCentroids +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode) *
@@ -112,9 +126,14 @@ struct Index2LevelDecoder {
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
 
-            const intptr_t coarseCode = coarse[coarseCentroidIdx];
-            const intptr_t fineCode = fine[fineCentroidIdx];
-
+            intptr_t coarseCode, fineCode;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode = Swap2Bytes(coarse[coarseCentroidIdx]);
+                fineCode = Swap2Bytes(fine[fineCentroidIdx]);
+            } else {
+                coarseCode = coarse[coarseCentroidIdx];
+                fineCode = fine[fineCentroidIdx];
+            }
             const float* const __restrict coarsePtr = pqCoarseCentroids +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode) *
                             COARSE_SIZE +
@@ -162,11 +181,18 @@ struct Index2LevelDecoder {
             const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
-
-            const intptr_t coarseCode0 = coarse0[coarseCentroidIdx];
-            const intptr_t fineCode0 = fine0[fineCentroidIdx];
-            const intptr_t coarseCode1 = coarse1[coarseCentroidIdx];
-            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+            intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+            }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *
@@ -222,11 +248,18 @@ struct Index2LevelDecoder {
             const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
-
-            const intptr_t coarseCode0 = coarse0[coarseCentroidIdx];
-            const intptr_t fineCode0 = fine0[fineCentroidIdx];
-            const intptr_t coarseCode1 = coarse1[coarseCentroidIdx];
-            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+            intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+            }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *
@@ -292,13 +325,23 @@ struct Index2LevelDecoder {
             const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
-
-            const intptr_t coarseCode0 = coarse0[coarseCentroidIdx];
-            const intptr_t fineCode0 = fine0[fineCentroidIdx];
-            const intptr_t coarseCode1 = coarse1[coarseCentroidIdx];
-            const intptr_t fineCode1 = fine1[fineCentroidIdx];
-            const intptr_t coarseCode2 = coarse2[coarseCentroidIdx];
-            const intptr_t fineCode2 = fine2[fineCentroidIdx];
+            intptr_t coarseCode0, coarseCode1, fineCode0, fineCode1;
+            intptr_t coarseCode2, fineCode2;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+                coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
+                fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+                coarseCode2 = coarse2[coarseCentroidIdx];
+                fineCode2 = fine2[fineCentroidIdx];
+            }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *
@@ -369,13 +412,23 @@ struct Index2LevelDecoder {
             const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
             const intptr_t fineCentroidIdx = i / FINE_SIZE;
             const intptr_t fineCentroidOffset = i % FINE_SIZE;
-
-            const intptr_t coarseCode0 = coarse0[coarseCentroidIdx];
-            const intptr_t fineCode0 = fine0[fineCentroidIdx];
-            const intptr_t coarseCode1 = coarse1[coarseCentroidIdx];
-            const intptr_t fineCode1 = fine1[fineCentroidIdx];
-            const intptr_t coarseCode2 = coarse2[coarseCentroidIdx];
-            const intptr_t fineCode2 = fine2[fineCentroidIdx];
+            intptr_t coarseCode0, fineCode0, coarseCode1, fineCode1;
+            intptr_t coarseCode2, fineCode2;
+            if (isBigEndian() && sizeof(coarse_storage_type) == 2) {
+                coarseCode0 = Swap2Bytes(coarse0[coarseCentroidIdx]);
+                fineCode0 = Swap2Bytes(fine0[fineCentroidIdx]);
+                coarseCode1 = Swap2Bytes(coarse1[coarseCentroidIdx]);
+                fineCode1 = Swap2Bytes(fine1[fineCentroidIdx]);
+                coarseCode2 = Swap2Bytes(coarse2[coarseCentroidIdx]);
+                fineCode2 = Swap2Bytes(fine2[fineCentroidIdx]);
+            } else {
+                coarseCode0 = coarse0[coarseCentroidIdx];
+                fineCode0 = fine0[fineCentroidIdx];
+                coarseCode1 = coarse1[coarseCentroidIdx];
+                fineCode1 = fine1[fineCentroidIdx];
+                coarseCode2 = coarse2[coarseCentroidIdx];
+                fineCode2 = fine2[fineCentroidIdx];
+            }
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids +
                     (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *

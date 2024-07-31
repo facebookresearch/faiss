@@ -7,6 +7,7 @@ import argparse
 import os
 import sys
 import time
+import json
 
 import faiss
 import numpy as np
@@ -19,105 +20,6 @@ except ModuleNotFoundError:
 sanitize = datasets.sanitize
 
 
-######################################################
-# Command-line parsing
-######################################################
-
-
-parser = argparse.ArgumentParser()
-
-
-def aa(*args, **kwargs):
-    group.add_argument(*args, **kwargs)
-
-
-group = parser.add_argument_group('dataset options')
-
-aa('--db', default='deep1M', help='dataset')
-aa('--compute_gt', default=False, action='store_true',
-    help='compute and store the groundtruth')
-aa('--force_IP', default=False, action="store_true",
-    help='force IP search instead of L2')
-
-group = parser.add_argument_group('index consturction')
-
-aa('--indexkey', default='HNSW32', help='index_factory type')
-aa('--maxtrain', default=256 * 256, type=int,
-   help='maximum number of training points (0 to set automatically)')
-aa('--indexfile', default='', help='file to read or write index from')
-aa('--add_bs', default=-1, type=int,
-   help='add elements index by batches of this size')
-
-
-group = parser.add_argument_group('IVF options')
-aa('--by_residual', default=-1, type=int,
-    help="set if index should use residuals (default=unchanged)")
-aa('--no_precomputed_tables', action='store_true', default=False,
-   help='disable precomputed tables (uses less memory)')
-aa('--get_centroids_from', default='',
-   help='get the centroids from this index (to speed up training)')
-aa('--clustering_niter', default=-1, type=int,
-   help='number of clustering iterations (-1 = leave default)')
-aa('--train_on_gpu', default=False, action='store_true',
-   help='do training on GPU')
-
-
-group = parser.add_argument_group('index-specific options')
-aa('--M0', default=-1, type=int, help='size of base level for HNSW')
-aa('--RQ_train_default', default=False, action="store_true",
-    help='disable progressive dim training for RQ')
-aa('--RQ_beam_size', default=-1, type=int,
-    help='set beam size at add time')
-aa('--LSQ_encode_ils_iters', default=-1, type=int,
-    help='ILS iterations for LSQ')
-aa('--RQ_use_beam_LUT', default=-1, type=int,
-    help='use beam LUT at add time')
-
-group = parser.add_argument_group('searching')
-
-aa('--k', default=100, type=int, help='nb of nearest neighbors')
-aa('--inter', default=False, action='store_true',
-    help='use intersection measure instead of 1-recall as metric')
-aa('--searchthreads', default=-1, type=int,
-   help='nb of threads to use at search time')
-aa('--searchparams', nargs='+', default=['autotune'],
-   help="search parameters to use (can be autotune or a list of params)")
-aa('--n_autotune', default=500, type=int,
-   help="max nb of autotune experiments")
-aa('--autotune_max', default=[], nargs='*',
-   help='set max value for autotune variables format "var:val" (exclusive)')
-aa('--autotune_range', default=[], nargs='*',
-   help='set complete autotune range, format "var:val1,val2,..."')
-aa('--min_test_duration', default=3.0, type=float,
-   help='run test at least for so long to avoid jitter')
-
-args = parser.parse_args()
-
-print("args:", args)
-
-os.system('echo -n "nb processors "; '
-          'cat /proc/cpuinfo | grep ^processor | wc -l; '
-          'cat /proc/cpuinfo | grep ^"model name" | tail -1')
-
-######################################################
-# Load dataset
-######################################################
-
-ds = datasets.load_dataset(
-    dataset=args.db, compute_gt=args.compute_gt)
-
-if args.force_IP:
-    ds.metric = "IP"
-
-print(ds)
-
-nq, d = ds.nq, ds.d
-nb, d = ds.nq, ds.d
-
-
-######################################################
-# Make index
-######################################################
 
 def unwind_index_ivf(index):
     if isinstance(index, faiss.IndexPreTransform):
@@ -125,6 +27,10 @@ def unwind_index_ivf(index):
         vt = index.chain.at(0)
         index_ivf, vt2 = unwind_index_ivf(faiss.downcast_index(index.index))
         assert vt2 is None
+        if vt is None:
+            vt = lambda x: x
+        else:
+            vt = faiss.downcast_VectorTransform(vt)
         return index_ivf, vt
     if hasattr(faiss, "IndexRefine") and isinstance(index, faiss.IndexRefine):
         return unwind_index_ivf(faiss.downcast_index(index.base_index))
@@ -157,16 +63,50 @@ def apply_AQ_options(index, args):
         index.rq.use_beam_LUT = args.RQ_use_beam_LUT
 
 
-if args.indexfile and os.path.exists(args.indexfile):
 
-    print("reading", args.indexfile)
-    index = faiss.read_index(args.indexfile)
+def eval_setting(index, xq, gt, k, inter, min_time):
+    """ evaluate searching in terms of precision vs. speed """
+    nq = xq.shape[0]
+    ivf_stats = faiss.cvar.indexIVF_stats
+    ivf_stats.reset()
+    nrun = 0
+    t0 = time.time()
+    while True:
+        D, I = index.search(xq, k)
+        nrun += 1
+        t1 = time.time()
+        if t1 - t0 > min_time:
+            break
+    ms_per_query = ((t1 - t0) * 1000.0 / nq / nrun)
+    res = {
+        "ms_per_query": ms_per_query,
+        "nrun": nrun
+    }
+    res["n"] = ms_per_query
+    if inter:
+        rank = k
+        inter_measure = faiss.eval_intersection(gt[:, :rank], I[:, :rank]) / (nq * rank)
+        print("%.4f" % inter_measure, end=' ')
+        res["inter_measure"] = inter_measure
+    else:
+        res["recalls"] = {}
+        for rank in 1, 10, 100:
+            recall = (I[:, :rank] == gt[:, :1]).sum() / float(nq)
+            print("%.4f" % recall, end=' ')
+            res["recalls"][rank] = recall
+    print("   %9.5f  " % ms_per_query, end=' ')
+    print("%12d   " % (ivf_stats.ndis / nrun), end=' ')
+    print(nrun)
+    res["ndis"] = ivf_stats.ndis / nrun
+    return res
 
-    index_ivf, vec_transform = unwind_index_ivf(index)
-    if vec_transform is None:
-        vec_transform = lambda x: x
+######################################################
+# Training
+######################################################
 
-else:
+def run_train(args, ds, res):
+    nq, d = ds.nq, ds.d
+    nb, d = ds.nq, ds.d
 
     print("build index, key=", args.indexkey)
 
@@ -176,10 +116,6 @@ else:
     )
 
     index_ivf, vec_transform = unwind_index_ivf(index)
-    if vec_transform is None:
-        vec_transform = lambda x: x
-    else:
-        vec_transform = faiss.downcast_VectorTransform(vec_transform)
 
     if args.by_residual != -1:
         by_residual = args.by_residual == 1
@@ -205,9 +141,14 @@ else:
                     64)
                 print(base_index.nprobe)
         elif isinstance(quantizer, faiss.IndexHNSW):
-            print("   update quantizer efSearch=", quantizer.hnsw.efSearch, end=" -> ")
-            quantizer.hnsw.efSearch = 40 if index_ivf.nlist < 4e6 else 64
-            print(quantizer.hnsw.efSearch)
+            hnsw = quantizer.hnsw
+            print(
+                f"   update HNSW quantizer options, before: "
+                f"{hnsw.efSearch=:} {hnsw.efConstruction=:}"
+            )
+            hnsw.efSearch = 40 if index_ivf.nlist < 4e6 else 64
+            hnsw.efConstruction = 200
+            print(f"       after: {hnsw.efSearch=:} {hnsw.efConstruction=:}")
 
     apply_AQ_options(index_ivf or index, args)
 
@@ -286,182 +227,341 @@ else:
 
     t0 = time.time()
     index.train(xt2)
-    print("  train in %.3f s" % (time.time() - t0))
+    res.train_time = time.time() - t0
+    print("  train in %.3f s" % res.train_time)
+    return index
+
+######################################################
+# Populating index
+######################################################
+
+def run_add(args, ds, index, res):
 
     print("adding")
     t0 = time.time()
     if args.add_bs == -1:
+        assert args.split == [1, 0], "split not supported with full batch add"
         index.add(sanitize(ds.get_database()))
     else:
+        totn = ds.nb // args.split[0] # approximate
         i0 = 0
-        for xblock in ds.database_iterator(bs=args.add_bs):
+        print(f"Adding in block sizes {args.add_bs} with split {args.split}")
+        for xblock in ds.database_iterator(bs=args.add_bs, split=args.split):
             i1 = i0 + len(xblock)
             print("  adding %d:%d / %d [%.3f s, RSS %d kiB] " % (
-                i0, i1, ds.nb, time.time() - t0,
+                i0, i1, totn, time.time() - t0,
                 faiss.get_mem_usage_kb()))
             index.add(xblock)
             i0 = i1
 
-    print("  add in %.3f s" % (time.time() - t0))
+    res.t_add = time.time() - t0
+    print(f"  add in {res.t_add:.3f} s index size {index.ntotal}")
+
+
+######################################################
+# Search
+######################################################
+
+def run_search(args, ds, index, res):
+
+    index_ivf, vec_transform = unwind_index_ivf(index)
+
+    if args.no_precomputed_tables:
+        if isinstance(index_ivf, faiss.IndexIVFPQ):
+            print("disabling precomputed table")
+            index_ivf.use_precomputed_table = -1
+            index_ivf.precomputed_table.clear()
+
     if args.indexfile:
-        print("storing", args.indexfile)
-        faiss.write_index(index, args.indexfile)
+        print("index size on disk: ", os.stat(args.indexfile).st_size)
 
-if args.no_precomputed_tables:
-    if isinstance(index_ivf, faiss.IndexIVFPQ):
-        print("disabling precomputed table")
-        index_ivf.use_precomputed_table = -1
-        index_ivf.precomputed_table.clear()
+    if hasattr(index, "code_size"):
+        print("vector code_size", index.code_size)
 
-if args.indexfile:
-    print("index size on disk: ", os.stat(args.indexfile).st_size)
+    if hasattr(index_ivf, "code_size"):
+        print("vector code_size (IVF)", index_ivf.code_size)
 
-if hasattr(index, "code_size"):
-    print("vector code_size", index.code_size)
+    print("current RSS:", faiss.get_mem_usage_kb() * 1024)
 
-if hasattr(index_ivf, "code_size"):
-    print("vector code_size (IVF)", index_ivf.code_size)
+    precomputed_table_size = 0
+    if hasattr(index_ivf, 'precomputed_table'):
+        precomputed_table_size = index_ivf.precomputed_table.size() * 4
 
-print("current RSS:", faiss.get_mem_usage_kb() * 1024)
+    print("precomputed tables size:", precomputed_table_size)
 
-precomputed_table_size = 0
-if hasattr(index_ivf, 'precomputed_table'):
-    precomputed_table_size = index_ivf.precomputed_table.size() * 4
+    # Index is ready
 
-print("precomputed tables size:", precomputed_table_size)
+    xq = sanitize(ds.get_queries())
+    nq, d = xq.shape
+    gt = ds.get_groundtruth(k=args.k)
 
+    if not args.accept_short_gt: # Deep1B has only a single NN per query
+        assert gt.shape[1] == args.k
 
-#############################################################
-# Index is ready
-#############################################################
-
-xq = sanitize(ds.get_queries())
-gt = ds.get_groundtruth(k=args.k)
-assert gt.shape[1] == args.k
-
-if args.searchthreads != -1:
-    print("Setting nb of threads to", args.searchthreads)
-    faiss.omp_set_num_threads(args.searchthreads)
-else:
-    print("nb search threads: ", faiss.omp_get_max_threads())
-
-ps = faiss.ParameterSpace()
-ps.initialize(index)
-
-parametersets = args.searchparams
-
-
-
-if args.inter:
-    header = (
-        '%-40s     inter@%3d time(ms/q)   nb distances #runs' %
-        ("parameters", args.k)
-    )
-else:
-
-    header = (
-        '%-40s     R@1   R@10  R@100  time(ms/q)   nb distances #runs' %
-        "parameters"
-    )
-
-def compute_inter(a, b):
-    nq, rank = a.shape
-    ninter = sum(
-        np.intersect1d(a[i, :rank], b[i, :rank]).size
-        for i in range(nq)
-    )
-    return ninter / a.size
-
-
-
-def eval_setting(index, xq, gt, k, inter, min_time):
-    nq = xq.shape[0]
-    ivf_stats = faiss.cvar.indexIVF_stats
-    ivf_stats.reset()
-    nrun = 0
-    t0 = time.time()
-    while True:
-        D, I = index.search(xq, k)
-        nrun += 1
-        t1 = time.time()
-        if t1 - t0 > min_time:
-            break
-    ms_per_query = ((t1 - t0) * 1000.0 / nq / nrun)
-    if inter:
-        rank = k
-        inter_measure = compute_inter(gt[:, :rank], I[:, :rank])
-        print("%.4f" % inter_measure, end=' ')
+    if args.searchthreads != -1:
+        print("Setting nb of threads to", args.searchthreads)
+        faiss.omp_set_num_threads(args.searchthreads)
     else:
-        for rank in 1, 10, 100:
-            n_ok = (I[:, :rank] == gt[:, :1]).sum()
-            print("%.4f" % (n_ok / float(nq)), end=' ')
-    print("   %9.5f  " % ms_per_query, end=' ')
-    print("%12d   " % (ivf_stats.ndis / nrun), end=' ')
-    print(nrun)
+        print("nb search threads: ", faiss.omp_get_max_threads())
 
+    ps = faiss.ParameterSpace()
+    ps.initialize(index)
 
-if parametersets == ['autotune']:
+    parametersets = args.searchparams
 
-    ps.n_experiments = args.n_autotune
-    ps.min_test_duration = args.min_test_duration
-
-    for kv in args.autotune_max:
-        k, vmax = kv.split(':')
-        vmax = float(vmax)
-        print("limiting %s to %g" % (k, vmax))
-        pr = ps.add_range(k)
-        values = faiss.vector_to_array(pr.values)
-        values = np.array([v for v in values if v < vmax])
-        faiss.copy_array_to_vector(values, pr.values)
-
-    for kv in args.autotune_range:
-        k, vals = kv.split(':')
-        vals = np.fromstring(vals, sep=',')
-        print("setting %s to %s" % (k, vals))
-        pr = ps.add_range(k)
-        faiss.copy_array_to_vector(vals, pr.values)
-
-    # setup the Criterion object
     if args.inter:
-        print("Optimize for intersection @ ", args.k)
-        crit = faiss.IntersectionCriterion(nq, args.k)
+        header = (
+            '%-40s     inter@%3d time(ms/q)   nb distances #runs' %
+            ("parameters", args.k)
+        )
     else:
-        print("Optimize for 1-recall @ 1")
-        crit = faiss.OneRecallAtRCriterion(nq, 1)
 
-    # by default, the criterion will request only 1 NN
-    crit.nnn = args.k
-    crit.set_groundtruth(None, gt.astype('int64'))
+        header = (
+            '%-40s     R@1   R@10  R@100  time(ms/q)   nb distances #runs' %
+            "parameters"
+        )
 
-    # then we let Faiss find the optimal parameters by itself
-    print("exploring operating points, %d threads" % faiss.omp_get_max_threads());
-    ps.display()
 
-    t0 = time.time()
-    op = ps.explore(index, xq, crit)
-    print("Done in %.3f s, available OPs:" % (time.time() - t0))
+    res.search_results = {}
+    if parametersets == ['autotune']:
 
-    op.display()
+        ps.n_experiments = args.n_autotune
+        ps.min_test_duration = args.min_test_duration
 
-    print("Re-running evaluation on selected OPs")
-    print(header)
-    opv = op.optimal_pts
-    maxw = max(max(len(opv.at(i).key) for i in range(opv.size())), 40)
-    for i in range(opv.size()):
-        opt = opv.at(i)
+        for kv in args.autotune_max:
+            k, vmax = kv.split(':')
+            vmax = float(vmax)
+            print("limiting %s to %g" % (k, vmax))
+            pr = ps.add_range(k)
+            values = faiss.vector_to_array(pr.values)
+            values = np.array([v for v in values if v < vmax])
+            faiss.copy_array_to_vector(values, pr.values)
 
-        ps.set_index_parameters(index, opt.key)
+        for kv in args.autotune_range:
+            k, vals = kv.split(':')
+            vals = np.fromstring(vals, sep=',')
+            print("setting %s to %s" % (k, vals))
+            pr = ps.add_range(k)
+            faiss.copy_array_to_vector(vals, pr.values)
 
-        print(opt.key.ljust(maxw), end=' ')
-        sys.stdout.flush()
+        # setup the Criterion object
+        if args.inter:
+            print("Optimize for intersection @ ", args.k)
+            crit = faiss.IntersectionCriterion(nq, args.k)
+        else:
+            print("Optimize for 1-recall @ 1")
+            crit = faiss.OneRecallAtRCriterion(nq, 1)
 
-        eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+        # by default, the criterion will request only 1 NN
+        crit.nnn = args.k
+        crit.set_groundtruth(None, gt.astype('int64'))
 
-else:
-    print(header)
-    for param in parametersets:
-        print("%-40s " % param, end=' ')
-        sys.stdout.flush()
-        ps.set_index_parameters(index, param)
+        # then we let Faiss find the optimal parameters by itself
+        print("exploring operating points, %d threads" % faiss.omp_get_max_threads());
+        ps.display()
 
-        eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+        t0 = time.time()
+        op = ps.explore(index, xq, crit)
+        res.t_explore = time.time() - t0
+        print("Done in %.3f s, available OPs:" % res.t_explore)
+
+        op.display()
+
+        print("Re-running evaluation on selected OPs")
+        print(header)
+        opv = op.optimal_pts
+        maxw = max(max(len(opv.at(i).key) for i in range(opv.size())), 40)
+        for i in range(opv.size()):
+            opt = opv.at(i)
+
+            ps.set_index_parameters(index, opt.key)
+
+            print(opt.key.ljust(maxw), end=' ')
+            sys.stdout.flush()
+
+            res_i = eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+            res.search_results[opt.key] = res_i
+
+    else:
+        print(header)
+        for param in parametersets:
+            print("%-40s " % param, end=' ')
+            sys.stdout.flush()
+            ps.set_index_parameters(index, param)
+
+            res_i = eval_setting(index, xq, gt, args.k, args.inter, args.min_test_duration)
+            res.search_results[param] = res_i
+
+
+
+######################################################
+# Driver function
+######################################################
+
+def main():
+
+    parser = argparse.ArgumentParser()
+
+    def aa(*args, **kwargs):
+        group.add_argument(*args, **kwargs)
+
+    group = parser.add_argument_group('general options')
+    aa('--nthreads', default=-1, type=int,
+        help='nb of threads to use at train and add time')
+    aa('--json', default=False, action="store_true",
+        help="output stats in JSON format at the end")
+    aa('--todo', default=["check_files"],
+       choices=["train", "add", "search", "check_files"],
+       nargs="+", help='what to do (check_files means decide depending on which index files exist)')
+
+    group = parser.add_argument_group('dataset options')
+    aa('--db', default='deep1M', help='dataset')
+    aa('--compute_gt', default=False, action='store_true',
+        help='compute and store the groundtruth')
+    aa('--force_IP', default=False, action="store_true",
+        help='force IP search instead of L2')
+    aa('--accept_short_gt', default=False, action='store_true',
+        help='work around a problem with Deep1B GT')
+
+    group = parser.add_argument_group('index construction')
+    aa('--indexkey', default='HNSW32', help='index_factory type')
+    aa('--trained_indexfile', default='',
+       help='file to read or write a trained index from')
+    aa('--maxtrain', default=256 * 256, type=int,
+        help='maximum number of training points (0 to set automatically)')
+    aa('--indexfile', default='', help='file to read or write index from')
+    aa('--split', default=[1, 0], type=int, nargs=2, help="database split")
+    aa('--add_bs', default=-1, type=int,
+        help='add elements index by batches of this size')
+
+    group = parser.add_argument_group('IVF options')
+    aa('--by_residual', default=-1, type=int,
+        help="set if index should use residuals (default=unchanged)")
+    aa('--no_precomputed_tables', action='store_true', default=False,
+        help='disable precomputed tables (uses less memory)')
+    aa('--get_centroids_from', default='',
+        help='get the centroids from this index (to speed up training)')
+    aa('--clustering_niter', default=-1, type=int,
+        help='number of clustering iterations (-1 = leave default)')
+    aa('--train_on_gpu', default=False, action='store_true',
+        help='do training on GPU')
+
+    group = parser.add_argument_group('index-specific options')
+    aa('--M0', default=-1, type=int, help='size of base level for HNSW')
+    aa('--RQ_train_default', default=False, action="store_true",
+        help='disable progressive dim training for RQ')
+    aa('--RQ_beam_size', default=-1, type=int,
+        help='set beam size at add time')
+    aa('--LSQ_encode_ils_iters', default=-1, type=int,
+        help='ILS iterations for LSQ')
+    aa('--RQ_use_beam_LUT', default=-1, type=int,
+        help='use beam LUT at add time')
+
+    group = parser.add_argument_group('searching')
+    aa('--k', default=100, type=int, help='nb of nearest neighbors')
+    aa('--inter', default=False, action='store_true',
+        help='use intersection measure instead of 1-recall as metric')
+    aa('--searchthreads', default=-1, type=int,
+        help='nb of threads to use at search time')
+    aa('--searchparams', nargs='+', default=['autotune'],
+        help="search parameters to use (can be autotune or a list of params)")
+    aa('--n_autotune', default=500, type=int,
+        help="max nb of autotune experiments")
+    aa('--autotune_max', default=[], nargs='*',
+        help='set max value for autotune variables format "var:val" (exclusive)')
+    aa('--autotune_range', default=[], nargs='*',
+        help='set complete autotune range, format "var:val1,val2,..."')
+    aa('--min_test_duration', default=3.0, type=float,
+        help='run test at least for so long to avoid jitter')
+    aa('--indexes_to_merge', default=[], nargs="*",
+        help="load these indexes to search and merge them before searching")
+
+    args = parser.parse_args()
+
+    if args.todo == ["check_files"]:
+        if os.path.exists(args.indexfile):
+            args.todo = ["search"]
+        elif os.path.exists(args.trained_indexfile):
+            args.todo = ["add", "search"]
+        else:
+            args.todo = ["train", "add", "search"]
+        print("setting todo to", args.todo)
+
+    print("args:", args)
+
+    os.system('echo -n "nb processors "; '
+            'cat /proc/cpuinfo | grep ^processor | wc -l; '
+            'cat /proc/cpuinfo | grep ^"model name" | tail -1')
+
+    # object to collect results
+    res = argparse.Namespace()
+    res.args = args.__dict__
+
+    res.cpu_model = [
+        l for l in open("/proc/cpuinfo", "r")
+        if "model name" in l][0]
+
+    print("Load dataset")
+
+    ds = datasets.load_dataset(
+        dataset=args.db, compute_gt=args.compute_gt)
+
+    if args.force_IP:
+        ds.metric = "IP"
+
+    print(ds)
+
+    if args.nthreads != -1:
+        print("Set nb of threads to", args.nthreads)
+        faiss.omp_set_num_threads(args.nthreads)
+    else:
+        print("nb threads: ", faiss.omp_get_max_threads())
+
+    index = None
+    if "train" in args.todo:
+        print("================== Training index")
+        index = run_train(args, ds, res)
+        if args.trained_indexfile:
+            print("storing trained index", args.trained_indexfile)
+            faiss.write_index(index, args.trained_indexfile)
+
+    if "add" in args.todo:
+        if not index:
+            assert args.trained_indexfile
+            print("reading trained index", args.trained_indexfile)
+            index = faiss.read_index(args.trained_indexfile)
+
+        print("================== Adding vectors to index")
+        run_add(args, ds, index, res)
+        if args.indexfile:
+            print("storing", args.indexfile)
+            faiss.write_index(index, args.indexfile)
+
+    if "search" in args.todo:
+        if not index:
+            if args.indexfile:
+                print("reading index", args.indexfile)
+                index = faiss.read_index(args.indexfile)
+            elif args.indexes_to_merge:
+                print(f"Merging {len(args.indexes_to_merge)} indexes")
+                sz = 0
+                for fname in args.indexes_to_merge:
+                    print(f"    reading {fname} (current size {sz})")
+                    index_i = faiss.read_index(fname)
+                    if index is None:
+                        index = index_i
+                    else:
+                        index.merge_from(index_i, index.ntotal)
+                    sz = index.ntotal
+            else:
+                assert False, "provide --indexfile"
+
+        print("================== Searching")
+        run_search(args, ds, index, res)
+
+    if args.json:
+        print("JSON results:", json.dumps(res.__dict__))
+
+
+if __name__ == "__main__":
+    main()

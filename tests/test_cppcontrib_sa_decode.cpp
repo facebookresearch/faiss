@@ -1034,147 +1034,147 @@ void testMinMaxIndexPQDecoder(
 constexpr size_t NSAMPLES = 256;
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16) {
+TEST(testCppcontribSaDecode, D256_IVF256_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "IVF256,PQ16np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ8) {
+TEST(testCppcontribSaDecode, D256_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 32>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "IVF256,PQ8np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D192_IVF256_PQ24) {
+TEST(testCppcontribSaDecode, D192_IVF256_PQ24) {
     using T = faiss::cppcontrib::Index2LevelDecoder<192, 192, 8>;
     testIndex2LevelDecoder<T>(NSAMPLES, 192, "IVF256,PQ24np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D192_IVF256_PQ16) {
+TEST(testCppcontribSaDecode, D192_IVF256_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<192, 192, 12>;
     testIndex2LevelDecoder<T>(NSAMPLES, 192, "IVF256,PQ16np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D192_IVF256_PQ12) {
+TEST(testCppcontribSaDecode, D192_IVF256_PQ12) {
     using T = faiss::cppcontrib::Index2LevelDecoder<192, 192, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 192, "IVF256,PQ12np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_IVF256_PQ40) {
+TEST(testCppcontribSaDecode, D160_IVF256_PQ40) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 160, 4>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "IVF256,PQ40np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_IVF256_PQ20) {
+TEST(testCppcontribSaDecode, D160_IVF256_PQ20) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 160, 8>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "IVF256,PQ20np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_IVF256_PQ10) {
+TEST(testCppcontribSaDecode, D160_IVF256_PQ10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 160, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "IVF256,PQ10np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_IVF256_PQ8) {
+TEST(testCppcontribSaDecode, D160_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 160, 20>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "IVF256,PQ8np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ8) {
+TEST(testCppcontribSaDecode, D128_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 128, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 128, "IVF256,PQ8np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ4) {
+TEST(testCppcontribSaDecode, D128_IVF256_PQ4) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 128, 32>;
     testIndex2LevelDecoder<T>(NSAMPLES, 128, "IVF256,PQ4np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ16) {
+TEST(testCppcontribSaDecode, D64_IVF256_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 8>;
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "IVF256,PQ8np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ8) {
+TEST(testCppcontribSaDecode, D64_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "IVF256,PQ4np");
 }
 
 #if defined(__AVX2__)
-TEST(TEST_CPPCONTRIB_SA_DECODE, D40_IVF256_PQ20) {
+TEST(testCppcontribSaDecode, D40_IVF256_PQ20) {
     using T = faiss::cppcontrib::Index2LevelDecoder<40, 40, 2>;
     testIndex2LevelDecoder<T>(NSAMPLES, 40, "IVF256,PQ20np");
 }
 #endif
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ16) {
+TEST(testCppcontribSaDecode, D256_Residual4x8_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "Residual4x8,PQ16");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ8) {
+TEST(testCppcontribSaDecode, D256_Residual4x8_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 32>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "Residual4x8,PQ8");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual4x8_PQ10) {
+TEST(testCppcontribSaDecode, D160_Residual4x8_PQ10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 40, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "Residual4x8,PQ10");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual2x8_PQ10) {
+TEST(testCppcontribSaDecode, D160_Residual2x8_PQ10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 80, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "Residual2x8,PQ10");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual1x8_PQ10) {
+TEST(testCppcontribSaDecode, D160_Residual1x8_PQ10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 160, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 160, "Residual1x8,PQ10");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ8) {
+TEST(testCppcontribSaDecode, D128_Residual4x8_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 32, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 128, "Residual4x8,PQ8");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ4) {
+TEST(testCppcontribSaDecode, D128_Residual4x8_PQ4) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 32, 32>;
     testIndex2LevelDecoder<T>(NSAMPLES, 128, "Residual4x8,PQ4");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ8) {
+TEST(testCppcontribSaDecode, D64_Residual4x8_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 16, 8>;
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "Residual4x8,PQ8");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ4) {
+TEST(testCppcontribSaDecode, D64_Residual4x8_PQ4) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 16, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "Residual4x8,PQ4");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF1024_PQ16) {
+TEST(testCppcontribSaDecode, D256_IVF1024_PQ16) {
     // It is acceptable to use COARSE_BITS=16 in this case,
     // because there's only one coarse quantizer element.
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "IVF1024,PQ16np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual1x9_PQ8) {
+TEST(testCppcontribSaDecode, D64_Residual1x9_PQ8) {
     // It is acceptable to use COARSE_BITS=16 in this case,
     // because there's only one coarse quantizer element.
     // It won't work for "Residual2x9,PQ8".
@@ -1183,45 +1183,45 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual1x9_PQ8) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16) {
+TEST(testCppcontribSaDecode, D256_PQ16) {
     using T = faiss::cppcontrib::IndexPQDecoder<256, 16>;
     testIndexPQDecoder<T>(NSAMPLES, 256, "PQ16np");
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20) {
+TEST(testCppcontribSaDecode, D160_PQ20) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8>;
     testIndexPQDecoder<T>(NSAMPLES, 160, "PQ20np");
 }
 
 #if defined(__AVX2__)
-TEST(TEST_CPPCONTRIB_SA_DECODE, D40_PQ20) {
+TEST(testCppcontribSaDecode, D40_PQ20) {
     using T = faiss::cppcontrib::IndexPQDecoder<40, 2>;
     testIndexPQDecoder<T>(NSAMPLES, 40, "PQ20np");
 }
 #endif
 
 // test IndexRowwiseMinMaxFP16
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16) {
+TEST(testCppcontribSaDecode, D256_MINMAXFP16_IVF256_PQ16) {
     using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
     using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
     testMinMaxIndex2LevelDecoder<T>(NSAMPLES, 256, "MinMaxFP16,IVF256,PQ16np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_PQ16) {
+TEST(testCppcontribSaDecode, D256_MINMAXFP16_PQ16) {
     using SubT = faiss::cppcontrib::IndexPQDecoder<256, 16>;
     using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
     testMinMaxIndexPQDecoder<T>(NSAMPLES, 256, "MinMaxFP16,PQ16np");
 }
 
 // test IndexRowwiseMinMax
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAX_IVF256_PQ16) {
+TEST(testCppcontribSaDecode, D256_MINMAX_IVF256_PQ16) {
     using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
     using T = faiss::cppcontrib::IndexMinMaxDecoder<SubT>;
     testMinMaxIndex2LevelDecoder<T>(NSAMPLES, 256, "MinMax,IVF256,PQ16np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAX_PQ16) {
+TEST(testCppcontribSaDecode, D256_MINMAX_PQ16) {
     using SubT = faiss::cppcontrib::IndexPQDecoder<256, 16>;
     using T = faiss::cppcontrib::IndexMinMaxDecoder<SubT>;
     testMinMaxIndexPQDecoder<T>(NSAMPLES, 256, "MinMax,PQ16np");
@@ -1229,63 +1229,63 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAX_PQ16) {
 
 // implemented for AVX2 and ARM so far
 #if defined(__AVX2__) || defined(__ARM_NEON)
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_PQ16x10) {
     using T = faiss::cppcontrib::IndexPQDecoder<256, 16, 10>;
     testIndexPQDecoder<T>(NSAMPLES * 4, 256, "PQ16x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x12) {
+TEST(testCppcontribSaDecode, D256_PQ16x12) {
     using T = faiss::cppcontrib::IndexPQDecoder<256, 16, 12>;
     testIndexPQDecoder<T>(NSAMPLES * 16, 256, "PQ16x12np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x10) {
+TEST(testCppcontribSaDecode, D160_PQ20x10) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8, 10>;
     testIndexPQDecoder<T>(NSAMPLES * 4, 160, "PQ20x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x12) {
+TEST(testCppcontribSaDecode, D160_PQ20x12) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8, 12>;
     testIndexPQDecoder<T>(NSAMPLES * 16, 160, "PQ20x12np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_IVF256_PQ16x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "IVF256,PQ16x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16x12) {
+TEST(testCppcontribSaDecode, D256_IVF256_PQ16x12) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 12>;
     testIndex2LevelDecoder<T>(NSAMPLES * 16, 256, "IVF256,PQ16x12np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_MINMAXFP16_IVF256_PQ16x10) {
     using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 10>;
     using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
     testMinMaxIndex2LevelDecoder<T>(
             NSAMPLES * 4, 256, "MinMaxFP16,IVF256,PQ16x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF1024_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_MINMAXFP16_IVF1024_PQ16x10) {
     using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 10, 10>;
     using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
     testMinMaxIndex2LevelDecoder<T>(
             NSAMPLES * 4, 256, "MinMaxFP16,IVF1024,PQ16x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF1024_PQ16x10_ALTERNATIVE) {
+TEST(testCppcontribSaDecode, D256_MINMAXFP16_IVF1024_PQ16x10_ALTERNATIVE) {
     using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16, 10>;
     using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
     testMinMaxIndex2LevelDecoder<T>(
             NSAMPLES * 4, 256, "MinMaxFP16,IVF1024,PQ16x10np");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual4x8_PQ8x10) {
+TEST(testCppcontribSaDecode, D160_Residual4x8_PQ8x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 40, 20, 8, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 160, "Residual4x8,PQ8x10");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual1x9_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_Residual1x9_PQ16x10) {
     // It is acceptable to use COARSE_BITS=16 in this case,
     // because there's only one coarse quantizer element.
     // It won't work for "Residual2x9,PQ16x10".
@@ -1293,12 +1293,12 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual1x9_PQ16x10) {
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "Residual1x9,PQ16x10");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x10_PQ16x10) {
+TEST(testCppcontribSaDecode, D256_Residual4x10_PQ16x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16, 10, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "Residual4x10,PQ16x10");
 }
 
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x12_PQ16x12) {
+TEST(testCppcontribSaDecode, D256_Residual4x12_PQ16x12) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16, 12, 12>;
     testIndex2LevelDecoder<T>(NSAMPLES * 16, 256, "Residual4x12,PQ16x12");
 }

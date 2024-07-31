@@ -91,7 +91,8 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx) override;
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,

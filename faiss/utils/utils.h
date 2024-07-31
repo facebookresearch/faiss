@@ -17,7 +17,9 @@
 #define FAISS_utils_h
 
 #include <stdint.h>
+#include <set>
 #include <string>
+#include <vector>
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
@@ -35,6 +37,9 @@ std::string get_compile_options();
  * Get some stats about the system
  **************************************************/
 
+// Expose FAISS version as a string
+std::string get_version();
+
 /// ms elapsed since some arbitrary epoch
 double getmillisecs();
 
@@ -46,25 +51,6 @@ uint64_t get_cycles();
 /***************************************************************************
  * Misc  matrix and vector manipulation functions
  ***************************************************************************/
-
-/** compute c := a + bf * b for a, b and c tables
- *
- * @param n   size of the tables
- * @param a   size n
- * @param b   size n
- * @param c   restult table, size n
- */
-void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
-
-/** same as fvec_madd, also return index of the min of the result table
- * @return    index of the min of table c
- */
-int fvec_madd_and_argmin(
-        size_t n,
-        const float* a,
-        float bf,
-        const float* b,
-        float* c);
 
 /* perform a reflection (not an efficient implementation, just for test ) */
 void reflection(const float* u, float* x, size_t n, size_t d, size_t nu);
@@ -178,25 +164,26 @@ bool check_openmp();
 /** This class is used to combine range and knn search results
  * in contrib.exhaustive_search.range_search_gpu */
 
+template <typename T>
 struct CombinerRangeKNN {
     int64_t nq;    /// nb of queries
     size_t k;      /// number of neighbors for the knn search part
-    float r2;      /// range search radius
+    T r2;          /// range search radius
     bool keep_max; /// whether to keep max values instead of min.
 
-    CombinerRangeKNN(int64_t nq, size_t k, float r2, bool keep_max)
+    CombinerRangeKNN(int64_t nq, size_t k, T r2, bool keep_max)
             : nq(nq), k(k), r2(r2), keep_max(keep_max) {}
 
     /// Knn search results
     const int64_t* I = nullptr; /// size nq * k
-    const float* D = nullptr;   /// size nq * k
+    const T* D = nullptr;       /// size nq * k
 
     /// optional: range search results (ignored if mask is NULL)
     const bool* mask =
             nullptr; /// mask for where knn results are valid, size nq
     // range search results for remaining entries nrange = sum(mask)
     const int64_t* lim_remain = nullptr; /// size nrange + 1
-    const float* D_remain = nullptr;     /// size lim_remain[nrange]
+    const T* D_remain = nullptr;         /// size lim_remain[nrange]
     const int64_t* I_remain = nullptr;   /// size lim_remain[nrange]
 
     const int64_t* L_res = nullptr; /// size nq + 1
@@ -205,7 +192,15 @@ struct CombinerRangeKNN {
 
     /// Phase 2: caller allocates D_res and I_res (size L_res[nq])
     /// Phase 3: fill in D_res and I_res
-    void write_result(float* D_res, int64_t* I_res);
+    void write_result(T* D_res, int64_t* I_res);
+};
+
+struct CodeSet {
+    size_t d;
+    std::set<std::vector<uint8_t>> s;
+
+    explicit CodeSet(size_t d) : d(d) {}
+    void insert(size_t n, const uint8_t* codes, bool* inserted);
 };
 
 } // namespace faiss

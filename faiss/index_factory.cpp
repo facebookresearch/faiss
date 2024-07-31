@@ -140,8 +140,12 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQ4", ScalarQuantizer::QT_4bit},
         {"SQ6", ScalarQuantizer::QT_6bit},
         {"SQfp16", ScalarQuantizer::QT_fp16},
+        {"SQbf16", ScalarQuantizer::QT_bf16},
+        {"SQ8_direct_signed", ScalarQuantizer::QT_8bit_direct_signed},
+        {"SQ8_direct", ScalarQuantizer::QT_8bit_direct},
 };
-const std::string sq_pattern = "(SQ4|SQ8|SQ6|SQfp16)";
+const std::string sq_pattern =
+        "(SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -216,7 +220,7 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
         return new RemapDimensionsTransform(d, std::max(d_out, d), false);
     }
     return nullptr;
-};
+}
 
 /***************************************************************
  * Parse IndexIVF
@@ -440,11 +444,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match("Flat|")) {
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexHNSWPQ* ipq = new IndexHNSWPQ(d, M, hnsw_M, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {
@@ -490,11 +496,12 @@ IndexNSG* parse_IndexNSG(
     if (match("Flat|")) {
         return new IndexNSGFlat(d, nsg_R, mt);
     }
-    if (match("PQ([0-9]+)(np)?")) {
+    if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
-        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R);
+        int nbit = mres_to_int(sm[2], 8, 1);
+        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R, nbit);
         dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
-                sm[2].str() != "np";
+                sm[3].str() != "np";
         return ipq;
     }
     if (match(sq_pattern)) {
@@ -523,11 +530,12 @@ Index* parse_other_indexes(
     }
 
     // IndexLSH
-    if (match("LSH(r?)(t?)")) {
-        bool rotate_data = sm[1].length() > 0;
-        bool train_thresholds = sm[2].length() > 0;
+    if (match("LSH([0-9]*)(r?)(t?)")) {
+        int nbits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : d;
+        bool rotate_data = sm[2].length() > 0;
+        bool train_thresholds = sm[3].length() > 0;
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
-        return new IndexLSH(d, d, rotate_data, train_thresholds);
+        return new IndexLSH(d, nbits, rotate_data, train_thresholds);
     }
 
     // IndexLattice

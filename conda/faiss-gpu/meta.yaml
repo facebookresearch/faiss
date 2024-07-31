@@ -6,6 +6,13 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
+{% if cudatoolkit == '11.4.4' %}
+{% set cuda_constraints=">=11.4,<12" %}
+{% set libcublas_constraints=">=11.6,<12" %}
+{% elif cudatoolkit == '12.1.1' %}
+{% set cuda_constraints=">=12.1,<13" %}
+{% set libcublas_constraints=">=12.1,<13" %}
+{% endif %}
 
 package:
   name: faiss-pkg
@@ -26,7 +33,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh  # [x86_64 and not win]
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
@@ -35,22 +43,24 @@ outputs:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
+        - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - sysroot_linux-64 =2.17  # [linux64]
+        - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
-        - cmake =3.23.1
+        - cmake >=3.24.0
         - make  # [not win]
         - mkl-devel =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cudatoolkit {{ cudatoolkit }}
       run:
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
+        - cuda-cudart {{ cuda_constraints }}
+        - libcublas {{ libcublas_constraints }}
     test:
       requires:
         - conda-build
@@ -61,7 +71,8 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-gpu
-    script: build-pkg.sh  # [x86_64 and not win]
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
@@ -71,21 +82,24 @@ outputs:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig
-        - cmake =3.23.1
+        - cmake >=3.24.0
         - make  # [not win]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
-        - numpy >=1.16,<2
+        - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - numpy >=1.16,<2
+        - numpy >=1.19,<2
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
         - numpy
         - scipy
         - pytorch
+        - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

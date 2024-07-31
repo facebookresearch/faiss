@@ -24,6 +24,9 @@
 
 namespace faiss {
 
+struct NormTableScaler;
+struct SIMDResultHandler;
+
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
  *
@@ -117,7 +120,6 @@ void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
  * @param LUT     packed look-up table
  * @param scaler  scaler to scale the encoded norm
  */
-template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop(
         int nq,
         size_t nb,
@@ -125,8 +127,8 @@ void pq4_accumulate_loop(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res,
-        const Scaler& scaler);
+        SIMDResultHandler& res,
+        const NormTableScaler* scaler);
 
 /* qbs versions, supported only for bbs=32.
  *
@@ -178,14 +180,13 @@ int pq4_pack_LUT_qbs_q_map(
  * @param res     call-back for the resutls
  * @param scaler  scaler to scale the encoded norm
  */
-template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop_qbs(
         int qbs,
         size_t nb,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res,
-        const Scaler& scaler);
+        SIMDResultHandler& res,
+        const NormTableScaler* scaler = nullptr);
 
 } // namespace faiss

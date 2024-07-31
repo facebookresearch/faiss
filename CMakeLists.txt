@@ -18,7 +18,7 @@
 # the License.
 # =============================================================================
 
-cmake_minimum_required(VERSION 3.23.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 
 set(FAISS_LANGUAGES CXX)
 
@@ -35,24 +35,22 @@ include(rapids-export)
 include(rapids-find)
 
 rapids_cuda_init_architectures(faiss)
+rapids_cuda_init_architectures(pyfaiss)
+rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.7.4
+  VERSION 1.8.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
-if(FAISS_ENABLE_RAFT)
 set(CMAKE_CXX_STANDARD 17)
-else()
-set(CMAKE_CXX_STANDARD 11)
-endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Valid values are "generic", "avx2".
+# Valid values are "generic", "avx2", "avx512", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
 option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
@@ -64,11 +62,9 @@ if(FAISS_ENABLE_GPU)
   enable_language(CUDA)
 endif()
 
-if(FAISS_ENABLE_RAFT)
-  rapids_cpm_init()
-  include(cmake/thirdparty/get_raft.cmake)
-  include(cmake/thirdparty/get_cutlass.cmake)
-endif()
+if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
+   find_package(raft COMPONENTS compiled distributed)
+ endif()
 
 add_subdirectory(faiss)
 
