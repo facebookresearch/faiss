@@ -167,7 +167,7 @@ class TestHNSW(unittest.TestCase):
             index3 = faiss.deserialize_index(
                 faiss.serialize_index(index), faiss.IO_FLAG_SKIP_STORAGE
             )
-            self.assertEquals(index3.storage, None)
+            self.assertEqual(index3.storage, None)
 
     def test_abs_inner_product(self):
         """Test HNSW with abs inner product (not a real distance, so dubious that triangular inequality works)"""
