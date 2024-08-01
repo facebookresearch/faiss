@@ -23,10 +23,11 @@ cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 set(FAISS_LANGUAGES CXX)
 
 if(FAISS_ENABLE_GPU)
-  # if ROCm install detected, assume ROCm/HIP is GPU device
-  if (EXISTS /opt/rocm)
+  if (FAISS_ENABLE_ROCM)
     set(USE_ROCM TRUE)
     list(APPEND FAISS_LANGUAGES HIP)
+    list(PREPEND CMAKE_MODULE_PATH "/opt/rocm/lib/cmake")
+    list(PREPEND CMAKE_PREFIX_PATH "/opt/rocm")
   else()
     list(APPEND FAISS_LANGUAGES CUDA)
   endif()
@@ -60,6 +61,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
 option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 
@@ -78,8 +80,13 @@ if(FAISS_ENABLE_GPU)
 endif()
 
 if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
-   find_package(raft COMPONENTS compiled distributed)
- endif()
+  find_package(raft COMPONENTS compiled distributed)
+endif()
+
+if(USE_ROCM)
+  find_package(HIP REQUIRED)
+  find_package(hipBLAS REQUIRED)
+endif()
 
 add_subdirectory(faiss)
 
