@@ -411,7 +411,8 @@ __global__ void ivfInterleavedAppend(
     EncodeT* listStart = ((EncodeT*)listData[listId]);
 
     // Each warp within the block handles a different chunk of kWarpSize
-    auto warpVec = alignedListVecStart + warpId * kWarpSize;
+    auto warpVec = alignedListVecStart +
+            (faiss::gpu::Tensor<long, 1, true>::DataType)warpId * kWarpSize;
 
     // The warp data starts here
     EncodeT* warpData = listStart + (warpVec / kWarpSize) * wordsPerVectorBlock;

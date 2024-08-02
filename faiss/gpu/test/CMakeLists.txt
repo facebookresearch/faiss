@@ -21,10 +21,14 @@
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
 if(USE_ROCM)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest $<$<BOOL:${USE_ROCM}>:hip::host>)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC
+    faiss gtest $<$<BOOL:${USE_ROCM}>:hip::host>)
 else()
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC
+    faiss gtest CUDA::cudart
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
 endif()
 
 macro(faiss_gpu_test file)
