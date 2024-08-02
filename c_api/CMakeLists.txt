@@ -56,7 +56,7 @@ add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
 
 if(FAISS_ENABLE_GPU)
-  if(USE_ROCM)
+  if(FAISS_ENABLE_ROCM)
     add_subdirectory(gpu-rocm)
   else ()
     add_subdirectory(gpu)

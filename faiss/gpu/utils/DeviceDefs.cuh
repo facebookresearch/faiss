@@ -12,7 +12,7 @@
 namespace faiss {
 namespace gpu {
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 
 #if __AMDGCN_WAVEFRONT_SIZE == 32u
 constexpr int kWarpSize = 32;
@@ -27,7 +27,7 @@ __forceinline__ __device__ void warpFence() {
 
 #define GPU_MAX_SELECTION_K 2048
 
-#else // USE_ROCM
+#else // USE_AMD_ROCM
 
 // We require at least CUDA 8.0 for compilation
 #if CUDA_VERSION < 8000
@@ -56,7 +56,7 @@ __forceinline__ __device__ void warpFence() {
 #define GPU_MAX_SELECTION_K 1024
 #endif
 
-#endif // USE_ROCM
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

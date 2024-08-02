@@ -23,7 +23,7 @@
 namespace faiss {
 namespace gpu {
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 
 template <typename T>
 struct LoadStore {
@@ -66,7 +66,7 @@ struct LoadStore<Half8> {
     }
 };
 
-#else // USE_ROCM
+#else // USE_AMD_ROCM
 
 template <typename T>
 struct LoadStore {
@@ -142,7 +142,7 @@ struct LoadStore<Half8> {
     }
 };
 
-#endif // USE_ROCM
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

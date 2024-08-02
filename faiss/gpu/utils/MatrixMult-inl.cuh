@@ -20,7 +20,7 @@ namespace gpu {
 template <typename T>
 struct GetCudaType;
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 template <>
 struct GetCudaType<float> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_32F;
@@ -61,7 +61,7 @@ cublasStatus_t rawGemm(
     auto cAT = GetCudaType<AT>::Type;
     auto cBT = GetCudaType<BT>::Type;
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
     return hipblasGemmEx(
             handle,
             transa,
@@ -135,7 +135,7 @@ cublasStatus_t rawGemm(
             C,
             CUDA_R_32F,
             ldc);
-#endif // USE_ROCM
+#endif // USE_AMD_ROCM
 }
 
 template <typename AT, typename BT>
@@ -162,7 +162,7 @@ cublasStatus_t rawBatchGemm(
     auto cBT = GetCudaType<BT>::Type;
 
     // Always accumulate in f32
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
     return hipblasGemmStridedBatchedEx(
             handle,
             transa,

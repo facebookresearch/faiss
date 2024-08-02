@@ -124,7 +124,7 @@ int getDeviceForAddress(const void* p) {
         return -1;
     }
 
-#if USE_ROCM
+#if USE_AMD_ROCM
     if (att.type != hipMemoryTypeHost &&
         att.type != hipMemoryTypeUnregistered) {
         return att.device;

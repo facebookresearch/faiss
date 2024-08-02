@@ -197,7 +197,7 @@ function(generate_ivf_interleaved_code)
     "64|2048|8"
   )
 
-  if (USE_ROCM)
+  if (FAISS_ENABLE_ROCM)
      list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
   endif()
 
@@ -294,7 +294,7 @@ if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)
 endif()
 
-if (USE_ROCM)
+if (FAISS_ENABLE_ROCM)
   list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
 endif()
 
@@ -313,10 +313,8 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
-if (USE_ROCM)
-  target_link_libraries(faiss_gpu PRIVATE
-    $<$<BOOL:${USE_ROCM}>:hip::host>
-    $<$<BOOL:${USE_ROCM}>:roc::hipblas>)
+if (FAISS_ENABLE_ROCM)
+  target_link_libraries(faiss_gpu PRIVATE hip::host roc::hipblas)
   target_compile_options(faiss_gpu PRIVATE)
 else()
   # Prepares a host linker script and enables host linker to support
