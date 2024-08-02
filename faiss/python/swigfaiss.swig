@@ -295,7 +295,7 @@ void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
-#ifdef USE_ROCM
+#ifdef FAISS_ENABLE_ROCM
 
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
@@ -365,7 +365,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 %}
 
-#else // USE_ROCM
+#else // FAISS_ENABLE_ROCM
 
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
@@ -438,7 +438,7 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 
 %}
 
-#endif // USE_ROCM
+#endif // FAISS_ENABLE_ROCM
 #else // GPU_WRAPPER
 
 %{
@@ -631,7 +631,7 @@ struct faiss::simd16uint16 {};
 
 #ifdef GPU_WRAPPER
 
-#ifdef USE_ROCM
+#ifdef FAISS_ENABLE_ROCM
 
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
@@ -648,7 +648,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu-rocm/GpuDistance.h>
 %include  <faiss/gpu-rocm/GpuIcmEncoder.h>
 
-#else // USE_ROCM
+#else // FAISS_ENABLE_ROCM
 
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
@@ -668,7 +668,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
 
-#endif // USE_ROCM
+#endif // FAISS_ENABLE_ROCM
 #endif
 
 
@@ -904,7 +904,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 #ifdef GPU_WRAPPER
 
-#ifdef USE_ROCM
+#ifdef FAISS_ENABLE_ROCM
 %include  <faiss/gpu-rocm/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -913,7 +913,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %include  <faiss/gpu-rocm/GpuCloner.h>
 
-#else // USE_ROCM
+#else // FAISS_ENABLE_ROCM
 %include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -922,7 +922,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %include  <faiss/gpu/GpuCloner.h>
 
-#endif // USE_ROCM
+#endif // FAISS_ENABLE_ROCM
 #endif
 
 

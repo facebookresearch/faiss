@@ -20,9 +20,8 @@
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-if(USE_ROCM)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC
-    faiss gtest $<$<BOOL:${USE_ROCM}>:hip::host>)
+if(FAISS_ENABLE_ROCM)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_gpu_test_helper PUBLIC
@@ -56,9 +55,9 @@ endif()
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
 
-if (USE_ROCM)
+if (FAISS_ENABLE_ROCM)
   target_link_libraries(demo_ivfpq_indexing_gpu
-    PRIVATE faiss gtest_main $<$<BOOL:${USE_ROCM}>:hip::host>)
+    PRIVATE faiss gtest_main hip::host)
 else()
   target_link_libraries(demo_ivfpq_indexing_gpu
     PRIVATE faiss gtest_main CUDA::cudart)
