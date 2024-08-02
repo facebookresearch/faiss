@@ -32,7 +32,7 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadStore<sp/>{</highlight></codeline>
@@ -75,7 +75,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#else<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#else<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadStore<sp/>{</highlight></codeline>
@@ -151,7 +151,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

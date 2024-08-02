@@ -56,7 +56,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>getBitfield(v,<sp/>pos,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumSubQuantizers&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadCode32<sp/>{};</highlight></codeline>
@@ -285,7 +285,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#else<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#else<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumSubQuantizers&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadCode32<sp/>{};</highlight></codeline>
@@ -618,7 +618,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

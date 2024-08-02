@@ -17,14 +17,14 @@
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;device_functions.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
@@ -60,7 +60,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>::__lane_id();</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#else<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#else<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>defines<sp/>to<sp/>simplify<sp/>the<sp/>SASS<sp/>assembly<sp/>structure<sp/>file/line<sp/>in<sp/>the<sp/>profiler</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/>\</highlight></codeline>
@@ -138,7 +138,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

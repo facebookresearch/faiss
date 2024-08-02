@@ -29,7 +29,7 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#if<sp/>defined(USE_ROCM)<sp/>&amp;&amp;<sp/>__AMDGCN_WAVEFRONT_SIZE<sp/>==<sp/>64u</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>defined(USE_AMD_ROCM)<sp/>&amp;&amp;<sp/>__AMDGCN_WAVEFRONT_SIZE<sp/>==<sp/>64u</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>LAUNCH_BOUND<sp/>320</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>LAUNCH_BOUND<sp/>288</highlight></codeline>

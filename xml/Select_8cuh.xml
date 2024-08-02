@@ -216,7 +216,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>
@@ -493,7 +493,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>

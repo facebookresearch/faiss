@@ -111,7 +111,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl_xor(v,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#ifdef<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl(half<sp/>v,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>__half2uint_rn(v);</highlight></codeline>
@@ -148,7 +148,7 @@
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>CUDA_VERSION</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

@@ -491,7 +491,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
@@ -501,7 +501,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>
@@ -627,7 +627,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
@@ -637,7 +637,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>

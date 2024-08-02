@@ -42,7 +42,7 @@
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>__host__<sp/>half<sp/>kGetHalf(unsigned<sp/>short<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000<sp/>||<sp/>defined(USE_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__half_raw<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>v;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half(h);</highlight></codeline>
