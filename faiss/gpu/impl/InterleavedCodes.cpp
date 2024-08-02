@@ -168,7 +168,7 @@ void unpackInterleavedWord(
         int dims,
         int bitsPerCode) {
     int warpSize = getWarpSizeCurrentDevice();
-    int wordsPerDimBlock = warpSize * bitsPerCode / (8 * sizeof(T));
+    int wordsPerDimBlock = (size_t)warpSize * bitsPerCode / (8 * sizeof(T));
     int wordsPerBlock = wordsPerDimBlock * dims;
     int numBlocks = utils::divUp(numVecs, warpSize);
 
@@ -446,7 +446,7 @@ void packInterleavedWord(
         int dims,
         int bitsPerCode) {
     int warpSize = getWarpSizeCurrentDevice();
-    int wordsPerDimBlock = warpSize * bitsPerCode / (8 * sizeof(T));
+    int wordsPerDimBlock = (size_t)warpSize * bitsPerCode / (8 * sizeof(T));
     int wordsPerBlock = wordsPerDimBlock * dims;
     int numBlocks = utils::divUp(numVecs, warpSize);
 
