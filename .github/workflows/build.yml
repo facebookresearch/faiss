@@ -20,6 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - uses: ./.github/actions/build_conda
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-      - uses: ./.github/actions/build_conda
