@@ -259,6 +259,7 @@ jobs:
         with:
           label: main
   rerun:
+    permissions: write-all
     name: Activate rerun workflow
     if: fromJSON(github.run_attempt) < 2
     runs-on: ubuntu-latest
