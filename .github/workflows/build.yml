@@ -16,6 +16,9 @@ jobs:
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
     steps:
+      - name: Docker prereqs
+        run: |
+            apt-get update && apt-get install -y sudo && apt-get install -y git
       - name: Checkout
         uses: actions/checkout@v4
       - name: git status
