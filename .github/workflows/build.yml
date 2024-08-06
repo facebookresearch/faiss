@@ -14,6 +14,7 @@ jobs:
   format:
     name: Format
     runs-on: faiss-amd-MI200
+    container: ubuntu:22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
