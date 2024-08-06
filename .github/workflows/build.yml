@@ -28,11 +28,13 @@ jobs:
             chmod u+x llvm.sh
             sudo ./llvm.sh 18
             sudo apt-get install -y git-core clang-format-18
-            pwd
-            find . -type d -name 'faiss'
-            find / -type d -name 'faiss'
       - name: Verify clang-format
         run: |
+            echo 'Current directory is:'
+            pwd
+            echo 'faiss directories found:'
+            find . -type d -name 'faiss'
+            echo '---done---'
             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
             if git diff --quiet; then
               echo "Formatting OK!"
