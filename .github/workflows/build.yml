@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install clang-format
         run: |
+            apt-get update && apt-get install -y sudo
             sudo apt-get update -y
             sudo apt-get install -y wget
             sudo apt install -y lsb-release wget software-properties-common gnupg
