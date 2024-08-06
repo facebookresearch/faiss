@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: git status
+        run: |
+            git status
       - name: Install clang-format
         run: |
             apt-get update && apt-get install -y sudo
