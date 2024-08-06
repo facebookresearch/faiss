@@ -56,17 +56,14 @@ jobs:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    continue-on-error: true # non-blocking mode for now
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
-        continue-on-error: true # non-blocking mode for now
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
         with:
           opt_level: avx512
-        continue-on-error: true # non-blocking mode for now
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
     needs: linux-x86_64-cmake
@@ -88,6 +85,27 @@ jobs:
         with:
           gpu: ON
           raft: ON
+  linux-x86_64-GPU-w-ROCm-cmake:
+    name: Linux x86_64 GPU w/ ROCm (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: 4-core-ubuntu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+          rocm: ON
+  linux-arm64-SVE-cmake:
+    name: Linux arm64 SVE (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: faiss-aws-r8g.large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
+        with:
+          opt_level: sve
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
     needs: linux-x86_64-cmake

@@ -167,7 +167,7 @@ class TestHNSW(unittest.TestCase):
             index3 = faiss.deserialize_index(
                 faiss.serialize_index(index), faiss.IO_FLAG_SKIP_STORAGE
             )
-            self.assertEquals(index3.storage, None)
+            self.assertEqual(index3.storage, None)
 
     def test_abs_inner_product(self):
         """Test HNSW with abs inner product (not a real distance, so dubious that triangular inequality works)"""
@@ -184,6 +184,34 @@ class TestHNSW(unittest.TestCase):
         # 4769 vs. 500*10
         self.assertGreater(inter, Iref.size * 0.9)
  
+ 
+class Issue3684(unittest.TestCase):
+
+    def test_issue3684(self):
+        np.random.seed(1234)  # For reproducibility
+        d = 256  # Example dimension
+        nb = 10  # Number of database vectors
+        nq = 2   # Number of query vectors
+        xb = np.random.random((nb, d)).astype('float32')
+        xq = np.random.random((nq, d)).astype('float32')
+
+        faiss.normalize_L2(xb)  # Normalize both query and database vectors
+        faiss.normalize_L2(xq)
+
+        hnsw_index_ip = faiss.IndexHNSWFlat(256, 16, faiss.METRIC_INNER_PRODUCT)
+        hnsw_index_ip.hnsw.efConstruction = 512
+        hnsw_index_ip.hnsw.efSearch = 512
+        hnsw_index_ip.add(xb)
+
+        # test knn 
+        D, I = hnsw_index_ip.search(xq, 10)
+        self.assertTrue(np.all(D[:, :-1] >= D[:, 1:]))
+
+        # test range search 
+        radius = 0.74  # Cosine similarity threshold
+        lims, D, I = hnsw_index_ip.range_search(xq, radius)
+        self.assertTrue(np.all(D >= radius))
+
 
 class TestNSG(unittest.TestCase):
 

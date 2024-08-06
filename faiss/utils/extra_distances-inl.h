@@ -9,6 +9,7 @@
  *  and inner product */
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <cmath>
 #include <type_traits>
@@ -193,6 +194,8 @@ typename Consumer::T dispatch_VectorDistance(
         DISPATCH_VD(METRIC_Jaccard);
         DISPATCH_VD(METRIC_NaNEuclidean);
         DISPATCH_VD(METRIC_ABS_INNER_PRODUCT);
+        default:
+            FAISS_THROW_FMT("Invalid metric %d", metric);
     }
 #undef DISPATCH_VD
 }

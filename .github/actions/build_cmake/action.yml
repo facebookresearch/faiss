@@ -12,6 +12,10 @@ inputs:
     description: 'Enable RAFT support.'
     required: false
     default: OFF
+  rocm:
+    description: 'Enable ROCm support.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -28,9 +32,23 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        # install base packages
-        conda install -y -q -c conda-forge gxx_linux-64 sysroot_linux-64
-        conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest
+        conda install -y -q python=3.11 cmake make swig numpy scipy pytest
+
+        # install base packages for ARM64
+        if [ "${{ runner.arch }}" = "ARM64" ]; then
+          conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
+        fi
+
+        # install base packages for X86_64
+        if [ "${{ runner.arch }}" = "X64" ]; then
+          # TODO: unpin versions for gxx_linux-64 and sysroot_linux-64 and merge it with ARM64 below
+          if [ "${{ inputs.rocm }}" = "ON" ]; then
+            conda install -y -q -c conda-forge gxx_linux-64 sysroot_linux-64
+          else
+            conda install -y -q -c conda-forge gxx_linux-64=11.2 sysroot_linux-64=2.28
+          fi
+          conda install -y -q mkl=2023 mkl-devel=2023
+        fi
 
         # install CUDA packages
         if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
@@ -49,6 +67,51 @@ runs:
         else
           conda install -y -q pytorch -c pytorch
         fi
+    - name: ROCm - Install dependencies
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        # Update repos and install kmod, wget
+        sudo apt-get update
+        sudo apt-get install -y kmod wget
+
+        # Get UBUNTU version name
+        UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
+
+        # Set ROCm version
+        ROCM_VERSION="6.1.1"
+
+        # Download, prepare, and install the package signing key
+        mkdir --parents --mode=0755 /etc/apt/keyrings
+        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+
+        # Add rocm repository
+        wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+        rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+        sudo apt-get update --allow-insecure-repositories
+        sudo apt-get install -y --allow-unauthenticated \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}"
+
+        # Fake presence of MI200-class accelerators
+        echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
+
+        # Cleanup
+        sudo apt-get autoclean && sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    - name: ROCm - Hipify
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: ./faiss/gpu/hipify.sh
+    - name: Symblink system dependencies
+      if: inputs.raft == 'ON' || inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        # symblink system libraries for HIP compiler
+        sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
+        sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
+        sudo ln -s /home/runner/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
     - name: Build all targets
       shell: bash
       run: |
@@ -59,15 +122,17 @@ runs:
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
               -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
-              -DBLA_VENDOR=Intel10_64_dyn \
-              -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
+              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
+      if: inputs.rocm == 'OFF'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
@@ -84,7 +149,7 @@ runs:
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
-      if: inputs.gpu == 'ON'
+      if: inputs.gpu == 'ON' && inputs.rocm == 'OFF'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
@@ -99,7 +164,8 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
+      if: inputs.rocm == 'OFF'
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
+        name: test-results-${{ runner.arch }}-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
         path: test-results

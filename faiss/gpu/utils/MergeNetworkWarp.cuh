@@ -164,7 +164,11 @@ template <typename K, typename V, bool Dir, typename Comp, bool Low>
 struct BitonicMergeStep<K, V, 1, Dir, Comp, Low, true> {
     static inline __device__ void merge(K k[1], V v[1]) {
         // Use warp shuffles
-        warpBitonicMergeLE16<K, V, 16, Dir, Comp, true>(k[0], v[0]);
+        if constexpr (kWarpSize == 32) {
+            warpBitonicMergeLE16<K, V, 16, Dir, Comp, true>(k[0], v[0]);
+        } else {
+            warpBitonicMergeLE16<K, V, 32, Dir, Comp, true>(k[0], v[0]);
+        }
     }
 };
 
@@ -529,13 +533,17 @@ struct BitonicSortStep<K, V, 1, Dir, Comp> {
     static inline __device__ void sort(K k[1], V v[1]) {
         // Update this code if this changes
         // should go from 1 -> kWarpSize in multiples of 2
-        static_assert(kWarpSize == 32, "unexpected warp size");
+        static_assert(
+                kWarpSize == 32 || kWarpSize == 64, "unexpected warp size");
 
         warpBitonicMergeLE16<K, V, 1, Dir, Comp, false>(k[0], v[0]);
         warpBitonicMergeLE16<K, V, 2, Dir, Comp, false>(k[0], v[0]);
         warpBitonicMergeLE16<K, V, 4, Dir, Comp, false>(k[0], v[0]);
         warpBitonicMergeLE16<K, V, 8, Dir, Comp, false>(k[0], v[0]);
         warpBitonicMergeLE16<K, V, 16, Dir, Comp, false>(k[0], v[0]);
+        if constexpr (kWarpSize == 64) {
+            warpBitonicMergeLE16<K, V, 32, Dir, Comp, false>(k[0], v[0]);
+        }
     }
 };
 

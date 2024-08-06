@@ -12,7 +12,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 
 // Some compute capabilities have full float16 ALUs.
-#if __CUDA_ARCH__ >= 530
+#if __CUDA_ARCH__ >= 530 || defined(USE_AMD_ROCM)
 #define FAISS_USE_FULL_FLOAT16 1
 #endif // __CUDA_ARCH__ types
 
