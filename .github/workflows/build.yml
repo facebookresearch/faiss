@@ -19,6 +19,7 @@ jobs:
       - name: Docker prereqs
         run: |
             apt-get update && apt-get install -y sudo && apt-get install -y git
+            git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install clang-format
