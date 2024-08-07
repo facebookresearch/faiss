@@ -15,7 +15,7 @@ jobs:
     name: Linux x86_64 AVX512 (cmake) 123
     runs-on: faiss-aws-m7i.large
     concurrency:
-      group: ci-${{ github.ref }}
+      group: ci-${{ github.head_ref || github.run_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
