@@ -12,7 +12,7 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-AVX512-cmake:
-    name: Linux x86_64 AVX512 (cmake)
+    name: Linux x86_64 AVX512 (cmake) 123
     runs-on: faiss-aws-m7i.large
     concurrency:
       group: ci-${{ github.ref }}
