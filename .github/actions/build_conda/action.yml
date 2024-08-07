@@ -13,10 +13,6 @@ inputs:
     description: "Enable RAFT support."
     default: ""
     required: false
-  compiler_version:
-    description: "compiler_version"
-    default: "Compiler version for C/C++/CUDA."
-    required: false
 runs:
   using: composite
   steps:
@@ -67,7 +63,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.raft == ''
@@ -76,14 +72,14 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
-        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU w/ RAFT)
       if: inputs.label == '' && inputs.cuda != '' && inputs.raft != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ RAFT) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.raft != ''
@@ -92,5 +88,5 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
-        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "c_compiler_version": "${{ inputs.compiler_version }}", "cxx_compiler_version": "${{ inputs.compiler_version }}" }' \
+        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge

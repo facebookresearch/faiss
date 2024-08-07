@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Install env using main channel
           command: |
-            conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64=11.2 sysroot_linux-64
+            conda install -y -q python=3.11 cmake make swig mkl=2023 mkl-devel=2023 numpy scipy pytest gxx_linux-64 sysroot_linux-64
       - run:
           name: Build all targets
           no_output_timeout: 30m
