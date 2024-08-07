@@ -11,15 +11,14 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  windows-x86_64-conda:
-    name: Windows x86_64 (conda)
-    runs-on: windows-2019
+  linux-x86_64-AVX512-cmake:
+    name: Linux x86_64 AVX512 (cmake)
+    runs-on: faiss-aws-m7i.large
+    concurrency:
+      group: ci-${{ github.ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+          opt_level: avx512
