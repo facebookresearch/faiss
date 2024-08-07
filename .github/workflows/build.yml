@@ -11,37 +11,18 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  format:
-    name: Format
+  linux-x86_64-cmake:
+    name: Linux x86_64 (cmake)
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
     steps:
-      - name: Docker prereqs
+      - name: Container setup
         run: |
             apt-get update && apt-get install -y sudo && apt-get install -y git
             git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install clang-format
-        run: |
-            sudo apt-get update -y
-            sudo apt-get install -y wget
-            sudo apt install -y lsb-release wget software-properties-common gnupg
-            wget https://apt.llvm.org/llvm.sh
-            chmod u+x llvm.sh
-            sudo ./llvm.sh 18
-            sudo apt-get install -y git-core clang-format-18
-      - name: Verify clang-format
-        run: |
-            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
-            if git diff --quiet; then
-              echo "Formatting OK!"
-            else
-              echo "Formatting not OK!"
-              echo "------------------"
-              git --no-pager diff --color
-              exit 1
-            fi
+      - uses: ./.github/actions/build_cmake
       - name: Setup tmate session
         if: failure()
         uses: mxschmitt/action-tmate@v3
