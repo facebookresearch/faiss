@@ -13,14 +13,14 @@ env:
 jobs:
   linux-x86_64-cmake-nocontainer:
     name: Linux x86_64 (cmake, no-container)
-    runs-on: ubuntu-latest
+    runs-on: faiss-amd-MI200
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake, docker)
-    runs-on: ubuntu-latest
+    runs-on: faiss-amd-MI200
     container: ubuntu:22.04
     steps:
       - name: Container setup
