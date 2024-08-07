@@ -11,6 +11,13 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
+  linux-x86_64-cmake-nocontainer:
+    name: Linux x86_64 (cmake, no-container)
+    runs-on: faiss-amd-MI200
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/build_cmake
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake, docker)
     runs-on: faiss-amd-MI200
@@ -20,13 +27,6 @@ jobs:
         run: |
             apt-get update && apt-get install -y sudo && apt-get install -y git
             git config --global --add safe.directory '*'
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
-  linux-x86_64-cmake-nocontainer:
-    name: Linux x86_64 (cmake, no-container)
-    runs-on: faiss-amd-MI200
-    steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/build_cmake
