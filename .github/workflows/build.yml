@@ -16,6 +16,8 @@ jobs:
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
     steps:
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Container setup
         run: |
             if [ -f /.dockerenv ]; then
