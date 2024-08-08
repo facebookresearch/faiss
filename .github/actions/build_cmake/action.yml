@@ -113,6 +113,7 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
+        exit 1
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
