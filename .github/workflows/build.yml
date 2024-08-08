@@ -12,14 +12,24 @@ env:
   MKL_THREADING_LAYER: GNU
 jobs:
   linux-x86_64-cmake:
-    name: Linux x86_64 (cmake, docker)
+    name: Linux x86_64 (cmake, docker) - 1
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
     steps:
       - name: Container setup
-        run: |
-            apt-get update && apt-get install -y sudo && apt-get install -y git
-            git config --global --add safe.directory '*'
+        uses: ./.github/actions/container_setup
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+  linux-x86_64-cmake:
+    name: Linux x86_64 (cmake, docker) - 2
+    runs-on: faiss-amd-MI200
+    container: ubuntu:22.04
+    steps:
+      - name: Container setup
+        uses: ./.github/actions/container_setup
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
