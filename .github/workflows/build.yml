@@ -43,7 +43,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
     needs: linux-x86_64-cmake
@@ -51,7 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
@@ -61,7 +63,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           opt_level: avx512
   linux-x86_64-GPU-cmake:
@@ -71,7 +74,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           gpu: ON
   linux-x86_64-GPU-w-RAFT-cmake:
@@ -81,7 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           gpu: ON
           raft: ON
@@ -92,7 +97,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           gpu: ON
           rocm: ON
@@ -103,7 +109,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/build_cmake
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
         with:
           opt_level: sve
   linux-x86_64-conda:
@@ -116,7 +123,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
     needs: linux-x86_64-cmake
@@ -127,7 +135,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
   linux-arm64-conda:
     name: Linux arm64 (conda)
     needs: linux-x86_64-cmake
@@ -138,7 +147,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
   linux-x86_64-packages:
     name: Linux x86_64 packages
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -149,7 +159,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
   linux-x86_64-GPU-packages-CUDA-11-4-4:
@@ -165,7 +176,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
           cuda: "11.4.4"
@@ -181,7 +193,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
           raft: "ON"
@@ -198,7 +211,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
           cuda: "12.1.1"
@@ -214,7 +228,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
           raft: "ON"
@@ -229,7 +244,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
   osx-arm64-packages:
@@ -242,7 +258,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
   linux-arm64-packages:
@@ -255,6 +272,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: ./.github/actions/build_conda
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
         with:
           label: main
