@@ -11,7 +11,7 @@ env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
 jobs:
-  linux-x86_64-cmake:
+  linux-x86_64-cmake-1:
     name: Linux x86_64 (cmake, docker) - 1
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
         uses: ./.github/actions/build_cmake
-  linux-x86_64-cmake:
+  linux-x86_64-cmake-2:
     name: Linux x86_64 (cmake, docker) - 2
     runs-on: faiss-amd-MI200
     container: ubuntu:22.04
