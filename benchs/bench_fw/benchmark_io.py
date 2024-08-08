@@ -46,12 +46,10 @@ def merge_rcq_itq(
 @dataclass
 class BenchmarkIO:
     path: str
+    cached_ds = {}
 
     def clone(self):
         return BenchmarkIO(path=self.path)
-
-    def __post_init__(self):
-        self.cached_ds = {}
 
     # TODO(kuarora): rename it as get_local_file
     def get_local_filename(self, filename):

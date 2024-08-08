@@ -78,6 +78,8 @@ class DatasetDescriptor:
     # number of vectors to load from the dataset
     num_vectors: Optional[int] = None
 
+    embedding_column: Optional[str] = None
+
     def __hash__(self):
         return hash(self.get_filename())
 
