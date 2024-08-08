@@ -285,7 +285,7 @@ jobs:
       - name: Start rerun workflow
         env:
           GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_DEBUG: api
         run: |
             gh workflow run retry_build.yml \
