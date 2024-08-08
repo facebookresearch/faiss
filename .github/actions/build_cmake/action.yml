@@ -163,5 +163,5 @@ runs:
       if: inputs.rocm == 'OFF'
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ runner.arch }}-${{ inputs.opt_level }}-${{ inputs.gpu }}-${{ inputs.raft }}
+        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-raft=${{ inputs.raft }}-rocm=${{ inputs.rocm }}
         path: test-results
