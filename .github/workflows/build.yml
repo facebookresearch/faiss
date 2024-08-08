@@ -264,11 +264,12 @@ jobs:
     if: fromJSON(github.run_attempt) < 2
     runs-on: ubuntu-latest
     steps:
-      - env:
+      - name: Start rerun workflow
+        env:
           GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.github_token }}
           GH_DEBUG: api
         run: |
-            gh workflow run retry_build.yml |
-            --ref ${{ github.ref_name }} |
+            gh workflow run retry_build.yml \
+            --ref ${{ github.ref_name }} \
             -F run_id=${{ github.run_id }}

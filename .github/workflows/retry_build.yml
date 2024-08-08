@@ -6,6 +6,7 @@ on:
         required: true
 jobs:
   rerun-on-failure:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: rerun ${{ inputs.run_id }}
