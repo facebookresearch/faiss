@@ -17,7 +17,13 @@ jobs:
     container: ubuntu:22.04
     steps:
       - name: Container setup
-        uses: ./.github/actions/container_setup
+        run: |
+            if [ -f /.dockerenv ]; then
+              apt-get update && apt-get install -y sudo && apt-get install -y git
+              git config --global --add safe.directory '*'
+            else
+              echo 'Skipping. Current job is not running inside a container.'
+            fi
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
@@ -28,7 +34,13 @@ jobs:
     container: ubuntu:22.04
     steps:
       - name: Container setup
-        uses: ./.github/actions/container_setup
+        run: |
+            if [ -f /.dockerenv ]; then
+              apt-get update && apt-get install -y sudo && apt-get install -y git
+              git config --global --add safe.directory '*'
+            else
+              echo 'Skipping. Current job is not running inside a container.'
+            fi
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
