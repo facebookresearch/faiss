@@ -22,4 +22,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
         uses: ./.github/actions/build_cmake
-
+  linux-x86_64-cmake-2:
+    name: Linux x86_64 (cmake, docker) two
+    runs-on: faiss-amd-MI200
+    container: ubuntu:22.04
+    steps:
+      - name: Container setup
+        uses: ./.github/actions/container_setup
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
