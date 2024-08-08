@@ -603,7 +603,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="185" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="185" declcolumn="22"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="189" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="189" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>

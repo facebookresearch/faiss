@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="212" column="14" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="212" bodyend="-1"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="216" column="14" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="216" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="213" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="54" bodyend="57"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="217" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="54" bodyend="57"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PQEncoder16_1ab1c054ada90405f6d2fa9681edef2991" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -54,14 +54,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="214" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="59" bodyend="61"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="218" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="59" bodyend="61"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/ProductQuantizer.h" line="211" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="211" bodyend="215"/>
+    <location file="faiss/impl/ProductQuantizer.h" line="215" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="215" bodyend="219"/>
     <listofallmembers>
       <member refid="structfaiss_1_1PQEncoder16_1a6218a32c8034826c8327bc11876b2650" prot="public" virt="non-virtual"><scope>faiss::PQEncoder16</scope><name>code</name></member>
       <member refid="structfaiss_1_1PQEncoder16_1ab1c054ada90405f6d2fa9681edef2991" prot="public" virt="non-virtual"><scope>faiss::PQEncoder16</scope><name>encode</name></member>

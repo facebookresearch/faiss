@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="235" column="22" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="235" bodyend="-1"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="239" column="22" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="239" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="236" column="20" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="236" bodyend="-1"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="240" column="20" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="240" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="237" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="107" bodyend="110"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="241" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="107" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PQDecoder16_1a243a469676be7bc675c455e6122fb552" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -66,14 +66,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="238" column="14" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="112" bodyend="114"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="242" column="14" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="112" bodyend="114"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/ProductQuantizer.h" line="234" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="234" bodyend="239"/>
+    <location file="faiss/impl/ProductQuantizer.h" line="238" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="238" bodyend="243"/>
     <listofallmembers>
       <member refid="structfaiss_1_1PQDecoder16_1ac8ad233a42295c64c326eda127628d69" prot="public" virt="non-virtual"><scope>faiss::PQDecoder16</scope><name>code</name></member>
       <member refid="structfaiss_1_1PQDecoder16_1a243a469676be7bc675c455e6122fb552" prot="public" virt="non-virtual"><scope>faiss::PQDecoder16</scope><name>decode</name></member>
