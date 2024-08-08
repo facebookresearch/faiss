@@ -39,6 +39,7 @@ jobs:
             if [ -f /.dockerenv ]; then
               apt-get update && apt-get install -y sudo && apt-get install -y git
               git config --global --add safe.directory '*'
+              sudo rm -rf $HOME/*
             else
               echo 'Skipping. Current job is not running inside a container.'
             fi
