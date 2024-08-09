@@ -16,7 +16,7 @@ jobs:
     runs-on: faiss-amd-MI200
     container:
       image: ubuntu:22.04
-      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video
+      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE
     steps:
       - name: Container setup
         run: |
