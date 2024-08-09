@@ -67,9 +67,9 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
-        # Update repos and install kmod, wget
+        # Update repos and install kmod, wget, gpg
         sudo apt-get update
-        sudo apt-get install -y kmod wget
+        sudo apt-get install -y kmod wget gpg
 
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
