@@ -127,6 +127,9 @@ runs:
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)
+    - name: Setup tmate session
+      if: failure()
+      uses: mxschmitt/action-tmate@v3
     - name: C++ tests
       shell: bash
       run: |
