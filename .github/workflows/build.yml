@@ -17,7 +17,7 @@ jobs:
     container:
       image: ubuntu:22.04
       options: |
-          --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN --security-opt seccomp=unconfined
+          --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN 
     steps:
       - name: Container setup
         run: |
