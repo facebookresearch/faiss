@@ -39,7 +39,7 @@ macro(configure_swigfaiss source)
       COMPILE_DEFINITIONS GPU_WRAPPER
     )
     if (FAISS_ENABLE_ROCM)
-      set_source_files_properties(${source} PROPERTIES
+      set_property(SOURCE ${source} APPEND PROPERTY
         COMPILE_DEFINITIONS FAISS_ENABLE_ROCM
       )
     endif()
