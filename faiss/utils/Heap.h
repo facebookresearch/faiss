@@ -30,6 +30,7 @@
 #include <cstdio>
 
 #include <limits>
+#include <utility>
 
 #include <faiss/utils/ordered_key_value.h>
 
@@ -198,6 +199,110 @@ inline void maxheap_replace_top(
         T val,
         int64_t ids) {
     heap_replace_top<CMax<T, int64_t>>(k, bh_val, bh_ids, val, ids);
+}
+
+/*******************************************************************
+ * Basic heap<std:pair<>> ops: push and pop
+ *******************************************************************/
+
+// This section contains a heap implementation that works with
+//   std::pair<Priority, Value> elements.
+
+/** Pops the top element from the heap defined by bh_val[0..k-1] and
+ * bh_ids[0..k-1].  on output the element at k-1 is undefined.
+ */
+template <class C>
+inline void heap_pop(size_t k, std::pair<typename C::T, typename C::TI>* bh) {
+    bh--; /* Use 1-based indexing for easier node->child translation */
+    typename C::T val = bh[k].first;
+    typename C::TI id = bh[k].second;
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k)
+            break;
+        if ((i2 == k + 1) ||
+            C::cmp2(bh[i1].first, bh[i2].first, bh[i1].second, bh[i2].second)) {
+            if (C::cmp2(val, bh[i1].first, id, bh[i1].second)) {
+                break;
+            }
+            bh[i] = bh[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh[i2].first, id, bh[i2].second)) {
+                break;
+            }
+            bh[i] = bh[i2];
+            i = i2;
+        }
+    }
+    bh[i] = bh[k];
+}
+
+/** Pushes the element (val, ids) into the heap bh_val[0..k-2] and
+ * bh_ids[0..k-2].  on output the element at k-1 is defined.
+ */
+template <class C>
+inline void heap_push(
+        size_t k,
+        std::pair<typename C::T, typename C::TI>* bh,
+        typename C::T val,
+        typename C::TI id) {
+    bh--; /* Use 1-based indexing for easier node->child translation */
+    size_t i = k, i_father;
+    while (i > 1) {
+        i_father = i >> 1;
+        auto bh_v = bh[i_father];
+        if (!C::cmp2(val, bh_v.first, id, bh_v.second)) {
+            /* the heap structure is ok */
+            break;
+        }
+        bh[i] = bh_v;
+        i = i_father;
+    }
+    bh[i] = std::make_pair(val, id);
+}
+
+/**
+ * Replaces the top element from the heap defined by bh_val[0..k-1] and
+ * bh_ids[0..k-1], and for identical bh_val[] values also sorts by bh_ids[]
+ * values.
+ */
+template <class C>
+inline void heap_replace_top(
+        size_t k,
+        std::pair<typename C::T, typename C::TI>* bh,
+        typename C::T val,
+        typename C::TI id) {
+    bh--; /* Use 1-based indexing for easier node->child translation */
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k) {
+            break;
+        }
+
+        // Note that C::cmp2() is a bool function answering
+        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
+        // heap and same with the `<` sign for min heap.
+        if ((i2 == k + 1) ||
+            C::cmp2(bh[i1].first, bh[i2].first, bh[i1].second, bh[i2].second)) {
+            if (C::cmp2(val, bh[i1].first, id, bh[i1].second)) {
+                break;
+            }
+            bh[i] = bh[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh[i2].first, id, bh[i2].second)) {
+                break;
+            }
+            bh[i] = bh[i2];
+            i = i2;
+        }
+    }
+    bh[i] = std::make_pair(val, id);
 }
 
 /*******************************************************************
