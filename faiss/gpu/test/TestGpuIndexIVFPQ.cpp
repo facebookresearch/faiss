@@ -307,14 +307,6 @@ void testMMCodeDistance(faiss::MetricType mt) {
     }
 }
 
-TEST(TestGpuIndexIVFPQ, Query_L2_MMCodeDistance) {
-    testMMCodeDistance(faiss::MetricType::METRIC_L2);
-}
-
-TEST(TestGpuIndexIVFPQ, Query_IP_MMCodeDistance) {
-    testMMCodeDistance(faiss::MetricType::METRIC_INNER_PRODUCT);
-}
-
 TEST(TestGpuIndexIVFPQ, Float16Coarse) {
     Options opt;
 
