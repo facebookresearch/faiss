@@ -133,3 +133,16 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
+  rerun:
+    name: Auto retry on failure
+    if: fromJSON(github.run_attempt) < 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start rerun workflow
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: |
+          gh workflow run retry_build.yml \
+            -F run_id=${{ github.run_id }}
