@@ -16,7 +16,7 @@ jobs:
     runs-on: faiss-amd-MI200
     container:
       image: ubuntu:22.04
-      options: --device=/dev/kfd 
+      options: --device=/dev/kfd --device=/dev/dri
     steps:
       - name: Container setup
         run: |
