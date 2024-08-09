@@ -111,6 +111,7 @@ runs:
     - name: Build all targets
       shell: bash
       run: |
+        exit 1
         eval "$(conda shell.bash hook)"
         conda activate
         cmake -B build \
