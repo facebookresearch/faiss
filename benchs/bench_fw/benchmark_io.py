@@ -10,7 +10,7 @@ import logging
 import os
 import pickle
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from zipfile import ZipFile
 
 import faiss  # @manual=//faiss/python:pyfaiss_gpu
@@ -46,12 +46,10 @@ def merge_rcq_itq(
 @dataclass
 class BenchmarkIO:
     path: str
+    cached_ds: Dict[Any, Any] = {}
 
     def clone(self):
         return BenchmarkIO(path=self.path)
-
-    def __post_init__(self):
-        self.cached_ds = {}
 
     # TODO(kuarora): rename it as get_local_file
     def get_local_filename(self, filename):
