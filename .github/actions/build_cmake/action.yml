@@ -58,7 +58,9 @@ runs:
 
         # install test packages
         conda install -y pytest
-        if [ "${{ inputs.gpu }}" = "ON" ]; then
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
+        elif [ "${{ inputs.gpu }}" = "ON" ]; then
           conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
           conda install -y -q pytorch -c pytorch
