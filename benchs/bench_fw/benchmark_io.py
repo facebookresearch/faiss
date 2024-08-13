@@ -46,7 +46,10 @@ def merge_rcq_itq(
 @dataclass
 class BenchmarkIO:
     path: str
-    cached_ds: Dict[Any, Any] = {}
+
+    def __init__(self, path: str):
+        self.path = path
+        self.cached_ds: Dict[Any, Any] = {}
 
     def clone(self):
         return BenchmarkIO(path=self.path)
