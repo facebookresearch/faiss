@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="71" column="29" bodyfile="faiss/impl/HNSW.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="72" column="29" bodyfile="faiss/impl/HNSW.h" bodystart="72" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="65" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="65" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="66" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="66" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a41574372117595d8829816367d56ca02" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="66" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="67" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a28f52e6beb031179d2fd3f7c7176db76" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="67" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="68" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a872c880f3f90af4e666dce2be4dab87c" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref> &gt;</type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="69" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="69" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="70" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a38fa78ac21419dade4efdf69e4852450" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="70" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="71" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="73" column="18" bodyfile="faiss/impl/HNSW.h" bodystart="73" bodyend="73"/>
+        <location file="faiss/impl/HNSW.h" line="74" column="18" bodyfile="faiss/impl/HNSW.h" bodystart="74" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a5bb98fe6de052c6f966d25b4c7fff738" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -122,7 +122,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="75" column="14"/>
+        <location file="faiss/impl/HNSW.h" line="76" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a87b25c78cf810c5a7249d171e4d2d7fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="77" column="15"/>
+        <location file="faiss/impl/HNSW.h" line="78" column="15"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1adc87106d3cf52c898c5b1d6af78d0918" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="79" column="13"/>
+        <location file="faiss/impl/HNSW.h" line="80" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1adad4c4a475a29ab0d02cce9dcb069f8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -161,7 +161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="81" column="14"/>
+        <location file="faiss/impl/HNSW.h" line="82" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1acd09edf2f36ccaf094b1df6acd51612b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="83" column="13"/>
+        <location file="faiss/impl/HNSW.h" line="84" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a94d529d139fb46034abf26f1bd6a9f14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -196,7 +196,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="85" column="13"/>
+        <location file="faiss/impl/HNSW.h" line="86" column="13"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -204,7 +204,7 @@
     <detaileddescription>
 <para>Heap structure that allows fast </para>
     </detaileddescription>
-    <location file="faiss/impl/HNSW.h" line="64" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="64" bodyend="86"/>
+    <location file="faiss/impl/HNSW.h" line="65" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="65" bodyend="87"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adad4c4a475a29ab0d02cce9dcb069f8a" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>clear</name></member>
       <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a94d529d139fb46034abf26f1bd6a9f14" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>count_below</name></member>

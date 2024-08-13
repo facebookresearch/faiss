@@ -7808,6 +7808,7 @@
   <compound refid="structfaiss_1_1SearchParametersHNSW" kind="struct"><name>faiss::SearchParametersHNSW</name>
     <member refid="structfaiss_1_1SearchParametersHNSW_1a97ab6982ca3de6f8420d8e445e925196" kind="variable"><name>efSearch</name></member>
     <member refid="structfaiss_1_1SearchParametersHNSW_1ae3b677b9eb7554502912e60797dc5c2f" kind="variable"><name>check_relative_distance</name></member>
+    <member refid="structfaiss_1_1SearchParametersHNSW_1a7e0cb8fd6ab25707248a9de030baf744" kind="variable"><name>bounded_queue</name></member>
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
     <member refid="structfaiss_1_1SearchParametersHNSW_1a3b7ae6bc1c8c9ba88632177ee5915aa7" kind="function"><name>~SearchParametersHNSW</name></member>
   </compound>

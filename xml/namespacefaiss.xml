@@ -590,7 +590,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="255" column="28" declfile="faiss/impl/HNSW.h" declline="255" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="256" column="28" declfile="faiss/impl/HNSW.h" declline="256" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
