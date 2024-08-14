@@ -145,7 +145,7 @@ runs:
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
-      if: inputs.gpu == 'ON' && inputs.rocm == 'OFF'
+      if: inputs.gpu == 'ON'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
