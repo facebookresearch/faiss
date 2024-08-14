@@ -148,11 +148,16 @@ runs:
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
+        sudo apt-get install -y python3-pip
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test
         pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
         pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
+    - name: Setup tmate session
+      if: failure()
+      uses: mxschmitt/action-tmate@v3
     - name: Test avx2 loading
       if: inputs.opt_level == 'avx2'
       shell: bash
