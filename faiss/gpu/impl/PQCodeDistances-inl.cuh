@@ -20,7 +20,7 @@
 namespace faiss {
 namespace gpu {
 
-#if defined(USE_ROCM) && __AMDGCN_WAVEFRONT_SIZE == 64u
+#if defined(USE_AMD_ROCM) && __AMDGCN_WAVEFRONT_SIZE == 64u
 #define LAUNCH_BOUND 320
 #else
 #define LAUNCH_BOUND 288

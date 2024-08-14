@@ -47,7 +47,7 @@ inline __device__ unsigned int getByte(uint64_t v, int pos, int width) {
     return getBitfield(v, pos, width);
 }
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 
 template <int NumSubQuantizers>
 struct LoadCode32 {};
@@ -276,7 +276,7 @@ struct LoadCode32<96> {
     }
 };
 
-#else // USE_ROCM
+#else // USE_AMD_ROCM
 
 template <int NumSubQuantizers>
 struct LoadCode32 {};
@@ -609,7 +609,7 @@ struct LoadCode32<96> {
     }
 };
 
-#endif // USE_ROCM
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

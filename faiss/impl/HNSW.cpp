@@ -847,6 +847,9 @@ HNSWStats HNSW::search(
     }
     int k = extract_k_from_ResultHandler(res);
 
+    bool bounded_queue =
+            params ? params->bounded_queue : this->search_bounded_queue;
+
     if (upper_beam == 1) {
         //  greedy search on upper levels
         storage_idx_t nearest = entry_point;
@@ -857,7 +860,7 @@ HNSWStats HNSW::search(
         }
 
         int ef = std::max(params ? params->efSearch : efSearch, k);
-        if (search_bounded_queue) { // this is the most common branch
+        if (bounded_queue) { // this is the most common branch
             MinimaxHeap candidates(ef);
 
             candidates.push(nearest, d_nearest);

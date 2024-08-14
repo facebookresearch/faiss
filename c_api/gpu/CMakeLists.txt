@@ -15,13 +15,13 @@ target_sources(faiss_c PRIVATE
 file(GLOB FAISS_C_API_GPU_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.h")
 faiss_install_headers("${FAISS_C_API_GPU_HEADERS}" c_api/gpu)
 
-if (USE_ROCM)
-find_package(HIP REQUIRED)
-find_package(hipBLAS REQUIRED)
-target_link_libraries(faiss_c PUBLIC hip::host roc::hipblas)
+if (FAISS_ENABLE_ROCM)
+  target_link_libraries(faiss_c PUBLIC hip::host roc::hipblas)
 else()
-find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+  find_package(CUDAToolkit REQUIRED)
+  target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 endif()
 
 add_executable(example_gpu_c EXCLUDE_FROM_ALL example_gpu_c.c)

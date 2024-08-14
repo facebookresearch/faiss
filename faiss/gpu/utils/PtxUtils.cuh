@@ -8,14 +8,14 @@
 #pragma once
 
 #include <cuda.h>
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 #include <device_functions.h>
 #endif
 
 namespace faiss {
 namespace gpu {
 
-#ifdef USE_ROCM
+#ifdef USE_AMD_ROCM
 
 #define GET_BITFIELD_U32(OUT, VAL, POS, LEN)        \
     do {                                            \
@@ -51,7 +51,7 @@ __device__ __forceinline__ int getLaneId() {
     return ::__lane_id();
 }
 
-#else // USE_ROCM
+#else // USE_AMD_ROCM
 
 // defines to simplify the SASS assembly structure file/line in the profiler
 #define GET_BITFIELD_U32(OUT, VAL, POS, LEN) \
@@ -129,7 +129,7 @@ __device__ __forceinline__ void namedBarrierArrived(int name, int numThreads) {
                  : "memory");
 }
 
-#endif // USE_ROCM
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss
