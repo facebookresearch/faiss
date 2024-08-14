@@ -228,12 +228,7 @@ void IndexIVF::add_core(
     FAISS_THROW_IF_NOT(is_trained);
     direct_map.check_can_add(xids);
 
-    size_t nadd = 0, nminus1 = 0;
-
-    for (size_t i = 0; i < n; i++) {
-        if (coarse_idx[i] < 0)
-            nminus1++;
-    }
+    size_t nadd = 0;
 
     std::unique_ptr<uint8_t[]> flat_codes(new uint8_t[n * code_size]);
     encode_vectors(n, x, coarse_idx, flat_codes.get());
@@ -266,6 +261,11 @@ void IndexIVF::add_core(
     }
 
     if (verbose) {
+        size_t nminus1 = 0;
+        for (size_t i = 0; i < n; i++) {
+            if (coarse_idx[i] < 0)
+                nminus1++;
+        }
         printf("    added %zd / %" PRId64 " vectors (%zd -1s)\n",
                nadd,
                n,
@@ -276,11 +276,8 @@ void IndexIVF::add_core(
 }
 
 void IndexIVF::make_direct_map(bool b) {
-    if (b) {
-        direct_map.set_type(DirectMap::Array, invlists, ntotal);
-    } else {
-        direct_map.set_type(DirectMap::NoMap, invlists, ntotal);
-    }
+    DirectMap::Type type = b ? DirectMap::Array : DirectMap::NoMap;
+    direct_map.set_type(type, invlists, ntotal);
 }
 
 void IndexIVF::set_direct_map_type(DirectMap::Type type) {

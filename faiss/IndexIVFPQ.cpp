@@ -192,11 +192,10 @@ void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {
             const uint8_t* code = codes + i * (code_size + coarse_size);
-            int64_t list_no = decode_listno(code);
             float* xi = x + i * d;
             pq.decode(code + coarse_size, xi);
             if (by_residual) {
-                quantizer->reconstruct(list_no, residual.data());
+                quantizer->reconstruct(decode_listno(code), residual.data());
                 for (size_t j = 0; j < d; j++) {
                     xi[j] += residual[j];
                 }
