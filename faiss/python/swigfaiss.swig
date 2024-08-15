@@ -351,6 +351,8 @@ void gpu_sync_all_devices()
 
 %include  <faiss/gpu-rocm/GpuResources.h>
 %include  <faiss/gpu-rocm/StandardGpuResources.h>
+typedef ihipStream_t* hipStream_t;
+
 
 %inline %{
 
