@@ -313,6 +313,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingOptimizer.html">Struct faiss::SimulatedAnnealingOptimizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SimulatedAnnealingParameters.html">Struct faiss::SimulatedAnnealingParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SplitMix64RandomGenerator.html">Struct faiss::SplitMix64RandomGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TimeoutCallback.html">Struct faiss::TimeoutCallback</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Top1BlockResultHandler.html">Struct faiss::Top1BlockResultHandler</a></li>
@@ -514,13 +515,25 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss34ProgressiveDimClusteringParameters4seedE">
 <span id="_CPPv3N5faiss34ProgressiveDimClusteringParameters4seedE"></span><span id="_CPPv2N5faiss34ProgressiveDimClusteringParameters4seedE"></span><span id="faiss::ProgressiveDimClusteringParameters::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1234</span></span><br /></dt>
-<dd><p>seed for the random number generator </p>
+<dd><p>seed for the random number generator. negative values lead to seeding an internal rng with std::high_resolution_clock. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss34ProgressiveDimClusteringParameters17decode_block_sizeE">
 <span id="_CPPv3N5faiss34ProgressiveDimClusteringParameters17decode_block_sizeE"></span><span id="_CPPv2N5faiss34ProgressiveDimClusteringParameters17decode_block_sizeE"></span><span id="faiss::ProgressiveDimClusteringParameters::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_block_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">32768</span></span><br /></dt>
 <dd><p>when the training set is encoded, batch size of the codec decoder </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss34ProgressiveDimClusteringParameters25check_input_data_for_NaNsE">
+<span id="_CPPv3N5faiss34ProgressiveDimClusteringParameters25check_input_data_for_NaNsE"></span><span id="_CPPv2N5faiss34ProgressiveDimClusteringParameters25check_input_data_for_NaNsE"></span><span id="faiss::ProgressiveDimClusteringParameters::check_input_data_for_NaNs__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_input_data_for_NaNs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><br /></dt>
+<dd><p>whether to check for NaNs in an input data </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss34ProgressiveDimClusteringParameters22use_faster_subsamplingE">
+<span id="_CPPv3N5faiss34ProgressiveDimClusteringParameters22use_faster_subsamplingE"></span><span id="_CPPv2N5faiss34ProgressiveDimClusteringParameters22use_faster_subsamplingE"></span><span id="faiss::ProgressiveDimClusteringParameters::use_faster_subsampling__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_faster_subsampling</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>Whether to use splitmix64-based random number generator for subsampling, which is faster, but may pick duplicate points. </p>
 </dd></dl>
 
 </div>

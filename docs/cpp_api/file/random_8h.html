@@ -385,6 +385,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20rand_perm_splitmix64EPi6size_t7int64_t">
+<span id="_CPPv3N5faiss20rand_perm_splitmix64EPi6size_t7int64_t"></span><span id="_CPPv2N5faiss20rand_perm_splitmix64EPi6size_t7int64_t"></span><span id="faiss::rand_perm_splitmix64__iP.s.int64_t"></span><span class="target" id="namespacefaiss_1a7f900e002856f3db2295abd9d429369e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_perm_splitmix64</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20rand_perm_splitmix64EPi6size_t7int64_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19rand_smooth_vectorsE6size_t6size_tPf7int64_t">
 <span id="_CPPv3N5faiss19rand_smooth_vectorsE6size_t6size_tPf7int64_t"></span><span id="_CPPv2N5faiss19rand_smooth_vectorsE6size_t6size_tPf7int64_t"></span><span id="faiss::rand_smooth_vectors__s.s.floatP.int64_t"></span><span class="target" id="namespacefaiss_1a62eb905cf4895b293b0d10b3af2c8df6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_smooth_vectors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19rand_smooth_vectorsE6size_t6size_tPf7int64_t" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -438,6 +443,64 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss15RandomGenerator2mtE">
 <span id="_CPPv3N5faiss15RandomGenerator2mtE"></span><span id="_CPPv2N5faiss15RandomGenerator2mtE"></span><span id="faiss::RandomGenerator::mt__std::mt19937"></span><span class="target" id="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mt19937</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mt</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15RandomGenerator2mtE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGeneratorE">
+<span id="_CPPv3N5faiss25SplitMix64RandomGeneratorE"></span><span id="_CPPv2N5faiss25SplitMix64RandomGeneratorE"></span><span id="faiss::SplitMix64RandomGenerator"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitMix64RandomGenerator</span></span></span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGeneratorE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;random.h&gt;</em></div>
+<p>fast random generator that cannot be used in multithreaded contexts. based on <a class="reference external" href="https://prng.di.unimi.it/">https://prng.di.unimi.it/</a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator8rand_intEv">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator8rand_intEv"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator8rand_intEv"></span><span id="faiss::SplitMix64RandomGenerator::rand_int"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_int</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator8rand_intEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>random positive integer </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator10rand_int64Ev">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator10rand_int64Ev"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator10rand_int64Ev"></span><span id="faiss::SplitMix64RandomGenerator::rand_int64"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_int64</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator10rand_int64Ev" title="Permalink to this definition"></a><br /></dt>
+<dd><p>random int64_t </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator8rand_intEi">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator8rand_intEi"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator8rand_intEi"></span><span id="faiss::SplitMix64RandomGenerator::rand_int__i"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_int</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator8rand_intEi" title="Permalink to this definition"></a><br /></dt>
+<dd><p>generate random integer between 0 and max-1 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator10rand_floatEv">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator10rand_floatEv"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator10rand_floatEv"></span><span id="faiss::SplitMix64RandomGenerator::rand_float"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_float</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator10rand_floatEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>between 0 and 1 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator11rand_doubleEv">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator11rand_doubleEv"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator11rand_doubleEv"></span><span id="faiss::SplitMix64RandomGenerator::rand_double"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a6409f6bccafd14404b953fe30ccfe5c3"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rand_double</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator11rand_doubleEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator25SplitMix64RandomGeneratorE7int64_t">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator25SplitMix64RandomGeneratorE7int64_t"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator25SplitMix64RandomGeneratorE7int64_t"></span><span id="faiss::SplitMix64RandomGenerator::SplitMix64RandomGenerator__int64_t"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1ad253f370d30b37f46dae62033e77a82c"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitMix64RandomGenerator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1234</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator25SplitMix64RandomGeneratorE7int64_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator4nextEv">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator4nextEv"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator4nextEv"></span><span id="faiss::SplitMix64RandomGenerator::next"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a72c9e822bf771b329ebceecff9dd2e9a"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">next</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator4nextEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss25SplitMix64RandomGenerator5stateE">
+<span id="_CPPv3N5faiss25SplitMix64RandomGenerator5stateE"></span><span id="_CPPv2N5faiss25SplitMix64RandomGenerator5stateE"></span><span id="faiss::SplitMix64RandomGenerator::state__uint64_t"></span><span class="target" id="structfaiss_1_1SplitMix64RandomGenerator_1a85ad5ee01fe609b60c34b5427b4c2229"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">state</span></span></span><a class="headerlink" href="#_CPPv4N5faiss25SplitMix64RandomGenerator5stateE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
