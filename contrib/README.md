@@ -1,4 +1,3 @@
-
 # The contrib modules
 
 The contrib directory contains helper modules for Faiss for various tasks.

@@ -11,9 +11,6 @@
 #define FAISS_INDEX_IVF_H
 
 #include <stdint.h>
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>

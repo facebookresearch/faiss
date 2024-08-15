@@ -283,7 +283,7 @@ void runGeneralDistance(
     FAISS_ASSERT(outDistances.getSize(1) == k);
     FAISS_ASSERT(outIndices.getSize(1) == k);
 
-    // If we're quering against a 0 sized set, just return empty results
+    // If we're querying against a 0 sized set, just return empty results
     if (centroids.numElements() == 0) {
         thrust::fill(
                 thrust::cuda::par.on(stream),

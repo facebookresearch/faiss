@@ -1,4 +1,3 @@
-
 # Offline IVF
 
 This folder contains the code for the offline ivf algorithm powered by faiss big batch search.
@@ -49,4 +48,3 @@ b. A new dataset needs to be prepared (step 1) before passing it to the query ve
 6. We can always run the consistency-check for sanity checks!
 
 `python run.py  --command consistency_check--config config_ssnpp.yaml --xb ssnpp_1B`
-

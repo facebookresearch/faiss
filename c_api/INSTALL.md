@@ -13,7 +13,7 @@ Include `-DFAISS_ENABLE_C_API=ON` to the cmake command.
 `make -C build`
 
 
-This builds the dynamic library "faiss_c", containing the full implementation of Faiss and the necessary wrappers for the C interface. It does not depend on libfaiss.a or the C++ standard library. 
+This builds the dynamic library "faiss_c", containing the full implementation of Faiss and the necessary wrappers for the C interface. It does not depend on libfaiss.a or the C++ standard library.
 
 To build the example program, you should run `make -C build example_c` at the top level of
 the faiss repo. The example program will be in `build/c_api/example_c` .
@@ -49,7 +49,7 @@ faiss_Index_free(index);
 ```
 
 Error handling is done by examining the error code returned by operations with recoverable errors.
-The code identifies the type of exception that rose from the implementation. Fetching the 
+The code identifies the type of exception that rose from the implementation. Fetching the
 corresponding error message can be done by calling the function `faiss_get_last_error()` from
 `error_c.h`. Getter functions and `free` functions do not return an error code.
 

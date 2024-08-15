@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env fbpython
 
 # Copyright (c) Facebook, Inc. and its affiliates.
 #

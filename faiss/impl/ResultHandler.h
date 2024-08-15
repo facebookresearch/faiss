@@ -30,7 +30,7 @@ namespace faiss {
  *   query
  * - with begin_multiple/add_results/end_multiple calls where a whole block of
  *   results is submitted
- * All classes are templated on C which to define wheter the min or the max of
+ * All classes are templated on C which to define whether the min or the max of
  * results is to be kept, and on sel, so that the codepaths for with / without
  * selector can be separated at compile time.
  *****************************************************************/

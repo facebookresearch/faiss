@@ -12,7 +12,7 @@ OS: <!-- e.g. macOS 10.13.3 -->
 
 Faiss version: <!-- git commit, e.g. 56383610bcb982d6591e2e2bea3516cb7723e04a -->
 
-Installed from: <!-- anaconda? compiled by yourself ? --> 
+Installed from: <!-- anaconda? compiled by yourself ? -->
 
 Faiss compilation options: <!-- e.g. using MKL with compile flags ... -->
 
@@ -20,7 +20,7 @@ Running on:
 - [ ] CPU
 - [ ] GPU
 
-Interface: 
+Interface:
 - [ ] C++
 - [ ] Python
 
@@ -29,5 +29,5 @@ Interface:
 <!-- Please provide specific and comprehensive instructions to reproduce the
 described behavior. -->
 
-<!-- Please *do not* post screenshots of logs. They are not searchable. Copy/paste 
-the text or make a gist if the text is too bulky. --> 
+<!-- Please *do not* post screenshots of logs. They are not searchable. Copy/paste
+the text or make a gist if the text is too bulky. -->

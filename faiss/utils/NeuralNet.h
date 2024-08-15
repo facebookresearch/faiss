@@ -103,7 +103,7 @@ struct QINCoStep {
         return residual_blocks[i];
     }
 
-    /** encode a set of vectors x with intial estimate xhat. Optionally return
+    /** encode a set of vectors x with initial estimate xhat. Optionally return
      * the delta to be added to xhat to form the new xhat */
     nn::Int32Tensor2D encode(
             const nn::Tensor2D& xhat,

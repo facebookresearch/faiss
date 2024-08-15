@@ -1,4 +1,3 @@
-
 # Benchmarking scripts
 
 This directory contains benchmarking scripts that can reproduce the

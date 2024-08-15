@@ -1,5 +1,3 @@
-
-
 Demos for a few Faiss functionalities
 =====================================
 
