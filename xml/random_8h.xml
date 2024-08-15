@@ -74,6 +74,7 @@
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
+    <innerclass refid="structfaiss_1_1SplitMix64RandomGenerator" prot="public">faiss::SplitMix64RandomGenerator</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -124,24 +125,49 @@
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator" kindref="compound">RandomGenerator</ref>(int64_t<sp/>seed<sp/>=<sp/>1234);</highlight></codeline>
 <codeline lineno="44"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Generate<sp/>an<sp/>array<sp/>of<sp/>uniform<sp/>random<sp/>floats<sp/>/<sp/>multi-threaded<sp/>implementation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>float_rand(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>float_randn(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>int64_rand(int64_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>byte_rand(uint8_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">//<sp/>max<sp/>is<sp/>actually<sp/>the<sp/>maximum<sp/>value<sp/>+<sp/>1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>int64_rand_max(int64_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>uint64_t<sp/>max,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>random<sp/>permutation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_perm(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Random<sp/>set<sp/>of<sp/>vectors<sp/>with<sp/>intrinsic<sp/>dimensionality<sp/>10<sp/>that<sp/>is<sp/>harder<sp/>to</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>index<sp/>than<sp/>a<sp/>subspace<sp/>of<sp/>dim<sp/>10<sp/>but<sp/>easier<sp/>than<sp/>uniform<sp/>data<sp/>in<sp/>dimension<sp/>d</highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/>*<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_smooth_vectors(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>int64_t<sp/>seed);</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="46"><highlight class="comment">///<sp/>fast<sp/>random<sp/>generator<sp/>that<sp/>cannot<sp/>be<sp/>used<sp/>in<sp/>multithreaded<sp/>contexts.</highlight></codeline>
+<codeline lineno="47"><highlight class="comment">///<sp/>based<sp/>on<sp/>https://prng.di.unimi.it/</highlight></codeline>
+<codeline lineno="48" refid="structfaiss_1_1SplitMix64RandomGenerator" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SplitMix64RandomGenerator" kindref="compound">SplitMix64RandomGenerator</ref><sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>state;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>random<sp/>positive<sp/>integer</highlight></codeline>
+<codeline lineno="52" refid="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" kindref="member">rand_int</ref>();</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>random<sp/>int64_t</highlight></codeline>
+<codeline lineno="55" refid="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/><ref refid="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51" kindref="member">rand_int64</ref>();</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>generate<sp/>random<sp/>integer<sp/>between<sp/>0<sp/>and<sp/>max-1</highlight></codeline>
+<codeline lineno="58" refid="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9" kindref="member">rand_int</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>between<sp/>0<sp/>and<sp/>1</highlight></codeline>
+<codeline lineno="61" refid="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9" kindref="member">rand_float</ref>();</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>rand_double();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SplitMix64RandomGenerator" kindref="compound">SplitMix64RandomGenerator</ref>(int64_t<sp/>seed<sp/>=<sp/>1234);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>next();</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Generate<sp/>an<sp/>array<sp/>of<sp/>uniform<sp/>random<sp/>floats<sp/>/<sp/>multi-threaded<sp/>implementation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>float_rand(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>float_randn(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>int64_rand(int64_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>byte_rand(uint8_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment">//<sp/>max<sp/>is<sp/>actually<sp/>the<sp/>maximum<sp/>value<sp/>+<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>int64_rand_max(int64_t*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>uint64_t<sp/>max,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>random<sp/>permutation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_perm(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_perm_splitmix64(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Random<sp/>set<sp/>of<sp/>vectors<sp/>with<sp/>intrinsic<sp/>dimensionality<sp/>10<sp/>that<sp/>is<sp/>harder<sp/>to</highlight></codeline>
+<codeline lineno="83"><highlight class="comment"><sp/>*<sp/>index<sp/>than<sp/>a<sp/>subspace<sp/>of<sp/>dim<sp/>10<sp/>but<sp/>easier<sp/>than<sp/>uniform<sp/>data<sp/>in<sp/>dimension<sp/>d</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_smooth_vectors(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/random.h"/>
   </compounddef>

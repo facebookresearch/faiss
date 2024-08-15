@@ -361,6 +361,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
     <member refid="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4" kind="function"><name>Clustering</name></member>
     <member refid="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff" kind="function"><name>Clustering</name></member>
     <member refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kind="function"><name>train</name></member>
@@ -391,6 +393,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
   </compound>
   <compound refid="structfaiss_1_1ClusteringIterationStats" kind="struct"><name>faiss::ClusteringIterationStats</name>
     <member refid="structfaiss_1_1ClusteringIterationStats_1a3a1ee76ac7d9cfda93284a846679e56a" kind="variable"><name>obj</name></member>
@@ -411,6 +415,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
   </compound>
   <compound refid="structfaiss_1_1CMax" kind="struct"><name>faiss::CMax</name>
     <member refid="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00" kind="typedef"><name>T</name></member>
@@ -7229,6 +7235,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0" kind="function"><name>ProgressiveDimClustering</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" kind="function"><name>ProgressiveDimClustering</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" kind="function"><name>train</name></member>
@@ -7248,6 +7256,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a8611a01f2d1c9b35af4871ce53e98160" kind="function"><name>ProgressiveDimClusteringParameters</name></member>
   </compound>
   <compound refid="structfaiss_1_1ProgressiveDimIndexFactory" kind="struct"><name>faiss::ProgressiveDimIndexFactory</name>
@@ -8554,6 +8564,16 @@
     <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1abb6e828d751c385dbcbfb492f65a148f" kind="function"><name>Slot</name></member>
     <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1a58fa6d66711e1567ea362504f844fa88" kind="function"><name>Slot</name></member>
   </compound>
+  <compound refid="structfaiss_1_1SplitMix64RandomGenerator" kind="struct"><name>faiss::SplitMix64RandomGenerator</name>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a85ad5ee01fe609b60c34b5427b4c2229" kind="variable"><name>state</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" kind="function"><name>rand_int</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51" kind="function"><name>rand_int64</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9" kind="function"><name>rand_int</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9" kind="function"><name>rand_float</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a6409f6bccafd14404b953fe30ccfe5c3" kind="function"><name>rand_double</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1ad253f370d30b37f46dae62033e77a82c" kind="function"><name>SplitMix64RandomGenerator</name></member>
+    <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a72c9e822bf771b329ebceecff9dd2e9a" kind="function"><name>next</name></member>
+  </compound>
   <compound refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kind="struct"><name>faiss::ScalarQuantizer::SQDistanceComputer</name>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ade7fed44ffa6f4ea257136108dadb472" kind="variable"><name>q</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" kind="variable"><name>codes</name></member>
@@ -9241,6 +9261,7 @@
     <member refid="namespacefaiss_1a4d573c579e00f4c78a8fa9a50a6a7100" kind="function"><name>byte_rand</name></member>
     <member refid="namespacefaiss_1ac394a01fe370ddc30c394cdea9527fbe" kind="function"><name>int64_rand_max</name></member>
     <member refid="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900" kind="function"><name>rand_perm</name></member>
+    <member refid="namespacefaiss_1a7f900e002856f3db2295abd9d429369e" kind="function"><name>rand_perm_splitmix64</name></member>
     <member refid="namespacefaiss_1a62eb905cf4895b293b0d10b3af2c8df6" kind="function"><name>rand_smooth_vectors</name></member>
     <member refid="namespacefaiss_1ae44e64d0db11cd08cfae98b8055628c3" kind="function"><name>min</name></member>
     <member refid="namespacefaiss_1a1970d7e0fa67324947657d43a5bae9ce" kind="function"><name>max</name></member>

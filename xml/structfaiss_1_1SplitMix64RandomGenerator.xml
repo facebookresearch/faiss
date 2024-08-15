@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SplitMix64RandomGenerator" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SplitMix64RandomGenerator</compoundname>
+    <includes refid="random_8h" local="no">random.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SplitMix64RandomGenerator_1a85ad5ee01fe609b60c34b5427b4c2229" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::SplitMix64RandomGenerator::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="49" column="14" bodyfile="faiss/utils/random.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::SplitMix64RandomGenerator::rand_int</definition>
+        <argsstring>()</argsstring>
+        <name>rand_int</name>
+        <briefdescription>
+<para>random positive integer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="52" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t faiss::SplitMix64RandomGenerator::rand_int64</definition>
+        <argsstring>()</argsstring>
+        <name>rand_int64</name>
+        <briefdescription>
+<para>random int64_t </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="55" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::SplitMix64RandomGenerator::rand_int</definition>
+        <argsstring>(int max)</argsstring>
+        <name>rand_int</name>
+        <param>
+          <type>int</type>
+          <declname>max</declname>
+        </param>
+        <briefdescription>
+<para>generate random integer between 0 and max-1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="58" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::SplitMix64RandomGenerator::rand_float</definition>
+        <argsstring>()</argsstring>
+        <name>rand_float</name>
+        <briefdescription>
+<para>between 0 and 1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="61" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1a6409f6bccafd14404b953fe30ccfe5c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double faiss::SplitMix64RandomGenerator::rand_double</definition>
+        <argsstring>()</argsstring>
+        <name>rand_double</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="63" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1ad253f370d30b37f46dae62033e77a82c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SplitMix64RandomGenerator::SplitMix64RandomGenerator</definition>
+        <argsstring>(int64_t seed=1234)</argsstring>
+        <name>SplitMix64RandomGenerator</name>
+        <param>
+          <type>int64_t</type>
+          <declname>seed</declname>
+          <defval>1234</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="65" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SplitMix64RandomGenerator_1a72c9e822bf771b329ebceecff9dd2e9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::SplitMix64RandomGenerator::next</definition>
+        <argsstring>()</argsstring>
+        <name>next</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="67" column="14"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>fast random generator that cannot be used in multithreaded contexts. based on <ulink url="https://prng.di.unimi.it/">https://prng.di.unimi.it/</ulink> </para>
+    </detaileddescription>
+    <location file="faiss/utils/random.h" line="48" column="1" bodyfile="faiss/utils/random.h" bodystart="48" bodyend="68"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a72c9e822bf771b329ebceecff9dd2e9a" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>next</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a6409f6bccafd14404b953fe30ccfe5c3" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>rand_double</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a71ca12855e6f0b06102c6e37fc2265a9" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>rand_float</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1aceec0b4b3b89b1ce1e6c84c40140777a" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>rand_int</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a635b40b73ac899c80a1c6db5607b51a9" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>rand_int</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a566734731ed4e35354fdd5bc6302ee51" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>rand_int64</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1ad253f370d30b37f46dae62033e77a82c" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>SplitMix64RandomGenerator</name></member>
+      <member refid="structfaiss_1_1SplitMix64RandomGenerator_1a85ad5ee01fe609b60c34b5427b4c2229" prot="public" virt="non-virtual"><scope>faiss::SplitMix64RandomGenerator</scope><name>state</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

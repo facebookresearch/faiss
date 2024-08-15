@@ -244,6 +244,7 @@
     <innerclass refid="structfaiss_1_1CMin" prot="public">faiss::CMin</innerclass>
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
+    <innerclass refid="structfaiss_1_1SplitMix64RandomGenerator" prot="public">faiss::SplitMix64RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
     <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>
@@ -1146,7 +1147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="195" column="7" declfile="faiss/Clustering.h" declline="195" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="204" column="7" declfile="faiss/Clustering.h" declline="204" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -8000,7 +8001,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="47" column="6" declfile="faiss/utils/random.h" declline="47" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="71" column="6" declfile="faiss/utils/random.h" declline="71" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa149aec8f65085773f664bb7b5884743" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8025,7 +8026,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="48" column="6" declfile="faiss/utils/random.h" declline="48" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="72" column="6" declfile="faiss/utils/random.h" declline="72" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8050,7 +8051,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="49" column="6" declfile="faiss/utils/random.h" declline="49" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="73" column="6" declfile="faiss/utils/random.h" declline="73" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4d573c579e00f4c78a8fa9a50a6a7100" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8075,7 +8076,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="50" column="6" declfile="faiss/utils/random.h" declline="50" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="74" column="6" declfile="faiss/utils/random.h" declline="74" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac394a01fe370ddc30c394cdea9527fbe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8104,7 +8105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="52" column="6" declfile="faiss/utils/random.h" declline="52" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="76" column="6" declfile="faiss/utils/random.h" declline="76" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8129,7 +8130,32 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="55" column="6" declfile="faiss/utils/random.h" declline="55" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="79" column="6" declfile="faiss/utils/random.h" declline="79" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a7f900e002856f3db2295abd9d429369e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rand_perm_splitmix64</definition>
+        <argsstring>(int *perm, size_t n, int64_t seed)</argsstring>
+        <name>rand_perm_splitmix64</name>
+        <param>
+          <type>int *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>seed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/random.h" line="80" column="6" declfile="faiss/utils/random.h" declline="80" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a62eb905cf4895b293b0d10b3af2c8df6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -8158,7 +8184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="60" column="6" declfile="faiss/utils/random.h" declline="60" declcolumn="6"/>
+        <location file="faiss/utils/random.h" line="85" column="6" declfile="faiss/utils/random.h" declline="85" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae44e64d0db11cd08cfae98b8055628c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="166" column="12" bodyfile="faiss/Clustering.h" bodystart="166" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="175" column="12" bodyfile="faiss/Clustering.h" bodystart="175" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="167" column="12" bodyfile="faiss/Clustering.h" bodystart="167" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="176" column="12" bodyfile="faiss/Clustering.h" bodystart="176" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="170" column="17" bodyfile="faiss/Clustering.h" bodystart="170" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="179" column="17" bodyfile="faiss/Clustering.h" bodystart="179" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1ClusteringIterationStats" kindref="compound">ClusteringIterationStats</ref> &gt;</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="173" column="17" bodyfile="faiss/Clustering.h" bodystart="173" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="182" column="17" bodyfile="faiss/Clustering.h" bodystart="182" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="138" column="9" bodyfile="faiss/Clustering.h" bodystart="138" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="147" column="9" bodyfile="faiss/Clustering.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="139" column="10" bodyfile="faiss/Clustering.h" bodystart="139" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="148" column="10" bodyfile="faiss/Clustering.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -230,13 +230,13 @@
         <name>seed</name>
         <initializer>= 1234</initializer>
         <briefdescription>
-<para>seed for the random number generator </para>
         </briefdescription>
         <detaileddescription>
+<para>seed for the random number generator. negative values lead to seeding an internal rng with std::high_resolution_clock. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="47" column="9" bodyfile="faiss/Clustering.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="49" column="9" bodyfile="faiss/Clustering.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -251,7 +251,37 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="50" column="12" bodyfile="faiss/Clustering.h" bodystart="50" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="52" column="12" bodyfile="faiss/Clustering.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::ClusteringParameters::check_input_data_for_NaNs</definition>
+        <argsstring></argsstring>
+        <name>check_input_data_for_NaNs</name>
+        <initializer>= true</initializer>
+        <briefdescription>
+<para>whether to check for NaNs in an input data </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="55" column="10" bodyfile="faiss/Clustering.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::ClusteringParameters::use_faster_subsampling</definition>
+        <argsstring></argsstring>
+        <name>use_faster_subsampling</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Whether to use splitmix64-based random number generator for subsampling, which is faster, but may pick duplicate points. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="59" column="10" bodyfile="faiss/Clustering.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -274,7 +304,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="175" column="5"/>
+        <location file="faiss/Clustering.h" line="184" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -299,7 +329,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="176" column="5"/>
+        <location file="faiss/Clustering.h" line="185" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -324,7 +354,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="181" column="10"/>
+        <location file="faiss/Clustering.h" line="190" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -337,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="183" column="13" bodyfile="faiss/Clustering.h" bodystart="183" bodyend="183"/>
+        <location file="faiss/Clustering.h" line="192" column="13" bodyfile="faiss/Clustering.h" bodystart="192" bodyend="192"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -386,10 +416,11 @@ Nearest Neighbor Search&quot;</para>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="165" column="1" bodyfile="faiss/Clustering.h" bodystart="165" bodyend="184"/>
+    <location file="faiss/Clustering.h" line="174" column="1" bodyfile="faiss/Clustering.h" bodystart="174" bodyend="193"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>apply_pca</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>centroids</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>check_input_data_for_NaNs</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>d</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>decode_block_size</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>frozen_centroids</name></member>
@@ -408,6 +439,7 @@ Nearest Neighbor Search&quot;</para>
       <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>spherical</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>train</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>update_index</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>use_faster_subsampling</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629" prot="public" virt="virtual"><scope>faiss::ProgressiveDimClustering</scope><name>~ProgressiveDimClustering</name></member>
     </listofallmembers>
