@@ -14,7 +14,6 @@
 #include <faiss/utils/simdlib.h>
 
 #if defined(__AVX2__)
-#include <immintrin.h>
 #endif
 
 namespace faiss {

@@ -12,12 +12,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
-#include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/invlists/InvertedListsIOHook.h>

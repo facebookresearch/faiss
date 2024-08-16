@@ -6,7 +6,6 @@
  */
 
 // -*- c++ -*-
-
 #include <faiss/utils/distances_fused/avx512.h>
 
 #ifdef __AVX512F__

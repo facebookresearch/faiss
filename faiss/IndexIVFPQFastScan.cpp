@@ -11,21 +11,17 @@
 #include <cinttypes>
 #include <cstdio>
 
-#include <omp.h>
-
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/simdlib.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
-#include <faiss/utils/quantize_lut.h>
 
 namespace faiss {
 

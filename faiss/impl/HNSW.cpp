@@ -16,8 +16,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/prefetch.h>
 
-#include <faiss/impl/platform_macros.h>
-
 #ifdef __AVX2__
 #include <immintrin.h>
 

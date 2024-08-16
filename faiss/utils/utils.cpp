@@ -15,8 +15,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include <sys/types.h>
-
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <windows.h>
@@ -35,7 +33,6 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 
 #ifndef FINTEGER

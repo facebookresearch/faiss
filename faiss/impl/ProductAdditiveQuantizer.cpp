@@ -11,7 +11,6 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
-#include <random>
 
 #include <algorithm>
 
@@ -20,7 +19,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/utils.h>
 
 extern "C" {
 

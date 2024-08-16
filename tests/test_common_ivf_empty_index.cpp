@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <omp.h>
 #include <cstddef>
 #include <memory>
 #include <vector>

@@ -13,7 +13,6 @@
 #include <cstdio>
 
 #include <faiss/impl/platform_macros.h>
-#include <omp.h>
 
 #ifdef __SSE__
 #include <immintrin.h>
@@ -25,7 +24,6 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/bf16.h>
 #include <faiss/utils/fp16.h>
-#include <faiss/utils/utils.h>
 
 namespace faiss {
 

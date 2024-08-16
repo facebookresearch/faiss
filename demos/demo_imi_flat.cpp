@@ -15,7 +15,6 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexPQ.h>
-#include <faiss/index_io.h>
 
 double elapsed() {
     struct timeval tv;

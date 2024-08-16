@@ -11,7 +11,6 @@
 
 #include <faiss/index_factory.h>
 
-#include <cinttypes>
 #include <cmath>
 
 #include <map>
@@ -20,7 +19,6 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
