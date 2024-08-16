@@ -58,7 +58,10 @@ runs:
 
         # install test packages
         conda install -y pytest
-        if [ "${{ inputs.gpu }}" = "ON" ]; then
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          : # skip torch install via conda, we need to install via pip to get
+            #  ROCm-enabled version until it's supported in conda by PyTorch
+        elif [ "${{ inputs.gpu }}" = "ON" ]; then
           conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
           conda install -y -q pytorch -c pytorch
@@ -138,6 +141,11 @@ runs:
       working-directory: build/faiss/python
       run: |
         $CONDA/bin/python setup.py install
+    - name: ROCm - install ROCm-enabled torch via pip
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF'
       shell: bash
@@ -145,7 +153,7 @@ runs:
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
-      if: inputs.gpu == 'ON' && inputs.rocm == 'OFF'
+      if: inputs.gpu == 'ON'
       shell: bash
       run: |
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
@@ -160,7 +168,6 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
-      if: inputs.rocm == 'OFF'
       uses: actions/upload-artifact@v4
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-raft=${{ inputs.raft }}-rocm=${{ inputs.rocm }}
