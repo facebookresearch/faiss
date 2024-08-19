@@ -15,5 +15,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_DEBUG: api
         run: |
-          gh run watch ${{ inputs.run_id }} > /dev/null 2>&1
+          gh run watch ${{ inputs.run_id }}
           gh run rerun ${{ inputs.run_id }} --failed
