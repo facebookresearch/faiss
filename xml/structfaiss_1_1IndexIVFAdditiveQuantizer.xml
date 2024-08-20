@@ -619,6 +619,34 @@
         </inbodydescription>
         <location file="faiss/IndexIVFAdditiveQuantizer.h" line="57" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexIVFAdditiveQuantizer::reconstruct_from_offset</definition>
+        <argsstring>(int64_t list_no, int64_t offset, float *recons) const override</argsstring>
+        <name>reconstruct_from_offset</name>
+        <reimplements refid="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d">reconstruct_from_offset</reimplements>
+        <param>
+          <type>int64_t</type>
+          <declname>list_no</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>recons</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</para>
+<para>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <ref refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854" kindref="member">search_preassigned()</ref> with <computeroutput>store_pairs</computeroutput> set. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="59" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a4963bada25044a941b7508029dc64af0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIVFAdditiveQuantizer::~IndexIVFAdditiveQuantizer</definition>
@@ -630,7 +658,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="59" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="62" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1439,39 +1467,6 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="371" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::IndexIVF::reconstruct_from_offset</definition>
-        <argsstring>(int64_t list_no, int64_t offset, float *recons) const</argsstring>
-        <name>reconstruct_from_offset</name>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9f8c11f0496f76eb38b39d058373d798">reconstruct_from_offset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a12194f155176f68a779c1a41a1b2c2fb">reconstruct_from_offset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1ab9ec78723d3fbc9834018f697e0cbe95">reconstruct_from_offset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a66645a61eb106f718fb5c8a7bac1f070">reconstruct_from_offset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1abc33d7d6a5f67719f3ee76b3b12d1f77">reconstruct_from_offset</reimplementedby>
-        <param>
-          <type>int64_t</type>
-          <declname>list_no</declname>
-        </param>
-        <param>
-          <type>int64_t</type>
-          <declname>offset</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>recons</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</para>
-<para>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <ref refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854" kindref="member">search_preassigned()</ref> with <computeroutput>store_pairs</computeroutput> set. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="388" column="18"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
         <definition>size_t faiss::IndexIVF::remove_ids</definition>
@@ -2245,7 +2240,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFAdditiveQuantizer.h" line="26" column="1" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="26" bodyend="60"/>
+    <location file="faiss/IndexIVFAdditiveQuantizer.h" line="26" column="1" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="26" bodyend="63"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>add_core</name></member>
@@ -2302,7 +2297,7 @@
       <member refid="structfaiss_1_1IndexIVF_1a8c2ff8d112f7f381c8cdcc5229b004fe" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>range_search_preassigned</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>reconstruct_from_offset</name></member>
+      <member refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>reconstruct_from_offset</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>reconstruct_n</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" prot="public" virt="non-virtual"><scope>faiss::IndexIVFAdditiveQuantizer</scope><name>replace_invlists</name></member>

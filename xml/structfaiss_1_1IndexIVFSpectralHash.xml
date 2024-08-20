@@ -1509,6 +1509,7 @@
         <definition>virtual void faiss::IndexIVF::reconstruct_from_offset</definition>
         <argsstring>(int64_t list_no, int64_t offset, float *recons) const</argsstring>
         <name>reconstruct_from_offset</name>
+        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9f8c11f0496f76eb38b39d058373d798">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a12194f155176f68a779c1a41a1b2c2fb">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
