@@ -519,6 +519,13 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf">
+<span id="_CPPv3NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="_CPPv2NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="faiss::IndexIVFAdditiveQuantizer::reconstruct_from_offset__int64_t.int64_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a06250df4bad3bcabaded275c12fc9ad6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_from_offset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
+<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexIVFAdditiveQuantizerD0Ev">
 <span id="_CPPv3N5faiss25IndexIVFAdditiveQuantizerD0Ev"></span><span id="_CPPv2N5faiss25IndexIVFAdditiveQuantizerD0Ev"></span><span id="faiss::IndexIVFAdditiveQuantizer::~IndexIVFAdditiveQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a4963bada25044a941b7508029dc64af0"></span><span class="sig-name descname"><span class="n"><span class="pre">~IndexIVFAdditiveQuantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd></dd></dl>
@@ -698,13 +705,6 @@
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf">
-<span id="_CPPv3NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="_CPPv2NK5faiss25IndexIVFAdditiveQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="faiss::IndexIVFAdditiveQuantizer::reconstruct_from_offset__int64_t.int64_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_from_offset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
-<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
 </dd></dl>
 
 <dl class="cpp function">
