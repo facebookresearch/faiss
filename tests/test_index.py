@@ -493,6 +493,23 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
 
+    def test_IndexIVFRQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFResidualQuantizer(quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
     def test_MultiIndex(self):
         d = 32
         nb = 1000
