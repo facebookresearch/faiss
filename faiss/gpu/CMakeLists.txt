@@ -298,10 +298,6 @@ if (FAISS_ENABLE_ROCM)
   list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
 endif()
 
-if (FAISS_ENABLE_ROCM)
-  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
-endif()
-
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
