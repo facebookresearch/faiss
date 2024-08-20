@@ -6,6 +6,7 @@
     <includes local="no">string</includes>
     <includes local="no">vector</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includedby refid="index__read__utils_8h" local="no">faiss/impl/index_read_utils.h</includedby>
     <includedby refid="InvertedListsIOHook_8h" local="no">faiss/invlists/InvertedListsIOHook.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
     <incdepgraph>
@@ -69,11 +70,15 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="4">
+      <node id="5">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="5">
+      <node id="2">
+        <label>faiss/impl/index_read_utils.h</label>
+        <link refid="index__read__utils_8h_source"/>
+      </node>
+      <node id="6">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
@@ -82,19 +87,21 @@
         <link refid="io_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

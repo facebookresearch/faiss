@@ -83,10 +83,10 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="44">
+      <node id="45">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
-        <childnode refid="45" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -101,22 +101,22 @@
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="52">
+      <node id="53">
         <label>faiss/IndexAdditiveQuantizer.h</label>
         <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="53" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="52">
         <label>faiss/impl/ProductAdditiveQuantizer.h</label>
         <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="52" relation="include">
-        </childnode>
         <childnode refid="53" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
         </childnode>
       </node>
       <node id="27">
@@ -141,7 +141,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="46">
+      <node id="47">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
@@ -163,16 +163,16 @@
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
       </node>
-      <node id="41">
+      <node id="42">
         <label>faiss/utils/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="42" relation="include">
+        <childnode refid="43" relation="include">
         </childnode>
       </node>
-      <node id="45">
+      <node id="46">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
-        <childnode refid="46" relation="include">
+        <childnode refid="47" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -182,21 +182,21 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
@@ -205,6 +205,8 @@
         <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -221,27 +223,27 @@
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
-      <node id="35">
+      <node id="36">
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="49">
+      <node id="50">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
         <link refid="LocalSearchQuantizer_8h_source"/>
-        <childnode refid="50" relation="include">
-        </childnode>
         <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="52" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="43">
+      <node id="44">
         <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
         <link refid="approx__topk__hamming_8h_source"/>
       </node>
@@ -253,26 +255,26 @@
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="47">
+      <node id="48">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
-      <node id="33">
+      <node id="34">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="38">
+      <node id="39">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
-      <node id="32">
+      <node id="33">
         <label>faiss/IndexIVFFastScan.h</label>
         <link refid="IndexIVFFastScan_8h_source"/>
-        <childnode refid="31" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -287,6 +289,10 @@
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
       </node>
+      <node id="30">
+        <label>faiss/impl/index_read_utils.h</label>
+        <link refid="index__read__utils_8h_source"/>
+      </node>
       <node id="11">
         <label>faiss/gpu/GpuIndexCagra.h</label>
         <link refid="GpuIndexCagra_8h_source"/>
@@ -299,7 +305,7 @@
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
       </node>
-      <node id="34">
+      <node id="35">
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
       </node>
@@ -324,13 +330,13 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
         <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
@@ -338,11 +344,11 @@
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
         <childnode refid="47" relation="include">
         </childnode>
         <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -351,11 +357,11 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="40">
+      <node id="41">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
         <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
-      <node id="36">
+      <node id="37">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="29" relation="include">
@@ -379,10 +385,10 @@
         <label>faiss/Index2Layer.h</label>
         <link refid="Index2Layer_8h_source"/>
       </node>
-      <node id="30">
+      <node id="31">
         <label>faiss/IndexIVFAdditiveQuantizer.h</label>
         <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
-        <childnode refid="31" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -397,11 +403,11 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="53">
+      <node id="54">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
       </node>
-      <node id="50">
+      <node id="51">
         <label>faiss/gpu/GpuIcmEncoder.h</label>
         <link refid="GpuIcmEncoder_8h_source"/>
       </node>
@@ -431,10 +437,10 @@
         <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="49">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
-        <childnode refid="49" relation="include">
+        <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -445,7 +451,7 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="40">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
       </node>
@@ -455,7 +461,7 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="31">
+      <node id="32">
         <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
         <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
       </node>

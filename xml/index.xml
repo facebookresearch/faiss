@@ -9094,6 +9094,10 @@
     <member refid="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" kind="function"><name>distance_four_codes</name></member>
     <member refid="namespacefaiss_1a542cf4d499962a3d7a0db924424d8870" kind="function"><name>handleExceptions</name></member>
     <member refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kind="function"><name>demangle_cpp_symbol</name></member>
+    <member refid="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" kind="function"><name>read_index_header</name></member>
+    <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
+    <member refid="namespacefaiss_1ae931529308da688bc1470f04e9b34bf2" kind="function"><name>read_ivf_header</name></member>
+    <member refid="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" kind="function"><name>read_InvertedLists</name></member>
     <member refid="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa4aee5942eb92dbce17469f4bdd2e0a5" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa2a1c19599e8fc0b8a3025d3386637b8" kind="function"><name>fourcc_inv</name></member>
@@ -9324,17 +9328,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d133" kind="namespace"><name>faiss::@133</name>
+  <compound refid="namespacefaiss_1_1_0d134" kind="namespace"><name>faiss::@134</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d142" kind="namespace"><name>faiss::@142</name>
+  <compound refid="namespacefaiss_1_1_0d143" kind="namespace"><name>faiss::@143</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d161" kind="namespace"><name>faiss::@161</name>
+  <compound refid="namespacefaiss_1_1_0d160" kind="namespace"><name>faiss::@160</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d162" kind="namespace"><name>faiss::@162</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d163" kind="namespace"><name>faiss::@163</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -9808,6 +9812,8 @@
   <compound refid="HNSW_8h" kind="file"><name>HNSW.h</name>
   </compound>
   <compound refid="IDSelector_8h" kind="file"><name>IDSelector.h</name>
+  </compound>
+  <compound refid="index__read__utils_8h" kind="file"><name>index_read_utils.h</name>
   </compound>
   <compound refid="io_8h" kind="file"><name>io.h</name>
   </compound>

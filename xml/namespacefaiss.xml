@@ -1379,6 +1379,99 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="62" column="13" declfile="faiss/impl/FaissException.h" declline="62" declcolumn="13"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_index_header</definition>
+        <argsstring>(Index *idx, IOReader *f)</argsstring>
+        <name>read_index_header</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="20" column="6" declfile="faiss/impl/index_read_utils.h" declline="20" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_direct_map</definition>
+        <argsstring>(DirectMap *dm, IOReader *f)</argsstring>
+        <name>read_direct_map</name>
+        <param>
+          <type><ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref> *</type>
+          <declname>dm</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="21" column="6" declfile="faiss/impl/index_read_utils.h" declline="21" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae931529308da688bc1470f04e9b34bf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_ivf_header</definition>
+        <argsstring>(IndexIVF *ivf, IOReader *f, std::vector&lt; std::vector&lt; idx_t &gt;&gt; *ids=nullptr)</argsstring>
+        <name>read_ivf_header</name>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
+          <declname>ivf</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;&gt; *</type>
+          <declname>ids</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="22" column="6" declfile="faiss/impl/index_read_utils.h" declline="22" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_InvertedLists</definition>
+        <argsstring>(IndexIVF *ivf, IOReader *f, int io_flags)</argsstring>
+        <name>read_InvertedLists</name>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
+          <declname>ivf</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>io_flags</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="26" column="6" declfile="faiss/impl/index_read_utils.h" declline="26" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
         <definition>uint32_t faiss::fourcc</definition>

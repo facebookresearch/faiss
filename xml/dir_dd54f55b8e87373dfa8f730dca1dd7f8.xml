@@ -11,6 +11,7 @@
     <innerfile refid="FaissException_8h">FaissException.h</innerfile>
     <innerfile refid="HNSW_8h">HNSW.h</innerfile>
     <innerfile refid="IDSelector_8h">IDSelector.h</innerfile>
+    <innerfile refid="index__read__utils_8h">index_read_utils.h</innerfile>
     <innerfile refid="io_8h">io.h</innerfile>
     <innerfile refid="io__macros_8h">io_macros.h</innerfile>
     <innerfile refid="kmeans1d_8h">kmeans1d.h</innerfile>
