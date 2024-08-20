@@ -217,6 +217,7 @@ struct simd16uint16 : simd256bit {
         __m256i j = thresh.i;
         __m256i max = _mm256_max_epu16(i, j);
         __m256i ge = _mm256_cmpeq_epi16(i, max);
+        // 0xFFFFFFFF if this >= thresh else 0
         return _mm256_movemask_epi8(ge);
     }
 
@@ -240,6 +241,8 @@ struct simd16uint16 : simd256bit {
     }
 
     void accu_min(simd16uint16 incoming) {
+        // compare 16 16-bit unsigned integers and return the corresponding
+        // smaller integer as part of the 256-bit result
         i = _mm256_min_epu16(i, incoming.i);
     }
 
@@ -279,6 +282,11 @@ inline uint32_t cmp_ge32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
     __m256i ge01 = _mm256_packs_epi16(ge0, ge1);
 
     // easier than manipulating bit fields afterwards
+    // 0 | (2 << 2) | (1 << 4) | (3 << 6)
+    // 0 | 00000010 << 2 | 00000001 << 4 | 00000011 << 6
+    // 0 | 00001000 | 00010000 | 11000000
+    // 0 | 11010000
+    // 0x3C
     ge01 = _mm256_permute4x64_epi64(ge01, 0 | (2 << 2) | (1 << 4) | (3 << 6));
     uint32_t ge = _mm256_movemask_epi8(ge01);
 
