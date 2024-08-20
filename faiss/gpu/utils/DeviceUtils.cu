@@ -124,6 +124,14 @@ int getDeviceForAddress(const void* p) {
         return -1;
     }
 
+#if USE_AMD_ROCM
+    if (att.type != hipMemoryTypeHost &&
+        att.type != hipMemoryTypeUnregistered) {
+        return att.device;
+    } else {
+        return -1;
+    }
+#else
     // memoryType is deprecated for CUDA 10.0+
 #if CUDA_VERSION < 10000
     if (att.memoryType == cudaMemoryTypeHost) {
@@ -138,6 +146,7 @@ int getDeviceForAddress(const void* p) {
     } else {
         return -1;
     }
+#endif
 #endif
 }
 
@@ -157,6 +166,15 @@ bool getTensorCoreSupport(int device) {
 
 bool getTensorCoreSupportCurrentDevice() {
     return getTensorCoreSupport(getCurrentDevice());
+}
+
+int getWarpSize(int device) {
+    const auto& prop = getDeviceProperties(device);
+    return prop.warpSize;
+}
+
+int getWarpSizeCurrentDevice() {
+    return getWarpSize(getCurrentDevice());
 }
 
 size_t getFreeMemory(int device) {

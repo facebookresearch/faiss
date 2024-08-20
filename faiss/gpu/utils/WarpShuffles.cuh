@@ -102,6 +102,22 @@ inline __device__ T* shfl_xor(
     return (T*)shfl_xor(v, laneMask, width);
 }
 
+#ifdef USE_AMD_ROCM
+
+inline __device__ half shfl(half v, int srcLane, int width = kWarpSize) {
+    unsigned int vu = __half2uint_rn(v);
+    vu = __shfl(vu, srcLane, width);
+    return __uint2half_rn(vu);
+}
+
+inline __device__ half shfl_xor(half v, int laneMask, int width = kWarpSize) {
+    unsigned int vu = __half2uint_rn(v);
+    vu = __shfl_xor(vu, laneMask, width);
+    return __uint2half_rn(vu);
+}
+
+#else
+
 // CUDA 9.0+ has half shuffle
 #if CUDA_VERSION < 9000
 inline __device__ half shfl(half v, int srcLane, int width = kWarpSize) {
@@ -122,6 +138,8 @@ inline __device__ half shfl_xor(half v, int laneMask, int width = kWarpSize) {
     return h;
 }
 #endif // CUDA_VERSION
+
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

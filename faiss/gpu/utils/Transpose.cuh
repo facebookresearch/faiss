@@ -84,7 +84,7 @@ __global__ void transposeAny(
         auto inputOffset = TensorInfoOffset<T, DimInput>::get(input, i);
         auto outputOffset = TensorInfoOffset<T, DimOutput>::get(output, i);
 
-#if __CUDA_ARCH__ >= 350
+#if __CUDA_ARCH__ >= 350 || defined(USE_AMD_ROCM)
         output.data[outputOffset] = __ldg(&input.data[inputOffset]);
 #else
         output.data[outputOffset] = input.data[inputOffset];

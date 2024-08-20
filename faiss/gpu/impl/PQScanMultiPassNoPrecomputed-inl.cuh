@@ -61,11 +61,11 @@ __global__ void pqScanInterleaved(
     auto vecsBase = (EncodeT*)listCodes[listId];
     auto numVecs = listLengths[listId];
 
-    // How many vector blocks of 32 are in this list?
-    idx_t numBlocks = utils::divUp(numVecs, (idx_t)32);
+    // How many vector blocks of kWarpSize are in this list?
+    idx_t numBlocks = utils::divUp(numVecs, (idx_t)kWarpSize);
 
-    // Number of EncodeT words per each dimension of block of 32 vecs
-    constexpr int bytesPerVectorBlockDim = EncodeBits * 32 / 8;
+    // Number of EncodeT words per each dimension of block of kWarpSize vecs
+    constexpr int bytesPerVectorBlockDim = EncodeBits * kWarpSize / 8;
     constexpr int wordsPerVectorBlockDim =
             bytesPerVectorBlockDim / sizeof(EncodeT);
     int wordsPerVectorBlock = wordsPerVectorBlockDim * numSubQuantizers;

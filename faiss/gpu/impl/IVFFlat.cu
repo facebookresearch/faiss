@@ -57,14 +57,16 @@ size_t IVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
         // bits per scalar code
         idx_t bits = scalarQ_ ? scalarQ_->bits : 32 /* float */;
 
-        // bytes to encode a block of 32 vectors (single dimension)
-        idx_t bytesPerDimBlock = bits * 32 / 8;
+        int warpSize = getWarpSizeCurrentDevice();
 
-        // bytes to fully encode 32 vectors
+        // bytes to encode a block of warpSize vectors (single dimension)
+        idx_t bytesPerDimBlock = bits * warpSize / 8;
+
+        // bytes to fully encode warpSize vectors
         idx_t bytesPerBlock = bytesPerDimBlock * dim_;
 
-        // number of blocks of 32 vectors we have
-        idx_t numBlocks = utils::divUp(numVecs, 32);
+        // number of blocks of warpSize vectors we have
+        idx_t numBlocks = utils::divUp(numVecs, warpSize);
 
         // total size to encode numVecs
         return bytesPerBlock * numBlocks;
@@ -289,6 +291,7 @@ void IVFFlat::reconstruct_n(idx_t i0, idx_t ni, float* out) {
         return;
     }
 
+    int warpSize = getWarpSizeCurrentDevice();
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     for (idx_t list_no = 0; list_no < numLists_; list_no++) {
@@ -313,15 +316,15 @@ void IVFFlat::reconstruct_n(idx_t i0, idx_t ni, float* out) {
             // where vectors are chunked into groups of 32, and each dimension
             // for each of the 32 vectors is contiguous
 
-            auto vectorChunk = offset / 32;
-            auto vectorWithinChunk = offset % 32;
+            auto vectorChunk = offset / warpSize;
+            auto vectorWithinChunk = offset % warpSize;
 
             auto listDataPtr = (float*)deviceListData_[list_no]->data.data();
-            listDataPtr += vectorChunk * 32 * dim_ + vectorWithinChunk;
+            listDataPtr += vectorChunk * warpSize * dim_ + vectorWithinChunk;
 
             for (int d = 0; d < dim_; ++d) {
                 fromDevice<float>(
-                        listDataPtr + 32 * d,
+                        listDataPtr + warpSize * d,
                         out + (id - i0) * dim_ + d,
                         1,
                         stream);
