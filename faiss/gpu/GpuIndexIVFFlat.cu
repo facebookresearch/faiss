@@ -120,7 +120,7 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     // Clear out our old data
     index_.reset();
 
-    // skip base class allocations if RAFT is enabled
+    // skip base class allocations if cuVS is enabled
     if (!should_use_cuvs(config_)) {
         baseIndex_.reset();
     }

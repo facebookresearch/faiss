@@ -111,7 +111,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Clear out our old data
     index_.reset();
 
-    // skip base class allocations if RAFT is enabled
+    // skip base class allocations if cuVS is enabled
     if (!should_use_cuvs(config_)) {
         baseIndex_.reset();
     }
@@ -349,11 +349,11 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     if (this->is_trained) {
         FAISS_ASSERT(index_);
         if (should_use_cuvs(config_)) {
-            // if RAFT is enabled, copy the IVF centroids to the RAFT index in
-            // case it has been reset. This is because reset clears the RAFT
+            // if cuVS is enabled, copy the IVF centroids to the cuVS index in
+            // case it has been reset. This is because reset clears the cuVS
             // index and its centroids.
             // TODO: change this once the coarse quantizer is separated from
-            // RAFT index
+            // cuVS index
             updateQuantizer();
         };
         return;

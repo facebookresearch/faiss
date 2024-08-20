@@ -69,7 +69,7 @@ class TestMoveToGpu(unittest.TestCase):
         self.verify_clones_successfully("PCA32,IVF32,PQ8")
         self.verify_clones_successfully("PCA32,IVF32,PQ8np")
 
-        # set use_cuvs to false, these index types are not supported on RAFT
+        # set use_cuvs to false, these index types are not supported on cuVS
         self.verify_clones_successfully("IVF32,SQ8", use_cuvs=False)
         self.verify_clones_successfully(
             "PCA32,IVF32,SQ8", use_cuvs=False)

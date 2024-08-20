@@ -56,7 +56,7 @@ class CuvsIVFPQ : public IVFPQ {
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
 
-    /// Clear out the RAFT index
+    /// Clear out the cuVS index
     void reset() override;
 
     /// After adding vectors, one can call this to reclaim device memory
@@ -138,7 +138,7 @@ class CuvsIVFPQ : public IVFPQ {
     void setPQCentroids_();
 
     /// Update the product quantizer centroids buffer held in the IVFPQ class.
-    /// Used when the RAFT index was updated externally.
+    /// Used when the cuVS index was updated externally.
     void setBasePQCentroids_();
 
     /// cuVS IVF-PQ index

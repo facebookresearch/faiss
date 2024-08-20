@@ -106,12 +106,15 @@ struct GpuDistanceParams {
     /// execution
     int device = -1;
 
-    /// Should the index dispatch down to RAFT?
-    /// TODO: change default to true if RAFT is enabled
+    /// Should the index dispatch down to cuVS?
+#if defined USE_NVIDIA_CUVS
+    bool use_cuvs = true;
+#else
     bool use_cuvs = false;
+#endif
 };
 
-/// A function that determines whether RAFT should be used based on various
+/// A function that determines whether cuVS should be used based on various
 /// conditions (such as unsupported architecture)
 bool should_use_cuvs(GpuDistanceParams args);
 

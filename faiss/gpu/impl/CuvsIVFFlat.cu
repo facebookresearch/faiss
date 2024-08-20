@@ -61,13 +61,13 @@ CuvsIVFFlat::CuvsIVFFlat(
                   useResidual,
                   scalarQ,
                   interleavedLayout,
-                  // skip ptr allocations in base class (handled by RAFT
+                  // skip ptr allocations in base class (handled by cuVS
                   // internally)
                   indicesOptions,
                   space) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == INDICES_64_BIT,
-            "only INDICES_64_BIT is supported for RAFT index");
+            "only INDICES_64_BIT is supported for cuVS index");
 }
 
 CuvsIVFFlat::~CuvsIVFFlat() {}
@@ -96,7 +96,7 @@ void CuvsIVFFlat::search(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to modify the RAFT index if the quantizer was
+    /// called updateQuantizer() to modify the cuVS index if the quantizer was
     /// modified externally
 
     uint32_t numQueries = queries.getSize(0);
@@ -166,7 +166,7 @@ idx_t CuvsIVFFlat::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to update the RAFT index if the quantizer was
+    /// called updateQuantizer() to update the cuVS index if the quantizer was
     /// modified externally
 
     FAISS_ASSERT(cuvs_index != nullptr);
@@ -240,7 +240,7 @@ std::vector<uint8_t> CuvsIVFFlat::getListVectorData(
         idx_t listId,
         bool gpuFormat) const {
     if (gpuFormat) {
-        FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
+        FAISS_THROW_MSG("gpuFormat should be false for cuVS indices");
     }
     FAISS_ASSERT(cuvs_index != nullptr);
 
@@ -397,7 +397,7 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
         // store the list size
         list_sizes_[i] = static_cast<uint32_t>(listSize);
 
-        // This RAFT list must currently be empty
+        // This cuVS list must currently be empty
         FAISS_ASSERT(getListLength(i) == 0);
 
         cuvs::neighbors::ivf::resize_list(

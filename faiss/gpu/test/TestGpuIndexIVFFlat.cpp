@@ -527,15 +527,15 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
 
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    faiss::gpu::GpuIndexIVFFlat cuvsGpuIndex(
             &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
-    raftGpuIndex.copyFrom(&cpuIndex);
-    raftGpuIndex.nprobe = opt.nprobe;
+    cuvsGpuIndex.copyFrom(&cpuIndex);
+    cuvsGpuIndex.nprobe = opt.nprobe;
 
     faiss::gpu::compareIndices(
             queryVecs,
             cpuIndex,
-            raftGpuIndex,
+            cuvsGpuIndex,
             opt.numQuery,
             opt.dim,
             opt.k,
@@ -599,14 +599,14 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     std::fill(distances.begin(), distances.end(), 0);
     std::fill(indices.begin(), indices.end(), 0);
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    faiss::gpu::GpuIndexIVFFlat cuvsGpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
-    raftGpuIndex.nprobe = opt.nprobe;
+    cuvsGpuIndex.nprobe = opt.nprobe;
 
-    raftGpuIndex.train(opt.numTrain, trainVecs.data());
-    raftGpuIndex.add(opt.numAdd, addVecs.data());
+    cuvsGpuIndex.train(opt.numTrain, trainVecs.data());
+    cuvsGpuIndex.add(opt.numAdd, addVecs.data());
 
-    raftGpuIndex.search(
+    cuvsGpuIndex.search(
             numQuery, nans.data(), opt.k, distances.data(), indices.data());
 
     for (int q = 0; q < numQuery; ++q) {
@@ -667,17 +667,17 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
 #if defined USE_NVIDIA_CUVS
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    faiss::gpu::GpuIndexIVFFlat cuvsGpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
-    raftGpuIndex.nprobe = opt.nprobe;
-    raftGpuIndex.train(opt.numTrain, trainVecs.data());
+    cuvsGpuIndex.nprobe = opt.nprobe;
+    cuvsGpuIndex.train(opt.numTrain, trainVecs.data());
 
     // should not crash
-    EXPECT_EQ(raftGpuIndex.ntotal, 0);
-    raftGpuIndex.add(numNans, nans.data());
+    EXPECT_EQ(cuvsGpuIndex.ntotal, 0);
+    cuvsGpuIndex.add(numNans, nans.data());
 
     // should not crash
-    raftGpuIndex.search(
+    cuvsGpuIndex.search(
             opt.numQuery,
             queryVecs.data(),
             opt.k,
@@ -745,14 +745,14 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
 #if defined USE_NVIDIA_CUVS
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    faiss::gpu::GpuIndexIVFFlat cuvsGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
-    raftGpuIndex.copyFrom(&cpuIndex);
-    raftGpuIndex.nprobe = nprobe;
+    cuvsGpuIndex.copyFrom(&cpuIndex);
+    cuvsGpuIndex.nprobe = nprobe;
 
     faiss::gpu::compareIndices(
             cpuIndex,
-            raftGpuIndex,
+            cuvsGpuIndex,
             numQuery,
             dim,
             k,
@@ -824,15 +824,15 @@ TEST(TestGpuIndexIVFFlat, LongIVFList) {
 #if defined USE_NVIDIA_CUVS
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
-    faiss::gpu::GpuIndexIVFFlat raftGpuIndex(
+    faiss::gpu::GpuIndexIVFFlat cuvsGpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
-    raftGpuIndex.train(numTrain, trainVecs.data());
-    raftGpuIndex.add(numAdd, addVecs.data());
-    raftGpuIndex.nprobe = 1;
+    cuvsGpuIndex.train(numTrain, trainVecs.data());
+    cuvsGpuIndex.add(numAdd, addVecs.data());
+    cuvsGpuIndex.nprobe = 1;
 
     faiss::gpu::compareIndices(
             cpuIndex,
-            raftGpuIndex,
+            cuvsGpuIndex,
             numQuery,
             dim,
             k,

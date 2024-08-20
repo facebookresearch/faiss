@@ -61,14 +61,14 @@ CuvsIVFPQ::CuvsIVFPQ(
                 useFloat16LookupTables,
                 useMMCodeDistance,
                 interleavedLayout,
-                // skip ptr allocations in base class (handled by RAFT
+                // skip ptr allocations in base class (handled by cuVS
                 // internally) false,
                 pqCentroidData,
                 indicesOptions,
                 space) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == INDICES_64_BIT,
-            "only INDICES_64_BIT is supported for RAFT index");
+            "only INDICES_64_BIT is supported for cuVS index");
 }
 
 CuvsIVFPQ::~CuvsIVFPQ() {}
@@ -239,7 +239,7 @@ std::vector<uint8_t> CuvsIVFPQ::getListVectorData(idx_t listId, bool gpuFormat)
         const {
     if (gpuFormat) {
         FAISS_THROW_MSG(
-                "gpuFormat should be false for RAFT indices. Unpacked codes are flat.");
+                "gpuFormat should be false for cuVS indices. Unpacked codes are flat.");
     }
     FAISS_ASSERT(cuvs_index);
 
@@ -363,7 +363,7 @@ idx_t CuvsIVFPQ::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to update the RAFT index if the quantizer was
+    /// called updateQuantizer() to update the cuVS index if the quantizer was
     /// modified externally
 
     FAISS_ASSERT(cuvs_index);
@@ -420,7 +420,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
         // store the list size
         list_sizes_[i] = static_cast<uint32_t>(listSize);
 
-        // This RAFT list must currently be empty
+        // This cuVS list must currently be empty
         FAISS_ASSERT(getListLength(i) == 0);
 
         cuvs::neighbors::ivf::resize_list(

@@ -853,7 +853,7 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
     config.use_cuvs = true;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
 
-    faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
+    faiss::gpu::GpuIndexIVFPQ cuvsGpuIndex(
             &res,
             dim,
             numCentroids,
@@ -861,12 +861,12 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             bitsPerCode,
             faiss::METRIC_L2,
             config);
-    raftGpuIndex.copyFrom(&cpuIndex);
-    raftGpuIndex.nprobe = nprobe;
+    cuvsGpuIndex.copyFrom(&cpuIndex);
+    cuvsGpuIndex.nprobe = nprobe;
 
     faiss::gpu::compareIndices(
             cpuIndex,
-            raftGpuIndex,
+            cuvsGpuIndex,
             numQuery,
             dim,
             k,

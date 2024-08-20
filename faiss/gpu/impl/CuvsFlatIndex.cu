@@ -54,7 +54,7 @@ void CuvsFlatIndex::query(
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
     /**
-     * RAFT doesn't yet support half-precision in bfknn.
+     * cuVS doesn't yet support half-precision in bfknn.
      * Use FlatIndex for float16 for now
      */
     if (useFloat16_) {
