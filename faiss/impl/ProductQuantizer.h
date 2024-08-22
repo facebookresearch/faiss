@@ -21,7 +21,11 @@
 
 namespace faiss {
 
-/** Product Quantizer. Implemented only for METRIC_L2 */
+/** Product Quantizer.
+ * PQ is trained using k-means, minimizing the L2 distance to centroids.
+ * PQ supports L2 and Inner Product search, however the quantization error is
+ * biased towards L2 distance.
+ */
 struct ProductQuantizer : Quantizer {
     size_t M;     ///< number of subquantizers
     size_t nbits; ///< number of bits per quantization index

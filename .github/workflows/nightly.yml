@@ -1,7 +1,7 @@
 name: Nightly
 on:
   schedule:
-    - cron:  '10 1 * * *'
+    - cron:  '10 6 * * *'
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
@@ -38,7 +38,6 @@ jobs:
         with:
           label: nightly
           cuda: "11.4.4"
-          compiler_version: "11.2"
   linux-x86_64-GPU-RAFT-CUDA11-8-0-nightly:
     name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.8.0)
     runs-on: 4-core-ubuntu-gpu-t4
@@ -57,7 +56,6 @@ jobs:
           label: nightly
           raft: "ON"
           cuda: "11.8.0"
-          compiler_version: "11.2"
   linux-x86_64-GPU-CUDA-12-1-1-nightly:
     name: Linux x86_64 GPU nightlies (CUDA 12.1.1)
     runs-on: 4-core-ubuntu-gpu-t4
@@ -75,7 +73,6 @@ jobs:
         with:
           label: nightly
           cuda: "12.1.1"
-          compiler_version: "11.2"
   linux-x86_64-GPU-RAFT-CUDA12-1-1-nightly:
     name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.1)
     runs-on: 4-core-ubuntu-gpu-t4
@@ -94,7 +91,6 @@ jobs:
           label: nightly
           raft: "ON"
           cuda: "12.1.1"
-          compiler_version: "11.2"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
     runs-on: windows-2019
@@ -137,3 +133,16 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
+  auto-retry:
+    name: Auto retry on failure
+    if: fromJSON(github.run_attempt) < 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start rerun workflow
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: |
+          gh workflow run retry_build.yml \
+            -F run_id=${{ github.run_id }}

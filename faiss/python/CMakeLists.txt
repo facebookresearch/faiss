@@ -38,6 +38,11 @@ macro(configure_swigfaiss source)
     set_source_files_properties(${source} PROPERTIES
       COMPILE_DEFINITIONS GPU_WRAPPER
     )
+    if (FAISS_ENABLE_ROCM)
+      set_property(SOURCE ${source} APPEND PROPERTY
+        COMPILE_DEFINITIONS FAISS_ENABLE_ROCM
+      )
+    endif()
     if (FAISS_ENABLE_RAFT)
       set_property(SOURCE ${source} APPEND PROPERTY
         COMPILE_DEFINITIONS FAISS_ENABLE_RAFT
@@ -61,17 +66,36 @@ if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
   set(SWIG_MODULE_swigfaiss_EXTRA_DEPS)
   foreach(h ${FAISS_HEADERS})
-    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
-  foreach(h ${FAISS_GPU_HEADERS})
-    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-    list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-  endforeach()
+  if(FAISS_ENABLE_ROCM)
+    foreach(h ${FAISS_GPU_HEADERS})
+      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+    endforeach()
+  else()
+    foreach(h ${FAISS_GPU_HEADERS})
+      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    endforeach()
+  endif()
 else()
   find_package(faiss REQUIRED)
 endif()
@@ -143,14 +167,28 @@ else()
 endif()
 
 if(FAISS_ENABLE_GPU)
-  find_package(CUDAToolkit REQUIRED)
-  if(FAISS_ENABLE_RAFT)
-    find_package(raft COMPONENTS compiled distributed)
+  if(FAISS_ENABLE_ROCM)
+    target_link_libraries(swigfaiss PRIVATE hip::host)
+    target_link_libraries(swigfaiss_avx2 PRIVATE hip::host)
+    target_link_libraries(swigfaiss_avx512 PRIVATE hip::host)
+  else()
+    find_package(CUDAToolkit REQUIRED)
+    if(FAISS_ENABLE_RAFT)
+      find_package(raft COMPONENTS compiled distributed)
+    endif()
+    target_link_libraries(swigfaiss PRIVATE CUDA::cudart
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+    target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+    target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+    target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
   endif()
-  target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-  target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-  target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-  target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
 endif()
 
 find_package(OpenMP REQUIRED)

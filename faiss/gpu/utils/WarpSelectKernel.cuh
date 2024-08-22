@@ -26,43 +26,45 @@ __global__ void warpSelect(
         K initK,
         IndexType initV,
         int k) {
-    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+    if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
+        constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    WarpSelect<
-            K,
-            IndexType,
-            Dir,
-            Comparator<K>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(initK, initV, k);
+        WarpSelect<
+                K,
+                IndexType,
+                Dir,
+                Comparator<K>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(initK, initV, k);
 
-    int warpId = threadIdx.x / kWarpSize;
-    idx_t row = idx_t(blockIdx.x) * kNumWarps + warpId;
+        int warpId = threadIdx.x / kWarpSize;
+        idx_t row = idx_t(blockIdx.x) * kNumWarps + warpId;
 
-    if (row >= in.getSize(0)) {
-        return;
+        if (row >= in.getSize(0)) {
+            return;
+        }
+
+        idx_t i = getLaneId();
+        K* inStart = in[row][i].data();
+
+        // Whole warps must participate in the selection
+        idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
+
+        for (; i < limit; i += kWarpSize) {
+            heap.add(*inStart, (IndexType)i);
+            inStart += kWarpSize;
+        }
+
+        // Handle non-warp multiple remainder
+        if (i < in.getSize(1)) {
+            heap.addThreadQ(*inStart, (IndexType)i);
+        }
+
+        heap.reduce();
+        heap.writeOut(outK[row].data(), outV[row].data(), k);
     }
-
-    idx_t i = getLaneId();
-    K* inStart = in[row][i].data();
-
-    // Whole warps must participate in the selection
-    idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
-
-    for (; i < limit; i += kWarpSize) {
-        heap.add(*inStart, (IndexType)i);
-        inStart += kWarpSize;
-    }
-
-    // Handle non-warp multiple remainder
-    if (i < in.getSize(1)) {
-        heap.addThreadQ(*inStart, (IndexType)i);
-    }
-
-    heap.reduce();
-    heap.writeOut(outK[row].data(), outV[row].data(), k);
 }
 
 void runWarpSelect(

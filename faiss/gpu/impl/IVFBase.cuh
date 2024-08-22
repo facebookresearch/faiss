@@ -220,15 +220,15 @@ class IVFBase {
     /// Coarse quantizer centroids available on GPU
     DeviceTensor<float, 2, true> ivfCentroids_;
 
-    /// Whether or not our index uses an interleaved by 32 layout:
+    /// Whether or not our index uses an interleaved by kWarpSize layout:
     /// The default memory layout is [vector][PQ/SQ component]:
     /// (v0 d0) (v0 d1) ... (v0 dD-1) (v1 d0) (v1 d1) ...
     ///
-    /// The interleaved by 32 memory layout is:
-    /// [vector / 32][PQ/SQ component][vector % 32] with padding:
+    /// The interleaved by kWarpSize memory layout is:
+    /// [vector / kWarpSize][PQ/SQ component][vector % kWarpSize] with padding:
     /// (v0 d0) (v1 d0) ... (v31 d0) (v0 d1) (v1 d1) ... (v31 dD-1) (v32 d0)
     /// (v33 d0) ... so the list length is always a multiple of num quantizers *
-    /// 32
+    /// kWarpSize
     bool interleavedLayout_;
 
     /// How are user indices stored on the GPU?

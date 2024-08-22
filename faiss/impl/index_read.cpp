@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/impl/index_read_utils.h>
 #include <faiss/index_io.h>
 
 #include <faiss/impl/io_macros.h>
@@ -61,7 +62,7 @@ namespace faiss {
  * Read
  **************************************************************/
 
-static void read_index_header(Index* idx, IOReader* f) {
+void read_index_header(Index* idx, IOReader* f) {
     READ1(idx->d);
     READ1(idx->ntotal);
     idx_t dummy;
@@ -230,7 +231,7 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
     }
 }
 
-static void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
+void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
     InvertedLists* ils = read_InvertedLists(f, io_flags);
     if (ils) {
         FAISS_THROW_IF_NOT(ils->nlist == ivf->nlist);
@@ -438,7 +439,7 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     return pq;
 }
 
-static void read_direct_map(DirectMap* dm, IOReader* f) {
+void read_direct_map(DirectMap* dm, IOReader* f) {
     char maintain_direct_map;
     READ1(maintain_direct_map);
     dm->type = (DirectMap::Type)maintain_direct_map;
@@ -454,10 +455,10 @@ static void read_direct_map(DirectMap* dm, IOReader* f) {
     }
 }
 
-static void read_ivf_header(
+void read_ivf_header(
         IndexIVF* ivf,
         IOReader* f,
-        std::vector<std::vector<idx_t>>* ids = nullptr) {
+        std::vector<std::vector<idx_t>>* ids) {
     read_index_header(ivf, f);
     READ1(ivf->nlist);
     READ1(ivf->nprobe);

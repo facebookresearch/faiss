@@ -56,6 +56,9 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
 
     void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
 
+    void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
+            const override;
+
     ~IndexIVFAdditiveQuantizer() override;
 };
 

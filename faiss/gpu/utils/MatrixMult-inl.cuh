@@ -20,6 +20,17 @@ namespace gpu {
 template <typename T>
 struct GetCudaType;
 
+#ifdef USE_AMD_ROCM
+template <>
+struct GetCudaType<float> {
+    static constexpr hipblasDatatype_t Type = HIPBLAS_R_32F;
+};
+
+template <>
+struct GetCudaType<half> {
+    static constexpr hipblasDatatype_t Type = HIPBLAS_R_16F;
+};
+#else
 template <>
 struct GetCudaType<float> {
     static constexpr cudaDataType_t Type = CUDA_R_32F;
@@ -29,6 +40,7 @@ template <>
 struct GetCudaType<half> {
     static constexpr cudaDataType_t Type = CUDA_R_16F;
 };
+#endif
 
 template <typename AT, typename BT>
 cublasStatus_t rawGemm(
@@ -48,6 +60,29 @@ cublasStatus_t rawGemm(
         int ldc) {
     auto cAT = GetCudaType<AT>::Type;
     auto cBT = GetCudaType<BT>::Type;
+
+#ifdef USE_AMD_ROCM
+    return hipblasGemmEx(
+            handle,
+            transa,
+            transb,
+            m,
+            n,
+            k,
+            &fAlpha,
+            A,
+            cAT,
+            lda,
+            B,
+            cBT,
+            ldb,
+            &fBeta,
+            C,
+            HIPBLAS_R_32F,
+            ldc,
+            HIPBLAS_R_32F,
+            HIPBLAS_GEMM_DEFAULT);
+#else
 
     // FIXME: some weird CUDA 11 bug? where cublasSgemmEx on
     // f16 (8, 64) x f16 (64, 64)' = f32 (8, 64) returns "not supported".
@@ -100,6 +135,7 @@ cublasStatus_t rawGemm(
             C,
             CUDA_R_32F,
             ldc);
+#endif // USE_AMD_ROCM
 }
 
 template <typename AT, typename BT>
@@ -126,6 +162,32 @@ cublasStatus_t rawBatchGemm(
     auto cBT = GetCudaType<BT>::Type;
 
     // Always accumulate in f32
+#ifdef USE_AMD_ROCM
+    return hipblasGemmStridedBatchedEx(
+            handle,
+            transa,
+            transb,
+            m,
+            n,
+            k,
+            &fAlpha,
+            A,
+            cAT,
+            lda,
+            strideA,
+            B,
+            cBT,
+            ldb,
+            strideB,
+            &fBeta,
+            C,
+            HIPBLAS_R_32F,
+            ldc,
+            strideC,
+            batchCount,
+            HIPBLAS_R_32F,
+            HIPBLAS_GEMM_DEFAULT);
+#else
     return cublasGemmStridedBatchedEx(
             handle,
             transa,
@@ -150,6 +212,7 @@ cublasStatus_t rawBatchGemm(
             batchCount,
             CUDA_R_32F,
             CUBLAS_GEMM_DEFAULT);
+#endif
 }
 
 template <typename AT, typename BT>
