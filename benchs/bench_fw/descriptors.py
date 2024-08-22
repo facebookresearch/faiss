@@ -80,6 +80,11 @@ class DatasetDescriptor:
 
     embedding_column: Optional[str] = None
 
+    sampling_rate: Optional[float] = None
+
+    # sampling column for xdb
+    sampling_column: Optional[str] = None
+
     def __hash__(self):
         return hash(self.get_filename())
 
