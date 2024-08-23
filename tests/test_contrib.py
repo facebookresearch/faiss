@@ -373,7 +373,7 @@ class TestPreassigned(unittest.TestCase):
         D, I = ivf_tools.search_preassigned(index, xq, 4, a)
         radius = D.max() * 1.01
 
-        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius, a)
+        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, float(radius), a)
 
         # with that radius the k-NN results are a subset of the range search
         # results
