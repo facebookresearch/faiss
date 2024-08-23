@@ -131,7 +131,6 @@ runs:
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
-      if: inputs.rocm == 'OFF'
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
