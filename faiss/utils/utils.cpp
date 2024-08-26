@@ -115,11 +115,10 @@ std::string get_compile_options() {
     options += "OPTIMIZE ";
 #endif
 
-#ifdef __AVX2__
-    options += "AVX2 ";
 #ifdef __AVX512F__
     options += "AVX512 ";
-#endif
+#elif defined(__AVX2__)
+    options += "AVX2 ";
 #elif defined(__ARM_FEATURE_SVE)
     options += "SVE NEON ";
 #elif defined(__aarch64__)
