@@ -96,7 +96,7 @@ def handle_Clustering(the_class):
             Index used to decode the vectors. Should have dimension `self.d`.
         index : faiss.Index
             Index used for assignment. The dimension of the index should be `self.d`.
-        weigths : array_like, optional
+        weights : array_like, optional
             Per training sample weight (size n) used when computing the weighted
             average to obtain the centroid (default is 1 for all training vectors).
         """
