@@ -143,6 +143,11 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
+    - name: C++ perf benchmarks
+      shell: bash
+      run: |
+        make  -C build -j faiss_perf_tests
+        cd ./build/perf_tests && ./faiss_perf_tests
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
