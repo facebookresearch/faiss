@@ -63,9 +63,9 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
+          conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch>=2 -c nvidia/label/cuda-12.4.0
         else
-          conda install -y -q pytorch -c pytorch
+          conda install -y -q pytorch -c pytorch>=2
         fi
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
