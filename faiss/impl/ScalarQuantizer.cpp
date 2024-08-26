@@ -82,26 +82,10 @@ struct Codec8bit {
     }
     static FAISS_ALWAYS_INLINE simd8float32
     decode_8_components(const uint8_t* code, int i) {
-#ifdef __AVX2__
-        const uint64_t c8 = *(uint64_t*)(code + i);
-
-        const __m128i i8 = _mm_set1_epi64x(c8);
-        const __m256i i32 = _mm256_cvtepu8_epi32(i8);
-        const __m256 f8 = _mm256_cvtepi32_ps(i32);
-        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
-        const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return simd8float32(_mm256_fmadd_ps(f8, one_255, half_one_255));
-#endif
-
-#ifdef __aarch64__
-        float32_t result[8] = {};
-        for (size_t j = 0; j < 8; j++) {
-            result[j] = decode_component(code, i + j);
-        }
-        float32x4_t res1 = vld1q_f32(result);
-        float32x4_t res2 = vld1q_f32(result + 4);
-        return simd8float32({res1, res2});
-#endif
+        simd8float32 f8 = load8(code, i);
+        simd8float32 half_one_255 = simd8float32(0.5f / 255.f);
+        simd8float32 one_255 = simd8float32(1.f / 255.f);
+        return fmadd(f8, one_255, half_one_255);
     }
 };
 
@@ -473,11 +457,16 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
 #ifdef __AVX2__
+        // reference impl: decode_bf16(((uint16_t*)code)[i]);
+        //  decode_bf16(v) -> (uint32_t(v) << 16)
+        // read 128-bits (16 uint8_t) -> (uint16_t*)code)[i]
+        // read as 8 x 16 bits and 0-extend into 8 x 32 bits -> uint32_t(v)
+        // bit shift by 16 -> uint32_t(v) << 16
 
-        __m128i code_128i = _mm_loadu_si128((const __m128i*)(code + 2 * i));
-        __m256i code_256i = _mm256_cvtepu16_epi32(code_128i);
-        code_256i = _mm256_slli_epi32(code_256i, 16);
-        return simd8float32(_mm256_castsi256_ps(code_256i));
+        // load 8 as i32 and bit shift by 16
+        simd8uint32 code_256i = load8_16bits_as_uint32(code, i);
+        simd8uint32 shifted_16 = code_256i << 16;
+        return as_float32(shifted_16);
 
 #endif
 
@@ -526,8 +515,6 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
-
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
@@ -535,36 +522,9 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
-        __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
-        __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
-        return simd8float32(_mm256_cvtepi32_ps(y8));        // 8 * float32
+        return load8(code, i);
     }
 };
-
-#endif
-
-#ifdef __aarch64__
-
-template <>
-struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
-    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
-
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
-        uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
-        uint16x8_t y8 = vmovl_u8(x8);
-        uint16x4_t y8_0 = vget_low_u16(y8);
-        uint16x4_t y8_1 = vget_high_u16(y8);
-
-        // convert uint16 -> uint32 -> fp32
-        return simd8float32(
-                {vcvtq_f32_u32(vmovl_u16(y8_0)),
-                 vcvtq_f32_u32(vmovl_u16(y8_1))});
-    }
-};
-
-#endif
 
 /*******************************************************************
  * 8bit_direct_signed quantizer
@@ -598,8 +558,6 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
-
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
@@ -607,42 +565,10 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
-        __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
-        __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
-        __m256i c8 = _mm256_set1_epi32(128);
-        __m256i z8 = _mm256_sub_epi32(y8, c8); // subtract 128 from all lanes
-        return simd8float32(_mm256_cvtepi32_ps(z8)); // 8 * float32
+        simd8float32 f8 = load8(code, i); // 8 * float32
+        return f8 - simd8float32(128.0);  // subtract 128 from all lanes
     }
 };
-
-#endif
-
-#ifdef __aarch64__
-
-template <>
-struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
-
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
-        uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
-        uint16x8_t y8 = vmovl_u8(x8); // convert uint8 -> uint16
-        uint16x4_t y8_0 = vget_low_u16(y8);
-        uint16x4_t y8_1 = vget_high_u16(y8);
-
-        float32x4_t z8_0 = vcvtq_f32_u32(
-                vmovl_u16(y8_0)); // convert uint16 -> uint32 -> fp32
-        float32x4_t z8_1 = vcvtq_f32_u32(vmovl_u16(y8_1));
-
-        // subtract 128 to convert into signed numbers
-        return simd8float32(
-                {vsubq_f32(z8_0, vmovq_n_f32(128.0)),
-                 vsubq_f32(z8_1, vmovq_n_f32(128.0))});
-    }
-};
-
-#endif
 
 template <int SIMDWIDTH>
 ScalarQuantizer::SQuantizer* select_quantizer_1(
@@ -905,6 +831,12 @@ struct SimilarityL2<8> {
     }
 
     FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+        // reference implementation
+        // yi is the current pointer into floats y
+        // *(yi++) - x -> increment yi and compute distance from float x
+        // tmp = *yi++ - x
+        // accu += tmp * tmp
+        // accu += (yi - x)^2
         simd8float32 yiv(yi);
         yi += 8;
         simd8float32 tmp = yiv - x;
@@ -919,25 +851,7 @@ struct SimilarityL2<8> {
     }
 
     FAISS_ALWAYS_INLINE float result_8() {
-#ifdef __AVX2__
-        const __m128 sum = _mm_add_ps(
-                _mm256_castps256_ps128(accu8.f),
-                _mm256_extractf128_ps(accu8.f, 1));
-        const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
-        const __m128 v1 = _mm_add_ps(sum, v0);
-        __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
-        const __m128 v3 = _mm_add_ps(v1, v2);
-        return _mm_cvtss_f32(v3);
-#endif
-
-#ifdef __aarch64__
-        float32x4_t sum_0 = vpaddq_f32(accu8.data.val[0], accu8.data.val[0]);
-        float32x4_t sum_1 = vpaddq_f32(accu8.data.val[1], accu8.data.val[1]);
-
-        float32x4_t sum2_0 = vpaddq_f32(sum_0, sum_0);
-        float32x4_t sum2_1 = vpaddq_f32(sum_1, sum_1);
-        return vgetq_lane_f32(sum2_0, 0) + vgetq_lane_f32(sum2_1, 0);
-#endif
+        return accu8.accumulate();
     }
 };
 
@@ -1003,28 +917,7 @@ struct SimilarityIP<8> {
     }
 
     FAISS_ALWAYS_INLINE float result_8() {
-#ifdef __AVX2__
-
-        const __m128 sum = _mm_add_ps(
-                _mm256_castps256_ps128(accu8.f),
-                _mm256_extractf128_ps(accu8.f, 1));
-        const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
-        const __m128 v1 = _mm_add_ps(sum, v0);
-        __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
-        const __m128 v3 = _mm_add_ps(v1, v2);
-        return _mm_cvtss_f32(v3);
-#endif
-
-#ifdef __aarch64__
-        float32x4x2_t sum = {
-                vpaddq_f32(accu8.data.val[0], accu8.data.val[0]),
-                vpaddq_f32(accu8.data.val[1], accu8.data.val[1])};
-
-        float32x4x2_t sum2 = {
-                vpaddq_f32(sum.val[0], sum.val[0]),
-                vpaddq_f32(sum.val[1], sum.val[1])};
-        return vgetq_lane_f32(sum2.val[0], 0) + vgetq_lane_f32(sum2.val[1], 0);
-#endif
+        return accu8.accumulate();
     }
 };
 
