@@ -11,6 +11,7 @@ FetchContent_MakeAvailable(
   googlebenchmark)
 
 find_package(Threads REQUIRED)
+find_package(OpenMP REQUIRED)
 
 add_executable(faiss_perf_tests bench_6bit_codec.cpp)
 
@@ -61,4 +62,4 @@ if(FAISS_OPT_LEVEL STREQUAL "sve")
   endif()
   target_link_libraries(faiss_perf_tests PRIVATE faiss_sve)
 endif()
-target_link_libraries(faiss_perf_tests PRIVATE benchmark::benchmark)
+target_link_libraries(faiss_perf_tests PRIVATE OpenMP::OpenMP_CXX benchmark::benchmark)
