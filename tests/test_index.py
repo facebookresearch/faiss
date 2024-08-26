@@ -423,7 +423,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         np.testing.assert_almost_equal(D, D_ref, decimal=5)
         # self.assertTrue((I == I_ref).all())
-         np.testing.assert_array_equal(I, I_ref)
+        np.testing.assert_array_equal(I, I_ref)
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)
 
