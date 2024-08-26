@@ -104,6 +104,8 @@ endif()
 add_subdirectory(demos)
 add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
+add_subdirectory(perf_tests)
+
 
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)
