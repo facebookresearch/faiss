@@ -19,3 +19,35 @@ jobs:
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
         uses: ./.github/actions/build_cmake
+  linux-x86_64-GPU-RAFT-CUDA11-8-0-nightly:
+    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.8.0)
+    # if: false
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          raft: "ON"
+          cuda: "11.8.0"
+  linux-x86_64-GPU-RAFT-CUDA12-1-1-nightly:
+    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.1)
+    # if: false
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          raft: "ON"
+          cuda: "12.1.1"
