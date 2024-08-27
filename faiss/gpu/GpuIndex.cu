@@ -537,6 +537,10 @@ struct InitGpuCompileOptions {
 #ifdef USE_NVIDIA_CUVS
         gpu_compile_options += "NVIDIA_CUVS ";
 #endif
+
+#ifdef USE_AMD_ROCM
+        gpu_compile_options += "AMD_ROCM ";
+#endif
     }
 };
 

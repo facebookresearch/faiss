@@ -16,4 +16,10 @@ jobs:
           GH_DEBUG: api
         run: |
           gh run watch ${{ inputs.run_id }} > /dev/null 2>&1
-          gh run rerun ${{ inputs.run_id }} --failed
+
+          # Only retry if there are failed jobs
+          if gh run view ${{ inputs.run_id }} --exit-status; then
+            echo Workflow succeeded - no retry necessary.
+          else
+            gh run rerun ${{ inputs.run_id }} --failed
+          fi

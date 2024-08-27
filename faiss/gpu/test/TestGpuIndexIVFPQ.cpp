@@ -307,6 +307,8 @@ void testMMCodeDistance(faiss::MetricType mt) {
     }
 }
 
+// FIXME: https://github.com/facebookresearch/faiss/issues/3787
+#ifndef USE_AMD_ROCM
 TEST(TestGpuIndexIVFPQ, Query_L2_MMCodeDistance) {
     testMMCodeDistance(faiss::MetricType::METRIC_L2);
 }
@@ -314,6 +316,7 @@ TEST(TestGpuIndexIVFPQ, Query_L2_MMCodeDistance) {
 TEST(TestGpuIndexIVFPQ, Query_IP_MMCodeDistance) {
     testMMCodeDistance(faiss::MetricType::METRIC_INNER_PRODUCT);
 }
+#endif // USE_AMD_ROCM
 
 TEST(TestGpuIndexIVFPQ, Float16Coarse) {
     Options opt;
