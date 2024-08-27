@@ -45,7 +45,7 @@ def merge_rcq_itq(
 
 @dataclass
 class BenchmarkIO:
-    path: str
+    path: str  # local path
 
     def __init__(self, path: str):
         self.path = path
@@ -54,8 +54,7 @@ class BenchmarkIO:
     def clone(self):
         return BenchmarkIO(path=self.path)
 
-    # TODO(kuarora): rename it as get_local_file
-    def get_local_filename(self, filename):
+    def get_local_filepath(self, filename):
         if len(filename) > 184:
             fn, ext = os.path.splitext(filename)
             filename = (
@@ -72,7 +71,7 @@ class BenchmarkIO:
         bucket: Optional[str] = None,
         path: Optional[str] = None,
     ):
-        return self.get_local_filename(filename)
+        return self.get_local_filepath(filename)
 
     def upload_file_to_blobstore(
         self,
@@ -84,7 +83,7 @@ class BenchmarkIO:
         pass
 
     def file_exist(self, filename: str):
-        fn = self.get_local_filename(filename)
+        fn = self.get_local_filepath(filename)
         exists = os.path.exists(fn)
         logger.info(f"{filename} {exists=}")
         return exists
@@ -112,7 +111,7 @@ class BenchmarkIO:
         values: List[Any],
         overwrite: bool = False,
     ):
-        fn = self.get_local_filename(filename)
+        fn = self.get_local_filepath(filename)
         with ZipFile(fn, "w") as zip_file:
             for key, value in zip(keys, values, strict=True):
                 with zip_file.open(key, "w", force_zip64=True) as f:
@@ -187,7 +186,7 @@ class BenchmarkIO:
         nparray: np.ndarray,
         filename: str,
     ):
-        fn = self.get_local_filename(filename)
+        fn = self.get_local_filepath(filename)
         logger.info(f"Saving nparray {nparray.shape} to {fn}")
         np.save(fn, nparray)
         self.upload_file_to_blobstore(filename)
@@ -209,7 +208,7 @@ class BenchmarkIO:
         filename: str,
         overwrite: bool = False,
     ):
-        fn = self.get_local_filename(filename)
+        fn = self.get_local_filepath(filename)
         logger.info(f"Saving json {json_dict} to {fn}")
         with open(fn, "w") as fp:
             json.dump(json_dict, fp)
@@ -239,7 +238,7 @@ class BenchmarkIO:
         index: faiss.Index,
         filename: str,
     ):
-        fn = self.get_local_filename(filename)
+        fn = self.get_local_filepath(filename)
         logger.info(f"Saving index to {fn}")
         faiss.write_index(index, fn)
         self.upload_file_to_blobstore(filename)

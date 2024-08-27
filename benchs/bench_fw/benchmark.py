@@ -276,6 +276,7 @@ class TrainOperator(IndexOperator):
 @dataclass
 class BuildOperator(IndexOperator):
     index_descs: List[IndexDescriptor] = field(default_factory=lambda: [])
+    serialize_index: bool = False
 
     def get_desc(self, name: str) -> Optional[IndexDescriptor]:
         for desc in self.index_descs:
@@ -312,6 +313,7 @@ class BuildOperator(IndexOperator):
                 path=index_desc.codec_desc.path,
                 index_name=index_desc.get_name(),
                 codec_name=index_desc.codec_desc.get_name(),
+                serialize_full_index=self.serialize_index,
             )
             index.set_io(self.io)
             index_desc.index = index
