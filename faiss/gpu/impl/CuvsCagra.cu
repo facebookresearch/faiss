@@ -87,7 +87,7 @@ CuvsCagra::CuvsCagra(
         index_params_.graph_build_params = graph_build_params;
     } else {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params;
+                graph_build_params(intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter;
         index_params_.graph_build_params = graph_build_params;
     }
@@ -178,14 +178,6 @@ void CuvsCagra::train(idx_t n, const float* x) {
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-
-    //     auto nn_descent_params = std::make_optional<
-    //             cuvs::neighbors::nn_descent::index_params>();
-    //     nn_descent_params->graph_degree =
-    //     index_params_.intermediate_graph_degree;
-    //     nn_descent_params->intermediate_graph_degree =
-    //             1.5 * index_params_.intermediate_graph_degree;
-    //     nn_descent_params->max_iterations = index_params_.nn_descent_niter;
 
     if (std::holds_alternative<
                 cuvs::neighbors::cagra::graph_build_params::ivf_pq_params>(

@@ -332,7 +332,7 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Add_IP) {
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_L2) {
     Options opt;
-    // queryTest(opt, faiss::METRIC_L2, false);
+    queryTest(opt, faiss::METRIC_L2, false);
 
 #if defined USE_NVIDIA_CUVS
     opt.useCuvs = true;

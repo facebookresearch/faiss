@@ -48,7 +48,7 @@ void evaluate_bfknn(
     bfKnn(res, args);
 
     std::stringstream str;
-    str << "using raft " << args.use_cuvs << "metric " << metric
+    str << "using cuVS " << args.use_cuvs << "metric " << metric
         << " colMajorVecs " << colMajorVecs << " colMajorQueries "
         << colMajorQueries;
 
