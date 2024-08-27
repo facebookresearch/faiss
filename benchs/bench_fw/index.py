@@ -786,12 +786,12 @@ class Index(IndexBase):
 # are used to wrap pre-trained Faiss indices (codecs)
 @dataclass
 class IndexFromCodec(Index):
-    path: Optional[str] = None
+    path: Optional[str] = None  # remote or local path to the codec
 
     def __post_init__(self):
         super().__post_init__()
-        if self.path is None:
-            raise ValueError("path is not set")
+        if self.path is None and self.codec_name is None:
+            raise ValueError("path or desc_name is not set")
 
     def get_quantizer(self):
         if not self.is_ivf():
@@ -814,10 +814,17 @@ class IndexFromCodec(Index):
         return None, None
 
     def fetch_codec(self):
+        if self.path is not None:
+            codec_filename = os.path.basename(self.path)
+            remote_path = os.path.dirname(self.path)
+        else:
+            codec_filename = self.get_codec_name() + "codec"
+            remote_path = None
+
         codec = self.io.read_index(
-            os.path.basename(self.path),
+            codec_filename,
             self.bucket,
-            os.path.dirname(self.path),
+            remote_path,
         )
         assert self.d == codec.d
         assert self.metric_type == codec.metric_type
