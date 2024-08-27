@@ -9,7 +9,7 @@
 {% if cudatoolkit == '11.8.0' %}
 {% set cuda_constraints=">=11.8,<12" %}
 {% set libcublas_constraints=">=11.11,<12" %}
-{% elif cudatoolkit == '12.1.1' %}
+{% elif cudatoolkit == '12.1.1' || cudatoolkit == '12.4.0' %}
 {% set cuda_constraints=">=12.1,<13" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% endif %}
