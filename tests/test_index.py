@@ -10,6 +10,7 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import unittest
 import faiss
+import sys
 import tempfile
 import os
 import re
@@ -412,7 +413,7 @@ class TestRangeSearch(unittest.TestCase):
 
 class TestSearchAndReconstruct(unittest.TestCase):
 
-    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
+    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None, debug=False):
         n, d = xb.shape
         assert xq.shape[1] == d
         assert index.d == d
@@ -421,8 +422,25 @@ class TestSearchAndReconstruct(unittest.TestCase):
         R_ref = index.reconstruct_n(0, n)
         D, I, R = index.search_and_reconstruct(xq, k)
 
+        np.set_printoptions(threshold=sys.maxsize)
+        if debug:
+            print("printing xb", file=sys.stderr)
+            print(xb[-5:], file=sys.stderr)
+            print("printing xq", file=sys.stderr)
+            print(xq[-5:], file=sys.stderr)
+
         np.testing.assert_almost_equal(D, D_ref, decimal=5)
         # self.assertTrue((I == I_ref).all())
+        # print not equals vectors
+        if debug and not (I == I_ref).all():
+            for i in range(len(I)):
+                if not (I[i] == I_ref[i]).all():
+                    print("i = ", i, file=sys.stderr)
+                    print("I[i] = ", I[i], file=sys.stderr)
+                    print("I_ref[i] = ", I_ref[i], file=sys.stderr)
+                    print("D[i] = ", D[i], file=sys.stderr)
+                    print("D_ref[i] = ", D_ref[i], file=sys.stderr)
+    
         np.testing.assert_array_equal(I, I_ref)
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)
@@ -509,7 +527,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
         index.train(xt)
         index.add(xb)
 
-        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0, debug=True)
 
     def test_MultiIndex(self):
         d = 32
