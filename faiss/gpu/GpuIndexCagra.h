@@ -38,7 +38,7 @@ class CuvsCagra;
 enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
-    /// Experimental, use NN-Descent to build all-neighbors knn graph
+    /// Use NN-Descent to build all-neighbors knn graph
     NN_DESCENT
 };
 
