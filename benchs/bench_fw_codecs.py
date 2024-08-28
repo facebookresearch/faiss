@@ -119,7 +119,7 @@ def run_local(rp):
         distance_metric=distance_metric,
     )
     benchmark.set_io(bio)
-    benchmark.benchmark(result_file="result.json", train=False, reconstruct=False, knn=False, range=False)
+    benchmark.benchmark(result_file="result.json", train=True, reconstruct=False, knn=False, range=False)
 
 def run(bio, d, tablename, distance_metric):
     bio.launch_jobs(run_local, [(bio, d, tablename, distance_metric)], local=True)
