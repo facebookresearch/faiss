@@ -17,14 +17,14 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
@@ -41,7 +41,7 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -55,12 +55,12 @@
       <node id="6">
         <label>cstdint</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
@@ -81,7 +81,7 @@
       <node id="9">
         <label>string</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>exception</label>
       </node>
       <node id="10">
@@ -93,7 +93,7 @@
       <node id="23">
         <label>vector</label>
       </node>
-      <node id="22">
+      <node id="17">
         <label>utility</label>
       </node>
       <node id="8">
@@ -118,8 +118,10 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
         <childnode refid="12" relation="include">
@@ -161,10 +163,10 @@
       <node id="14">
         <label>cstring</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/impl/FaissAssert.h</label>
         <link refid="FaissAssert_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>

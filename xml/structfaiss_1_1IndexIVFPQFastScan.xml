@@ -2573,6 +2573,7 @@
         <name>get_distance_computer</name>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1ab8c5ac9637fe663d04438d0336f7552f">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516">get_distance_computer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexHNSW_1ae675b12983b7a9765c9e413270b312c4">get_distance_computer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a3ce8b52cbad596e5880aaac81e774b1e">get_distance_computer</reimplementedby>
         <briefdescription>
         </briefdescription>

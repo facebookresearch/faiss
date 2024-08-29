@@ -537,7 +537,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="441" column="19" bodyfile="faiss/utils/Heap.h" bodystart="441" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="546" column="19" bodyfile="faiss/utils/Heap.h" bodystart="546" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a17c03ceef680b86f30abf40c359f0b6c" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; int, int64_t &gt; &gt;</type>
@@ -550,7 +550,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="442" column="19" bodyfile="faiss/utils/Heap.h" bodystart="442" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="547" column="19" bodyfile="faiss/utils/Heap.h" bodystart="547" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -563,7 +563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="444" column="19" bodyfile="faiss/utils/Heap.h" bodystart="444" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="549" column="19" bodyfile="faiss/utils/Heap.h" bodystart="549" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; int, int64_t &gt; &gt;</type>
@@ -576,7 +576,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="445" column="19" bodyfile="faiss/utils/Heap.h" bodystart="445" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="550" column="19" bodyfile="faiss/utils/Heap.h" bodystart="550" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
@@ -7013,7 +7013,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="46" column="13" bodyfile="faiss/utils/Heap.h" bodystart="46" bodyend="76"/>
+        <location file="faiss/utils/Heap.h" line="47" column="13" bodyfile="faiss/utils/Heap.h" bodystart="47" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2e2264988d2658c0cd467463bc03254c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7052,7 +7052,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="82" column="13" bodyfile="faiss/utils/Heap.h" bodystart="82" bodyend="103"/>
+        <location file="faiss/utils/Heap.h" line="83" column="13" bodyfile="faiss/utils/Heap.h" bodystart="83" bodyend="104"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abedf9900fe8f4b4566801aad585d60c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7091,7 +7091,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="111" column="13" bodyfile="faiss/utils/Heap.h" bodystart="111" bodyend="149"/>
+        <location file="faiss/utils/Heap.h" line="112" column="13" bodyfile="faiss/utils/Heap.h" bodystart="112" bodyend="150"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6007eab1211f86326246114757ee8c41" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7121,7 +7121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="154" column="13" bodyfile="faiss/utils/Heap.h" bodystart="154" bodyend="156"/>
+        <location file="faiss/utils/Heap.h" line="155" column="13" bodyfile="faiss/utils/Heap.h" bodystart="155" bodyend="157"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a34d5f3d2e6e58005727989c3b2def7fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7159,7 +7159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="159" column="13" bodyfile="faiss/utils/Heap.h" bodystart="159" bodyend="166"/>
+        <location file="faiss/utils/Heap.h" line="160" column="13" bodyfile="faiss/utils/Heap.h" bodystart="160" bodyend="167"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a56261d03ad06ddadde7f9c8161c48f88" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7197,7 +7197,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="169" column="13" bodyfile="faiss/utils/Heap.h" bodystart="169" bodyend="176"/>
+        <location file="faiss/utils/Heap.h" line="170" column="13" bodyfile="faiss/utils/Heap.h" bodystart="170" bodyend="177"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af1853d9d3e0c4c0d3ebf204c1f50c30c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7227,7 +7227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="179" column="13" bodyfile="faiss/utils/Heap.h" bodystart="179" bodyend="181"/>
+        <location file="faiss/utils/Heap.h" line="180" column="13" bodyfile="faiss/utils/Heap.h" bodystart="180" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8c87f0f0d3f96ede4b6cd031592aaed1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7265,7 +7265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="184" column="13" bodyfile="faiss/utils/Heap.h" bodystart="184" bodyend="191"/>
+        <location file="faiss/utils/Heap.h" line="185" column="13" bodyfile="faiss/utils/Heap.h" bodystart="185" bodyend="192"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0060a794c9aa0f221dec2ed996f4cab6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7303,7 +7303,104 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="194" column="13" bodyfile="faiss/utils/Heap.h" bodystart="194" bodyend="201"/>
+        <location file="faiss/utils/Heap.h" line="195" column="13" bodyfile="faiss/utils/Heap.h" bodystart="195" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab704c7ced4df0f7db39abbe4adbe29b2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::heap_pop</definition>
+        <argsstring>(size_t k, std::pair&lt; typename C::T, typename C::TI &gt; *bh)</argsstring>
+        <name>heap_pop</name>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; typename C::T, typename C::TI &gt; *</type>
+          <declname>bh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pops the top element from the heap defined by bh_val[0..k-1] and bh_ids[0..k-1]. on output the element at k-1 is undefined. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="215" column="13" bodyfile="faiss/utils/Heap.h" bodystart="215" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a043fff0ee78486b74f79c27f7233af87" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::heap_push</definition>
+        <argsstring>(size_t k, std::pair&lt; typename C::T, typename C::TI &gt; *bh, typename C::T val, typename C::TI id)</argsstring>
+        <name>heap_push</name>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; typename C::T, typename C::TI &gt; *</type>
+          <declname>bh</declname>
+        </param>
+        <param>
+          <type>typename C::T</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>typename C::TI</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pushes the element (val, ids) into the heap bh_val[0..k-2] and bh_ids[0..k-2]. on output the element at k-1 is defined. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="247" column="13" bodyfile="faiss/utils/Heap.h" bodystart="247" bodyend="265"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a66e2d19b17520125b3ff3f85e31bd398" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::heap_replace_top</definition>
+        <argsstring>(size_t k, std::pair&lt; typename C::T, typename C::TI &gt; *bh, typename C::T val, typename C::TI id)</argsstring>
+        <name>heap_replace_top</name>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; typename C::T, typename C::TI &gt; *</type>
+          <declname>bh</declname>
+        </param>
+        <param>
+          <type>typename C::T</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>typename C::TI</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Replaces the top element from the heap defined by bh_val[0..k-1] and bh_ids[0..k-1], and for identical bh_val[] values also sorts by bh_ids[] values. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="273" column="13" bodyfile="faiss/utils/Heap.h" bodystart="273" bodyend="306"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8617ea308e081aed83d4a084a9d31f70" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7348,7 +7445,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="211" column="13" bodyfile="faiss/utils/Heap.h" bodystart="211" bodyend="233"/>
+        <location file="faiss/utils/Heap.h" line="316" column="13" bodyfile="faiss/utils/Heap.h" bodystart="316" bodyend="338"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a74010fa2ad110134f8b7c5e3af54a98b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7393,7 +7490,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="236" column="13" bodyfile="faiss/utils/Heap.h" bodystart="236" bodyend="244"/>
+        <location file="faiss/utils/Heap.h" line="341" column="13" bodyfile="faiss/utils/Heap.h" bodystart="341" bodyend="349"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad80324df320ebcc1e5deecbe4e8626d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7438,7 +7535,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="247" column="13" bodyfile="faiss/utils/Heap.h" bodystart="247" bodyend="255"/>
+        <location file="faiss/utils/Heap.h" line="352" column="13" bodyfile="faiss/utils/Heap.h" bodystart="352" bodyend="360"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1afa5c2b8f24eb244fb064af0c7d853422" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7480,7 +7577,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="263" column="13" bodyfile="faiss/utils/Heap.h" bodystart="263" bodyend="283"/>
+        <location file="faiss/utils/Heap.h" line="368" column="13" bodyfile="faiss/utils/Heap.h" bodystart="368" bodyend="388"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad1864b81445cbbc1ffe06fa8d0d26943" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7522,7 +7619,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="288" column="13" bodyfile="faiss/utils/Heap.h" bodystart="288" bodyend="296"/>
+        <location file="faiss/utils/Heap.h" line="393" column="13" bodyfile="faiss/utils/Heap.h" bodystart="393" bodyend="401"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a31eaeca29f48abb9ca4822085ab24a47" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7564,7 +7661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="299" column="13" bodyfile="faiss/utils/Heap.h" bodystart="299" bodyend="307"/>
+        <location file="faiss/utils/Heap.h" line="404" column="13" bodyfile="faiss/utils/Heap.h" bodystart="404" bodyend="412"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4e69334ccd78982042a6210c743d0418" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7594,7 +7691,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="316" column="15" bodyfile="faiss/utils/Heap.h" bodystart="316" bodyend="345"/>
+        <location file="faiss/utils/Heap.h" line="421" column="15" bodyfile="faiss/utils/Heap.h" bodystart="421" bodyend="450"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa29a53dfe2924fb9684292be43539228" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7624,7 +7721,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="348" column="15" bodyfile="faiss/utils/Heap.h" bodystart="348" bodyend="350"/>
+        <location file="faiss/utils/Heap.h" line="453" column="15" bodyfile="faiss/utils/Heap.h" bodystart="453" bodyend="455"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1adf25de8d60180e4d314a6d1be95d4334" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7654,7 +7751,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="353" column="15" bodyfile="faiss/utils/Heap.h" bodystart="353" bodyend="355"/>
+        <location file="faiss/utils/Heap.h" line="458" column="15" bodyfile="faiss/utils/Heap.h" bodystart="458" bodyend="460"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8023405f5360828c9a892510a5f4c4ec" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7684,7 +7781,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="461" column="13" bodyfile="faiss/utils/Heap.h" bodystart="461" bodyend="487"/>
+        <location file="faiss/utils/Heap.h" line="566" column="13" bodyfile="faiss/utils/Heap.h" bodystart="566" bodyend="592"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8ecaf37c77256e02a946e1572b992ed5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -7718,7 +7815,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="490" column="13" bodyfile="faiss/utils/Heap.h" bodystart="490" bodyend="506"/>
+        <location file="faiss/utils/Heap.h" line="595" column="13" bodyfile="faiss/utils/Heap.h" bodystart="595" bodyend="611"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5bd0fd59cade66b4d3bda7ba3d59cfd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -7802,7 +7899,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="520" column="6" declfile="faiss/utils/Heap.h" declline="520" declcolumn="6"/>
+        <location file="faiss/utils/Heap.h" line="625" column="6" declfile="faiss/utils/Heap.h" declline="625" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a36bf2bb72e8dd3c2e320a6ef89765635" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

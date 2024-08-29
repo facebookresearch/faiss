@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="173" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="173" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="180" column="10" bodyfile="faiss/IndexHNSW.h" bodystart="180" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSWCagra_1a1c1182e0d77cfefb0dd16c0de808ad6a" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="179" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="179" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="186" column="9" bodyfile="faiss/IndexHNSW.h" bodystart="186" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref></type>
@@ -200,7 +200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="165" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="172" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a944a37bc641d8f5c06a90f368e50cf16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -226,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="166" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="173" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -267,7 +267,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="181" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="188" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -307,7 +307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="184" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="191" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -638,6 +638,22 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="113" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1ae675b12983b7a9765c9e413270b312c4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
+        <definition>DistanceComputer* faiss::IndexHNSW::get_distance_computer</definition>
+        <argsstring>() const override</argsstring>
+        <name>get_distance_computer</name>
+        <reimplements refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a">get_distance_computer</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="115" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1117,24 +1133,6 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="265" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
-        <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
-        <argsstring>() const</argsstring>
-        <name>get_distance_computer</name>
-        <reimplementedby refid="structfaiss_1_1Index2Layer_1ab8c5ac9637fe663d04438d0336f7552f">get_distance_computer</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516">get_distance_computer</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a3ce8b52cbad596e5880aaac81e774b1e">get_distance_computer</reimplementedby>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
-<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="277" column="30"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
         <definition>virtual size_t faiss::Index::sa_code_size</definition>
@@ -1442,7 +1440,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="164" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="164" bodyend="191"/>
+    <location file="faiss/IndexHNSW.h" line="171" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="171" bodyend="198"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>add_with_ids</name></member>
@@ -1454,7 +1452,7 @@
       <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>compute_residual_n</name></member>
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1ae675b12983b7a9765c9e413270b312c4" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>hnsw</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a973769979e047374a8310b9fa891214c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>IndexHNSW</name></member>
