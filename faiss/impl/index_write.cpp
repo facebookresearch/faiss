@@ -312,7 +312,11 @@ static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     WRITE1(hnsw->max_level);
     WRITE1(hnsw->efConstruction);
     WRITE1(hnsw->efSearch);
-    WRITE1(hnsw->upper_beam);
+
+    // // deprecated field
+    // WRITE1(hnsw->upper_beam);
+    constexpr int tmp_upper_beam = 1;
+    WRITE1(tmp_upper_beam);
 }
 
 static void write_NSG(const NSG* nsg, IOWriter* f) {

@@ -374,7 +374,10 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READ1(hnsw->max_level);
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
-    READ1(hnsw->upper_beam);
+
+    // // deprecated field
+    // READ1(hnsw->upper_beam);
+    READ1_DUMMY(int)
 }
 
 static void read_NSG(NSG* nsg, IOReader* f) {

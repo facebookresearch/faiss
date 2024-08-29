@@ -3,11 +3,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import faiss
 import torch
 from torch import nn
 import unittest
 import numpy as np
+import faiss
 
 from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks

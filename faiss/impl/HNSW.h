@@ -142,9 +142,6 @@ struct HNSW {
     /// enough?
     bool check_relative_distance = true;
 
-    /// number of entry points in levels > 0.
-    int upper_beam = 1;
-
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
@@ -235,20 +232,23 @@ struct HNSW {
 };
 
 struct HNSWStats {
-    size_t n1 = 0; /// numbner of vectors searched
+    size_t n1 = 0; /// number of vectors searched
     size_t n2 =
-            0; /// number of queries for which the candidate list is exhasted
-    size_t ndis = 0; /// number of distances computed
+            0; /// number of queries for which the candidate list is exhausted
+    size_t ndis = 0;  /// number of distances computed
+    size_t nhops = 0; /// number of hops aka number of edges traversed
 
     void reset() {
         n1 = n2 = 0;
         ndis = 0;
+        nhops = 0;
     }
 
     void combine(const HNSWStats& other) {
         n1 += other.n1;
         n2 += other.n2;
         ndis += other.ndis;
+        nhops += other.nhops;
     }
 };
 

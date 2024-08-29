@@ -68,12 +68,12 @@ template <class C>
 static void reorder_2_heaps(
         idx_t n,
         idx_t k,
-        idx_t* labels,
-        float* distances,
+        idx_t* __restrict labels,
+        float* __restrict distances,
         idx_t k_base,
-        const idx_t* base_labels,
-        const float* base_distances) {
-#pragma omp parallel for
+        const idx_t* __restrict base_labels,
+        const float* __restrict base_distances) {
+#pragma omp parallel for if (n > 1)
     for (idx_t i = 0; i < n; i++) {
         idx_t* idxo = labels + i * k;
         float* diso = distances + i * k;
