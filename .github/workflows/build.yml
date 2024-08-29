@@ -51,19 +51,3 @@ jobs:
         with:
           raft: "ON"
           cuda: "12.1.1"
-  linux-x86_64-GPU-RAFT-CUDA12-4-0-nightly:
-    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.4.0)
-    # if: false
-    runs-on: 4-core-ubuntu-gpu-t4
-    env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-        with:
-          raft: "ON"
-          cuda: "12.4.0"
