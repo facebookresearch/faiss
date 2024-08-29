@@ -164,9 +164,9 @@ void CuvsCagra::train(idx_t n, const float* x) {
 
     if (!ivf_pq_params_) {
         ivf_pq_params_ = cuvs::neighbors::ivf_pq::index_params::from_dataset(
-                raft::make_extents(
+                raft::make_extents<uint32_t>(
                         static_cast<uint32_t>(n_), static_cast<uint32_t>(dim_)),
-                metricFaissToCuvs(metric_));
+                metricFaissToCuvs(metric_, false));
     }
     if (graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
         cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
@@ -182,7 +182,7 @@ void CuvsCagra::train(idx_t n, const float* x) {
         }
     } else {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params(intermediate_graph_degree);
+                graph_build_params(index_params_.intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter_;
         index_params_.graph_build_params = graph_build_params;
     }

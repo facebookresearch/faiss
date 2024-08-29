@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <cstddef>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
+#include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <optional>
 
@@ -45,36 +45,57 @@ enum class cagra_hash_mode { HASH, SMALL, AUTO };
 namespace gpu {
 
 class CuvsCagra {
-  public:
-    CuvsCagra(GpuResources *resources, int dim, idx_t intermediate_graph_degree,
-              idx_t graph_degree, faiss::cagra_build_algo graph_build_algo,
-              size_t nn_descent_niter, bool store_dataset,
-              faiss::MetricType metric, float metricArg,
-              IndicesOptions indicesOptions,
-              std::optional<cuvs::neighbors::ivf_pq::index_params>
-                  ivf_pq_params = std::nullopt,
-              std::optional<cuvs::neighbors::ivf_pq::search_params>
-                  ivf_pq_search_params = std::nullopt,
-              float refine_rate = 2.0f);
+   public:
+    CuvsCagra(
+            GpuResources* resources,
+            int dim,
+            idx_t intermediate_graph_degree,
+            idx_t graph_degree,
+            faiss::cagra_build_algo graph_build_algo,
+            size_t nn_descent_niter,
+            bool store_dataset,
+            faiss::MetricType metric,
+            float metricArg,
+            IndicesOptions indicesOptions,
+            std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
+                    std::nullopt,
+            std::optional<cuvs::neighbors::ivf_pq::search_params>
+                    ivf_pq_search_params = std::nullopt,
+            float refine_rate = 2.0f);
 
-    CuvsCagra(GpuResources *resources, int dim, idx_t n, int graph_degree,
-              const float *distances, const idx_t *knn_graph,
-              faiss::MetricType metric, float metricArg,
-              IndicesOptions indicesOptions);
+    CuvsCagra(
+            GpuResources* resources,
+            int dim,
+            idx_t n,
+            int graph_degree,
+            const float* distances,
+            const idx_t* knn_graph,
+            faiss::MetricType metric,
+            float metricArg,
+            IndicesOptions indicesOptions);
 
     ~CuvsCagra() = default;
 
-    void train(idx_t n, const float *x);
+    void train(idx_t n, const float* x);
 
-    void search(Tensor<float, 2, true> &queries, int k,
-                Tensor<float, 2, true> &outDistances,
-                Tensor<idx_t, 2, true> &outIndices, idx_t max_queries,
-                idx_t itopk_size, idx_t max_iterations,
-                faiss::cagra_search_algo graph_search_algo, idx_t team_size,
-                idx_t search_width, idx_t min_iterations,
-                idx_t thread_block_size, faiss::cagra_hash_mode hash_mode,
-                idx_t hashmap_min_bitlen, float hashmap_max_fill_rate,
-                idx_t num_random_samplings, idx_t rand_xor_mask);
+    void search(
+            Tensor<float, 2, true>& queries,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<idx_t, 2, true>& outIndices,
+            idx_t max_queries,
+            idx_t itopk_size,
+            idx_t max_iterations,
+            faiss::cagra_search_algo graph_search_algo,
+            idx_t team_size,
+            idx_t search_width,
+            idx_t min_iterations,
+            idx_t thread_block_size,
+            faiss::cagra_hash_mode hash_mode,
+            idx_t hashmap_min_bitlen,
+            float hashmap_max_fill_rate,
+            idx_t num_random_samplings,
+            idx_t rand_xor_mask);
 
     void reset();
 
@@ -82,14 +103,14 @@ class CuvsCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const float *get_training_dataset() const;
+    const float* get_training_dataset() const;
 
-  private:
+   private:
     /// Collection of GPU resources that we use
-    GpuResources *resources_;
+    GpuResources* resources_;
 
     /// Training dataset
-    const float *storage_;
+    const float* storage_;
     int n_;
 
     /// Expected dimensionality of the vectors
@@ -119,7 +140,7 @@ class CuvsCagra {
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<float, uint32_t>> cuvs_index{
-        nullptr};
+            nullptr};
 };
 
 } // namespace gpu
