@@ -51,8 +51,6 @@ jobs:
         with:
           raft: "ON"
           cuda: "12.1.1"
-  linux-x86_64-GPU-RAFT-CUDA12-4-0-nightly:
-    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.4.0)
     # if: false
     runs-on: 4-core-ubuntu-gpu-t4
     env:
