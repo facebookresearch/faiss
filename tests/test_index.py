@@ -10,13 +10,13 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import unittest
 import faiss
-import sys
 import tempfile
 import os
 import re
 import warnings
 
 from common_faiss_tests import get_dataset, get_dataset_2
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 class TestModuleInterface(unittest.TestCase):
 
@@ -412,13 +412,8 @@ class TestRangeSearch(unittest.TestCase):
 
 
 class TestSearchAndReconstruct(unittest.TestCase):
-    # reorders based on ids when the distances are identical
-    # by sorting on the combination of distance and id
-    def stable_sort_ids_by_distance(self, I, D):
-        return [x for x, _ in sorted(np.column_stack((I, D)),
-                                     key=lambda x: (x[1], x[0]))]
 
-    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None, debug=False):
+    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
         n, d = xb.shape
         assert xq.shape[1] == d
         assert index.d == d
@@ -426,18 +421,10 @@ class TestSearchAndReconstruct(unittest.TestCase):
         D_ref, I_ref = index.search(xq, k)
         R_ref = index.reconstruct_n(0, n)
         D, I, R = index.search_and_reconstruct(xq, k)
-        # In some cases, when the distances are identical,
-        # `search_and_reconstruct` and `search` can return the ids
-        # in different order. Reorder such ids before comparing.
-        I_ref = np.asarray(
-            [self.stable_sort_ids_by_distance(I_ref[i], D_ref[i]) for i in range(len(I_ref))],  # noqa: E501
-            dtype=I_ref.dtype)
-        I = np.asarray([
-            self.stable_sort_ids_by_distance(I[i], D[i]) for i in range(len(I))],  # noqa: E501
-            dtype=I.dtype)
-        
+
         np.testing.assert_almost_equal(D, D_ref, decimal=5)
-        np.testing.assert_array_equal(I, I_ref)
+        # self.assertTrue((I == I_ref).all())
+        check_ref_knn_with_draws(D_ref, I_ref, D, I)
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)
 
@@ -523,7 +510,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
         index.train(xt)
         index.add(xb)
 
-        self.run_search_and_reconstruct(index, xb, xq, eps=1.0, debug=True)
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
 
     def test_MultiIndex(self):
         d = 32
