@@ -116,7 +116,6 @@ endif()
 ]=])
 endif()
 
-find_package(libstdcxx-ng 14.1.0-hc0a3c3a_0 EXACT REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
