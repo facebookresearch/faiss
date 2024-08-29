@@ -412,10 +412,11 @@ class TestRangeSearch(unittest.TestCase):
 
 
 class TestSearchAndReconstruct(unittest.TestCase):
-    # reorders based on ids when the distances are identical 
+    # reorders based on ids when the distances are identical
     # by sorting on the combination of distance and id
     def stable_sort_ids_by_distance(self, I, D):
-        return [x for x, _ in sorted(np.column_stack((I, D)), key=lambda x: (x[1], x[0]))]
+        return [x for x, _ in sorted(np.column_stack((I, D)),
+                                     key=lambda x: (x[1], x[0]))]
 
     def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None, debug=False):
         n, d = xb.shape
@@ -425,30 +426,17 @@ class TestSearchAndReconstruct(unittest.TestCase):
         D_ref, I_ref = index.search(xq, k)
         R_ref = index.reconstruct_n(0, n)
         D, I, R = index.search_and_reconstruct(xq, k)
-        # In some cases, when the distances are identical, `search_and_reconstruct` and `search` 
-        # can return the ids in different order. Reorder such ids before comparing.
-        I_ref = np.asarray([self.stable_sort_ids_by_distance(I_ref[i], D_ref[i]) for i in range(len(I_ref))], dtype=I_ref.dtype)
-        I = np.asarray([self.stable_sort_ids_by_distance(I[i], D[i]) for i in range(len(I))], dtype=I.dtype)
-
-        np.set_printoptions(threshold=sys.maxsize)
-        if debug:
-            print("printing xb", file=sys.stderr)
-            print(xb[-5:], file=sys.stderr)
-            print("printing xq", file=sys.stderr)
-            print(xq[-5:], file=sys.stderr)
-
+        # In some cases, when the distances are identical,
+        # `search_and_reconstruct` and `search` can return the ids
+        # in different order. Reorder such ids before comparing.
+        I_ref = np.asarray(
+            [self.stable_sort_ids_by_distance(I_ref[i], D_ref[i]) for i in range(len(I_ref))],  # noqa: E501
+            dtype=I_ref.dtype)
+        I = np.asarray([
+            self.stable_sort_ids_by_distance(I[i], D[i]) for i in range(len(I))],  # noqa: E501
+            dtype=I.dtype)
+        
         np.testing.assert_almost_equal(D, D_ref, decimal=5)
-        # self.assertTrue((I == I_ref).all())
-        # print not equals vectors
-        if debug and not (I == I_ref).all():
-            for i in range(len(I)):
-                if not (I[i] == I_ref[i]).all():
-                    print("i = ", i, file=sys.stderr)
-                    print("I[i] = ", I[i], file=sys.stderr)
-                    print("I_ref[i] = ", I_ref[i], file=sys.stderr)
-                    print("D[i] = ", D[i], file=sys.stderr)
-                    print("D_ref[i] = ", D_ref[i], file=sys.stderr)
-    
         np.testing.assert_array_equal(I, I_ref)
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)
