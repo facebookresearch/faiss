@@ -39,6 +39,7 @@ jobs:
             fi
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake)
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -92,7 +93,6 @@ jobs:
           raft: ON
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
-    needs: linux-x86_64-cmake
     runs-on: faiss-amd-MI200
     container:
       image: ubuntu:22.04

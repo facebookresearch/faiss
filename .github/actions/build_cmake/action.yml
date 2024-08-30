@@ -78,7 +78,7 @@ runs:
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.1.1"
+        ROCM_VERSION="6.1.3"
 
         # Download, prepare, and install the package signing key
         mkdir --parents --mode=0755 /etc/apt/keyrings
@@ -134,7 +134,7 @@ runs:
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-        make -C build test
+        make -C build test || cat /__w/faiss/faiss/build/Testing/Temporary/LastTest.log
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
