@@ -180,6 +180,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
     // specialized route (via enabling `useMMCodeDistance`)
     for (int tries = 0; tries < 2; ++tries) {
         Options opt;
+        opt.device = 0;
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -229,6 +230,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
     // These sizes are not specialized, they will fall back to the MM version
     for (int dimPerSubQ : {7, 11}) {
         Options opt;
+        opt.device = 0;
 
         opt.codes = 12;
         opt.dim = dimPerSubQ * opt.codes;

@@ -134,10 +134,7 @@ runs:
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-        make -C build test; cat /__w/faiss/faiss/build/Testing/Temporary/LastTest.log
-    - name: Setup tmate session
-      if: always()
-      uses: mxschmitt/action-tmate@v3
+        make -C build test ARGS="-V"
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
