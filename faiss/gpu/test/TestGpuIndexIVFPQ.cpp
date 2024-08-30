@@ -179,6 +179,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
     // (even for dimension sizes that would otherwise be handled by the
     // specialized route (via enabling `useMMCodeDistance`)
     for (int tries = 0; tries < 2; ++tries) {
+        printf("<first-loop-run-%i>\n", tries);
         Options opt;
         opt.device = 0;
 
@@ -225,10 +226,12 @@ void testMMCodeDistance(faiss::MetricType mt) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+        printf("</first-loop-run-%i>\n", tries);
     }
 
     // These sizes are not specialized, they will fall back to the MM version
     for (int dimPerSubQ : {7, 11}) {
+        printf("<second-loop-dimpersubq-%i>\n", dimPerSubQ);
         Options opt;
         opt.device = 0;
 
@@ -276,6 +279,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
                 opt.getCompareEpsilon(),
                 opt.getPctMaxDiff1(),
                 opt.getPctMaxDiffN());
+        printf("</second-loop-dimpersubq-%i>\n", dimPerSubQ);
     }
 }
 
