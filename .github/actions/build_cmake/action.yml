@@ -134,7 +134,7 @@ runs:
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-        make -C build test || cat /__w/faiss/faiss/build/Testing/Temporary/LastTest.log
+        make -C build test; cat /__w/faiss/faiss/build/Testing/Temporary/LastTest.log
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
