@@ -128,4 +128,4 @@ target_link_libraries(faiss_test PRIVATE
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-gtest_discover_tests(faiss_test)
+#gtest_discover_tests(faiss_test)

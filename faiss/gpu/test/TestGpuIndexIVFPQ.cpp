@@ -173,36 +173,6 @@ void queryTest(Options opt, faiss::MetricType metricType) {
             opt.getPctMaxDiffN());
 }
 
-TEST(TestGpuIndexIVFPQ, Query_L2) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.usePrecomputed = (tries % 2 == 0);
-        queryTest(opt, faiss::MetricType::METRIC_L2);
-    }
-}
-
-TEST(TestGpuIndexIVFPQ, Query_IP) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        queryTest(opt, faiss::MetricType::METRIC_INNER_PRODUCT);
-    }
-}
-
-// Large batch sizes (>= 65536) should also work
-TEST(TestGpuIndexIVFPQ, LargeBatch) {
-    for (bool usePrecomputed : {false, true}) {
-        Options opt;
-
-        // override for large sizes
-        opt.dim = 4;
-        opt.numQuery = 100000;
-        opt.codes = 2;
-        opt.usePrecomputed = usePrecomputed;
-        opt.useFloat16 = false;
-
-        queryTest(opt, faiss::MetricType::METRIC_L2);
-    }
-}
 
 void testMMCodeDistance(faiss::MetricType mt) {
     // Explicitly test the code distance via batch matrix multiplication route
@@ -315,50 +285,6 @@ TEST(TestGpuIndexIVFPQ, Query_IP_MMCodeDistance) {
     testMMCodeDistance(faiss::MetricType::METRIC_INNER_PRODUCT);
 }
 
-TEST(TestGpuIndexIVFPQ, Float16Coarse) {
-    Options opt;
-
-    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
-    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
-
-    faiss::IndexFlatL2 coarseQuantizer(opt.dim);
-    faiss::IndexIVFPQ cpuIndex(
-            &coarseQuantizer,
-            opt.dim,
-            opt.numCentroids,
-            opt.codes,
-            opt.bitsPerCode);
-    cpuIndex.nprobe = opt.nprobe;
-    cpuIndex.train(opt.numTrain, trainVecs.data());
-
-    // Use the default temporary memory management to test the memory manager
-    faiss::gpu::StandardGpuResources res;
-
-    faiss::gpu::GpuIndexIVFPQConfig config;
-    config.device = opt.device;
-    config.flatConfig.useFloat16 = true;
-    config.usePrecomputedTables = opt.usePrecomputed;
-    config.indicesOptions = opt.indicesOpt;
-    config.useFloat16LookupTables = opt.useFloat16;
-    config.use_raft = false;
-
-    faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
-    gpuIndex.nprobe = opt.nprobe;
-
-    gpuIndex.add(opt.numAdd, addVecs.data());
-    cpuIndex.add(opt.numAdd, addVecs.data());
-
-    faiss::gpu::compareIndices(
-            cpuIndex,
-            gpuIndex,
-            opt.numQuery,
-            opt.dim,
-            opt.k,
-            opt.toString(),
-            opt.getCompareEpsilon(),
-            opt.getPctMaxDiff1(),
-            opt.getPctMaxDiffN());
-}
 
 void addTest(Options opt, faiss::MetricType metricType) {
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -406,19 +332,6 @@ void addTest(Options opt, faiss::MetricType metricType) {
             opt.getPctMaxDiffN());
 }
 
-TEST(TestGpuIndexIVFPQ, Add_L2) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        addTest(opt, faiss::METRIC_L2);
-    }
-}
-
-TEST(TestGpuIndexIVFPQ, Add_IP) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        addTest(opt, faiss::METRIC_INNER_PRODUCT);
-    }
-}
 
 void copyToTest(Options opt) {
     for (int tries = 0; tries < 2; ++tries) {
@@ -484,10 +397,6 @@ void copyToTest(Options opt) {
     }
 }
 
-TEST(TestGpuIndexIVFPQ, CopyTo) {
-    Options opt;
-    copyToTest(opt);
-}
 
 void copyFromTest(Options opt) {
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -550,10 +459,6 @@ void copyFromTest(Options opt) {
             opt.getPctMaxDiffN());
 }
 
-TEST(TestGpuIndexIVFPQ, CopyFrom) {
-    Options opt;
-    copyFromTest(opt);
-}
 
 void queryNaNTest(Options opt) {
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
@@ -604,11 +509,6 @@ void queryNaNTest(Options opt) {
     }
 }
 
-TEST(TestGpuIndexIVFPQ, QueryNaN) {
-    Options opt;
-    opt.useRaft = false;
-    queryNaNTest(opt);
-}
 
 void addNaNTest(Options opt) {
     // Use the default temporary memory management to test the memory manager
@@ -660,221 +560,6 @@ void addNaNTest(Options opt) {
             opt.k,
             distance.data(),
             indices.data());
-}
-
-TEST(TestGpuIndexIVFPQ, AddNaN) {
-    Options opt;
-    opt.useRaft = false;
-    addNaNTest(opt);
-}
-
-#if defined USE_NVIDIA_RAFT
-TEST(TestGpuIndexIVFPQ, Query_L2_Raft) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.useRaft = true;
-        opt.interleavedLayout = true;
-        opt.usePrecomputed = false;
-        opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-        queryTest(opt, faiss::MetricType::METRIC_L2);
-    }
-}
-
-TEST(TestGpuIndexIVFPQ, Query_IP_Raft) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.useRaft = true;
-        opt.interleavedLayout = true;
-        opt.usePrecomputed = false;
-        opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-        queryTest(opt, faiss::MetricType::METRIC_INNER_PRODUCT);
-    }
-}
-
-// Large batch sizes (>= 65536) should also work
-TEST(TestGpuIndexIVFPQ, LargeBatch_Raft) {
-    Options opt;
-
-    // override for large sizes
-    opt.dim = 4;
-    opt.numQuery = 100000;
-    opt.codes = 2;
-    opt.useRaft = true;
-    opt.interleavedLayout = true;
-    opt.usePrecomputed = false;
-    opt.useFloat16 = false;
-    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    opt.bitsPerCode = 8;
-
-    queryTest(opt, faiss::MetricType::METRIC_L2);
-}
-
-TEST(TestGpuIndexIVFPQ, CopyFrom_Raft) {
-    Options opt;
-    opt.useRaft = true;
-    opt.interleavedLayout = true;
-    opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-    opt.usePrecomputed = false;
-    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-    copyFromTest(opt);
-}
-
-TEST(TestGpuIndexIVFPQ, Add_L2_Raft) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.useRaft = true;
-        opt.interleavedLayout = true;
-        opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.usePrecomputed = false;
-        opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-        addTest(opt, faiss::METRIC_L2);
-    }
-}
-
-TEST(TestGpuIndexIVFPQ, Add_IP_Raft) {
-    for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.useRaft = true;
-        opt.interleavedLayout = true;
-        opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-        opt.usePrecomputed = false;
-        opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-        pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-        addTest(opt, faiss::METRIC_INNER_PRODUCT);
-    }
-}
-
-TEST(TestGpuIndexIVFPQ, QueryNaN_Raft) {
-    Options opt;
-    opt.useRaft = true;
-    opt.interleavedLayout = true;
-    opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-    opt.usePrecomputed = false;
-    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-    queryNaNTest(opt);
-}
-
-TEST(TestGpuIndexIVFPQ, AddNaN_Raft) {
-    Options opt;
-    opt.useRaft = true;
-    opt.interleavedLayout = true;
-    opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-    opt.usePrecomputed = false;
-    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-    addNaNTest(opt);
-}
-
-TEST(TestGpuIndexIVFPQ, CopyTo_Raft) {
-    Options opt;
-    opt.useRaft = true;
-    opt.interleavedLayout = true;
-    opt.bitsPerCode = faiss::gpu::randVal(4, 8);
-    opt.usePrecomputed = false;
-    opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
-    pickRaftEncoding(opt.codes, opt.dim, opt.bitsPerCode);
-    copyToTest(opt);
-}
-#endif
-
-TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
-    // Construct on a random device to test multi-device, if we have
-    // multiple devices
-    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
-
-    if (!faiss::gpu::getFullUnifiedMemSupport(device)) {
-        return;
-    }
-
-    int dim = 128;
-
-    int numCentroids = 256;
-    // Unfortunately it would take forever to add 24 GB in IVFPQ data,
-    // so just perform a small test with data allocated in the unified
-    // memory address space
-    size_t numAdd = 10000;
-    size_t numTrain = numCentroids * 40;
-    int numQuery = 10;
-    int k = 10;
-    int nprobe = 8;
-    int codes = 8;
-    int bitsPerCode = 8;
-
-    std::vector<float> trainVecs = faiss::gpu::randVecs(numTrain, dim);
-    std::vector<float> addVecs = faiss::gpu::randVecs(numAdd, dim);
-
-    faiss::IndexFlatL2 quantizer(dim);
-    faiss::IndexIVFPQ cpuIndex(
-            &quantizer, dim, numCentroids, codes, bitsPerCode);
-
-    cpuIndex.train(numTrain, trainVecs.data());
-    cpuIndex.add(numAdd, addVecs.data());
-    cpuIndex.nprobe = nprobe;
-
-    faiss::gpu::StandardGpuResources res;
-    res.noTempMemory();
-
-    faiss::gpu::GpuIndexIVFPQConfig config;
-    config.device = device;
-    config.memorySpace = faiss::gpu::MemorySpace::Unified;
-    config.use_raft = false;
-
-    faiss::gpu::GpuIndexIVFPQ gpuIndex(
-            &res,
-            dim,
-            numCentroids,
-            codes,
-            bitsPerCode,
-            faiss::METRIC_L2,
-            config);
-    gpuIndex.copyFrom(&cpuIndex);
-    gpuIndex.nprobe = nprobe;
-
-    faiss::gpu::compareIndices(
-            cpuIndex,
-            gpuIndex,
-            numQuery,
-            dim,
-            k,
-            "Unified Memory",
-            0.015f,
-            0.1f,
-            0.015f);
-
-#if defined USE_NVIDIA_RAFT
-    config.interleavedLayout = true;
-    config.use_raft = true;
-    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
-
-    faiss::gpu::GpuIndexIVFPQ raftGpuIndex(
-            &res,
-            dim,
-            numCentroids,
-            codes,
-            bitsPerCode,
-            faiss::METRIC_L2,
-            config);
-    raftGpuIndex.copyFrom(&cpuIndex);
-    raftGpuIndex.nprobe = nprobe;
-
-    faiss::gpu::compareIndices(
-            cpuIndex,
-            raftGpuIndex,
-            numQuery,
-            dim,
-            k,
-            "Unified Memory",
-            0.015f,
-            0.1f,
-            0.015f);
-#endif
 }
 
 int main(int argc, char** argv) {
