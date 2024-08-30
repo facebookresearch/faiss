@@ -21,8 +21,8 @@ or Torch tensors; no mixing is allowed.
 """
 
 
-import faiss
 import torch
+import faiss
 import contextlib
 import inspect
 import sys
