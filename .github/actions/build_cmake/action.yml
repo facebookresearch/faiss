@@ -167,6 +167,7 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-raft=${{ inputs.raft }}-rocm=${{ inputs.rocm }}
