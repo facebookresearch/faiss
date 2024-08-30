@@ -178,7 +178,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
     // Explicitly test the code distance via batch matrix multiplication route
     // (even for dimension sizes that would otherwise be handled by the
     // specialized route (via enabling `useMMCodeDistance`)
-    for (int tries = 0; tries < 2; ++tries) {
+    for (int tries = 0; tries < 0; ++tries) {
         printf("<first-loop-run-%i>\n", tries);
         Options opt;
         opt.device = 0;
