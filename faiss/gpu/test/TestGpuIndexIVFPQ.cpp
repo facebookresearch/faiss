@@ -182,6 +182,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         printf("<first-loop-run-%i>\n", tries);
         Options opt;
         opt.device = 0;
+        opt.nprobe = opt.numCentroids;
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
