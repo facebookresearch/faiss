@@ -36,7 +36,7 @@ import model_qinco
 
 with torch.no_grad():
 
-    qinco = torch.load("/tmp/bigann_8x8_L2.pt")
+    qinco = torch.load("/tmp/bigann_8x8_L2.pt", weights_only=False)
     qinco.eval()
     # print(qinco)
     if True:
