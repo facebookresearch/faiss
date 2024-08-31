@@ -235,6 +235,7 @@ void testMMCodeDistance(faiss::MetricType mt) {
         printf("<second-loop-dimpersubq-%i>\n", dimPerSubQ);
         Options opt;
         opt.device = 0;
+        opt.nprobe = opt.numCentroids;
 
         opt.codes = 12;
         opt.dim = dimPerSubQ * opt.codes;
