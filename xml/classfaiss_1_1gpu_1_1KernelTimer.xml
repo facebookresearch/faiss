@@ -58,15 +58,15 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af74c6cd80da226927867bb707f38e136" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::KernelTimer::KernelTimer</definition>
-        <argsstring>(cudaStream_t stream=0)</argsstring>
+        <argsstring>(cudaStream_t stream=nullptr)</argsstring>
         <name>KernelTimer</name>
         <param>
           <type>cudaStream_t</type>
           <declname>stream</declname>
-          <defval>0</defval>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -114,7 +114,7 @@
     <location file="faiss/gpu/utils/Timer.h" line="17" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>elapsedMilliseconds</name></member>
-      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>KernelTimer</name></member>
+      <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af74c6cd80da226927867bb707f38e136" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>KernelTimer</name></member>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ae02d1204dcac4dc5cff5be785312a7b4" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>startEvent_</name></member>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>stopEvent_</name></member>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" prot="private" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>stream_</name></member>

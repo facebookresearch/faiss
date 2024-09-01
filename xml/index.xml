@@ -6262,7 +6262,7 @@
     <member refid="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" kind="variable"><name>stopEvent_</name></member>
     <member refid="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" kind="variable"><name>stream_</name></member>
     <member refid="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec" kind="variable"><name>valid_</name></member>
-    <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" kind="function"><name>KernelTimer</name></member>
+    <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af74c6cd80da226927867bb707f38e136" kind="function"><name>KernelTimer</name></member>
     <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" kind="function"><name>~KernelTimer</name></member>
     <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" kind="function"><name>elapsedMilliseconds</name></member>
   </compound>
