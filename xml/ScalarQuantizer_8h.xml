@@ -7,6 +7,7 @@
     <includes refid="Quantizer_8h" local="no">faiss/impl/Quantizer.h</includes>
     <includedby refid="GpuIndexIVFFlat_8h" local="no">faiss/gpu/GpuIndexIVFFlat.h</includedby>
     <includedby refid="IndexScalarQuantizer_8h" local="no">faiss/IndexScalarQuantizer.h</includedby>
+    <includedby refid="perf__tests_2utils_8h" local="no">faiss/perf_tests/utils.h</includedby>
     <incdepgraph>
       <node id="9">
         <label>faiss/impl/platform_macros.h</label>
@@ -133,6 +134,8 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
@@ -141,6 +144,10 @@
       <node id="4">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="7">
+        <label>faiss/perf_tests/utils.h</label>
+        <link refid="perf__tests_2utils_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1ScalarQuantizer" prot="public">faiss::ScalarQuantizer</innerclass>

@@ -9,7 +9,7 @@
     <includes local="no">vector</includes>
     <includes refid="AdditiveQuantizer_8h" local="no">faiss/impl/AdditiveQuantizer.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
-    <includes refid="utils_8h" local="no">faiss/utils/utils.h</includes>
+    <includes refid="utils_2utils_8h" local="no">faiss/utils/utils.h</includes>
     <includedby refid="GpuIcmEncoder_8h" local="no">faiss/gpu/GpuIcmEncoder.h</includedby>
     <includedby refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includedby>
     <includedby refid="IndexAdditiveQuantizer_8h" local="no">faiss/IndexAdditiveQuantizer.h</includedby>
@@ -191,7 +191,7 @@
       </node>
       <node id="20">
         <label>faiss/utils/utils.h</label>
-        <link refid="utils_8h_source"/>
+        <link refid="utils_2utils_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="21" relation="include">

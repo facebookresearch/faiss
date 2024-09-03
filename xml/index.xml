@@ -9331,17 +9331,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d134" kind="namespace"><name>faiss::@134</name>
+  <compound refid="namespacefaiss_1_1_0d135" kind="namespace"><name>faiss::@135</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d143" kind="namespace"><name>faiss::@143</name>
+  <compound refid="namespacefaiss_1_1_0d144" kind="namespace"><name>faiss::@144</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d160" kind="namespace"><name>faiss::@160</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d162" kind="namespace"><name>faiss::@162</name>
+  <compound refid="namespacefaiss_1_1_0d161" kind="namespace"><name>faiss::@161</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d163" kind="namespace"><name>faiss::@163</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d165" kind="namespace"><name>faiss::@165</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -9543,6 +9543,9 @@
   </compound>
   <compound refid="namespacefaiss_1_1nsg" kind="namespace"><name>faiss::nsg</name>
     <member refid="NSG_8h_1a491ec45b49c9c454d16fe800c5df9184" kind="function"><name>storage_distance_computer</name></member>
+  </compound>
+  <compound refid="namespacefaiss_1_1perf__tests" kind="namespace"><name>faiss::perf_tests</name>
+    <member refid="perf__tests_2utils_8h_1a307d17bf2e4a0b4dbd4b27d70a2f336f" kind="function"><name>sq_types</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1quantize__lut" kind="namespace"><name>faiss::quantize_lut</name>
     <member refid="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" kind="function"><name>round_uint8_per_column</name></member>
@@ -9990,6 +9993,10 @@
   </compound>
   <compound refid="MetricType_8h" kind="file"><name>MetricType.h</name>
   </compound>
+  <compound refid="perf__tests_2utils_8h" kind="file"><name>utils.h</name>
+  </compound>
+  <compound refid="utils_2utils_8h" kind="file"><name>utils.h</name>
+  </compound>
   <compound refid="python__callbacks_8h" kind="file"><name>python_callbacks.h</name>
   </compound>
   <compound refid="AlignedTable_8h" kind="file"><name>AlignedTable.h</name>
@@ -10085,8 +10092,6 @@
   </compound>
   <compound refid="transpose-avx2-inl_8h" kind="file"><name>transpose-avx2-inl.h</name>
   </compound>
-  <compound refid="utils_8h" kind="file"><name>utils.h</name>
-  </compound>
   <compound refid="WorkerThread_8h" kind="file"><name>WorkerThread.h</name>
   </compound>
   <compound refid="VectorTransform_8h" kind="file"><name>VectorTransform.h</name>
@@ -10111,13 +10116,15 @@
   </compound>
   <compound refid="dir_a990053ab0ed2a0e35fd7924fe582c4e" kind="dir"><name>faiss/utils/hamming_distance</name>
   </compound>
-  <compound refid="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir"><name>faiss/impl</name>
-  </compound>
   <compound refid="dir_c7562a8177f4c7fed0562155251b7d22" kind="dir"><name>faiss/gpu/impl</name>
+  </compound>
+  <compound refid="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir"><name>faiss/impl</name>
   </compound>
   <compound refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir"><name>faiss/invlists</name>
   </compound>
   <compound refid="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir"><name>faiss/gpu/perf</name>
+  </compound>
+  <compound refid="dir_9a7da9ee4fe680479f0b36ca15318b4e" kind="dir"><name>faiss/perf_tests</name>
   </compound>
   <compound refid="dir_17d03c0b48df2002720ab53d8fded289" kind="dir"><name>faiss/python</name>
   </compound>

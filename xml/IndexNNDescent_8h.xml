@@ -5,7 +5,7 @@
     <includes local="no">vector</includes>
     <includes refid="IndexFlat_8h" local="no">faiss/IndexFlat.h</includes>
     <includes refid="NNDescent_8h" local="no">faiss/impl/NNDescent.h</includes>
-    <includes refid="utils_8h" local="no">faiss/utils/utils.h</includes>
+    <includes refid="utils_2utils_8h" local="no">faiss/utils/utils.h</includes>
     <includedby refid="IndexNSG_8h" local="no">faiss/IndexNSG.h</includedby>
     <incdepgraph>
       <node id="22">
@@ -208,7 +208,7 @@
       </node>
       <node id="35">
         <label>faiss/utils/utils.h</label>
-        <link refid="utils_8h_source"/>
+        <link refid="utils_2utils_8h_source"/>
         <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="36" relation="include">

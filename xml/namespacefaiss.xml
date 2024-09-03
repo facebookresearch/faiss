@@ -274,6 +274,7 @@
     <innernamespace refid="namespacefaiss_1_1nn">faiss::nn</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nndescent">faiss::nndescent</innernamespace>
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1perf__tests">faiss::perf_tests</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>

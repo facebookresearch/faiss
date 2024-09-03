@@ -153,6 +153,8 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
       </node>
       <node id="24">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
@@ -161,6 +163,10 @@
       <node id="26">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="27">
+        <label>faiss/perf_tests/utils.h</label>
+        <link refid="perf__tests_2utils_8h_source"/>
       </node>
       <node id="2">
         <label>faiss/impl/AdditiveQuantizer.h</label>
