@@ -22,11 +22,11 @@ or Torch tensors; no mixing is allowed.
 
 
 import torch
-import faiss
 import contextlib
 import inspect
 import sys
 import numpy as np
+import faiss
 
 def swig_ptr_from_UInt8Tensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
