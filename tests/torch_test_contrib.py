@@ -3,11 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import torch
-import unittest
-import numpy as np
-import faiss
-import faiss.contrib.torch_utils
+import torch  # usort: skip
+import unittest   # usort: skip
+import numpy as np   # usort: skip
+
+import faiss   # usort: skip
+import faiss.contrib.torch_utils  # usort: skip
 
 class TestTorchUtilsCPU(unittest.TestCase):
     # tests add, search
