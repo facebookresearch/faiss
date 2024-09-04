@@ -135,6 +135,9 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test ARGS="-V"
+    - name: Setup tmate session
+      if: failure()
+      uses: mxschmitt/action-tmate@v3
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
