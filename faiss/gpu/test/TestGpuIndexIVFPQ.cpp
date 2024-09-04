@@ -235,14 +235,15 @@ void testMMCodeDistance(faiss::MetricType mt) {
         printf("<second-loop-dimpersubq-%i>\n", dimPerSubQ);
         Options opt;
         opt.device = 0;
-        opt.nprobe = opt.numCentroids;
+        opt.nprobe = opt.numCentroids = 10;
+        opt.numAdd = opt.numTrain = 256;
 
         opt.codes = 12;
         opt.dim = dimPerSubQ * opt.codes;
 
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
-        std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+        std::vector<float> addVecs = trainVecs;
 
         faiss::IndexFlat coarseQuantizer(opt.dim, mt);
         faiss::IndexIVFPQ cpuIndex(
@@ -254,6 +255,24 @@ void testMMCodeDistance(faiss::MetricType mt) {
         cpuIndex.nprobe = opt.nprobe;
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numAdd, addVecs.data());
+
+        
+        float* queryVector = new float[opt.dim];
+        for (int i = 0; i < opt.dim; i++) {
+            queryVector[i] = 0.0;
+        }
+        int k = opt.numAdd;
+        float* distances = new float[k];
+        faiss::idx_t* labels = new faiss::idx_t[k];
+        printf("total: %li\n", cpuIndex.ntotal);
+        cpuIndex.search(1, queryVector, k, distances, labels);
+        std::cout << "<distances>" << std::endl;
+        std::sort(labels, labels + k);
+        for (int i = 0; i < k; i++) {
+            std::cout << distances[i] << std::endl;
+        }
+        std::cout << "</distances>" << std::endl;
+
 
         // Use the default temporary memory management to test the memory
         // manager
