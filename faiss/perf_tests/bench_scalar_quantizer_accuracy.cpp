@@ -27,7 +27,6 @@ static void bench_reconstruction_error(
         ScalarQuantizer::QuantizerType type,
         int d,
         int n) {
-    state.SetLabel(faiss::get_compile_options());
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
@@ -64,7 +63,6 @@ static void bench_reconstruction_error(
     state.counters["ndiff_for_idempotence"] = ndiff;
 
     state.counters["code_size_two"] = codes.size();
-    state.SetLabel(faiss::get_compile_options());
 }
 
 int main(int argc, char** argv) {
