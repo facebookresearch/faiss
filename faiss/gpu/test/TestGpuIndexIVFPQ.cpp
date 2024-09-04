@@ -256,24 +256,6 @@ void testMMCodeDistance(faiss::MetricType mt) {
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.add(opt.numAdd, addVecs.data());
 
-        
-        float* queryVector = new float[opt.dim];
-        for (int i = 0; i < opt.dim; i++) {
-            queryVector[i] = 0.0;
-        }
-        int k = opt.numAdd;
-        float* distances = new float[k];
-        faiss::idx_t* labels = new faiss::idx_t[k];
-        printf("total: %li\n", cpuIndex.ntotal);
-        cpuIndex.search(1, queryVector, k, distances, labels);
-        std::cout << "<distances>" << std::endl;
-        std::sort(labels, labels + k);
-        for (int i = 0; i < k; i++) {
-            std::cout << distances[i] << std::endl;
-        }
-        std::cout << "</distances>" << std::endl;
-
-
         // Use the default temporary memory management to test the memory
         // manager
         faiss::gpu::StandardGpuResources res;
@@ -289,6 +271,46 @@ void testMMCodeDistance(faiss::MetricType mt) {
 
         faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
         gpuIndex.nprobe = opt.nprobe;
+
+        {
+            std::cout << "<cpu>" << std::endl;
+            float* queryVector = new float[opt.dim];
+            for (int i = 0; i < opt.dim; i++) {
+                queryVector[i] = 0.0;
+            }
+            int k = opt.numAdd;
+            float* distances = new float[k];
+            faiss::idx_t* labels = new faiss::idx_t[k];
+            printf("total: %li\n", cpuIndex.ntotal);
+            cpuIndex.search(1, queryVector, k, distances, labels);
+            std::cout << "<distances>" << std::endl;
+            std::sort(labels, labels + k);
+            for (int i = 0; i < k; i++) {
+                std::cout << distances[i] << std::endl;
+            }
+            std::cout << "</distances>" << std::endl;
+            std::cout << "</cpu>" << std::endl;
+        }
+
+        {
+            std::cout << "<gpu>" << std::endl;
+            float* queryVector = new float[opt.dim];
+            for (int i = 0; i < opt.dim; i++) {
+                queryVector[i] = 0.0;
+            }
+            int k = opt.numAdd;
+            float* distances = new float[k];
+            faiss::idx_t* labels = new faiss::idx_t[k];
+            printf("total: %li\n", gpuIndex.ntotal);
+            gpuIndex.search(1, queryVector, k, distances, labels);
+            std::cout << "<distances>" << std::endl;
+            std::sort(labels, labels + k);
+            for (int i = 0; i < k; i++) {
+                std::cout << distances[i] << std::endl;
+            }
+            std::cout << "</distances>" << std::endl;
+            std::cout << "</gpu>" << std::endl;
+        }
 
         faiss::gpu::compareIndices(
                 cpuIndex,
