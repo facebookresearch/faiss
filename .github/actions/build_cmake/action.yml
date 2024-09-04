@@ -140,7 +140,7 @@ runs:
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-        make -C build test
+        make -C build test ARGS="-V"
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
