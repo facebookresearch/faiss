@@ -19,6 +19,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Setup tmate session
+      if: always()
+      uses: mxschmitt/action-tmate@v3
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -135,9 +138,6 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test ARGS="-V"
-    - name: Setup tmate session
-      if: failure()
-      uses: mxschmitt/action-tmate@v3
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
