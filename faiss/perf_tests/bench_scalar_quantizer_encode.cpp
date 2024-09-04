@@ -28,7 +28,6 @@ static void bench_encode(
         ScalarQuantizer::QuantizerType type,
         int d,
         int n) {
-    state.SetLabel(faiss::get_compile_options());
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
