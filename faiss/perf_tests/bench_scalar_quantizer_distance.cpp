@@ -27,7 +27,6 @@ static void bench_distance(
         ScalarQuantizer::QuantizerType type,
         int n,
         int d) {
-    state.SetLabel(faiss::get_compile_options());
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
@@ -45,8 +44,6 @@ static void bench_distance(
     // encode
     std::vector<uint8_t> codes(code_size * n);
     sq.compute_codes(x.data(), codes.data(), n);
-
-    state.SetLabel(faiss::get_compile_options());
 
     std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
             sq.get_distance_computer());
