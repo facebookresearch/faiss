@@ -132,7 +132,6 @@ runs:
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
-              -DCMAKE_PREFIX_PATH=/opt/rocm \
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
