@@ -5,28 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <fmt/format.h>
+#include <gflags/gflags.h>
 #include <omp.h>
 #include <cstdio>
+#include <map>
 
 #include <benchmark/benchmark.h>
 #include <faiss/impl/ScalarQuantizer.h>
-#include <faiss/utils/distances.h>
+#include <faiss/perf_tests/utils.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
 using namespace faiss;
+DEFINE_uint32(d, 128, "dimension");
+DEFINE_uint32(n, 2000, "dimension");
+DEFINE_uint32(iterations, 20, "iterations");
 
-static void bench(benchmark::State& state) {
-    int d = 128;
-    int n = 2000;
-    state.SetLabel(faiss::get_compile_options());
-
+static void bench_distance(
+        benchmark::State& state,
+        ScalarQuantizer::QuantizerType type,
+        int n,
+        int d) {
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
 
     // make sure it's idempotent
-    ScalarQuantizer sq(d, ScalarQuantizer::QT_6bit);
+    ScalarQuantizer sq(d, type);
 
     omp_set_num_threads(1);
 
@@ -39,32 +45,10 @@ static void bench(benchmark::State& state) {
     std::vector<uint8_t> codes(code_size * n);
     sq.compute_codes(x.data(), codes.data(), n);
 
-    // decode
-    std::vector<float> x2(d * n);
-    sq.decode(codes.data(), x2.data(), n);
-
-    state.counters["sql2_recons_error"] =
-            fvec_L2sqr(x.data(), x2.data(), n * d) / n;
-
-    // encode again
-    std::vector<uint8_t> codes2(code_size * n);
-    sq.compute_codes(x2.data(), codes2.data(), n);
-
-    size_t ndiff = 0;
-    for (size_t i = 0; i < codes.size(); i++) {
-        if (codes[i] != codes2[i])
-            ndiff++;
-    }
-
-    state.counters["ndiff_for_idempotence"] = ndiff;
-
-    state.counters["code_size_two"] = codes.size();
-
     std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
             sq.get_distance_computer());
     dc->codes = codes.data();
     dc->code_size = sq.code_size;
-    state.counters["code_size_three"] = dc->code_size;
 
     for (auto _ : state) {
         float sum_dis = 0;
@@ -76,7 +60,25 @@ static void bench(benchmark::State& state) {
         }
     }
 }
-// I think maybe n and d should be input arguments
-// for things to really make sense, idk.
-BENCHMARK(bench)->Iterations(20);
-BENCHMARK_MAIN();
+
+int main(int argc, char** argv) {
+    benchmark::Initialize(&argc, argv);
+    gflags::AllowCommandLineReparsing();
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    int iterations = FLAGS_iterations;
+    int d = FLAGS_d;
+    int n = FLAGS_n;
+    auto benchs = ::perf_tests::sq_types();
+
+    for (auto& [bench_name, quantizer_type] : benchs) {
+        benchmark::RegisterBenchmark(
+                fmt::format("{}_{}d_{}n", bench_name, d, n).c_str(),
+                bench_distance,
+                quantizer_type,
+                d,
+                n)
+                ->Iterations(iterations);
+    }
+    benchmark::RunSpecifiedBenchmarks();
+    benchmark::Shutdown();
+}

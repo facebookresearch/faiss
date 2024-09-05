@@ -3,14 +3,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import torch
-from torch import nn
-import unittest
-import numpy as np
-import faiss
+import torch  # usort: skip
+from torch import nn  # usort: skip
+import unittest  # usort: skip
+import numpy as np  # usort: skip
 
-from faiss.contrib import datasets
-from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
+import faiss  # usort: skip
+
+from faiss.contrib import datasets  # usort: skip
+from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks  # usort: skip
 
 
 class TestLayer(unittest.TestCase):
