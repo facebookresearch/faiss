@@ -348,7 +348,8 @@ class SearchOperator(IndexOperator):
         if hasattr(knn_desc, "index"):
             return
 
-        if knn_desc.index_desc.index is not None:
+        assert knn_desc.index_desc is not None
+        if hasattr(knn_desc.index_desc, "index"):
             knn_desc.index = knn_desc.index_desc.index
             knn_desc.index.knn_name = knn_desc.get_name()
             knn_desc.index.search_params = knn_desc.search_params
@@ -359,6 +360,7 @@ class SearchOperator(IndexOperator):
                 metric=self.distance_metric,
                 bucket=knn_desc.index_desc.bucket,
                 index_path=knn_desc.index_desc.path,
+                index_name=knn_desc.index_desc.get_name(),
                 # knn_name=knn_desc.get_name(),
                 search_params=knn_desc.search_params,
             )
@@ -544,6 +546,31 @@ class SearchOperator(IndexOperator):
     def knn_search_benchmark(
         self, dry_run, results: Dict[str, Any], knn_desc: KnnDescriptor
     ):
+        gt_knn_D = None
+        gt_knn_I = None
+        if hasattr(self, "gt_knn_D"):
+            gt_knn_D = self.gt_knn_D
+            gt_knn_I = self.gt_knn_I
+
+        assert hasattr(knn_desc, "index")
+        if not knn_desc.index.is_flat_index() and gt_knn_I is None:
+            key = knn_desc.index.get_knn_search_name(
+                search_parameters=knn_desc.search_params,
+                query_vectors=knn_desc.query_dataset,
+                k=knn_desc.k,
+                reconstruct=False,
+            )
+            metrics, requires = knn_desc.index.knn_search(
+                dry_run,
+                knn_desc.search_params,
+                knn_desc.query_dataset,
+                knn_desc.k,
+            )[3:]
+            if requires is not None:
+                return results, requires
+            results["experiments"][key] = metrics
+            return results, requires
+
         return self.search_benchmark(
             name="knn_search",
             search_func=lambda parameters: knn_desc.index.knn_search(
@@ -551,8 +578,8 @@ class SearchOperator(IndexOperator):
                 parameters,
                 knn_desc.query_dataset,
                 knn_desc.k,
-                self.gt_knn_I,
-                self.gt_knn_D,
+                gt_knn_I,
+                gt_knn_D,
             )[3:],
             key_func=lambda parameters: knn_desc.index.get_knn_search_name(
                 search_parameters=parameters,
@@ -634,6 +661,7 @@ class ExecutionOperator:
     train_op: Optional[TrainOperator] = None
     build_op: Optional[BuildOperator] = None
     search_op: Optional[SearchOperator] = None
+    compute_gt: bool = True
 
     def __post_init__(self):
         if self.distance_metric == "IP":
@@ -698,16 +726,11 @@ class ExecutionOperator:
         faiss.omp_set_num_threads(self.num_threads)
         assert self.search_op is not None
 
-        if not dry_run:
+        if not dry_run and self.compute_gt:
             self.create_gt_knn(knn_desc)
             self.create_range_ref_knn(knn_desc)
 
         self.search_op.build_index_wrapper(knn_desc)
-        meta, requires = knn_desc.index.fetch_meta(dry_run=dry_run)
-        if requires is not None:
-            # return results, (requires if train else None)
-            return results, requires
-        results["indices"][knn_desc.index.get_codec_name()] = meta
 
         # results, requires = self.reconstruct_benchmark(
         #     dry_run=True,
@@ -766,9 +789,11 @@ class ExecutionOperator:
                 ref_index_desc.search_params,
                 range_metric,
             )
-            gt_rsm = self.search_op.range_ground_truth(
-                gt_radius, range_search_metric_function
-            )
+            gt_rsm = None
+            if self.compute_gt:
+                gt_rsm = self.search_op.range_ground_truth(
+                    gt_radius, range_search_metric_function
+                )
             results, requires = self.search_op.range_search_benchmark(
                 dry_run=True,
                 results=results,
@@ -847,9 +872,13 @@ class ExecutionOperator:
         if self.search_op:
             gt_knn_desc = self.search_op.get_flat_desc(knn_desc.flat_name())
             if gt_knn_desc is None:
-                gt_index_desc = self.build_op.get_flat_desc(
-                    knn_desc.index_desc.flat_name()
-                )
+                if knn_desc.index_desc is not None:
+                    gt_index_desc = knn_desc.gt_index_desc
+                else:
+                    gt_index_desc = self.build_op.get_flat_desc(
+                        knn_desc.index_desc.flat_name()
+                    )
+                    knn_desc.gt_index_desc = gt_index_desc
                 assert gt_index_desc is not None
                 gt_knn_desc = KnnDescriptor(
                     d=knn_desc.d,
@@ -933,7 +962,10 @@ class ExecutionOperator:
         if self.search_op is not None:
             for desc in self.search_op.knn_descs:
                 results, requires = self.search_one(
-                    knn_desc=desc, results=results, dry_run=dry_run, range=self.search_op.range
+                    knn_desc=desc,
+                    results=results,
+                    dry_run=dry_run,
+                    range=self.search_op.range,
                 )
                 if dry_run:
                     if requires is None:
