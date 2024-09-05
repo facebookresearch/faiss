@@ -1245,10 +1245,13 @@ void * cast_integer_to_void_ptr (int64_t x) {
 %}
 
 %inline %{
-    void wait() {
-        // in gdb, use return to get out of this function
-        for(int i = 0; i == 0; i += 0);
-    }
- %}
+
+// the SWIG version is a 6-digit hex string, eg. version 3.2.1 is encoded as
+// 0x030201
+uint64_t swig_version() {
+    return SWIG_VERSION;
+}
+
+%}
 
 // End of file...

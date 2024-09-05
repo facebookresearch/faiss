@@ -3,12 +3,14 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from packaging.version import Version
 import platform
 import subprocess
 import logging
 import os
 
+
+def Version(v):
+    return [int(x) for x in v.split('.')]
 
 def supported_instruction_sets():
     """
