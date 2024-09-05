@@ -5,8 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <omp.h>
+#include <faiss/perf_tests/utils.h>
+#include <fmt/format.h>
+#include <gflags/gflags.h>
 #include <cstdio>
+#include <map>
 
 #include <benchmark/benchmark.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -15,20 +18,21 @@
 #include <faiss/utils/utils.h>
 
 using namespace faiss;
+DEFINE_uint32(d, 128, "dimension");
+DEFINE_uint32(n, 2000, "dimension");
+DEFINE_uint32(iterations, 20, "iterations");
 
-static void bench(benchmark::State& state) {
-    int d = 128;
-    int n = 2000;
-    state.SetLabel(faiss::get_compile_options());
-
+static void bench_reconstruction_error(
+        benchmark::State& state,
+        ScalarQuantizer::QuantizerType type,
+        int d,
+        int n) {
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
 
     // make sure it's idempotent
-    ScalarQuantizer sq(d, ScalarQuantizer::QT_6bit);
-
-    omp_set_num_threads(1);
+    ScalarQuantizer sq(d, type);
 
     sq.train(n, x.data());
 
@@ -59,24 +63,27 @@ static void bench(benchmark::State& state) {
     state.counters["ndiff_for_idempotence"] = ndiff;
 
     state.counters["code_size_two"] = codes.size();
-
-    std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
-            sq.get_distance_computer());
-    dc->codes = codes.data();
-    dc->code_size = sq.code_size;
-    state.counters["code_size_three"] = dc->code_size;
-
-    for (auto _ : state) {
-        float sum_dis = 0;
-        for (int i = 0; i < n; i++) {
-            dc->set_query(&x[i * d]);
-            for (int j = 0; j < n; j++) {
-                benchmark::DoNotOptimize(sum_dis += (*dc)(j));
-            }
-        }
-    }
 }
-// I think maybe n and d should be input arguments
-// for things to really make sense, idk.
-BENCHMARK(bench)->Iterations(20);
-BENCHMARK_MAIN();
+
+int main(int argc, char** argv) {
+    benchmark::Initialize(&argc, argv);
+    gflags::AllowCommandLineReparsing();
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    int iterations = FLAGS_iterations;
+    int d = FLAGS_d;
+    int n = FLAGS_n;
+    auto benchs = ::perf_tests::sq_types();
+
+    for (auto& [bench_name, quantizer_type] : benchs) {
+        benchmark::RegisterBenchmark(
+                fmt::format("{}_{}d_{}n", bench_name, d, n).c_str(),
+                bench_reconstruction_error,
+                quantizer_type,
+                d,
+                n)
+                ->Iterations(iterations);
+    }
+
+    benchmark::RunSpecifiedBenchmarks();
+    benchmark::Shutdown();
+}
