@@ -70,7 +70,6 @@ jobs:
           opt_level: avx512
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
-    if: false
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -81,7 +80,6 @@ jobs:
           gpu: ON
   linux-x86_64-GPU-w-RAFT-cmake:
     name: Linux x86_64 GPU w/ RAFT (cmake)
-    needs: linux-x86_64-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
