@@ -51,13 +51,14 @@ runs:
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
-        # install CUDA packages
-        if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
+        # no CUDA needed for ROCm so skip this
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          :
+        # regular CUDA for GPU builds
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        fi
-
-        # install RAFT packages
-        if [ "${{ inputs.raft }}" = "ON" ]; then
+        # and CUDA from RAFT channel for RAFT builds
+        elif [ "${{ inputs.raft }}" = "ON" ]; then
           conda install -y -q libraft cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
