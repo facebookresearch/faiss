@@ -83,7 +83,7 @@ runs:
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.1.1"
+        ROCM_VERSION="6.2"
 
         # Download, prepare, and install the package signing key
         mkdir --parents --mode=0755 /etc/apt/keyrings
@@ -130,6 +130,7 @@ runs:
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
+              -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
