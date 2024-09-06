@@ -19,9 +19,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup tmate session
-      if: always()
-      uses: mxschmitt/action-tmate@v3
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
