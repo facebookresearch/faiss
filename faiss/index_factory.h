@@ -9,8 +9,11 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <regex>
 
 namespace faiss {
+
+bool re_match(const std::string& s, const std::string& pat, std::smatch& sm);
 
 /** Build and index with the sequence of processing steps described in
  *  the string. */

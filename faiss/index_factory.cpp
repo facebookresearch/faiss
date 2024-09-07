@@ -61,15 +61,15 @@ namespace faiss {
 
 int index_factory_verbose = 0;
 
+bool re_match(const std::string& s, const std::string& pat, std::smatch& sm) {
+    return std::regex_match(s, sm, std::regex(pat));
+}
+
 namespace {
 
 /***************************************************************
  * Small functions
  */
-
-bool re_match(const std::string& s, const std::string& pat, std::smatch& sm) {
-    return std::regex_match(s, sm, std::regex(pat));
-}
 
 // find first pair of matching parentheses
 void find_matching_parentheses(
