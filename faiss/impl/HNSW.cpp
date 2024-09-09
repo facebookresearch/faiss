@@ -775,7 +775,6 @@ int search_from_candidates(
             int counter = 0;
             size_t saved_j[4];
 
-            ndis += jmax - begin;
             threshold = res.threshold;
 
             auto add_to_heap = [&](const size_t idx, const float dis) {
@@ -814,6 +813,8 @@ int search_from_candidates(
                         add_to_heap(saved_j[id4], dis[id4]);
                     }
 
+                    ndis += 4;
+
                     counter = 0;
                 }
             }
@@ -821,6 +822,8 @@ int search_from_candidates(
             for (size_t icnt = 0; icnt < counter; icnt++) {
                 float dis = qdis(saved_j[icnt]);
                 add_to_heap(saved_j[icnt], dis);
+
+                ndis += 1;
             }
         }
 
@@ -919,8 +922,6 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             int counter = 0;
             size_t saved_j[4];
 
-            ndis += jmax - begin;
-
             auto add_to_heap = [&](const size_t idx, const float dis) {
                 if (top_candidates.top().first > dis ||
                     top_candidates.size() < ef) {
@@ -957,6 +958,8 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
                         add_to_heap(saved_j[id4], dis[id4]);
                     }
 
+                    ndis += 4;
+
                     counter = 0;
                 }
             }
@@ -964,6 +967,8 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             for (size_t icnt = 0; icnt < counter; icnt++) {
                 float dis = qdis(saved_j[icnt]);
                 add_to_heap(saved_j[icnt], dis);
+
+                ndis += 1;
             }
         }
 
