@@ -238,6 +238,18 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.index_factory(123, "IVF456,Flat")
         self.assertEqual(index.__class__, faiss.IndexIVFFlat)
 
+    def test_ivf_suffix_k(self):
+        index = faiss.index_factory(123, "IVF3k,Flat")
+        self.assertEqual(index.nlist, 3072)
+
+    def test_ivf_suffix_M(self):
+        index = faiss.index_factory(123, "IVF1M,Flat")
+        self.assertEqual(index.nlist, 1024 * 1024)
+
+    def test_ivf_suffix_HNSW_M(self):
+        index = faiss.index_factory(123, "IVF1M_HNSW,Flat")
+        self.assertEqual(index.nlist, 1024 * 1024)
+
     def test_idmap(self):
         index = faiss.index_factory(123, "Flat,IDMap")
         self.assertEqual(index.__class__, faiss.IndexIDMap)
