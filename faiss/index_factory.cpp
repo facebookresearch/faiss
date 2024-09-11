@@ -226,6 +226,19 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
  * Parse IndexIVF
  */
 
+size_t parse_nlist(std::string s) {
+    size_t multiplier = 1;
+    if (s.back() == 'k') {
+        s.pop_back();
+        multiplier = 1024;
+    }
+    if (s.back() == 'M') {
+        s.pop_back();
+        multiplier = 1024 * 1024;
+    }
+    return std::stoi(s) * multiplier;
+}
+
 // parsing guard + function
 Index* parse_coarse_quantizer(
         const std::string& description,
@@ -240,8 +253,8 @@ Index* parse_coarse_quantizer(
     };
     use_2layer = false;
 
-    if (match("IVF([0-9]+)")) {
-        nlist = std::stoi(sm[1].str());
+    if (match("IVF([0-9]+[kM]?)")) {
+        nlist = parse_nlist(sm[1].str());
         return new IndexFlat(d, mt);
     }
     if (match("IMI2x([0-9]+)")) {
@@ -252,18 +265,18 @@ Index* parse_coarse_quantizer(
         nlist = (size_t)1 << (2 * nbit);
         return new MultiIndexQuantizer(d, 2, nbit);
     }
-    if (match("IVF([0-9]+)_HNSW([0-9]*)")) {
-        nlist = std::stoi(sm[1].str());
+    if (match("IVF([0-9]+[kM]?)_HNSW([0-9]*)")) {
+        nlist = parse_nlist(sm[1].str());
         int hnsw_M = sm[2].length() > 0 ? std::stoi(sm[2]) : 32;
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
-    if (match("IVF([0-9]+)_NSG([0-9]+)")) {
-        nlist = std::stoi(sm[1].str());
+    if (match("IVF([0-9]+[kM]?)_NSG([0-9]+)")) {
+        nlist = parse_nlist(sm[1].str());
         int R = std::stoi(sm[2]);
         return new IndexNSGFlat(d, R, mt);
     }
-    if (match("IVF([0-9]+)\\(Index([0-9])\\)")) {
-        nlist = std::stoi(sm[1].str());
+    if (match("IVF([0-9]+[kM]?)\\(Index([0-9])\\)")) {
+        nlist = parse_nlist(sm[1].str());
         int no = std::stoi(sm[2].str());
         FAISS_ASSERT(no >= 0 && no < parenthesis_indexes.size());
         return parenthesis_indexes[no].release();

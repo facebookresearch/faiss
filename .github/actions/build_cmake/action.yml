@@ -51,13 +51,14 @@ runs:
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
-        # install CUDA packages
-        if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
+        # no CUDA needed for ROCm so skip this
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          :
+        # regular CUDA for GPU builds
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        fi
-
-        # install cuVS packages
-        if [ "${{ inputs.cuvs }}" = "ON" ]; then
+        # and CUDA from cuVS channel for cuVS builds
+        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
@@ -76,14 +77,14 @@ runs:
       shell: bash
       run: |
         # Update repos and install kmod, wget, gpg
-        sudo apt-get update
-        sudo apt-get install -y kmod wget gpg
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y kmod wget gpg >/dev/null
 
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.1.1"
+        ROCM_VERSION="6.2"
 
         # Download, prepare, and install the package signing key
         mkdir --parents --mode=0755 /etc/apt/keyrings
@@ -93,15 +94,17 @@ runs:
         wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
         rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-        sudo apt-get update --allow-insecure-repositories
-        sudo apt-get install -y --allow-unauthenticated \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}"
+        sudo apt-get -qq update --allow-insecure-repositories >/dev/null
+        sudo apt-get -qq install -y --allow-unauthenticated \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
+            "rocm-libs${ROCM_VERSION}" >/dev/null
 
         # Fake presence of MI200-class accelerators
         echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
-        sudo apt-get autoclean && sudo apt-get clean
+        sudo apt-get -qq autoclean >/dev/null
+        sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     - name: ROCm - Hipify
       if: inputs.rocm == 'ON'
