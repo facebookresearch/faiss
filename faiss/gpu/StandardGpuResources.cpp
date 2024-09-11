@@ -262,7 +262,7 @@ void StandardGpuResourcesImpl::setDefaultStream(
         // with the updated stream during any subsequent calls to getRaftHandle
         auto it2 = raftHandles_.find(device);
         if (it2 != raftHandles_.end()) {
-            raftHandles_.erase(it2);
+            raft::resource::set_cuda_stream(it2->second, stream);
         }
 #endif
     }
@@ -288,7 +288,7 @@ void StandardGpuResourcesImpl::revertDefaultStream(int device) {
         // with the updated stream during any subsequent calls to getRaftHandle
         auto it2 = raftHandles_.find(device);
         if (it2 != raftHandles_.end()) {
-            raftHandles_.erase(it2);
+            raft::resource::set_cuda_stream(it2->second, newStream);
         }
 #endif
     }
