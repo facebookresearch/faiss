@@ -48,9 +48,8 @@ namespace faiss {
 namespace gpu {
 
 bool should_use_cuvs(GpuDistanceParams args) {
-    cudaDeviceProp prop;
     int dev = args.device >= 0 ? args.device : getCurrentDevice();
-    cudaGetDeviceProperties(&prop, dev);
+    auto prop = getDeviceProperties(dev);
 
     if (prop.major < 7)
         return false;

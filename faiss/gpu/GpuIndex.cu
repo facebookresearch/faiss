@@ -43,8 +43,7 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
 bool should_use_cuvs(GpuIndexConfig config_) {
-    cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, config_.device);
+    auto prop = getDeviceProperties(config_.device);
 
     if (prop.major < 7)
         return false;
