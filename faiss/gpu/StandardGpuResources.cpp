@@ -282,15 +282,25 @@ void StandardGpuResourcesImpl::revertDefaultStream(int device) {
             cudaStream_t newStream = defaultStreams_[device];
 
             streamWait({newStream}, {prevStream});
-        }
+
 #if defined USE_NVIDIA_CUVS
-        // delete the raft handle for this device, which will be initialized
-        // with the updated stream during any subsequent calls to getRaftHandle
-        auto it2 = raftHandles_.find(device);
-        if (it2 != raftHandles_.end()) {
-            raft::resource::set_cuda_stream(it2->second, newStream);
-        }
+            // update the stream on the raft handle for this device
+            auto it2 = raftHandles_.find(device);
+            if (it2 != raftHandles_.end()) {
+                raft::resource::set_cuda_stream(it2->second, newStream);
+            }
 #endif
+        } else {
+#if defined USE_NVIDIA_CUVS
+            // delete the raft handle for this device, which will be initialized
+            // with the updated stream during any subsequent calls to
+            // getRaftHandle
+            auto it2 = raftHandles_.find(device);
+            if (it2 != raftHandles_.end()) {
+                raftHandles_.erase(it2);
+            }
+#endif
+        }
     }
 
     userDefaultStreams_.erase(device);
