@@ -85,6 +85,10 @@ class DatasetDescriptor:
     # sampling column for xdb
     sampling_column: Optional[str] = None
 
+    # blob store
+    bucket: Optional[str] = None
+    path: Optional[str] = None
+
     def __hash__(self):
         return hash(self.get_filename())
 
