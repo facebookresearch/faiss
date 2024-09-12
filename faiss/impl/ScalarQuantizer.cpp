@@ -44,7 +44,9 @@ namespace faiss {
  * that hides the template mess.
  ********************************************************************/
 
-#ifdef __AVX2__
+#if __AVX512F__ && __F16C__
+#define USE_AVX512_F16C
+#elif __AVX2__
 #ifdef __F16C__
 #define USE_F16C
 #else
@@ -79,7 +81,17 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        const __m128i c16 = _mm_loadu_si128((__m128i*)(code + i));
+        const __m512i i32 = _mm512_cvtepu8_epi32(c16);
+        const __m512 f16 = _mm512_cvtepi32_ps(i32);
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 255.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
+        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+    }
+#elif __AVX2__
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
@@ -121,7 +133,28 @@ struct Codec4bit {
         return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
     }
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        uint32_t c4 = *(uint32_t*)(code + (i >> 1));
+        uint32_t mask = 0x0f0f0f0f;
+        uint32_t c4ev = c4 & mask;
+        uint32_t c4od = (c4 >> 4) & mask;
+
+        __m128i c4ev_vec = _mm_set1_epi32(c4ev);
+        __m128i c4od_vec = _mm_set1_epi32(c4od);
+        __m128i c8 = _mm_unpacklo_epi8(c4ev_vec, c4od_vec);
+        __m256i i8lo = _mm256_cvtepu8_epi32(c8);
+        __m256i i8hi = _mm256_cvtepu8_epi32(_mm_srli_si128(c8, 4));
+        __m512i i16 = _mm512_castsi256_si512(i8lo);
+        i16 = _mm512_inserti32x8(i16, i8hi, 1);
+        __m512 f16 = _mm512_cvtepi32_ps(i16);
+        __m512 half = _mm512_set1_ps(0.5f);
+        f16 = _mm512_add_ps(f16, half);
+        __m512 one_15 = _mm512_set1_ps(1.f / 15.f);
+        return _mm512_mul_ps(f16, one_15);
+    }
+#elif __AVX2__
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
@@ -207,7 +240,43 @@ struct Codec6bit {
         return (bits + 0.5f) / 63.0f;
     }
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+    static FAISS_ALWAYS_INLINE __m512i load12(const uint16_t* code16) {
+        const __m128i perm = _mm_set_epi8(
+                -1, 5, 5, 4, 4, 3, -1, 3, -1, 2, 2, 1, 1, 0, -1, 0);
+
+        const __m512i shifts = _mm512_set_epi32(
+                2, 4, 6, 0, 2, 4, 6, 0, 2, 4, 6, 0, 2, 4, 6, 0);
+
+        __m128i c1_low =
+                _mm_set_epi16(0, 0, 0, 0, 0, code16[2], code16[1], code16[0]);
+        __m128i c1_high =
+                _mm_set_epi16(0, 0, 0, 0, 0, code16[5], code16[4], code16[3]);
+
+        __m128i c2_low = _mm_shuffle_epi8(c1_low, perm);
+        __m128i c2_high = _mm_shuffle_epi8(c1_high, perm);
+        __m256i c3_low = _mm256_cvtepi16_epi32(c2_low);
+        __m256i c3_high = _mm256_cvtepi16_epi32(c2_high);
+        __m512i c4 = _mm512_castsi256_si512(c3_low);
+        c4 = _mm512_inserti32x8(c4, c3_high, 1);
+        __m512i c5 = _mm512_srlv_epi32(c4, shifts);
+        __m512i result = _mm512_and_si512(_mm512_set1_epi32(63), c5);
+        return result;
+    }
+
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        __m512i i16 = load12((const uint16_t*)(code + (i >> 1) * 3));
+        __m512 f16 = _mm512_cvtepi32_ps(i16);
+
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 63.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 63.f);
+
+        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+    }
+
+#elif __AVX2__
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */
@@ -316,7 +385,22 @@ struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <class Codec>
+struct QuantizerTemplate<Codec, true, 16> : QuantizerTemplate<Codec, true, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<Codec, true, 1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m512 xi = Codec::decode_16_components(code, i);
+        return _mm512_fmadd_ps(
+                xi, _mm512_set1_ps(this->vdiff), _mm512_set1_ps(this->vmin));
+    }
+};
+
+#elif __AVX2__
 
 template <class Codec>
 struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
@@ -394,7 +478,24 @@ struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <class Codec>
+struct QuantizerTemplate<Codec, false, 16>
+        : QuantizerTemplate<Codec, false, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<Codec, false, 1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m512 xi = Codec::decode_16_components(code, i);
+        __m512 vdiff_vec = _mm512_loadu_ps(this->vdiff + i);
+        __m512 vmin_vec = _mm512_loadu_ps(this->vmin + i);
+        return _mm512_fmadd_ps(xi, vdiff_vec, vmin_vec);
+    }
+};
+
+#elif __AVX2__
 
 template <class Codec>
 struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
@@ -465,7 +566,21 @@ struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef USE_F16C
+#if defined(USE_AVX512_F16C)
+
+template <>
+struct QuantizerFP16<16> : QuantizerFP16<1> {
+    QuantizerFP16(size_t d, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m256i codei = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        return _mm512_cvtph_ps(codei);
+    }
+};
+
+#elif defined(USE_F16C)
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -528,7 +643,22 @@ struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <>
+struct QuantizerBF16<16> : QuantizerBF16<1> {
+    QuantizerBF16(size_t d, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d, trained) {}
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m256i code_256i = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        __m512i code_512i = _mm512_cvtepu16_epi32(code_256i);
+        code_512i = _mm512_slli_epi32(code_512i, 16);
+        return _mm512_castsi512_ps(code_512i);
+    }
+};
+
+#elif __AVX2__
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -595,7 +725,22 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <>
+struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
+    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m128i x16 = _mm_loadu_si128((__m128i*)(code + i)); // 16 * int8
+        __m512i y16 = _mm512_cvtepu8_epi32(x16);             // 16 * int32
+        return _mm512_cvtepi32_ps(y16);                      // 16 * float32
+    }
+};
+
+#elif __AVX2__
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -665,7 +810,24 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <>
+struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m128i x16 = _mm_loadu_si128((__m128i*)(code + i)); // 16 * int8
+        __m512i y16 = _mm512_cvtepu8_epi32(x16);             // 16 * int32
+        __m512i c16 = _mm512_set1_epi32(128);
+        __m512i z16 = _mm512_sub_epi32(y16, c16); // subtract 128 from all lanes
+        return _mm512_cvtepi32_ps(z16);           // 16 * float32
+    }
+};
+
+#elif __AVX2__
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -955,7 +1117,52 @@ struct SimilarityL2<1> {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+template <>
+struct SimilarityL2<16> {
+    static constexpr int simdwidth = 16;
+    static constexpr MetricType metric_type = METRIC_L2;
+
+    const float *y, *yi;
+
+    explicit SimilarityL2(const float* y) : y(y) {}
+    __m512 accu16;
+
+    FAISS_ALWAYS_INLINE void begin_16() {
+        accu16 = _mm512_setzero_ps();
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components(__m512 x) {
+        __m512 yiv = _mm512_loadu_ps(yi);
+        yi += 16;
+        __m512 tmp = _mm512_sub_ps(yiv, x);
+        accu16 = _mm512_fmadd_ps(tmp, tmp, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components_2(__m512 x, __m512 y_2) {
+        __m512 tmp = _mm512_sub_ps(y_2, x);
+        accu16 = _mm512_fmadd_ps(tmp, tmp, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE float result_16() {
+        // Sum the 16 lanes in accu16
+        __m512 sum = _mm512_add_ps(
+                accu16,
+                _mm512_shuffle_f32x4(accu16, accu16, _MM_SHUFFLE(2, 3, 0, 1)));
+        sum = _mm512_add_ps(
+                sum, _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(1, 0, 3, 2)));
+        __m256 lo = _mm512_castps512_ps256(sum);
+        __m256 hi = _mm512_extractf32x8_ps(sum, 1);
+        __m256 final_sum = _mm256_add_ps(lo, hi);
+        final_sum = _mm256_hadd_ps(final_sum, final_sum);
+        final_sum = _mm256_hadd_ps(final_sum, final_sum);
+        return _mm_cvtss_f32(_mm256_castps256_ps128(final_sum));
+    }
+};
+
+#elif __AVX2__
+
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -1078,7 +1285,53 @@ struct SimilarityIP<1> {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <>
+struct SimilarityIP<16> {
+    static constexpr int simdwidth = 16;
+    static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
+
+    const float *y, *yi;
+
+    float accu;
+
+    explicit SimilarityIP(const float* y) : y(y) {}
+
+    __m512 accu16;
+
+    FAISS_ALWAYS_INLINE void begin_16() {
+        accu16 = _mm512_setzero_ps();
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components(__m512 x) {
+        __m512 yiv = _mm512_loadu_ps(yi);
+        yi += 16;
+        accu16 = _mm512_fmadd_ps(yiv, x, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components_2(__m512 x1, __m512 x2) {
+        accu16 = _mm512_fmadd_ps(x1, x2, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE float result_16() {
+        // Sum the 16 lanes in accu16
+        __m512 sum = _mm512_add_ps(
+                accu16,
+                _mm512_shuffle_f32x4(accu16, accu16, _MM_SHUFFLE(2, 3, 0, 1)));
+        sum = _mm512_add_ps(
+                sum, _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(1, 0, 3, 2)));
+        __m256 lo = _mm512_castps512_ps256(sum);
+        __m256 hi = _mm512_extractf32x8_ps(sum, 1);
+        __m256 final_sum = _mm256_add_ps(lo, hi);
+        final_sum = _mm256_hadd_ps(final_sum, final_sum);
+        final_sum = _mm256_hadd_ps(final_sum, final_sum);
+        return _mm_cvtss_f32(_mm256_castps256_ps128(final_sum));
+    }
+};
+
+#elif __AVX2__
 
 template <>
 struct SimilarityIP<8> {
@@ -1220,7 +1473,55 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#ifdef USE_F16C
+#if defined(USE_AVX512_F16C)
+
+template <class Quantizer, class Similarity>
+struct DCTemplate<Quantizer, Similarity, 16>
+        : SQDistanceComputer { // Update to handle 16 lanes
+    using Sim = Similarity;
+
+    Quantizer quant;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained) {}
+
+    float compute_distance(const float* x, const uint8_t* code) const {
+        Similarity sim(x);
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            __m512 xi = quant.reconstruct_16_components(code, i);
+            sim.add_16_components(xi);
+        }
+        return sim.result_16();
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        Similarity sim(nullptr);
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            __m512 x1 = quant.reconstruct_16_components(code1, i);
+            __m512 x2 = quant.reconstruct_16_components(code2, i);
+            sim.add_16_components_2(x1, x2);
+        }
+        return sim.result_16();
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_distance(q, code);
+    }
+};
+
+#elif defined(USE_F16C)
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1367,7 +1668,65 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#ifdef __AVX2__
+#ifdef __AVX512F__
+
+template <class Similarity>
+struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    int d;
+    std::vector<uint8_t> tmp;
+
+    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+
+    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        __m512i accu = _mm512_setzero_si512();
+        for (int i = 0; i < d; i += 32) { // Process 32 bytes at a time
+            __m512i c1 = _mm512_cvtepu8_epi16(
+                    _mm256_loadu_si256((__m256i*)(code1 + i)));
+            __m512i c2 = _mm512_cvtepu8_epi16(
+                    _mm256_loadu_si256((__m256i*)(code2 + i)));
+            __m512i prod32;
+            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
+                prod32 = _mm512_madd_epi16(c1, c2);
+            } else {
+                __m512i diff = _mm512_sub_epi16(c1, c2);
+                prod32 = _mm512_madd_epi16(diff, diff);
+            }
+            accu = _mm512_add_epi32(accu, prod32);
+        }
+        // Horizontally add elements of accu
+        return _mm512_reduce_add_epi32(accu);
+    }
+
+    void set_query(const float* x) final {
+        /*
+        for (int i = 0; i < d; i += 8) {
+            __m256 xi = _mm256_loadu_ps (x + i);
+            __m256i ci = _mm256_cvtps_epi32(xi);
+        */
+        for (int i = 0; i < d; i++) {
+            tmp[i] = int(x[i]);
+        }
+    }
+
+    int compute_distance(const float* x, const uint8_t* code) {
+        set_query(x);
+        return compute_code_distance(tmp.data(), code);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_code_distance(tmp.data(), code);
+    }
+};
+
+#elif __AVX2__
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -1632,7 +1991,11 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 }
 
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C) || defined(__aarch64__)
+    if (d % 16 == 0) {
+        return select_quantizer_1<16>(qtype, d, trained);
+    } else
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -1663,7 +2026,17 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C) || defined(__aarch64__)
+    if (d % 16 == 0) {
+        if (metric == METRIC_L2) {
+            return select_distance_computer<SimilarityL2<16>>(
+                    qtype, d, trained);
+        } else {
+            return select_distance_computer<SimilarityIP<16>>(
+                    qtype, d, trained);
+        }
+    } else
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2009,7 +2382,12 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C) || defined(__aarch64__)
+    if (d % 16 == 0) {
+        return sel0_InvertedListScanner<16>(
+                mt, this, quantizer, store_pairs, sel, by_residual);
+    } else
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
