@@ -19,6 +19,8 @@ $ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 
 # GPU(+CPU) version with NVIDIA RAFT
 $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
+
+# GPU(+CPU) version using ROCm not yet available
 ```
 
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
@@ -37,6 +39,8 @@ $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
 
 # GPU(+CPU) version with NVIDIA RAFT
 conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
+
+# GPU(+CPU) version using ROCm not yet available
 ```
 In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
 
@@ -63,6 +67,8 @@ $ conda install -c conda-forge faiss-cpu
 
 # GPU version
 $ conda install -c conda-forge faiss-gpu
+
+# ROCm version not yet available
 ```
 
 You can tell which channel your conda packages come from by using `conda list`.
@@ -87,6 +93,8 @@ The optional requirements are:
 - for GPU indices:
   - nvcc,
   - the CUDA toolkit,
+- for AMD GPUs:
+  - ROCm,
 - for the python bindings:
   - python 3,
   - numpy,
@@ -137,6 +145,10 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_CUDA_ARCHITECTURES="75;72"` for specifying which GPU architectures
   to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
   determine which architecture(s) you should pick),
+  - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
+  The hipify script must be executed before using this option. 
+  Invoke `./faiss/gpu/hipify.sh` to execute. `-DFAISS_ENABLE_GPU` must be `ON`
+  when using this option. (possible values are `ON` and `OFF`),
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see
