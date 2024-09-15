@@ -23,9 +23,9 @@
 #include <immintrin.h>
 #endif
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 #include <faiss/utils/transpose/transpose-avx512-inl.h>
-#elif __AVX2__
+#elif defined(__AVX2__)
 #include <faiss/utils/transpose/transpose-avx2-inl.h>
 #endif
 
@@ -449,7 +449,8 @@ void fvec_op_ny_D2(float* dis, const float* x, const float* y, size_t ny) {
     }
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
+
 template <>
 void fvec_op_ny_D2<ElementOpIP>(
         float* dis,
@@ -477,7 +478,7 @@ void fvec_op_ny_D2<ElementOpIP>(
             __m512 v0;
             __m512 v1;
 
-            faiss::transpose_16x2(
+            transpose_16x2(
                     _mm512_loadu_ps(y + 0 * 16),
                     _mm512_loadu_ps(y + 1 * 16),
                     v0,
@@ -534,7 +535,7 @@ void fvec_op_ny_D2<ElementOpL2>(
             __m512 v0;
             __m512 v1;
 
-            faiss::transpose_16x2(
+            transpose_16x2(
                     _mm512_loadu_ps(y + 0 * 16),
                     _mm512_loadu_ps(y + 1 * 16),
                     v0,
@@ -571,7 +572,7 @@ void fvec_op_ny_D2<ElementOpL2>(
     }
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 void fvec_op_ny_D2<ElementOpIP>(
@@ -707,7 +708,7 @@ void fvec_op_ny_D4(float* dis, const float* x, const float* y, size_t ny) {
     }
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 void fvec_op_ny_D4<ElementOpIP>(
@@ -735,7 +736,7 @@ void fvec_op_ny_D4<ElementOpIP>(
             __m512 v2;
             __m512 v3;
 
-            faiss::transpose_16x4(
+            transpose_16x4(
                     _mm512_loadu_ps(y + 0 * 16),
                     _mm512_loadu_ps(y + 1 * 16),
                     _mm512_loadu_ps(y + 2 * 16),
@@ -796,7 +797,7 @@ void fvec_op_ny_D4<ElementOpL2>(
             __m512 v2;
             __m512 v3;
 
-            faiss::transpose_16x4(
+            transpose_16x4(
                     _mm512_loadu_ps(y + 0 * 16),
                     _mm512_loadu_ps(y + 1 * 16),
                     _mm512_loadu_ps(y + 2 * 16),
@@ -837,7 +838,7 @@ void fvec_op_ny_D4<ElementOpL2>(
     }
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 void fvec_op_ny_D4<ElementOpIP>(
@@ -985,7 +986,7 @@ void fvec_op_ny_D8(float* dis, const float* x, const float* y, size_t ny) {
     }
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 void fvec_op_ny_D8<ElementOpIP>(
@@ -1159,7 +1160,7 @@ void fvec_op_ny_D8<ElementOpL2>(
     }
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 void fvec_op_ny_D8<ElementOpIP>(
@@ -1404,7 +1405,7 @@ void fvec_inner_products_ny(
 #undef DISPATCH
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
@@ -1479,7 +1480,8 @@ void fvec_L2sqr_ny_y_transposed_D(
     }
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
+
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
         float* distances,
@@ -1555,6 +1557,7 @@ void fvec_L2sqr_ny_y_transposed_D(
         }
     }
 }
+
 #endif
 
 void fvec_L2sqr_ny_transposed(
@@ -1589,7 +1592,8 @@ void fvec_L2sqr_ny_transposed(
 #endif
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
+
 size_t fvec_L2sqr_ny_nearest_D2(
         float* distances_tmp_buffer,
         const float* x,
@@ -1897,7 +1901,7 @@ size_t fvec_L2sqr_ny_nearest_D8(
     return current_min_index;
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
 
 size_t fvec_L2sqr_ny_nearest_D2(
         float* distances_tmp_buffer,
@@ -2308,7 +2312,7 @@ size_t fvec_L2sqr_ny_nearest(
 #undef DISPATCH
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
@@ -2349,8 +2353,9 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
 
         for (; i < ny16 * 16; i += 16) {
             // Compute dot products
-            __m512 dp = _mm512_setzero_ps();
-            for (size_t j = 0; j < DIM; j++) {
+            const __m512 v0 = _mm512_loadu_ps(y + 0 * d_offset);
+            __m512 dp = _mm512_mul_ps(m[0], v0);
+            for (size_t j = 1; j < DIM; j++) {
                 const __m512 vj = _mm512_loadu_ps(y + j * d_offset);
                 dp = _mm512_fmadd_ps(m[j], vj, dp);
             }
@@ -2367,9 +2372,11 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
 
             // Update min distances and indices with closest vectors if needed
             min_distances =
-                    _mm512_mask_blend_ps(comparison, min_distances, distances);
-            min_indices = _mm512_mask_blend_epi32(
-                    comparison, min_indices, current_indices);
+                    _mm512_mask_blend_ps(comparison, distances, min_distances);
+            min_indices = _mm512_castps_si512(_mm512_mask_blend_ps(
+                    comparison,
+                    _mm512_castsi512_ps(current_indices),
+                    _mm512_castsi512_ps(min_indices)));
 
             // Update current indices values. Basically, +16 to each of the 16
             // AVX-512 components.
@@ -2420,7 +2427,8 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
     return current_min_index;
 }
 
-#elif __AVX2__
+#elif defined(__AVX2__)
+
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
         float* distances_tmp_buffer,
@@ -2536,6 +2544,7 @@ size_t fvec_L2sqr_ny_nearest_y_transposed_D(
 
     return current_min_index;
 }
+
 #endif
 
 size_t fvec_L2sqr_ny_nearest_y_transposed(
@@ -2802,7 +2811,8 @@ void fvec_inner_products_ny(
         c[i] = a[i] + bf * b[i];
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
+
 static inline void fvec_madd_avx512(
         const size_t n,
         const float* __restrict a,
@@ -2831,7 +2841,9 @@ static inline void fvec_madd_avx512(
         _mm512_mask_storeu_ps(c + idx, mask, abmul);
     }
 }
-#elif __AVX2__
+
+#elif defined(__AVX2__)
+
 static inline void fvec_madd_avx2(
         const size_t n,
         const float* __restrict a,
@@ -2884,6 +2896,7 @@ static inline void fvec_madd_avx2(
         _mm256_maskstore_ps(c + idx, mask, abmul);
     }
 }
+
 #endif
 
 #ifdef __SSE3__
