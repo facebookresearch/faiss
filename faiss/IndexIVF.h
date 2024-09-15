@@ -479,7 +479,7 @@ struct InvertedListScanner {
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
     /** scan a set of codes, compute distances to current query and
-     * update heap of results if necessary. Default implemetation
+     * update heap of results if necessary. Default implementation
      * calls distance_to_code.
      *
      * @param n      number of codes to scan

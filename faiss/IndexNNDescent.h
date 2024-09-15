@@ -26,7 +26,7 @@ struct IndexNNDescent : Index {
 
     /// Faiss results are 64-bit
 
-    // the link strcuture
+    // the link structure
     NNDescent nndescent;
 
     // the sequential storage
