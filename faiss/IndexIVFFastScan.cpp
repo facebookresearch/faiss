@@ -694,7 +694,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
             search_implem_10(
                     n, x, *handler.get(), cq, &ndis, &nlist_visited, scaler);
         } else {
-            FAISS_THROW_FMT("Range search implem %d not impemented", impl);
+            FAISS_THROW_FMT("Range search implem %d not implemented", impl);
         }
     } else {
         // explicitly slice over threads

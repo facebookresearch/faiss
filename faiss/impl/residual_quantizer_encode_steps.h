@@ -25,7 +25,7 @@ namespace faiss {
  * It allows low-level access to the encoding function, exposed mainly for unit
  * tests.
  *
- * @param n              number of vectors to hanlde
+ * @param n              number of vectors to handle
  * @param residuals      vectors to encode, size (n, beam_size, d)
  * @param cent           centroids, size (K, d)
  * @param beam_size      input beam size
