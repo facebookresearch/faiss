@@ -20,7 +20,7 @@ $ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 # GPU(+CPU) version with NVIDIA RAFT
 $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
 
-# GPU(+CPU) version using ROCm not yet available
+# GPU(+CPU) version using AMD ROCm not yet available
 ```
 
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
@@ -40,7 +40,7 @@ $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
 # GPU(+CPU) version with NVIDIA RAFT
 conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
 
-# GPU(+CPU) version using ROCm not yet available
+# GPU(+CPU) version using AMD ROCm not yet available
 ```
 In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
 
@@ -68,7 +68,7 @@ $ conda install -c conda-forge faiss-cpu
 # GPU version
 $ conda install -c conda-forge faiss-gpu
 
-# ROCm version not yet available
+# AMD ROCm version not yet available
 ```
 
 You can tell which channel your conda packages come from by using `conda list`.
@@ -94,7 +94,7 @@ The optional requirements are:
   - nvcc,
   - the CUDA toolkit,
 - for AMD GPUs:
-  - ROCm,
+  - AMD ROCm,
 - for the python bindings:
   - python 3,
   - numpy,
