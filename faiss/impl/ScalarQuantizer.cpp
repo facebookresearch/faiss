@@ -143,18 +143,16 @@ struct Codec4bit {
         uint64_t c8ev = c8 & mask;
         uint64_t c8od = (c8 >> 4) & mask;
 
-        __m128i c8ev_vec = _mm_set1_epi64x(c8ev);
-        __m128i c8od_vec = _mm_set1_epi64x(c8od);
-        __m128i c16 = _mm_unpacklo_epi8(c8ev_vec, c8od_vec);
-        __m256i i8lo = _mm256_cvtepu8_epi32(c16);
-        __m256i i8hi = _mm256_cvtepu8_epi32(_mm_srli_si128(c16, 8));
-        __m512i i16 = _mm512_castsi256_si512(i8lo);
-        i16 = _mm512_inserti32x8(i16, i8hi, 1);
+        __m128i c16 =
+                _mm_unpacklo_epi8(_mm_set1_epi64x(c8ev), _mm_set1_epi64x(c8od));
+        __m256i c8lo = _mm256_cvtepu8_epi32(c16);
+        __m256i c8hi = _mm256_cvtepu8_epi32(_mm_srli_si128(c16, 8));
+        __m512i i16 = _mm512_castsi256_si512(c8lo);
+        i16 = _mm512_inserti32x8(i16, c8hi, 1);
         __m512 f16 = _mm512_cvtepi32_ps(i16);
-        __m512 half = _mm512_set1_ps(0.5f);
-        f16 = _mm512_add_ps(f16, half);
-        __m512 one_15 = _mm512_set1_ps(1.f / 15.f);
-        return _mm512_mul_ps(f16, one_15);
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 15.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
+        return _mm512_fmadd_ps(f16, one_255, half_one_255);
     }
 #endif
 
@@ -244,6 +242,57 @@ struct Codec6bit {
         return (bits + 0.5f) / 63.0f;
     }
 
+#ifdef __AVX512F__
+
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        // pure AVX512 implementation (not necessarily the fastest).
+        // see:
+        // https://github.com/zilliztech/knowhere/blob/main/thirdparty/faiss/faiss/impl/ScalarQuantizerCodec_avx512.h
+
+        // clang-format off
+
+        // 16 components, 16x6 bit=12 bytes
+        const __m128i bit_6v =
+                _mm_maskz_loadu_epi8(0b0000111111111111, code + (i >> 2) * 3);
+        const __m256i bit_6v_256 = _mm256_broadcast_i32x4(bit_6v);
+
+        // 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+        // 00          01          02          03
+        const __m256i shuffle_mask = _mm256_setr_epi16(
+                0xFF00, 0x0100, 0x0201, 0xFF02,
+                0xFF03, 0x0403, 0x0504, 0xFF05,
+                0xFF06, 0x0706, 0x0807, 0xFF08,
+                0xFF09, 0x0A09, 0x0B0A, 0xFF0B);
+        const __m256i shuffled = _mm256_shuffle_epi8(bit_6v_256, shuffle_mask);
+
+        // 0: xxxxxxxx xx543210
+        // 1: xxxx5432 10xxxxxx
+        // 2: xxxxxx54 3210xxxx
+        // 3: xxxxxxxx 543210xx
+        const __m256i shift_right_v = _mm256_setr_epi16(
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U);
+        __m256i shuffled_shifted = _mm256_srlv_epi16(shuffled, shift_right_v);
+
+        // remove unneeded bits
+        shuffled_shifted =
+                _mm256_and_si256(shuffled_shifted, _mm256_set1_epi16(0x003F));
+
+        // scale
+        const __m512 f8 =
+                _mm512_cvtepi32_ps(_mm512_cvtepi16_epi32(shuffled_shifted));
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 63.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 63.f);
+        return _mm512_fmadd_ps(f8, one_255, half_one_255);
+
+        // clang-format on
+    }
+
+#endif
+
 #ifdef __AVX2__
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
@@ -291,19 +340,6 @@ struct Codec6bit {
         return _mm256_fmadd_ps(f8, one_255, half_one_255);
     }
 
-#endif
-
-#ifdef __AVX512F__
-    static FAISS_ALWAYS_INLINE __m512
-    decode_16_components(const uint8_t* code, int i) {
-        __m256 v0 = decode_8_components(code, i);
-        __m256 v1 = decode_8_components(code, i + 8);
-
-        __m512 combined = _mm512_setzero_ps();
-        combined = _mm512_insertf32x8(combined, v0, 0);
-        combined = _mm512_insertf32x8(combined, v1, 1);
-        return combined;
-    }
 #endif
 
 #ifdef __aarch64__
