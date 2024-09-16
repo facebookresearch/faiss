@@ -470,105 +470,6 @@ void search_neighbors_to_add(
     vt.advance();
 }
 
-/**************************************************************
- * Searching subroutines
- **************************************************************/
-
-/// greedily update a nearest vector at a given level
-HNSWStats greedy_update_nearest(
-        const HNSW& hnsw,
-        DistanceComputer& qdis,
-        int level,
-        storage_idx_t& nearest,
-        float& d_nearest) {
-    // selects a version
-    const bool reference_version = false;
-
-    HNSWStats stats;
-
-    for (;;) {
-        storage_idx_t prev_nearest = nearest;
-
-        size_t begin, end;
-        hnsw.neighbor_range(nearest, level, &begin, &end);
-
-        size_t ndis = 0;
-
-        // select a version, based on a flag
-        if (reference_version) {
-            // a reference version
-            for (size_t i = begin; i < end; i++) {
-                storage_idx_t v = hnsw.neighbors[i];
-                if (v < 0)
-                    break;
-                ndis += 1;
-                float dis = qdis(v);
-                if (dis < d_nearest) {
-                    nearest = v;
-                    d_nearest = dis;
-                }
-            }
-        } else {
-            // a faster version
-
-            // the following version processes 4 neighbors at a time
-            auto update_with_candidate = [&](const storage_idx_t idx,
-                                             const float dis) {
-                if (dis < d_nearest) {
-                    nearest = idx;
-                    d_nearest = dis;
-                }
-            };
-
-            int n_buffered = 0;
-            storage_idx_t buffered_ids[4];
-
-            for (size_t j = begin; j < end; j++) {
-                storage_idx_t v = hnsw.neighbors[j];
-                if (v < 0)
-                    break;
-                ndis += 1;
-
-                buffered_ids[n_buffered] = v;
-                n_buffered += 1;
-
-                if (n_buffered == 4) {
-                    float dis[4];
-                    qdis.distances_batch_4(
-                            buffered_ids[0],
-                            buffered_ids[1],
-                            buffered_ids[2],
-                            buffered_ids[3],
-                            dis[0],
-                            dis[1],
-                            dis[2],
-                            dis[3]);
-
-                    for (size_t id4 = 0; id4 < 4; id4++) {
-                        update_with_candidate(buffered_ids[id4], dis[id4]);
-                    }
-
-                    n_buffered = 0;
-                }
-            }
-
-            // process leftovers
-            for (size_t icnt = 0; icnt < n_buffered; icnt++) {
-                float dis = qdis(buffered_ids[icnt]);
-                update_with_candidate(buffered_ids[icnt], dis);
-            }
-        }
-
-        // update stats
-        stats.ndis += ndis;
-        stats.nhops += 1;
-
-        if (nearest == prev_nearest) {
-            return stats;
-        }
-    }
-}
-
 } // namespace
 
 /// Finds neighbors and builds links with them, starting from an entry
@@ -671,12 +572,10 @@ void HNSW::add_with_locks(
  * Searching
  **************************************************************/
 
-namespace {
 using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 using C = HNSW::C;
 /** Do a BFS on the candidates list */
-
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
@@ -685,11 +584,8 @@ int search_from_candidates(
         VisitedTable& vt,
         HNSWStats& stats,
         int level,
-        int nres_in = 0,
-        const SearchParametersHNSW* params = nullptr) {
-    // selects a version
-    const bool reference_version = false;
-
+        int nres_in,
+        const SearchParametersHNSW* params) {
     int nres = nres_in;
     int ndis = 0;
 
@@ -734,97 +630,70 @@ int search_from_candidates(
         size_t begin, end;
         hnsw.neighbor_range(v0, level, &begin, &end);
 
-        // select a version, based on a flag
-        if (reference_version) {
-            // a reference version
-            for (size_t j = begin; j < end; j++) {
-                int v1 = hnsw.neighbors[j];
-                if (v1 < 0)
-                    break;
-                if (vt.get(v1)) {
-                    continue;
-                }
-                vt.set(v1);
-                ndis++;
-                float d = qdis(v1);
-                if (!sel || sel->is_member(v1)) {
-                    if (d < threshold) {
-                        if (res.add_result(d, v1)) {
-                            threshold = res.threshold;
-                            nres += 1;
-                        }
+        // a faster version: reference version in unit test test_hnsw.cpp
+        // the following version processes 4 neighbors at a time
+        size_t jmax = begin;
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0)
+                break;
+
+            prefetch_L2(vt.visited.data() + v1);
+            jmax += 1;
+        }
+
+        int counter = 0;
+        size_t saved_j[4];
+
+        threshold = res.threshold;
+
+        auto add_to_heap = [&](const size_t idx, const float dis) {
+            if (!sel || sel->is_member(idx)) {
+                if (dis < threshold) {
+                    if (res.add_result(dis, idx)) {
+                        threshold = res.threshold;
+                        nres += 1;
                     }
                 }
-
-                candidates.push(v1, d);
             }
-        } else {
-            // a faster version
+            candidates.push(idx, dis);
+        };
 
-            // the following version processes 4 neighbors at a time
-            size_t jmax = begin;
-            for (size_t j = begin; j < end; j++) {
-                int v1 = hnsw.neighbors[j];
-                if (v1 < 0)
-                    break;
+        for (size_t j = begin; j < jmax; j++) {
+            int v1 = hnsw.neighbors[j];
 
-                prefetch_L2(vt.visited.data() + v1);
-                jmax += 1;
-            }
+            bool vget = vt.get(v1);
+            vt.set(v1);
+            saved_j[counter] = v1;
+            counter += vget ? 0 : 1;
 
-            int counter = 0;
-            size_t saved_j[4];
+            if (counter == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        saved_j[0],
+                        saved_j[1],
+                        saved_j[2],
+                        saved_j[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
 
-            threshold = res.threshold;
-
-            auto add_to_heap = [&](const size_t idx, const float dis) {
-                if (!sel || sel->is_member(idx)) {
-                    if (dis < threshold) {
-                        if (res.add_result(dis, idx)) {
-                            threshold = res.threshold;
-                            nres += 1;
-                        }
-                    }
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    add_to_heap(saved_j[id4], dis[id4]);
                 }
-                candidates.push(idx, dis);
-            };
 
-            for (size_t j = begin; j < jmax; j++) {
-                int v1 = hnsw.neighbors[j];
+                ndis += 4;
 
-                bool vget = vt.get(v1);
-                vt.set(v1);
-                saved_j[counter] = v1;
-                counter += vget ? 0 : 1;
-
-                if (counter == 4) {
-                    float dis[4];
-                    qdis.distances_batch_4(
-                            saved_j[0],
-                            saved_j[1],
-                            saved_j[2],
-                            saved_j[3],
-                            dis[0],
-                            dis[1],
-                            dis[2],
-                            dis[3]);
-
-                    for (size_t id4 = 0; id4 < 4; id4++) {
-                        add_to_heap(saved_j[id4], dis[id4]);
-                    }
-
-                    ndis += 4;
-
-                    counter = 0;
-                }
+                counter = 0;
             }
+        }
 
-            for (size_t icnt = 0; icnt < counter; icnt++) {
-                float dis = qdis(saved_j[icnt]);
-                add_to_heap(saved_j[icnt], dis);
+        for (size_t icnt = 0; icnt < counter; icnt++) {
+            float dis = qdis(saved_j[icnt]);
+            add_to_heap(saved_j[icnt], dis);
 
-                ndis += 1;
-            }
+            ndis += 1;
         }
 
         nstep++;
@@ -852,9 +721,6 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         int ef,
         VisitedTable* vt,
         HNSWStats& stats) {
-    // selects a version
-    const bool reference_version = false;
-
     int ndis = 0;
     std::priority_queue<Node> top_candidates;
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
@@ -878,98 +744,68 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         size_t begin, end;
         hnsw.neighbor_range(v0, 0, &begin, &end);
 
-        if (reference_version) {
-            // reference version
-            for (size_t j = begin; j < end; ++j) {
-                int v1 = hnsw.neighbors[j];
+        // a faster version: reference version in unit test test_hnsw.cpp
+        // the following version processes 4 neighbors at a time
+        size_t jmax = begin;
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0)
+                break;
 
-                if (v1 < 0) {
-                    break;
-                }
-                if (vt->get(v1)) {
-                    continue;
-                }
+            prefetch_L2(vt->visited.data() + v1);
+            jmax += 1;
+        }
 
-                vt->set(v1);
+        int counter = 0;
+        size_t saved_j[4];
 
-                float d1 = qdis(v1);
-                ++ndis;
+        auto add_to_heap = [&](const size_t idx, const float dis) {
+            if (top_candidates.top().first > dis ||
+                top_candidates.size() < ef) {
+                candidates.emplace(dis, idx);
+                top_candidates.emplace(dis, idx);
 
-                if (top_candidates.top().first > d1 ||
-                    top_candidates.size() < ef) {
-                    candidates.emplace(d1, v1);
-                    top_candidates.emplace(d1, v1);
-
-                    if (top_candidates.size() > ef) {
-                        top_candidates.pop();
-                    }
+                if (top_candidates.size() > ef) {
+                    top_candidates.pop();
                 }
             }
-        } else {
-            // a faster version
+        };
 
-            // the following version processes 4 neighbors at a time
-            size_t jmax = begin;
-            for (size_t j = begin; j < end; j++) {
-                int v1 = hnsw.neighbors[j];
-                if (v1 < 0)
-                    break;
+        for (size_t j = begin; j < jmax; j++) {
+            int v1 = hnsw.neighbors[j];
 
-                prefetch_L2(vt->visited.data() + v1);
-                jmax += 1;
-            }
+            bool vget = vt->get(v1);
+            vt->set(v1);
+            saved_j[counter] = v1;
+            counter += vget ? 0 : 1;
 
-            int counter = 0;
-            size_t saved_j[4];
+            if (counter == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        saved_j[0],
+                        saved_j[1],
+                        saved_j[2],
+                        saved_j[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
 
-            auto add_to_heap = [&](const size_t idx, const float dis) {
-                if (top_candidates.top().first > dis ||
-                    top_candidates.size() < ef) {
-                    candidates.emplace(dis, idx);
-                    top_candidates.emplace(dis, idx);
-
-                    if (top_candidates.size() > ef) {
-                        top_candidates.pop();
-                    }
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    add_to_heap(saved_j[id4], dis[id4]);
                 }
-            };
 
-            for (size_t j = begin; j < jmax; j++) {
-                int v1 = hnsw.neighbors[j];
+                ndis += 4;
 
-                bool vget = vt->get(v1);
-                vt->set(v1);
-                saved_j[counter] = v1;
-                counter += vget ? 0 : 1;
-
-                if (counter == 4) {
-                    float dis[4];
-                    qdis.distances_batch_4(
-                            saved_j[0],
-                            saved_j[1],
-                            saved_j[2],
-                            saved_j[3],
-                            dis[0],
-                            dis[1],
-                            dis[2],
-                            dis[3]);
-
-                    for (size_t id4 = 0; id4 < 4; id4++) {
-                        add_to_heap(saved_j[id4], dis[id4]);
-                    }
-
-                    ndis += 4;
-
-                    counter = 0;
-                }
+                counter = 0;
             }
+        }
 
-            for (size_t icnt = 0; icnt < counter; icnt++) {
-                float dis = qdis(saved_j[icnt]);
-                add_to_heap(saved_j[icnt], dis);
+        for (size_t icnt = 0; icnt < counter; icnt++) {
+            float dis = qdis(saved_j[icnt]);
+            add_to_heap(saved_j[icnt], dis);
 
-                ndis += 1;
-            }
+            ndis += 1;
         }
 
         stats.nhops += 1;
@@ -984,6 +820,86 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
     return top_candidates;
 }
 
+/// greedily update a nearest vector at a given level
+HNSWStats greedy_update_nearest(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int level,
+        storage_idx_t& nearest,
+        float& d_nearest) {
+    HNSWStats stats;
+
+    for (;;) {
+        storage_idx_t prev_nearest = nearest;
+
+        size_t begin, end;
+        hnsw.neighbor_range(nearest, level, &begin, &end);
+
+        size_t ndis = 0;
+
+        // a faster version: reference version in unit test test_hnsw.cpp
+        // the following version processes 4 neighbors at a time
+        auto update_with_candidate = [&](const storage_idx_t idx,
+                                         const float dis) {
+            if (dis < d_nearest) {
+                nearest = idx;
+                d_nearest = dis;
+            }
+        };
+
+        int n_buffered = 0;
+        storage_idx_t buffered_ids[4];
+
+        for (size_t j = begin; j < end; j++) {
+            storage_idx_t v = hnsw.neighbors[j];
+            if (v < 0)
+                break;
+            ndis += 1;
+
+            buffered_ids[n_buffered] = v;
+            n_buffered += 1;
+
+            if (n_buffered == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        buffered_ids[0],
+                        buffered_ids[1],
+                        buffered_ids[2],
+                        buffered_ids[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    update_with_candidate(buffered_ids[id4], dis[id4]);
+                }
+
+                n_buffered = 0;
+            }
+        }
+
+        // process leftovers
+        for (size_t icnt = 0; icnt < n_buffered; icnt++) {
+            float dis = qdis(buffered_ids[icnt]);
+            update_with_candidate(buffered_ids[icnt], dis);
+        }
+
+        // update stats
+        stats.ndis += ndis;
+        stats.nhops += 1;
+
+        if (nearest == prev_nearest) {
+            return stats;
+        }
+    }
+}
+
+namespace {
+using MinimaxHeap = HNSW::MinimaxHeap;
+using Node = HNSW::Node;
+using C = HNSW::C;
+
 // just used as a lower bound for the minmaxheap, but it is set for heap search
 int extract_k_from_ResultHandler(ResultHandler<C>& res) {
     using RH = HeapBlockResultHandler<C>;
@@ -993,7 +909,7 @@ int extract_k_from_ResultHandler(ResultHandler<C>& res) {
     return 1;
 }
 
-} // anonymous namespace
+} // namespace
 
 HNSWStats HNSW::search(
         DistanceComputer& qdis,

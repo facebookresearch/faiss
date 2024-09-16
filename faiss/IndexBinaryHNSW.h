@@ -21,7 +21,7 @@ namespace faiss {
 struct IndexBinaryHNSW : IndexBinary {
     typedef HNSW::storage_idx_t storage_idx_t;
 
-    // the link strcuture
+    // the link structure
     HNSW hnsw;
 
     // the sequential storage

@@ -255,4 +255,30 @@ struct HNSWStats {
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
 
+int search_from_candidates(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        ResultHandler<HNSW::C>& res,
+        HNSW::MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in = 0,
+        const SearchParametersHNSW* params = nullptr);
+
+HNSWStats greedy_update_nearest(
+        const HNSW& hnsw,
+        DistanceComputer& qdis,
+        int level,
+        HNSW::storage_idx_t& nearest,
+        float& d_nearest);
+
+std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
+        const HNSW& hnsw,
+        const HNSW::Node& node,
+        DistanceComputer& qdis,
+        int ef,
+        VisitedTable* vt,
+        HNSWStats& stats);
+
 } // namespace faiss
