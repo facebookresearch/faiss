@@ -396,7 +396,7 @@
 <codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment">//<sp/>rather<sp/>than<sp/>a<sp/>heap</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="286"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>distance_compute_min_k_reservoir;</highlight></codeline>
 <codeline lineno="287"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="288"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="288"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="289"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>w.r.t<sp/>to<sp/>max<sp/>inner<sp/>product.</highlight></codeline>
 <codeline lineno="290"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="291"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
@@ -412,7 +412,7 @@
 <codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>*<sp/>res,</highlight></codeline>
 <codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="303"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="304"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="304"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="305"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>inner<sp/>product<sp/>metric.</highlight></codeline>
 <codeline lineno="306"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="307"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
@@ -431,7 +431,7 @@
 <codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>indexes,</highlight></codeline>
 <codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="323"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="323"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="324"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>L2<sp/>distance</highlight></codeline>
 <codeline lineno="325"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
 <codeline lineno="326"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>ny<sp/>*<sp/>d</highlight></codeline>
@@ -449,7 +449,7 @@
 <codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y_norm2<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="340"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="341"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="341"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="342"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>L2<sp/>distance</highlight></codeline>
 <codeline lineno="343"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="344"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
@@ -524,7 +524,7 @@
 <codeline lineno="413"><highlight class="comment">///<sp/>Forward<sp/>declaration,<sp/>see<sp/>AuxIndexStructures.h</highlight></codeline>
 <codeline lineno="414"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>;</highlight></codeline>
 <codeline lineno="415"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="416"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
+<codeline lineno="416"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="417"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>w.r.t<sp/>to<sp/>max<sp/>inner<sp/>product</highlight></codeline>
 <codeline lineno="418"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="419"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>

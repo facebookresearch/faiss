@@ -2573,7 +2573,7 @@
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of vectors to hanlde </para>
+<para>number of vectors to handle </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -4792,7 +4792,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product.</para>
+<para>Return the k nearest neighbors of each of the nx vectors x among the ny vector y, w.r.t to max inner product.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
@@ -4869,7 +4869,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the inner product metric.</para>
+<para>Return the k nearest neighbors of each of the nx vectors x among the ny vector y, for the inner product metric.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
@@ -4951,7 +4951,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the L2 distance <parameterlist kind="param"><parameteritem>
+<para>Return the k nearest neighbors of each of the nx vectors x among the ny vector y, for the L2 distance <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
@@ -5048,7 +5048,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the L2 distance</para>
+<para>Return the k nearest neighbors of each of the nx vectors x among the ny vector y, for the L2 distance</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
@@ -5347,7 +5347,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product</para>
+<para>Return the k nearest neighbors of each of the nx vectors x among the ny vector y, w.r.t to max inner product</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>

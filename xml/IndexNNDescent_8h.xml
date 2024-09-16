@@ -297,7 +297,7 @@
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Faiss<sp/>results<sp/>are<sp/>64-bit</highlight></codeline>
 <codeline lineno="28"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>link<sp/>strcuture</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>link<sp/>structure</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30" refid="structfaiss_1_1IndexNNDescent_1abbb67095a45de116b553cd4be872440f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref><sp/><ref refid="structfaiss_1_1IndexNNDescent_1abbb67095a45de116b553cd4be872440f" kindref="member">nndescent</ref>;</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>sequential<sp/>storage</highlight><highlight class="normal"></highlight></codeline>

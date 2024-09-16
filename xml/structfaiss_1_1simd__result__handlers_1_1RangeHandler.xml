@@ -512,7 +512,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Result hanlder for range search. The difficulty is that the range distances have to be scaled using the scaler. </para>
+<para>Result handler for range search. The difficulty is that the range distances have to be scaled using the scaler. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">

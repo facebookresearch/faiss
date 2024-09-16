@@ -241,7 +241,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>merge a set of PartialResult&apos;s into one <ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> on ouptut the partialresults are empty! </para>
+<para>merge a set of PartialResult&apos;s into one <ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> on output the partialresults are empty! </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

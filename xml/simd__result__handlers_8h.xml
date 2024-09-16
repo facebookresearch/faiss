@@ -819,7 +819,7 @@
 <codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="536"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="537"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="538"><highlight class="comment">/**<sp/>Result<sp/>hanlder<sp/>for<sp/>range<sp/>search.<sp/>The<sp/>difficulty<sp/>is<sp/>that<sp/>the<sp/>range<sp/>distances</highlight></codeline>
+<codeline lineno="538"><highlight class="comment">/**<sp/>Result<sp/>handler<sp/>for<sp/>range<sp/>search.<sp/>The<sp/>difficulty<sp/>is<sp/>that<sp/>the<sp/>range<sp/>distances</highlight></codeline>
 <codeline lineno="539"><highlight class="comment"><sp/>*<sp/>have<sp/>to<sp/>be<sp/>scaled<sp/>using<sp/>the<sp/>scaler.</highlight></codeline>
 <codeline lineno="540"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="541"><highlight class="normal"></highlight></codeline>
@@ -997,7 +997,7 @@
 <codeline lineno="713"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="714"><highlight class="normal"></highlight></codeline>
 <codeline lineno="715"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>W,<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Consumer,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal">...<sp/>Types&gt;</highlight></codeline>
-<codeline lineno="716"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHanlder_fixedCW(</highlight></codeline>
+<codeline lineno="716"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHandler_fixedCW(</highlight></codeline>
 <codeline lineno="717"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
 <codeline lineno="718"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Consumer&amp;<sp/>consumer,</highlight></codeline>
 <codeline lineno="719"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Types...<sp/>args)<sp/>{</highlight></codeline>
@@ -1017,19 +1017,19 @@
 <codeline lineno="733"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="734"><highlight class="normal"></highlight></codeline>
 <codeline lineno="735"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">C,<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Consumer,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal">...<sp/>Types&gt;</highlight></codeline>
-<codeline lineno="736"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHanlder_fixedC(</highlight></codeline>
+<codeline lineno="736"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHandler_fixedC(</highlight></codeline>
 <codeline lineno="737"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SIMDResultHandler&amp;<sp/>res,</highlight></codeline>
 <codeline lineno="738"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Consumer&amp;<sp/>consumer,</highlight></codeline>
 <codeline lineno="739"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Types...<sp/>args)<sp/>{</highlight></codeline>
 <codeline lineno="740"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(res.with_fields)<sp/>{</highlight></codeline>
-<codeline lineno="741"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedCW&lt;C,<sp/>true&gt;(res,<sp/>consumer,<sp/>args...);</highlight></codeline>
+<codeline lineno="741"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedCW&lt;C,<sp/>true&gt;(res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="742"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="743"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedCW&lt;C,<sp/>false&gt;(res,<sp/>consumer,<sp/>args...);</highlight></codeline>
+<codeline lineno="743"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedCW&lt;C,<sp/>false&gt;(res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="744"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="745"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="746"><highlight class="normal"></highlight></codeline>
 <codeline lineno="747"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Consumer,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal">...<sp/>Types&gt;</highlight></codeline>
-<codeline lineno="748"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHanlder(</highlight></codeline>
+<codeline lineno="748"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dispatch_SIMDResultHandler(</highlight></codeline>
 <codeline lineno="749"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SIMDResultHandler&amp;<sp/>res,</highlight></codeline>
 <codeline lineno="750"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Consumer&amp;<sp/>consumer,</highlight></codeline>
 <codeline lineno="751"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Types...<sp/>args)<sp/>{</highlight></codeline>
@@ -1047,18 +1047,18 @@
 <codeline lineno="763"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="764"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(res.sizeof_ids<sp/>==<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
 <codeline lineno="765"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(res.is_CMax)<sp/>{</highlight></codeline>
-<codeline lineno="766"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedC&lt;CMax&lt;uint16_t,<sp/>int&gt;&gt;(</highlight></codeline>
+<codeline lineno="766"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedC&lt;CMax&lt;uint16_t,<sp/>int&gt;&gt;(</highlight></codeline>
 <codeline lineno="767"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="768"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="769"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedC&lt;CMin&lt;uint16_t,<sp/>int&gt;&gt;(</highlight></codeline>
+<codeline lineno="769"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedC&lt;CMin&lt;uint16_t,<sp/>int&gt;&gt;(</highlight></codeline>
 <codeline lineno="770"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="771"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="772"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(res.sizeof_ids<sp/>==<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(int64_t))<sp/>{</highlight></codeline>
 <codeline lineno="773"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(res.is_CMax)<sp/>{</highlight></codeline>
-<codeline lineno="774"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedC&lt;CMax&lt;uint16_t,<sp/>int64_t&gt;&gt;(</highlight></codeline>
+<codeline lineno="774"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedC&lt;CMax&lt;uint16_t,<sp/>int64_t&gt;&gt;(</highlight></codeline>
 <codeline lineno="775"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="776"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="777"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHanlder_fixedC&lt;CMin&lt;uint16_t,<sp/>int64_t&gt;&gt;(</highlight></codeline>
+<codeline lineno="777"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dispatch_SIMDResultHandler_fixedC&lt;CMin&lt;uint16_t,<sp/>int64_t&gt;&gt;(</highlight></codeline>
 <codeline lineno="778"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>consumer,<sp/>args...);</highlight></codeline>
 <codeline lineno="779"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="780"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>

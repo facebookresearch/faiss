@@ -9564,9 +9564,9 @@
     <member refid="residual__quantizer__encode__steps_8h_1a0799cc440d949c45026006770194c0f2" kind="function"><name>compute_codes_add_centroids_mp_lut1</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1simd__result__handlers" kind="namespace"><name>faiss::simd_result_handlers</name>
-    <member refid="simd__result__handlers_8h_1a12ddbf9763642cb7d761eefbd3556d93" kind="function"><name>dispatch_SIMDResultHanlder_fixedCW</name></member>
-    <member refid="simd__result__handlers_8h_1a95dd220216f9e9a830228c0401b8a601" kind="function"><name>dispatch_SIMDResultHanlder_fixedC</name></member>
-    <member refid="simd__result__handlers_8h_1aa1b29889d26ab11c454ec846250896d1" kind="function"><name>dispatch_SIMDResultHanlder</name></member>
+    <member refid="simd__result__handlers_8h_1a98508fd1e82d686aac870ca844cc2502" kind="function"><name>dispatch_SIMDResultHandler_fixedCW</name></member>
+    <member refid="simd__result__handlers_8h_1a739b6efe174b418b92664439772a6d25" kind="function"><name>dispatch_SIMDResultHandler_fixedC</name></member>
+    <member refid="simd__result__handlers_8h_1a116179974dd04a41323438390f8277c0" kind="function"><name>dispatch_SIMDResultHandler</name></member>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>

@@ -485,7 +485,7 @@
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>link<sp/>structure<sp/>built<sp/>on<sp/>top<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
 <codeline lineno="26" refid="structfaiss_1_1IndexNSG" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexNSG" kindref="compound">IndexNSG</ref><sp/>:<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>link<sp/>strcuture</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>link<sp/>structure</highlight></codeline>
 <codeline lineno="28" refid="structfaiss_1_1IndexNSG_1a8ef9a38cf4c8876a2d2d2c309125cd68" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref><sp/><ref refid="structfaiss_1_1IndexNSG_1a8ef9a38cf4c8876a2d2d2c309125cd68" kindref="member">nsg</ref>;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>sequential<sp/>storage</highlight></codeline>

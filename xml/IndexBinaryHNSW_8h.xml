@@ -267,7 +267,7 @@
 <codeline lineno="21" refid="structfaiss_1_1IndexBinaryHNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref><sp/>{</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref><sp/>storage_idx_t;</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>link<sp/>strcuture</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>link<sp/>structure</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref><sp/>hnsw;</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>sequential<sp/>storage</highlight><highlight class="normal"></highlight></codeline>

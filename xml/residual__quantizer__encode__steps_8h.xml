@@ -108,7 +108,7 @@
 <codeline lineno="25"><highlight class="comment"><sp/>*<sp/>It<sp/>allows<sp/>low-level<sp/>access<sp/>to<sp/>the<sp/>encoding<sp/>function,<sp/>exposed<sp/>mainly<sp/>for<sp/>unit</highlight></codeline>
 <codeline lineno="26"><highlight class="comment"><sp/>*<sp/>tests.</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="28"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>hanlde</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>handle</highlight></codeline>
 <codeline lineno="29"><highlight class="comment"><sp/>*<sp/>@param<sp/>residuals<sp/><sp/><sp/><sp/><sp/><sp/>vectors<sp/>to<sp/>encode,<sp/>size<sp/>(n,<sp/>beam_size,<sp/>d)</highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/>*<sp/>@param<sp/>cent<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centroids,<sp/>size<sp/>(K,<sp/>d)</highlight></codeline>
 <codeline lineno="31"><highlight class="comment"><sp/>*<sp/>@param<sp/>beam_size<sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>beam<sp/>size</highlight></codeline>
