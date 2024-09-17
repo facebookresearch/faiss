@@ -95,7 +95,7 @@ void accum_and_store_tab(
         for (size_t ij = 1; ij < M; ij++) {
             reg += cbs[ij][kk];
         }
-        output[b * K + kk] = reg;
+        output[kk] = reg;
     }
 }
 
@@ -152,7 +152,7 @@ void accum_and_add_tab(
         for (size_t ij = 1; ij < M; ij++) {
             reg += cbs[ij][kk];
         }
-        output[b * K + kk] += reg;
+        output[kk] += reg;
     }
 }
 
