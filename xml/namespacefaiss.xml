@@ -1520,7 +1520,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/index_read_utils.h" line="20" column="6" declfile="faiss/impl/index_read_utils.h" declline="20" declcolumn="6"/>
+        <location file="faiss/impl/index_read_utils.h" line="22" column="6" declfile="faiss/impl/index_read_utils.h" declline="22" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1541,7 +1541,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/index_read_utils.h" line="21" column="6" declfile="faiss/impl/index_read_utils.h" declline="21" declcolumn="6"/>
+        <location file="faiss/impl/index_read_utils.h" line="23" column="6" declfile="faiss/impl/index_read_utils.h" declline="23" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae931529308da688bc1470f04e9b34bf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1567,7 +1567,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/index_read_utils.h" line="22" column="6" declfile="faiss/impl/index_read_utils.h" declline="22" declcolumn="6"/>
+        <location file="faiss/impl/index_read_utils.h" line="24" column="6" declfile="faiss/impl/index_read_utils.h" declline="24" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1592,7 +1592,70 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/index_read_utils.h" line="26" column="6" declfile="faiss/impl/index_read_utils.h" declline="26" declcolumn="6"/>
+        <location file="faiss/impl/index_read_utils.h" line="28" column="6" declfile="faiss/impl/index_read_utils.h" declline="28" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aa12092ef91253e1539c474b4697f287f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
+        <definition>ArrayInvertedLists* faiss::set_array_invlist</definition>
+        <argsstring>(IndexIVF *ivf, std::vector&lt; std::vector&lt; idx_t &gt;&gt; &amp;ids)</argsstring>
+        <name>set_array_invlist</name>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
+          <declname>ivf</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;&gt; &amp;</type>
+          <declname>ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="29" column="20" declfile="faiss/impl/index_read_utils.h" declline="29" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4eae12c70887bff34241a726efb9ff02" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_ProductQuantizer</definition>
+        <argsstring>(ProductQuantizer *pq, IOReader *f)</argsstring>
+        <name>read_ProductQuantizer</name>
+        <param>
+          <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> *</type>
+          <declname>pq</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="32" column="6" declfile="faiss/impl/index_read_utils.h" declline="32" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a39ebc7cee79b9534f7a5d6d622ed0250" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::read_ScalarQuantizer</definition>
+        <argsstring>(ScalarQuantizer *ivsc, IOReader *f)</argsstring>
+        <name>read_ScalarQuantizer</name>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref> *</type>
+          <declname>ivsc</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/index_read_utils.h" line="33" column="6" declfile="faiss/impl/index_read_utils.h" declline="33" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>

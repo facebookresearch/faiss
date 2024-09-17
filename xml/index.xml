@@ -9101,6 +9101,9 @@
     <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
     <member refid="namespacefaiss_1ae931529308da688bc1470f04e9b34bf2" kind="function"><name>read_ivf_header</name></member>
     <member refid="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" kind="function"><name>read_InvertedLists</name></member>
+    <member refid="namespacefaiss_1aa12092ef91253e1539c474b4697f287f" kind="function"><name>set_array_invlist</name></member>
+    <member refid="namespacefaiss_1a4eae12c70887bff34241a726efb9ff02" kind="function"><name>read_ProductQuantizer</name></member>
+    <member refid="namespacefaiss_1a39ebc7cee79b9534f7a5d6d622ed0250" kind="function"><name>read_ScalarQuantizer</name></member>
     <member refid="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa4aee5942eb92dbce17469f4bdd2e0a5" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa2a1c19599e8fc0b8a3025d3386637b8" kind="function"><name>fourcc_inv</name></member>
