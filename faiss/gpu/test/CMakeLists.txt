@@ -24,7 +24,7 @@ if(FAISS_ENABLE_ROCM)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
 else()
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:raft::raft>)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
 endif()
 
 macro(faiss_gpu_test file)
