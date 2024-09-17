@@ -243,7 +243,7 @@ void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
     ivf->own_invlists = true;
 }
 
-static void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
+void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->d);
     READ1(pq->M);
     READ1(pq->nbits);
@@ -353,7 +353,7 @@ static void read_ProductLocalSearchQuantizer(
     }
 }
 
-static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
+void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->qtype);
     READ1(ivsc->rangestat);
     READ1(ivsc->rangestat_arg);
@@ -476,7 +476,7 @@ void read_ivf_header(
 }
 
 // used for legacy formats
-static ArrayInvertedLists* set_array_invlist(
+ArrayInvertedLists* set_array_invlist(
         IndexIVF* ivf,
         std::vector<std::vector<idx_t>>& ids) {
     ArrayInvertedLists* ail =
