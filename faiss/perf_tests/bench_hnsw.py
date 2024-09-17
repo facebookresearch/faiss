@@ -52,10 +52,12 @@ def accumulate_perf_counter(
 def run_on_dataset(
     ds: Dataset,
     M: int,
-    num_threads:
-    int,
+    num_threads: int,
+    num_add_iterations: int,
+    num_search_iterations: int,
     efSearch: int = 16,
-    efConstruction: int = 40
+    efConstruction: int = 40,
+    search_bounded_queue: bool = True,
 ) -> Dict[str, int]:
     xq = ds.get_queries()
     xb = ds.get_database()
@@ -67,22 +69,27 @@ def run_on_dataset(
     # pyre-ignore[16]: Module `faiss` has no attribute `omp_set_num_threads`.
     faiss.omp_set_num_threads(num_threads)
     index = faiss.IndexHNSWFlat(d, M)
-    index.hnsw.efConstruction = 40  # default
+    index.hnsw.efConstruction = efConstruction  # default
     with timed_execution() as t:
-        index.add(xb)
+        for _ in range(num_add_iterations):
+            index.add(xb)
     counters = {}
     accumulate_perf_counter("add", t, counters)
     counters["nb"] = nb
+    counters["num_add_iterations"] = num_add_iterations
 
     index.hnsw.efSearch = efSearch
+    index.hnsw.search_bounded_queue = search_bounded_queue
     with timed_execution() as t:
-        D, I = index.search(xq, k)
+        for _ in range(num_search_iterations):
+            D, I = index.search(xq, k)
     accumulate_perf_counter("search", t, counters)
     counters["nq"] = nq
     counters["efSearch"] = efSearch
     counters["efConstruction"] = efConstruction
     counters["M"] = M
     counters["d"] = d
+    counters["num_search_iterations"] = num_search_iterations
 
     return counters
 
@@ -93,59 +100,23 @@ def run(
     nq: int,
     M: int,
     num_threads: int,
+    num_add_iterations: int = 1,
+    num_search_iterations: int = 1,
     efSearch: int = 16,
     efConstruction: int = 40,
+    search_bounded_queue: bool = True,
 ) -> Dict[str, int]:
     ds = SyntheticDataset(d=d, nb=nb, nt=0, nq=nq, metric="L2", seed=1338)
     return run_on_dataset(
         ds,
         M=M,
+        num_add_iterations=num_add_iterations,
+        num_search_iterations=num_search_iterations,
         num_threads=num_threads,
         efSearch=efSearch,
         efConstruction=efConstruction,
+        search_bounded_queue=search_bounded_queue,
     )
-
-
-def _merge_counters(
-    element: Dict[str, int], accu: Optional[Dict[str, int]] = None
-) -> Dict[str, int]:
-    if accu is None:
-        return dict(element)
-    else:
-        assert accu.keys() <= element.keys(), (
-            "Accu keys must be a subset of element keys: "
-            f"{accu.keys()} not a subset of {element.keys()}"
-        )
-        for key in accu.keys():
-            if is_perf_counter(key):
-                accu[key] += element[key]
-        return accu
-
-
-def run_with_iterations(
-    iterations: int,
-    d: int,
-    nb: int,
-    nq: int,
-    M: int,
-    num_threads: int,
-    efSearch: int = 16,
-    efConstruction: int = 40,
-) -> Dict[str, int]:
-    result = None
-    for _ in range(iterations):
-        counters = run(
-            d=d,
-            nb=nb,
-            nq=nq,
-            M=M,
-            num_threads=num_threads,
-            efSearch=efSearch,
-            efConstruction=efConstruction,
-        )
-        result = _merge_counters(counters, result)
-    assert result is not None
-    return result
 
 
 def _accumulate_counters(
@@ -169,10 +140,13 @@ def main():
     parser.add_argument("-M", "--M", type=int, required=True)
     parser.add_argument("-t", "--num-threads", type=int, required=True)
     parser.add_argument("-w", "--warm-up-iterations", type=int, default=0)
-    parser.add_argument("-i", "--num-iterations", type=int, default=20)
+    parser.add_argument("-i", "--num-search-iterations", type=int, default=20)
+    parser.add_argument("-i", "--num-add-iterations", type=int, default=20)
     parser.add_argument("-r", "--num-repetitions", type=int, default=20)
     parser.add_argument("-s", "--ef-search", type=int, default=16)
     parser.add_argument("-c", "--ef-construction", type=int, default=40)
+    parser.add_argument("-b", "--search-bounded-queue", action="store_true")
+
     parser.add_argument("-n", "--nb", type=int, default=5000)
     parser.add_argument("-q", "--nq", type=int, default=500)
     parser.add_argument("-d", "--d", type=int, default=128)
@@ -181,8 +155,9 @@ def main():
     if args.warm_up_iterations > 0:
         print(f"Warming up for {args.warm_up_iterations} iterations...")
         # warm-up
-        run_with_iterations(
-            iterations=args.warm_up_iterations,
+        run(
+            num_search_iterations=args.warm_up_iterations,
+            num_add_iterations=args.warm_up_iterations,
             d=args.d,
             nb=args.nb,
             nq=args.nq,
@@ -190,6 +165,7 @@ def main():
             num_threads=args.num_threads,
             efSearch=args.ef_search,
             efConstruction=args.ef_construction,
+            search_bounded_queue=args.search_bounded_queue,
         )
     print(
         f"Running benchmark with dataset(nb={args.nb}, nq={args.nq}, "
@@ -198,8 +174,9 @@ def main():
     )
     result = None
     for _ in range(args.num_repetitions):
-        counters = run_with_iterations(
-            iterations=args.num_iterations,
+        counters = run(
+            num_search_iterations=args.num_search_iterations,
+            num_add_iterations=args.num_add_iterations,
             d=args.d,
             nb=args.nb,
             nq=args.nq,
@@ -207,15 +184,13 @@ def main():
             num_threads=args.num_threads,
             efSearch=args.ef_search,
             efConstruction=args.ef_construction,
+            search_bounded_queue=args.search_bounded_queue,
         )
         result = _accumulate_counters(counters, result)
     assert result is not None
     for counter, values in result.items():
         if is_perf_counter(counter):
             print(
-                "%s t=%.3f us (± %.4f)" % (
-                    counter,
-                    np.mean(values),
-                    np.std(values)
-                )
+                "%s t=%.3f us (± %.4f)" %
+                (counter, np.mean(values), np.std(values))
             )
