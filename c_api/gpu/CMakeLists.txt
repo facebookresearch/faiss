@@ -20,7 +20,7 @@ if (FAISS_ENABLE_ROCM)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas
-    $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:raft::raft>)
 endif()
 
 add_executable(example_gpu_c EXCLUDE_FROM_ALL example_gpu_c.c)

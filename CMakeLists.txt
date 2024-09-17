@@ -81,6 +81,7 @@ endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
    find_package(cuvs)
+   find_package(raft)
  endif()
 
 add_subdirectory(faiss)
