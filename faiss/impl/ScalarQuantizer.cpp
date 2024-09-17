@@ -93,7 +93,7 @@ struct Codec8bit {
     }
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -144,7 +144,7 @@ struct Codec4bit {
     }
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -256,7 +256,7 @@ struct Codec6bit {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -333,7 +333,7 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
@@ -413,7 +413,7 @@ struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
@@ -481,7 +481,7 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -612,7 +612,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -996,7 +996,7 @@ struct SimilarityL2<8> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -1120,7 +1120,7 @@ struct SimilarityIP<8> {
 };
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct SimilarityIP<8> {
@@ -1269,7 +1269,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1432,7 +1432,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -1632,7 +1632,8 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 }
 
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_F16C) || \
+        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -1663,7 +1664,8 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_F16C) || \
+        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2009,7 +2011,8 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_F16C) || \
+        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
