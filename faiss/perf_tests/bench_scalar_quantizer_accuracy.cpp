@@ -6,7 +6,6 @@
  */
 
 #include <faiss/perf_tests/utils.h>
-#include <fmt/format.h>
 #include <gflags/gflags.h>
 #include <cstdio>
 #include <map>
@@ -76,7 +75,7 @@ int main(int argc, char** argv) {
 
     for (auto& [bench_name, quantizer_type] : benchs) {
         benchmark::RegisterBenchmark(
-                fmt::format("{}_{}d_{}n", bench_name, d, n).c_str(),
+                bench_name.c_str(),
                 bench_reconstruction_error,
                 quantizer_type,
                 d,

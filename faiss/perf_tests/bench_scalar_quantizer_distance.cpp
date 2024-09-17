@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fmt/format.h>
 #include <gflags/gflags.h>
 #include <omp.h>
 #include <cstdio>
@@ -72,11 +71,7 @@ int main(int argc, char** argv) {
 
     for (auto& [bench_name, quantizer_type] : benchs) {
         benchmark::RegisterBenchmark(
-                fmt::format("{}_{}d_{}n", bench_name, d, n).c_str(),
-                bench_distance,
-                quantizer_type,
-                d,
-                n)
+                bench_name.c_str(), bench_distance, quantizer_type, d, n)
                 ->Iterations(iterations);
     }
     benchmark::RunSpecifiedBenchmarks();
