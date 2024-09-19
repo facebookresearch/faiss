@@ -46,7 +46,8 @@ namespace faiss {
 
 #if defined(__AVX512F__) && defined(__F16C__)
 #define USE_AVX512_F16C
-#elif defined(__AVX2__)
+#endif
+#if defined(__AVX2__)
 #ifdef __F16C__
 #define USE_F16C
 #else
@@ -1488,7 +1489,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#if defined(USE_AVX512_F16C)
+#ifdef USE_AVX512_F16C
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 16>
@@ -1535,8 +1536,9 @@ struct DCTemplate<Quantizer, Similarity, 16>
         return compute_distance(q, code);
     }
 };
+#endif
 
-#elif defined(USE_F16C)
+#if defined(USE_F16C)
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1906,9 +1908,10 @@ SQDistanceComputer* select_distance_computer(
             if (d % 32 == 0) {
                 return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
             } else
-#elif defined(__AVX2__)
-            if (d % 16 == 0) {
-                return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
+#endif
+#if defined(__AVX2__)
+                    if (d % 16 == 0) {
+                return new DistanceComputerByte<Sim, 8>(d, trained);
             } else
 #endif
             {
@@ -2014,8 +2017,9 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     if (d % 16 == 0) {
         return select_quantizer_1<16>(qtype, d, trained);
     } else
-#elif defined(USE_F16C) || defined(__aarch64__)
-    if (d % 8 == 0) {
+#endif
+#if defined(USE_F16C) || defined(__aarch64__)
+            if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
 #endif
@@ -2055,8 +2059,9 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
                     qtype, d, trained);
         }
     } else
-#elif defined(USE_F16C) || defined(__aarch64__)
-    if (d % 8 == 0) {
+#endif
+#if defined(USE_F16C) || defined(__aarch64__)
+            if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
         } else {
@@ -2359,8 +2364,9 @@ InvertedListScanner* sel1_InvertedListScanner(
                         DistanceComputerByte<Similarity, SIMDWIDTH>>(
                         sq, quantizer, store_pairs, sel, r);
             } else
-#elif defined(__AVX2__)
-            if (sq->d % 16 == 0) {
+#endif
+#if defined(__AVX2__)
+                    if (sq->d % 16 == 0) {
                 return sel2_InvertedListScanner<
                         DistanceComputerByte<Similarity, SIMDWIDTH>>(
                         sq, quantizer, store_pairs, sel, r);
@@ -2415,8 +2421,9 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         return sel0_InvertedListScanner<16>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
-#elif defined(USE_F16C) || defined(__aarch64__)
-    if (d % 8 == 0) {
+#endif
+#if defined(USE_F16C) || defined(__aarch64__)
+            if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
