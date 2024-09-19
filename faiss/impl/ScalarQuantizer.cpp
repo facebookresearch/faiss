@@ -81,7 +81,7 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
     static FAISS_ALWAYS_INLINE __m512
     decode_16_components(const uint8_t* code, int i) {
         const __m128i c16 = _mm_loadu_si128((__m128i*)(code + i));
@@ -91,9 +91,7 @@ struct Codec8bit {
         const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
         return _mm512_fmadd_ps(f16, one_255, half_one_255);
     }
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
@@ -135,7 +133,7 @@ struct Codec4bit {
         return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
     }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
     static FAISS_ALWAYS_INLINE __m512
     decode_16_components(const uint8_t* code, int i) {
         uint64_t c8 = *(uint64_t*)(code + (i >> 1));
@@ -154,9 +152,7 @@ struct Codec4bit {
         const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
         return _mm512_fmadd_ps(f16, one_255, half_one_255);
     }
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
@@ -242,7 +238,7 @@ struct Codec6bit {
         return (bits + 0.5f) / 63.0f;
     }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
     static FAISS_ALWAYS_INLINE __m512
     decode_16_components(const uint8_t* code, int i) {
@@ -291,9 +287,7 @@ struct Codec6bit {
         // clang-format on
     }
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */
@@ -402,7 +396,7 @@ struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, true, 16> : QuantizerTemplate<Codec, true, 1> {
@@ -417,9 +411,7 @@ struct QuantizerTemplate<Codec, true, 16> : QuantizerTemplate<Codec, true, 1> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
@@ -497,7 +489,7 @@ struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, false, 16>
@@ -515,9 +507,7 @@ struct QuantizerTemplate<Codec, false, 16>
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
@@ -667,7 +657,7 @@ struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 struct QuantizerBF16<16> : QuantizerBF16<1> {
@@ -682,9 +672,7 @@ struct QuantizerBF16<16> : QuantizerBF16<1> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -751,7 +739,7 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
@@ -766,9 +754,7 @@ struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -838,7 +824,7 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
@@ -855,9 +841,7 @@ struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -1147,7 +1131,7 @@ struct SimilarityL2<1> {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 struct SimilarityL2<16> {
@@ -1182,9 +1166,7 @@ struct SimilarityL2<16> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 struct SimilarityL2<8> {
@@ -1308,7 +1290,7 @@ struct SimilarityIP<1> {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <>
 struct SimilarityIP<16> {
@@ -1344,9 +1326,7 @@ struct SimilarityIP<16> {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <>
 struct SimilarityIP<8> {
@@ -1683,7 +1663,7 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__)
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
@@ -1736,9 +1716,7 @@ struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
     }
 };
 
-#endif
-
-#ifdef __AVX2__
+#elif defined(__AVX2__)
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
