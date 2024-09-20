@@ -6,17 +6,15 @@
 
 # @lint-ignore-every LINEWRAP
 project(faiss_perf_tests)
+set(BENCHMARK_ENABLE_TESTING OFF)
 
 include(FetchContent)
 FetchContent_Declare(googlebenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
         GIT_TAG main) # need main for benchmark::benchmark
-
-set(BENCHMARK_ENABLE_TESTING OFF)
 FetchContent_MakeAvailable(
   googlebenchmark)
 
-set(BENCHMARK_ENABLE_TESTING OFF)
 
 find_package(Threads REQUIRED)
 find_package(OpenMP REQUIRED)
