@@ -26,8 +26,7 @@ from faiss.contrib.exhaustive_search import \
     range_search_max_results, exponential_query_iterator
 from contextlib import contextmanager
 
-@unittest.skipIf(platform.python_version_tuple()[0] < '3',
-                 'Submodule import broken in python 2.')
+
 class TestComputeGT(unittest.TestCase):
 
     def do_test_compute_GT(self, metric=faiss.METRIC_L2):
