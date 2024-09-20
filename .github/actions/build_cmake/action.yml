@@ -152,6 +152,9 @@ runs:
       working-directory: build/faiss/python
       run: |
         $CONDA/bin/python setup.py install
+    - name: Setup tmate session
+      if: failure()
+      uses: mxschmitt/action-tmate@v3
     - name: ROCm - install ROCm-enabled torch via pip
       if: inputs.rocm == 'ON'
       shell: bash
