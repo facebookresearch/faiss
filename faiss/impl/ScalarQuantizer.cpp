@@ -564,7 +564,7 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
 #endif
 
-#ifdef __aarch64__
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -702,7 +702,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
