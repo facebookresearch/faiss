@@ -151,14 +151,12 @@ class DatasetAssign:
 
         I = I.ravel()
         D = D.ravel()
-        n = len(self.x)
+        nc, d = centroids.shape
+        sum_per_centroid = np.zeros((nc, d), dtype='float32')
         if weights is None:
-            weights = np.ones(n, dtype='float32')
-        nc = len(centroids)
-        m = scipy.sparse.csc_matrix(
-            (weights, I, np.arange(n + 1)),
-            shape=(nc, n))
-        sum_per_centroid = m * self.x
+            np.add.at(sum_per_centroid, I, self.x)
+        else: 
+            np.add.at(sum_per_centroid, I, weights[:, np.newaxis] * self.x)
 
         return I, D, sum_per_centroid
 
@@ -185,7 +183,8 @@ class DatasetAssignGPU(DatasetAssign):
 
 def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
     """ assignment function for xq is sparse, xb is dense
-    uses a matrix multiplication. The squared norms can be provided if available.
+    uses a matrix multiplication. The squared norms can be provided if 
+    available.
     """
     nq = xq.shape[0]
     nb = xb.shape[0]
@@ -272,6 +271,7 @@ class DatasetAssignSparse(DatasetAssign):
         if weights is None:
             weights = np.ones(n, dtype='float32')
         nc = len(centroids)
+        
         m = scipy.sparse.csc_matrix(
             (weights, I, np.arange(n + 1)),
             shape=(nc, n))
