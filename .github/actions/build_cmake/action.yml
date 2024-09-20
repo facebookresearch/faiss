@@ -146,8 +146,7 @@ runs:
     - name: C++ perf benchmarks
       shell: bash
       run: |
-        make  -C build -j faiss_perf_tests
-        cd ./build/perf_tests && ./faiss_perf_tests
+        find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
