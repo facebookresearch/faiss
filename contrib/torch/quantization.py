@@ -8,46 +8,46 @@ This contrib module contains Pytorch code for quantization.
 """
 
 import numpy as np
-import torch 
+import torch
 import faiss
 
 from faiss.contrib import torch_utils
 
 
-class Quantizer: 
+class Quantizer:
 
-    def __init__(self, d, code_size): 
-        self.d = d 
+    def __init__(self, d, code_size):
+        self.d = d
         self.code_size = code_size
 
-    def train(self, x): 
+    def train(self, x):
         pass
-    
-    def encode(self, x): 
+
+    def encode(self, x):
         pass
-    
-    def decode(self, x): 
+
+    def decode(self, x):
         pass
 
 
-class VectorQuantizer(Quantizer): 
+class VectorQuantizer(Quantizer):
 
-    def __init__(self, d, k): 
+    def __init__(self, d, k):
         code_size = int(torch.ceil(torch.log2(k) / 8))
         Quantizer.__init__(d, code_size)
         self.k = k
 
-    def train(self, x): 
+    def train(self, x):
         pass
 
 
-class ProductQuantizer(Quantizer): 
+class ProductQuantizer(Quantizer):
 
-    def __init__(self, d, M, nbits): 
+    def __init__(self, d, M, nbits):
         code_size = int(torch.ceil(M * nbits / 8))
         Quantizer.__init__(d, code_size)
         self.M = M
         self.nbits = nbits
 
-    def train(self, x): 
+    def train(self, x):
         pass

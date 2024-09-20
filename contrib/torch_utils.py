@@ -73,7 +73,7 @@ def swig_ptr_from_IndicesTensor(x):
         x.untyped_storage().data_ptr() + x.storage_offset() * 8)
 
 ##################################################################
-# utilities 
+# utilities
 ##################################################################
 
 @contextlib.contextmanager
@@ -519,7 +519,7 @@ def torch_replacement_knn(xq, xb, k, metric=faiss.METRIC_L2, metric_arg=0):
     assert xb.is_contiguous()
     assert xb.dtype == torch.float32
     assert not xb.is_cuda, "use knn_gpu for GPU tensors"
-    
+
     nq, d2 = xq.size()
     assert d2 == d
     assert xq.is_contiguous()
@@ -543,7 +543,7 @@ def torch_replacement_knn(xq, xb, k, metric=faiss.METRIC_L2, metric_arg=0):
             xq_ptr, xb_ptr,
             d, nq, nb, k, D_ptr, I_ptr
         )
-    else: 
+    else:
         faiss.knn_extra_metrics(
             xq_ptr, xb_ptr,
             d, nq, nb, metric, metric_arg, k, D_ptr, I_ptr

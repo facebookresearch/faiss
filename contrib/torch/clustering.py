@@ -11,8 +11,7 @@ import faiss.contrib.torch_utils
 import torch
 
 # the kmeans can produce both torch and numpy centroids
-from faiss.contrib.clustering import DatasetAssign, kmeans
-
+from faiss.contrib.clustering import kmeans
 
 class DatasetAssign:
     """Wrapper for a tensor that offers a function to assign the vectors
@@ -52,7 +51,7 @@ class DatasetAssign:
 
 class DatasetAssignGPU(DatasetAssign):
 
-    def __init__(self, res, x): 
+    def __init__(self, res, x):
         DatasetAssign.__init__(self, x)
         self.res = res
 
