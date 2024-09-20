@@ -3,6 +3,7 @@
   <compounddef id="dir_6db856fab8a406bb2751df9e12e5655b" kind="dir">
     <compoundname>faiss/utils/transpose</compoundname>
     <innerfile refid="transpose-avx2-inl_8h">transpose-avx2-inl.h</innerfile>
+    <innerfile refid="transpose-avx512-inl_8h">transpose-avx512-inl.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
