@@ -285,7 +285,7 @@ FAISS_API extern int distance_compute_blas_database_bs;
 // rather than a heap
 FAISS_API extern int distance_compute_min_k_reservoir;
 
-/** Return the k nearest neighors of each of the nx vectors x among the ny
+/** Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product.
  *
  * @param x    query vectors, size nx * d
@@ -301,7 +301,7 @@ void knn_inner_product(
         float_minheap_array_t* res,
         const IDSelector* sel = nullptr);
 
-/**  Return the k nearest neighors of each of the nx vectors x among the ny
+/**  Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, for the inner product metric.
  *
  * @param x    query vectors, size nx * d
@@ -320,7 +320,7 @@ void knn_inner_product(
         int64_t* indexes,
         const IDSelector* sel = nullptr);
 
-/** Return the k nearest neighors of each of the nx vectors x among the ny
+/** Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
  * @param x    query vectors, size nx * d
  * @param y    database vectors, size ny * d
@@ -338,7 +338,7 @@ void knn_L2sqr(
         const float* y_norm2 = nullptr,
         const IDSelector* sel = nullptr);
 
-/**  Return the k nearest neighors of each of the nx vectors x among the ny
+/**  Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
  *
  * @param x    query vectors, size nx * d
@@ -413,7 +413,7 @@ void knn_L2sqr_by_idx(
 /// Forward declaration, see AuxIndexStructures.h
 struct RangeSearchResult;
 
-/** Return the k nearest neighors of each of the nx vectors x among the ny
+/** Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, w.r.t to max inner product
  *
  * @param x      query vectors, size nx * d

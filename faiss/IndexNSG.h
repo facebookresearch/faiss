@@ -24,7 +24,7 @@ namespace faiss {
  * link structure built on top */
 
 struct IndexNSG : Index {
-    /// the link strcuture
+    /// the link structure
     NSG nsg;
 
     /// the sequential storage

@@ -127,7 +127,7 @@ void BlockInvertedLists::update_entries(
         size_t,
         const idx_t*,
         const uint8_t*) {
-    FAISS_THROW_MSG("not impemented");
+    FAISS_THROW_MSG("not implemented");
 }
 
 BlockInvertedLists::~BlockInvertedLists() {

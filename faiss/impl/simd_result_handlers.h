@@ -535,7 +535,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
     }
 };
 
-/** Result hanlder for range search. The difficulty is that the range distances
+/** Result handler for range search. The difficulty is that the range distances
  * have to be scaled using the scaler.
  */
 
@@ -713,7 +713,7 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map> {
  */
 
 template <class C, bool W, class Consumer, class... Types>
-void dispatch_SIMDResultHanlder_fixedCW(
+void dispatch_SIMDResultHandler_fixedCW(
         SIMDResultHandler& res,
         Consumer& consumer,
         Types... args) {
@@ -733,19 +733,19 @@ void dispatch_SIMDResultHanlder_fixedCW(
 }
 
 template <class C, class Consumer, class... Types>
-void dispatch_SIMDResultHanlder_fixedC(
+void dispatch_SIMDResultHandler_fixedC(
         SIMDResultHandler& res,
         Consumer& consumer,
         Types... args) {
     if (res.with_fields) {
-        dispatch_SIMDResultHanlder_fixedCW<C, true>(res, consumer, args...);
+        dispatch_SIMDResultHandler_fixedCW<C, true>(res, consumer, args...);
     } else {
-        dispatch_SIMDResultHanlder_fixedCW<C, false>(res, consumer, args...);
+        dispatch_SIMDResultHandler_fixedCW<C, false>(res, consumer, args...);
     }
 }
 
 template <class Consumer, class... Types>
-void dispatch_SIMDResultHanlder(
+void dispatch_SIMDResultHandler(
         SIMDResultHandler& res,
         Consumer& consumer,
         Types... args) {
@@ -763,18 +763,18 @@ void dispatch_SIMDResultHanlder(
         }
     } else if (res.sizeof_ids == sizeof(int)) {
         if (res.is_CMax) {
-            dispatch_SIMDResultHanlder_fixedC<CMax<uint16_t, int>>(
+            dispatch_SIMDResultHandler_fixedC<CMax<uint16_t, int>>(
                     res, consumer, args...);
         } else {
-            dispatch_SIMDResultHanlder_fixedC<CMin<uint16_t, int>>(
+            dispatch_SIMDResultHandler_fixedC<CMin<uint16_t, int>>(
                     res, consumer, args...);
         }
     } else if (res.sizeof_ids == sizeof(int64_t)) {
         if (res.is_CMax) {
-            dispatch_SIMDResultHanlder_fixedC<CMax<uint16_t, int64_t>>(
+            dispatch_SIMDResultHandler_fixedC<CMax<uint16_t, int64_t>>(
                     res, consumer, args...);
         } else {
-            dispatch_SIMDResultHanlder_fixedC<CMin<uint16_t, int64_t>>(
+            dispatch_SIMDResultHandler_fixedC<CMin<uint16_t, int64_t>>(
                     res, consumer, args...);
         }
     } else {
