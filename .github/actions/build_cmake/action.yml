@@ -145,7 +145,7 @@ runs:
         make -C build test
     - name: C++ perf benchmarks
       shell: bash
-      if: inputs.gpu == 'OFF'
+      if: inputs.rocm == 'OFF'
       run: |
         find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
