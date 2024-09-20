@@ -402,9 +402,12 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
 #if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 16> : QuantizerTemplate<Codec, true, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, true, 1>(d, trained) {}
+            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
+                      d,
+                      trained) {}
 
     FAISS_ALWAYS_INLINE __m512
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -502,10 +505,13 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
 #if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 16>
-        : QuantizerTemplate<Codec, false, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, false, 1>(d, trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1>(d, trained) {}
 
     FAISS_ALWAYS_INLINE __m512
     reconstruct_16_components(const uint8_t* code, int i) const {
