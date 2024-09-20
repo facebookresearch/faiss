@@ -9,6 +9,10 @@ import numpy as np   # usort: skip
 
 import faiss   # usort: skip
 import faiss.contrib.torch_utils  # usort: skip
+from faiss.contrib import datasets
+from faiss.contrib.torch import clustering
+
+
 
 class TestTorchUtilsCPU(unittest.TestCase):
     # tests add, search
@@ -344,3 +348,29 @@ class TestTorchUtilsCPU(unittest.TestCase):
         # disabled since we now accept non-contiguous arrays
         # with self.assertRaises(ValueError):
         #    index.add(xb.numpy())
+
+
+class TestClustering(unittest.TestCase):
+
+    def test_python_kmeans(self):
+        """ Test the python implementation of kmeans """
+        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        x = ds.get_train()
+
+        # bad distribution to stress-test split code
+        xt = x[:10000].copy()
+        xt[:5000] = x[0]
+
+        km_ref = faiss.Kmeans(ds.d, 100, niter=10)
+        km_ref.train(xt)
+        err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
+
+        xt_torch = torch.from_numpy(xt)
+        data = clustering.DatasetAssign(xt_torch)
+        centroids = clustering.kmeans(100, data, 10)
+        centroids = centroids.numpy()
+        err2 = faiss.knn(xt, centroids, 1)[0].sum()
+
+        # 33498.332 33380.477
+        # print(err, err2)        1/0
+        self.assertLess(err2, err * 1.1)

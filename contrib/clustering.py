@@ -151,14 +151,12 @@ class DatasetAssign:
 
         I = I.ravel()
         D = D.ravel()
-        n = len(self.x)
+        nc, d = centroids.shape
+        sum_per_centroid = np.zeros((nc, d), dtype='float32')
         if weights is None:
-            weights = np.ones(n, dtype='float32')
-        nc = len(centroids)
-        m = scipy.sparse.csc_matrix(
-            (weights, I, np.arange(n + 1)),
-            shape=(nc, n))
-        sum_per_centroid = m * self.x
+            np.add.at(sum_per_centroid, I, self.x)
+        else:
+            np.add.at(sum_per_centroid, I, weights[:, np.newaxis] * self.x)
 
         return I, D, sum_per_centroid
 
@@ -185,7 +183,8 @@ class DatasetAssignGPU(DatasetAssign):
 
 def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
     """ assignment function for xq is sparse, xb is dense
-    uses a matrix multiplication. The squared norms can be provided if available.
+    uses a matrix multiplication. The squared norms can be provided if
+    available.
     """
     nq = xq.shape[0]
     nb = xb.shape[0]
@@ -272,6 +271,7 @@ class DatasetAssignSparse(DatasetAssign):
         if weights is None:
             weights = np.ones(n, dtype='float32')
         nc = len(centroids)
+
         m = scipy.sparse.csc_matrix(
             (weights, I, np.arange(n + 1)),
             shape=(nc, n))
@@ -285,25 +285,40 @@ def imbalance_factor(k, assign):
     return faiss.imbalance_factor(len(assign), k, faiss.swig_ptr(assign))
 
 
+def check_if_torch(x):
+    if x.__class__ == np.ndarray:
+        return False
+    import torch
+    if isinstance(x, torch.Tensor):
+        return True
+    raise NotImplementedError(f"Unknown tensor type {type(x)}")
+
+
 def reassign_centroids(hassign, centroids, rs=None):
     """ reassign centroids when some of them collapse """
     if rs is None:
         rs = np.random
     k, d = centroids.shape
     nsplit = 0
+    is_torch = check_if_torch(centroids)
+
     empty_cents = np.where(hassign == 0)[0]
 
-    if empty_cents.size == 0:
+    if len(empty_cents) == 0:
         return 0
 
-    fac = np.ones(d)
+    if is_torch:
+        import torch
+        fac = torch.ones_like(centroids[0])
+    else:
+        fac = np.ones_like(centroids[0])
     fac[::2] += 1 / 1024.
     fac[1::2] -= 1 / 1024.
 
     # this is a single pass unless there are more than k/2
     # empty centroids
-    while empty_cents.size > 0:
-        # choose which centroids to split
+    while len(empty_cents) > 0:
+        # choose which centroids to split (numpy)
         probas = hassign.astype('float') - 1
         probas[probas < 0] = 0
         probas /= probas.sum()
@@ -327,13 +342,17 @@ def reassign_centroids(hassign, centroids, rs=None):
     return nsplit
 
 
+
 def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
            return_stats=False):
     """Pure python kmeans implementation. Follows the Faiss C++ version
     quite closely, but takes a DatasetAssign instead of a training data
-    matrix. Also redo is not implemented. """
-    n, d = data.count(), data.dim()
+    matrix. Also redo is not implemented.
 
+    For the torch implementation, the centroids are tensors (possibly on GPU),
+    but the indices remain numpy on CPU.
+    """
+    n, d = data.count(), data.dim()
     log = print if verbose else print_nop
 
     log(("Clustering %d points in %dD to %d clusters, " +
@@ -345,6 +364,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
     # initialization
     perm = rs.choice(n, size=k, replace=False)
     centroids = data.get_subset(perm)
+    is_torch = check_if_torch(centroids)
 
     iteration_stats = []
 
@@ -362,12 +382,17 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
         t_search_tot += time.time() - t0s;
 
         err = D.sum()
+        if is_torch:
+            err = err.item()
         obj.append(err)
 
         hassign = np.bincount(assign, minlength=k)
 
         fac = hassign.reshape(-1, 1).astype('float32')
-        fac[fac == 0] = 1 # quiet warning
+        fac[fac == 0] = 1  # quiet warning
+        if is_torch:
+            import torch
+            fac = torch.from_numpy(fac).to(sums.device)
 
         centroids = sums / fac
 
@@ -377,7 +402,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
             "obj": err,
             "time": (time.time() - t0),
             "time_search": t_search_tot,
-            "imbalance_factor": imbalance_factor (k, assign),
+            "imbalance_factor": imbalance_factor(k, assign),
             "nsplit": nsplit
         }
 
@@ -391,7 +416,11 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
 
         if checkpoint is not None:
             log('storing centroids in', checkpoint)
-            np.save(checkpoint, centroids)
+            if is_torch:
+                import torch
+                torch.save(centroids, checkpoint)
+            else:
+                np.save(checkpoint, centroids)
 
     if return_stats:
         return centroids, iteration_stats

@@ -28,12 +28,17 @@ import inspect
 import sys
 import numpy as np
 
+##################################################################
+# Equivalent of swig_ptr for Torch tensors
+##################################################################
+
 def swig_ptr_from_UInt8Tensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.uint8
     return faiss.cast_integer_to_uint8_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset())
+
 
 def swig_ptr_from_HalfTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -43,12 +48,14 @@ def swig_ptr_from_HalfTensor(x):
     return faiss.cast_integer_to_void_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 2)
 
+
 def swig_ptr_from_FloatTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.float32
     return faiss.cast_integer_to_float_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
+
 
 def swig_ptr_from_IntTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -57,12 +64,17 @@ def swig_ptr_from_IntTensor(x):
     return faiss.cast_integer_to_int_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
+
 def swig_ptr_from_IndicesTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
     assert x.dtype == torch.int64, 'dtype=%s' % x.dtype
     return faiss.cast_integer_to_idx_t_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 8)
+
+##################################################################
+# utilities
+##################################################################
 
 @contextlib.contextmanager
 def using_stream(res, pytorch_stream=None):
@@ -106,6 +118,10 @@ def torch_replace_method(the_class, name, replacement,
     assert ignore_no_base or (orig_method.__name__ == 'replacement_' + name)
     setattr(the_class, name + '_numpy', orig_method)
     setattr(the_class, name, replacement)
+
+##################################################################
+# Setup wrappers
+##################################################################
 
 def handle_torch_Index(the_class):
     def torch_replacement_add(self, x):
@@ -491,6 +507,52 @@ for symbol in dir(faiss_module):
         the_class = obj
         if issubclass(the_class, faiss.Index):
             handle_torch_Index(the_class)
+
+
+# allows torch tensor usage with knn
+def torch_replacement_knn(xq, xb, k, metric=faiss.METRIC_L2, metric_arg=0):
+    if type(xb) is np.ndarray:
+        # Forward to faiss __init__.py base method
+        return faiss.knn_numpy(xq, xb, k, metric=metric, metric_arg=metric_arg)
+
+    nb, d = xb.size()
+    assert xb.is_contiguous()
+    assert xb.dtype == torch.float32
+    assert not xb.is_cuda, "use knn_gpu for GPU tensors"
+
+    nq, d2 = xq.size()
+    assert d2 == d
+    assert xq.is_contiguous()
+    assert xq.dtype == torch.float32
+    assert not xq.is_cuda, "use knn_gpu for GPU tensors"
+
+    D = torch.empty(nq, k, device=xb.device, dtype=torch.float32)
+    I = torch.empty(nq, k, device=xb.device, dtype=torch.int64)
+    I_ptr = swig_ptr_from_IndicesTensor(I)
+    D_ptr = swig_ptr_from_FloatTensor(D)
+    xb_ptr = swig_ptr_from_FloatTensor(xb)
+    xq_ptr = swig_ptr_from_FloatTensor(xq)
+
+    if metric == faiss.METRIC_L2:
+        faiss.knn_L2sqr(
+            xq_ptr, xb_ptr,
+            d, nq, nb, k, D_ptr, I_ptr
+        )
+    elif metric == faiss.METRIC_INNER_PRODUCT:
+        faiss.knn_inner_product(
+            xq_ptr, xb_ptr,
+            d, nq, nb, k, D_ptr, I_ptr
+        )
+    else:
+        faiss.knn_extra_metrics(
+            xq_ptr, xb_ptr,
+            d, nq, nb, metric, metric_arg, k, D_ptr, I_ptr
+        )
+
+    return D, I
+
+
+torch_replace_method(faiss_module, 'knn', torch_replacement_knn, True, True)
 
 
 # allows torch tensor usage with bfKnn
