@@ -13,7 +13,6 @@ import platform
 shutil.rmtree("faiss", ignore_errors=True)
 os.mkdir("faiss")
 shutil.copytree("contrib", "faiss/contrib")
-shutil.copytree("contrib/torch", "faiss/contrib/torch")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("class_wrappers.py", "faiss/class_wrappers.py")
