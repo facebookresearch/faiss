@@ -79,12 +79,12 @@ setup(
     long_description=long_description,
     url='https://github.com/facebookresearch/faiss',
     author='Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini',
-    author_email='matthijs@fb.com',
+    author_email='matthijs@meta.com',
     license='MIT',
     keywords='search nearest neighbors',
 
     install_requires=['numpy', 'packaging'],
-    packages=['faiss', 'faiss.contrib'],
+    packages=['faiss', 'faiss.contrib', 'faiss.contrib.torch'],
     package_data={
         'faiss': ['*.so', '*.pyd'],
     },

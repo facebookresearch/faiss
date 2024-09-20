@@ -9,6 +9,10 @@ import numpy as np
 import faiss
 import faiss.contrib.torch_utils
 
+from faiss.contrib import datasets
+from faiss.contrib.torch import clustering
+
+
 def to_column_major_torch(x):
     if hasattr(torch, 'contiguous_format'):
         return x.t().clone(memory_format=torch.contiguous_format).t()
@@ -377,6 +381,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
         self.assertTrue(torch.equal(torch.from_numpy(I).long(), gt_I))
         self.assertLess((torch.from_numpy(D) - gt_D).abs().max(), 1.5e-3)
 
+
 class TestTorchUtilsPairwiseDistanceGpu(unittest.TestCase):
     def test_pairwise_distance_gpu(self):
         torch.manual_seed(10)
@@ -470,3 +475,31 @@ class TestTorchUtilsPairwiseDistanceGpu(unittest.TestCase):
                         D, _ = torch.sort(D, dim=1)
 
                         self.assertLess((D.cpu() - gt_D[4:8]).abs().max(), 1e-4)
+
+
+class TestClustering(unittest.TestCase):
+
+    def test_python_kmeans(self):
+        """ Test the python implementation of kmeans """
+        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        x = ds.get_train()
+
+        # bad distribution to stress-test split code
+        xt = x[:10000].copy()
+        xt[:5000] = x[0]
+
+        # CPU baseline
+        km_ref = faiss.Kmeans(ds.d, 100, niter=10)
+        km_ref.train(xt)
+        err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
+
+        xt_torch = torch.from_numpy(xt).to("cuda:0")
+        res = faiss.StandardGpuResources()
+        data = clustering.DatasetAssignGPU(res, xt_torch)
+        centroids = clustering.kmeans(100, data, 10)
+        centroids = centroids.cpu().numpy()
+        err2 = faiss.knn(xt, centroids, 1)[0].sum()
+
+        # 33498.332 33380.477
+        print(err, err2)
+        self.assertLess(err2, err * 1.1)
