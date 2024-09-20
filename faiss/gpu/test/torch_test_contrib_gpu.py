@@ -501,5 +501,5 @@ class TestClustering(unittest.TestCase):
         err2 = faiss.knn(xt, centroids, 1)[0].sum()
 
         # 33498.332 33380.477
-        print(err, err2)        
+        print(err, err2)
         self.assertLess(err2, err * 1.1)

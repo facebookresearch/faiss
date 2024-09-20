@@ -9,7 +9,7 @@ import numpy as np   # usort: skip
 
 import faiss   # usort: skip
 import faiss.contrib.torch_utils  # usort: skip
-from faiss.contrib import datasets  
+from faiss.contrib import datasets
 from faiss.contrib.torch import clustering
 
 
@@ -365,7 +365,7 @@ class TestClustering(unittest.TestCase):
         km_ref.train(xt)
         err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
 
-        xt_torch = torch.from_numpy(xt) 
+        xt_torch = torch.from_numpy(xt)
         data = clustering.DatasetAssign(xt_torch)
         centroids = clustering.kmeans(100, data, 10)
         centroids = centroids.numpy()

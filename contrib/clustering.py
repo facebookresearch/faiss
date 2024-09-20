@@ -155,7 +155,7 @@ class DatasetAssign:
         sum_per_centroid = np.zeros((nc, d), dtype='float32')
         if weights is None:
             np.add.at(sum_per_centroid, I, self.x)
-        else: 
+        else:
             np.add.at(sum_per_centroid, I, weights[:, np.newaxis] * self.x)
 
         return I, D, sum_per_centroid
@@ -183,7 +183,7 @@ class DatasetAssignGPU(DatasetAssign):
 
 def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
     """ assignment function for xq is sparse, xb is dense
-    uses a matrix multiplication. The squared norms can be provided if 
+    uses a matrix multiplication. The squared norms can be provided if
     available.
     """
     nq = xq.shape[0]
@@ -271,7 +271,7 @@ class DatasetAssignSparse(DatasetAssign):
         if weights is None:
             weights = np.ones(n, dtype='float32')
         nc = len(centroids)
-        
+
         m = scipy.sparse.csc_matrix(
             (weights, I, np.arange(n + 1)),
             shape=(nc, n))
@@ -289,7 +289,7 @@ def check_if_torch(x):
     if x.__class__ == np.ndarray:
         return False
     import torch
-    if isinstance(x, torch.Tensor): 
+    if isinstance(x, torch.Tensor):
         return True
     raise NotImplementedError(f"Unknown tensor type {type(x)}")
 
@@ -307,11 +307,11 @@ def reassign_centroids(hassign, centroids, rs=None):
     if len(empty_cents) == 0:
         return 0
 
-    if is_torch: 
+    if is_torch:
         import torch
-        fac = torch.ones_like(centroids[0]) 
-    else: 
-        fac = np.ones_like(centroids[0]) 
+        fac = torch.ones_like(centroids[0])
+    else:
+        fac = np.ones_like(centroids[0])
     fac[::2] += 1 / 1024.
     fac[1::2] -= 1 / 1024.
 
@@ -347,9 +347,9 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
            return_stats=False):
     """Pure python kmeans implementation. Follows the Faiss C++ version
     quite closely, but takes a DatasetAssign instead of a training data
-    matrix. Also redo is not implemented. 
-    
-    For the torch implementation, the centroids are tensors (possibly on GPU), 
+    matrix. Also redo is not implemented.
+
+    For the torch implementation, the centroids are tensors (possibly on GPU),
     but the indices remain numpy on CPU.
     """
     n, d = data.count(), data.dim()
@@ -382,7 +382,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
         t_search_tot += time.time() - t0s;
 
         err = D.sum()
-        if is_torch: 
+        if is_torch:
             err = err.item()
         obj.append(err)
 
@@ -390,7 +390,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
 
         fac = hassign.reshape(-1, 1).astype('float32')
         fac[fac == 0] = 1  # quiet warning
-        if is_torch: 
+        if is_torch:
             import torch
             fac = torch.from_numpy(fac).to(sums.device)
 
@@ -402,7 +402,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
             "obj": err,
             "time": (time.time() - t0),
             "time_search": t_search_tot,
-            "imbalance_factor": imbalance_factor (k, assign),
+            "imbalance_factor": imbalance_factor(k, assign),
             "nsplit": nsplit
         }
 
@@ -416,10 +416,10 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
 
         if checkpoint is not None:
             log('storing centroids in', checkpoint)
-            if is_torch: 
+            if is_torch:
                 import torch
                 torch.save(centroids, checkpoint)
-            else: 
+            else:
                 np.save(checkpoint, centroids)
 
     if return_stats:

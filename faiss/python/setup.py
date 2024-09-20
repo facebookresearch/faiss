@@ -13,6 +13,7 @@ import platform
 shutil.rmtree("faiss", ignore_errors=True)
 os.mkdir("faiss")
 shutil.copytree("contrib", "faiss/contrib")
+shutil.copytree("contrib/torch", "faiss/contrib/torch")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("class_wrappers.py", "faiss/class_wrappers.py")
@@ -79,12 +80,12 @@ setup(
     long_description=long_description,
     url='https://github.com/facebookresearch/faiss',
     author='Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini',
-    author_email='matthijs@fb.com',
+    author_email='matthijs@meta.com',
     license='MIT',
     keywords='search nearest neighbors',
 
     install_requires=['numpy', 'packaging'],
-    packages=['faiss', 'faiss.contrib'],
+    packages=['faiss', 'faiss.contrib', 'faiss.contrib.torch'],
     package_data={
         'faiss': ['*.so', '*.pyd'],
     },
