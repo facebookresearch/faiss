@@ -13,7 +13,7 @@
 
 #if defined(__F16C__)
 #include <faiss/utils/fp16-fp16c.h>
-#elif defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#elif defined(USE_NEON)
 #include <faiss/utils/fp16-arm.h>
 #else
 #include <faiss/utils/fp16-inl.h>

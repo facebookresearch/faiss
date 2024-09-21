@@ -53,6 +53,22 @@ namespace faiss {
 #warning \
         "Cannot enable AVX optimizations in scalar quantizer if -mf16c is not set as well"
 #endif
+#elif defined(__aarch64__)
+#if defined(__GNUC__) && __GNUC__ < 8
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71233
+// https://patches.linaro.org/project/gcc/patch/CAELXzTNvL1wzXPSCG2nD949UPFdz2YK5f6YBMmN3LTXe68tWQQ@mail.gmail.com/
+__extension__ extern __inline float32x4x2_t
+        __attribute__((__always_inline__, __gnu_inline__, __artificial__))
+        vld1q_f32_x2(const float32_t* __a) {
+    float32x4x2_t ret;
+    __builtin_aarch64_simd_oi __o;
+    __o = __builtin_aarch64_ld1x2v4sf((const __builtin_aarch64_simd_sf*)__a);
+    ret.val[0] = (float32x4_t)__builtin_aarch64_get_qregoiv4sf(__o, 0);
+    ret.val[1] = (float32x4_t)__builtin_aarch64_get_qregoiv4sf(__o, 1);
+    return ret;
+}
+#endif
+#define USE_NEON
 #endif
 
 namespace {
@@ -105,7 +121,7 @@ struct Codec8bit {
     }
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -175,7 +191,7 @@ struct Codec4bit {
     }
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -336,7 +352,7 @@ struct Codec6bit {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -434,7 +450,7 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
@@ -540,7 +556,7 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
@@ -628,7 +644,7 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -708,7 +724,7 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -789,7 +805,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -878,7 +894,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -1236,7 +1252,7 @@ struct SimilarityL2<8> {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -1396,7 +1412,7 @@ struct SimilarityIP<8> {
 };
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <>
 struct SimilarityIP<8> {
@@ -1593,7 +1609,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1809,7 +1825,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#ifdef USE_NEON
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -2035,8 +2051,7 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     if (d % 16 == 0) {
         return select_quantizer_1<16>(qtype, d, trained);
     } else
-#if defined(USE_F16C) || \
-        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -2077,8 +2092,7 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
                     qtype, d, trained);
         }
     } else
-#if defined(USE_F16C) || \
-        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2453,8 +2467,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         return sel0_InvertedListScanner<16>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
-#if defined(USE_F16C) || \
-        (defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8))
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
