@@ -73,7 +73,7 @@ function(link_to_faiss_lib target)
     else()
       # TODO: support Windows
     endif()
-    target_link_libraries(${target} tests_utils PRIVATE faiss_sve)
+    target_link_libraries(${target} PRIVATE faiss_sve)
   endif()
 endfunction()
 
