@@ -27,53 +27,57 @@ add_library(faiss_perf_tests_utils
 target_include_directories(faiss_perf_tests_utils PRIVATE
    ${PROJECT_SOURCE_DIR}/../..)
 
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
-  target_link_libraries(faiss_perf_tests_utils PRIVATE faiss)
-endif()
-
-if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  if(NOT WIN32)
-    target_compile_options(faiss_perf_tests_utils PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma>)
-  else()
-    target_compile_options(faiss_perf_tests_utils PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
+function(link_to_faiss_lib target)
+  if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
+    target_link_libraries(${target} PRIVATE faiss)
   endif()
-  target_link_libraries(faiss_perf_tests_utils PRIVATE faiss_avx2)
-endif()
 
-if(FAISS_OPT_LEVEL STREQUAL "avx512")
-  if(NOT WIN32)
-    target_compile_options(faiss_perf_tests_utils PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mavx512f -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw>)
-  else()
-    target_compile_options(faiss_perf_tests_utils PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
-  endif()
-  target_link_libraries(faiss_perf_tests_utils PRIVATE faiss_avx512)
-endif()
-
-if(FAISS_OPT_LEVEL STREQUAL "sve")
-  if(NOT WIN32)
-    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=native")
-      # Do nothing, expect SVE to be enabled by -march=native
-    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-      # Add +sve
-      target_compile_options(faiss_perf_tests_utils PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${CMAKE_MATCH_2}+sve>)
-    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=armv")
-      # No valid -march, so specify -march=armv8-a+sve as the default
-      target_compile_options(faiss_perf_tests_utils PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:-march=armv8-a+sve>)
+  if(FAISS_OPT_LEVEL STREQUAL "avx2")
+    if(NOT WIN32)
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma>)
+    else()
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
     endif()
-    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=native")
-      # Do nothing, expect SVE to be enabled by -march=native
-    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-      # Add +sve
-      target_compile_options(faiss_perf_tests_utils PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${CMAKE_MATCH_2}+sve>)
-    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
-      # No valid -march, so specify -march=armv8-a+sve as the default
-      target_compile_options(faiss_perf_tests_utils PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
-    endif()
-  else()
-    # TODO: support Windows
+    target_link_libraries(${target} PRIVATE faiss_avx2)
   endif()
-  target_link_libraries(faiss_perf_tests_utils PRIVATE faiss_sve)
-endif()
+
+  if(FAISS_OPT_LEVEL STREQUAL "avx512")
+    if(NOT WIN32)
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mavx512f -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw>)
+    else()
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
+    endif()
+    target_link_libraries(${target} PRIVATE faiss_avx512)
+  endif()
+
+  if(FAISS_OPT_LEVEL STREQUAL "sve")
+    if(NOT WIN32)
+      if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=native")
+        # Do nothing, expect SVE to be enabled by -march=native
+      elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
+        # Add +sve
+        target_compile_options(${target}  PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${CMAKE_MATCH_2}+sve>)
+      elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=armv")
+        # No valid -march, so specify -march=armv8-a+sve as the default
+        target_compile_options(${target} PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:-march=armv8-a+sve>)
+      endif()
+      if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=native")
+        # Do nothing, expect SVE to be enabled by -march=native
+      elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
+        # Add +sve
+        target_compile_options(${target}  PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${CMAKE_MATCH_2}+sve>)
+      elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
+        # No valid -march, so specify -march=armv8-a+sve as the default
+        target_compile_options(${target} PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
+      endif()
+    else()
+      # TODO: support Windows
+    endif()
+    target_link_libraries(${target} tests_utils PRIVATE faiss_sve)
+  endif()
+endfunction()
+
+link_to_faiss_lib(faiss_perf_tests_utils)
 
 set(FAISS_PERF_TEST_SRC
   bench_no_multithreading_rcq_search.cpp
