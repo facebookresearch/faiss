@@ -878,7 +878,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 #endif
 
-#ifdef defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
+#if defined(__aarch64__) && (!defined(__GNUC__) || __GNUC__ >= 8)
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
