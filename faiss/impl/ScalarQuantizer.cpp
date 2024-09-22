@@ -53,22 +53,15 @@ namespace faiss {
 #warning \
         "Cannot enable AVX optimizations in scalar quantizer if -mf16c is not set as well"
 #endif
-#elif defined(__aarch64__)
-#if defined(__GNUC__) && __GNUC__ < 8
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71233
-// https://patches.linaro.org/project/gcc/patch/CAELXzTNvL1wzXPSCG2nD949UPFdz2YK5f6YBMmN3LTXe68tWQQ@mail.gmail.com/
-__extension__ extern __inline float32x4x2_t
-        __attribute__((__always_inline__, __gnu_inline__, __artificial__))
-        vld1q_f32_x2(const float32_t* __a) {
-    float32x4x2_t ret;
-    __builtin_aarch64_simd_oi __o;
-    __o = __builtin_aarch64_ld1x2v4sf((const __builtin_aarch64_simd_sf*)__a);
-    ret.val[0] = (float32x4_t)__builtin_aarch64_get_qregoiv4sf(__o, 0);
-    ret.val[1] = (float32x4_t)__builtin_aarch64_get_qregoiv4sf(__o, 1);
-    return ret;
-}
 #endif
+
+#if defined(__aarch64__)
+#if defined(__GNUC__) && __GNUC__ < 8
+#warning \
+        "Cannot enable NEON optimizations in scalar quantizer if the compiler is GCC<8"
+#else
 #define USE_NEON
+#endif
 #endif
 
 namespace {
