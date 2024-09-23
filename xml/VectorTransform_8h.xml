@@ -77,20 +77,28 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
       </node>
+      <node id="4">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
+      </node>
       <node id="3">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>

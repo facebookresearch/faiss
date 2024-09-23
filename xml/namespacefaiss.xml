@@ -1150,6 +1150,23 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="204" column="7" declfile="faiss/Clustering.h" declline="204" declcolumn="7"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::reverse_index_factory</definition>
+        <argsstring>(const faiss::Index *index)</argsstring>
+        <name>reverse_index_factory</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/factory_tools.h" line="22" column="13" declfile="faiss/cppcontrib/factory_tools.h" declline="22" declcolumn="13"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>

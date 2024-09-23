@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
-  <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d5" kind="namespace" language="C++">
-    <compoundname>faiss::cppcontrib::@5</compoundname>
+  <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d6" kind="namespace" language="C++">
+    <compoundname>faiss::cppcontrib::@6</compoundname>
     <briefdescription>
 <para><ref refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kindref="compound">Index2LevelDecoder</ref>. </para>
     </briefdescription>

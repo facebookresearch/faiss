@@ -91,6 +91,8 @@
       <node id="3">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/IndexFastScan.h</label>
@@ -99,6 +101,10 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="2">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>

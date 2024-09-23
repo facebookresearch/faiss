@@ -9088,6 +9088,7 @@
     <member refid="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" kind="function"><name>clone_Quantizer</name></member>
     <member refid="namespacefaiss_1aa052b2baf4ccdf2c7d2841f6db35e4bc" kind="function"><name>clone_binary_index</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
+    <member refid="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" kind="function"><name>reverse_index_factory</name></member>
     <member refid="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" kind="function"><name>distance_single_code_generic</name></member>
     <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
     <member refid="namespacefaiss_1a4f5a40d297ddf6822a9262a333f938a3" kind="function"><name>distance_single_code</name></member>
@@ -9337,28 +9338,28 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d135" kind="namespace"><name>faiss::@135</name>
+  <compound refid="namespacefaiss_1_1_0d136" kind="namespace"><name>faiss::@136</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d144" kind="namespace"><name>faiss::@144</name>
+  <compound refid="namespacefaiss_1_1_0d145" kind="namespace"><name>faiss::@145</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d161" kind="namespace"><name>faiss::@161</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d163" kind="namespace"><name>faiss::@163</name>
+  <compound refid="namespacefaiss_1_1_0d162" kind="namespace"><name>faiss::@162</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d165" kind="namespace"><name>faiss::@165</name>
   </compound>
+  <compound refid="namespacefaiss_1_1_0d166" kind="namespace"><name>faiss::@166</name>
+  </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d10" kind="namespace"><name>faiss::cppcontrib::@10</name>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d11" kind="namespace"><name>faiss::cppcontrib::@11</name>
   </compound>
-  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d12" kind="namespace"><name>faiss::cppcontrib::@12</name>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d13" kind="namespace"><name>faiss::cppcontrib::@13</name>
   </compound>
-  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d5" kind="namespace"><name>faiss::cppcontrib::@5</name>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d6" kind="namespace"><name>faiss::cppcontrib::@6</name>
   </compound>
-  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d7" kind="namespace"><name>faiss::cppcontrib::@7</name>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d8" kind="namespace"><name>faiss::cppcontrib::@8</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib_1_1detail" kind="namespace"><name>faiss::cppcontrib::detail</name>
     <member refid="UintReader_8h_1a7d4c5421a72ecb5ccaf38b8d13c639b8" kind="typedef"><name>UintReader</name></member>
@@ -9582,6 +9583,8 @@
   <compound refid="CoarseBitType_8h" kind="file"><name>CoarseBitType.h</name>
   </compound>
   <compound refid="UintReader_8h" kind="file"><name>UintReader.h</name>
+  </compound>
+  <compound refid="factory__tools_8h" kind="file"><name>factory_tools.h</name>
   </compound>
   <compound refid="Level2-avx2-inl_8h" kind="file"><name>Level2-avx2-inl.h</name>
   </compound>

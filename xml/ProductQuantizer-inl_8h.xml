@@ -4,15 +4,15 @@
     <compoundname>ProductQuantizer-inl.h</compoundname>
     <includedby refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includedby>
     <invincdepgraph>
-      <node id="9">
+      <node id="10">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
         <childnode refid="11" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
@@ -23,11 +23,11 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -45,14 +45,18 @@
       <node id="8">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="4">
         <label>faiss/gpu/GpuIndexCagra.h</label>
         <link refid="GpuIndexCagra_8h_source"/>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
@@ -60,17 +64,23 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="7">
         <label>faiss/Index2Layer.h</label>
         <link refid="Index2Layer_8h_source"/>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="9">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="2">
         <label>faiss/impl/ProductQuantizer.h</label>
@@ -79,11 +89,11 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

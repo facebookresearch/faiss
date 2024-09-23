@@ -126,7 +126,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
@@ -137,6 +137,8 @@
       <node id="10">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
@@ -156,6 +158,10 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="11">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
+      </node>
       <node id="6">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
@@ -173,15 +179,15 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexNNDescent.h</label>
         <link refid="IndexNNDescent_8h_source"/>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="8">
