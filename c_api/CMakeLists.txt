@@ -54,6 +54,10 @@ faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
 
+if(FAISS_ENABLE_DNNL)
+   add_compile_definitions(ENABLE_DNNL)
+endif()
+
 if(FAISS_ENABLE_GPU)
   add_subdirectory(gpu)
 endif()

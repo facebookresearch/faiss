@@ -101,6 +101,7 @@ int faiss_get_distance_compute_min_k_reservoir() {
     return faiss::distance_compute_min_k_reservoir;
 }
 
+#ifdef ENABLE_DNNL
 void faiss_set_distance_compute_dnnl_query_bs(int value) {
     faiss::distance_compute_dnnl_query_bs = value;
 }
@@ -108,3 +109,12 @@ void faiss_set_distance_compute_dnnl_query_bs(int value) {
 int faiss_get_distance_compute_dnnl_query_bs() {
     return faiss::distance_compute_dnnl_query_bs;
 }
+
+void faiss_set_distance_compute_dnnl_database_bs(int value) {
+    faiss::distance_compute_dnnl_database_bs = value;
+}
+
+int faiss_get_distance_compute_dnnl_database_bs() {
+    return faiss::distance_compute_dnnl_database_bs;
+}
+#endif
