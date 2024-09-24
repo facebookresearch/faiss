@@ -7,15 +7,10 @@
 This contrib module contains Pytorch code for quantization.
 """
 
-import numpy as np
 import torch
-import faiss
-
-from faiss.contrib import torch_utils
 
 
 class Quantizer:
-
     def __init__(self, d, code_size):
         self.d = d
         self.code_size = code_size
@@ -31,7 +26,6 @@ class Quantizer:
 
 
 class VectorQuantizer(Quantizer):
-
     def __init__(self, d, k):
         code_size = int(torch.ceil(torch.log2(k) / 8))
         Quantizer.__init__(d, code_size)
@@ -42,7 +36,6 @@ class VectorQuantizer(Quantizer):
 
 
 class ProductQuantizer(Quantizer):
-
     def __init__(self, d, M, nbits):
         code_size = int(torch.ceil(M * nbits / 8))
         Quantizer.__init__(d, code_size)

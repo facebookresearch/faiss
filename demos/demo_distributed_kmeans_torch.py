@@ -3,16 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import faiss
+
+import faiss.contrib.torch_utils
 import numpy as np
 
 import torch
 import torch.distributed
-
-import faiss
-
-import faiss.contrib.torch_utils
-from faiss.contrib.torch import clustering
 from faiss.contrib import datasets
+from faiss.contrib.clustering import kmeans
+from faiss.contrib.torch import clustering
 
 
 class DatasetAssignDistributedGPU(clustering.DatasetAssign):
@@ -33,18 +33,19 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
         sizes = torch.zeros(nproc, device=self.device, dtype=torch.int64)
         sizes[rank] = n
         torch.distributed.all_gather(
-            [sizes[i:i + 1] for i in range(nproc)], sizes[rank:rank + 1])
+            [sizes[i : i + 1] for i in range(nproc)], sizes[rank : rank + 1]
+        )
         self.sizes = sizes.cpu().numpy()
 
         # begin & end of each shard
-        self.cs = np.zeros(nproc + 1, dtype='int64')
+        self.cs = np.zeros(nproc + 1, dtype="int64")
         self.cs[1:] = np.cumsum(self.sizes)
 
     def count(self):
         return int(self.sizes.sum())
 
     def int_to_slaves(self, i):
-        " broadcast an int to all workers "
+        "broadcast an int to all workers"
         rank = self.rank
         tab = torch.zeros(1, device=self.device, dtype=torch.int64)
         if rank == 0:
@@ -63,8 +64,7 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
         if rank == 0:
             indices = torch.from_numpy(indices).to(self.device)
         else:
-            indices = torch.zeros(
-                len_indices, dtype=torch.int64, device=self.device)
+            indices = torch.zeros(len_indices, dtype=torch.int64, device=self.device)
         torch.distributed.broadcast(indices, 0)
 
         # select subset of indices
@@ -73,8 +73,8 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
 
         mask = torch.logical_and(indices < i1, indices >= i0)
         output = torch.zeros(
-            len_indices, self.x.shape[1],
-            dtype=self.x.dtype, device=self.device)
+            len_indices, self.x.shape[1], dtype=self.x.dtype, device=self.device
+        )
         output[mask] = self.x[indices[mask] - i0]
         torch.distributed.reduce(output, 0)  # sum
         if rank == 0:
@@ -83,7 +83,7 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
             return None
 
     def perform_search(self, centroids):
-        assert False, "shoudl not be called"
+        assert False, "should not be called"
 
     def assign_to(self, centroids, weights=None):
         assert weights is None
@@ -94,12 +94,12 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
 
         if rank != 0:
             centroids = torch.zeros(
-                nc, self.x.shape[1], dtype=self.x.dtype, device=self.device)
+                nc, self.x.shape[1], dtype=self.x.dtype, device=self.device
+            )
         torch.distributed.broadcast(centroids, 0)
 
         # perform search
-        D, I = faiss.knn_gpu(
-            self.res, self.x, centroids, 1, device=self.device.index)
+        D, I = faiss.knn_gpu(self.res, self.x, centroids, 1, device=self.device.index)
 
         I = I.ravel()
         D = D.ravel()
@@ -120,11 +120,13 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
             all_I = torch.zeros(self.count(), dtype=I.dtype, device=device)
             all_D = torch.zeros(self.count(), dtype=D.dtype, device=device)
             torch.distributed.gather(
-                I, [all_I[self.cs[r]:self.cs[r + 1]] for r in range(nproc)],
+                I,
+                [all_I[self.cs[r] : self.cs[r + 1]] for r in range(nproc)],
                 dst=0,
             )
             torch.distributed.gather(
-                D, [all_D[self.cs[r]:self.cs[r + 1]] for r in range(nproc)],
+                D,
+                [all_D[self.cs[r] : self.cs[r + 1]] for r in range(nproc)],
                 dst=0,
             )
             return all_I.cpu().numpy(), all_D, sum_per_centroid
@@ -159,8 +161,7 @@ if __name__ == "__main__":
 
     if rank == 0:
         print(f"sizes = {da.sizes}")
-        centroids, iteration_stats = clustering.kmeans(
-            k, da, niter=niter, return_stats=True)
+        centroids, iteration_stats = kmeans(k, da, niter=niter, return_stats=True)
         print("clusters:", centroids.cpu().numpy())
     else:
         # make sure the iterations are aligned with master

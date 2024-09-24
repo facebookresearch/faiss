@@ -10,8 +10,6 @@ import faiss
 import faiss.contrib.torch_utils
 import torch
 
-# the kmeans can produce both torch and numpy centroids
-from faiss.contrib.clustering import kmeans
 
 class DatasetAssign:
     """Wrapper for a tensor that offers a function to assign the vectors
