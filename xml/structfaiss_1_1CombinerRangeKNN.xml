@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CombinerRangeKNN" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CombinerRangeKNN</compoundname>
-    <includes refid="utils_2utils_8h" local="no">utils.h</includes>
+    <includes refid="utils_8h" local="no">utils.h</includes>
     <templateparamlist>
       <param>
         <type>typename T</type>
