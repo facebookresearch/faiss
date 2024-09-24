@@ -32,7 +32,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake make swig numpy scipy pytest
+        conda install -y -q python=3.11 cmake make swig numpy scipy pytest gflags
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -143,6 +143,11 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
+    - name: C++ perf benchmarks
+      shell: bash
+      if: inputs.rocm == 'OFF'
+      run: |
+        find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
