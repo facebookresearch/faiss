@@ -608,6 +608,8 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
             return simd8float32(
                     {vcvt_f32_f16(vreinterpret_f16_u16(codei.val[0])),
                      vcvt_f32_f16(vreinterpret_f16_u16(codei.val[1]))});
+#else
+        throw std::runtime_error("not implemented");
 
 #endif
         }
@@ -671,7 +673,7 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
-#ifdef __AVX2__
+        // #ifdef __AVX2__
         // reference impl: decode_bf16(((uint16_t*)code)[i]);
         //  decode_bf16(v) -> (uint32_t(v) << 16)
         // read 128-bits (16 uint8_t) -> (uint16_t*)code)[i]
@@ -683,18 +685,18 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
         simd8uint32 shifted_16 = code_256i << 16;
         return as_float32(shifted_16);
 
-#endif
+        // #endif
 
-#ifdef __aarch64__
+        // #ifdef __aarch64__
 
-        uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 * i));
-        return simd8float32(
-                {vreinterpretq_f32_u32(
-                         vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
-                 vreinterpretq_f32_u32(
-                         vshlq_n_u32(vmovl_u16(codei.val[1]), 16))});
+        //         uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 *
+        //         i)); return simd8float32(
+        //                 {vreinterpretq_f32_u32(
+        //                          vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
+        //                  vreinterpretq_f32_u32(
+        //                          vshlq_n_u32(vmovl_u16(codei.val[1]), 16))});
 
-#endif
+        // #endif
     }
 };
 
@@ -1119,7 +1121,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
         }
     };
 
-#else
+#elif defined(__AVX2__) || defined(__aarch64__)
 
 template <>
 struct SimilarityL2<8> {
@@ -1229,7 +1231,7 @@ struct SimilarityL2<8> {
         }
     };
 
-#else
+#elif defined(__AVX2__) || defined(__aarch64__)
 
 template <>
 struct SimilarityIP<8> {

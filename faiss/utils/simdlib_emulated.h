@@ -673,6 +673,19 @@ struct simd8uint32 : simd256bit {
     bool operator!=(simd8uint32 other) const {
         return !(*this == other);
     }
+    template <typename F>
+    static simd8uint32 unary_func(const simd8uint32& a, F&& f) {
+        simd8uint32 c;
+        for (int j = 0; j < 8; j++) {
+            c.u32[j] = f(a.u32[j]);
+        }
+        return c;
+    }
+
+    // shift must be known at compile time
+    simd8uint32 operator<<(const int shift) const {
+        return unary_func(*this, [shift](uint16_t a) { return a << shift; });
+    }
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
@@ -705,6 +718,13 @@ struct simd8uint32 : simd256bit {
     }
 };
 
+inline simd8uint32 load8_16bits_as_uint32(const uint8_t* code, int i) {
+    simd8uint32 res;
+    for (int j = 0; j < 16; j = j + 2) {
+        res.u32[j / 2] = *(code + i + j);
+    }
+    return res;
+}
 // Vectorized version of the following code:
 //   for (size_t i = 0; i < n; i++) {
 //      bool flag = (candidateValues[i] < currentValues[i]);
@@ -833,8 +853,12 @@ struct simd8float32 : simd256bit {
         ptr[-1] = 0;
         return std::string(res);
     }
-};
 
+    float accumulate() const {
+        return f32[0] + f32[1] + f32[2] + f32[3] + f32[4] + f32[5] + f32[6] +
+                f32[7];
+    };
+};
 // hadd does not cross lanes
 inline simd8float32 hadd(const simd8float32& a, const simd8float32& b) {
     simd8float32 c;
@@ -880,25 +904,17 @@ inline simd8float32 unpackhi(const simd8float32& a, const simd8float32& b) {
 
     return c;
 }
-
-// compute a * b + c
-inline simd8float32 fmadd(
-        const simd8float32& a,
-        const simd8float32& b,
-        const simd8float32& c) {
-    simd8float32 res;
-    for (int i = 0; i < 8; i++) {
-        res.f32[i] = a.f32[i] * b.f32[i] + c.f32[i];
-    }
-    return res;
-}
-
-inline simd8float32 load8(const uint8_t* code, int i) {
-    simd8float32 res;
-    for (int j = 0; j < 8; j++) {
-        res.f32[i] = *(code + i + j);
-    }
-    return res;
+inline simd8float32 as_float32(simd8uint32 x) {
+    simd8float32 c;
+    c.f32[0] = x.u32[0];
+    c.f32[1] = x.u32[1];
+    c.f32[2] = x.u32[2];
+    c.f32[3] = x.u32[3];
+    c.f32[4] = x.u32[4];
+    c.f32[5] = x.u32[5];
+    c.f32[6] = x.u32[6];
+    c.f32[7] = x.u32[7];
+    return c;
 }
 
 namespace {
@@ -981,8 +997,8 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
 //       lowestIndex = i;
 //     }
 //   }
-// Vectorized version can be implemented via two operations: cmp and blend
-// with something like this:
+// Vectorized version can be implemented via two operations: cmp and
+// blend with something like this:
 //   lowestValues = [HUGE_VAL; 8];
 //   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
 //   for (size_t i = 0; i < n; i += 8) {
@@ -1000,8 +1016,9 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
 // The problem is that blend primitive needs very different instruction
 // order for AVX and ARM.
 // So, let's introduce a combination of these two in order to avoid
-// confusion for ppl who write in low-level SIMD instructions. Additionally,
-// these two ops (cmp and blend) are very often used together.
+// confusion for ppl who write in low-level SIMD instructions.
+// Additionally, these two ops (cmp and blend) are very often used
+// together.
 inline void cmplt_and_blend_inplace(
         const simd8float32 candidateValues,
         const simd8uint32 candidateIndices,
@@ -1024,9 +1041,9 @@ inline void cmplt_and_blend_inplace(
 //      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
 //      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
 //   }
-// Max indices evaluation is inaccurate in case of equal values (the index of
-// the last equal value is saved instead of the first one), but this behavior
-// saves instructions.
+// Max indices evaluation is inaccurate in case of equal values (the
+// index of the last equal value is saved instead of the first one), but
+// this behavior saves instructions.
 inline void cmplt_min_max_fast(
         const simd8float32 candidateValues,
         const simd8uint32 candidateIndices,
@@ -1049,5 +1066,22 @@ inline void cmplt_min_max_fast(
 }
 
 } // namespace
-
+// compute a * b + c
+inline simd8float32 fmadd(
+        const simd8float32& a,
+        const simd8float32& b,
+        const simd8float32& c) {
+    simd8float32 res;
+    for (int i = 0; i < 8; i++) {
+        res.f32[i] = a.f32[i] * b.f32[i] + c.f32[i];
+    }
+    return res;
+}
+inline simd8float32 load8(const uint8_t* code, int i) {
+    simd8float32 res;
+    for (int j = 0; j < 8; j++) {
+        res.f32[j] = *(code + i + j);
+    }
+    return res;
+}
 } // namespace faiss
