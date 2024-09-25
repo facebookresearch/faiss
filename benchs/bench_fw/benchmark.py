@@ -9,7 +9,7 @@ from operator import itemgetter
 from statistics import mean, median
 from typing import Any, Dict, List, Optional
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 
 import numpy as np
 
@@ -214,6 +214,7 @@ class IndexOperator:
 @dataclass
 class TrainOperator(IndexOperator):
     codec_descs: List[CodecDescriptor] = field(default_factory=lambda: [])
+    assemble_opaque: bool = True
 
     def get_desc(self, name: str) -> Optional[CodecDescriptor]:
         for desc in self.codec_descs:
@@ -248,6 +249,7 @@ class TrainOperator(IndexOperator):
                 factory=codec_desc.factory,
                 training_vectors=codec_desc.training_vectors,
                 codec_name=codec_desc.get_name(),
+                assemble_opaque=self.assemble_opaque,
             )
             index.set_io(self.io)
             codec_desc.index = index

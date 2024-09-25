@@ -13,11 +13,11 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from zipfile import ZipFile
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 
 import numpy as np
 import submitit
-from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib
     dataset_from_name,
 )
 
