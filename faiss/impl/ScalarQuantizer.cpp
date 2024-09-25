@@ -487,7 +487,7 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
         }
     };
 
-#else
+#elif defined(__AVX2__)
 
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
@@ -503,43 +503,45 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
         simd8float32 xi = Codec::decode_8_components(code, i);
         return simd8float32(
                 fmadd(xi,
-                      simd8float32(this->vdiff + i),
-                      simd8float32(this->vmin + i)));
+                      simd8float32(this->vmin + i),
+                      simd8float32(this->vdiff + i)));
+        // return simd8float32(
+        //         fmadd(xi,
+        //               simd8float32(this->vdiff + i),
+        //               simd8float32(this->vmin + i)));
     }
 };
 
-#endif
+#elif defined(__aarch64__)
 
     // #ifdef __aarch64__
 
-    //     template <class Codec>
-    //     struct QuantizerTemplate<Codec,
-    //     QuantizerTemplateScaling::NON_UNIFORM, 8>
-    //             : QuantizerTemplate<
-    //                       Codec,
-    //                       QuantizerTemplateScaling::NON_UNIFORM,
-    //                       1> {
-    //         QuantizerTemplate(size_t d, const std::vector<float>& trained)
-    //                 : QuantizerTemplate<
-    //                           Codec,
-    //                           QuantizerTemplateScaling::NON_UNIFORM,
-    //                           1>(d, trained) {}
+    template <class Codec>
+    struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1> {
+        QuantizerTemplate(size_t d, const std::vector<float>& trained)
+                : QuantizerTemplate<
+                          Codec,
+                          QuantizerTemplateScaling::NON_UNIFORM,
+                          1>(d, trained) {}
 
-    //         FAISS_ALWAYS_INLINE simd8float32
-    //         reconstruct_8_components(const uint8_t* code, int i) const {
-    //             simd8float32 xi = Codec::decode_8_components(code, i);
+        FAISS_ALWAYS_INLINE simd8float32
+        reconstruct_8_components(const uint8_t* code, int i) const {
+            simd8float32 xi = Codec::decode_8_components(code, i);
 
-    //             float32x4x2_t vmin_8 = vld1q_f32_x2(this->vmin + i);
-    //             float32x4x2_t vdiff_8 = vld1q_f32_x2(this->vdiff + i);
-    //             // why is this flipped?
-    //             return simd8float32(
-    //                     {vfmaq_f32(vmin_8.val[0], xi.val[0], vdiff_8.val[0]),
-    //                      vfmaq_f32(vmin_8.val[1], xi.val[1],
-    //                      vdiff_8.val[1])});
-    //         }
-    //     };
+            float32x4x2_t vmin_8 = vld1q_f32_x2(this->vmin + i);
+            float32x4x2_t vdiff_8 = vld1q_f32_x2(this->vdiff + i);
+            // why is this flipped?
+            return simd8float32(
+                    {vfmaq_f32(vmin_8.val[0], xi.val[0], vdiff_8.val[0]),
+                     vfmaq_f32(vmin_8.val[1], xi.val[1], vdiff_8.val[1])});
+        }
+    };
 
-    // #endif
+#endif
 
     /*******************************************************************
      * FP16 quantizer
