@@ -217,6 +217,7 @@ struct simd16uint16 : simd256bit {
         __m256i j = thresh.i;
         __m256i max = _mm256_max_epu16(i, j);
         __m256i ge = _mm256_cmpeq_epi16(i, max);
+        // 0xFFFFFFFF if this >= thresh else 0
         return _mm256_movemask_epi8(ge);
     }
 
@@ -240,6 +241,8 @@ struct simd16uint16 : simd256bit {
     }
 
     void accu_min(simd16uint16 incoming) {
+        // compare 16 16-bit unsigned integers and return the corresponding
+        // smaller integer as part of the 256-bit result
         i = _mm256_min_epu16(i, incoming.i);
     }
 
@@ -279,6 +282,11 @@ inline uint32_t cmp_ge32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
     __m256i ge01 = _mm256_packs_epi16(ge0, ge1);
 
     // easier than manipulating bit fields afterwards
+    // 0 | (2 << 2) | (1 << 4) | (3 << 6)
+    // 0 | 00000010 << 2 | 00000001 << 4 | 00000011 << 6
+    // 0 | 00001000 | 00010000 | 11000000
+    // 0 | 11010000
+    // 0x3C
     ge01 = _mm256_permute4x64_epi64(ge01, 0 | (2 << 2) | (1 << 4) | (3 << 6));
     uint32_t ge = _mm256_movemask_epi8(ge01);
 
@@ -547,6 +555,16 @@ struct simd8uint32 : simd256bit {
         return !(*this == other);
     }
 
+    // // shift must be known at compile time
+    simd8uint32 operator<<(const int shift) const {
+        return simd8uint32(_mm256_slli_epi32(i, shift));
+    }
+
+    // // shift must be known at compile time
+    simd8uint32 operator>>(const int shift) const {
+        return simd8uint32(_mm256_srli_epi32(i, shift));
+    }
+
     std::string elements_to_string(const char* fmt) const {
         uint32_t bytes[8];
         storeu((void*)bytes);
@@ -676,6 +694,22 @@ struct simd8float32 : simd256bit {
         ptr[-1] = 0;
         return std::string(res);
     }
+
+    float accumulate() const {
+        // sum = (s0, s1, s2, s3) = (f0+f4, f1+f5, f2+f6, f3+f7)
+        // v0 = (s2, s3, s0, s0)
+        // v1 = (s2+s0, s3+s1, s0+s2, s0+s3)
+        // v2 = (s1+s3, s2+s0, s2+s0, s2+s0)
+        // v3 = (s0+s1+s2+s3, s1+s2+s3, 2s0+2s2, 2s0+s2+s3)
+        // return v3[0]
+        const __m128 sum = _mm_add_ps(
+                _mm256_castps256_ps128(f), _mm256_extractf128_ps(f, 1));
+        const __m128 v0 = _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 0, 3, 2));
+        const __m128 v1 = _mm_add_ps(sum, v0);
+        __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
+        const __m128 v3 = _mm_add_ps(v1, v2);
+        return _mm_cvtss_f32(v3);
+    }
 };
 
 inline simd8float32 hadd(simd8float32 a, simd8float32 b) {
@@ -695,6 +729,21 @@ inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
     return simd8float32(_mm256_fmadd_ps(a.f, b.f, c.f));
 }
 
+// load8_8bits uint8_t from code + i and extend the elements to float32
+inline simd8float32 load8(const uint8_t* code, int i) {
+    __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
+    __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
+    return simd8float32(_mm256_cvtepi32_ps(y8));        // 8 * float32
+}
+
+inline simd8uint32 load8_16bits_as_uint32(const uint8_t* code, int i) {
+    __m128i code_128i = _mm_loadu_si128((const __m128i*)(code + 2 * i));
+    return simd8uint32(_mm256_cvtepu16_epi32(code_128i));
+}
+
+inline simd8float32 as_float32(simd8uint32 x) {
+    return simd8float32(_mm256_castsi256_ps(x.i));
+}
 // The following primitive is a vectorized version of the following code
 // snippet:
 //   float lowestValue = HUGE_VAL;
@@ -705,8 +754,8 @@ inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
 //       lowestIndex = i;
 //     }
 //   }
-// Vectorized version can be implemented via two operations: cmp and blend
-// with something like this:
+// Vectorized version can be implemented via two operations: cmp and
+// blend with something like this:
 //   lowestValues = [HUGE_VAL; 8];
 //   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
 //   for (size_t i = 0; i < n; i += 8) {
@@ -724,8 +773,9 @@ inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
 // The problem is that blend primitive needs very different instruction
 // order for AVX and ARM.
 // So, let's introduce a combination of these two in order to avoid
-// confusion for ppl who write in low-level SIMD instructions. Additionally,
-// these two ops (cmp and blend) are very often used together.
+// confusion for ppl who write in low-level SIMD instructions.
+// Additionally, these two ops (cmp and blend) are very often used
+// together.
 inline void cmplt_and_blend_inplace(
         const simd8float32 candidateValues,
         const simd8uint32 candidateIndices,
