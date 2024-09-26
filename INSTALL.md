@@ -177,6 +177,22 @@ $ (cd build/faiss/python && python setup.py install)
 The first command builds the python bindings for Faiss, while the second one
 generates and installs the python package.
 
+If making use of optimization options, build the correct target before swigfaiss.
+
+For AVX2:
+
+``` shell
+$ make -C build -j faiss_avx2
+```
+
+For AVX512:
+
+``` shell
+$ make -C build -j faiss_avx512
+```
+
+This will ensure the creation of neccesary files when building and installing the python package.
+
 ## Step 4: Installing the C++ library and headers (optional)
 
 ``` shell
