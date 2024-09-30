@@ -11,18 +11,18 @@ from copy import copy
 from dataclasses import dataclass
 from typing import ClassVar, Dict, List, Optional
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 import numpy as np
 from faiss.benchs.bench_fw.descriptors import IndexBaseDescriptor
 
-from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
     knn_intersection_measure,
     OperatingPointsWithRanges,
 )
-from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib
     reverse_index_factory,
 )
-from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib
     add_preassigned,
     replace_ivf_quantizer,
 )
@@ -635,11 +635,12 @@ class Index(IndexBase):
 
     def fetch_index(self):
         # read index from file if it is already available
+        index_filename = None
         if self.index_path:
             index_filename = os.path.basename(self.index_path)
-        else:
+        elif self.index_name:
             index_filename = self.index_name + "index"
-        if self.io.file_exist(index_filename):
+        if index_filename and self.io.file_exist(index_filename):
             if self.index_path:
                 index = self.io.read_index(
                     index_filename,
@@ -681,7 +682,7 @@ class Index(IndexBase):
             )
         assert index.ntotal == xb.shape[0] or index_ivf.ntotal == xb.shape[0]
         logger.info("Added vectors to index")
-        if self.serialize_full_index:
+        if self.serialize_full_index and index_filename:
             codec_size = self.io.write_index(index, index_filename)
             assert codec_size is not None
 
@@ -908,6 +909,7 @@ class IndexFromPreTransform(IndexBase):
 class IndexFromFactory(Index):
     factory: Optional[str] = None
     training_vectors: Optional[DatasetDescriptor] = None
+    assemble_opaque: bool = True
 
     def __post_init__(self):
         super().__post_init__()
@@ -915,6 +917,19 @@ class IndexFromFactory(Index):
             raise ValueError("factory is not set")
         if self.factory != "Flat" and self.training_vectors is None:
             raise ValueError(f"training_vectors is not set for {self.factory}")
+
+    def get_codec_name(self):
+        codec_name = super().get_codec_name()
+        if codec_name is None:
+            codec_name = f"{self.factory.replace(',', '_')}."
+            codec_name += f"d_{self.d}.{self.metric.upper()}."
+            if self.factory != "Flat":
+                assert self.training_vectors is not None
+                codec_name += self.training_vectors.get_filename("xt")
+            if self.construction_params is not None:
+                codec_name += IndexBaseDescriptor.param_dict_list_to_name(self.construction_params)
+        self.codec_name = codec_name
+        return self.codec_name
 
     def fetch_meta(self, dry_run=False):
         meta_filename = self.get_codec_name() + "json"
@@ -1021,14 +1036,13 @@ class IndexFromFactory(Index):
     def assemble(self, dry_run):
         logger.info(f"assemble {self.factory}")
         model = self.get_model()
-        opaque = True
         t_aggregate = 0
         # try:
         #     reverse_index_factory(model)
         #     opaque = False
         # except NotImplementedError:
         #     opaque = True
-        if opaque:
+        if self.assemble_opaque:
             codec = model
         else:
             if isinstance(model, faiss.IndexPreTransform):

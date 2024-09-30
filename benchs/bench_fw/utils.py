@@ -9,10 +9,10 @@ from enum import Enum
 from multiprocessing.pool import ThreadPool
 from time import perf_counter
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 import numpy as np
 
-from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
     OperatingPoints,
 )
 

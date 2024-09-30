@@ -7,9 +7,9 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 
-# from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+# from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
 #     OperatingPoints,
 # )
 
