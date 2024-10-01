@@ -44,12 +44,23 @@ namespace faiss {
  * that hides the template mess.
  ********************************************************************/
 
-#ifdef __AVX2__
+#if defined(__AVX512F__) && defined(__F16C__)
+#define USE_AVX512_F16C
+#elif defined(__AVX2__)
 #ifdef __F16C__
 #define USE_F16C
 #else
 #warning \
         "Cannot enable AVX optimizations in scalar quantizer if -mf16c is not set as well"
+#endif
+#endif
+
+#if defined(__aarch64__)
+#if defined(__GNUC__) && __GNUC__ < 8
+#warning \
+        "Cannot enable NEON optimizations in scalar quantizer if the compiler is GCC<8"
+#else
+#define USE_NEON
 #endif
 #endif
 
@@ -79,7 +90,17 @@ struct Codec8bit {
         return (code[i] + 0.5f) / 255.0f;
     }
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        const __m128i c16 = _mm_loadu_si128((__m128i*)(code + i));
+        const __m512i i32 = _mm512_cvtepu8_epi32(c16);
+        const __m512 f16 = _mm512_cvtepi32_ps(i32);
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 255.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
+        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+    }
+#elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
@@ -93,7 +114,7 @@ struct Codec8bit {
     }
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -121,7 +142,26 @@ struct Codec4bit {
         return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
     }
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        uint64_t c8 = *(uint64_t*)(code + (i >> 1));
+        uint64_t mask = 0x0f0f0f0f0f0f0f0f;
+        uint64_t c8ev = c8 & mask;
+        uint64_t c8od = (c8 >> 4) & mask;
+
+        __m128i c16 =
+                _mm_unpacklo_epi8(_mm_set1_epi64x(c8ev), _mm_set1_epi64x(c8od));
+        __m256i c8lo = _mm256_cvtepu8_epi32(c16);
+        __m256i c8hi = _mm256_cvtepu8_epi32(_mm_srli_si128(c16, 8));
+        __m512i i16 = _mm512_castsi256_si512(c8lo);
+        i16 = _mm512_inserti32x8(i16, c8hi, 1);
+        __m512 f16 = _mm512_cvtepi32_ps(i16);
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 15.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
+        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+    }
+#elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
@@ -144,7 +184,7 @@ struct Codec4bit {
     }
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -207,7 +247,56 @@ struct Codec6bit {
         return (bits + 0.5f) / 63.0f;
     }
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+    static FAISS_ALWAYS_INLINE __m512
+    decode_16_components(const uint8_t* code, int i) {
+        // pure AVX512 implementation (not necessarily the fastest).
+        // see:
+        // https://github.com/zilliztech/knowhere/blob/main/thirdparty/faiss/faiss/impl/ScalarQuantizerCodec_avx512.h
+
+        // clang-format off
+
+        // 16 components, 16x6 bit=12 bytes
+        const __m128i bit_6v =
+                _mm_maskz_loadu_epi8(0b0000111111111111, code + (i >> 2) * 3);
+        const __m256i bit_6v_256 = _mm256_broadcast_i32x4(bit_6v);
+
+        // 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+        // 00          01          02          03
+        const __m256i shuffle_mask = _mm256_setr_epi16(
+                0xFF00, 0x0100, 0x0201, 0xFF02,
+                0xFF03, 0x0403, 0x0504, 0xFF05,
+                0xFF06, 0x0706, 0x0807, 0xFF08,
+                0xFF09, 0x0A09, 0x0B0A, 0xFF0B);
+        const __m256i shuffled = _mm256_shuffle_epi8(bit_6v_256, shuffle_mask);
+
+        // 0: xxxxxxxx xx543210
+        // 1: xxxx5432 10xxxxxx
+        // 2: xxxxxx54 3210xxxx
+        // 3: xxxxxxxx 543210xx
+        const __m256i shift_right_v = _mm256_setr_epi16(
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U,
+                0x0U, 0x6U, 0x4U, 0x2U);
+        __m256i shuffled_shifted = _mm256_srlv_epi16(shuffled, shift_right_v);
+
+        // remove unneeded bits
+        shuffled_shifted =
+                _mm256_and_si256(shuffled_shifted, _mm256_set1_epi16(0x003F));
+
+        // scale
+        const __m512 f8 =
+                _mm512_cvtepi32_ps(_mm512_cvtepi16_epi32(shuffled_shifted));
+        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 63.f);
+        const __m512 one_255 = _mm512_set1_ps(1.f / 63.f);
+        return _mm512_fmadd_ps(f8, one_255, half_one_255);
+
+        // clang-format on
+    }
+
+#elif defined(__AVX2__)
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */
@@ -256,7 +345,7 @@ struct Codec6bit {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -275,11 +364,14 @@ struct Codec6bit {
  * through a codec
  *******************************************************************/
 
-template <class Codec, bool uniform, int SIMD>
+enum class QuantizerTemplateScaling { UNIFORM = 0, NON_UNIFORM = 1 };
+
+template <class Codec, QuantizerTemplateScaling SCALING, int SIMD>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
+        : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -316,12 +408,33 @@ struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, true, 1>(d, trained) {}
+            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
+                      d,
+                      trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m512 xi = Codec::decode_16_components(code, i);
+        return _mm512_fmadd_ps(
+                xi, _mm512_set1_ps(this->vdiff), _mm512_set1_ps(this->vmin));
+    }
+};
+
+#elif defined(__AVX2__)
+
+template <class Codec>
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
+                      d,
+                      trained) {}
 
     FAISS_ALWAYS_INLINE __m256
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -333,12 +446,15 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, true, 1>(d, trained) {}
+            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
+                      d,
+                      trained) {}
 
     FAISS_ALWAYS_INLINE float32x4x2_t
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -357,7 +473,8 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
+        : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -394,12 +511,37 @@ struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, false, 1>(d, trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m512 xi = Codec::decode_16_components(code, i);
+        return _mm512_fmadd_ps(
+                xi,
+                _mm512_loadu_ps(this->vdiff + i),
+                _mm512_loadu_ps(this->vmin + i));
+    }
+};
+
+#elif defined(__AVX2__)
+
+template <class Codec>
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1>(d, trained) {}
 
     FAISS_ALWAYS_INLINE __m256
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -413,12 +555,16 @@ struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 8> : QuantizerTemplate<Codec, false, 1> {
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, false, 1>(d, trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1>(d, trained) {}
 
     FAISS_ALWAYS_INLINE float32x4x2_t
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -465,7 +611,23 @@ struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef USE_F16C
+#if defined(USE_AVX512_F16C)
+
+template <>
+struct QuantizerFP16<16> : QuantizerFP16<1> {
+    QuantizerFP16(size_t d, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m256i codei = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        return _mm512_cvtph_ps(codei);
+    }
+};
+
+#endif
+
+#if defined(USE_F16C)
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -481,7 +643,7 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -528,7 +690,22 @@ struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <>
+struct QuantizerBF16<16> : QuantizerBF16<1> {
+    QuantizerBF16(size_t d, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d, trained) {}
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m256i code_256i = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
+        __m512i code_512i = _mm512_cvtepu16_epi32(code_256i);
+        code_512i = _mm512_slli_epi32(code_512i, 16);
+        return _mm512_castsi512_ps(code_512i);
+    }
+};
+
+#elif defined(__AVX2__)
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -546,7 +723,7 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -595,7 +772,22 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <>
+struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
+    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m128i x16 = _mm_loadu_si128((__m128i*)(code + i)); // 16 * int8
+        __m512i y16 = _mm512_cvtepu8_epi32(x16);             // 16 * int32
+        return _mm512_cvtepi32_ps(y16);                      // 16 * float32
+    }
+};
+
+#elif defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -612,7 +804,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -665,7 +857,24 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <>
+struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE __m512
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        __m128i x16 = _mm_loadu_si128((__m128i*)(code + i)); // 16 * int8
+        __m512i y16 = _mm512_cvtepu8_epi32(x16);             // 16 * int32
+        __m512i c16 = _mm512_set1_epi32(128);
+        __m512i z16 = _mm512_sub_epi32(y16, c16); // subtract 128 from all lanes
+        return _mm512_cvtepi32_ps(z16);           // 16 * float32
+    }
+};
+
+#elif defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -684,7 +893,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -717,20 +926,30 @@ ScalarQuantizer::SQuantizer* select_quantizer_1(
         const std::vector<float>& trained) {
     switch (qtype) {
         case ScalarQuantizer::QT_8bit:
-            return new QuantizerTemplate<Codec8bit, false, SIMDWIDTH>(
-                    d, trained);
+            return new QuantizerTemplate<
+                    Codec8bit,
+                    QuantizerTemplateScaling::NON_UNIFORM,
+                    SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_6bit:
-            return new QuantizerTemplate<Codec6bit, false, SIMDWIDTH>(
-                    d, trained);
+            return new QuantizerTemplate<
+                    Codec6bit,
+                    QuantizerTemplateScaling::NON_UNIFORM,
+                    SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_4bit:
-            return new QuantizerTemplate<Codec4bit, false, SIMDWIDTH>(
-                    d, trained);
+            return new QuantizerTemplate<
+                    Codec4bit,
+                    QuantizerTemplateScaling::NON_UNIFORM,
+                    SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_8bit_uniform:
-            return new QuantizerTemplate<Codec8bit, true, SIMDWIDTH>(
-                    d, trained);
+            return new QuantizerTemplate<
+                    Codec8bit,
+                    QuantizerTemplateScaling::UNIFORM,
+                    SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
-            return new QuantizerTemplate<Codec4bit, true, SIMDWIDTH>(
-                    d, trained);
+            return new QuantizerTemplate<
+                    Codec4bit,
+                    QuantizerTemplateScaling::UNIFORM,
+                    SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_fp16:
             return new QuantizerFP16<SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_bf16:
@@ -955,7 +1174,43 @@ struct SimilarityL2<1> {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <>
+struct SimilarityL2<16> {
+    static constexpr int simdwidth = 16;
+    static constexpr MetricType metric_type = METRIC_L2;
+
+    const float *y, *yi;
+
+    explicit SimilarityL2(const float* y) : y(y) {}
+    __m512 accu16;
+
+    FAISS_ALWAYS_INLINE void begin_16() {
+        accu16 = _mm512_setzero_ps();
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components(__m512 x) {
+        __m512 yiv = _mm512_loadu_ps(yi);
+        yi += 16;
+        __m512 tmp = _mm512_sub_ps(yiv, x);
+        accu16 = _mm512_fmadd_ps(tmp, tmp, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components_2(__m512 x, __m512 y_2) {
+        __m512 tmp = _mm512_sub_ps(y_2, x);
+        accu16 = _mm512_fmadd_ps(tmp, tmp, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE float result_16() {
+        // performs better than dividing into _mm256 and adding
+        return _mm512_reduce_add_ps(accu16);
+    }
+};
+
+#elif defined(__AVX2__)
+
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -996,7 +1251,7 @@ struct SimilarityL2<8> {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -1078,7 +1333,43 @@ struct SimilarityIP<1> {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <>
+struct SimilarityIP<16> {
+    static constexpr int simdwidth = 16;
+    static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
+
+    const float *y, *yi;
+
+    float accu;
+
+    explicit SimilarityIP(const float* y) : y(y) {}
+
+    __m512 accu16;
+
+    FAISS_ALWAYS_INLINE void begin_16() {
+        accu16 = _mm512_setzero_ps();
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components(__m512 x) {
+        __m512 yiv = _mm512_loadu_ps(yi);
+        yi += 16;
+        accu16 = _mm512_fmadd_ps(yiv, x, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE void add_16_components_2(__m512 x1, __m512 x2) {
+        accu16 = _mm512_fmadd_ps(x1, x2, accu16);
+    }
+
+    FAISS_ALWAYS_INLINE float result_16() {
+        // performs better than dividing into _mm256 and adding
+        return _mm512_reduce_add_ps(accu16);
+    }
+};
+
+#elif defined(__AVX2__)
 
 template <>
 struct SimilarityIP<8> {
@@ -1120,7 +1411,7 @@ struct SimilarityIP<8> {
 };
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <>
 struct SimilarityIP<8> {
@@ -1220,7 +1511,55 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#ifdef USE_F16C
+#if defined(USE_AVX512_F16C)
+
+template <class Quantizer, class Similarity>
+struct DCTemplate<Quantizer, Similarity, 16>
+        : SQDistanceComputer { // Update to handle 16 lanes
+    using Sim = Similarity;
+
+    Quantizer quant;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained) {}
+
+    float compute_distance(const float* x, const uint8_t* code) const {
+        Similarity sim(x);
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            __m512 xi = quant.reconstruct_16_components(code, i);
+            sim.add_16_components(xi);
+        }
+        return sim.result_16();
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        Similarity sim(nullptr);
+        sim.begin_16();
+        for (size_t i = 0; i < quant.d; i += 16) {
+            __m512 x1 = quant.reconstruct_16_components(code1, i);
+            __m512 x2 = quant.reconstruct_16_components(code2, i);
+            sim.add_16_components_2(x1, x2);
+        }
+        return sim.result_16();
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_distance(q, code);
+    }
+};
+
+#elif defined(USE_F16C)
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1269,7 +1608,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1367,7 +1706,60 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#ifdef __AVX2__
+#if defined(__AVX512F__)
+
+template <class Similarity>
+struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    int d;
+    std::vector<uint8_t> tmp;
+
+    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+
+    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        __m512i accu = _mm512_setzero_si512();
+        for (int i = 0; i < d; i += 32) { // Process 32 bytes at a time
+            __m512i c1 = _mm512_cvtepu8_epi16(
+                    _mm256_loadu_si256((__m256i*)(code1 + i)));
+            __m512i c2 = _mm512_cvtepu8_epi16(
+                    _mm256_loadu_si256((__m256i*)(code2 + i)));
+            __m512i prod32;
+            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
+                prod32 = _mm512_madd_epi16(c1, c2);
+            } else {
+                __m512i diff = _mm512_sub_epi16(c1, c2);
+                prod32 = _mm512_madd_epi16(diff, diff);
+            }
+            accu = _mm512_add_epi32(accu, prod32);
+        }
+        // Horizontally add elements of accu
+        return _mm512_reduce_add_epi32(accu);
+    }
+
+    void set_query(const float* x) final {
+        for (int i = 0; i < d; i++) {
+            tmp[i] = int(x[i]);
+        }
+    }
+
+    int compute_distance(const float* x, const uint8_t* code) {
+        set_query(x);
+        return compute_code_distance(tmp.data(), code);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_code_distance(tmp.data(), code);
+    }
+};
+
+#elif defined(__AVX2__)
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -1432,7 +1824,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef __aarch64__
+#ifdef USE_NEON
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -1494,31 +1886,46 @@ SQDistanceComputer* select_distance_computer(
     switch (qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return new DCTemplate<
-                    QuantizerTemplate<Codec8bit, true, SIMDWIDTH>,
+                    QuantizerTemplate<
+                            Codec8bit,
+                            QuantizerTemplateScaling::UNIFORM,
+                            SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
 
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate<
-                    QuantizerTemplate<Codec4bit, true, SIMDWIDTH>,
+                    QuantizerTemplate<
+                            Codec4bit,
+                            QuantizerTemplateScaling::UNIFORM,
+                            SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec8bit, false, SIMDWIDTH>,
+                    QuantizerTemplate<
+                            Codec8bit,
+                            QuantizerTemplateScaling::NON_UNIFORM,
+                            SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec6bit, false, SIMDWIDTH>,
+                    QuantizerTemplate<
+                            Codec6bit,
+                            QuantizerTemplateScaling::NON_UNIFORM,
+                            SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
 
         case ScalarQuantizer::QT_4bit:
             return new DCTemplate<
-                    QuantizerTemplate<Codec4bit, false, SIMDWIDTH>,
+                    QuantizerTemplate<
+                            Codec4bit,
+                            QuantizerTemplateScaling::NON_UNIFORM,
+                            SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
 
@@ -1531,9 +1938,16 @@ SQDistanceComputer* select_distance_computer(
                     d, trained);
 
         case ScalarQuantizer::QT_8bit_direct:
+#if defined(__AVX512F__)
+            if (d % 32 == 0) {
+                return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
+            } else
+#elif defined(__AVX2__)
             if (d % 16 == 0) {
                 return new DistanceComputerByte<Sim, SIMDWIDTH>(d, trained);
-            } else {
+            } else
+#endif
+            {
                 return new DCTemplate<
                         Quantizer8bitDirect<SIMDWIDTH>,
                         Sim,
@@ -1632,7 +2046,11 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 }
 
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C)
+    if (d % 16 == 0) {
+        return select_quantizer_1<16>(qtype, d, trained);
+    } else
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -1663,7 +2081,17 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C)
+    if (d % 16 == 0) {
+        if (metric == METRIC_L2) {
+            return select_distance_computer<SimilarityL2<16>>(
+                    qtype, d, trained);
+        } else {
+            return select_distance_computer<SimilarityIP<16>>(
+                    qtype, d, trained);
+        }
+    } else
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -1912,7 +2340,7 @@ InvertedListScanner* sel2_InvertedListScanner(
     }
 }
 
-template <class Similarity, class Codec, bool uniform>
+template <class Similarity, class Codec, QuantizerTemplateScaling SCALING>
 InvertedListScanner* sel12_InvertedListScanner(
         const ScalarQuantizer* sq,
         const Index* quantizer,
@@ -1920,7 +2348,7 @@ InvertedListScanner* sel12_InvertedListScanner(
         const IDSelector* sel,
         bool r) {
     constexpr int SIMDWIDTH = Similarity::simdwidth;
-    using QuantizerClass = QuantizerTemplate<Codec, uniform, SIMDWIDTH>;
+    using QuantizerClass = QuantizerTemplate<Codec, SCALING, SIMDWIDTH>;
     using DCClass = DCTemplate<QuantizerClass, Similarity, SIMDWIDTH>;
     return sel2_InvertedListScanner<DCClass>(
             sq, quantizer, store_pairs, sel, r);
@@ -1936,19 +2364,34 @@ InvertedListScanner* sel1_InvertedListScanner(
     constexpr int SIMDWIDTH = Similarity::simdwidth;
     switch (sq->qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
-            return sel12_InvertedListScanner<Similarity, Codec8bit, true>(
+            return sel12_InvertedListScanner<
+                    Similarity,
+                    Codec8bit,
+                    QuantizerTemplateScaling::UNIFORM>(
                     sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_4bit_uniform:
-            return sel12_InvertedListScanner<Similarity, Codec4bit, true>(
+            return sel12_InvertedListScanner<
+                    Similarity,
+                    Codec4bit,
+                    QuantizerTemplateScaling::UNIFORM>(
                     sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_8bit:
-            return sel12_InvertedListScanner<Similarity, Codec8bit, false>(
+            return sel12_InvertedListScanner<
+                    Similarity,
+                    Codec8bit,
+                    QuantizerTemplateScaling::NON_UNIFORM>(
                     sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_4bit:
-            return sel12_InvertedListScanner<Similarity, Codec4bit, false>(
+            return sel12_InvertedListScanner<
+                    Similarity,
+                    Codec4bit,
+                    QuantizerTemplateScaling::NON_UNIFORM>(
                     sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_6bit:
-            return sel12_InvertedListScanner<Similarity, Codec6bit, false>(
+            return sel12_InvertedListScanner<
+                    Similarity,
+                    Codec6bit,
+                    QuantizerTemplateScaling::NON_UNIFORM>(
                     sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_fp16:
             return sel2_InvertedListScanner<DCTemplate<
@@ -1961,11 +2404,20 @@ InvertedListScanner* sel1_InvertedListScanner(
                     Similarity,
                     SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_8bit_direct:
+#if defined(__AVX512F__)
+            if (sq->d % 32 == 0) {
+                return sel2_InvertedListScanner<
+                        DistanceComputerByte<Similarity, SIMDWIDTH>>(
+                        sq, quantizer, store_pairs, sel, r);
+            } else
+#elif defined(__AVX2__)
             if (sq->d % 16 == 0) {
                 return sel2_InvertedListScanner<
                         DistanceComputerByte<Similarity, SIMDWIDTH>>(
                         sq, quantizer, store_pairs, sel, r);
-            } else {
+            } else
+#endif
+            {
                 return sel2_InvertedListScanner<DCTemplate<
                         Quantizer8bitDirect<SIMDWIDTH>,
                         Similarity,
@@ -2009,7 +2461,12 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-#if defined(USE_F16C) || defined(__aarch64__)
+#if defined(USE_AVX512_F16C)
+    if (d % 16 == 0) {
+        return sel0_InvertedListScanner<16>(
+                mt, this, quantizer, store_pairs, sel, by_residual);
+    } else
+#elif defined(USE_F16C) || defined(USE_NEON)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
