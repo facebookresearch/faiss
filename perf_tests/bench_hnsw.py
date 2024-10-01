@@ -46,7 +46,6 @@ def accumulate_perf_counter(
 ):
     counters[f"{phase}_wall_time_us"] = int(t.wall_time_s * US_IN_S)
     counters[f"{phase}_user_time_us"] = int(t.user_time_s * US_IN_S)
-    counters[f"{phase}_system_time_us"] = int(t.system_time_s * US_IN_S)
 
 
 def run_on_dataset(
@@ -137,19 +136,19 @@ def _accumulate_counters(
 
 def main():
     parser = argparse.ArgumentParser(description="Benchmark HNSW")
-    parser.add_argument("-M", "--M", type=int, required=True)
-    parser.add_argument("-t", "--num-threads", type=int, required=True)
-    parser.add_argument("-w", "--warm-up-iterations", type=int, default=0)
-    parser.add_argument("-i", "--num-search-iterations", type=int, default=20)
-    parser.add_argument("-i", "--num-add-iterations", type=int, default=20)
-    parser.add_argument("-r", "--num-repetitions", type=int, default=20)
-    parser.add_argument("-s", "--ef-search", type=int, default=16)
-    parser.add_argument("-c", "--ef-construction", type=int, default=40)
-    parser.add_argument("-b", "--search-bounded-queue", action="store_true")
+    parser.add_argument("--M", type=int, default=32)
+    parser.add_argument("--num-threads", type=int, default=5)
+    parser.add_argument("--warm-up-iterations", type=int, default=0)
+    parser.add_argument("--num-search-iterations", type=int, default=1)
+    parser.add_argument("--num-add-iterations", type=int, default=1)
+    parser.add_argument("--num-repetitions", type=int, default=1)
+    parser.add_argument("--ef-search", type=int, default=16)
+    parser.add_argument("--ef-construction", type=int, default=40)
+    parser.add_argument("--search-bounded-queue", action="store_true")
 
-    parser.add_argument("-n", "--nb", type=int, default=5000)
-    parser.add_argument("-q", "--nq", type=int, default=500)
-    parser.add_argument("-d", "--d", type=int, default=128)
+    parser.add_argument("--nb", type=int, default=5000)
+    parser.add_argument("--nq", type=int, default=500)
+    parser.add_argument("--d", type=int, default=128)
     args = parser.parse_args()
 
     if args.warm_up_iterations > 0:
@@ -191,6 +190,10 @@ def main():
     for counter, values in result.items():
         if is_perf_counter(counter):
             print(
-                "%s t=%.3f us (± %.4f)" %
+                "%s t=%.3f us (± %.4f)" % 
                 (counter, np.mean(values), np.std(values))
             )
+
+
+if __name__ == "__main__":
+    main()
