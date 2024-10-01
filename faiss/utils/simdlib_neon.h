@@ -972,6 +972,19 @@ struct simd8uint32 {
         return ~(*this == other);
     }
 
+    // shift must be known at compile time
+    simd8uint32 operator<<(const int shift) const {
+        int32x4_t shifts = {
+                static_cast<int32_t>(shift),
+                static_cast<int32_t>(shift),
+                static_cast<int32_t>(shift),
+                static_cast<int32_t>(shift)};
+        simd8uint32 result;
+        result.data.val[0] = vshlq_u32(data.val[0], shifts);
+        result.data.val[1] = vshlq_u32(data.val[1], shifts);
+        return result;
+    }
+
     // Checks whether the other holds exactly the same bytes.
     template <typename T>
     bool is_same_as(T other) const {
@@ -1040,9 +1053,9 @@ struct simd8uint32 {
 //      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
 //      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
 //   }
-// Max indices evaluation is inaccurate in case of equal values (the index of
-// the last equal value is saved instead of the first one), but this behavior
-// saves instructions.
+// Max indices evaluation is inaccurate in case of equal values (the
+// index of the last equal value is saved instead of the first one), but
+// this behavior saves instructions.
 inline void cmplt_min_max_fast(
         const simd8uint32 candidateValues,
         const simd8uint32 candidateIndices,
@@ -1160,8 +1173,8 @@ struct simd8float32 {
     }
 
     simd8float32& operator+=(const simd8float32& other) {
-        // In this context, it is more compiler friendly to write intrinsics
-        // directly instead of using binary_func
+        // In this context, it is more compiler friendly to write
+        // intrinsics directly instead of using binary_func
         data.val[0] = vaddq_f32(data.val[0], other.data.val[0]);
         data.val[1] = vaddq_f32(data.val[1], other.data.val[1]);
         return *this;
@@ -1191,6 +1204,19 @@ struct simd8float32 {
     std::string tostring() const {
         return detail::simdlib::elements_to_string<float, 8u>("%g,", *this);
     }
+
+    float accumulate() const {
+        // data = {v01, v02, v03, v04, v11, v12, v13, v14}
+        // sum_0 = {v01+v02, v03+v04, v01+v02, v03+v04}
+        // sum_1 = {v11+v12, v13+v14, v11+v12, v13+v14}
+        // sum2_0 = {v01+v02+v03+v04, v01+v02+v03+v04, v01+v02+v03+v04,
+        // v01+v02+v03+v04}
+        // sum2_1 = {v11+v12+v13+v14, v11+v12+v13+v14, v11+v12+v13+v14,
+        // v11+v12+v13+v14}
+        // vgetq_lane_f32(sum2_0, 0) = v01+v02+v03+v04
+        // vgetq_lane_f32(sum2_1, 0) = v11+v12+v13+v14
+        return vaddvq_f32(data.val[0]) + vaddvq_f32(data.val[1]);
+    }
 };
 
 // hadd does not cross lanes
@@ -1219,6 +1245,17 @@ inline simd8float32 fmadd(
             vfmaq_f32(c.data.val[1], a.data.val[1], b.data.val[1])}};
 }
 
+// load 8 uint8_t from code + i and extend the elements to float32
+inline simd8float32 load8(const uint8_t* code, int i) {
+    uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
+    uint16x8_t y8 = vmovl_u8(x8);
+    uint16x4_t y8_0 = vget_low_u16(y8);
+    uint16x4_t y8_1 = vget_high_u16(y8);
+
+    // convert uint16 -> uint32 -> fp32
+    return simd8float32(
+            {vcvtq_f32_u32(vmovl_u16(y8_0)), vcvtq_f32_u32(vmovl_u16(y8_1))});
+}
 // The following primitive is a vectorized version of the following code
 // snippet:
 //   float lowestValue = HUGE_VAL;
@@ -1229,8 +1266,8 @@ inline simd8float32 fmadd(
 //       lowestIndex = i;
 //     }
 //   }
-// Vectorized version can be implemented via two operations: cmp and blend
-// with something like this:
+// Vectorized version can be implemented via two operations: cmp and
+// blend with something like this:
 //   lowestValues = [HUGE_VAL; 8];
 //   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
 //   for (size_t i = 0; i < n; i += 8) {
@@ -1248,8 +1285,9 @@ inline simd8float32 fmadd(
 // The problem is that blend primitive needs very different instruction
 // order for AVX and ARM.
 // So, let's introduce a combination of these two in order to avoid
-// confusion for ppl who write in low-level SIMD instructions. Additionally,
-// these two ops (cmp and blend) are very often used together.
+// confusion for ppl who write in low-level SIMD instructions.
+// Additionally, these two ops (cmp and blend) are very often used
+// together.
 inline void cmplt_and_blend_inplace(
         const simd8float32 candidateValues,
         const simd8uint32 candidateIndices,
@@ -1287,9 +1325,9 @@ inline void cmplt_and_blend_inplace(
 //      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
 //      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
 //   }
-// Max indices evaluation is inaccurate in case of equal values (the index of
-// the last equal value is saved instead of the first one), but this behavior
-// saves instructions.
+// Max indices evaluation is inaccurate in case of equal values (the
+// index of the last equal value is saved instead of the first one), but
+// this behavior saves instructions.
 inline void cmplt_min_max_fast(
         const simd8float32 candidateValues,
         const simd8uint32 candidateIndices,
