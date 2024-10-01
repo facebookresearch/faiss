@@ -99,6 +99,8 @@ void CuvsIVFFlat::search(
     /// called updateQuantizer() to modify the cuVS index if the quantizer was
     /// modified externally
 
+    std::cout << "inside cuvs ivf flat search" << std::endl;
+
     uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
     uint32_t k_ = k;
@@ -116,10 +118,18 @@ void CuvsIVFFlat::search(
 
     auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
             queries.data(), (idx_t)numQueries, (idx_t)cols);
+    raft::print_device_vector("queries", queries.data(), 25, std::cout);
     auto out_inds_view = raft::make_device_matrix_view<idx_t, idx_t>(
             outIndices.data(), (idx_t)numQueries, (idx_t)k_);
     auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
             outDistances.data(), (idx_t)numQueries, (idx_t)k_);
+
+    std::cout << "now running search";
+    raft::print_device_vector(
+            "cuvs centers before running search",
+            cuvs_index->centers().data_handle(),
+            numLists_ * dim_,
+            std::cout);
 
     cuvs::neighbors::ivf_flat::search(
             raft_handle,
@@ -129,6 +139,11 @@ void CuvsIVFFlat::search(
             out_inds_view,
             out_dists_view);
 
+    raft::print_device_vector(
+            "outIndices before filtering",
+            outIndices.data(),
+            numQueries * k_,
+            std::cout);
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
 
@@ -159,6 +174,8 @@ void CuvsIVFFlat::search(
                     return max_val;
                 return out_dists[i];
             });
+    raft::print_device_vector(
+            "outIndices", outIndices.data(), numQueries * k_, std::cout);
 }
 
 idx_t CuvsIVFFlat::addVectors(
@@ -168,6 +185,11 @@ idx_t CuvsIVFFlat::addVectors(
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
     /// called updateQuantizer() to update the cuVS index if the quantizer was
     /// modified externally
+    std::cout << "inside CuvsIVFFlat addVectors" << std::endl;
+    raft::print_device_vector(
+            "indices", indices.data(), indices.getSize(0), std::cout);
+    raft::print_device_vector(
+            "vectors", vecs.data(), vecs.getSize(1), std::cout);
 
     FAISS_ASSERT(cuvs_index != nullptr);
 
@@ -177,17 +199,14 @@ idx_t CuvsIVFFlat::addVectors(
     /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
-    cuvs_index = std::make_shared<
-            cuvs::neighbors::ivf_flat::index<float, idx_t>>(
-            cuvs::neighbors::ivf_flat::extend(
-                    raft_handle,
-                    raft::make_device_matrix_view<const float, idx_t>(
-                            vecs.data(), n_rows_valid, dim_),
-                    std::make_optional<
-                            raft::device_vector_view<const idx_t, idx_t>>(
-                            raft::make_device_vector_view<const idx_t, idx_t>(
-                                    indices.data(), n_rows_valid)),
-                    *cuvs_index));
+    cuvs::neighbors::ivf_flat::extend(
+            raft_handle,
+            raft::make_device_matrix_view<const float, idx_t>(
+                    vecs.data(), n_rows_valid, dim_),
+            std::make_optional<raft::device_vector_view<const idx_t, idx_t>>(
+                    raft::make_device_vector_view<const idx_t, idx_t>(
+                            indices.data(), n_rows_valid)),
+            cuvs_index.get());
 
     return n_rows_valid;
 }
@@ -362,6 +381,11 @@ void CuvsIVFFlat::updateQuantizer(Index* quantizer) {
                 total_elems,
                 stream);
     }
+    raft::print_device_vector(
+            "cuvs centers",
+            cuvs_index->centers().data_handle(),
+            total_elems,
+            std::cout);
 }
 
 void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
