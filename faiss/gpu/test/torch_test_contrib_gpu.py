@@ -13,9 +13,6 @@ from faiss.contrib import datasets
 from faiss.contrib.torch import clustering
 
 
-from rmm.allocators.torch import rmm_torch_allocator
-torch.cuda.memory.change_current_allocator(rmm_torch_allocator)
-
 def to_column_major_torch(x):
     if hasattr(torch, 'contiguous_format'):
         return x.t().clone(memory_format=torch.contiguous_format).t()
@@ -76,7 +73,6 @@ class TestTorchUtilsGPU(unittest.TestCase):
         self.assertTrue(np.array_equal(d_torch_cpu.numpy(), d_np_cpu))
         self.assertTrue(np.array_equal(i_torch_cpu.numpy(), i_np_cpu))
 
-
     # tests train, add_with_ids
     def test_train_add_with_ids(self):
         d = 32
@@ -85,42 +81,27 @@ class TestTorchUtilsGPU(unittest.TestCase):
         res.noTempMemory()
 
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_cuvs = True
+        config.use_cuvs = False
 
         index = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
-        from rmm.allocators.cupy import rmm_cupy_allocator
-        import cupy as cp
-        import numpy as np
-        cp.cuda.set_allocator(rmm_cupy_allocator)
         xb = torch.rand(1000, d, device=torch.device('cuda', 0), dtype=torch.float32)
-        # xb = cp.random.rand(1000, d, dtype=np.float32)
-        # xb_t = torch.as_tensor(xb, device="cuda")
-        print(xb)
-        # print("torchgpu")
         index.train(xb)
 
         ids = torch.arange(1000, 1000 + xb.shape[0], device=torch.device('cuda', 0), dtype=torch.int64)
-        # ids = torch.as_tensor(cp.arange(1000, 1000 + xb_t.shape[0], dtype=np.int64), device="cuda")
 
         # Test add_with_ids with torch gpu
         index.add_with_ids(xb, ids)
         _, I = index.search(xb[10:20], 1)
-        print(I)
         self.assertTrue(torch.equal(I.view(10), ids[10:20]))
 
         # Test add_with_ids with torch cpu
         index.reset()
-        # index2 = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
         xb_cpu = xb.cpu()
         ids_cpu = ids.cpu()
-        # xb_cpu = cp.asarray(xb)
-        # ids_cpu = cp.asarray(ids)
 
-        print("torch_cpu")
         index.train(xb_cpu)
         index.add_with_ids(xb_cpu, ids_cpu)
         _, I = index.search(xb_cpu[10:20], 1)
-        # print(I)
         self.assertTrue(torch.equal(I.view(10), ids_cpu[10:20]))
 
         # Test add_with_ids with numpy
@@ -128,18 +109,16 @@ class TestTorchUtilsGPU(unittest.TestCase):
         xb_np = xb.cpu().numpy()
         ids_np = ids.cpu().numpy()
 
-        print("torch_np")
-        # index.train(xb_np)
-        # index.add_with_ids(xb_np, ids_np)
-        # _, I = index.search(xb_np[10:20], 1)
-        # self.assertTrue(np.array_equal(I.reshape(10), ids_np[10:20]))
-        # self.assertTrue(False)
+        index.train(xb_np)
+        index.add_with_ids(xb_np, ids_np)
+        _, I = index.search(xb_np[10:20], 1)
+        self.assertTrue(np.array_equal(I.reshape(10), ids_np[10:20]))
 
     # tests reconstruct, reconstruct_n
     def test_flat_reconstruct(self):
         d = 32
         res = faiss.StandardGpuResources()
-        # res.noTempMemory()
+        res.noTempMemory()
         index = faiss.GpuIndexFlatL2(res, d)
 
         xb = torch.rand(100, d, device=torch.device('cuda', 0), dtype=torch.float32)
@@ -191,7 +170,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
         res = faiss.StandardGpuResources()
         res.noTempMemory()
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_cuvs = False
+        config.use_raft = False
 
         index = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
 
@@ -277,7 +256,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
         return
 
 class TestTorchUtilsKnnGpu(unittest.TestCase):
-    def test_knn_gpu(self, use_cuvs=False):
+    def test_knn_gpu(self, use_raft=False):
         torch.manual_seed(10)
         d = 32
         nb = 1024
@@ -314,7 +293,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                     else:
                         xb_c = xb_np
 
-                    D, I = faiss.knn_gpu(res, xq_c, xb_c, k, use_cuvs=use_cuvs)
+                    D, I = faiss.knn_gpu(res, xq_c, xb_c, k, use_raft=use_raft)
 
                     self.assertTrue(torch.equal(torch.from_numpy(I), gt_I))
                     self.assertLess((torch.from_numpy(D) - gt_D).abs().max(), 1e-4)
@@ -340,7 +319,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                             xb_c = to_column_major_torch(xb)
                             assert not xb_c.is_contiguous()
 
-                        D, I = faiss.knn_gpu(res, xq_c, xb_c, k, use_cuvs=use_cuvs)
+                        D, I = faiss.knn_gpu(res, xq_c, xb_c, k, use_raft=use_raft)
 
                         self.assertTrue(torch.equal(I.cpu(), gt_I))
                         self.assertLess((D.cpu() - gt_D).abs().max(), 1e-4)
@@ -348,7 +327,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                         # test on subset
                         try:
                             # This internally uses the current pytorch stream
-                            D, I = faiss.knn_gpu(res, xq_c[6:8], xb_c, k, use_cuvs=use_cuvs)
+                            D, I = faiss.knn_gpu(res, xq_c[6:8], xb_c, k, use_raft=use_raft)
                         except TypeError:
                             if not xq_row_major:
                                 # then it is expected
@@ -360,12 +339,12 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                         self.assertLess((D.cpu() - gt_D[6:8]).abs().max(), 1e-4)
 
     @unittest.skipUnless(
-        "CUVS" in faiss.get_compile_options(),
-        "only if cuVS is compiled in")
-    def test_knn_gpu_cuvs(self):
-        self.test_knn_gpu(use_cuvs=True)
+        "RAFT" in faiss.get_compile_options(),
+        "only if RAFT is compiled in")
+    def test_knn_gpu_raft(self):
+        self.test_knn_gpu(use_raft=True)
 
-    def test_knn_gpu_datatypes(self, use_cuvs=False):
+    def test_knn_gpu_datatypes(self, use_raft=False):
         torch.manual_seed(10)
         d = 10
         nb = 1024
@@ -388,7 +367,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
         D = torch.zeros(nq, k, device=xb_c.device, dtype=torch.float32)
         I = torch.zeros(nq, k, device=xb_c.device, dtype=torch.int32)
 
-        faiss.knn_gpu(res, xq_c, xb_c, k, D, I, use_cuvs=use_cuvs)
+        faiss.knn_gpu(res, xq_c, xb_c, k, D, I, use_raft=use_raft)
 
         self.assertTrue(torch.equal(I.long().cpu(), gt_I))
         self.assertLess((D.float().cpu() - gt_D).abs().max(), 1.5e-3)
@@ -400,7 +379,7 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
         xb_c = xb.half().numpy()
         xq_c = xq.half().numpy()
 
-        faiss.knn_gpu(res, xq_c, xb_c, k, D, I, use_cuvs=use_cuvs)
+        faiss.knn_gpu(res, xq_c, xb_c, k, D, I, use_raft=use_raft)
 
         self.assertTrue(torch.equal(torch.from_numpy(I).long(), gt_I))
         self.assertLess((torch.from_numpy(D) - gt_D).abs().max(), 1.5e-3)
