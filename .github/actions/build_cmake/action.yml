@@ -28,8 +28,9 @@ runs:
       shell: bash
       run: |
         # initialize Conda
-        conda config --set solver libmamba
         conda update -y -q conda
+        conda install -y -q --solver=classic -c conda-forge conda-libmamba-solver "libmamba<2" "libmambapy<2" libarchive
+        conda config --set solver libmamba
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.11 cmake make swig numpy scipy pytest gflags
@@ -37,7 +38,6 @@ runs:
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
           # installing libmamba-solver is necessary for openblas=*=*openmp*
-          conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
 
           # installing openblas that was compiled with USE_OPENMP=1.
           # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
