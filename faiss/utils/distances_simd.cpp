@@ -29,6 +29,10 @@
 #include <faiss/utils/transpose/transpose-avx2-inl.h>
 #endif
 
+#ifdef __ARM_FEATURE_SVE
+#include <arm_sve.h>
+#endif
+
 #ifdef __aarch64__
 #include <arm_neon.h>
 #endif
@@ -2932,6 +2936,60 @@ void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
     else
         fvec_madd_ref(n, a, bf, b, c);
 #endif
+}
+
+#elif defined(__ARM_FEATURE_SVE)
+
+void fvec_madd(
+        const size_t n,
+        const float* __restrict a,
+        const float bf,
+        const float* __restrict b,
+        float* __restrict c) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const size_t lanes2 = lanes * 2;
+    const size_t lanes3 = lanes * 3;
+    const size_t lanes4 = lanes * 4;
+    size_t i = 0;
+    for (; i + lanes4 < n; i += lanes4) {
+        const auto mask = svptrue_b32();
+        const auto ai0 = svld1_f32(mask, a + i);
+        const auto ai1 = svld1_f32(mask, a + i + lanes);
+        const auto ai2 = svld1_f32(mask, a + i + lanes2);
+        const auto ai3 = svld1_f32(mask, a + i + lanes3);
+        const auto bi0 = svld1_f32(mask, b + i);
+        const auto bi1 = svld1_f32(mask, b + i + lanes);
+        const auto bi2 = svld1_f32(mask, b + i + lanes2);
+        const auto bi3 = svld1_f32(mask, b + i + lanes3);
+        const auto ci0 = svmla_n_f32_x(mask, ai0, bi0, bf);
+        const auto ci1 = svmla_n_f32_x(mask, ai1, bi1, bf);
+        const auto ci2 = svmla_n_f32_x(mask, ai2, bi2, bf);
+        const auto ci3 = svmla_n_f32_x(mask, ai3, bi3, bf);
+        svst1_f32(mask, c + i, ci0);
+        svst1_f32(mask, c + i + lanes, ci1);
+        svst1_f32(mask, c + i + lanes2, ci2);
+        svst1_f32(mask, c + i + lanes3, ci3);
+    }
+    const auto mask0 = svwhilelt_b32_u64(i, n);
+    const auto mask1 = svwhilelt_b32_u64(i + lanes, n);
+    const auto mask2 = svwhilelt_b32_u64(i + lanes2, n);
+    const auto mask3 = svwhilelt_b32_u64(i + lanes3, n);
+    const auto ai0 = svld1_f32(mask0, a + i);
+    const auto ai1 = svld1_f32(mask1, a + i + lanes);
+    const auto ai2 = svld1_f32(mask2, a + i + lanes2);
+    const auto ai3 = svld1_f32(mask3, a + i + lanes3);
+    const auto bi0 = svld1_f32(mask0, b + i);
+    const auto bi1 = svld1_f32(mask1, b + i + lanes);
+    const auto bi2 = svld1_f32(mask2, b + i + lanes2);
+    const auto bi3 = svld1_f32(mask3, b + i + lanes3);
+    const auto ci0 = svmla_n_f32_x(mask0, ai0, bi0, bf);
+    const auto ci1 = svmla_n_f32_x(mask1, ai1, bi1, bf);
+    const auto ci2 = svmla_n_f32_x(mask2, ai2, bi2, bf);
+    const auto ci3 = svmla_n_f32_x(mask3, ai3, bi3, bf);
+    svst1_f32(mask0, c + i, ci0);
+    svst1_f32(mask1, c + i + lanes, ci1);
+    svst1_f32(mask2, c + i + lanes2, ci2);
+    svst1_f32(mask3, c + i + lanes3, ci3);
 }
 
 #elif defined(__aarch64__)
