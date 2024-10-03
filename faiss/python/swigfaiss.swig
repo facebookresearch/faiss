@@ -257,7 +257,7 @@ namespace std {
 %template(Float32Vector) std::vector<float>;
 %template(Float64Vector) std::vector<double>;
 
-// werid interaction within C++ between char and signed char
+// weird interaction within C++ between char and signed char
 %ignore Int8Vector::swap;
 
 %template(Int8Vector) std::vector<int8_t>;
