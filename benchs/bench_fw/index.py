@@ -735,9 +735,6 @@ class Index(IndexBase):
                     if self.search_params and name in self.search_params
                     else range
                 ),
-                [self.search_params[name]]
-                if self.search_params and name in self.search_params
-                else range,
             )
 
         add_range_or_val("snap", [0])
@@ -1023,9 +1020,11 @@ class IndexFromFactory(Index):
             d=model_ivf.quantizer.d,
             metric=model_ivf.quantizer.metric_type,
             database_vectors=centroids,
-            construction_params=self.construction_params[1:]
-            if self.construction_params is not None
-            else None,
+            construction_params=(
+                self.construction_params[1:]
+                if self.construction_params is not None
+                else None
+            ),
             search_params=None,
             factory=reverse_index_factory(model_ivf.quantizer),
             training_vectors=centroids,
