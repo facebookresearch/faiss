@@ -55,15 +55,6 @@ namespace faiss {
 #endif
 #endif
 
-#if defined(__aarch64__)
-#if defined(__GNUC__) && __GNUC__ < 8
-#warning \
-        "Cannot enable NEON optimizations in scalar quantizer if the compiler is GCC<8"
-#else
-#define USE_NEON
-#endif
-#endif
-
 namespace {
 
 typedef ScalarQuantizer::QuantizerType QuantizerType;
@@ -114,7 +105,7 @@ struct Codec8bit {
     }
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -184,7 +175,7 @@ struct Codec4bit {
     }
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -345,7 +336,7 @@ struct Codec6bit {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
     static FAISS_ALWAYS_INLINE float32x4x2_t
     decode_8_components(const uint8_t* code, int i) {
         float32_t result[8] = {};
@@ -446,7 +437,7 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
@@ -555,7 +546,7 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
@@ -643,7 +634,7 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
@@ -723,7 +714,7 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
@@ -804,7 +795,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
@@ -893,7 +884,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
@@ -1251,7 +1242,7 @@ struct SimilarityL2<8> {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 template <>
 struct SimilarityL2<8> {
     static constexpr int simdwidth = 8;
@@ -1411,7 +1402,7 @@ struct SimilarityIP<8> {
 };
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <>
 struct SimilarityIP<8> {
@@ -1608,7 +1599,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -1824,7 +1815,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
 #endif
 
-#ifdef USE_NEON
+#ifdef __aarch64__
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
@@ -2050,7 +2041,7 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     if (d % 16 == 0) {
         return select_quantizer_1<16>(qtype, d, trained);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -2091,7 +2082,7 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
                     qtype, d, trained);
         }
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2466,7 +2457,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         return sel0_InvertedListScanner<16>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(__aarch64__)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
