@@ -41,7 +41,7 @@ runs:
 
           # installing openblas that was compiled with USE_OPENMP=1.
           # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
-          conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
+          conda install -y -q -c conda-forge openblas=*=*openmp* gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
         # install base packages for X86_64
