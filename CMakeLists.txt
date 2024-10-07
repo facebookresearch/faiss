@@ -46,7 +46,7 @@ rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.8.0
+  VERSION 1.9.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})

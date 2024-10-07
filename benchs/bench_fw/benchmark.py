@@ -874,13 +874,14 @@ class ExecutionOperator:
         if self.search_op:
             gt_knn_desc = self.search_op.get_flat_desc(knn_desc.flat_name())
             if gt_knn_desc is None:
-                if knn_desc.index_desc is not None:
+                if knn_desc.gt_index_desc is not None:
                     gt_index_desc = knn_desc.gt_index_desc
                 else:
                     gt_index_desc = self.build_op.get_flat_desc(
                         knn_desc.index_desc.flat_name()
                     )
                     knn_desc.gt_index_desc = gt_index_desc
+
                 assert gt_index_desc is not None
                 gt_knn_desc = KnnDescriptor(
                     d=knn_desc.d,
