@@ -37,7 +37,7 @@ runs:
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
           # installing libmamba-solver is necessary for openblas=*=*openmp*
-          conda install --solver=classic conda-forge::conda-libmamba-solver=24.7.0 conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
+          # conda install --solver=classic conda-forge::conda-libmamba-solver=24.7.0 conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
 
           # installing openblas that was compiled with USE_OPENMP=1.
           # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
