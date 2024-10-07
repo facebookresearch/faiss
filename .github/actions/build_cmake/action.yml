@@ -36,12 +36,11 @@ runs:
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          # installing libmamba-solver is necessary for openblas=*=*openmp*
-          # conda install --solver=classic conda-forge::conda-libmamba-solver=24.7.0 conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
-
-          # installing openblas that was compiled with USE_OPENMP=1.
+          # TODO: We should install openblas=*=*openmp* that was compiled with USE_OPENMP=1
           # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
-          conda install -y -q -c conda-forge openblas=*=*openmp* gxx_linux-aarch64 sysroot_linux-aarch64
+          # However that package causes 7-8x slow-down on CI. Figure out why.
+          conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
+          echo "OPENBLAS_NUM_THREADS=4" >> "$GITHUB_ENV"
         fi
 
         # install base packages for X86_64
@@ -134,7 +133,7 @@ runs:
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
-              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || runner.arch == 'ARM64' && 'OpenBLAS' }} \
+              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)
