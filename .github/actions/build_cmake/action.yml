@@ -40,7 +40,7 @@ runs:
           # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
           # However that package causes 7-8x slow-down on CI. Figure out why.
           conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
-          echo "OPENBLAS_NUM_THREADS=4" >> "$GITHUB_ENV"
+          echo "OPENBLAS_NUM_THREADS=1" >> "$GITHUB_ENV"
         fi
 
         # install base packages for X86_64
