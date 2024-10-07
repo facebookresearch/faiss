@@ -59,7 +59,7 @@ runs:
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from RAFT channel for RAFT builds
         elif [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
+          conda install -y -q libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
         # install test packages
