@@ -134,7 +134,7 @@ runs:
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
-              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
+              -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || runner.arch == 'ARM64' && 'OpenBLAS' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)
