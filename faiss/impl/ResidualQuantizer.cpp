@@ -492,40 +492,6 @@ void ResidualQuantizer::refine_beam(
  * Functions using the dot products between codebook entries
  *******************************************************************/
 
-void ResidualQuantizer::compute_codebook_tables() {
-    cent_norms.resize(total_codebook_size);
-    fvec_norms_L2sqr(
-            cent_norms.data(), codebooks.data(), d, total_codebook_size);
-    size_t cross_table_size = 0;
-    for (int m = 0; m < M; m++) {
-        size_t K = (size_t)1 << nbits[m];
-        cross_table_size += K * codebook_offsets[m];
-    }
-    codebook_cross_products.resize(cross_table_size);
-    size_t ofs = 0;
-    for (int m = 1; m < M; m++) {
-        FINTEGER ki = (size_t)1 << nbits[m];
-        FINTEGER kk = codebook_offsets[m];
-        FINTEGER di = d;
-        float zero = 0, one = 1;
-        assert(ofs + ki * kk <= cross_table_size);
-        sgemm_("Transposed",
-               "Not transposed",
-               &ki,
-               &kk,
-               &di,
-               &one,
-               codebooks.data() + d * kk,
-               &di,
-               codebooks.data(),
-               &di,
-               &zero,
-               codebook_cross_products.data() + ofs,
-               &ki);
-        ofs += ki * kk;
-    }
-}
-
 void ResidualQuantizer::refine_beam_LUT(
         size_t n,
         const float* query_norms, // size n
