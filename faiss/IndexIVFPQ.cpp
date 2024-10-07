@@ -318,16 +318,14 @@ void IndexIVFPQ::reconstruct_from_offset(
         float* recons) const {
     const uint8_t* code = invlists->get_single_code(list_no, offset);
 
+    pq.decode(code, recons);
     if (by_residual) {
         std::vector<float> centroid(d);
         quantizer->reconstruct(list_no, centroid.data());
 
-        pq.decode(code, recons);
         for (int i = 0; i < d; ++i) {
             recons[i] += centroid[i];
         }
-    } else {
-        pq.decode(code, recons);
     }
 }
 

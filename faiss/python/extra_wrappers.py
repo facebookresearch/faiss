@@ -345,7 +345,7 @@ def knn(xq, xb, k, metric=METRIC_L2, metric_arg=0.0):
         `dtype` must be float32.
     k : int
         Number of nearest neighbors.
-    distance_type : MetricType, optional
+    metric : MetricType, optional
         distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
 
     Returns

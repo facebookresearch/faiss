@@ -15,7 +15,7 @@
 /// Assertions
 ///
 
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) || defined(USE_AMD_ROCM)
 #define GPU_FAISS_ASSERT(X) assert(X)
 #define GPU_FAISS_ASSERT_MSG(X, MSG) assert(X)
 #define GPU_FAISS_ASSERT_FMT(X, FMT, ...) assert(X)

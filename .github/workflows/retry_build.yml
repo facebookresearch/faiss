@@ -1,0 +1,25 @@
+name: Retry Build
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+jobs:
+  rerun-on-failure:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: rerun ${{ inputs.run_id }}
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: |
+          gh run watch ${{ inputs.run_id }} > /dev/null 2>&1
+
+          # Only retry if there are failed jobs
+          if gh run view ${{ inputs.run_id }} --exit-status; then
+            echo Workflow succeeded - no retry necessary.
+          else
+            gh run rerun ${{ inputs.run_id }} --failed
+          fi

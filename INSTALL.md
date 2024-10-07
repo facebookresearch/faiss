@@ -19,6 +19,8 @@ $ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 
 # GPU(+CPU) version with NVIDIA RAFT
 $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
+
+# GPU(+CPU) version using AMD ROCm not yet available
 ```
 
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
@@ -37,6 +39,8 @@ $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
 
 # GPU(+CPU) version with NVIDIA RAFT
 conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
+
+# GPU(+CPU) version using AMD ROCm not yet available
 ```
 In the above commands, pytorch-cuda=11 or pytorch-cuda=12 would select a specific CUDA version, if it’s required.
 
@@ -63,6 +67,8 @@ $ conda install -c conda-forge faiss-cpu
 
 # GPU version
 $ conda install -c conda-forge faiss-gpu
+
+# AMD ROCm version not yet available
 ```
 
 You can tell which channel your conda packages come from by using `conda list`.
@@ -87,6 +93,8 @@ The optional requirements are:
 - for GPU indices:
   - nvcc,
   - the CUDA toolkit,
+- for AMD GPUs:
+  - AMD ROCm,
 - for the python bindings:
   - python 3,
   - numpy,
@@ -124,6 +132,7 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
   generate code using optimized SIMD instructions (possible values are `generic`,
   `avx2` and `avx512`, by increasing order of optimization),
+  - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
@@ -136,6 +145,10 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_CUDA_ARCHITECTURES="75;72"` for specifying which GPU architectures
   to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
   determine which architecture(s) you should pick),
+  - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
+  The hipify script must be executed before using this option. 
+  Invoke `./faiss/gpu/hipify.sh` to execute. `-DFAISS_ENABLE_GPU` must be `ON`
+  when using this option. (possible values are `ON` and `OFF`),
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see
@@ -154,6 +167,22 @@ The `-j` option enables parallel compilation of multiple units, leading to a
 faster build, but increasing the chances of running out of memory, in which case
 it is recommended to set the `-j` option to a fixed value (such as `-j4`).
 
+If making use of optimization options, build the correct target before swigfaiss.
+
+For AVX2:
+
+``` shell
+$ make -C build -j faiss_avx2
+```
+
+For AVX512:
+
+``` shell
+$ make -C build -j faiss_avx512
+```
+
+This will ensure the creation of neccesary files when building and installing the python package.
+
 ## Step 3: Building the python bindings (optional)
 
 ``` shell
@@ -163,6 +192,7 @@ $ (cd build/faiss/python && python setup.py install)
 
 The first command builds the python bindings for Faiss, while the second one
 generates and installs the python package.
+
 
 ## Step 4: Installing the C++ library and headers (optional)
 

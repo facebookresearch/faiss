@@ -43,11 +43,20 @@ struct ClusteringParameters {
     int min_points_per_centroid = 39;
     /// to limit size of dataset, otherwise the training set is subsampled
     int max_points_per_centroid = 256;
-    /// seed for the random number generator
+    /// seed for the random number generator.
+    /// negative values lead to seeding an internal rng with
+    /// std::high_resolution_clock.
     int seed = 1234;
 
     /// when the training set is encoded, batch size of the codec decoder
     size_t decode_block_size = 32768;
+
+    /// whether to check for NaNs in an input data
+    bool check_input_data_for_NaNs = true;
+
+    /// Whether to use splitmix64-based random number generator for subsampling,
+    /// which is faster, but may pick duplicate points.
+    bool use_faster_subsampling = false;
 };
 
 struct ClusteringIterationStats {

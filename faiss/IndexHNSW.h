@@ -27,7 +27,7 @@ struct IndexHNSW;
 struct IndexHNSW : Index {
     typedef HNSW::storage_idx_t storage_idx_t;
 
-    // the link strcuture
+    // the link structure
     HNSW hnsw;
 
     // the sequential storage
@@ -111,6 +111,8 @@ struct IndexHNSW : Index {
     void link_singletons();
 
     void permute_entries(const idx_t* perm);
+
+    DistanceComputer* get_distance_computer() const override;
 };
 
 /** Flat index topped with with a HNSW structure to access elements
@@ -127,7 +129,12 @@ struct IndexHNSWFlat : IndexHNSW {
  */
 struct IndexHNSWPQ : IndexHNSW {
     IndexHNSWPQ();
-    IndexHNSWPQ(int d, int pq_m, int M, int pq_nbits = 8);
+    IndexHNSWPQ(
+            int d,
+            int pq_m,
+            int M,
+            int pq_nbits = 8,
+            MetricType metric = METRIC_L2);
     void train(idx_t n, const float* x) override;
 };
 

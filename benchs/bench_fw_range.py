@@ -3,28 +3,29 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import logging
 import argparse
+import logging
 import os
 
-from bench_fw.benchmark import Benchmark
-from bench_fw.benchmark_io import BenchmarkIO
-from bench_fw.descriptors import DatasetDescriptor, IndexDescriptor
+from faiss.benchs.bench_fw.benchmark import Benchmark
+from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
+from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptorClassic
 
 logging.basicConfig(level=logging.INFO)
+
 
 def ssnpp(bio):
     benchmark = Benchmark(
         num_threads=32,
         training_vectors=DatasetDescriptor(
-            tablename="ssnpp_training_5M.npy",
+            tablename="training.npy",
         ),
         database_vectors=DatasetDescriptor(
-            tablename="ssnpp_xb_range_filtered_119201.npy",
+            tablename="database.npy",
         ),
-        query_vectors=DatasetDescriptor(tablename="ssnpp_xq_range_filtered_33615.npy"),
+        query_vectors=DatasetDescriptor(tablename="query.npy"),
         index_descs=[
-            IndexDescriptor(
+            IndexDescriptorClassic(
                 factory="Flat",
                 range_metrics={
                     "weighted": [
@@ -56,7 +57,7 @@ def ssnpp(bio):
                     ]
                 },
             ),
-            IndexDescriptor(
+            IndexDescriptorClassic(
                 factory="IVF262144(PQ256x4fs),PQ32",
             ),
         ],
@@ -66,6 +67,7 @@ def ssnpp(bio):
     )
     benchmark.set_io(bio)
     benchmark.benchmark("result.json", local=False, train=True, reconstruct=False, knn=False, range=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

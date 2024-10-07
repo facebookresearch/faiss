@@ -145,6 +145,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/NeuralNet.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -164,6 +165,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/lattice_Zn.h>
 #include <faiss/IndexLattice.h>
 
+#include <faiss/IndexNeuralNetCodec.h>
 
 %}
 
@@ -257,7 +259,6 @@ namespace std {
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 %template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
 
-
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
 #endif // !SWIGWIN
@@ -294,6 +295,79 @@ void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
+#ifdef FAISS_ENABLE_ROCM
+
+%shared_ptr(faiss::gpu::GpuResources);
+%shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
+
+%{
+
+#include <faiss/gpu-rocm/StandardGpuResources.h>
+#include <faiss/gpu-rocm/GpuIndicesOptions.h>
+#include <faiss/gpu-rocm/GpuClonerOptions.h>
+#include <faiss/gpu-rocm/GpuIndex.h>
+#include <faiss/gpu-rocm/GpuIndexFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVF.h>
+#include <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+#include <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+#include <faiss/gpu-rocm/GpuAutoTune.h>
+#include <faiss/gpu-rocm/GpuCloner.h>
+#include <faiss/gpu-rocm/GpuDistance.h>
+#include <faiss/gpu-rocm/GpuIcmEncoder.h>
+
+int get_num_gpus()
+{
+    return faiss::gpu::getNumDevices();
+}
+
+void gpu_profiler_start()
+{
+    return faiss::gpu::profilerStart();
+}
+
+void gpu_profiler_stop()
+{
+    return faiss::gpu::profilerStop();
+}
+
+void gpu_sync_all_devices()
+{
+    return faiss::gpu::synchronizeAllDevices();
+}
+
+%}
+
+%template() std::pair<int, uint64_t>;
+%template() std::map<std::string, std::pair<int, uint64_t> >;
+%template() std::map<int, std::map<std::string, std::pair<int, uint64_t> > >;
+
+// causes weird wrapper bug
+%ignore *::allocMemoryHandle;
+%ignore faiss::gpu::GpuMemoryReservation;
+%ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
+%ignore faiss::gpu::AllocType;
+
+%include  <faiss/gpu-rocm/GpuResources.h>
+%include  <faiss/gpu-rocm/StandardGpuResources.h>
+
+typedef ihipStream_t* hipStream_t;
+
+%inline %{
+
+// interop between pytorch exposed hipStream_t and faiss
+hipStream_t cast_integer_to_cudastream_t(int64_t x) {
+  return (hipStream_t) x;
+}
+
+int64_t cast_cudastream_t_to_integer(hipStream_t x) {
+  return (int64_t) x;
+}
+
+%}
+
+#else // FAISS_ENABLE_ROCM
 
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
@@ -366,7 +440,8 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 
 %}
 
-#else
+#endif // FAISS_ENABLE_ROCM
+#else // GPU_WRAPPER
 
 %{
 int get_num_gpus()
@@ -388,7 +463,7 @@ void gpu_sync_all_devices()
 %}
 
 
-#endif
+#endif // GPU_WRAPPER
 
 // order matters because includes are not recursive
 
@@ -530,6 +605,12 @@ struct faiss::simd16uint16 {};
 
 %include  <faiss/IndexRowwiseMinMax.h>
 
+%include <faiss/utils/NeuralNet.h>
+%template(Tensor2D) faiss::nn::Tensor2DTemplate<float>;
+%template(Int32Tensor2D) faiss::nn::Tensor2DTemplate<int32_t>;
+
+%include <faiss/IndexNeuralNetCodec.h>
+
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -552,6 +633,25 @@ struct faiss::simd16uint16 {};
 
 #ifdef GPU_WRAPPER
 
+#ifdef FAISS_ENABLE_ROCM
+
+// quiet SWIG warnings
+%ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
+
+%include  <faiss/gpu-rocm/GpuIndicesOptions.h>
+%include  <faiss/gpu-rocm/GpuClonerOptions.h>
+%include  <faiss/gpu-rocm/GpuIndex.h>
+%include  <faiss/gpu-rocm/GpuIndexFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVF.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+%include  <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+%include  <faiss/gpu-rocm/GpuDistance.h>
+%include  <faiss/gpu-rocm/GpuIcmEncoder.h>
+
+#else // FAISS_ENABLE_ROCM
+
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
 
@@ -570,10 +670,8 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
 
-
+#endif // FAISS_ENABLE_ROCM
 #endif
-
-
 
 
 
@@ -808,6 +906,16 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 #ifdef GPU_WRAPPER
 
+#ifdef FAISS_ENABLE_ROCM
+%include  <faiss/gpu-rocm/GpuAutoTune.h>
+
+%newobject index_gpu_to_cpu;
+%newobject index_cpu_to_gpu;
+%newobject index_cpu_to_gpu_multiple;
+
+%include  <faiss/gpu-rocm/GpuCloner.h>
+
+#else // FAISS_ENABLE_ROCM
 %include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -816,6 +924,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %include  <faiss/gpu/GpuCloner.h>
 
+#endif // FAISS_ENABLE_ROCM
 #endif
 
 
@@ -1136,10 +1245,13 @@ void * cast_integer_to_void_ptr (int64_t x) {
 %}
 
 %inline %{
-    void wait() {
-        // in gdb, use return to get out of this function
-        for(int i = 0; i == 0; i += 0);
-    }
- %}
+
+// the SWIG version is a 6-digit hex string, eg. version 3.2.1 is encoded as
+// 0x030201
+uint64_t swig_version() {
+    return SWIG_VERSION;
+}
+
+%}
 
 // End of file...

@@ -55,7 +55,7 @@ SPECIALIZED_HC(64);
 /***************************************************************************
  * Dispatching function that takes a code size and a consumer object
  * the consumer object should contain a retun type t and a operation template
- * function f() that to be called to perform the operation.
+ * function f() that must be called to perform the operation.
  **************************************************************************/
 
 template <class Consumer, class... Types>
@@ -76,6 +76,7 @@ typename Consumer::T dispatch_HammingComputer(
         default:
             return consumer.template f<HammingComputerDefault>(args...);
     }
+#undef DISPATCH_HC
 }
 
 } // namespace faiss

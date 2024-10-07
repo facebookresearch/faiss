@@ -29,6 +29,12 @@
 
 #define READ1(x) READANDCHECK(&(x), 1)
 
+#define READ1_DUMMY(x_type) \
+    {                       \
+        x_type x = {};      \
+        READ1(x);           \
+    }
+
 // will fail if we write 256G of data at once...
 #define READVECTOR(vec)                                              \
     {                                                                \

@@ -35,11 +35,12 @@ set(FAISS_TEST_SRC
   test_disable_pq_sdc_tables.cpp
   test_common_ivf_empty_index.cpp
   test_callback.cpp
+  test_utils.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
   target_link_libraries(faiss_test PRIVATE faiss)
 endif()
 
@@ -59,6 +60,32 @@ if(FAISS_OPT_LEVEL STREQUAL "avx512")
     target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   endif()
   target_link_libraries(faiss_test PRIVATE faiss_avx512)
+endif()
+
+if(FAISS_OPT_LEVEL STREQUAL "sve")
+  if(NOT WIN32)
+    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=native")
+      # Do nothing, expect SVE to be enabled by -march=native
+    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
+      # Add +sve
+      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${CMAKE_MATCH_2}+sve>)
+    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=armv")
+      # No valid -march, so specify -march=armv8-a+sve as the default
+      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:-march=armv8-a+sve>)
+    endif()
+    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=native")
+      # Do nothing, expect SVE to be enabled by -march=native
+    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
+      # Add +sve
+      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${CMAKE_MATCH_2}+sve>)
+    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
+      # No valid -march, so specify -march=armv8-a+sve as the default
+      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
+    endif()
+  else()
+    # TODO: support Windows
+  endif()
+  target_link_libraries(faiss_test PRIVATE faiss_sve)
 endif()
 
 include(FetchContent)
@@ -96,6 +123,7 @@ target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   GTest::gtest_main
   $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+  $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 
 # Defines `gtest_discover_tests()`.

@@ -16,6 +16,7 @@ import re
 import warnings
 
 from common_faiss_tests import get_dataset, get_dataset_2
+from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 class TestModuleInterface(unittest.TestCase):
 
@@ -422,7 +423,7 @@ class TestSearchAndReconstruct(unittest.TestCase):
         D, I, R = index.search_and_reconstruct(xq, k)
 
         np.testing.assert_almost_equal(D, D_ref, decimal=5)
-        self.assertTrue((I == I_ref).all())
+        check_ref_knn_with_draws(D_ref, I_ref, D, I)
         self.assertEqual(R.shape[:2], I.shape)
         self.assertEqual(R.shape[2], d)
 
@@ -486,6 +487,23 @@ class TestSearchAndReconstruct(unittest.TestCase):
 
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+
+        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
+
+    def test_IndexIVFRQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
+
+        quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFResidualQuantizer(quantizer, d, 32, 8, 8)
         index.cp.min_points_per_centroid = 5    # quiet warning
         index.nprobe = 4
         index.train(xt)

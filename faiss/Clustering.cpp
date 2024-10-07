@@ -11,6 +11,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
+#include <chrono>
 #include <cinttypes>
 #include <cmath>
 #include <cstdio>
@@ -74,6 +75,14 @@ void Clustering::train(
 
 namespace {
 
+uint64_t get_actual_rng_seed(const int seed) {
+    return (seed >= 0)
+            ? seed
+            : static_cast<uint64_t>(std::chrono::high_resolution_clock::now()
+                                            .time_since_epoch()
+                                            .count());
+}
+
 idx_t subsample_training_set(
         const Clustering& clus,
         idx_t nx,
@@ -87,11 +96,30 @@ idx_t subsample_training_set(
                clus.k * clus.max_points_per_centroid,
                nx);
     }
-    std::vector<int> perm(nx);
-    rand_perm(perm.data(), nx, clus.seed);
+
+    const uint64_t actual_seed = get_actual_rng_seed(clus.seed);
+
+    std::vector<int> perm;
+    if (clus.use_faster_subsampling) {
+        // use subsampling with splitmix64 rng
+        SplitMix64RandomGenerator rng(actual_seed);
+
+        const idx_t new_nx = clus.k * clus.max_points_per_centroid;
+        perm.resize(new_nx);
+        for (idx_t i = 0; i < new_nx; i++) {
+            perm[i] = rng.rand_int(nx);
+        }
+    } else {
+        // use subsampling with a default std rng
+        perm.resize(nx);
+        rand_perm(perm.data(), nx, actual_seed);
+    }
+
     nx = clus.k * clus.max_points_per_centroid;
     uint8_t* x_new = new uint8_t[nx * line_size];
     *x_out = x_new;
+
+    // might be worth omp-ing as well
     for (idx_t i = 0; i < nx; i++) {
         memcpy(x_new + i * line_size, x + perm[i] * line_size, line_size);
     }
@@ -280,7 +308,7 @@ void Clustering::train_encoded(
 
     double t0 = getmillisecs();
 
-    if (!codec) {
+    if (!codec && check_input_data_for_NaNs) {
         // Check for NaNs in input data. Normally it is the user's
         // responsibility, but it may spare us some hard-to-debug
         // reports.
@@ -383,6 +411,9 @@ void Clustering::train_encoded(
     }
     t0 = getmillisecs();
 
+    // initialize seed
+    const uint64_t actual_seed = get_actual_rng_seed(seed);
+
     // temporary buffer to decode vectors during the optimization
     std::vector<float> decode_buffer(codec ? d * decode_block_size : 0);
 
@@ -395,7 +426,7 @@ void Clustering::train_encoded(
         centroids.resize(d * k);
         std::vector<int> perm(nx);
 
-        rand_perm(perm.data(), nx, seed + 1 + redo * 15486557L);
+        rand_perm(perm.data(), nx, actual_seed + 1 + redo * 15486557L);
 
         if (!codec) {
             for (int i = n_input_centroids; i < k; i++) {

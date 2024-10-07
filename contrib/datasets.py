@@ -130,6 +130,11 @@ else:
     dataset_basedir = 'data/'
 
 
+def set_dataset_basedir(path):
+    global dataset_basedir
+    dataset_basedir = path
+
+
 class DatasetSIFT1M(Dataset):
     """
     The original dataset is available at: http://corpus-texmex.irisa.fr/

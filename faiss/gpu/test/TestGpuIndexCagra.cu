@@ -182,7 +182,7 @@ void queryTest(faiss::MetricType metric, double expected_recall) {
                 recall_score.view(),
                 test_dis_mds_opt,
                 ref_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
+        ASSERT_GT(*recall_score.data_handle(), expected_recall);
     }
 }
 
@@ -330,7 +330,7 @@ void copyToTest(
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
+        ASSERT_GT(*recall_score.data_handle(), expected_recall);
     }
 }
 
@@ -452,7 +452,7 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
                 recall_score.view(),
                 copy_test_dis_mds_opt,
                 test_dis_mds_opt);
-        ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
+        ASSERT_GT(*recall_score.data_handle(), expected_recall);
     }
 }
 

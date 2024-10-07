@@ -549,6 +549,22 @@ void IndexFastScan::search_implem_14(
     }
 }
 
+template void IndexFastScan::search_dispatch_implem<true>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler* scaler) const;
+
+template void IndexFastScan::search_dispatch_implem<false>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler* scaler) const;
+
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
     std::vector<uint8_t> code(code_size, 0);
     BitstringWriter bsw(code.data(), code_size);

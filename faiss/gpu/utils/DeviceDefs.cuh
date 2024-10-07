@@ -12,6 +12,23 @@
 namespace faiss {
 namespace gpu {
 
+#ifdef USE_AMD_ROCM
+
+#if __AMDGCN_WAVEFRONT_SIZE == 32u
+constexpr int kWarpSize = 32;
+#else
+constexpr int kWarpSize = 64;
+#endif
+
+// This is a memory barrier for intra-warp writes to shared memory.
+__forceinline__ __device__ void warpFence() {
+    __threadfence_block();
+}
+
+#define GPU_MAX_SELECTION_K 2048
+
+#else // USE_AMD_ROCM
+
 // We require at least CUDA 8.0 for compilation
 #if CUDA_VERSION < 8000
 #error "CUDA >= 8.0 is required"
@@ -38,6 +55,8 @@ __forceinline__ __device__ void warpFence() {
 #else
 #define GPU_MAX_SELECTION_K 1024
 #endif
+
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss
