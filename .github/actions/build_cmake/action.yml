@@ -111,7 +111,7 @@ runs:
       shell: bash
       run: ./faiss/gpu/hipify.sh
     - name: Symblink system dependencies
-      if: inputs.cuvs == 'ON' || inputs.rocm == 'ON'
+      if: inputs.rocm == 'ON'
       shell: bash
       run: |
         # symblink system libraries for HIP compiler
