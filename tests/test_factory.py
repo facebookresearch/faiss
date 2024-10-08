@@ -12,6 +12,7 @@ import faiss
 from faiss.contrib import factory_tools
 from faiss.contrib import datasets
 
+
 class TestFactory(unittest.TestCase):
 
     def test_factory_1(self):
@@ -39,7 +40,6 @@ class TestFactory(unittest.TestCase):
 
         index = faiss.index_factory(12, "SQ8")
         assert index.code_size == 12
-
 
     def test_factory_3(self):
 
@@ -73,7 +73,8 @@ class TestFactory(unittest.TestCase):
     def test_factory_HNSW_newstyle(self):
         index = faiss.index_factory(12, "HNSW32,Flat")
         assert index.storage.sa_code_size() == 12 * 4
-        index = faiss.index_factory(12, "HNSW32,SQ8", faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(12, "HNSW32,SQ8",
+                                    faiss.METRIC_INNER_PRODUCT)
         assert index.storage.sa_code_size() == 12
         assert index.metric_type == faiss.METRIC_INNER_PRODUCT
         index = faiss.index_factory(12, "HNSW,PQ4")
@@ -131,7 +132,8 @@ class TestFactory(unittest.TestCase):
         self.assertEqual(index.pq.nbits, 4)
         index = faiss.index_factory(56, "PQ28x4fs_64")
         self.assertEqual(index.bbs, 64)
-        index = faiss.index_factory(56, "IVF50,PQ28x4fs_64", faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(56, "IVF50,PQ28x4fs_64",
+                                    faiss.METRIC_INNER_PRODUCT)
         self.assertEqual(index.bbs, 64)
         self.assertEqual(index.nlist, 50)
         self.assertTrue(index.cp.spherical)
@@ -157,7 +159,6 @@ class TestFactory(unittest.TestCase):
         rf = faiss.downcast_index(index.refine_index)
         self.assertEqual(rf.pq.M, 25)
         self.assertEqual(rf.pq.nbits, 12)
-
 
     def test_parenthesis_refine_2(self):
         # Refine applies on the whole index including pre-transforms
@@ -264,6 +265,19 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.downcast_index(index)
         self.assertEqual(index.__class__, faiss.IndexIDMap2)
 
+    def test_idmap_refine(self):
+        index = faiss.index_factory(8, "IDMap,PQ4x4fs,RFlat")
+        self.assertEqual(index.__class__, faiss.IndexIDMap)
+        refine_index = faiss.downcast_index(index.index)
+        self.assertEqual(refine_index.__class__, faiss.IndexRefineFlat)
+        base_index = faiss.downcast_index(refine_index.base_index)
+        self.assertEqual(base_index.__class__, faiss.IndexPQFastScan)
+
+        # Index now works with add_with_ids, but not with add
+        index.train(np.zeros((16, 8)))
+        index.add_with_ids(np.zeros((16, 8)), np.arange(16))
+        self.assertRaises(RuntimeError, index.add, np.zeros((16, 8)))
+
     def test_ivf_hnsw(self):
         index = faiss.index_factory(123, "IVF100_HNSW,Flat")
         quantizer = faiss.downcast_index(index.quantizer)
@@ -337,4 +351,4 @@ class TestIVFSpectralHashOwnership(unittest.TestCase):
         index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
         index.replace_vt(faiss.ITQTransform(10, 10))
         gc.collect()
-        index.vt.d_out # this should not crash
+        index.vt.d_out  # this should not crash
