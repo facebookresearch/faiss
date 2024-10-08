@@ -217,14 +217,8 @@ def handle_torch_Index(the_class):
             # CPU torch
             self.train_c(n, x_ptr)
 
-    def torch_replacement_search(self, x, k, D=None, I=None):
-        if type(x) is np.ndarray:
-            # forward to faiss __init__.py base method
-            return self.search_numpy(x, k, D=D, I=I)
-
-        assert type(x) is torch.Tensor
+    def search_methods_common(x, k, D, I):
         n, d = x.shape
-        assert d == self.d
         x_ptr = swig_ptr_from_FloatTensor(x)
 
         if D is None:
@@ -240,6 +234,19 @@ def handle_torch_Index(the_class):
             assert type(I) is torch.Tensor
             assert I.shape == (n, k)
         I_ptr = swig_ptr_from_IndicesTensor(I)
+
+        return x_ptr, D_ptr, I_ptr, D, I
+
+    def torch_replacement_search(self, x, k, D=None, I=None):
+        if type(x) is np.ndarray:
+            # forward to faiss __init__.py base method
+            return self.search_numpy(x, k, D=D, I=I)
+
+        assert type(x) is torch.Tensor
+        n, d = x.shape
+        assert d == self.d
+
+        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
@@ -261,21 +268,8 @@ def handle_torch_Index(the_class):
         assert type(x) is torch.Tensor
         n, d = x.shape
         assert d == self.d
-        x_ptr = swig_ptr_from_FloatTensor(x)
 
-        if D is None:
-            D = torch.empty(n, k, device=x.device, dtype=torch.float32)
-        else:
-            assert type(D) is torch.Tensor
-            assert D.shape == (n, k)
-        D_ptr = swig_ptr_from_FloatTensor(D)
-
-        if I is None:
-            I = torch.empty(n, k, device=x.device, dtype=torch.int64)
-        else:
-            assert type(I) is torch.Tensor
-            assert I.shape == (n, k)
-        I_ptr = swig_ptr_from_IndicesTensor(I)
+        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
 
         if R is None:
             R = torch.empty(n, k, d, device=x.device, dtype=torch.float32)
@@ -295,6 +289,40 @@ def handle_torch_Index(the_class):
             self.search_and_reconstruct_c(n, x_ptr, k, D_ptr, I_ptr, R_ptr)
 
         return D, I, R
+
+    def torch_replacement_search_preassigned(self, x, k, Iq, Dq, *, D=None, I=None):
+        if type(x) is np.ndarray:
+            # forward to faiss __init__.py base method
+            return self.search_preassigned_numpy(x, k, Iq, Dq, D=D, I=I)
+
+        assert type(x) is torch.Tensor
+        n, d = x.shape
+        assert d == self.d
+
+        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
+
+        assert Iq.shape == (n, self.nprobe)
+        Iq = Iq.contiguous()
+        Iq_ptr = swig_ptr_from_IndicesTensor(Iq)
+
+        if Dq is not None:
+            Dq = Dq.contiguous()
+            assert Dq.shape == Iq.shape
+            Dq_ptr = swig_ptr_from_FloatTensor(Dq)
+        else:
+            Dq_ptr = None
+
+        if x.is_cuda:
+            assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
+
+            # On the GPU, use proper stream ordering
+            with using_stream(self.getResources()):
+                self.search_preassigned_c(n, x_ptr, k, Iq_ptr, Dq_ptr, D_ptr, I_ptr, False)
+        else:
+            # CPU torch
+            self.search_preassigned_c(n, x_ptr, k, Iq_ptr, Dq_ptr, D_ptr, I_ptr, False)
+
+        return D, I
 
     def torch_replacement_remove_ids(self, x):
         # Not yet implemented
@@ -495,6 +523,8 @@ def handle_torch_Index(the_class):
                          ignore_missing=True)
     torch_replace_method(the_class, 'search_and_reconstruct',
                          torch_replacement_search_and_reconstruct, ignore_missing=True)
+    torch_replace_method(the_class, 'search_preassigned',
+                        torch_replacement_search_preassigned, ignore_missing=True)
     torch_replace_method(the_class, 'sa_encode', torch_replacement_sa_encode)
     torch_replace_method(the_class, 'sa_decode', torch_replacement_sa_decode)
 
