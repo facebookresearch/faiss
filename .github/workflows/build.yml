@@ -124,6 +124,9 @@ jobs:
         uses: ./.github/actions/build_cmake
         with:
           opt_level: sve
+        env:
+          # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
+          OPENBLAS_NUM_THREADS: '1'
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
     needs: linux-x86_64-cmake
