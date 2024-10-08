@@ -41,7 +41,6 @@ runs:
         cd cmake/build
         ../bootstrap -- -DCMAKE_BUILD_TYPE=Release
         make -j8
-        make install
         popd
 
         # install base packages for ARM64
@@ -134,6 +133,7 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
+        export PATH="/tmp/cmake-build/cmake/build/bin:$PATH"
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
