@@ -143,16 +143,6 @@ struct ResidualQuantizer : AdditiveQuantizer {
      * @param beam_size  if != -1, override the beam size
      */
     size_t memory_per_point(int beam_size = -1) const;
-
-    /** Cross products used in codebook tables used for beam_LUT = 1
-     */
-    void compute_codebook_tables();
-
-    /// dot products of all codebook entries with the previous codebooks
-    /// size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1)
-    std::vector<float> codebook_cross_products;
-    /// norms of all codebook entries (size total_codebook_size)
-    std::vector<float> cent_norms;
 };
 
 } // namespace faiss

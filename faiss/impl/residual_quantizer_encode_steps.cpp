@@ -809,7 +809,7 @@ void refine_beam_LUT_mp(
                 rq.codebook_offsets.data(),
                 query_cp + rq.codebook_offsets[m],
                 rq.total_codebook_size,
-                rq.cent_norms.data() + rq.codebook_offsets[m],
+                rq.centroid_norms.data() + rq.codebook_offsets[m],
                 m,
                 codes_ptr,
                 distances_ptr,

@@ -29,6 +29,8 @@ struct AdditiveQuantizer : Quantizer {
     std::vector<float> codebooks; ///< codebooks
 
     // derived values
+    /// codebook #1 is stored in rows codebook_offsets[i]:codebook_offsets[i+1]
+    /// in the codebooks table of size total_codebook_size by d
     std::vector<uint64_t> codebook_offsets;
     size_t tot_bits = 0;            ///< total number of bits (indexes + norms)
     size_t norm_bits = 0;           ///< bits allocated for the norms
@@ -38,9 +40,19 @@ struct AdditiveQuantizer : Quantizer {
     bool verbose = false;    ///< verbose during training?
     bool is_trained = false; ///< is trained or not
 
-    IndexFlat1D qnorm;            ///< store and search norms
-    std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
-                                  ///< fastscan search
+    /// auxiliary data for ST_norm_lsq2x4 and ST_norm_rq2x4
+    /// store norms of codebook entries for 4-bit fastscan
+    std::vector<float> norm_tabs;
+    IndexFlat1D qnorm; ///< store and search norms
+
+    void compute_codebook_tables();
+
+    /// norms of all codebook entries (size total_codebook_size)
+    std::vector<float> centroid_norms;
+
+    /// dot products of all codebook entries with the previous codebooks
+    /// size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1)
+    std::vector<float> codebook_cross_products;
 
     /// norms and distance matrixes with beam search can get large, so use this
     /// to control for the amount of memory that can be allocated
