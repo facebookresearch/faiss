@@ -4,7 +4,7 @@ import faiss
 
 import faiss.extra_wrappers
 
-import faiss.faiss_example_external_module as external_module
+import faiss_example_external_module as external_module
 
 import numpy as np
 

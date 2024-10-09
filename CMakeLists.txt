@@ -104,6 +104,7 @@ endif()
 add_subdirectory(demos)
 add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
+add_subdirectory(faiss_example_external_module)
 
 
 # CTest must be included in the top level to enable `make test` target.

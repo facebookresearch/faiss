@@ -10,6 +10,8 @@ import platform
 import shutil
 
 from setuptools import find_packages, setup
+from setuptools.command.install_lib import install_lib as _install_lib
+
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
@@ -87,6 +89,38 @@ if found_faiss_example_external_module_lib:
         f"faiss/_faiss_example_external_module{ext}",
     )
 
+
+class install_lib(_install_lib):
+    def run(self):
+        res = super().run()
+        print(f"CURRENT WORKING DIR: {os.getcwd()}")
+        # if os.path.exists("faiss/_faiss_example_external_module.so"):
+        #     shutil.move(
+        #         "faiss/_faiss_example_external_module.so",
+        #         "./_faiss_example_external_module.so",
+        #     )
+        #     print("MOVED _faiss_example_external_module.so")
+        # else:
+        #     print("DID NOT MOVE")
+        # if os.path.exists("faiss/faiss_example_external_module.py"):
+        #     shutil.move(
+        #         "faiss/faiss_example_external_module.py",
+        #         "./faiss_example_external_module.py",
+        #     )
+        #     print("MOVED faiss_example_external_module.py")
+        # else:
+        #     print("DID NOT MOVE")
+        # if os.path.exists("faiss/faiss_example_external_module.pyd"):
+        #     shutil.move(
+        #         "faiss/_faiss_example_external_module.pyd",
+        #         "./_faiss_example_external_module.pyd",
+        #     )
+        #     print("MOVED _faiss_example_external_module.pyd")
+        # else:
+        #     print("DID NOT MOVE")
+        return res
+
+
 long_description = """
 Faiss is a library for efficient similarity search and clustering of dense
 vectors. It contains algorithms that search in sets of vectors of any size,
@@ -106,9 +140,36 @@ setup(
     license="MIT",
     keywords="search nearest neighbors",
     install_requires=["numpy", "packaging"],
-    packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
+    packages=[
+        "faiss",
+        "faiss.contrib",
+        "faiss.contrib.torch",
+        "faiss_example_external_module",
+    ],
     package_data={
         "faiss": ["*.so", "*.pyd"],
+        "faiss_example_external_module": [
+            "_faiss_example_external_module.so",
+            "_faiss_example_external_module.pyd",
+        ],
     },
+    cmdclass={"install_lib": install_lib},
     zip_safe=False,
 )
+# setup(
+#     name="faiss_example_external_module",
+#     version="1.0.0",
+#     description="An example of an external module for faiss",
+#     long_description=long_description,
+#     url="https://github.com/facebookresearch/faiss",
+#     author="Matthijs Douze, Michael Norris",
+#     author_email="matthijs@meta.com",
+#     license="MIT",
+#     keywords="external module",
+#     install_requires=["numpy", "packaging"],
+#     packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
+#     package_data={
+#         "faiss": ["*.so", "*.pyd"],
+#     },
+#     zip_safe=False,
+# )
