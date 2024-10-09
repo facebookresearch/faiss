@@ -92,6 +92,9 @@ class DatasetDescriptor:
     bucket: Optional[str] = None
     path: Optional[str] = None
 
+    # desc_name
+    desc_name: Optional[str] = None
+
     def __hash__(self):
         return hash(self.get_filename())
 
@@ -99,6 +102,9 @@ class DatasetDescriptor:
         self,
         prefix: Optional[str] = None,
     ) -> str:
+        if self.desc_name is not None:
+            return self.desc_name
+
         filename = ""
         if prefix is not None:
             filename += prefix + "_"
@@ -111,7 +117,9 @@ class DatasetDescriptor:
         if self.num_vectors is not None:
             filename += f"_{self.num_vectors}"
         filename += "."
-        return filename
+
+        self.desc_name = filename
+        return self.desc_name
 
     def get_kmeans_filename(self, k):
         return f"{self.get_filename()}kmeans_{k}."
