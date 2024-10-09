@@ -39,7 +39,7 @@ runs:
         git clone -b v3.30.5 https://gitlab.kitware.com/cmake/cmake.git
         mkdir cmake/build
         cd cmake/build
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DOpenSSL_DIR="$CONDA_PREFIX/lib/cmake/OpenSSL"
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="$CONDA_PREFIX"
         make -j8
         popd
 
