@@ -14,7 +14,6 @@
 #include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
 #include <faiss/IndexIVFFlat.h>
-#include <faiss/VectorTransform.h>
 #include <faiss/clone_index.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_factory.h>
