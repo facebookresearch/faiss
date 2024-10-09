@@ -291,6 +291,32 @@ class TestTorchUtilsCPU(unittest.TestCase):
         self.assertTrue(torch.equal(I, I_input))
         self.assertTrue(torch.equal(R, R_input))
 
+    def test_search_preassigned(self):
+        ds = datasets.SyntheticDataset(32, 1000, 100, 10)
+        index = faiss.index_factory(32, "IVF20,PQ4np")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 4
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        quantizer = faiss.clone_index(index.quantizer)
+
+        # mutilate the index' quantizer
+        index.quantizer.reset()
+        index.quantizer.add(np.zeros((20, 32), dtype='float32'))
+
+        # test numpy codepath
+        Dq, Iq = quantizer.search(ds.get_queries(), 4)
+        Dref2, Iref2 = index.search_preassigned(ds.get_queries(), 10, Iq, Dq)
+        np.testing.assert_array_equal(Iref, Iref2)
+        np.testing.assert_array_equal(Dref, Dref2)
+
+        # test torch codepath
+        xq = torch.from_numpy(ds.get_queries())
+        Dq, Iq = quantizer.search(xq, 4)
+        Dref2, Iref2 = index.search_preassigned(xq, 10, Iq, Dq)
+        np.testing.assert_array_equal(Iref, Iref2.numpy())
+        np.testing.assert_array_equal(Dref, Dref2.numpy())
+
     # tests sa_encode, sa_decode
     def test_sa_encode_decode(self):
         d = 16

@@ -679,6 +679,24 @@ std::unique_ptr<Index> index_factory_sub(
     // for the current match
     std::smatch sm;
 
+    // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
+    // support both
+    if (re_match(description, "(.+),IDMap2", sm) ||
+        re_match(description, "IDMap2,(.+)", sm)) {
+        IndexIDMap2* idmap2 = new IndexIDMap2(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap2->own_fields = true;
+        return std::unique_ptr<Index>(idmap2);
+    }
+
+    if (re_match(description, "(.+),IDMap", sm) ||
+        re_match(description, "IDMap,(.+)", sm)) {
+        IndexIDMap* idmap = new IndexIDMap(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap->own_fields = true;
+        return std::unique_ptr<Index>(idmap);
+    }
+
     // handle refines
     if (re_match(description, "(.+),RFlat", sm) ||
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
@@ -753,24 +771,6 @@ std::unique_ptr<Index> index_factory_sub(
                description.c_str(),
                parenthesis_indexes.size(),
                d);
-    }
-
-    // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
-    // support both
-    if (re_match(description, "(.+),IDMap2", sm) ||
-        re_match(description, "IDMap2,(.+)", sm)) {
-        IndexIDMap2* idmap2 = new IndexIDMap2(
-                index_factory_sub(d, sm[1].str(), metric).release());
-        idmap2->own_fields = true;
-        return std::unique_ptr<Index>(idmap2);
-    }
-
-    if (re_match(description, "(.+),IDMap", sm) ||
-        re_match(description, "IDMap,(.+)", sm)) {
-        IndexIDMap* idmap = new IndexIDMap(
-                index_factory_sub(d, sm[1].str(), metric).release());
-        idmap->own_fields = true;
-        return std::unique_ptr<Index>(idmap);
     }
 
     { // handle basic index types
