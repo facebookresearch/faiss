@@ -481,6 +481,7 @@ class Kmeans:
         self.d = d
         self.reset(k)
         self.gpu = False
+        self.index = None
         if "progressive_dim_steps" in kwargs:
             self.cp = ProgressiveDimClusteringParameters()
         else:
