@@ -39,7 +39,7 @@ runs:
         git clone -b v3.30.5 https://gitlab.kitware.com/cmake/cmake.git
         mkdir cmake/build
         cd cmake/build
-        ../bootstrap -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
+        ../bootstrap -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_FIND_ROOT_PATH="$CONDA_PREFIX"
         make -j8
         popd
 
