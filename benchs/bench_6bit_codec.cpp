@@ -19,6 +19,7 @@ using namespace faiss;
 static void bench(benchmark::State& state) {
     int d = 128;
     int n = 2000;
+    state.SetLabel(faiss::get_compile_options());
 
     std::vector<float> x(d * n);
 

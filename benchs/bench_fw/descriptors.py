@@ -8,13 +8,16 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 
 from .benchmark_io import BenchmarkIO
 from .utils import timer
 
 logger = logging.getLogger(__name__)
 
+
+# Important: filenames end with . without extension (npy, codec, index),
+# when writing files, you are required to filename + "npy" etc.
 
 @dataclass
 class IndexDescriptorClassic:
@@ -85,6 +88,10 @@ class DatasetDescriptor:
     # sampling column for xdb
     sampling_column: Optional[str] = None
 
+    # blob store
+    bucket: Optional[str] = None
+    path: Optional[str] = None
+
     def __hash__(self):
         return hash(self.get_filename())
 
@@ -106,21 +113,25 @@ class DatasetDescriptor:
         filename += "."
         return filename
 
+    def get_kmeans_filename(self, k):
+        return f"{self.get_filename()}kmeans_{k}."
+
     def k_means(self, io, k, dry_run):
         logger.info(f"k_means {k} {self}")
         kmeans_vectors = DatasetDescriptor(
-            tablename=f"{self.get_filename()}kmeans_{k}.npy"
+            tablename=f"{self.get_filename()}kmeans_{k}"
         )
-        meta_filename = kmeans_vectors.tablename + ".json"
-        if not io.file_exist(kmeans_vectors.tablename) or not io.file_exist(
+        kmeans_filename = kmeans_vectors.get_filename() + "npy"
+        meta_filename = kmeans_vectors.get_filename() + "json"
+        if not io.file_exist(kmeans_filename) or not io.file_exist(
             meta_filename
         ):
             if dry_run:
-                return None, None, kmeans_vectors.tablename
+                return None, None, kmeans_filename
             x = io.get_dataset(self)
             kmeans = faiss.Kmeans(d=x.shape[1], k=k, gpu=True)
             _, t, _ = timer("k_means", lambda: kmeans.train(x))
-            io.write_nparray(kmeans.centroids, kmeans_vectors.tablename)
+            io.write_nparray(kmeans.centroids, kmeans_filename)
             io.write_json({"k_means_time": t}, meta_filename)
         else:
             t = io.read_json(meta_filename)["k_means_time"]

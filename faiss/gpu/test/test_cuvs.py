@@ -26,13 +26,13 @@ class TestBfKnn(unittest.TestCase):
         # Faiss internal implementation
         Dnew, Inew = faiss.knn_gpu(
             res, ds.get_queries(), ds.get_database(), 12, use_cuvs=False)
-        np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
+        np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
 
         # cuVS version
         Dnew, Inew = faiss.knn_gpu(
             res, ds.get_queries(), ds.get_database(), 12, use_cuvs=True)
-        np.testing.assert_allclose(Dref, Dnew, atol=1e-5)
+        np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
 
     def test_IndexFlat(self):

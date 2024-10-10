@@ -48,9 +48,8 @@ namespace faiss {
 namespace gpu {
 
 bool should_use_cuvs(GpuDistanceParams args) {
-    cudaDeviceProp prop;
     int dev = args.device >= 0 ? args.device : getCurrentDevice();
-    cudaGetDeviceProperties(&prop, dev);
+    auto prop = getDeviceProperties(dev);
 
     if (prop.major < 7)
         return false;
@@ -235,11 +234,31 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
 #if defined USE_NVIDIA_CUVS
     // Note: For now, cuVS bfknn requires queries and vectors to be same layout
-    if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor) {
+    if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor &&
+        args.outIndicesType == IndicesDataType::I64 &&
+        args.vectorType == DistanceDataType::F32 && args.k > 0) {
         cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);
 
         auto resImpl = prov->getResources();
         auto res = resImpl.get();
+        // If the user specified a device, then ensure that it is currently set
+        int device = -1;
+        if (args.device == -1) {
+            // Original behavior if no device is specified, use the current CUDA
+            // thread local device
+            device = getCurrentDevice();
+        } else {
+            // Otherwise, use the device specified in `args`
+            device = args.device;
+
+            FAISS_THROW_IF_NOT_FMT(
+                    device >= 0 && device < getNumDevices(),
+                    "bfKnn: device specified must be -1 (current CUDA thread local device) "
+                    "or within the range [0, %d)",
+                    getNumDevices());
+        }
+
+        DeviceScope scope(device);
         raft::device_resources& handle = res->getRaftHandleCurrentDevice();
         auto stream = res->getDefaultStreamCurrentDevice();
 
@@ -299,12 +318,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
             cuvs::neighbors::brute_force::search(
-                    handle,
-                    idx,
-                    search.view(),
-                    inds.view(),
-                    dists.view(),
-                    std::nullopt);
+                    handle, idx, search.view(), inds.view(), dists.view());
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
                     const float,
@@ -343,12 +357,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
             cuvs::neighbors::brute_force::search(
-                    handle,
-                    idx,
-                    search.view(),
-                    inds.view(),
-                    dists.view(),
-                    std::nullopt);
+                    handle, idx, search.view(), inds.view(), dists.view());
         }
 
         if (args.metric == MetricType::METRIC_Lp) {

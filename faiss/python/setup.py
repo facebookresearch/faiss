@@ -74,17 +74,17 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name='faiss',
-    version='1.8.0',
+    version='1.9.0',
     description='A library for efficient similarity search and clustering of dense vectors',
     long_description=long_description,
     url='https://github.com/facebookresearch/faiss',
     author='Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini',
-    author_email='matthijs@fb.com',
+    author_email='matthijs@meta.com',
     license='MIT',
     keywords='search nearest neighbors',
 
     install_requires=['numpy', 'packaging'],
-    packages=['faiss', 'faiss.contrib'],
+    packages=['faiss', 'faiss.contrib', 'faiss.contrib.torch'],
     package_data={
         'faiss': ['*.so', '*.pyd'],
     },

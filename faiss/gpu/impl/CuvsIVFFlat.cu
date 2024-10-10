@@ -177,17 +177,14 @@ idx_t CuvsIVFFlat::addVectors(
     /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
-    cuvs_index = std::make_shared<
-            cuvs::neighbors::ivf_flat::index<float, idx_t>>(
-            cuvs::neighbors::ivf_flat::extend(
-                    raft_handle,
-                    raft::make_device_matrix_view<const float, idx_t>(
-                            vecs.data(), n_rows_valid, dim_),
-                    std::make_optional<
-                            raft::device_vector_view<const idx_t, idx_t>>(
-                            raft::make_device_vector_view<const idx_t, idx_t>(
-                                    indices.data(), n_rows_valid)),
-                    *cuvs_index));
+    cuvs::neighbors::ivf_flat::extend(
+            raft_handle,
+            raft::make_device_matrix_view<const float, idx_t>(
+                    vecs.data(), n_rows_valid, dim_),
+            std::make_optional<raft::device_vector_view<const idx_t, idx_t>>(
+                    raft::make_device_vector_view<const idx_t, idx_t>(
+                            indices.data(), n_rows_valid)),
+            cuvs_index.get());
 
     return n_rows_valid;
 }

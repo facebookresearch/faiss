@@ -95,7 +95,7 @@ void accum_and_store_tab(
         for (size_t ij = 1; ij < M; ij++) {
             reg += cbs[ij][kk];
         }
-        output[b * K + kk] = reg;
+        output[kk] = reg;
     }
 }
 
@@ -152,7 +152,7 @@ void accum_and_add_tab(
         for (size_t ij = 1; ij < M; ij++) {
             reg += cbs[ij][kk];
         }
-        output[b * K + kk] += reg;
+        output[kk] += reg;
     }
 }
 
@@ -664,8 +664,6 @@ void refine_beam_mp(
     std::unique_ptr<Index> assign_index;
     if (rq.assign_index_factory) {
         assign_index.reset((*rq.assign_index_factory)(rq.d));
-    } else {
-        assign_index.reset(new IndexFlatL2(rq.d));
     }
 
     // main loop
@@ -701,7 +699,9 @@ void refine_beam_mp(
                 assign_index.get(),
                 rq.approx_topk_mode);
 
-        assign_index->reset();
+        if (assign_index != nullptr) {
+            assign_index->reset();
+        }
 
         std::swap(codes_ptr, new_codes_ptr);
         std::swap(residuals_ptr, new_residuals_ptr);

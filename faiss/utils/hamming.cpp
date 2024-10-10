@@ -364,7 +364,7 @@ void fvec2bitvec(const float* __restrict x, uint8_t* __restrict b, size_t d) {
 }
 
 /* Same but for n vectors.
-   Ensure that the ouptut b is byte-aligned (pad with 0s). */
+   Ensure that the output b is byte-aligned (pad with 0s). */
 void fvecs2bitvecs(
         const float* __restrict x,
         uint8_t* __restrict b,

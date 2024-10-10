@@ -46,7 +46,7 @@ rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.8.0
+  VERSION 1.9.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
@@ -105,11 +105,12 @@ add_subdirectory(demos)
 add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
 
+
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(tests)
-
+  add_subdirectory(perf_tests)
   if(FAISS_ENABLE_GPU)
     if(FAISS_ENABLE_ROCM)
       add_subdirectory(faiss/gpu-rocm/test)

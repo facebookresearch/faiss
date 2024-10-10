@@ -217,7 +217,7 @@ void pq4_accumulate_loop(
         SIMDResultHandler& res,
         const NormTableScaler* scaler) {
     Run_pq4_accumulate_loop consumer;
-    dispatch_SIMDResultHanlder(
+    dispatch_SIMDResultHandler(
             res, consumer, nq, nb, bbs, nsq, codes, LUT, scaler);
 }
 

@@ -32,7 +32,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake make swig numpy scipy pytest
+        conda install -y -q python=3.11 cmake=3.26.4 make swig numpy scipy pytest gflags
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -46,14 +46,15 @@ runs:
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
-        # install CUDA packages
-        if [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
+        # no CUDA needed for ROCm so skip this
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          :
+        # regular CUDA for GPU builds
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        fi
-
-        # install cuVS packages
-        if [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
+        # and CUDA from cuVS channel for cuVS builds
+        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
+          conda install -y -q libcuvs=24.10 cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
         # install test packages
@@ -71,14 +72,14 @@ runs:
       shell: bash
       run: |
         # Update repos and install kmod, wget, gpg
-        sudo apt-get update
-        sudo apt-get install -y kmod wget gpg
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y kmod wget gpg >/dev/null
 
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
-        ROCM_VERSION="6.1.1"
+        ROCM_VERSION="6.2"
 
         # Download, prepare, and install the package signing key
         mkdir --parents --mode=0755 /etc/apt/keyrings
@@ -88,15 +89,17 @@ runs:
         wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
         rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-        sudo apt-get update --allow-insecure-repositories
-        sudo apt-get install -y --allow-unauthenticated \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}"
+        sudo apt-get -qq update --allow-insecure-repositories >/dev/null
+        sudo apt-get -qq install -y --allow-unauthenticated \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
+            "rocm-libs${ROCM_VERSION}" >/dev/null
 
         # Fake presence of MI200-class accelerators
         echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
-        sudo apt-get autoclean && sudo apt-get clean
+        sudo apt-get -qq autoclean >/dev/null
+        sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     - name: ROCm - Hipify
       if: inputs.rocm == 'ON'
@@ -107,6 +110,9 @@ runs:
       shell: bash
       run: |
         # symblink system libraries for HIP compiler
+        ldd --version
+        sudo apt-get update
+        sudo apt-get upgrade
         sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
         sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
         sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
@@ -135,6 +141,11 @@ runs:
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
+    - name: C++ perf benchmarks
+      shell: bash
+      if: inputs.rocm == 'OFF'
+      run: |
+        find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
@@ -167,6 +178,7 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
