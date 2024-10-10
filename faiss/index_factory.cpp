@@ -767,7 +767,7 @@ std::unique_ptr<Index> index_factory_sub(
     }
 
     if (verbose) {
-        printf("after () normalization: %s %ld parenthesis indexes d=%d\n",
+        printf("after () normalization: %s %zd parenthesis indexes d=%d\n",
                description.c_str(),
                parenthesis_indexes.size(),
                d);
