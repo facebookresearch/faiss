@@ -28,7 +28,7 @@ def make_indices_copy_from_cpu(nlist, d, qtype, by_residual, metric, clamp):
     res = faiss.StandardGpuResources()
     res.noTempMemory()
     config = faiss.GpuIndexIVFScalarQuantizerConfig()
-    config.use_raft = False
+    config.use_cuvs = False
     idx_gpu = faiss.GpuIndexIVFScalarQuantizer(res, idx_cpu, config)
 
     return idx_cpu, idx_gpu
@@ -40,7 +40,7 @@ def make_indices_copy_from_gpu(nlist, d, qtype, by_residual, metric, clamp):
     res = faiss.StandardGpuResources()
     res.noTempMemory()
     config = faiss.GpuIndexIVFScalarQuantizerConfig()
-    config.use_raft = False
+    config.use_cuvs = False
     idx_gpu = faiss.GpuIndexIVFScalarQuantizer(res, d, nlist,
                                                qtype, metric, by_residual, config)
     idx_gpu.train(to_train)
@@ -68,7 +68,7 @@ def make_indices_train(nlist, d, qtype, by_residual, metric, clamp):
     res = faiss.StandardGpuResources()
     res.noTempMemory()
     config = faiss.GpuIndexIVFScalarQuantizerConfig()
-    config.use_raft = False
+    config.use_cuvs = False
     idx_gpu = faiss.GpuIndexIVFScalarQuantizer(res, d, nlist,
                                                qtype, metric, by_residual, config)
     assert(by_residual == idx_gpu.by_residual)
