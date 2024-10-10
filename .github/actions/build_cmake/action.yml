@@ -110,9 +110,6 @@ runs:
       shell: bash
       run: |
         # symblink system libraries for HIP compiler
-        ldd --version
-        sudo apt-get update
-        sudo apt-get upgrade
         sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
         sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
         sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
