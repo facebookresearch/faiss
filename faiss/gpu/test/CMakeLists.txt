@@ -24,10 +24,7 @@ if(FAISS_ENABLE_ROCM)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
 else()
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC
-    faiss gtest CUDA::cudart
-    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
 endif()
 
 macro(faiss_gpu_test file)
@@ -47,8 +44,7 @@ faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.${GPU_EXT_PREFIX})
 faiss_gpu_test(TestGpuSelect.${GPU_EXT_PREFIX})
-
-if(FAISS_ENABLE_RAFT)
+if(FAISS_ENABLE_CUVS)
   faiss_gpu_test(TestGpuIndexCagra.cu)
 endif()
 
