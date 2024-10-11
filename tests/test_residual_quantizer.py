@@ -457,6 +457,37 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         # recalls are {1: 0.05, 10: 0.37, 100: 0.37}
         self.assertGreater(recalls[10], 0.35)
 
+    def do_exact_search_equiv(self, norm_type):
+        """ searching with this normalization should yield
+        exactly the same results as decompression (because the
+        norms are exact) """
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+
+        # decompresses by default
+        ir = faiss.IndexResidualQuantizer(ds.d, 3, 6)
+        ir.rq.train_type = faiss.ResidualQuantizer.Train_default
+        ir.train(ds.get_train())
+        ir.add(ds.get_database())
+        Dref, Iref = ir.search(ds.get_queries(), 10)
+
+        ir2 = faiss.IndexResidualQuantizer(
+            ds.d, 3, 6, faiss.METRIC_L2, norm_type)
+
+        # assumes training is reproducible
+        ir2.rq.train_type = faiss.ResidualQuantizer.Train_default
+        ir2.train(ds.get_train())
+        ir2.add(ds.get_database())
+        D, I = ir2.search(ds.get_queries(), 10)
+
+        np.testing.assert_allclose(D, Dref, atol=1e-5)
+        np.testing.assert_array_equal(I, Iref)
+
+    def test_exact_equiv_norm_float(self):
+        self.do_exact_search_equiv(faiss.AdditiveQuantizer.ST_norm_float)
+
+    def test_exact_equiv_norm_from_LUT(self):
+        self.do_exact_search_equiv(faiss.AdditiveQuantizer.ST_norm_from_LUT)
+
     def test_reestimate_codebook(self):
         ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
 
@@ -858,6 +889,9 @@ class TestIVFResidualQuantizer(unittest.TestCase):
         self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_cqint8)
         self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_cqint4)
 
+    def test_norm_from_LUT(self):
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_from_LUT)
+
     def test_factory(self):
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Nfloat")
         self.assertEqual(index.nlist, 1024)
@@ -1105,7 +1139,7 @@ class TestCrossCodebookComputations(unittest.TestCase):
             ofs += kk * K
             np.testing.assert_allclose(py_table, cpp_table, atol=1e-5)
 
-        cent_norms = faiss.vector_to_array(rq.cent_norms)
+        cent_norms = faiss.vector_to_array(rq.centroid_norms)
         np.testing.assert_array_almost_equal(
             np.hstack(cent_norms_ref), cent_norms, decimal=5)
 

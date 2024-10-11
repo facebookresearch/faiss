@@ -275,7 +275,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
         return new AQInvertedListScannerLUT<false, AdditiveQuantizer::st>( \
                 *this, store_pairs);
                 A(ST_LUT_nonorm)
-                // A(ST_norm_from_LUT)
+                A(ST_norm_from_LUT)
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)
