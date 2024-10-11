@@ -24,6 +24,7 @@
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
+#include <optional>
 #include <vector>
 
 #include <cuvs/neighbors/brute_force.hpp>
@@ -98,7 +99,8 @@ void CuvsFlatIndex::query(
 
         cuvs::neighbors::brute_force::index idx(
                 handle, index, norms_view, distance, metricArg);
-        cuvs::neighbors::brute_force::search(handle, idx, search, inds, dists);
+        cuvs::neighbors::brute_force::search(
+                handle, idx, search, inds, dists, std::nullopt);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
