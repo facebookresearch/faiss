@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Struct faiss::AdditiveQuantizer &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1AdditiveQuantizer.html" />
@@ -507,6 +507,11 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer23compute_codebook_tablesEv">
+<span id="_CPPv3N5faiss17AdditiveQuantizer23compute_codebook_tablesEv"></span><span id="_CPPv2N5faiss17AdditiveQuantizer23compute_codebook_tablesEv"></span><span id="faiss::AdditiveQuantizer::compute_codebook_tables"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_codebook_tables</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss17AdditiveQuantizer11encode_normEf">
 <span id="_CPPv3NK5faiss17AdditiveQuantizer11encode_normEf"></span><span id="_CPPv2NK5faiss17AdditiveQuantizer11encode_normEf"></span><span id="faiss::AdditiveQuantizer::encode_norm__floatC"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode_norm</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">norm</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>encode a norm into norm_bits bits </p>
@@ -710,7 +715,8 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer16codebook_offsetsE">
 <span id="_CPPv3N5faiss17AdditiveQuantizer16codebook_offsetsE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer16codebook_offsetsE"></span><span id="faiss::AdditiveQuantizer::codebook_offsets__std::vector:uint64_t:"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a5cf9516480f6fd9912d4b0d323109088"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook_offsets</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>codebook #1 is stored in rows codebook_offsets[i]:codebook_offsets[i+1] in the codebooks table of size total_codebook_size by d </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer8tot_bitsE">
@@ -749,15 +755,27 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer9norm_tabsE">
+<span id="_CPPv3N5faiss17AdditiveQuantizer9norm_tabsE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer9norm_tabsE"></span><span id="faiss::AdditiveQuantizer::norm_tabs__std::vector:float:"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">norm_tabs</span></span></span><br /></dt>
+<dd><p>auxiliary data for ST_norm_lsq2x4 and ST_norm_rq2x4 store norms of codebook entries for 4-bit fastscan </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer5qnormE">
 <span id="_CPPv3N5faiss17AdditiveQuantizer5qnormE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer5qnormE"></span><span id="faiss::AdditiveQuantizer::qnorm__IndexFlat1D"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def"></span><a class="reference internal" href="../file/IndexFlat_8h.html#_CPPv4N5faiss11IndexFlat1DE" title="faiss::IndexFlat1D"><span class="n"><span class="pre">IndexFlat1D</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">qnorm</span></span></span><br /></dt>
 <dd><p>store and search norms </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer9norm_tabsE">
-<span id="_CPPv3N5faiss17AdditiveQuantizer9norm_tabsE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer9norm_tabsE"></span><span id="faiss::AdditiveQuantizer::norm_tabs__std::vector:float:"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">norm_tabs</span></span></span><br /></dt>
-<dd><p>store norms of codebook entries for 4-bit fastscan search </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer14centroid_normsE">
+<span id="_CPPv3N5faiss17AdditiveQuantizer14centroid_normsE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer14centroid_normsE"></span><span id="faiss::AdditiveQuantizer::centroid_norms__std::vector:float:"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid_norms</span></span></span><br /></dt>
+<dd><p>norms of all codebook entries (size total_codebook_size) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17AdditiveQuantizer23codebook_cross_productsE">
+<span id="_CPPv3N5faiss17AdditiveQuantizer23codebook_cross_productsE"></span><span id="_CPPv2N5faiss17AdditiveQuantizer23codebook_cross_productsE"></span><span id="faiss::AdditiveQuantizer::codebook_cross_products__std::vector:float:"></span><span class="target" id="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook_cross_products</span></span></span><br /></dt>
+<dd><p>dot products of all codebook entries with the previous codebooks size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1) </p>
 </dd></dl>
 
 <dl class="cpp var">

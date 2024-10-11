@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File ResidualQuantizer.h &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="canonical" href="https://faiss.ai/cpp_api/file/ResidualQuantizer_8h.html" />
@@ -464,12 +464,6 @@
 </dl>
 </dd></dl>
 
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17ResidualQuantizer23compute_codebook_tablesEv">
-<span id="_CPPv3N5faiss17ResidualQuantizer23compute_codebook_tablesEv"></span><span id="_CPPv2N5faiss17ResidualQuantizer23compute_codebook_tablesEv"></span><span id="faiss::ResidualQuantizer::compute_codebook_tables"></span><span class="target" id="structfaiss_1_1ResidualQuantizer_1ac888008b930ef52e7e3ee21bc10428ee"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_codebook_tables</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17ResidualQuantizer23compute_codebook_tablesEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Cross products used in codebook tables used for beam_LUT = 1 </p>
-</dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -513,18 +507,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17ResidualQuantizer20assign_index_factoryE">
 <span id="_CPPv3N5faiss17ResidualQuantizer20assign_index_factoryE"></span><span id="_CPPv2N5faiss17ResidualQuantizer20assign_index_factoryE"></span><span id="faiss::ResidualQuantizer::assign_index_factory__ProgressiveDimIndexFactoryP"></span><span class="target" id="structfaiss_1_1ResidualQuantizer_1a7e962b48662bcc7fd9531ff6bee06430"></span><a class="reference internal" href="Clustering_8h.html#_CPPv4N5faiss26ProgressiveDimIndexFactoryE" title="faiss::ProgressiveDimIndexFactory"><span class="n"><span class="pre">ProgressiveDimIndexFactory</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">assign_index_factory</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss17ResidualQuantizer20assign_index_factoryE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>if non-NULL, use this index for assignment </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17ResidualQuantizer23codebook_cross_productsE">
-<span id="_CPPv3N5faiss17ResidualQuantizer23codebook_cross_productsE"></span><span id="_CPPv2N5faiss17ResidualQuantizer23codebook_cross_productsE"></span><span id="faiss::ResidualQuantizer::codebook_cross_products__std::vector:float:"></span><span class="target" id="structfaiss_1_1ResidualQuantizer_1a32524bf1630073efa869d0f4648ce6af"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codebook_cross_products</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17ResidualQuantizer23codebook_cross_productsE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>dot products of all codebook entries with the previous codebooks size sum(codebook_offsets[m] * 2^nbits[m], m=0..M-1) </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss17ResidualQuantizer10cent_normsE">
-<span id="_CPPv3N5faiss17ResidualQuantizer10cent_normsE"></span><span id="_CPPv2N5faiss17ResidualQuantizer10cent_normsE"></span><span id="faiss::ResidualQuantizer::cent_norms__std::vector:float:"></span><span class="target" id="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cent_norms</span></span></span><a class="headerlink" href="#_CPPv4N5faiss17ResidualQuantizer10cent_normsE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>norms of all codebook entries (size total_codebook_size) </p>
 </dd></dl>
 
 </div>
