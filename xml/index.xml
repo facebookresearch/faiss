@@ -55,14 +55,17 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a093437a71a2fd301cf10f2f156f39249" kind="variable"><name>norm_max</name></member>
     <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>
@@ -6367,8 +6370,10 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
@@ -6389,6 +6394,7 @@
     <member refid="structfaiss_1_1LocalSearchQuantizer_1a430a9837a96e8ac65d27bc81aaab7d1d" kind="function"><name>compute_binary_terms</name></member>
     <member refid="structfaiss_1_1LocalSearchQuantizer_1add0c1db81b4d343a0cfd85100f13a236" kind="function"><name>compute_unary_terms</name></member>
     <member refid="structfaiss_1_1LocalSearchQuantizer_1ae0b0c28f231374305e6ddc5cf72120be" kind="function"><name>evaluate</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>
@@ -7019,8 +7025,10 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
@@ -7038,6 +7046,7 @@
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3f46da7ac6d3fa9282557842e8688a45" kind="function"><name>decode_unpacked</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a1cbf18c081882301bc41d447f3845295" kind="function"><name>decode</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a58434325033167884ea6f5d821e016a1" kind="function"><name>compute_LUT</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>
@@ -7073,6 +7082,7 @@
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3f46da7ac6d3fa9282557842e8688a45" kind="function"><name>decode_unpacked</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a1cbf18c081882301bc41d447f3845295" kind="function"><name>decode</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a58434325033167884ea6f5d821e016a1" kind="function"><name>compute_LUT</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>
@@ -7097,8 +7107,10 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
@@ -7173,6 +7185,7 @@
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3f46da7ac6d3fa9282557842e8688a45" kind="function"><name>decode_unpacked</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a1cbf18c081882301bc41d447f3845295" kind="function"><name>decode</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a58434325033167884ea6f5d821e016a1" kind="function"><name>compute_LUT</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>
@@ -7197,8 +7210,10 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
@@ -7662,8 +7677,6 @@
     <member refid="structfaiss_1_1ResidualQuantizer_1ad44f8d7e4bffb1faaa36f3f03133e47f" kind="variable"><name>approx_topk_mode</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1a2b108691bcd6261835102fbe37a76c4d" kind="variable"><name>cp</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1a7e962b48662bcc7fd9531ff6bee06430" kind="variable"><name>assign_index_factory</name></member>
-    <member refid="structfaiss_1_1ResidualQuantizer_1a32524bf1630073efa869d0f4648ce6af" kind="variable"><name>codebook_cross_products</name></member>
-    <member refid="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" kind="variable"><name>cent_norms</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4aeef9f31288a7c28c02a2582616a660" kind="variable"><name>M</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3eda6b9cc0ffa5ce141683f0a6e27349" kind="variable"><name>nbits</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a1bd2810ad54fb243b666e56f5d505d3f" kind="variable"><name>codebooks</name></member>
@@ -7674,8 +7687,10 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" kind="variable"><name>only_8bit</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6bc5248e11416924b7d7d73e53672465" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a345684bf40fb4395fb0bc29fa0708424" kind="variable"><name>norm_tabs</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" kind="variable"><name>qnorm</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1af366aff9e6f592413920232add8a4658" kind="variable"><name>centroid_norms</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a8a7bf5068face76845f039137af0e81d" kind="variable"><name>codebook_cross_products</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a2576ad822575071941166ce96cd14d72" kind="variable"><name>max_mem_distances</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" kind="variable"><name>search_type</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a648e012d823d2baf4947d4d2ce64af80" kind="variable"><name>norm_min</name></member>
@@ -7697,7 +7712,7 @@
     <member refid="structfaiss_1_1ResidualQuantizer_1abe48d8c22ea9c3de22704aea7a606b31" kind="function"><name>refine_beam</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1ac59e6e5544cde2db8ffc340faaa52597" kind="function"><name>refine_beam_LUT</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1ac9e1a3f90181d86f85f3d9716fb4a6ac" kind="function"><name>memory_per_point</name></member>
-    <member refid="structfaiss_1_1ResidualQuantizer_1ac888008b930ef52e7e3ee21bc10428ee" kind="function"><name>compute_codebook_tables</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a11964f0d7ef3603a0855a46634b0096e" kind="function"><name>compute_codebook_tables</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7b6a82e71df3f5a989505dd45ed72618" kind="function"><name>encode_norm</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a7dce04e60d67081b02d85af9fd13b61c" kind="function"><name>encode_qcint</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a9f6fdbed02275fe908ac219c022fc859" kind="function"><name>decode_qcint</name></member>

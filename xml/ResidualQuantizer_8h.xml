@@ -332,19 +332,9 @@
 <codeline lineno="143"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>beam_size<sp/><sp/>if<sp/>!=<sp/>-1,<sp/>override<sp/>the<sp/>beam<sp/>size</highlight></codeline>
 <codeline lineno="144"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="145" refid="structfaiss_1_1ResidualQuantizer_1ac9e1a3f90181d86f85f3d9716fb4a6ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResidualQuantizer_1ac9e1a3f90181d86f85f3d9716fb4a6ac" kindref="member">memory_per_point</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>beam_size<sp/>=<sp/>-1)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Cross<sp/>products<sp/>used<sp/>in<sp/>codebook<sp/>tables<sp/>used<sp/>for<sp/>beam_LUT<sp/>=<sp/>1</highlight></codeline>
-<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="149" refid="structfaiss_1_1ResidualQuantizer_1ac888008b930ef52e7e3ee21bc10428ee" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResidualQuantizer_1ac888008b930ef52e7e3ee21bc10428ee" kindref="member">compute_codebook_tables</ref>();</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>dot<sp/>products<sp/>of<sp/>all<sp/>codebook<sp/>entries<sp/>with<sp/>the<sp/>previous<sp/>codebooks</highlight></codeline>
-<codeline lineno="152"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>sum(codebook_offsets[m]<sp/>*<sp/>2^nbits[m],<sp/>m=0..M-1)</highlight></codeline>
-<codeline lineno="153" refid="structfaiss_1_1ResidualQuantizer_1a32524bf1630073efa869d0f4648ce6af" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1ResidualQuantizer_1a32524bf1630073efa869d0f4648ce6af" kindref="member">codebook_cross_products</ref>;</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="154"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>norms<sp/>of<sp/>all<sp/>codebook<sp/>entries<sp/>(size<sp/>total_codebook_size)</highlight></codeline>
-<codeline lineno="155" refid="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1ResidualQuantizer_1aa8438e1b1b028dd8fe1eaafc72c34942" kindref="member">cent_norms</ref>;</highlight></codeline>
-<codeline lineno="156"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/ResidualQuantizer.h"/>
   </compounddef>
