@@ -329,7 +329,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
         if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
             try {
                 pinnedMemAlloc_ = pmr_->allocate(pinnedMemSize_);
-            } catch (const std::bad_alloc& rmm_ex) {
+            } catch (const std::bad_alloc&) {
                 FAISS_THROW_MSG("CUDA memory allocation error");
             }
 
@@ -529,7 +529,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
                             rmm::cuda_device_id{adjReq.device});
             p = current_mr->allocate_async(adjReq.size, adjReq.stream);
             adjReq.mr = current_mr;
-        } catch (const std::bad_alloc& rmm_ex) {
+        } catch (const std::bad_alloc&) {
             FAISS_THROW_MSG("CUDA memory allocation error");
         }
 #else
@@ -564,7 +564,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // device.
             p = mmr_->allocate_async(adjReq.size, adjReq.stream);
             adjReq.mr = mmr_.get();
-        } catch (const std::bad_alloc& rmm_ex) {
+        } catch (const std::bad_alloc&) {
             FAISS_THROW_MSG("CUDA memory allocation error");
         }
 #else
