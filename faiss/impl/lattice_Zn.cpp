@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include <queue>
-#include <unordered_map>
 #include <unordered_set>
 
 #include <faiss/impl/platform_macros.h>

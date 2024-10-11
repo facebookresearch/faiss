@@ -16,7 +16,6 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/utils.h>
 
 namespace {
 

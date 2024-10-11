@@ -23,7 +23,6 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>

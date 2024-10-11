@@ -16,7 +16,6 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/WorkerThread.h>
 #include <faiss/utils/random.h>

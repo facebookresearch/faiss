@@ -14,7 +14,6 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/Timer.h>
 #include <gflags/gflags.h>
-#include <map>
 #include <vector>
 
 DEFINE_int32(batches, 10, "number of batches of vectors to add");
