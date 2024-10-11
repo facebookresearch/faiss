@@ -25,14 +25,14 @@ if(FAISS_ENABLE_ROCM)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
-  target_compile_options(faiss_gpu_test_helper PUBLIC
-    $<$<BOOL:${FAISS_ENABLE_CUVS}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
 endif()
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
   add_executable(${test_name} ${file})
   target_link_libraries(${test_name} PRIVATE faiss_gpu_test_helper)
+  target_compile_options(${test_name} PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:$<$<BOOL:${FAISS_ENABLE_CUVS}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
   gtest_discover_tests(${test_name})
 endmacro()
 
