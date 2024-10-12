@@ -113,7 +113,9 @@ class DatasetDescriptor:
         assert self.tablename is not None
         filename += self.tablename
         if self.partitions is not None:
-            filename += "_" + "_".join(self.partitions).replace("=", "_")
+            filename += "_" + "_".join(
+                self.partitions
+            ).replace("=", "_").replace("/", "_")
         if self.num_vectors is not None:
             filename += f"_{self.num_vectors}"
         filename += "."
