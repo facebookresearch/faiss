@@ -34,7 +34,7 @@ runs:
 
         conda install -y -q python=3.11 make swig numpy scipy pytest gflags openssl cmake=3.26.4
 
-        conda init
+        eval $(conda shell.bash hook)
         conda activate
         mkdir /tmp/cmake-build
         pushd /tmp/cmake-build
