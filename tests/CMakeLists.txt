@@ -88,7 +88,9 @@ if(FAISS_OPT_LEVEL STREQUAL "sve")
   target_link_libraries(faiss_test PRIVATE faiss_sve)
 endif()
 
-target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+if (FAISS_ENABLE_PYTHON)
+  target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
