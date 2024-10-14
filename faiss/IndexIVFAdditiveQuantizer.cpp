@@ -116,6 +116,21 @@ void IndexIVFAdditiveQuantizer::sa_decode(
     }
 }
 
+void IndexIVFAdditiveQuantizer::reconstruct_from_offset(
+        int64_t list_no,
+        int64_t offset,
+        float* recons) const {
+    const uint8_t* code = invlists->get_single_code(list_no, offset);
+    aq->decode(code, recons, 1);
+    if (by_residual) {
+        std::vector<float> centroid(d);
+        quantizer->reconstruct(list_no, centroid.data());
+        for (int i = 0; i < d; ++i) {
+            recons[i] += centroid[i];
+        }
+    }
+}
+
 IndexIVFAdditiveQuantizer::~IndexIVFAdditiveQuantizer() = default;
 
 /*********************************************
@@ -260,7 +275,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
         return new AQInvertedListScannerLUT<false, AdditiveQuantizer::st>( \
                 *this, store_pairs);
                 A(ST_LUT_nonorm)
-                // A(ST_norm_from_LUT)
+                A(ST_norm_from_LUT)
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)

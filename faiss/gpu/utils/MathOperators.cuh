@@ -282,7 +282,7 @@ struct Math<half> {
     }
 
     static inline __device__ half zero() {
-#if CUDA_VERSION >= 9000
+#if CUDA_VERSION >= 9000 || defined(USE_AMD_ROCM)
         return 0;
 #else
         half h;

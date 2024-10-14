@@ -122,7 +122,7 @@ struct RangeSearchPartialResult : BufferList {
     void copy_result(bool incremental = false);
 
     /// merge a set of PartialResult's into one RangeSearchResult
-    /// on ouptut the partialresults are empty!
+    /// on output the partialresults are empty!
     static void merge(
             std::vector<RangeSearchPartialResult*>& partial_results,
             bool do_delete = true);

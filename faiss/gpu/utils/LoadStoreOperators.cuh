@@ -23,6 +23,51 @@
 namespace faiss {
 namespace gpu {
 
+#ifdef USE_AMD_ROCM
+
+template <typename T>
+struct LoadStore {
+    static inline __device__ T load(void* p) {
+        return *((T*)p);
+    }
+
+    static inline __device__ void store(void* p, const T& v) {
+        *((T*)p) = v;
+    }
+};
+
+template <>
+struct LoadStore<Half4> {
+    static inline __device__ Half4 load(void* p) {
+        Half4 out;
+        Half4* t = reinterpret_cast<Half4*>(p);
+        out = *t;
+        return out;
+    }
+
+    static inline __device__ void store(void* p, Half4& v) {
+        Half4* t = reinterpret_cast<Half4*>(p);
+        *t = v;
+    }
+};
+
+template <>
+struct LoadStore<Half8> {
+    static inline __device__ Half8 load(void* p) {
+        Half8 out;
+        Half8* t = reinterpret_cast<Half8*>(p);
+        out = *t;
+        return out;
+    }
+
+    static inline __device__ void store(void* p, Half8& v) {
+        Half8* t = reinterpret_cast<Half8*>(p);
+        *t = v;
+    }
+};
+
+#else // USE_AMD_ROCM
+
 template <typename T>
 struct LoadStore {
     static inline __device__ T load(void* p) {
@@ -96,6 +141,8 @@ struct LoadStore<Half8> {
 #endif
     }
 };
+
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

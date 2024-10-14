@@ -23,7 +23,7 @@ struct SearchParametersPreTransform : SearchParameters {
 /** Index that applies a LinearTransform transform on vectors before
  *  handing them over to a sub-index */
 struct IndexPreTransform : Index {
-    std::vector<VectorTransform*> chain; ///! chain of tranforms
+    std::vector<VectorTransform*> chain; ///! chain of transforms
     Index* index;                        ///! the sub-index
 
     bool own_fields; ///! whether pointers are deleted in destructor

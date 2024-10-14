@@ -23,7 +23,13 @@ cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 set(FAISS_LANGUAGES CXX)
 
 if(FAISS_ENABLE_GPU)
-  list(APPEND FAISS_LANGUAGES CUDA)
+  if (FAISS_ENABLE_ROCM)
+    list(APPEND FAISS_LANGUAGES HIP)
+    list(PREPEND CMAKE_MODULE_PATH "/opt/rocm/lib/cmake")
+    list(PREPEND CMAKE_PREFIX_PATH "/opt/rocm")
+  else()
+    list(APPEND FAISS_LANGUAGES CUDA)
+  endif()
 endif()
 
 if(FAISS_ENABLE_RAFT)
@@ -40,7 +46,7 @@ rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.8.0
+  VERSION 1.9.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
@@ -50,27 +56,42 @@ set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Valid values are "generic", "avx2", "avx512".
+# Valid values are "generic", "avx2", "avx512", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_DNNL "Enable support for onednn to accelerate indexflat search." OFF)
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
 option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
+option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
 
 if(FAISS_ENABLE_GPU)
-  set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-  enable_language(CUDA)
+  if(FAISS_ENABLE_ROCM)
+    enable_language(HIP)
+    add_definitions(-DUSE_AMD_ROCM)
+    find_package(HIP REQUIRED)
+    find_package(hipBLAS REQUIRED)
+    set(GPU_EXT_PREFIX "hip")
+  else ()
+    set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+    enable_language(CUDA)
+    set(GPU_EXT_PREFIX "cu")
+  endif()
 endif()
 
 if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
-   find_package(raft COMPONENTS compiled distributed)
- endif()
+  find_package(raft COMPONENTS compiled distributed)
+endif()
 
 add_subdirectory(faiss)
 
 if(FAISS_ENABLE_GPU)
-  add_subdirectory(faiss/gpu)
+  if(FAISS_ENABLE_ROCM)
+    add_subdirectory(faiss/gpu-rocm)
+  else()
+    add_subdirectory(faiss/gpu)
+  endif()
 endif()
 
 if(FAISS_ENABLE_PYTHON)
@@ -86,12 +107,17 @@ add_subdirectory(demos)
 add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
 
+
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(tests)
-
+  add_subdirectory(perf_tests)
   if(FAISS_ENABLE_GPU)
-    add_subdirectory(faiss/gpu/test)
+    if(FAISS_ENABLE_ROCM)
+      add_subdirectory(faiss/gpu-rocm/test)
+    else()
+      add_subdirectory(faiss/gpu/test)
+    endif()
   endif()
 endif()

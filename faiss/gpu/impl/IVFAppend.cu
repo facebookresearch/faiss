@@ -342,7 +342,7 @@ void runSQEncode(
 }
 
 // Handles appending encoded vectors (one per EncodeT word) packed into
-// EncodeBits interleaved by 32 vectors.
+// EncodeBits interleaved by kWarpSize vectors.
 // This is used by Flat, SQ and PQ code for the interleaved format.
 template <typename EncodeT, int EncodeBits>
 __global__ void ivfInterleavedAppend(
@@ -391,30 +391,31 @@ __global__ void ivfInterleavedAppend(
     // These are the actual vec IDs that we are adding (in vecs)
     auto listVecIds = vectorsByUniqueList[vecIdStart].data();
 
-    // All data is written by groups of 32 vectors (to mirror the warp).
+    // All data is written by groups of kWarpSize vectors (to mirror the warp).
     // listVecStart could be in the middle of this, or even, for sub-byte
     // encodings, mean that the first vector piece of data that we need to
     // update is in the high part of a byte.
     //
     // WarpPackedBits allows writing of arbitrary bit packed data in groups of
-    // 32, but we ensure that it only operates on the group of 32 vectors. In
-    // order to do this we need to actually start updating vectors at the next
-    // lower multiple of 32 from listVecStart.
-    auto alignedListVecStart = utils::roundDown(listVecStart, 32);
+    // kWarpSize, but we ensure that it only operates on the group of kWarpSize
+    // vectors. In order to do this we need to actually start updating vectors
+    // at the next lower multiple of kWarpSize from listVecStart.
+    auto alignedListVecStart = utils::roundDown(listVecStart, kWarpSize);
 
-    // Each block of 32 vectors fully encodes into this many bytes
-    constexpr int bytesPerVectorBlockDim = EncodeBits * 32 / 8;
+    // Each block of kWarpSize vectors fully encodes into this many bytes
+    constexpr int bytesPerVectorBlockDim = EncodeBits * kWarpSize / 8;
     constexpr int wordsPerVectorBlockDim =
             bytesPerVectorBlockDim / sizeof(EncodeT);
     auto wordsPerVectorBlock = wordsPerVectorBlockDim * encodedVecs.getSize(1);
 
     EncodeT* listStart = ((EncodeT*)listData[listId]);
 
-    // Each warp within the block handles a different chunk of 32
-    auto warpVec = alignedListVecStart + warpId * 32;
+    // Each warp within the block handles a different chunk of kWarpSize
+    auto warpVec = alignedListVecStart +
+            (faiss::gpu::Tensor<long, 1, true>::DataType)warpId * kWarpSize;
 
     // The warp data starts here
-    EncodeT* warpData = listStart + (warpVec / 32) * wordsPerVectorBlock;
+    EncodeT* warpData = listStart + (warpVec / kWarpSize) * wordsPerVectorBlock;
 
     // Each warp encodes a single block
     for (; warpVec < listVecStart + numVecsAdding;

@@ -14,7 +14,10 @@ namespace faiss {
 namespace gpu {
 
 KernelTimer::KernelTimer(cudaStream_t stream)
-        : startEvent_(0), stopEvent_(0), stream_(stream), valid_(true) {
+        : startEvent_(nullptr),
+          stopEvent_(nullptr),
+          stream_(stream),
+          valid_(true) {
     CUDA_VERIFY(cudaEventCreate(&startEvent_));
     CUDA_VERIFY(cudaEventCreate(&stopEvent_));
 

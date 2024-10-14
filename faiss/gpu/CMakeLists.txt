@@ -197,6 +197,10 @@ function(generate_ivf_interleaved_code)
     "64|2048|8"
   )
 
+  if (FAISS_ENABLE_ROCM)
+     list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+  endif()
+
   # Traverse through the Cartesian product of X and Y
   foreach(sub_codec ${SUB_CODEC_TYPE})
   foreach(metric_type ${SUB_METRIC_TYPE})
@@ -210,10 +214,10 @@ function(generate_ivf_interleaved_code)
     set(filename "template_${sub_codec}_${metric_type}_${sub_threads}_${sub_num_warp_q}_${sub_num_thread_q}")
     # Remove illegal characters from filename
     string(REGEX REPLACE "[^A-Za-z0-9_]" "" filename ${filename})
-    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.cu")
+    set(output_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.${GPU_EXT_PREFIX}")
 
     # Read the template file
-    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.cu" template_content)
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/impl/scan/IVFInterleavedScanKernelTemplate.${GPU_EXT_PREFIX}" template_content)
 
     # Replace the placeholders
     string(REPLACE "SUB_CODEC_TYPE" "${sub_codec}" template_content "${template_content}")
@@ -290,12 +294,17 @@ if(FAISS_ENABLE_RAFT)
   target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_RAFT=1)
 endif()
 
+if (FAISS_ENABLE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+endif()
+
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
 target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_sve PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
@@ -304,21 +313,33 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
-# Prepares a host linker script and enables host linker to support
-# very large device object files.
-# This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld"
-[=[
-SECTIONS
-{
-.nvFatBinSegment : { *(.nvFatBinSegment) }
-__nv_relfatbin : { *(__nv_relfatbin) }
-.nv_fatbin : { *(.nv_fatbin) }
-}
-]=]
-)
-target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+if (FAISS_ENABLE_ROCM)
+  target_link_libraries(faiss_gpu PRIVATE hip::host roc::hipblas)
+  target_compile_options(faiss_gpu PRIVATE)
+else()
+  # Prepares a host linker script and enables host linker to support
+  # very large device object files.
+  # This is what CUDA 11.5+ `nvcc -hls=gen-lcs -aug-hls` would generate
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld"
+  [=[
+  SECTIONS
+  {
+    .nvFatBinSegment : { *(.nvFatBinSegment) }
+    __nv_relfatbin : { *(__nv_relfatbin) }
+    .nv_fatbin : { *(.nv_fatbin) }
+  }
+  ]=]
+  )
+  target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
 
-find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass> $<$<BOOL:${FAISS_ENABLE_RAFT}>:OpenMP::OpenMP_CXX>)
-target_compile_options(faiss_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr $<$<BOOL:${FAISS_ENABLE_RAFT}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
+  find_package(CUDAToolkit REQUIRED)
+  target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::compiled>
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:OpenMP::OpenMP_CXX>)
+  target_compile_options(faiss_gpu PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all
+    --expt-extended-lambda --expt-relaxed-constexpr
+    $<$<BOOL:${FAISS_ENABLE_RAFT}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
+endif()

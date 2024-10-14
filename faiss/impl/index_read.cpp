@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/impl/index_read_utils.h>
 #include <faiss/index_io.h>
 
 #include <faiss/impl/io_macros.h>
@@ -61,7 +62,7 @@ namespace faiss {
  * Read
  **************************************************************/
 
-static void read_index_header(Index* idx, IOReader* f) {
+void read_index_header(Index* idx, IOReader* f) {
     READ1(idx->d);
     READ1(idx->ntotal);
     idx_t dummy;
@@ -230,7 +231,7 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
     }
 }
 
-static void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
+void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
     InvertedLists* ils = read_InvertedLists(f, io_flags);
     if (ils) {
         FAISS_THROW_IF_NOT(ils->nlist == ivf->nlist);
@@ -242,7 +243,7 @@ static void read_InvertedLists(IndexIVF* ivf, IOReader* f, int io_flags) {
     ivf->own_invlists = true;
 }
 
-static void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
+void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->d);
     READ1(pq->M);
     READ1(pq->nbits);
@@ -352,7 +353,7 @@ static void read_ProductLocalSearchQuantizer(
     }
 }
 
-static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
+void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->qtype);
     READ1(ivsc->rangestat);
     READ1(ivsc->rangestat_arg);
@@ -373,7 +374,10 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READ1(hnsw->max_level);
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
-    READ1(hnsw->upper_beam);
+
+    // // deprecated field
+    // READ1(hnsw->upper_beam);
+    READ1_DUMMY(int)
 }
 
 static void read_NSG(NSG* nsg, IOReader* f) {
@@ -438,7 +442,7 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     return pq;
 }
 
-static void read_direct_map(DirectMap* dm, IOReader* f) {
+void read_direct_map(DirectMap* dm, IOReader* f) {
     char maintain_direct_map;
     READ1(maintain_direct_map);
     dm->type = (DirectMap::Type)maintain_direct_map;
@@ -454,10 +458,10 @@ static void read_direct_map(DirectMap* dm, IOReader* f) {
     }
 }
 
-static void read_ivf_header(
+void read_ivf_header(
         IndexIVF* ivf,
         IOReader* f,
-        std::vector<std::vector<idx_t>>* ids = nullptr) {
+        std::vector<std::vector<idx_t>>* ids) {
     read_index_header(ivf, f);
     READ1(ivf->nlist);
     READ1(ivf->nprobe);
@@ -472,7 +476,7 @@ static void read_ivf_header(
 }
 
 // used for legacy formats
-static ArrayInvertedLists* set_array_invlist(
+ArrayInvertedLists* set_array_invlist(
         IndexIVF* ivf,
         std::vector<std::vector<idx_t>>& ids) {
     ArrayInvertedLists* ail =

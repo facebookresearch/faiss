@@ -11,17 +11,18 @@ from copy import copy
 from dataclasses import dataclass
 from typing import ClassVar, Dict, List, Optional
 
-import faiss  # @manual=//faiss/python:pyfaiss_gpu
+import faiss  # @manual=//faiss/python:pyfaiss
 import numpy as np
+from faiss.benchs.bench_fw.descriptors import IndexBaseDescriptor
 
-from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.evaluation import (  # @manual=//faiss/contrib:faiss_contrib
     knn_intersection_measure,
     OperatingPointsWithRanges,
 )
-from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.factory_tools import (  # @manual=//faiss/contrib:faiss_contrib
     reverse_index_factory,
 )
-from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib_gpu
+from faiss.contrib.ivf_tools import (  # @manual=//faiss/contrib:faiss_contrib
     add_preassigned,
     replace_ivf_quantizer,
 )
@@ -50,35 +51,6 @@ class IndexBase:
         self.io = benchmark_io
 
     @staticmethod
-    def param_dict_list_to_name(param_dict_list):
-        if not param_dict_list:
-            return ""
-        l = 0
-        n = ""
-        for param_dict in param_dict_list:
-            n += IndexBase.param_dict_to_name(param_dict, f"cp{l}")
-            l += 1
-        return n
-
-    @staticmethod
-    def param_dict_to_name(param_dict, prefix="sp"):
-        if not param_dict:
-            return ""
-        n = prefix
-        for name, val in param_dict.items():
-            if name == "snap":
-                continue
-            if name == "lsq_gpu" and val == 0:
-                continue
-            if name == "use_beam_LUT" and val == 0:
-                continue
-            n += f"_{name}_{val}"
-        if n == prefix:
-            return ""
-        n += "."
-        return n
-
-    @staticmethod
     def set_index_param_dict_list(index, param_dict_list, assert_same=False):
         if not param_dict_list:
             return
@@ -101,7 +73,10 @@ class IndexBase:
     def set_index_param(index, name, val, assert_same=False):
         index = faiss.downcast_index(index)
         val = int(val)
-        if isinstance(index, faiss.IndexPreTransform):
+        if (
+            isinstance(index, faiss.IndexPreTransform)
+            or isinstance(index, faiss.IndexIDMap)
+        ):
             Index.set_index_param(index.index, name, val)
             return
         elif name == "snap":
@@ -282,7 +257,7 @@ class IndexBase:
         reconstruct: bool = False,
     ):
         name = self.get_index_name()
-        name += Index.param_dict_to_name(search_parameters)
+        name += IndexBaseDescriptor.param_dict_to_name(search_parameters)
         name += query_vectors.get_filename("q")
         name += f"k_{k}."
         name += f"t_{self.num_threads}."
@@ -302,7 +277,10 @@ class IndexBase:
         D_gt=None,
     ):
         logger.info("knn_search: begin")
-        if search_parameters is not None and search_parameters["snap"] == 1:
+        if (
+            search_parameters is not None and
+            search_parameters.get("snap", 0) == 1
+        ):
             query_vectors = self.snap(query_vectors)
         filename = (
             self.get_knn_search_name(search_parameters, query_vectors, k)
@@ -350,7 +328,11 @@ class IndexBase:
             else:
                 xq = self.io.get_dataset(query_vectors)
                 (D, I), t, _ = timer("knn_search", lambda: index.search(xq, k))
-            if self.is_flat() or not hasattr(self, "database_vectors"):  # TODO
+            if (
+                self.is_flat() or
+                not hasattr(self, "database_vectors") or
+                (self.database_vectors is None)
+            ):  # TODO
                 R = D
             else:
                 xq = self.io.get_dataset(query_vectors)
@@ -380,20 +362,24 @@ class IndexBase:
             "factory": self.get_model_name(),
             "construction_params": self.get_construction_params(),
             "search_params": search_parameters,
-            "knn_intersection": knn_intersection_measure(
-                I,
-                I_gt,
-            )
-            if I_gt is not None
-            else None,
-            "distance_ratio": distance_ratio_measure(
-                I,
-                R,
-                D_gt,
-                self.metric_type,
-            )
-            if D_gt is not None
-            else None,
+            "knn_intersection": (
+                knn_intersection_measure(
+                    I,
+                    I_gt,
+                )
+                if I_gt is not None
+                else None
+            ),
+            "distance_ratio": (
+                distance_ratio_measure(
+                    I,
+                    R,
+                    D_gt,
+                    self.metric_type,
+                )
+                if D_gt is not None
+                else None
+            ),
         }
         logger.info("knn_search: end")
         return D, I, R, P, None
@@ -495,7 +481,10 @@ class IndexBase:
         radius: Optional[float] = None,
     ):
         logger.info("range_search: begin")
-        if search_parameters is not None and search_parameters.get("snap") == 1:
+        if (
+            search_parameters is not None and
+            search_parameters.get("snap", 0) == 1
+        ):
             query_vectors = self.snap(query_vectors)
         filename = (
             self.get_range_search_name(
@@ -582,14 +571,21 @@ class Index(IndexBase):
     num_threads: int
     d: int
     metric: str
-    database_vectors: DatasetDescriptor
-    construction_params: List[Dict[str, int]]
-    search_params: Dict[str, int]
+    codec_name: Optional[str] = None
+    index_name: Optional[str] = None
+    database_vectors: Optional[DatasetDescriptor] = None
+    construction_params: Optional[List[Dict[str, int]]] = None
+    search_params: Optional[Dict[str, int]] = None
+    serialize_full_index: bool = False
+
+    bucket: Optional[str] = None
+    index_path: Optional[str] = None
 
     cached_codec: ClassVar[OrderedDict[str, faiss.Index]] = OrderedDict()
     cached_index: ClassVar[OrderedDict[str, faiss.Index]] = OrderedDict()
 
     def __post_init__(self):
+        logger.info(f"Initializing metric_type to {self.metric}")
         if isinstance(self.metric, str):
             if self.metric == "IP":
                 self.metric_type = faiss.METRIC_INNER_PRODUCT
@@ -628,13 +624,38 @@ class Index(IndexBase):
                 Index.cached_codec.popitem(last=False)
         return Index.cached_codec[codec_name]
 
-    def get_index_name(self):
-        name = self.get_codec_name()
-        assert self.database_vectors is not None
-        name += self.database_vectors.get_filename("xb")
-        return name
+    def get_model(self):
+        return self.get_index()
+
+    def get_model_name(self):
+        return self.get_index_name()
+
+    def get_codec_name(self) -> Optional[str]:
+        return self.codec_name
+
+    def get_index_name(self) -> Optional[str]:
+        return self.index_name
 
     def fetch_index(self):
+        # read index from file if it is already available
+        index_filename = None
+        if self.index_path:
+            index_filename = os.path.basename(self.index_path)
+        elif self.index_name:
+            index_filename = self.index_name + "index"
+        if index_filename and self.io.file_exist(index_filename):
+            if self.index_path:
+                index = self.io.read_index(
+                    index_filename,
+                    self.bucket,
+                    os.path.dirname(self.index_path),
+                )
+            else:
+                index = self.io.read_index(index_filename)
+            assert self.d == index.d
+            assert self.metric_type == index.metric_type
+            return index, 0
+
         index = self.get_codec()
         index.reset()
         assert index.ntotal == 0
@@ -664,10 +685,15 @@ class Index(IndexBase):
             )
         assert index.ntotal == xb.shape[0] or index_ivf.ntotal == xb.shape[0]
         logger.info("Added vectors to index")
+        if self.serialize_full_index and index_filename:
+            codec_size = self.io.write_index(index, index_filename)
+            assert codec_size is not None
+
         return index, t
 
     def get_index(self):
-        index_name = self.get_index_name()
+        index_name = self.index_name
+        # TODO(kuarora) : retrieve file from bucket and path.
         if index_name not in Index.cached_index:
             Index.cached_index[index_name], _ = self.fetch_index()
             if len(Index.cached_index) > 3:
@@ -707,9 +733,11 @@ class Index(IndexBase):
         def add_range_or_val(name, range):
             op.add_range(
                 name,
-                [self.search_params[name]]
-                if self.search_params and name in self.search_params
-                else range,
+                (
+                    [self.search_params[name]]
+                    if self.search_params and name in self.search_params
+                    else range
+                ),
             )
 
         add_range_or_val("snap", [0])
@@ -784,8 +812,12 @@ class Index(IndexBase):
 # are used to wrap pre-trained Faiss indices (codecs)
 @dataclass
 class IndexFromCodec(Index):
-    path: str
-    bucket: Optional[str] = None
+    path: Optional[str] = None  # remote or local path to the codec
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.path is None and self.codec_name is None:
+            raise ValueError("path or desc_name is not set")
 
     def get_quantizer(self):
         if not self.is_ivf():
@@ -802,22 +834,26 @@ class IndexFromCodec(Index):
         return quantizer
 
     def get_model_name(self):
-        return os.path.basename(self.path)
-
-    def get_codec_name(self):
-        assert self.path is not None
-        name = os.path.basename(self.path)
-        name += Index.param_dict_list_to_name(self.construction_params)
-        return name
+        if self.path is not None:
+            return os.path.basename(self.path)
+        else:
+            return self.get_codec_name()
 
     def fetch_meta(self, dry_run=False):
         return None, None
 
     def fetch_codec(self):
+        if self.path is not None:
+            codec_filename = os.path.basename(self.path)
+            remote_path = os.path.dirname(self.path)
+        else:
+            codec_filename = self.get_codec_name() + "codec"
+            remote_path = None
+
         codec = self.io.read_index(
-            os.path.basename(self.path),
+            codec_filename,
             self.bucket,
-            os.path.dirname(self.path),
+            remote_path,
         )
         assert self.d == codec.d
         assert self.metric_type == codec.metric_type
@@ -871,20 +907,29 @@ class IndexFromPreTransform(IndexBase):
 # IndexFromFactory is for creating and training indices from scratch
 @dataclass
 class IndexFromFactory(Index):
-    factory: str
-    training_vectors: DatasetDescriptor
+    factory: Optional[str] = None
+    training_vectors: Optional[DatasetDescriptor] = None
+    assemble_opaque: bool = True
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.factory is None:
+            raise ValueError("factory is not set")
+        if self.factory != "Flat" and self.training_vectors is None:
+            raise ValueError(f"training_vectors is not set for {self.factory}")
 
     def get_codec_name(self):
-        assert self.factory is not None
-        name = f"{self.factory.replace(',', '_')}."
-        assert self.d is not None
-        assert self.metric is not None
-        name += f"d_{self.d}.{self.metric.upper()}."
-        if self.factory != "Flat":
-            assert self.training_vectors is not None
-            name += self.training_vectors.get_filename("xt")
-        name += Index.param_dict_list_to_name(self.construction_params)
-        return name
+        codec_name = super().get_codec_name()
+        if codec_name is None:
+            codec_name = f"{self.factory.replace(',', '_')}."
+            codec_name += f"d_{self.d}.{self.metric.upper()}."
+            if self.factory != "Flat":
+                assert self.training_vectors is not None
+                codec_name += self.training_vectors.get_filename("xt")
+            if self.construction_params is not None:
+                codec_name += IndexBaseDescriptor.param_dict_list_to_name(self.construction_params)
+        self.codec_name = codec_name
+        return self.codec_name
 
     def fetch_meta(self, dry_run=False):
         meta_filename = self.get_codec_name() + "json"
@@ -978,9 +1023,11 @@ class IndexFromFactory(Index):
             d=model_ivf.quantizer.d,
             metric=model_ivf.quantizer.metric_type,
             database_vectors=centroids,
-            construction_params=self.construction_params[1:]
-            if self.construction_params is not None
-            else None,
+            construction_params=(
+                self.construction_params[1:]
+                if self.construction_params is not None
+                else None
+            ),
             search_params=None,
             factory=reverse_index_factory(model_ivf.quantizer),
             training_vectors=centroids,
@@ -991,14 +1038,13 @@ class IndexFromFactory(Index):
     def assemble(self, dry_run):
         logger.info(f"assemble {self.factory}")
         model = self.get_model()
-        opaque = True
         t_aggregate = 0
         # try:
         #     reverse_index_factory(model)
         #     opaque = False
         # except NotImplementedError:
         #     opaque = True
-        if opaque:
+        if self.assemble_opaque:
             codec = model
         else:
             if isinstance(model, faiss.IndexPreTransform):

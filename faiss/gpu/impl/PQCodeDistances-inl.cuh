@@ -20,6 +20,12 @@
 namespace faiss {
 namespace gpu {
 
+#if defined(USE_AMD_ROCM) && __AMDGCN_WAVEFRONT_SIZE == 64u
+#define LAUNCH_BOUND 320
+#else
+#define LAUNCH_BOUND 288
+#endif
+
 // Kernel responsible for calculating distance from residual vector to
 // each product quantizer code centroid
 template <
@@ -27,7 +33,7 @@ template <
         typename CentroidT,
         int DimsPerSubQuantizer,
         bool L2Distance>
-__global__ void __launch_bounds__(288, 3) pqCodeDistances(
+__global__ void __launch_bounds__(LAUNCH_BOUND, 3) pqCodeDistances(
         Tensor<float, 2, true> queries,
         int queriesPerBlock,
         Tensor<CentroidT, 2, true> coarseCentroids,
@@ -632,7 +638,8 @@ void runPQCodeDistances(
 
     // Reserve one block of threads for double buffering
     // FIXME: probably impractical for large # of dims?
-    auto loadingThreads = utils::roundUp(dimsPerSubQuantizer, kWarpSize);
+    int warpSize = getWarpSizeCurrentDevice();
+    auto loadingThreads = utils::roundUp(dimsPerSubQuantizer, warpSize);
     auto block = dim3(codesPerSubQuantizer + loadingThreads);
 
     auto smem = (3 * dimsPerSubQuantizer) * sizeof(float) +
