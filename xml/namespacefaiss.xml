@@ -1296,7 +1296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/code_distance/code_distance.h" line="87" column="14" bodyfile="faiss/impl/code_distance/code_distance.h" bodystart="87" bodyend="97"/>
+        <location file="faiss/impl/code_distance/code_distance.h" line="140" column="14" bodyfile="faiss/impl/code_distance/code_distance.h" bodystart="140" bodyend="150"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -1358,7 +1358,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/code_distance/code_distance.h" line="100" column="13" bodyfile="faiss/impl/code_distance/code_distance.h" bodystart="100" bodyend="129"/>
+        <location file="faiss/impl/code_distance/code_distance.h" line="153" column="13" bodyfile="faiss/impl/code_distance/code_distance.h" bodystart="153" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a542cf4d499962a3d7a0db924424d8870" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

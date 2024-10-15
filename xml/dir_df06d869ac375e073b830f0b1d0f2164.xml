@@ -5,6 +5,7 @@
     <innerfile refid="code__distance-avx2_8h">code_distance-avx2.h</innerfile>
     <innerfile refid="code__distance-avx512_8h">code_distance-avx512.h</innerfile>
     <innerfile refid="code__distance-generic_8h">code_distance-generic.h</innerfile>
+    <innerfile refid="code__distance-sve_8h">code_distance-sve.h</innerfile>
     <innerfile refid="code__distance_8h">code_distance.h</innerfile>
     <briefdescription>
     </briefdescription>
