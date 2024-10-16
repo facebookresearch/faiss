@@ -119,3 +119,5 @@ if(BUILD_TESTING)
     endif()
   endif()
 endif()
+
+add_subdirectory(faiss/cppcontrib/knowhere)
