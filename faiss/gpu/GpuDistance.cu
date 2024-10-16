@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -64,7 +65,7 @@ bool should_use_raft(GpuDistanceParams args) {
 
     if (device_major_version < 7)
         return false;
-
+    int x; // test this useless variable lint still works?
     return args.use_raft;
 }
 
