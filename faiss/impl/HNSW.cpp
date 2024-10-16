@@ -166,10 +166,10 @@ void HNSW::print_neighbor_stats(int level) const {
 }
 
 void HNSW::fill_with_random_links(size_t n) {
-    int max_level = prepare_level_tab(n);
+    int max_level_2 = prepare_level_tab(n);
     RandomGenerator rng2(456);
 
-    for (int level = max_level - 1; level >= 0; --level) {
+    for (int level = max_level_2 - 1; level >= 0; --level) {
         std::vector<int> elts;
         for (int i = 0; i < n; i++) {
             if (levels[i] > level) {
@@ -210,16 +210,16 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         }
     }
 
-    int max_level = 0;
+    int max_level_2 = 0;
     for (int i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
-        if (pt_level > max_level)
-            max_level = pt_level;
+        if (pt_level > max_level_2)
+            max_level_2 = pt_level;
         offsets.push_back(offsets.back() + cum_nb_neighbors(pt_level + 1));
     }
     neighbors.resize(offsets.back(), -1);
 
-    return max_level;
+    return max_level_2;
 }
 
 /** Enumerate vertices from nearest to farthest from query, keep a
@@ -493,17 +493,17 @@ void HNSW::add_links_starting_from(
 
     ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
 
-    std::vector<storage_idx_t> neighbors;
-    neighbors.reserve(link_targets.size());
+    std::vector<storage_idx_t> neighbors_2;
+    neighbors_2.reserve(link_targets.size());
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
         add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
-        neighbors.push_back(other_id);
+        neighbors_2.push_back(other_id);
         link_targets.pop();
     }
 
     omp_unset_lock(&locks[pt_id]);
-    for (storage_idx_t other_id : neighbors) {
+    for (storage_idx_t other_id : neighbors_2) {
         omp_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         omp_unset_lock(&locks[other_id]);
