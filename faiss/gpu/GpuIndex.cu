@@ -42,10 +42,13 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 // FIXME: parameterize based on algorithm need
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
+/// Caches device major version
+extern int device_major_version;
+
 bool should_use_cuvs(GpuIndexConfig config_) {
     auto prop = getDeviceProperties(config_.device);
 
-    if (prop.major < 7)
+    if (device_major_version < 7)
         return false;
 
     return config_.use_cuvs;

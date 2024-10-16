@@ -81,6 +81,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
         res.noTempMemory()
 
         config = faiss.GpuIndexIVFFlatConfig()
+        # FIXME: triage failure when use_cuvs is set to True (issue #3968)
         config.use_cuvs = False
 
         index = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)

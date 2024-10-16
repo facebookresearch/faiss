@@ -51,7 +51,7 @@ bool should_use_cuvs(GpuDistanceParams args) {
     int dev = args.device >= 0 ? args.device : getCurrentDevice();
     auto prop = getDeviceProperties(dev);
 
-    if (prop.major < 7)
+    if (device_major_version < 7)
         return false;
 
     return args.use_cuvs;
