@@ -34,6 +34,7 @@ runs:
 
         conda install -y -q python=3.11 make swig numpy scipy pytest gflags openssl
 
+        sudo apt-get update
         sudo apt-get install libssl-dev
         mkdir /tmp/cmake-build
         pushd /tmp/cmake-build
