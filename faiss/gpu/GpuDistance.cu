@@ -51,12 +51,18 @@ using namespace raft::distance;
 using namespace raft::neighbors;
 #endif
 
-bool should_use_raft(GpuDistanceParams args) {
-    cudaDeviceProp prop;
-    int dev = args.device >= 0 ? args.device : getCurrentDevice();
-    cudaGetDeviceProperties(&prop, dev);
+/// Caches device major version
+int device_major_version = -1;
 
-    if (prop.major < 7)
+bool should_use_raft(GpuDistanceParams args) {
+    if (device_major_version < 0) {
+        cudaDeviceProp prop;
+        int dev = args.device >= 0 ? args.device : getCurrentDevice();
+        cudaGetDeviceProperties(&prop, dev);
+        device_major_version = prop.major;
+    }
+
+    if (device_major_version < 7)
         return false;
 
     return args.use_raft;

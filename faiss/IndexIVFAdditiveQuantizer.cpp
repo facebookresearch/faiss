@@ -186,10 +186,10 @@ struct AQInvertedListScannerDecompress : AQInvertedListScanner {
     float coarse_dis = 0;
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        AQInvertedListScanner::set_list(list_no, coarse_dis);
+    void set_list(idx_t list_no, float coarse_dis_2) override {
+        AQInvertedListScanner::set_list(list_no, coarse_dis_2);
         if (ia.by_residual) {
-            this->coarse_dis = coarse_dis;
+            this->coarse_dis = coarse_dis_2;
         }
     }
 
