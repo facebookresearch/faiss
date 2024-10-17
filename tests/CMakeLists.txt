@@ -36,6 +36,7 @@ set(FAISS_TEST_SRC
   test_common_ivf_empty_index.cpp
   test_callback.cpp
   test_utils.cpp
+  test_knn_functions.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -56,7 +57,7 @@ FetchContent_MakeAvailable(googletest)
 
 if(NOT EXISTS ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/gtest-config.cmake
    AND NOT EXISTS ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/GTestConfig.cmake)
-  file(
+    file(
     WRITE ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/gtest-config.cmake
     [=[
 include(CMakeFindDependencyMacro)
