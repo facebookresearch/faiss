@@ -24,6 +24,7 @@
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
+#include <optional>
 #include <vector>
 
 #include <cuvs/neighbors/brute_force.hpp>

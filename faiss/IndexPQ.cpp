@@ -159,16 +159,16 @@ void IndexPQ::search(
     FAISS_THROW_IF_NOT(is_trained);
 
     const SearchParametersPQ* params = nullptr;
-    Search_type_t search_type = this->search_type;
+    Search_type_t search_type_2 = this->search_type;
 
     if (iparams) {
         params = dynamic_cast<const SearchParametersPQ*>(iparams);
         FAISS_THROW_IF_NOT_MSG(params, "invalid search params");
         FAISS_THROW_IF_NOT_MSG(!params->sel, "selector not supported");
-        search_type = params->search_type;
+        search_type_2 = params->search_type;
     }
 
-    if (search_type == ST_PQ) { // Simple PQ search
+    if (search_type_2 == ST_PQ) { // Simple PQ search
 
         if (metric_type == METRIC_L2) {
             float_maxheap_array_t res = {
@@ -183,10 +183,10 @@ void IndexPQ::search(
         indexPQ_stats.ncode += n * ntotal;
 
     } else if (
-            search_type == ST_polysemous ||
-            search_type == ST_polysemous_generalize) {
+            search_type_2 == ST_polysemous ||
+            search_type_2 == ST_polysemous_generalize) {
         FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
-        int polysemous_ht =
+        int polysemous_ht_2 =
                 params ? params->polysemous_ht : this->polysemous_ht;
         search_core_polysemous(
                 n,
@@ -194,8 +194,8 @@ void IndexPQ::search(
                 k,
                 distances,
                 labels,
-                polysemous_ht,
-                search_type == ST_polysemous_generalize);
+                polysemous_ht_2,
+                search_type_2 == ST_polysemous_generalize);
 
     } else { // code-to-code distances
 
@@ -215,7 +215,7 @@ void IndexPQ::search(
             }
         }
 
-        if (search_type == ST_SDC) {
+        if (search_type_2 == ST_SDC) {
             float_maxheap_array_t res = {
                     size_t(n), size_t(k), labels, distances};
 
@@ -227,7 +227,7 @@ void IndexPQ::search(
             int_maxheap_array_t res = {
                     size_t(n), size_t(k), labels, idistances.get()};
 
-            if (search_type == ST_HE) {
+            if (search_type_2 == ST_HE) {
                 hammings_knn_hc(
                         &res,
                         q_codes.get(),
@@ -236,7 +236,7 @@ void IndexPQ::search(
                         pq.code_size,
                         true);
 
-            } else if (search_type == ST_generalized_HE) {
+            } else if (search_type_2 == ST_generalized_HE) {
                 generalized_hammings_knn_hc(
                         &res,
                         q_codes.get(),
@@ -322,13 +322,13 @@ void IndexPQ::search_core_polysemous(
         idx_t k,
         float* distances,
         idx_t* labels,
-        int polysemous_ht,
+        int polysemous_ht_2,
         bool generalized_hamming) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(pq.nbits == 8);
 
-    if (polysemous_ht == 0) {
-        polysemous_ht = pq.nbits * pq.M + 1;
+    if (polysemous_ht_2 == 0) {
+        polysemous_ht_2 = pq.nbits * pq.M + 1;
     }
 
     // PQ distance tables
@@ -374,7 +374,7 @@ void IndexPQ::search_core_polysemous(
                     k,
                     heap_dis,
                     heap_ids,
-                    polysemous_ht);
+                    polysemous_ht_2);
 
         } else { // generalized hamming
             switch (pq.code_size) {
@@ -387,7 +387,7 @@ void IndexPQ::search_core_polysemous(
                 k,                                               \
                 heap_dis,                                        \
                 heap_ids,                                        \
-                polysemous_ht);                                  \
+                polysemous_ht_2);                                \
         break;
                 DISPATCH(8)
                 DISPATCH(16)
@@ -401,7 +401,7 @@ void IndexPQ::search_core_polysemous(
                                 k,
                                 heap_dis,
                                 heap_ids,
-                                polysemous_ht);
+                                polysemous_ht_2);
                     } else {
                         bad_code_size++;
                     }
@@ -516,8 +516,8 @@ struct PreSortedArray {
     int N;
 
     explicit PreSortedArray(int N) : N(N) {}
-    void init(const T* x) {
-        this->x = x;
+    void init(const T* x_2) {
+        this->x = x_2;
     }
     // get smallest value
     T get_0() {
@@ -557,11 +557,11 @@ struct SortedArray {
         perm.resize(N);
     }
 
-    void init(const T* x) {
-        this->x = x;
+    void init(const T* x_2) {
+        this->x = x_2;
         for (int n = 0; n < N; n++)
             perm[n] = n;
-        ArgSort<T> cmp = {x};
+        ArgSort<T> cmp = {x_2};
         std::sort(perm.begin(), perm.end(), cmp);
     }
 
@@ -639,8 +639,8 @@ struct SemiSortedArray {
         k_factor = 4;
     }
 
-    void init(const T* x) {
-        this->x = x;
+    void init(const T* x_2) {
+        this->x = x_2;
         for (int n = 0; n < N; n++)
             perm[n] = n;
         k = 0;

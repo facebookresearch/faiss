@@ -81,6 +81,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
         res.noTempMemory()
 
         config = faiss.GpuIndexIVFFlatConfig()
+        # FIXME: triage failure when use_cuvs is set to True (issue #3968)
         config.use_cuvs = False
 
         index = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
@@ -339,9 +340,9 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
                         self.assertLess((D.cpu() - gt_D[6:8]).abs().max(), 1e-4)
 
     @unittest.skipUnless(
-        "RAFT" in faiss.get_compile_options(),
-        "only if RAFT is compiled in")
-    def test_knn_gpu_raft(self):
+        "CUVS" in faiss.get_compile_options(),
+        "only if CUVS is compiled in")
+    def test_knn_gpu_cuvs(self):
         self.test_knn_gpu(use_cuvs=True)
 
     def test_knn_gpu_datatypes(self, use_cuvs=False):
