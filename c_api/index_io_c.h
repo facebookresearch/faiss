@@ -16,6 +16,7 @@
 #include "IndexBinary_c.h"
 #include "Index_c.h"
 #include "faiss_c.h"
+#include "VectorTransform_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,6 +73,11 @@ int faiss_read_index_binary_fname(
         const char* fname,
         int io_flags,
         FaissIndexBinary** p_out);
+
+/** Read vector transform from a file.
+ * This is equivalent to `faiss:read_VectorTransform` when a file path is given.
+ */
+int faiss_read_VectorTransform_fname(const char* fname, FaissVectorTransform** p_out);
 #ifdef __cplusplus
 }
 #endif
