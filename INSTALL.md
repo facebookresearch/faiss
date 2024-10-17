@@ -93,6 +93,9 @@ The optional requirements are:
 - for GPU indices:
   - nvcc,
   - the CUDA toolkit,
+- for Intel®-AMX/oneDNN acceleration:
+  - oneDNN,
+  - 4th+ Gen Intel® Xeon® Scalable processor.
 - for AMD GPUs:
   - AMD ROCm,
 - for the python bindings:
@@ -116,6 +119,8 @@ Several options can be passed to CMake, among which:
 - general options:
   - `-DFAISS_ENABLE_GPU=OFF` in order to disable building GPU indices (possible
   values are `ON` and `OFF`),
+  - `-DFAISS_ENABLE_DNNL=OFF` in order to support for Intel®-AMX/oneDNN to accelerate indexflat(inner_product) search (possible
+  values are `ON` and `OFF`, before invoking CMake and setting this option to `ON`, you can refer to this [link](https://oneapi-src.github.io/oneDNN/dev_guide_build.html) for installing oneDNN),
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_RAFT=ON` in order to enable building the RAFT implementations
