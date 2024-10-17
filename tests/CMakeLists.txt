@@ -44,7 +44,6 @@ add_executable(faiss_test ${FAISS_TEST_SRC})
 include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_test)
-target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
 
 include(FetchContent)
 FetchContent_Declare(
