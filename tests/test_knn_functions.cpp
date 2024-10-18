@@ -34,7 +34,7 @@ VectorDataPtr generateRandomVector(
             data[n * d + i] = dis(gen);
         }
     }
-    return std::move(data);
+    return data;
 }
 
 float computeL2SqrDist(const float* vec1, const float* vec2, const unsigned d) {
