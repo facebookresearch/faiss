@@ -4,21 +4,21 @@ The supported way to install Faiss is through [conda](https://docs.conda.io).
 Stable releases are pushed regularly to the pytorch conda channel, as well as
 pre-release nightly builds.
 
-- The CPU-only faiss-cpu conda package is currently available on Linux (x86_64 and arm64), OSX (arm64 only), and Windows (x86_64)
-- faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86_64 only) for CUDA 11.4 and 12.1
-- NEW: faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86_64 only) for CUDA 11.8 and 12.1.
+- The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
+- faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
+- faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86-64 only) for CUDA 11.8 and 12.1.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.8.0
+$ conda install -c pytorch faiss-cpu=1.9.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.8.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.9.0
 
 # GPU(+CPU) version with NVIDIA RAFT
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -35,10 +35,10 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.8.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
 # GPU(+CPU) version with NVIDIA RAFT
-conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.8.0 pytorch pytorch-cuda numpy
+conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0 pytorch pytorch-cuda numpy
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -80,7 +80,7 @@ conda-forge package "feedstock".
 
 Faiss can be built from source using CMake.
 
-Faiss is supported on x86_64 machines on Linux, OSX, and Windows. It has been
+Faiss is supported on x86-64 machines on Linux, OSX, and Windows. It has been
 found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
@@ -130,8 +130,9 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `avx2` and `avx512`, by increasing order of optimization),
+  generate code using optimized SIMD/Vector instructions. Possible values are below:
+    - On x86-64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
+    - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the

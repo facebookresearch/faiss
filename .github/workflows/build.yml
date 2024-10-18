@@ -124,6 +124,9 @@ jobs:
         uses: ./.github/actions/build_cmake
         with:
           opt_level: sve
+        env:
+          # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
+          OPENBLAS_NUM_THREADS: '1'
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
     needs: linux-x86_64-cmake
@@ -172,6 +175,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
   linux-x86_64-GPU-packages-CUDA-11-4-4:
@@ -189,6 +194,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
           cuda: "11.4.4"
@@ -206,6 +213,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
           raft: "ON"
@@ -224,6 +233,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
           cuda: "12.1.1"
@@ -241,6 +252,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
           raft: "ON"
@@ -257,6 +270,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
   osx-arm64-packages:
@@ -271,6 +286,8 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main
   linux-arm64-packages:
@@ -285,5 +302,7 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: main

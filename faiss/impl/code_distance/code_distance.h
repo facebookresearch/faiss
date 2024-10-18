@@ -77,6 +77,59 @@ inline void distance_four_codes(
 
 } // namespace faiss
 
+#elif defined(__ARM_FEATURE_SVE)
+
+#include <faiss/impl/code_distance/code_distance-sve.h>
+
+namespace faiss {
+
+template <typename PQDecoderT>
+inline float distance_single_code(
+        // the product quantizer
+        const size_t M,
+        // number of bits per quantization index
+        const size_t nbits,
+        // precomputed distances, layout (M, ksub)
+        const float* sim_table,
+        // the code
+        const uint8_t* code) {
+    return distance_single_code_sve<PQDecoderT>(M, nbits, sim_table, code);
+}
+
+template <typename PQDecoderT>
+inline void distance_four_codes(
+        // the product quantizer
+        const size_t M,
+        // number of bits per quantization index
+        const size_t nbits,
+        // precomputed distances, layout (M, ksub)
+        const float* sim_table,
+        // codes
+        const uint8_t* __restrict code0,
+        const uint8_t* __restrict code1,
+        const uint8_t* __restrict code2,
+        const uint8_t* __restrict code3,
+        // computed distances
+        float& result0,
+        float& result1,
+        float& result2,
+        float& result3) {
+    distance_four_codes_sve<PQDecoderT>(
+            M,
+            nbits,
+            sim_table,
+            code0,
+            code1,
+            code2,
+            code3,
+            result0,
+            result1,
+            result2,
+            result3);
+}
+
+} // namespace faiss
+
 #else
 
 #include <faiss/impl/code_distance/code_distance-generic.h>

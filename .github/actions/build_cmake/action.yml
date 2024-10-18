@@ -36,12 +36,7 @@ runs:
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          # installing libmamba-solver is necessary for openblas=*=*openmp*
-          conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
-
-          # installing openblas that was compiled with USE_OPENMP=1.
-          # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
-          conda install -y -q -c conda-forge openblas=*=*openmp* gxx_linux-aarch64 sysroot_linux-aarch64
+          conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
         fi
 
         # install base packages for X86_64
@@ -59,7 +54,7 @@ runs:
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from RAFT channel for RAFT builds
         elif [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft cuda-version=12.4 cuda-toolkit -c rapidsai-nightly -c "nvidia/label/cuda-12.4.0" -c conda-forge
+          conda install -y -q libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
         # install test packages
