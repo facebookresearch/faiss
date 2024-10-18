@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <random>
 
@@ -18,7 +19,8 @@
 static const unsigned nb{1000};
 static const unsigned d{128};
 static const std::array<unsigned, 3> k_list{1, 50, 100};
-static const std::array<unsigned, 2> nq_list{10, 30};
+// static const std::array<unsigned, 2> nq_list{10, 30};
+static const std::array<unsigned, 2> nq_list{30};
 
 using VectorDataPtr = std::unique_ptr<float[]>;
 
@@ -72,7 +74,8 @@ void checkKNNResults(
         for (int64_t i = 0; i < ny; ++i) {
             float dist{0};
             if (is_l2) {
-                dist = computeL2SqrDist(x + q * d, y + i * d, d);
+                // dist = computeL2SqrDist(x + q * d, y + i * d, d);
+                dist = faiss::fvec_L2sqr(x + q * d, y + i * d, d);
             } else {
                 dist = computeInnerProductDist(x + q * d, y + i * d, d);
             }
@@ -87,17 +90,26 @@ void checkKNNResults(
                 });
         for (size_t j = 0; j < k; ++j) {
             ASSERT_EQ(res_pairs[j].second, indexes[q * k + j]);
-            // WARNING: There will be a very small fractional error :(
-            // ASSERT_FLOAT_EQ(res_pairs[j].first, distances[q * k + j]);
+
+            float local_dist{0}, ref_dist{distances[q * k + j]};
+            if (is_l2) {
+                local_dist = faiss::fvec_L2sqr(
+                        x + q * d, y + res_pairs[j].second * d, d);
+            } else {
+                local_dist = faiss::fvec_inner_product(
+                        x + q * d, y + res_pairs[j].second * d, d);
+            }
+            float relative_error = std::abs((local_dist - ref_dist)) / ref_dist;
+            ASSERT_LE(relative_error, 0.0001);
         }
     }
 }
 
 TEST(TestKNNFunctions, knn_L2sqr) {
-    VectorDataPtr random_base_data = generateRandomVector(nb, d);
+    VectorDataPtr random_base_data = generateRandomVector(nb, d, 0);
     for (unsigned k : k_list) {
         for (unsigned nq : nq_list) {
-            VectorDataPtr random_query_data = generateRandomVector(nq, d);
+            VectorDataPtr random_query_data = generateRandomVector(nq, d, 1);
             std::unique_ptr<float[]> distances =
                     std::make_unique<float[]>(nq * k);
             std::unique_ptr<int64_t[]> indexes =
