@@ -19,8 +19,7 @@
 static const unsigned nb{1000};
 static const unsigned d{128};
 static const std::array<unsigned, 3> k_list{1, 50, 100};
-// static const std::array<unsigned, 2> nq_list{10, 30};
-static const std::array<unsigned, 2> nq_list{30};
+static const std::array<unsigned, 2> nq_list{10, 30};
 
 using VectorDataPtr = std::unique_ptr<float[]>;
 
@@ -138,10 +137,10 @@ TEST(TestKNNFunctions, knn_L2sqr) {
 }
 
 TEST(TestKNNFunctions, knn_inner_product) {
-    VectorDataPtr random_base_data = generateRandomVector(nb, d);
+    VectorDataPtr random_base_data = generateRandomVector(nb, d, 0);
     for (unsigned k : k_list) {
         for (unsigned nq : nq_list) {
-            VectorDataPtr random_query_data = generateRandomVector(nq, d);
+            VectorDataPtr random_query_data = generateRandomVector(nq, d, 1);
             std::unique_ptr<float[]> distances =
                     std::make_unique<float[]>(nq * k);
             std::unique_ptr<int64_t[]> indexes =
