@@ -32,7 +32,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake make swig numpy=1.26.4 scipy pytest gflags
+        conda install -y -q python=3.11 cmake make swig numpy scipy pytest gflags
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -54,7 +54,7 @@ runs:
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from RAFT channel for RAFT builds
         elif [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
+          conda install -y -q numpy=1.26.4 libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
         # install test packages
