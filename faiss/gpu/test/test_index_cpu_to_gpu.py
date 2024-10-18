@@ -28,13 +28,13 @@ class TestMoveToGpu(unittest.TestCase):
 
     def create_and_clone(self, factory_string,
                          allowCpuCoarseQuantizer=None,
-                         use_raft=None):
+                         use_cuvs=None):
         idx = self.create_index(factory_string)
         config = faiss.GpuClonerOptions()
         if allowCpuCoarseQuantizer is not None:
             config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer
-        if use_raft is not None:
-            config.use_raft = use_raft
+        if use_cuvs is not None:
+            config.use_cuvs = use_cuvs
         faiss.index_cpu_to_gpu(self.res, 0, idx, config)
 
     def verify_throws_not_implemented_exception(self, factory_string):
@@ -47,12 +47,12 @@ class TestMoveToGpu(unittest.TestCase):
 
     def verify_clones_successfully(self, factory_string,
                                    allowCpuCoarseQuantizer=None,
-                                   use_raft=None):
+                                   use_cuvs=None):
         try:
             self.create_and_clone(
                 factory_string,
                 allowCpuCoarseQuantizer=allowCpuCoarseQuantizer,
-                use_raft=use_raft)
+                use_cuvs=use_cuvs)
         except Exception as e:
             self.fail("Unexpected exception thrown factory_string: "
                       "%s; error message: %s." % (factory_string, str(e)))
@@ -74,10 +74,10 @@ class TestMoveToGpu(unittest.TestCase):
         self.verify_clones_successfully("PCA32,IVF32,PQ8")
         self.verify_clones_successfully("PCA32,IVF32,PQ8np")
 
-        # set use_raft to false, these index types are not supported on RAFT
-        self.verify_clones_successfully("IVF32,SQ8", use_raft=False)
+        # set use_cuvs to false, these index types are not supported on cuVS
+        self.verify_clones_successfully("IVF32,SQ8", use_cuvs=False)
         self.verify_clones_successfully(
-            "PCA32,IVF32,SQ8", use_raft=False)
+            "PCA32,IVF32,SQ8", use_cuvs=False)
 
     def test_with_flag(self):
         self.verify_clones_successfully("IVF32_HNSW,Flat",
