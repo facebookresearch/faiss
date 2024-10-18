@@ -73,10 +73,9 @@ void checkKNNResults(
         for (int64_t i = 0; i < ny; ++i) {
             float dist{0};
             if (is_l2) {
-                // dist = computeL2SqrDist(x + q * d, y + i * d, d);
                 dist = faiss::fvec_L2sqr(x + q * d, y + i * d, d);
             } else {
-                dist = computeInnerProductDist(x + q * d, y + i * d, d);
+                dist = faiss::fvec_inner_product(x + q * d, y + i * d, d);
             }
             res_pairs.emplace_back(dist, i);
         }
