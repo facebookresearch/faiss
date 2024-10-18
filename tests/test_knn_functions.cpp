@@ -16,8 +16,10 @@
 
 #include "faiss/utils/distances.h"
 
-static const unsigned nb{1000};
-static const unsigned d{128};
+static const unsigned db_round = 3;
+static const unsigned nb{10000};
+static const std::array<unsigned, 3> nb_list{1000, 10000, 100000};
+static const std::array<unsigned, 3> d_list{32, 128, 1024};
 static const std::array<unsigned, 3> k_list{1, 50, 100};
 static const std::array<unsigned, 2> nq_list{10, 30};
 
@@ -28,7 +30,7 @@ VectorDataPtr generateRandomVector(
         const unsigned d,
         int seed = 0) {
     std::mt19937 gen(seed);
-    std::uniform_real_distribution<> dis(-1.0, 1.0);
+    std::uniform_real_distribution<> dis(-10.0, 10.0);
     VectorDataPtr data = std::make_unique<float[]>(nx * d);
     for (unsigned n{0}; n < nx; ++n) {
         for (unsigned i = 0; i < d; ++i) {
@@ -84,10 +86,23 @@ void checkKNNResults(
                 res_pairs.end(),
                 [is_l2](const std::pair<float, int64_t>& a,
                         const std::pair<float, int64_t>& b) {
-                    return is_l2 ? a.first < b.first : a.first > b.first;
+                    // return is_l2 ? (a.first < b.first) : (a.first > b.first);
+                    if (is_l2) {
+                        return a.first != b.first ? a.first < b.first
+                                                  : a.second < b.second;
+                    } else {
+                        return a.first != b.first ? a.first > b.first
+                                                  : a.second < b.second;
+                    }
                 });
         for (size_t j = 0; j < k; ++j) {
-            ASSERT_EQ(res_pairs[j].second, indexes[q * k + j]);
+            // ASSERT_EQ(res_pairs[j].second, indexes[q * k + j]);
+            EXPECT_EQ(res_pairs[j].second, indexes[q * k + j]);
+            if (res_pairs[j].second != indexes[q * k + j]) {
+                std::cout << "location: " << j << std::endl;
+                std::cout << "distances: " << res_pairs.at(j).first << "|"
+                          << distances[q * k + j] << std::endl;
+            }
 
             float local_dist{0}, ref_dist{distances[q * k + j]};
             if (is_l2) {
@@ -104,65 +119,75 @@ void checkKNNResults(
 }
 
 TEST(TestKNNFunctions, knn_L2sqr) {
-    VectorDataPtr random_base_data = generateRandomVector(nb, d, 0);
-    for (unsigned k : k_list) {
-        for (unsigned nq : nq_list) {
-            VectorDataPtr random_query_data = generateRandomVector(nq, d, 1);
-            std::unique_ptr<float[]> distances =
-                    std::make_unique<float[]>(nq * k);
-            std::unique_ptr<int64_t[]> indexes =
-                    std::make_unique<int64_t[]>(nq * k);
-            faiss::knn_L2sqr(
-                    random_query_data.get(),
-                    random_base_data.get(),
-                    d,
-                    nq,
-                    nb,
-                    k,
-                    distances.get(),
-                    indexes.get());
-            checkKNNResults(
-                    random_query_data.get(),
-                    random_base_data.get(),
-                    nq,
-                    nb,
-                    d,
-                    k,
-                    distances.get(),
-                    indexes.get(),
-                    true);
+    for (unsigned r{0}; r < db_round; ++r) {
+        unsigned nb = nb_list.at(r);
+        unsigned d = d_list.at(r);
+        VectorDataPtr random_base_data = generateRandomVector(nb, d, d);
+        for (unsigned k : k_list) {
+            for (unsigned nq : nq_list) {
+                VectorDataPtr random_query_data =
+                        generateRandomVector(nq, d, nq);
+                std::unique_ptr<float[]> distances =
+                        std::make_unique<float[]>(nq * k);
+                std::unique_ptr<int64_t[]> indexes =
+                        std::make_unique<int64_t[]>(nq * k);
+                faiss::knn_L2sqr(
+                        random_query_data.get(),
+                        random_base_data.get(),
+                        d,
+                        nq,
+                        nb,
+                        k,
+                        distances.get(),
+                        indexes.get());
+                checkKNNResults(
+                        random_query_data.get(),
+                        random_base_data.get(),
+                        nq,
+                        nb,
+                        d,
+                        k,
+                        distances.get(),
+                        indexes.get(),
+                        true);
+            }
         }
     }
 }
 
 TEST(TestKNNFunctions, knn_inner_product) {
-    VectorDataPtr random_base_data = generateRandomVector(nb, d, 0);
-    for (unsigned k : k_list) {
-        for (unsigned nq : nq_list) {
-            VectorDataPtr random_query_data = generateRandomVector(nq, d, 1);
-            std::unique_ptr<float[]> distances =
-                    std::make_unique<float[]>(nq * k);
-            std::unique_ptr<int64_t[]> indexes =
-                    std::make_unique<int64_t[]>(nq * k);
-            faiss::knn_inner_product(
-                    random_query_data.get(),
-                    random_base_data.get(),
-                    d,
-                    nq,
-                    nb,
-                    k,
-                    distances.get(),
-                    indexes.get());
-            checkKNNResults(
-                    random_query_data.get(),
-                    random_base_data.get(),
-                    nq,
-                    nb,
-                    d,
-                    k,
-                    distances.get(),
-                    indexes.get(),
-                    false);
+    for (unsigned r{0}; r < db_round; ++r) {
+        unsigned nb = nb_list.at(r);
+        unsigned d = d_list.at(r);
+        VectorDataPtr random_base_data = generateRandomVector(nb, d, d);
+        for (unsigned k : k_list) {
+            for (unsigned nq : nq_list) {
+                VectorDataPtr random_query_data =
+                        generateRandomVector(nq, d, nq);
+                std::unique_ptr<float[]> distances =
+                        std::make_unique<float[]>(nq * k);
+                std::unique_ptr<int64_t[]> indexes =
+                        std::make_unique<int64_t[]>(nq * k);
+                faiss::knn_inner_product(
+                        random_query_data.get(),
+                        random_base_data.get(),
+                        d,
+                        nq,
+                        nb,
+                        k,
+                        distances.get(),
+                        indexes.get());
+                checkKNNResults(
+                        random_query_data.get(),
+                        random_base_data.get(),
+                        nq,
+                        nb,
+                        d,
+                        k,
+                        distances.get(),
+                        indexes.get(),
+                        false);
+            }
         }
     }
 }
