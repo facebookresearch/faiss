@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
