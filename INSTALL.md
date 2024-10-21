@@ -147,9 +147,7 @@ Several options can be passed to CMake, among which:
   to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
   determine which architecture(s) you should pick),
   - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
-  The hipify script must be executed before using this option. 
-  Invoke `./faiss/gpu/hipify.sh` to execute. `-DFAISS_ENABLE_GPU` must be `ON`
-  when using this option. (possible values are `ON` and `OFF`),
+ `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see
