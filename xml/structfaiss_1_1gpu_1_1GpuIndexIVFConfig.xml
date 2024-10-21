@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="33" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="34" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="38" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="39" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="44" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="45" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

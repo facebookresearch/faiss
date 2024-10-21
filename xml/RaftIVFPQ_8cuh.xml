@@ -7,6 +7,7 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
+<codeline><highlight class="normal">//<sp/>@lint-ignore-every<sp/>LICENSELINT</highlight></codeline>
 <codeline><highlight class="normal">/**</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*</highlight></codeline>
