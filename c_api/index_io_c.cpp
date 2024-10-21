@@ -85,7 +85,9 @@ int faiss_read_index_binary_fname(
     CATCH_AND_HANDLE
 }
 
-int faiss_read_VectorTransform_fname(const char* fname, FaissVectorTransform** p_out) {
+int faiss_read_VectorTransform_fname(
+        const char* fname,
+        FaissVectorTransform** p_out) {
     try {
         auto out = faiss::read_VectorTransform(fname);
         *p_out = reinterpret_cast<FaissVectorTransform*>(out);
