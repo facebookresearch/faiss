@@ -21,7 +21,7 @@
 #endif
 
 #ifdef ENABLE_DNNL
-#include <faiss/cppcontrib/amx/onednn_utils.h>
+#include <faiss/cppcontrib/amx/distances_dnnl.h>
 #endif
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -135,48 +135,21 @@ namespace {
 
 #ifdef ENABLE_DNNL
 /* Find the nearest neighbors for nx queries in a set of ny vectors using oneDNN/AMX */
-template <class BlockResultHandler,  bool use_sel = false>
-void exhaustive_inner_product_seq_dnnl(
+template <class BlockResultHandler>
+void exhaustive_inner_product_dnnl(
         const float* x,
         const float* y,
         size_t d,
         size_t nx,
         size_t ny,
-        BlockResultHandler& res,
-        const IDSelector* sel = nullptr) {           
-    using SingleResultHandler =
-            typename BlockResultHandler::SingleResultHandler;
-    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
-
-    FAISS_ASSERT(use_sel == (sel != nullptr));
-
-    float* res_arr = (float*)malloc(nx * ny * sizeof(float));
-
-    comput_f32bf16f32_inner_product(
-            nx,
-            d,
-            ny,
-            d,
-            const_cast<float*>(x),
-            const_cast<float*>(y),
-            res_arr);
-
-#pragma omp parallel num_threads(nt)
-        {
-            SingleResultHandler resi(res);
-#pragma omp for
-            for (size_t i = 0; i < nx; i++) {
-                resi.begin(i);
-                for (size_t j = 0; j < ny; j++) {
-                    float ip = res_arr[i * ny + j];
-                    resi.add_result(ip, j);
-                }
-                resi.end();
-            }
-        }
-    free(res_arr);  
+        BlockResultHandler& res) {
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_inner_product_seq_dnnl(x, y, d, nx, ny, res);
+    } else {
+        exhaustive_inner_product_blas_dnnl(x, y, d, nx, ny, res);
+    } 
 }
-#endif
+#endif   
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
 template <class BlockResultHandler>
@@ -244,53 +217,6 @@ void exhaustive_L2sqr_seq(
         }
     }
 }
-
- 
-#ifdef ENABLE_DNNL
-/** Find the nearest neighbors for nx queries in a set of ny vectors using oneDNN/AMX */
-template <class BlockResultHandler>
-void exhaustive_inner_product_blas_dnnl(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        BlockResultHandler& res) {     
-    /* block sizes */    
-    const size_t bs_x = distance_compute_dnnl_query_bs;
-    const size_t bs_y = distance_compute_dnnl_database_bs;
-    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
-
-    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-        size_t i1 = i0 + bs_x;
-        if (i1 > nx)
-            i1 = nx;
-
-        res.begin_multiple(i0, i1);
-
-        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-            size_t j1 = j0 + bs_y;
-            if (j1 > ny)
-                j1 = ny;
-            /* compute the actual dot products */
-            FINTEGER nyi = j1 - j0, nxi = i1 - i0;
-            comput_f32bf16f32_inner_product(
-                    nxi,
-                    d,
-                    nyi,
-                    d,
-                    const_cast<float*>(x + i0 * d),
-                    const_cast<float*>(y + j0 * d),
-                    ip_block.get());
-
-
-            res.add_results(j0, j1, ip_block.get());
-        }
-        res.end_multiple();
-        InterruptCallback::check();
-    }
-}
-#endif
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
 template <class BlockResultHandler>
@@ -703,21 +629,15 @@ struct Run_search_inner_product {
            size_t d,
            size_t nx,
            size_t ny) {
-        if (res.sel || nx < distance_compute_blas_threshold) {
 #ifdef ENABLE_DNNL
-            if(is_amxbf16_supported()){
-                exhaustive_inner_product_seq_dnnl(x, y, d, nx, ny, res);
-                return;
-            }
-#endif    
+        if(!res.sel && is_amxbf16_supported()) {
+            exhaustive_inner_product_dnnl(x, y, d, nx, ny, res);
+            return;
+        }
+#endif        
+        if (res.sel || nx < distance_compute_blas_threshold) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
-#ifdef ENABLE_DNNL
-            if(is_amxbf16_supported()){
-                exhaustive_inner_product_blas_dnnl(x, y, d, nx, ny, res);
-                return;
-            }
-#endif           
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
         }
     }
@@ -751,8 +671,6 @@ int distance_compute_blas_threshold = 20;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
-int distance_compute_dnnl_query_bs = 10240;
-int distance_compute_dnnl_database_bs = 10240;
 
 
 void knn_inner_product(

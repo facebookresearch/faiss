@@ -231,6 +231,7 @@ endif()
 
 if(FAISS_ENABLE_DNNL)
   list(APPEND FAISS_HEADERS cppcontrib/amx/onednn_utils.h)
+  list(APPEND FAISS_HEADERS cppcontrib/amx/distances_dnnl.h)
 endif()
 
 if(FAISS_ENABLE_DNNL)
