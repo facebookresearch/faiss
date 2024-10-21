@@ -8,8 +8,8 @@ inputs:
     description: 'Enable GPU support.'
     required: false
     default: OFF
-  raft:
-    description: 'Enable RAFT support.'
+  cuvs:
+    description: 'Enable cuVS support.'
     required: false
     default: OFF
   rocm:
@@ -32,7 +32,19 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake make swig numpy scipy pytest gflags
+        conda install -y -q python=3.11 make swig numpy scipy pytest gflags
+
+        apt-cache show libc6
+        sudo apt-get update
+        sudo apt-get install libssl-dev
+        mkdir /tmp/cmake-build
+        pushd /tmp/cmake-build
+        git clone -b v3.30.5 https://gitlab.kitware.com/cmake/cmake.git
+        mkdir cmake/build
+        cd cmake/build
+        ../bootstrap -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
+        make -j8
+        popd
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -50,11 +62,11 @@ runs:
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           :
         # regular CUDA for GPU builds
-        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        # and CUDA from RAFT channel for RAFT builds
-        elif [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
+        # and CUDA from cuVS channel for cuVS builds
+        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
+          conda install -y -q libcuvs=24.10 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
         fi
 
         # install test packages
@@ -101,25 +113,26 @@ runs:
         sudo apt-get -qq autoclean >/dev/null
         sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-    - name: Symblink system dependencies
-      if: inputs.raft == 'ON' || inputs.rocm == 'ON'
-      shell: bash
-      run: |
-        # symblink system libraries for HIP compiler
-        sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
-        sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
-        sudo ln -s $HOME/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
+#   - name: Symblink system dependencies
+#     if: inputs.cuvs == 'ON' || inputs.rocm == 'ON'
+#     shell: bash
+#     run: |
+#       # symblink system libraries for HIP compiler
+#       sudo ln -s /lib/x86_64-linux-gnu/libc.so.6 /lib64/libc.so.6
+#       sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
+#       sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
+#       sudo ln -s $HOME/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
     - name: Build all targets
       shell: bash
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
+        export PATH="/tmp/cmake-build/cmake/build/bin:$PATH"
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
-              -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
@@ -127,6 +140,7 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
@@ -174,5 +188,5 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-raft=${{ inputs.raft }}-rocm=${{ inputs.rocm }}
+        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
         path: test-results
