@@ -1571,9 +1571,10 @@
     <member refid="structfaiss_1_1nsg_1_1Graph_1adce99316683878d3bccc0055026e542e" kind="function"><name>Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a93fa05e785fbd0c82c762d4ea34f6e8c" kind="function"><name>Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1af9db6b52a82a8c633dfd8bb487106948" kind="function"><name>Graph</name></member>
-    <member refid="structfaiss_1_1nsg_1_1Graph_1ada22192501114a583bf778428c76c8d9" kind="function"><name>~Graph</name></member>
+    <member refid="structfaiss_1_1nsg_1_1Graph_1a945f614dcd4f5ccb28c8e7af6165e6d1" kind="function"><name>~Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a678cdec9f72b63eca1012d657cf74770" kind="function"><name>at</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a6e677c5639c8ee26a12751e4e88a8841" kind="function"><name>at</name></member>
+    <member refid="structfaiss_1_1nsg_1_1Graph_1a7b857463a2dd15fcf6ae5c474d1986da" kind="function"><name>get_neighbors</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
@@ -6678,13 +6679,15 @@
   </compound>
   <compound refid="structfaiss_1_1NSG" kind="struct"><name>faiss::NSG</name>
     <member refid="structfaiss_1_1NSG_1a4a60736c534e8753071308fdb0e6eeab" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1NSG_1a1a7412b20274be98246ba8ca13e3b16e" kind="typedef"><name>Node</name></member>
+    <member refid="structfaiss_1_1NSG_1a04b85471028d297e5bd153d2ee0820d0" kind="typedef"><name>Neighbor</name></member>
     <member refid="structfaiss_1_1NSG_1a59ba6c8149371bba021032b85ef4c05f" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1NSG_1a6ea9e9a2f92a3b4750cb2dbdb0fe3ef6" kind="variable"><name>R</name></member>
     <member refid="structfaiss_1_1NSG_1af354918b4f15cfee52b475d1c49164ad" kind="variable"><name>L</name></member>
     <member refid="structfaiss_1_1NSG_1a578bc868281b0c3105ddf91e6485b57b" kind="variable"><name>C</name></member>
     <member refid="structfaiss_1_1NSG_1a13564167f1050b9d23b650bc70f23a36" kind="variable"><name>search_L</name></member>
     <member refid="structfaiss_1_1NSG_1aed2653f3cc0681c175536a4090dfc4ca" kind="variable"><name>enterpoint</name></member>
-    <member refid="structfaiss_1_1NSG_1ac227b99a8b240ce87cde46f9fbcd2cb8" kind="variable"><name>final_graph</name></member>
+    <member refid="structfaiss_1_1NSG_1a1176bfde1457292e4c058b352bcde902" kind="variable"><name>final_graph</name></member>
     <member refid="structfaiss_1_1NSG_1a4d059cd0ef5c9722c082c77da13fea7a" kind="variable"><name>is_built</name></member>
     <member refid="structfaiss_1_1NSG_1a9c6c2f501206e39318527d3470e7abfe" kind="variable"><name>rng</name></member>
     <member refid="structfaiss_1_1NSG_1a2d1f59aa68aee326953b222c8a460805" kind="function"><name>NSG</name></member>
