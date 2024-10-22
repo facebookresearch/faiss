@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="48" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/impl/FaissException.h" line="47" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1TransformedVectors_1ae552cef59d3d89e9ce87592a98b26024" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="49" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/impl/FaissException.h" line="48" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="50" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="50" bodyend="52"/>
+        <location file="faiss/impl/FaissException.h" line="49" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="49" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1TransformedVectors_1a1167e5c815fefbeb66a4223ca7ce452d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="54" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="54" bodyend="58"/>
+        <location file="faiss/impl/FaissException.h" line="53" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="53" bodyend="57"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -72,7 +72,7 @@
     <detaileddescription>
 <para>RAII object for a set of possibly transformed vectors (deallocated only if they are indeed transformed) </para>
     </detaileddescription>
-    <location file="faiss/impl/FaissException.h" line="47" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="47" bodyend="59"/>
+    <location file="faiss/impl/FaissException.h" line="46" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="46" bodyend="58"/>
     <listofallmembers>
       <member refid="structfaiss_1_1TransformedVectors_1ae552cef59d3d89e9ce87592a98b26024" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>own_x</name></member>
       <member refid="structfaiss_1_1TransformedVectors_1ae9dfe9f6ff89c627513f7e31635c515e" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>TransformedVectors</name></member>

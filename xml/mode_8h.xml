@@ -146,8 +146,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</para>
+<para>Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</para>
 <para>B represents the number of buckets. D is the number of min-k elements to track within every bucket.</para>
 <para>Default option is EXACT_TOPK. APPROX_TOPK_BUCKETS_B16_D2 is worth starting from, if you&apos;d like to experiment a bit.</para>
 <para>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so ones were not introduced.</para>
@@ -163,8 +162,8 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
 <codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
 <codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>

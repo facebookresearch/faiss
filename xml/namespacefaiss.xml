@@ -1376,7 +1376,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="41" column="6" declfile="faiss/impl/FaissException.h" declline="41" declcolumn="6"/>
+        <location file="faiss/impl/FaissException.h" line="40" column="6" declfile="faiss/impl/FaissException.h" declline="40" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -1394,7 +1394,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="62" column="13" declfile="faiss/impl/FaissException.h" declline="62" declcolumn="13"/>
+        <location file="faiss/impl/FaissException.h" line="61" column="13" declfile="faiss/impl/FaissException.h" declline="61" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6f2f483b00cb60d4860f1d3ff7107b8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -10400,34 +10400,24 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
+<para>Implementation of k-means clustering with many variants.</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implementation of k-means clustering with many variants.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> is intended to define a subset of vectors to handle (for removal or as subset to search)</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. PQ4 SIMD packing and accumulation functions</para>
+<para><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> is intended to define a subset of vectors to handle (for removal or as subset to search)</para>
+<para>PQ4 SIMD packing and accumulation functions</para>
 <para>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</para>
 <para>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</para>
+<para>This file contains callbacks for kernels that compute distances.</para>
 <para>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</para>
 <para>x[ i * d + j ]</para>
 <para>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</para>
+<para>I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</para>
 <para>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>.</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <ref refid="structfaiss_1_1QINCo" kindref="compound">QINCo</ref></para>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </para>
+<para>Definition of inverted lists + a few common classes that implement the interface.</para>
+<para>Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>.</para>
+<para>In this file are the implementations of extra metrics beyond L2 and inner product</para>
+<para>Implements a few neural net layers, mainly to support <ref refid="structfaiss_1_1QINCo" kindref="compound">QINCo</ref></para>
+<para>Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </para>
     </detaileddescription>
     <location file="faiss/AutoTune.h" line="19" column="1"/>
   </compounddef>

@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="35" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/impl/FaissException.h" line="34" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="24" column="14"/>
+        <location file="faiss/impl/FaissException.h" line="23" column="14"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1FaissException_1aad3c1ede6afd588191567fa9f1a60ed0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="26" column="5"/>
+        <location file="faiss/impl/FaissException.h" line="25" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1FaissException_1a1993286a39f14787d8441f2f2344612a" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>const char *</type>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="33" column="16"/>
+        <location file="faiss/impl/FaissException.h" line="32" column="16"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -108,7 +108,7 @@
         <label>std::exception</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/FaissException.h" line="22" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="22" bodyend="36"/>
+    <location file="faiss/impl/FaissException.h" line="21" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="21" bodyend="35"/>
     <listofallmembers>
       <member refid="classfaiss_1_1FaissException_1a666519cae8a1ab155907e91e80e2ea59" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>FaissException</name></member>
       <member refid="classfaiss_1_1FaissException_1aad3c1ede6afd588191567fa9f1a60ed0" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>FaissException</name></member>

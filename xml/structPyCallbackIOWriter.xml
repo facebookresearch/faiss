@@ -3,7 +3,6 @@
   <compounddef id="structPyCallbackIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOWriter</compoundname>
     <basecompoundref refid="structfaiss_1_1IOWriter" prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
-    <includes refid="python__callbacks_8h" local="no">python_callbacks.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
@@ -126,8 +125,6 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">
