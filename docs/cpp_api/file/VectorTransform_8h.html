@@ -325,34 +325,24 @@
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45faiss">
 <span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
-<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<dd><p>Implementation of k-means clustering with many variants.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implementation of k-means clustering with many variants.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a> is intended to define a subset of vectors to handle (for removal or as subset to search)</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. PQ4 SIMD packing and accumulation functions</p>
+<p><a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a> is intended to define a subset of vectors to handle (for removal or as subset to search)</p>
+<p>PQ4 SIMD packing and accumulation functions</p>
 <p>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</p>
 <p>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. This file contains callbacks for kernels that compute distances.</p>
+<p>This file contains callbacks for kernels that compute distances.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
 <p>x[ i * d + j ]</p>
 <p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
 <p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Definition of inverted lists + a few common classes that implement the interface.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. In this file are the implementations of extra metrics beyond L2 and inner product</p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
-<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<p>Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
+<p>Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss15VectorTransformE">
 <span id="_CPPv3N5faiss15VectorTransformE"></span><span id="_CPPv2N5faiss15VectorTransformE"></span><span id="faiss::VectorTransform"></span><span class="target" id="structfaiss_1_1VectorTransform"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VectorTransform</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15VectorTransformE" title="Permalink to this definition"></a><br /></dt>

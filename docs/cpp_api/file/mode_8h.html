@@ -327,8 +327,7 @@
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv417ApproxTopK_mode_t">
 <span id="_CPPv317ApproxTopK_mode_t"></span><span id="_CPPv217ApproxTopK_mode_t"></span><span class="target" id="mode_8h_1a58cd97df40a8121322e0648c49186299"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApproxTopK_mode_t</span></span></span><a class="headerlink" href="#_CPPv417ApproxTopK_mode_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
-<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</p>
+<dd><p>Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</p>
 <p>B represents the number of buckets. D is the number of min-k elements to track within every bucket.</p>
 <p>Default option is EXACT_TOPK. APPROX_TOPK_BUCKETS_B16_D2 is worth starting from, if you’d like to experiment a bit.</p>
 <p>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so ones were not introduced.</p>
