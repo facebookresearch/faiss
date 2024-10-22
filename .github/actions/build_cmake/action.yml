@@ -102,7 +102,7 @@ runs:
         sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     - name: Symblink system dependencies
-      if: inputs.cuvs == 'ON' || inputs.rocm == 'ON'
+      if: inputs.rocm == 'ON'
       shell: bash
       run: |
         # symblink system libraries for HIP compiler
