@@ -42,7 +42,7 @@ runs:
         # install base packages for X86_64
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
-          conda install -y -q -c conda-forge gxx_linux-64=11.2 sysroot_linux-64=2.28
+          conda install -y -q -c conda-forge gxx_linux-64=11.2 sysroot_linux-64
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
@@ -54,7 +54,7 @@ runs:
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q cmake=3.26 libcuvs=24.10 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
+          conda install -y -q cmake=3.26 libcuvs=24.10 cuda-version=12.4 cuda-toolkit -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
         fi
 
         # install test packages
