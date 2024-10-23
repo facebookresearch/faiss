@@ -28,6 +28,28 @@ typename C::T partition_fuzzy(
         size_t q_max,
         size_t* q_out);
 
+template <class C>
+typename C::T partition_fuzzy_one_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template <class C>
+typename C::T partition_fuzzy_two_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs_first,
+        typename C::T* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+
 /** simplified interface for when the parition is not fuzzy */
 template <class C>
 inline typename C::T partition(
@@ -36,6 +58,27 @@ inline typename C::T partition(
         size_t n,
         size_t q) {
     return partition_fuzzy<C>(vals, ids, n, q, q, nullptr);
+}
+
+template <class C>
+inline typename C::T partition_one_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs,
+        size_t n,
+        size_t q) {
+    return partition_fuzzy_one_attribute<C>(vals, ids, attrs, n, q, q, nullptr);
+}
+
+template <class C>
+inline typename C::T partition_two_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs_first,
+        typename C::T* attrs_second,
+        size_t n,
+        size_t q) {
+    return partition_fuzzy_two_attribute<C>(vals, ids, attrs_first, attrs_second, n, q, q, nullptr);
 }
 
 /** low level SIMD histogramming functions */

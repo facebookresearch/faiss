@@ -41,6 +41,18 @@ struct IndexLattice : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /// not implemented
+    void add(idx_t n, const float* x) override;
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void reset() override;
 };
 
 } // namespace faiss

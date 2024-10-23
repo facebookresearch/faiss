@@ -301,6 +301,33 @@ void knn_inner_product(
         float_minheap_array_t* res,
         const IDSelector* sel = nullptr);
 
+void knn_inner_product_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_minheap_one_attribute_array_t* res,
+        const IDSelector* sel = nullptr);
+
+void knn_inner_product_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_minheap_two_attribute_array_t* res,
+        const IDSelector* sel = nullptr);
+
 /**  Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, for the inner product metric.
  *
@@ -320,6 +347,40 @@ void knn_inner_product(
         int64_t* indexes,
         const IDSelector* sel = nullptr);
 
+void knn_inner_product_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        float* attrs,
+        const IDSelector* sel = nullptr);
+
+void knn_inner_product_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        float* attrs_first,
+        float* attrs_second,
+        const IDSelector* sel = nullptr);
+
 /** Return the k nearest neighbors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
  * @param x    query vectors, size nx * d
@@ -335,6 +396,35 @@ void knn_L2sqr(
         size_t nx,
         size_t ny,
         float_maxheap_array_t* res,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
+void knn_L2sqr_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_maxheap_one_attribute_array_t* res,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
+void knn_L2sqr_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_maxheap_two_attribute_array_t* res,
         const float* y_norm2 = nullptr,
         const IDSelector* sel = nullptr);
 
@@ -357,6 +447,42 @@ void knn_L2sqr(
         size_t k,
         float* distances,
         int64_t* indexes,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
+void knn_L2sqr_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        float* attrs,
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
+
+void knn_L2sqr_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        float* attrs_first,
+        float* attrs_second,
         const float* y_norm2 = nullptr,
         const IDSelector* sel = nullptr);
 
@@ -383,6 +509,44 @@ void knn_inner_products_by_idx(
         int64_t* ids,
         int64_t ld_ids = -1);
 
+void knn_inner_products_by_idx_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        const int64_t* subset, // selected ids
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        int64_t ld_ids = -1);
+
+void knn_inner_products_by_idx_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        const int64_t* subset, // selected ids
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
+        int64_t ld_ids = -1);
+
 /** Find the nearest neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
  *
@@ -404,6 +568,44 @@ void knn_L2sqr_by_idx(
         size_t k,
         float* vals,
         int64_t* ids,
+        int64_t ld_subset = -1);
+
+void knn_L2sqr_by_idx_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        const int64_t* subset,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        int64_t ld_subset = -1);
+
+void knn_L2sqr_by_idx_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        const int64_t* subset,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
         int64_t ld_subset = -1);
 
 /***************************************************************************

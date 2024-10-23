@@ -17,7 +17,7 @@
 #include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 9
+#define FAISS_VERSION_MINOR 8
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
@@ -116,6 +116,8 @@ struct Index {
      * @param x      input matrix, size n * d
      */
     virtual void add(idx_t n, const float* x) = 0;
+    virtual void add_with_one_attribute(idx_t n, const float* x, const float* attr);
+    virtual void add_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second);
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -127,6 +129,8 @@ struct Index {
      * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
+    virtual void add_with_ids_with_one_attribute(idx_t n, const float* x, const float* attr, const idx_t* xids);
+    virtual void add_with_ids_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second, const idx_t* xids);
 
     /** query n vectors of dimension d to the index.
      *
@@ -146,6 +150,32 @@ struct Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
+
+    virtual void search_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute,
+            const float upper_attribute,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            const SearchParameters* params = nullptr) const;
+
+
+    virtual void search_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
+            const SearchParameters* params = nullptr) const;
 
     /** query n vectors of dimension d to the index.
      *
@@ -174,8 +204,7 @@ struct Index {
      * @param labels      output labels of the NNs, size n*k
      * @param k           number of nearest neighbours
      */
-    virtual void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1)
-            const;
+    virtual void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1) const;
 
     /// removes all elements from the database.
     virtual void reset() = 0;
@@ -192,6 +221,8 @@ struct Index {
      * @param recons      reconstucted vector (size d)
      */
     virtual void reconstruct(idx_t key, float* recons) const;
+    virtual void reconstruct_one_attribute(idx_t key, float* recons_attr) const;
+    virtual void reconstruct_two_attribute(idx_t key, float* recons_attr_first, float* recons_attr_second) const;
 
     /** Reconstruct several stored vectors (or an approximation if lossy
      * coding)
@@ -201,8 +232,7 @@ struct Index {
      * @param keys        ids of the vectors to reconstruct (size n)
      * @param recons      reconstucted vector (size n * d)
      */
-    virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
-            const;
+    virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons) const;
 
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
@@ -212,6 +242,8 @@ struct Index {
      * @param recons      reconstucted vector (size ni * d)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, float* recons) const;
+    virtual void reconstruct_n_one_attribute(idx_t i0, idx_t ni, float* recons_attr) const;
+    virtual void reconstruct_n_two_attribute(idx_t i0, idx_t ni, float* recons_attr_first, float* recons_attr_second) const;
 
     /** Similar to search, but also reconstructs the stored vectors (or an
      * approximation in the case of lossy coding) for the search results.
@@ -246,8 +278,7 @@ struct Index {
      * @param residual    output residual vector, size d
      * @param key         encoded index, as returned by search and assign
      */
-    virtual void compute_residual(const float* x, float* residual, idx_t key)
-            const;
+    virtual void compute_residual(const float* x, float* residual, idx_t key) const;
 
     /** Computes a residual vector after indexing encoding (batch form).
      * Equivalent to calling compute_residual for each vector.
@@ -280,6 +311,8 @@ struct Index {
 
     /** size of the produced codes in bytes */
     virtual size_t sa_code_size() const;
+    virtual size_t sa_one_attribute_code_size() const;
+    virtual size_t sa_two_attribute_code_size() const;
 
     /** encode a set of vectors
      *
@@ -288,6 +321,9 @@ struct Index {
      * @param bytes   output encoded vectors, size n * sa_code_size()
      */
     virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
+    virtual void sa_one_attribute_encode(idx_t n, const float* attr, uint8_t* bytes) const;
+    virtual void sa_two_attribute_encode(idx_t n, const float* attr_first, const float* attr_second, 
+                                         uint8_t* bytes_first, uint8_t* bytes_second) const;
 
     /** decode a set of vectors
      *
@@ -296,6 +332,9 @@ struct Index {
      * @param x       output vectors, size n * d
      */
     virtual void sa_decode(idx_t n, const uint8_t* bytes, float* x) const;
+    virtual void sa_one_attribute_decode(idx_t n, const uint8_t* bytes, float* attr) const;
+    virtual void sa_two_attribute_decode(idx_t n, const uint8_t* bytes_first, const uint8_t* bytes_second, 
+                                         float* attr_first, float* attr_second) const;
 
     /** moves the entries from another dataset to self.
      * On output, other is empty.
@@ -307,6 +346,8 @@ struct Index {
      * trained in the same way and have the same
      * parameters). Otherwise throw. */
     virtual void check_compatible_for_merge(const Index& otherIndex) const;
+    virtual void set_is_include_one_attribute();
+    virtual void set_is_include_two_attribute();
 };
 
 } // namespace faiss

@@ -166,6 +166,30 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             for (size_t i = 0; i < n8; i++) {
                 cs += codes8[i];
             }
+
+            if (od->is_include_one_attribute){
+                const uint8_t* attributes = od->get_attributes(list_no);
+                const idx_t* attributes8 = (const idx_t*)attributes; 
+                idx_t q8 = n * od->attr_size / 8; 
+                for (size_t i = 0; i < q8; i++){
+                    cs += attributes8[i];
+                }
+            }
+
+            if (od->is_include_two_attribute){
+                const uint8_t* attributes_first = od->get_attributes_first(list_no);
+                const idx_t* attributes_first8 = (const idx_t*)attributes_first;
+                const uint8_t* attributes_second = od->get_attributes_second(list_no);
+                const idx_t* attributes_second8 = (const idx_t*)attributes_second;
+                idx_t q8 = n * od->attr_size / 8; 
+                for (size_t i = 0; i < q8; i++){
+                    cs += attributes_first8[i];
+                }
+                for (size_t i = 0; i < q8; i++){
+                    cs += attributes_second8[i];
+                }
+            }
+
             od->locks->unlock_1(list_no);
 
             global_cs += cs & 1;
@@ -398,6 +422,33 @@ const idx_t* OnDiskInvertedLists::get_ids(size_t list_no) const {
                           code_size * lists[list_no].capacity);
 }
 
+const uint8_t* OnDiskInvertedLists::get_attributes(size_t list_no) const {
+    FAISS_THROW_IF_NOT(is_include_one_attribute);
+    if (lists[list_no].offset == INVALID_OFFSET) {
+        return nullptr;
+    }
+
+    return (const uint8_t*)(ptr + lists[list_no].offset + (code_size + sizeof(idx_t)) * lists[list_no].capacity);
+}
+
+const uint8_t* OnDiskInvertedLists::get_attributes_first(size_t list_no) const {
+    FAISS_THROW_IF_NOT(is_include_two_attribute);
+    if (lists[list_no].offset == INVALID_OFFSET) {
+        return nullptr;
+    }
+
+    return (const uint8_t*)(ptr + lists[list_no].offset + (code_size + sizeof(idx_t)) * lists[list_no].capacity);
+}
+
+const uint8_t* OnDiskInvertedLists::get_attributes_second(size_t list_no) const {
+    FAISS_THROW_IF_NOT(is_include_two_attribute);
+    if (lists[list_no].offset == INVALID_OFFSET) {
+        return nullptr;
+    }
+
+    return (const uint8_t*)(ptr + lists[list_no].offset + (code_size + sizeof(idx_t)) * lists[list_no].capacity);
+}
+
 void OnDiskInvertedLists::update_entries(
         size_t list_no,
         size_t offset,
@@ -405,6 +456,8 @@ void OnDiskInvertedLists::update_entries(
         const idx_t* ids_in,
         const uint8_t* codes_in) {
     FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(!is_include_one_attribute);
+    FAISS_THROW_IF_NOT(!is_include_two_attribute);
     if (n_entry == 0)
         return;
     [[maybe_unused]] const List& l = lists[list_no];
@@ -415,16 +468,99 @@ void OnDiskInvertedLists::update_entries(
     memcpy(codes + offset * code_size, codes_in, code_size * n_entry);
 }
 
+void OnDiskInvertedLists::update_entries_with_one_attribute(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* codes_in,
+        const uint8_t* attributes_in) {
+    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(is_include_one_attribute);
+    if (n_entry == 0)
+        return;
+    [[maybe_unused]] const List& l = lists[list_no];
+    assert(n_entry + offset <= l.size);
+    idx_t* ids = const_cast<idx_t*>(get_ids(list_no));
+    memcpy(ids + offset, ids_in, sizeof(ids_in[0]) * n_entry);
+    uint8_t* codes = const_cast<uint8_t*>(get_codes(list_no));
+    memcpy(codes + offset * code_size, codes_in, code_size * n_entry);
+
+    uint8_t* attributes = const_cast<uint8_t*>(get_attributes(list_no));
+    memcpy(attributes + offset * attr_size, attributes_in, attr_size * n_entry);
+}
+
+void OnDiskInvertedLists::update_entries_with_two_attribute(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* codes_in,
+        const uint8_t* attributes_in_first,
+        const uint8_t* attributes_in_second) {
+    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(is_include_two_attribute);
+    if (n_entry == 0)
+        return;
+    [[maybe_unused]] const List& l = lists[list_no];
+    assert(n_entry + offset <= l.size);
+    idx_t* ids = const_cast<idx_t*>(get_ids(list_no));
+    memcpy(ids + offset, ids_in, sizeof(ids_in[0]) * n_entry);
+    uint8_t* codes = const_cast<uint8_t*>(get_codes(list_no));
+    memcpy(codes + offset * code_size, codes_in, code_size * n_entry);
+
+    uint8_t* attributes_first = const_cast<uint8_t*>(get_attributes_first(list_no));
+    memcpy(attributes_first + offset * attr_size, attributes_in_first, attr_size * n_entry);
+    uint8_t* attributes_second = const_cast<uint8_t*>(get_attributes_second(list_no));
+    memcpy(attributes_second + offset * attr_size, attributes_in_second, attr_size * n_entry);
+}
+
+
 size_t OnDiskInvertedLists::add_entries(
         size_t list_no,
         size_t n_entry,
         const idx_t* ids,
         const uint8_t* code) {
     FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(!is_include_one_attribute);
+    FAISS_THROW_IF_NOT(!is_include_two_attribute);
     locks->lock_1(list_no);
     size_t o = list_size(list_no);
     resize_locked(list_no, n_entry + o);
     update_entries(list_no, o, n_entry, ids, code);
+    locks->unlock_1(list_no);
+    return o;
+}
+
+size_t OnDiskInvertedLists::add_entries_with_one_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code,
+        const uint8_t* attribute) {
+    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(is_include_one_attribute);
+    locks->lock_1(list_no);
+    size_t o = list_size(list_no);
+    resize_locked(list_no, n_entry + o);
+    update_entries_with_one_attribute(list_no, o, n_entry, ids, code, attribute);
+    locks->unlock_1(list_no);
+    return o;
+}
+
+size_t OnDiskInvertedLists::add_entries_with_two_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code,
+        const uint8_t* attribute_first,
+        const uint8_t* attribute_second) {
+    FAISS_THROW_IF_NOT(!read_only);
+    FAISS_THROW_IF_NOT(is_include_two_attribute);
+    locks->lock_1(list_no);
+    size_t o = list_size(list_no);
+    resize_locked(list_no, n_entry + o);
+    update_entries_with_two_attribute(list_no, o, n_entry, ids, code, attribute_first, attribute_second);
     locks->unlock_1(list_no);
     return o;
 }
@@ -459,18 +595,44 @@ void OnDiskInvertedLists::resize_locked(size_t list_no, size_t new_size) {
         while (new_l.capacity < new_size) {
             new_l.capacity *= 2;
         }
-        new_l.offset =
-                allocate_slot(new_l.capacity * (sizeof(idx_t) + code_size));
+        if(is_include_one_attribute) {
+            new_l.offset = allocate_slot(new_l.capacity * (sizeof(idx_t) + code_size + attr_size));
+        } else if (is_include_two_attribute) {
+            new_l.offset = allocate_slot(new_l.capacity * (sizeof(idx_t) + code_size + attr_size + attr_size));
+        } else {
+            new_l.offset = allocate_slot(new_l.capacity * (sizeof(idx_t) + code_size));
+        }
     }
 
     // copy common data
     if (l.offset != new_l.offset) {
         size_t n = std::min(new_size, l.size);
         if (n > 0) {
-            memcpy(ptr + new_l.offset, get_codes(list_no), n * code_size);
-            memcpy(ptr + new_l.offset + new_l.capacity * code_size,
-                   get_ids(list_no),
-                   n * sizeof(idx_t));
+            if (is_include_one_attribute) {
+                memcpy(ptr + new_l.offset, get_codes(list_no), n * code_size);
+                memcpy(ptr + new_l.offset + new_l.capacity * code_size,
+                    get_ids(list_no),
+                    n * sizeof(idx_t));
+                memcpy(ptr + new_l.offset + new_l.capacity * (sizeof(idx_t) + code_size),
+                    get_attributes(list_no),
+                    n * attr_size);
+            } else if (is_include_two_attribute) {
+                memcpy(ptr + new_l.offset, get_codes(list_no), n * code_size);
+                memcpy(ptr + new_l.offset + new_l.capacity * code_size,
+                    get_ids(list_no),
+                    n * sizeof(idx_t));
+                memcpy(ptr + new_l.offset + new_l.capacity * (sizeof(idx_t) + code_size),
+                    get_attributes_first(list_no),
+                    n * attr_size);
+                memcpy(ptr + new_l.offset + new_l.capacity * (sizeof(idx_t) + sizeof(idx_t) + code_size),
+                    get_attributes_second(list_no),
+                    n * attr_size);
+            } else {
+                memcpy(ptr + new_l.offset, get_codes(list_no), n * code_size);
+                memcpy(ptr + new_l.offset + new_l.capacity * code_size,
+                    get_ids(list_no),
+                    n * sizeof(idx_t));
+            }
         }
     }
 
@@ -573,6 +735,23 @@ size_t OnDiskInvertedLists::merge_from_multiple(
     FAISS_THROW_IF_NOT_MSG(
             totsize == 0, "works only on an empty InvertedLists");
 
+    bool tmp_is_include_one_attribute_tmp = ils[0]->is_include_one_attribute;
+    bool tmp_is_include_two_attribute_tmp = ils[0]->is_include_two_attribute;
+
+    for (int i = 1; i < n_il; i++){
+        const InvertedLists* il = ils[i];
+        FAISS_THROW_IF_NOT(tmp_is_include_one_attribute_tmp == il->is_include_one_attribute);
+        FAISS_THROW_IF_NOT(tmp_is_include_two_attribute_tmp == il->is_include_two_attribute);
+    }
+
+    if (tmp_is_include_one_attribute_tmp) {
+        this->set_is_include_one_attribute();
+    }
+
+    if (tmp_is_include_two_attribute_tmp) {
+        this->set_is_include_two_attribute();
+    }
+
     std::vector<size_t> sizes(nlist);
     std::vector<size_t> shift_id_offsets(n_il);
     for (int i = 0; i < n_il; i++) {
@@ -595,7 +774,15 @@ size_t OnDiskInvertedLists::merge_from_multiple(
         lists[j].size = 0;
         lists[j].capacity = sizes[j];
         lists[j].offset = cums;
-        cums += lists[j].capacity * (sizeof(idx_t) + code_size);
+
+        if (is_include_one_attribute) {
+            cums += lists[j].capacity * (sizeof(idx_t) + code_size + attr_size);
+        } else if (is_include_two_attribute) {
+            cums += lists[j].capacity * (sizeof(idx_t) + code_size + attr_size + attr_size);
+        }
+        else {
+            cums += lists[j].capacity * (sizeof(idx_t) + code_size);
+        }
     }
 
     update_totsize(cums);
@@ -620,12 +807,32 @@ size_t OnDiskInvertedLists::merge_from_multiple(
                 }
                 scope_ids_data = new_ids.data();
             }
-            update_entries(
+
+            if (is_include_one_attribute) {
+                update_entries_with_one_attribute(
+                    j,
+                    l.size - n_entry,
+                    n_entry,
+                    scope_ids_data,
+                    ScopedCodes(il, j).get(),
+                    ScopedAttributes(il, j).get());
+            } else if (is_include_two_attribute) {
+                update_entries_with_two_attribute(
+                    j,
+                    l.size - n_entry,
+                    n_entry,
+                    scope_ids_data,
+                    ScopedCodes(il, j).get(),
+                    ScopedAttributesFirst(il, j).get(),
+                    ScopedAttributesSecond(il, j).get());
+            } else {
+                update_entries(
                     j,
                     l.size - n_entry,
                     n_entry,
                     scope_ids_data,
                     ScopedCodes(il, j).get());
+            }
         }
         assert(l.size == l.capacity);
         if (verbose) {
@@ -672,7 +879,14 @@ void OnDiskInvertedLists::set_all_lists_sizes(const size_t* sizes) {
     for (size_t i = 0; i < nlist; i++) {
         lists[i].offset = ofs;
         lists[i].capacity = lists[i].size = sizes[i];
-        ofs += sizes[i] * (sizeof(idx_t) + code_size);
+        if (is_include_one_attribute) {
+            ofs += sizes[i] * (sizeof(idx_t) + code_size + attr_size);
+        } else if (is_include_two_attribute) {
+            ofs += sizes[i] * (sizeof(idx_t) + code_size + attr_size + attr_size);
+        }
+        else {
+            ofs += sizes[i] * (sizeof(idx_t) + code_size);
+        }
     }
 }
 
@@ -689,6 +903,8 @@ void OnDiskInvertedListsIOHook::write(const InvertedLists* ils, IOWriter* f)
     WRITE1(h);
     WRITE1(ils->nlist);
     WRITE1(ils->code_size);
+    WRITE1(ils->is_include_one_attribute);
+    WRITE1(ils->is_include_two_attribute);
     const OnDiskInvertedLists* od =
             dynamic_cast<const OnDiskInvertedLists*>(ils);
     // this is a POD object
@@ -712,6 +928,8 @@ InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
     od->read_only = io_flags & IO_FLAG_READ_ONLY;
     READ1(od->nlist);
     READ1(od->code_size);
+    READ1(od->is_include_one_attribute);
+    READ1(od->is_include_two_attribute);
     // this is a POD object
     READVECTOR(od->lists);
     {
@@ -762,10 +980,14 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         int /* io_flags */,
         size_t nlist,
         size_t code_size,
-        const std::vector<size_t>& sizes) const {
+        const std::vector<size_t>& sizes,
+        bool is_include_one_attribute,
+        bool is_include_two_attribute) const {
     auto ails = new OnDiskInvertedLists();
     ails->nlist = nlist;
     ails->code_size = code_size;
+    ails->is_include_one_attribute = is_include_one_attribute;
+    ails->is_include_two_attribute = is_include_two_attribute;
     ails->read_only = true;
     ails->lists.resize(nlist);
 
@@ -796,7 +1018,13 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         OnDiskInvertedLists::List& l = ails->lists[i];
         l.size = l.capacity = sizes[i];
         l.offset = o;
-        o += l.size * (sizeof(idx_t) + ails->code_size);
+        if (ails->is_include_one_attribute) {
+            o += l.size * (sizeof(idx_t) + ails->code_size + ails->attr_size);
+        } else if (ails->is_include_two_attribute) {
+            o += l.size * (sizeof(idx_t) + ails->code_size + ails->attr_size + ails->attr_size);
+        } else {
+            o += l.size * (sizeof(idx_t) + ails->code_size);
+        }
     }
     // resume normal reading of file
     fseek(fdesc, o, SEEK_SET);

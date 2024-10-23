@@ -254,6 +254,9 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         WRITE1(h);
         WRITE1(ails->nlist);
         WRITE1(ails->code_size);
+        WRITE1(ails->is_include_one_attribute);
+        WRITE1(ails->is_include_two_attribute);
+
         // here we store either as a full or a sparse data buffer
         size_t n_non0 = 0;
         for (size_t i = 0; i < ails->nlist; i++) {
@@ -287,6 +290,13 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
             if (n > 0) {
                 WRITEANDCHECK(ails->codes[i].data(), n * ails->code_size);
                 WRITEANDCHECK(ails->ids[i].data(), n);
+                if (ails->is_include_one_attribute) {
+                    WRITEANDCHECK(ails->attributes[i].data(), n * ails->attr_size);
+                }
+                if (ails->is_include_two_attribute) {
+                    WRITEANDCHECK(ails->attributes_first[i].data(), n * ails->attr_size);
+                    WRITEANDCHECK(ails->attributes_second[i].data(), n * ails->attr_size);
+                }
             }
         }
 
@@ -405,6 +415,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(idx, f);
         WRITEXBVECTOR(idxf->codes);
+        WRITEXBVECTOR(idxf->attributes);
+        WRITEXBVECTOR(idxf->attributes_first);
+        WRITEXBVECTOR(idxf->attributes_second);
+        READ1(idxf->is_include_one_attribute);
+        READ1(idxf->is_include_two_attribute);
     } else if (const IndexLSH* idxl = dynamic_cast<const IndexLSH*>(idx)) {
         uint32_t h = fourcc("IxHe");
         WRITE1(h);

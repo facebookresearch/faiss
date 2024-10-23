@@ -18,7 +18,6 @@ FetchContent_MakeAvailable(
 
 find_package(Threads REQUIRED)
 find_package(OpenMP REQUIRED)
-find_package(gflags REQUIRED)
 
 add_library(faiss_perf_tests_utils
   utils.cpp

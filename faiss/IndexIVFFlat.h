@@ -28,9 +28,41 @@ struct IndexIVFFlat : IndexIVF {
             size_t nlist_,
             MetricType = METRIC_L2);
 
+    IndexIVFFlat(
+            Index* quantizer,
+            size_t d,
+            size_t nlist_,
+            bool is_include_one_attribute,
+            MetricType = METRIC_L2);
+    
+    IndexIVFFlat(
+            Index* quantizer,
+            size_t d,
+            size_t nlist_,
+            bool is_include_two_attribute,
+            bool mode_two,
+            MetricType = METRIC_L2);
+
     void add_core(
             idx_t n,
             const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
+
+    void add_core_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr) override;
+
+    void add_core_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr_first,
+            const float* attr_second,
             const idx_t* xids,
             const idx_t* precomputed_idx,
             void* inverted_list_context = nullptr) override;
@@ -42,6 +74,26 @@ struct IndexIVFFlat : IndexIVF {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    void encode_vectors_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr,
+            const idx_t* list_nos,
+            uint8_t* codes,
+            uint8_t* attributes,
+            bool include_listnos = false) const override;
+
+    void encode_vectors_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr_first,
+            const float* attr_second,
+            const idx_t* list_nos,
+            uint8_t* codes,
+            uint8_t* attributes_first,
+            uint8_t* attributes_second,
+            bool include_listnos = false) const override;
+
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
             const IDSelector* sel) const override;
@@ -50,6 +102,8 @@ struct IndexIVFFlat : IndexIVF {
             const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+    void sa_one_attribute_decode(idx_t n, const uint8_t* bytes, float* attr) const override;
+    void sa_two_attribute_decode(idx_t n, const uint8_t* bytes_first, const uint8_t* bytes_second, float* attr_first, float* attr_second) const override;
 
     IndexIVFFlat();
 };

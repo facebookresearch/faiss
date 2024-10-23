@@ -39,6 +39,29 @@ IndexIVFFlat::IndexIVFFlat(
     by_residual = false;
 }
 
+IndexIVFFlat::IndexIVFFlat(
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        bool is_include_one_attribute,
+        MetricType metric)
+        : IndexIVF(quantizer, d, nlist, sizeof(float) * d, is_include_one_attribute, metric) {
+    code_size = sizeof(float) * d;
+    by_residual = false;
+}
+
+IndexIVFFlat::IndexIVFFlat(
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        bool is_include_two_attribute,
+        bool mode_two,
+        MetricType metric)
+        : IndexIVF(quantizer, d, nlist, sizeof(float) * d, is_include_two_attribute, mode_two, metric) {
+    code_size = sizeof(float) * d;
+    by_residual = false;
+}
+
 IndexIVFFlat::IndexIVFFlat() {
     by_residual = false;
 }
@@ -71,8 +94,111 @@ void IndexIVFFlat::add_core(
             if (list_no >= 0 && list_no % nt == rank) {
                 idx_t id = xids ? xids[i] : ntotal + i;
                 const float* xi = x + i * d;
-                size_t offset = invlists->add_entry(
-                        list_no, id, (const uint8_t*)xi, inverted_list_context);
+                size_t offset = invlists->add_entry(list_no, id, (const uint8_t*)xi, inverted_list_context);
+                dm_adder.add(i, list_no, offset);
+                n_add++;
+            } else if (rank == 0 && list_no == -1) {
+                dm_adder.add(i, -1, 0);
+            }
+        }
+    }
+
+    if (verbose) {
+        printf("IndexIVFFlat::add_core: added %" PRId64 " / %" PRId64
+               " vectors\n",
+               n_add,
+               n);
+    }
+    ntotal += n;
+}
+
+void IndexIVFFlat::add_core_with_one_attribute(
+        idx_t n,
+        const float* x,
+        const float* attr,
+        const idx_t* xids,
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(coarse_idx);
+    FAISS_THROW_IF_NOT(!by_residual);
+    assert(invlists);
+    FAISS_THROW_IF_NOT(invlists->has_one_attribute(0));
+    FAISS_THROW_IF_NOT_MSG(invlists->is_include_one_attribute == true, "is_include_one_attribute must be true to add_core_with_one_attribute");
+    direct_map.check_can_add(xids);
+
+    int64_t n_add = 0;
+
+    DirectMapAdd dm_adder(direct_map, n, xids);
+
+#pragma omp parallel reduction(+ : n_add)
+    {
+        int nt = omp_get_num_threads();
+        int rank = omp_get_thread_num();
+
+        // each thread takes care of a subset of lists
+        for (size_t i = 0; i < n; i++) {
+            idx_t list_no = coarse_idx[i];
+
+            if (list_no >= 0 && list_no % nt == rank) {
+                idx_t id = xids ? xids[i] : ntotal + i;
+                const float* xi = x + i * d;
+                const float* attri = attr + i * 1;
+                size_t offset = invlists->add_entry_with_one_attribute(list_no, id, (const uint8_t*)xi, (const uint8_t*)attri, inverted_list_context);
+                dm_adder.add(i, list_no, offset);
+                n_add++;
+            } else if (rank == 0 && list_no == -1) {
+                dm_adder.add(i, -1, 0);
+            }
+        }
+    }
+
+    if (verbose) {
+        printf("IndexIVFFlat::add_core: added %" PRId64 " / %" PRId64
+               " vectors\n",
+               n_add,
+               n);
+    }
+    ntotal += n;
+}
+
+void IndexIVFFlat::add_core_with_two_attribute(
+        idx_t n,
+        const float* x,
+        const float* attr_first,
+        const float* attr_second,
+        const idx_t* xids,
+        const idx_t* coarse_idx,
+        void* inverted_list_context) {
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(coarse_idx);
+    FAISS_THROW_IF_NOT(!by_residual);
+    assert(invlists);
+    FAISS_THROW_IF_NOT(invlists->has_two_attribute(0));
+    FAISS_THROW_IF_NOT_MSG(invlists->is_include_two_attribute == true, "is_include_two_attribute must be true to add_core_with_two_attribute");
+    direct_map.check_can_add(xids);
+
+    int64_t n_add = 0;
+
+    DirectMapAdd dm_adder(direct_map, n, xids);
+
+#pragma omp parallel reduction(+ : n_add)
+    {
+        int nt = omp_get_num_threads();
+        int rank = omp_get_thread_num();
+
+        // each thread takes care of a subset of lists
+        for (size_t i = 0; i < n; i++) {
+            idx_t list_no = coarse_idx[i];
+
+            if (list_no >= 0 && list_no % nt == rank) {
+                idx_t id = xids ? xids[i] : ntotal + i;
+                const float* xi = x + i * d;
+                const float* attr_fi = attr_first + i * 1;
+                const float* attr_si = attr_second + i * 1;
+                size_t offset = invlists->add_entry_with_two_attribute(list_no, id, (const uint8_t*)xi, 
+                                                                                    (const uint8_t*)attr_fi,
+                                                                                    (const uint8_t*)attr_si, inverted_list_context);
                 dm_adder.add(i, list_no, offset);
                 n_add++;
             } else if (rank == 0 && list_no == -1) {
@@ -115,12 +241,104 @@ void IndexIVFFlat::encode_vectors(
     }
 }
 
+void IndexIVFFlat::encode_vectors_with_one_attribute(
+        idx_t n,
+        const float* x,
+        const float* attr,
+        const idx_t* list_nos,
+        uint8_t* codes,
+        uint8_t* attributes,
+        bool include_listnos) const {
+    FAISS_THROW_IF_NOT(!by_residual);
+    if (!include_listnos) {
+        memcpy(codes, x, code_size * n);
+        memcpy(attributes, attr, attr_size * n);
+    } else {
+        size_t coarse_size = coarse_code_size();
+        for (size_t i = 0; i < n; i++) {
+            int64_t list_no = list_nos[i];
+            uint8_t* code = codes + i * (code_size + coarse_size);
+            uint8_t* attribute = attributes + i * (attr_size + coarse_size);
+            const float* xi = x + i * d;
+            const float* attri = attr + i * 1;
+            if (list_no >= 0) {
+                encode_listno(list_no, code);
+                memcpy(code + coarse_size, xi, code_size);
+                memcpy(attribute + coarse_size, attri, attr_size);
+            } else {
+                memset(code, 0, code_size + coarse_size);
+                memset(attribute, 0, attr_size + coarse_size);
+            }
+        }
+    }
+}
+
+void IndexIVFFlat::encode_vectors_with_two_attribute(
+        idx_t n,
+        const float* x,
+        const float* attr_first,
+        const float* attr_second,
+        const idx_t* list_nos,
+        uint8_t* codes,
+        uint8_t* attributes_first,
+        uint8_t* attributes_second,
+        bool include_listnos) const {
+    FAISS_THROW_IF_NOT(!by_residual);
+    if (!include_listnos) {
+        memcpy(codes, x, code_size * n);
+        memcpy(attributes_first, attr_first, attr_size * n);
+        memcpy(attributes_second, attr_second, attr_size * n);
+    } else {
+        size_t coarse_size = coarse_code_size();
+        for (size_t i = 0; i < n; i++) {
+            int64_t list_no = list_nos[i];
+            uint8_t* code = codes + i * (code_size + coarse_size);
+            uint8_t* attribute_first = attributes_first + i * (attr_size + coarse_size);
+            uint8_t* attribute_second = attributes_second + i * (attr_size + coarse_size);
+            const float* xi = x + i * d;
+            const float* attr_fi = attr_first + i * 1;
+            const float* attr_si = attr_second + i * 1;
+            if (list_no >= 0) {
+                encode_listno(list_no, code);
+                memcpy(code + coarse_size, xi, code_size);
+                memcpy(attribute_first + coarse_size, attr_fi, attr_size);
+                memcpy(attribute_second + coarse_size, attr_si, attr_size);
+            } else {
+                memset(code, 0, code_size + coarse_size);
+                memset(attribute_first, 0, attr_size + coarse_size);
+                memset(attribute_second, 0, attr_size + coarse_size);
+            }
+        }
+    }
+}
+
 void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     size_t coarse_size = coarse_code_size();
     for (size_t i = 0; i < n; i++) {
         const uint8_t* code = bytes + i * (code_size + coarse_size);
         float* xi = x + i * d;
         memcpy(xi, code + coarse_size, code_size);
+    }
+}
+
+void IndexIVFFlat::sa_one_attribute_decode(idx_t n, const uint8_t* bytes, float* attr) const {
+    size_t coarse_size = coarse_code_size();
+    for (size_t i = 0; i < n; i++) {
+        const uint8_t* attribute = bytes + i * (attr_size + coarse_size);
+        float* attri = attr + i * 1;
+        memcpy(attri, attribute + coarse_size, attr_size);
+    }
+}
+
+void IndexIVFFlat::sa_two_attribute_decode(idx_t n, const uint8_t* bytes_first, const uint8_t* bytes_second, float* attr_first, float* attr_second) const {
+    size_t coarse_size = coarse_code_size();
+    for (size_t i = 0; i < n; i++) {
+        const uint8_t* attribute_first = bytes_first + i * (attr_size + coarse_size);
+        const uint8_t* attribute_second = bytes_second + i * (attr_size + coarse_size);
+        float* attr_fi = attr_first + i * 1;
+        float* attr_si = attr_second + i * 1;
+        memcpy(attr_fi, attribute_first + coarse_size, attr_size);
+        memcpy(attr_si, attribute_second + coarse_size, attr_size);
     }
 }
 
@@ -173,6 +391,84 @@ struct IVFFlatScanner : InvertedListScanner {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 heap_replace_top<C>(k, simi, idxi, dis, id);
                 nup++;
+            }
+        }
+        return nup;
+    }
+
+    size_t scan_codes_with_one_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes,
+            const float lower_attribute,
+            const float upper_attribute,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attri,
+            size_t k) const override {
+        const float* list_vecs = (const float*)codes;
+        const float* current_attributes = (const float*) attributes;
+        size_t nup = 0;
+        for (size_t j = 0; j < list_size; j++) {
+            const float* yj = list_vecs + d * j;
+            if (use_sel && !sel->is_member(ids[j])) {
+                continue;
+            }
+
+            const float current_attribute = current_attributes[j];
+            if (current_attribute >= lower_attribute && current_attribute <= upper_attribute) {
+                float dis = metric == METRIC_INNER_PRODUCT
+                        ? fvec_inner_product(xi, yj, d)
+                        : fvec_L2sqr(xi, yj, d);
+                if (C::cmp(simi[0], dis)) {
+                    int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    heap_replace_top_one_attribute<C>(k, simi, idxi, attri, dis, id, current_attribute);
+                    nup++;
+                }
+            }
+        }
+        return nup;
+    }
+
+    size_t scan_codes_with_two_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes_first,
+            const uint8_t* attributes_second,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attr_fi,
+            float* attr_si,
+            size_t k) const override {
+        const float* list_vecs = (const float*)codes;
+        const float* current_attributes_first = (const float*) attributes_first;
+        const float* current_attributes_second = (const float*) attributes_second;
+        size_t nup = 0;
+        for (size_t j = 0; j < list_size; j++) {
+            const float* yj = list_vecs + d * j;
+            if (use_sel && !sel->is_member(ids[j])) {
+                continue;
+            }
+
+            const float current_attribute_first = current_attributes_first[j];
+            const float current_attribute_second = current_attributes_second[j];
+            if (current_attribute_first >= lower_attribute_first && current_attribute_first <= upper_attribute_first) {
+                if (current_attribute_second >= lower_attribute_second && current_attribute_second <= upper_attribute_second) {
+                    float dis = metric == METRIC_INNER_PRODUCT
+                            ? fvec_inner_product(xi, yj, d)
+                            : fvec_L2sqr(xi, yj, d);
+                    if (C::cmp(simi[0], dis)) {
+                        int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                        heap_replace_top_two_attribute<C>(k, simi, idxi, attr_fi, attr_si, dis, id, current_attribute_first, current_attribute_second);
+                        nup++;
+                    }
+                }
             }
         }
         return nup;

@@ -229,6 +229,21 @@ def handle_Index(the_class):
         x = np.ascontiguousarray(x, dtype='float32')
         self.add_c(n, swig_ptr(x))
 
+    def replacement_add_with_one_attribute(self, x, attr):
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        attr = np.ascontiguousarray(attr.reshape(-1, 1), dtype='float32')
+        self.add_with_one_attribute_c(n, swig_ptr(x), swig_ptr(attr))
+
+    def replacement_add_with_two_attribute(self, x, attr_first, attr_second):
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        attr_first = np.ascontiguousarray(attr_first.reshape(-1, 1), dtype='float32')
+        attr_second = np.ascontiguousarray(attr_second.reshape(-1, 1), dtype='float32')
+        self.add_with_two_attribute_c(n, swig_ptr(x), swig_ptr(attr_first), swig_ptr(attr_second))
+
     def replacement_add_with_ids(self, x, ids):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
         The index must be trained before vectors can be added to it.
@@ -249,6 +264,25 @@ def handle_Index(the_class):
         ids = np.ascontiguousarray(ids, dtype='int64')
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+
+    def replacement_add_with_ids_with_one_attribute(self, x, attr, ids):
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        ids = np.ascontiguousarray(ids, dtype='int64')
+        attr = np.ascontiguousarray(attr.reshape(-1, 1), dtype='float32')
+        assert ids.shape == (n, ), 'not same nb of vectors as ids'
+        self.add_with_ids_with_one_attribute_c(n, swig_ptr(x), swig_ptr(attr), swig_ptr(ids))
+    
+    def replacement_add_with_ids_with_two_attribute(self, x, attr_first, attr_second, ids):
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        ids = np.ascontiguousarray(ids, dtype='int64')
+        attr_first = np.ascontiguousarray(attr_first.reshape(-1, 1), dtype='float32')
+        attr_second = np.ascontiguousarray(attr_second.reshape(-1, 1), dtype='float32')
+        assert ids.shape == (n, ), 'not same nb of vectors as ids'
+        self.add_with_ids_with_two_attribute_c(n, swig_ptr(x), swig_ptr(attr_first), swig_ptr(attr_second), swig_ptr(ids))
 
     def replacement_assign(self, x, k, labels=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -342,6 +376,64 @@ def handle_Index(the_class):
 
         self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
         return D, I
+
+    def replacement_search_with_one_attribute(self, x, lower_attribute, upper_attribute, k, *, params=None, D=None, I=None, ATTR=None):
+        n, d = x.shape
+        x = np.ascontiguousarray(x, dtype='float32')
+        assert d == self.d
+
+        assert k > 0
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+        
+        if ATTR is None:
+            ATTR = np.empty((n, k), dtype=np.float32)
+        else:
+            assert ATTR.shape == (n, k)
+
+        self.search_with_one_attribute_c(n, swig_ptr(x), float(lower_attribute), float(upper_attribute), k, swig_ptr(D), swig_ptr(I), swig_ptr(ATTR), params)
+        return D, I, ATTR
+
+    def replacement_search_with_two_attribute(self, x, lower_attribute_first, upper_attribute_first,
+                                                       lower_attribute_second, upper_attribute_second, k, *, params=None, D=None, I=None, ATTRF=None, ATTRS=None):
+        n, d = x.shape
+        x = np.ascontiguousarray(x, dtype='float32')
+        assert d == self.d
+
+        assert k > 0
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.float32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+        
+        if ATTRF is None:
+            ATTRF = np.empty((n, k), dtype=np.float32)
+        else:
+            assert ATTRF.shape == (n, k)
+
+        if ATTRS is None:
+            ATTRS = np.empty((n, k), dtype=np.float32)
+        else:
+            assert ATTRS.shape == (n, k)
+
+        self.search_with_two_attribute_c(n, swig_ptr(x), float(lower_attribute_first), float(upper_attribute_first), 
+                                                         float(lower_attribute_second), float(upper_attribute_second), 
+                                                         k, swig_ptr(D), swig_ptr(I), swig_ptr(ATTRF), swig_ptr(ATTRS), params)
+        return D, I, ATTRF, ATTRS
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
         """Find the k nearest neighbors of the set of vectors x in the index,
@@ -519,6 +611,29 @@ def handle_Index(the_class):
 
         self.reconstruct_c(key, swig_ptr(x))
         return x
+    
+    def replacement_reconstruct_one_attribute(self, key, attr=None):
+        if attr is None:
+            attr = np.empty(1, dtype=np.float32)
+        else:
+            assert attr.shape == (1, )
+
+        self.reconstruct_one_attribute_c(key, swig_ptr(attr))
+        return attr
+
+    def replacement_reconstruct_two_attribute(self, key, attr_first=None, attr_second=None):
+        if attr_first is None:
+            attr_first = np.empty(1, dtype=np.float32)
+        else:
+            assert attr_first.shape == (1, )
+
+        if attr_second is None:
+            attr_second = np.empty(1, dtype=np.float32)
+        else:
+            assert attr_second.shape == (1, )
+
+        self.reconstruct_two_attribute_c(key, swig_ptr(attr_first), swig_ptr(attr_second))
+        return attr_first, attr_second
 
     def replacement_reconstruct_batch(self, key, x=None):
         """Approximate reconstruction of several vectors from the index.
@@ -571,6 +686,34 @@ def handle_Index(the_class):
 
         self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
+
+    def replacement_reconstruct_n_one_attribute(self, n0=0, ni=-1, attr=None):
+        if ni == -1:
+            ni = self.ntotal - n0
+        if attr is None:
+            attr = np.empty((ni, 1), dtype=np.float32)
+        else:
+            assert attr.shape == (ni, 1)
+
+        self.reconstruct_n_one_attribute_c(n0, ni, swig_ptr(attr))
+        return attr
+
+    def replacement_reconstruct_n_two_attribute(self, n0=0, ni=-1, attr_first=None, attr_second=None):
+        if ni == -1:
+            ni = self.ntotal - n0
+
+        if attr_first is None:
+            attr_first = np.empty((ni, 1), dtype=np.float32)
+        else:
+            assert attr_first.shape == (ni, 1)
+        
+        if attr_second is None:
+            attr_second = np.empty((ni, 1), dtype=np.float32)
+        else:
+            assert attr_second.shape == (ni, 1)
+
+        self.reconstruct_n_two_attribute_c(n0, ni, swig_ptr(attr_first), swig_ptr(attr_second))
+        return attr_first, attr_second
 
     def replacement_update_vectors(self, keys, x):
         n = keys.size
@@ -788,18 +931,26 @@ def handle_Index(the_class):
         self.permute_entries_c(faiss.swig_ptr(perm))
 
     replace_method(the_class, 'add', replacement_add)
+    replace_method(the_class, 'add_with_one_attribute', replacement_add_with_one_attribute)
+    replace_method(the_class, 'add_with_two_attribute', replacement_add_with_two_attribute)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
+    replace_method(the_class, 'add_with_ids_with_one_attribute', replacement_add_with_ids_with_one_attribute)
+    replace_method(the_class, 'add_with_ids_with_two_attribute', replacement_add_with_ids_with_two_attribute)
     replace_method(the_class, 'assign', replacement_assign)
     replace_method(the_class, 'train', replacement_train)
     replace_method(the_class, 'search', replacement_search)
+    replace_method(the_class, 'search_with_one_attribute', replacement_search_with_one_attribute)
+    replace_method(the_class, 'search_with_two_attribute', replacement_search_with_two_attribute)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
-    replace_method(the_class, 'reconstruct_batch',
-                   replacement_reconstruct_batch)
+    replace_method(the_class, 'reconstruct_one_attribute', replacement_reconstruct_one_attribute)
+    replace_method(the_class, 'reconstruct_two_attribute', replacement_reconstruct_two_attribute)
+    replace_method(the_class, 'reconstruct_batch', replacement_reconstruct_batch)
     replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
+    replace_method(the_class, 'reconstruct_n_one_attribute', replacement_reconstruct_n_one_attribute)
+    replace_method(the_class, 'reconstruct_n_two_attribute', replacement_reconstruct_n_two_attribute)
     replace_method(the_class, 'range_search', replacement_range_search)
-    replace_method(the_class, 'update_vectors', replacement_update_vectors,
-                   ignore_missing=True)
+    replace_method(the_class, 'update_vectors', replacement_update_vectors, ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
     replace_method(the_class, 'search_and_return_codes',

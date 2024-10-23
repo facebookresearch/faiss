@@ -76,6 +76,90 @@ inline void heap_pop(size_t k, typename C::T* bh_val, typename C::TI* bh_ids) {
     bh_ids[i] = bh_ids[k];
 }
 
+
+template <class C>
+inline void heap_pop_one_attribute(size_t k, typename C::T* bh_val, typename C::TI* bh_ids, typename C::T* bh_attr) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr--;
+
+    typename C::T val = bh_val[k];
+    typename C::TI id = bh_ids[k];
+
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k)
+            break;
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
+                break;
+            }
+            bh_val[i] = bh_val[i1];
+            bh_ids[i] = bh_ids[i1];
+            bh_attr[i] = bh_attr[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
+                break;
+            }
+            bh_val[i] = bh_val[i2];
+            bh_ids[i] = bh_ids[i2];
+            bh_attr[i] = bh_attr[i2];
+            i = i2;
+        }
+    }
+    bh_val[i] = bh_val[k];
+    bh_ids[i] = bh_ids[k];
+    bh_attr[i] = bh_attr[k];
+}
+
+
+template <class C>
+inline void heap_pop_two_attribute(size_t k, typename C::T* bh_val, typename C::TI* bh_ids, typename C::T* bh_attr_first, typename C::T* bh_attr_second) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr_first--;
+    bh_attr_second--;
+
+    typename C::T val = bh_val[k];
+    typename C::TI id = bh_ids[k];
+
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k)
+            break;
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
+                break;
+            }
+            bh_val[i] = bh_val[i1];
+            bh_ids[i] = bh_ids[i1];
+            bh_attr_first[i] = bh_attr_first[i1];
+            bh_attr_second[i] = bh_attr_second[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
+                break;
+            }
+            bh_val[i] = bh_val[i2];
+            bh_ids[i] = bh_ids[i2];
+            bh_attr_first[i] = bh_attr_first[i2];
+            bh_attr_second[i] = bh_attr_second[i2];
+            i = i2;
+        }
+    }
+    bh_val[i] = bh_val[k];
+    bh_ids[i] = bh_ids[k];
+    bh_attr_first[i] = bh_attr_first[k];
+    bh_attr_second[i] = bh_attr_second[k];
+}
+
 /** Pushes the element (val, ids) into the heap bh_val[0..k-2] and
  * bh_ids[0..k-2].  on output the element at k-1 is defined.
  */
@@ -101,6 +185,70 @@ inline void heap_push(
     }
     bh_val[i] = val;
     bh_ids[i] = id;
+}
+
+
+template <class C>
+inline void heap_push_one_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr,
+        typename C::T val,
+        typename C::TI id,
+        typename C::T attr) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr--;
+    size_t i = k, i_father;
+    while (i > 1) {
+        i_father = i >> 1;
+        if (!C::cmp2(val, bh_val[i_father], id, bh_ids[i_father])) {
+            /* the heap structure is ok */
+            break;
+        }
+        bh_val[i] = bh_val[i_father];
+        bh_ids[i] = bh_ids[i_father];
+        bh_attr[i] = bh_attr[i_father];
+        i = i_father;
+    }
+    bh_val[i] = val;
+    bh_ids[i] = id;
+    bh_attr[i] = attr;
+}
+
+template <class C>
+inline void heap_push_two_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr_first,
+        typename C::T* bh_attr_second,
+        typename C::T val,
+        typename C::TI id,
+        typename C::T attr_first,
+        typename C::T attr_second) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr_first--;
+    bh_attr_second--;
+    size_t i = k, i_father;
+    while (i > 1) {
+        i_father = i >> 1;
+        if (!C::cmp2(val, bh_val[i_father], id, bh_ids[i_father])) {
+            /* the heap structure is ok */
+            break;
+        }
+        bh_val[i] = bh_val[i_father];
+        bh_ids[i] = bh_ids[i_father];
+        bh_attr_first[i] = bh_attr_first[i_father];
+        bh_attr_second[i] = bh_attr_second[i_father];
+        i = i_father;
+    }
+    bh_val[i] = val;
+    bh_ids[i] = id;
+    bh_attr_first[i] = attr_first;
+    bh_attr_second[i] = attr_second;
 }
 
 /**
@@ -149,11 +297,123 @@ inline void heap_replace_top(
     bh_ids[i] = id;
 }
 
+
+template <class C>
+inline void heap_replace_top_one_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr,
+        typename C::T val,
+        typename C::TI id,
+        typename C::T attr) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr--;
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k) {
+            break;
+        }
+
+        // Note that C::cmp2() is a bool function answering
+        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
+        // heap and same with the `<` sign for min heap.
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
+                break;
+            }
+            bh_val[i] = bh_val[i1];
+            bh_ids[i] = bh_ids[i1];
+            bh_attr[i] = bh_attr[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
+                break;
+            }
+            bh_val[i] = bh_val[i2];
+            bh_ids[i] = bh_ids[i2];
+            bh_attr[i] = bh_attr[i2];
+            i = i2;
+        }
+    }
+    bh_val[i] = val;
+    bh_ids[i] = id;
+    bh_attr[i] = attr;
+}
+
+
+template <class C>
+inline void heap_replace_top_two_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr_first,
+        typename C::T* bh_attr_second,
+        typename C::T val,
+        typename C::TI id,
+        typename C::T attr_first,
+        typename C::T attr_second) {
+    bh_val--; /* Use 1-based indexing for easier node->child translation */
+    bh_ids--;
+    bh_attr_first--;
+    bh_attr_second--;
+    size_t i = 1, i1, i2;
+    while (1) {
+        i1 = i << 1;
+        i2 = i1 + 1;
+        if (i1 > k) {
+            break;
+        }
+
+        // Note that C::cmp2() is a bool function answering
+        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
+        // heap and same with the `<` sign for min heap.
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
+                break;
+            }
+            bh_val[i] = bh_val[i1];
+            bh_ids[i] = bh_ids[i1];
+            bh_attr_first[i] = bh_attr_first[i1];
+            bh_attr_second[i] = bh_attr_second[i1];
+            i = i1;
+        } else {
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
+                break;
+            }
+            bh_val[i] = bh_val[i2];
+            bh_ids[i] = bh_ids[i2];
+            bh_attr_first[i] = bh_attr_first[i2];
+            bh_attr_second[i] = bh_attr_second[i2];
+            i = i2;
+        }
+    }
+    bh_val[i] = val;
+    bh_ids[i] = id;
+    bh_attr_first[i] = attr_first;
+    bh_attr_second[i] = attr_second;
+}
+
 /* Partial instanciation for heaps with TI = int64_t */
 
 template <typename T>
 inline void minheap_pop(size_t k, T* bh_val, int64_t* bh_ids) {
     heap_pop<CMin<T, int64_t>>(k, bh_val, bh_ids);
+}
+
+template <typename T>
+inline void minheap_pop_one_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr) {
+    heap_pop_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr);
+}
+
+template <typename T>
+inline void minheap_pop_two_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr_first, T* bh_attr_second) {
+    heap_pop_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second);
 }
 
 template <typename T>
@@ -167,6 +427,32 @@ inline void minheap_push(
 }
 
 template <typename T>
+inline void minheap_push_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        T val,
+        int64_t ids,
+        T attr) {
+    heap_push_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr, val, ids, attr);
+}
+
+template <typename T>
+inline void minheap_push_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        T val,
+        int64_t ids,
+        T attr_first,
+        T attr_second) {
+    heap_push_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, val, ids, attr_first, attr_second);
+}
+
+template <typename T>
 inline void minheap_replace_top(
         size_t k,
         T* bh_val,
@@ -177,8 +463,44 @@ inline void minheap_replace_top(
 }
 
 template <typename T>
+inline void minheap_replace_top_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        T val,
+        int64_t ids,
+        T attr) {
+    heap_replace_top_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr, val, ids, attr);
+}
+
+template <typename T>
+inline void minheap_replace_top_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        T val,
+        int64_t ids,
+        T attr_first,
+        T attr_second) {
+    heap_replace_top_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, val, ids, attr_first, attr_second);
+}
+
+template <typename T>
 inline void maxheap_pop(size_t k, T* bh_val, int64_t* bh_ids) {
     heap_pop<CMax<T, int64_t>>(k, bh_val, bh_ids);
+}
+
+template <typename T>
+inline void maxheap_pop_one_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr) {
+    heap_pop_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr);
+}
+
+template <typename T>
+inline void maxheap_pop_two_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr_first, T* bh_attr_second) {
+    heap_pop_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second);
 }
 
 template <typename T>
@@ -192,6 +514,32 @@ inline void maxheap_push(
 }
 
 template <typename T>
+inline void maxheap_push_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        T val,
+        int64_t ids,
+        T attr) {
+    heap_push_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr, val, ids, attr);
+}
+
+template <typename T>
+inline void maxheap_push_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        T val,
+        int64_t ids,
+        T attr_first,
+        T attr_second) {
+    heap_push_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, val, ids, attr_first, attr_second);
+}
+
+template <typename T>
 inline void maxheap_replace_top(
         size_t k,
         T* bh_val,
@@ -201,109 +549,32 @@ inline void maxheap_replace_top(
     heap_replace_top<CMax<T, int64_t>>(k, bh_val, bh_ids, val, ids);
 }
 
-/*******************************************************************
- * Basic heap<std:pair<>> ops: push and pop
- *******************************************************************/
-
-// This section contains a heap implementation that works with
-//   std::pair<Priority, Value> elements.
-
-/** Pops the top element from the heap defined by bh_val[0..k-1] and
- * bh_ids[0..k-1].  on output the element at k-1 is undefined.
- */
-template <class C>
-inline void heap_pop(size_t k, std::pair<typename C::T, typename C::TI>* bh) {
-    bh--; /* Use 1-based indexing for easier node->child translation */
-    typename C::T val = bh[k].first;
-    typename C::TI id = bh[k].second;
-    size_t i = 1, i1, i2;
-    while (1) {
-        i1 = i << 1;
-        i2 = i1 + 1;
-        if (i1 > k)
-            break;
-        if ((i2 == k + 1) ||
-            C::cmp2(bh[i1].first, bh[i2].first, bh[i1].second, bh[i2].second)) {
-            if (C::cmp2(val, bh[i1].first, id, bh[i1].second)) {
-                break;
-            }
-            bh[i] = bh[i1];
-            i = i1;
-        } else {
-            if (C::cmp2(val, bh[i2].first, id, bh[i2].second)) {
-                break;
-            }
-            bh[i] = bh[i2];
-            i = i2;
-        }
-    }
-    bh[i] = bh[k];
-}
-
-/** Pushes the element (val, ids) into the heap bh_val[0..k-2] and
- * bh_ids[0..k-2].  on output the element at k-1 is defined.
- */
-template <class C>
-inline void heap_push(
+template <typename T>
+inline void maxheap_replace_top_one_attribute(
         size_t k,
-        std::pair<typename C::T, typename C::TI>* bh,
-        typename C::T val,
-        typename C::TI id) {
-    bh--; /* Use 1-based indexing for easier node->child translation */
-    size_t i = k, i_father;
-    while (i > 1) {
-        i_father = i >> 1;
-        auto bh_v = bh[i_father];
-        if (!C::cmp2(val, bh_v.first, id, bh_v.second)) {
-            /* the heap structure is ok */
-            break;
-        }
-        bh[i] = bh_v;
-        i = i_father;
-    }
-    bh[i] = std::make_pair(val, id);
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        T val,
+        int64_t ids,
+        T attr) {
+    heap_replace_top_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr, val, ids, attr);
 }
 
-/**
- * Replaces the top element from the heap defined by bh_val[0..k-1] and
- * bh_ids[0..k-1], and for identical bh_val[] values also sorts by bh_ids[]
- * values.
- */
-template <class C>
-inline void heap_replace_top(
+template <typename T>
+inline void maxheap_replace_top_two_attribute(
         size_t k,
-        std::pair<typename C::T, typename C::TI>* bh,
-        typename C::T val,
-        typename C::TI id) {
-    bh--; /* Use 1-based indexing for easier node->child translation */
-    size_t i = 1, i1, i2;
-    while (1) {
-        i1 = i << 1;
-        i2 = i1 + 1;
-        if (i1 > k) {
-            break;
-        }
-
-        // Note that C::cmp2() is a bool function answering
-        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
-        // heap and same with the `<` sign for min heap.
-        if ((i2 == k + 1) ||
-            C::cmp2(bh[i1].first, bh[i2].first, bh[i1].second, bh[i2].second)) {
-            if (C::cmp2(val, bh[i1].first, id, bh[i1].second)) {
-                break;
-            }
-            bh[i] = bh[i1];
-            i = i1;
-        } else {
-            if (C::cmp2(val, bh[i2].first, id, bh[i2].second)) {
-                break;
-            }
-            bh[i] = bh[i2];
-            i = i2;
-        }
-    }
-    bh[i] = std::make_pair(val, id);
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        T val,
+        int64_t ids,
+        T attr_first,
+        T attr_second) {
+    heap_replace_top_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, val, ids, attr_first, attr_second);
 }
+
 
 /*******************************************************************
  * Heap initialization
@@ -337,6 +608,65 @@ inline void heap_heapify(
     }
 }
 
+template <class C>
+inline void heap_heapify_one_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr,
+        const typename C::T* x = nullptr,
+        const typename C::TI* ids = nullptr,
+        const typename C::T* attr = nullptr,
+        size_t k0 = 0) {
+    if (k0 > 0)
+        assert(x);
+
+    if (ids) {
+        for (size_t i = 0; i < k0; i++)
+            heap_push_one_attribute<C>(i + 1, bh_val, bh_ids, bh_attr, x[i], ids[i], attr[i]);
+    } else {
+        for (size_t i = 0; i < k0; i++)
+            heap_push_one_attribute<C>(i + 1, bh_val, bh_ids, bh_attr, x[i], i, attr[i]);
+    }
+
+    for (size_t i = k0; i < k; i++) {
+        bh_val[i] = C::neutral();
+        bh_ids[i] = -1;
+        bh_attr[i] = C::neutral();
+    }
+}
+
+template <class C>
+inline void heap_heapify_two_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr_first,
+        typename C::T* bh_attr_second,
+        const typename C::T* x = nullptr,
+        const typename C::TI* ids = nullptr,
+        const typename C::T* attr_first = nullptr,
+        const typename C::T* attr_second = nullptr,
+        size_t k0 = 0) {
+    if (k0 > 0)
+        assert(x);
+
+    if (ids) {
+        for (size_t i = 0; i < k0; i++)
+            heap_push_two_attribute<C>(i + 1, bh_val, bh_ids, bh_attr_first, bh_attr_second, x[i], ids[i], attr_first[i], attr_second[i]);
+    } else {
+        for (size_t i = 0; i < k0; i++)
+            heap_push_two_attribute<C>(i + 1, bh_val, bh_ids, bh_attr_first, bh_attr_second, x[i], i, attr_first[i], attr_second[i]);
+    }
+
+    for (size_t i = k0; i < k; i++) {
+        bh_val[i] = C::neutral();
+        bh_ids[i] = -1;
+        bh_attr_first[i] = C::neutral();
+        bh_attr_second[i] = C::neutral();
+    }
+}
+
 template <typename T>
 inline void minheap_heapify(
         size_t k,
@@ -349,6 +679,34 @@ inline void minheap_heapify(
 }
 
 template <typename T>
+inline void minheap_heapify_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        const T* x = nullptr,
+        const int64_t* ids = nullptr,
+        const T* attr = nullptr,
+        size_t k0 = 0) {
+    heap_heapify_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr, x, ids, attr, k0);
+}
+
+template <typename T>
+inline void minheap_heapify_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        const T* x = nullptr,
+        const int64_t* ids = nullptr,
+        const T* attr_first = nullptr,
+        const T* attr_second = nullptr,
+        size_t k0 = 0) {
+    heap_heapify_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x, ids, attr_first, attr_second, k0);
+}
+
+template <typename T>
 inline void maxheap_heapify(
         size_t k,
         T* bh_val,
@@ -357,6 +715,34 @@ inline void maxheap_heapify(
         const int64_t* ids = nullptr,
         size_t k0 = 0) {
     heap_heapify<CMax<T, int64_t>>(k, bh_val, bh_ids, x, ids, k0);
+}
+
+template <typename T>
+inline void maxheap_heapify_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        const T* x = nullptr,
+        const int64_t* ids = nullptr,
+        const T* attr = nullptr,
+        size_t k0 = 0) {
+    heap_heapify_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr, x, ids, attr, k0);
+}
+
+template <typename T>
+inline void maxheap_heapify_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        const T* x = nullptr,
+        const int64_t* ids = nullptr,
+        const T* attr_first = nullptr,
+        const T* attr_second = nullptr,
+        size_t k0 = 0) {
+    heap_heapify_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x, ids, attr_first, attr_second, k0);
 }
 
 /*******************************************************************
@@ -387,6 +773,57 @@ inline void heap_addn(
         }
 }
 
+template <class C>
+inline void heap_addn_one_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr,
+        const typename C::T* x,
+        const typename C::TI* ids,
+        const typename C::T* attr,
+        size_t n) {
+    size_t i;
+    if (ids)
+        for (i = 0; i < n; i++) {
+            if (C::cmp(bh_val[0], x[i])) {
+                heap_replace_top_one_attribute<C>(k, bh_val, bh_ids, bh_attr, x[i], ids[i], attr[i]);
+            }
+        }
+    else
+        for (i = 0; i < n; i++) {
+            if (C::cmp(bh_val[0], x[i])) {
+                heap_replace_top_one_attribute<C>(k, bh_val, bh_ids, bh_attr, x[i], i, attr[i]);
+            }
+        }
+}
+
+template <class C>
+inline void heap_addn_two_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr_first,
+        typename C::T* bh_attr_second,
+        const typename C::T* x,
+        const typename C::TI* ids,
+        const typename C::T* attr_first,
+        const typename C::T* attr_second,
+        size_t n) {
+    size_t i;
+    if (ids)
+        for (i = 0; i < n; i++) {
+            if (C::cmp(bh_val[0], x[i])) {
+                heap_replace_top_two_attribute<C>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x[i], ids[i], attr_first[i], attr_second[i]);
+            }
+        }
+    else
+        for (i = 0; i < n; i++) {
+            if (C::cmp(bh_val[0], x[i])) {
+                heap_replace_top_two_attribute<C>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x[i], i, attr_first[i], attr_second[i]);
+            }
+        }
+}
 /* Partial instanciation for heaps with TI = int64_t */
 
 template <typename T>
@@ -401,6 +838,34 @@ inline void minheap_addn(
 }
 
 template <typename T>
+inline void minheap_addn_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        const T* x,
+        const int64_t* ids,
+        const T* attr,
+        size_t n) {
+    heap_addn_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr, x, ids, attr, n);
+}
+
+template <typename T>
+inline void minheap_addn_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        const T* x,
+        const int64_t* ids,
+        const T* attr_first,
+        const T* attr_second,
+        size_t n) {
+    heap_addn_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x, ids, attr_first, attr_second, n);
+}
+
+template <typename T>
 inline void maxheap_addn(
         size_t k,
         T* bh_val,
@@ -409,6 +874,34 @@ inline void maxheap_addn(
         const int64_t* ids,
         size_t n) {
     heap_addn<CMax<T, int64_t>>(k, bh_val, bh_ids, x, ids, n);
+}
+
+template <typename T>
+inline void maxheap_addn_one_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr,
+        const T* x,
+        const int64_t* ids,
+        const T* attr,
+        size_t n) {
+    heap_addn_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr, x, ids, attr, n);
+}
+
+template <typename T>
+inline void maxheap_addn_two_attribute(
+        size_t k,
+        T* bh_val,
+        int64_t* bh_ids,
+        T* bh_attr_first,
+        T* bh_attr_second,
+        const T* x,
+        const int64_t* ids,
+        const T* attr_first,
+        const T* attr_second,
+        size_t n) {
+    heap_addn_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second, x, ids, attr_first, attr_second, n);
 }
 
 /*******************************************************************
@@ -449,14 +942,113 @@ inline size_t heap_reorder(
     return nel;
 }
 
+template <typename C>
+inline size_t heap_reorder_one_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr) {
+    size_t i, ii;
+
+    for (i = 0, ii = 0; i < k; i++) {
+        /* top element should be put at the end of the list */
+        typename C::T val = bh_val[0];
+        typename C::TI id = bh_ids[0];
+        typename C::T attr = bh_attr[0];
+
+        /* boundary case: we will over-ride this value if not a true element */
+        heap_pop_one_attribute<C>(k - i, bh_val, bh_ids, bh_attr);
+        bh_val[k - ii - 1] = val;
+        bh_ids[k - ii - 1] = id;
+        bh_attr[k - ii - 1] = attr;
+        if (id != -1)
+            ii++;
+    }
+    /* Count the number of elements which are effectively returned */
+    size_t nel = ii;
+
+    memmove(bh_val, bh_val + k - ii, ii * sizeof(*bh_val));
+    memmove(bh_ids, bh_ids + k - ii, ii * sizeof(*bh_ids));
+    memmove(bh_attr, bh_attr + k - ii, ii * sizeof(*bh_attr));
+
+    for (; ii < k; ii++) {
+        bh_val[ii] = C::neutral();
+        bh_ids[ii] = -1;
+        bh_attr[ii] = C::neutral();
+    }
+    return nel;
+}
+
+template <typename C>
+inline size_t heap_reorder_two_attribute(
+        size_t k,
+        typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        typename C::T* bh_attr_first,
+        typename C::T* bh_attr_second) {
+    size_t i, ii;
+
+    for (i = 0, ii = 0; i < k; i++) {
+        /* top element should be put at the end of the list */
+        typename C::T val = bh_val[0];
+        typename C::TI id = bh_ids[0];
+        typename C::T attr_first = bh_attr_first[0];
+        typename C::T attr_second = bh_attr_second[0];
+
+        /* boundary case: we will over-ride this value if not a true element */
+        heap_pop_two_attribute<C>(k - i, bh_val, bh_ids, bh_attr_first, bh_attr_second);
+        bh_val[k - ii - 1] = val;
+        bh_ids[k - ii - 1] = id;
+        bh_attr_first[k - ii - 1] = attr_first;
+        bh_attr_second[k - ii - 1] = attr_second;
+        if (id != -1)
+            ii++;
+    }
+    /* Count the number of elements which are effectively returned */
+    size_t nel = ii;
+
+    memmove(bh_val, bh_val + k - ii, ii * sizeof(*bh_val));
+    memmove(bh_ids, bh_ids + k - ii, ii * sizeof(*bh_ids));
+    memmove(bh_attr_first, bh_attr_first + k - ii, ii * sizeof(*bh_attr_first));
+    memmove(bh_attr_second, bh_attr_second + k - ii, ii * sizeof(*bh_attr_second));
+
+    for (; ii < k; ii++) {
+        bh_val[ii] = C::neutral();
+        bh_ids[ii] = -1;
+        bh_attr_first[ii] = C::neutral();
+        bh_attr_second[ii] = C::neutral();
+    }
+    return nel;
+}
+
 template <typename T>
 inline size_t minheap_reorder(size_t k, T* bh_val, int64_t* bh_ids) {
     return heap_reorder<CMin<T, int64_t>>(k, bh_val, bh_ids);
 }
 
 template <typename T>
+inline size_t minheap_reorder_one_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr) {
+    return heap_reorder_one_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr);
+}
+
+template <typename T>
+inline size_t minheap_reorder_two_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr_first, T* bh_attr_second) {
+    return heap_reorder_two_attribute<CMin<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second);
+}
+
+template <typename T>
 inline size_t maxheap_reorder(size_t k, T* bh_val, int64_t* bh_ids) {
     return heap_reorder<CMax<T, int64_t>>(k, bh_val, bh_ids);
+}
+
+template <typename T>
+inline size_t maxheap_reorder_one_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr) {
+    return heap_reorder_one_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr);
+}
+
+template <typename T>
+inline size_t maxheap_reorder_two_attribute(size_t k, T* bh_val, int64_t* bh_ids, T* bh_attr_first, T* bh_attr_second) {
+    return heap_reorder_two_attribute<CMax<T, int64_t>>(k, bh_val, bh_ids, bh_attr_first, bh_attr_second);
 }
 
 /*******************************************************************
@@ -542,12 +1134,203 @@ struct HeapArray {
     void per_line_extrema(T* vals_out, TI* idx_out) const;
 };
 
+
+template <typename C>
+struct HeapArrayOneAttribute {
+    typedef typename C::TI TI;
+    typedef typename C::T T;
+
+    size_t nh; ///< number of heaps
+    size_t k;  ///< allocated size per heap
+    TI* ids;   ///< identifiers (size nh * k)
+    T* val;    ///< values (distances or similarities), size nh * k
+    T* attr;
+
+    /// Return the list of values for a heap
+    T* get_val(size_t key) {
+        return val + key * k;
+    }
+
+    T* get_attr(size_t key) {
+        return attr + key * k;
+    }
+
+    /// Correspponding identifiers
+    TI* get_ids(size_t key) {
+        return ids + key * k;
+    }
+
+    /// prepare all the heaps before adding
+    void heapify();
+
+    /** add nj elements to heaps i0:i0+ni, with sequential ids
+     *
+     * @param nj    nb of elements to add to each heap
+     * @param vin   elements to add, size ni * nj
+     * @param atrin elements attribute to add, size ni * nj
+     * @param j0    add this to the ids that are added
+     * @param i0    first heap to update
+     * @param ni    nb of elements to update (-1 = use nh)
+     */
+    void addn(
+            size_t nj,
+            const T* vin,
+            const T* atrin,
+            TI j0 = 0,
+            size_t i0 = 0,
+            int64_t ni = -1);
+
+    /** same as addn
+     *
+     * @param id_in     ids of the elements to add, size ni * nj
+     * @param id_stride stride for id_in
+     */
+    void addn_with_ids(
+            size_t nj,
+            const T* vin,
+            const T* atrin,
+            const TI* id_in = nullptr,
+            int64_t id_stride = 0,
+            size_t i0 = 0,
+            int64_t ni = -1);
+
+    /** same as addn_with_ids, but for just a subset of queries
+     *
+     * @param nsubset  number of query entries to update
+     * @param subset   indexes of queries to update, in 0..nh-1, size nsubset
+     */
+    void addn_query_subset_with_ids(
+            size_t nsubset,
+            const TI* subset,
+            size_t nj,
+            const T* vin,
+            const T* atrin,
+            const TI* id_in = nullptr,
+            int64_t id_stride = 0);
+
+    /// reorder all the heaps
+    void reorder();
+
+    /** this is not really a heap function. It just finds the per-line
+     *   extrema of each line of array D
+     * @param vals_out    extreme value of each line (size nh, or NULL)
+     * @param attrs_out   extreme attribute of each line (size nh, or NULL)
+     * @param idx_out     index of extreme value (size nh or NULL)
+     */
+    void per_line_extrema(T* vals_out, T* attrs_out, TI* idx_out) const;
+};
+
+template <typename C>
+struct HeapArrayTwoAttribute {
+    typedef typename C::TI TI;
+    typedef typename C::T T;
+
+    size_t nh; ///< number of heaps
+    size_t k;  ///< allocated size per heap
+    TI* ids;   ///< identifiers (size nh * k)
+    T* val;    ///< values (distances or similarities), size nh * k
+    T* attr_first;
+    T* attr_second;
+
+    /// Return the list of values for a heap
+    T* get_val(size_t key) {
+        return val + key * k;
+    }
+
+    T* get_attr_first(size_t key) {
+        return attr_first + key * k;
+    }
+
+    T* get_attr_second(size_t key) {
+        return attr_second + key * k;
+    }
+
+    /// Correspponding identifiers
+    TI* get_ids(size_t key) {
+        return ids + key * k;
+    }
+
+    /// prepare all the heaps before adding
+    void heapify();
+
+    /** add nj elements to heaps i0:i0+ni, with sequential ids
+     *
+     * @param nj     nb of elements to add to each heap
+     * @param vin    elements to add, size ni * nj
+     * @param atrfin elements attribute first to add, size ni * nj
+     * @param atrsin elements attribute second to add, size ni * nj
+     * @param j0     add this to the ids that are added
+     * @param i0     first heap to update
+     * @param ni     nb of elements to update (-1 = use nh)
+     */
+    void addn(
+            size_t nj,
+            const T* vin,
+            const T* atrfin,
+            const T* atrsin,
+            TI j0 = 0,
+            size_t i0 = 0,
+            int64_t ni = -1);
+
+    /** same as addn
+     *
+     * @param id_in     ids of the elements to add, size ni * nj
+     * @param id_stride stride for id_in
+     */
+    void addn_with_ids(
+            size_t nj,
+            const T* vin,
+            const T* atrfin,
+            const T* atrsin,
+            const TI* id_in = nullptr,
+            int64_t id_stride = 0,
+            size_t i0 = 0,
+            int64_t ni = -1);
+
+    /** same as addn_with_ids, but for just a subset of queries
+     *
+     * @param nsubset  number of query entries to update
+     * @param subset   indexes of queries to update, in 0..nh-1, size nsubset
+     */
+    void addn_query_subset_with_ids(
+            size_t nsubset,
+            const TI* subset,
+            size_t nj,
+            const T* vin,
+            const T* atrfin,
+            const T* atrsin,
+            const TI* id_in = nullptr,
+            int64_t id_stride = 0);
+
+    /// reorder all the heaps
+    void reorder();
+
+    /** this is not really a heap function. It just finds the per-line
+     *   extrema of each line of array D
+     * @param vals_out         extreme value of each line (size nh, or NULL)
+     * @param attrs_first_out  extreme attribute first of each line (size nh, or NULL)
+     * @param attrs_second_out extreme attribute second of each line (size nh, or NULL)
+     * @param idx_out          index of extreme value (size nh or NULL)
+     */
+    void per_line_extrema(T* vals_out, T* attrs_first_out, T* attrs_second_out, TI* idx_out) const;
+};
+
 /* Define useful heaps */
 typedef HeapArray<CMin<float, int64_t>> float_minheap_array_t;
 typedef HeapArray<CMin<int, int64_t>> int_minheap_array_t;
-
 typedef HeapArray<CMax<float, int64_t>> float_maxheap_array_t;
 typedef HeapArray<CMax<int, int64_t>> int_maxheap_array_t;
+
+
+typedef HeapArrayOneAttribute<CMin<float, int64_t>> float_minheap_one_attribute_array_t;
+typedef HeapArrayOneAttribute<CMin<int, int64_t>> int_minheap_one_attribute_array_t;
+typedef HeapArrayOneAttribute<CMax<float, int64_t>> float_maxheap_one_attribute_array_t;
+typedef HeapArrayOneAttribute<CMax<int, int64_t>> int_maxheap_one_attribute_array_t;
+
+typedef HeapArrayTwoAttribute<CMin<float, int64_t>> float_minheap_two_attribute_array_t;
+typedef HeapArrayTwoAttribute<CMin<int, int64_t>> int_minheap_two_attribute_array_t;
+typedef HeapArrayTwoAttribute<CMax<float, int64_t>> float_maxheap_two_attribute_array_t;
+typedef HeapArrayTwoAttribute<CMax<int, int64_t>> int_maxheap_two_attribute_array_t;
 
 // The heap templates are instantiated explicitly in Heap.cpp
 
@@ -592,6 +1375,70 @@ inline void indirect_heap_pop(
 }
 
 template <class C>
+inline void indirect_heap_pop_one_attribute(
+        size_t k,
+        const typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        const typename C::T* bh_attr) {
+    bh_ids--; /* Use 1-based indexing for easier node->child translation */
+    typename C::T val = bh_val[bh_ids[k]];
+    typename C::T attr = bh_attr[bh_ids[k]];
+    size_t i = 1;
+    while (1) {
+        size_t i1 = i << 1;
+        size_t i2 = i1 + 1;
+        if (i1 > k)
+            break;
+        typename C::TI id1 = bh_ids[i1], id2 = bh_ids[i2];
+        if (i2 == k + 1 || C::cmp(bh_val[id1], bh_val[id2])) {
+            if (C::cmp(val, bh_val[id1]))
+                break;
+            bh_ids[i] = id1;
+            i = i1;
+        } else {
+            if (C::cmp(val, bh_val[id2]))
+                break;
+            bh_ids[i] = id2;
+            i = i2;
+        }
+    }
+    bh_ids[i] = bh_ids[k];
+}
+
+template <class C>
+inline void indirect_heap_pop_two_attribute(
+        size_t k,
+        const typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        const typename C::T* bh_attr_first,
+        const typename C::T* bh_attr_second) {
+    bh_ids--; /* Use 1-based indexing for easier node->child translation */
+    typename C::T val = bh_val[bh_ids[k]];
+    typename C::T attr_first = bh_attr_first[bh_ids[k]];
+    typename C::T attr_second = bh_attr_second[bh_ids[k]];
+    size_t i = 1;
+    while (1) {
+        size_t i1 = i << 1;
+        size_t i2 = i1 + 1;
+        if (i1 > k)
+            break;
+        typename C::TI id1 = bh_ids[i1], id2 = bh_ids[i2];
+        if (i2 == k + 1 || C::cmp(bh_val[id1], bh_val[id2])) {
+            if (C::cmp(val, bh_val[id1]))
+                break;
+            bh_ids[i] = id1;
+            i = i1;
+        } else {
+            if (C::cmp(val, bh_val[id2]))
+                break;
+            bh_ids[i] = id2;
+            i = i2;
+        }
+    }
+    bh_ids[i] = bh_ids[k];
+}
+
+template <class C>
 inline void indirect_heap_push(
         size_t k,
         const typename C::T* bh_val,
@@ -599,6 +1446,50 @@ inline void indirect_heap_push(
         typename C::TI id) {
     bh_ids--; /* Use 1-based indexing for easier node->child translation */
     typename C::T val = bh_val[id];
+    size_t i = k;
+    while (i > 1) {
+        size_t i_father = i >> 1;
+        if (!C::cmp(val, bh_val[bh_ids[i_father]]))
+            break;
+        bh_ids[i] = bh_ids[i_father];
+        i = i_father;
+    }
+    bh_ids[i] = id;
+}
+
+template <class C>
+inline void indirect_heap_push_one_attribute(
+        size_t k,
+        const typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        const typename C::T* bh_attr,
+        typename C::TI id) {
+    bh_ids--; /* Use 1-based indexing for easier node->child translation */
+    typename C::T val = bh_val[id];
+    typename C::T attr = bh_attr[id];
+    size_t i = k;
+    while (i > 1) {
+        size_t i_father = i >> 1;
+        if (!C::cmp(val, bh_val[bh_ids[i_father]]))
+            break;
+        bh_ids[i] = bh_ids[i_father];
+        i = i_father;
+    }
+    bh_ids[i] = id;
+}
+
+template <class C>
+inline void indirect_heap_push_two_attribute(
+        size_t k,
+        const typename C::T* bh_val,
+        typename C::TI* bh_ids,
+        const typename C::T* bh_attr_first,
+        const typename C::T* bh_attr_second,
+        typename C::TI id) {
+    bh_ids--; /* Use 1-based indexing for easier node->child translation */
+    typename C::T val = bh_val[id];
+    typename C::T attr_first = bh_attr_first[id];
+    typename C::T attr_second = bh_attr_second[id];
     size_t i = k;
     while (i > 1) {
         size_t i_father = i >> 1;
@@ -631,6 +1522,48 @@ void merge_knn_results(
         typename C::T* distances,
         idx_t* labels);
 
+/** Merge result tables from several shards. The per-shard results are assumed
+ * to be sorted. Note that the C comparator is reversed w.r.t. the usual top-k
+ * element heap because we want the best (ie. lowest for L2) result to be on
+ * top, not the worst. Also, it needs to hold an index of a shard id (ie.
+ * usually int32 is more than enough).
+ *
+ * @param all_distances      size (nshard, n, k)
+ * @param all_labels         size (nshard, n, k)
+ * @param all_attributes     size (nshard, n, k)
+ * @param all_attributes_first   size (nshard, n, k)
+ * @param all_attributes_second  size (nshard, n, k)
+ * @param distances          output distances, size (n, k)
+ * @param labels             output labels, size (n, k)
+ * @param attributes         output attributes, size (n, k)
+ * @param attributes_first   output attributes_first, size (n, k)
+ * @param attributes_second  output attributes_second, size (n, k)
+ */
+template <class idx_t, class C>
+void merge_knn_results_one_attribute(
+        size_t n,
+        size_t k,
+        typename C::TI nshard,
+        const typename C::T* all_distances,
+        const idx_t* all_labels,
+        const typename C::T* all_attributes,
+        typename C::T* distances,
+        idx_t* labels,
+        typename C::T* attributes);
+
+template <class idx_t, class C>
+void merge_knn_results_two_attribute(
+        size_t n,
+        size_t k,
+        typename C::TI nshard,
+        const typename C::T* all_distances,
+        const idx_t* all_labels,
+        const typename C::T* all_attributes_first,
+        const typename C::T* all_attributes_second,
+        typename C::T* distances,
+        idx_t* labels,
+        typename C::T* attributes_first,
+        typename C::T* attributes_second);
 } // namespace faiss
 
 #endif /* FAISS_Heap_h */

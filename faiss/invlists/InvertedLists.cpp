@@ -24,6 +24,12 @@ InvertedListsIterator::~InvertedListsIterator() {}
 InvertedLists::InvertedLists(size_t nlist, size_t code_size)
         : nlist(nlist), code_size(code_size) {}
 
+InvertedLists::InvertedLists(size_t nlist, size_t code_size, bool is_include_one_attribute)
+        : nlist(nlist), code_size(code_size), is_include_one_attribute(is_include_one_attribute) {}
+
+InvertedLists::InvertedLists(size_t nlist, size_t code_size, bool is_include_two_attribute, bool mode_two)
+        : nlist(nlist), code_size(code_size), is_include_two_attribute(is_include_two_attribute), mode_two(mode_two) {}
+
 InvertedLists::~InvertedLists() {}
 
 idx_t InvertedLists::get_single_id(size_t list_no, size_t offset) const {
@@ -34,16 +40,84 @@ idx_t InvertedLists::get_single_id(size_t list_no, size_t offset) const {
     return id;
 }
 
+bool InvertedLists::get_is_include_one_attribute() const {
+    return is_include_one_attribute;
+}
+
+void InvertedLists::set_is_include_one_attribute() {
+    is_include_one_attribute = true;
+}
+
+bool InvertedLists::get_is_include_two_attribute() const {
+    return is_include_two_attribute;
+}
+
+void InvertedLists::set_is_include_two_attribute() {
+    is_include_two_attribute = true;
+}
+
+size_t InvertedLists::get_codes_size() const {
+    FAISS_THROW_MSG("InvertedLists::get_codes_size() is not implemented");
+}
+
+size_t InvertedLists::one_attribute_list_size(size_t list_no) const {
+    FAISS_THROW_MSG("one_attribute_list_size not implemented");
+}
+
+size_t InvertedLists::two_attribute_list_size(size_t list_no) const {
+    FAISS_THROW_MSG("two_attribute_list_size not implemented");
+}
+
+size_t InvertedLists::get_one_attribute_size() const {
+    FAISS_THROW_MSG("InvertedLists::get_one_attribute_size() is not implemented");
+}
+
+size_t InvertedLists::get_two_attribute_size() const {
+    FAISS_THROW_MSG("InvertedLists::get_two_attribute_size() is not implemented");
+}
+
+const uint8_t* InvertedLists::get_attributes(size_t list_no) const {
+    FAISS_THROW_MSG("InvertedLists::get_attributes() is not implemented");
+}
+
+const uint8_t* InvertedLists::get_attributes_first(size_t list_no) const {
+    FAISS_THROW_MSG("InvertedLists::get_attributes_first() is not implemented");
+}
+
+const uint8_t* InvertedLists::get_attributes_second(size_t list_no) const {
+    FAISS_THROW_MSG("InvertedLists::get_attributes_second() is not implemented");
+}
+
 void InvertedLists::release_codes(size_t, const uint8_t*) const {}
+
+void InvertedLists::release_attributes(size_t, const uint8_t*) const {}
+
+void InvertedLists::release_attributes_first(size_t, const uint8_t*) const {}
+
+void InvertedLists::release_attributes_second(size_t, const uint8_t*) const {}
 
 void InvertedLists::release_ids(size_t, const idx_t*) const {}
 
 void InvertedLists::prefetch_lists(const idx_t*, int) const {}
 
-const uint8_t* InvertedLists::get_single_code(size_t list_no, size_t offset)
-        const {
+const uint8_t* InvertedLists::get_single_code(size_t list_no, size_t offset) const {
     assert(offset < list_size(list_no));
     return get_codes(list_no) + offset * code_size;
+}
+
+const uint8_t* InvertedLists::get_single_attribute(size_t list_no, size_t offset) const {
+    assert(offset < list_size(list_no));
+    return get_attributes(list_no) + offset * attr_size;
+}
+
+const uint8_t* InvertedLists::get_single_attribute_first(size_t list_no, size_t offset) const {
+    assert(offset < list_size(list_no));
+    return get_attributes_first(list_no) + offset * attr_size;
+}
+
+const uint8_t* InvertedLists::get_single_attribute_second(size_t list_no, size_t offset) const {
+    assert(offset < list_size(list_no));
+    return get_attributes_second(list_no) + offset * attr_size;
 }
 
 size_t InvertedLists::add_entry(
@@ -54,12 +128,90 @@ size_t InvertedLists::add_entry(
     return add_entries(list_no, 1, &theid, code);
 }
 
+size_t InvertedLists::add_entry_with_one_attribute(
+        size_t list_no,
+        idx_t theid,
+        const uint8_t* code,
+        const uint8_t* attribute,
+        void* /*inverted_list_context*/) {
+    return add_entries_with_one_attribute(list_no, 1, &theid, code, attribute);
+}
+
+size_t InvertedLists::add_entry_with_two_attribute(
+        size_t list_no,
+        idx_t theid,
+        const uint8_t* code,
+        const uint8_t* attribute_first,
+        const uint8_t* attribute_second,
+        void* /*inverted_list_context*/) {
+    return add_entries_with_two_attribute(list_no, 1, &theid, code, attribute_first, attribute_second);
+}
+
+size_t InvertedLists::add_entries_with_one_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code,
+        const uint8_t* attribute) {
+    FAISS_THROW_MSG("InvertedLists::add_entries_with_one_attribute() is not implemented");
+}
+
+size_t InvertedLists::add_entries_with_two_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code,
+        const uint8_t* attribute_first,
+        const uint8_t* attribute_second) {
+    FAISS_THROW_MSG("InvertedLists::add_entries_with_two_attribute() is not implemented");
+}
+
 void InvertedLists::update_entry(
         size_t list_no,
         size_t offset,
         idx_t id,
         const uint8_t* code) {
     update_entries(list_no, offset, 1, &id, code);
+}
+
+void InvertedLists::update_entry_with_one_attribute(
+        size_t list_no,
+        size_t offset,
+        idx_t id,
+        const uint8_t* code,
+        const uint8_t* attribute) {
+    update_entries_with_one_attribute(list_no, offset, 1, &id, code, attribute);
+}
+
+void InvertedLists::update_entry_with_two_attribute(
+        size_t list_no,
+        size_t offset,
+        idx_t id,
+        const uint8_t* code,
+        const uint8_t* attribute_first,
+        const uint8_t* attribute_second) {
+    update_entries_with_two_attribute(list_no, offset, 1, &id, code, attribute_first, attribute_second);
+}
+
+void InvertedLists::update_entries_with_one_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute) {
+    FAISS_THROW_MSG("InvertedLists::update_entries_with_one_attribute() is not implemented");
+}
+
+void InvertedLists::update_entries_with_two_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second) {
+    FAISS_THROW_MSG("InvertedLists::update_entries_with_two_attribute() is not implemented");
 }
 
 void InvertedLists::reset() {
@@ -69,20 +221,38 @@ void InvertedLists::reset() {
 }
 
 void InvertedLists::merge_from(InvertedLists* oivf, size_t add_id) {
+
+    FAISS_THROW_IF_NOT_MSG(this->get_is_include_one_attribute() == oivf->get_is_include_one_attribute(),
+    "Both invlists must have the save mode of is_include_one_attribute !");
+
+    FAISS_THROW_IF_NOT_MSG(this->get_is_include_two_attribute() == oivf->get_is_include_two_attribute(),
+    "Both invlists must have the save mode of is_include_two_attribute !");
+
 #pragma omp parallel for
     for (idx_t i = 0; i < nlist; i++) {
         size_t list_size = oivf->list_size(i);
         ScopedIds ids(oivf, i);
         if (add_id == 0) {
-            add_entries(i, list_size, ids.get(), ScopedCodes(oivf, i).get());
+            if (this->get_is_include_one_attribute()) {
+                add_entries_with_one_attribute(i, list_size, ids.get(), ScopedCodes(oivf, i).get(), ScopedAttributes(oivf, i).get());
+            } else if (this->get_is_include_two_attribute()) {
+                add_entries_with_two_attribute(i, list_size, ids.get(), ScopedCodes(oivf, i).get(), ScopedAttributesFirst(oivf, i).get(), ScopedAttributesSecond(oivf, i).get());
+            } else {
+                add_entries(i, list_size, ids.get(), ScopedCodes(oivf, i).get());
+            }
         } else {
             std::vector<idx_t> new_ids(list_size);
 
             for (size_t j = 0; j < list_size; j++) {
                 new_ids[j] = ids[j] + add_id;
             }
-            add_entries(
-                    i, list_size, new_ids.data(), ScopedCodes(oivf, i).get());
+            if (this->get_is_include_one_attribute()) {
+                add_entries_with_one_attribute(i, list_size, new_ids.data(), ScopedCodes(oivf, i).get(), ScopedAttributes(oivf, i).get());
+            } else if (this->get_is_include_two_attribute()) {
+                add_entries_with_two_attribute(i, list_size, new_ids.data(), ScopedCodes(oivf, i).get(), ScopedAttributesFirst(oivf, i).get(), ScopedAttributesSecond(oivf, i).get());
+            } else {
+                add_entries(i, list_size, new_ids.data(), ScopedCodes(oivf, i).get());
+            }
         }
         oivf->resize(i, 0);
     }
@@ -93,6 +263,12 @@ size_t InvertedLists::copy_subset_to(
         subset_type_t subset_type,
         idx_t a1,
         idx_t a2) const {
+
+    FAISS_THROW_IF_NOT_MSG(
+            is_include_one_attribute == false,
+            "copy_subset_to only support for index which Has no one_attribute now"
+    );
+
     FAISS_THROW_IF_NOT(nlist == oivf.nlist);
     FAISS_THROW_IF_NOT(code_size == oivf.code_size);
     FAISS_THROW_IF_NOT_FMT(
@@ -217,8 +393,7 @@ size_t InvertedLists::compute_ntotal() const {
     return tot;
 }
 
-bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
-        const {
+bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context) const {
     if (use_iterator) {
         return !std::unique_ptr<InvertedListsIterator>(
                         get_iterator(list_no, inverted_list_context))
@@ -227,6 +402,14 @@ bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
         FAISS_THROW_IF_NOT(inverted_list_context == nullptr);
         return list_size(list_no) == 0;
     }
+}
+
+bool InvertedLists::has_one_attribute(size_t list_no, void* inverted_list_context) const {
+    return is_include_one_attribute;
+}
+
+bool InvertedLists::has_two_attribute(size_t list_no, void* inverted_list_context) const {
+    return is_include_two_attribute;
 }
 
 // implemnent iterator on top of get_codes / get_ids
@@ -275,6 +458,25 @@ ArrayInvertedLists::ArrayInvertedLists(size_t nlist, size_t code_size)
     codes.resize(nlist);
 }
 
+ArrayInvertedLists::ArrayInvertedLists(size_t nlist, size_t code_size, bool is_include_one_attribute)
+        : InvertedLists(nlist, code_size, is_include_one_attribute) {
+    ids.resize(nlist);
+    codes.resize(nlist);
+    if (is_include_one_attribute == true) {
+        attributes.resize(nlist);
+    }
+}
+
+ArrayInvertedLists::ArrayInvertedLists(size_t nlist, size_t code_size, bool is_include_two_attribute, bool mode_two)
+        : InvertedLists(nlist, code_size, is_include_two_attribute, mode_two) {
+    ids.resize(nlist);
+    codes.resize(nlist);
+    if (is_include_two_attribute == true) {
+        attributes_first.resize(nlist);
+        attributes_second.resize(nlist);
+    }
+}
+
 size_t ArrayInvertedLists::add_entries(
         size_t list_no,
         size_t n_entry,
@@ -282,6 +484,16 @@ size_t ArrayInvertedLists::add_entries(
         const uint8_t* code) {
     if (n_entry == 0)
         return 0;
+    FAISS_THROW_IF_NOT_MSG(
+            is_include_one_attribute == false,
+            "add_entries without one attribute cause conflict, turn off is_include_one_attribute or pass one attribute array into function"
+    );
+
+    FAISS_THROW_IF_NOT_MSG(
+            is_include_two_attribute == false,
+            "add_entries without two attribute cause conflict, turn off is_include_one_attribute or pass two attribute array into function"
+    );
+
     assert(list_no < nlist);
     size_t o = ids[list_no].size();
     ids[list_no].resize(o + n_entry);
@@ -291,21 +503,169 @@ size_t ArrayInvertedLists::add_entries(
     return o;
 }
 
+size_t ArrayInvertedLists::add_entries_with_one_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code,
+        const uint8_t* attribute) {
+    if (n_entry == 0)
+        return 0;
+    assert(list_no < nlist);
+
+    if (has_one_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no one_attribute");
+        return (size_t)0; 
+    }
+    
+    size_t o = ids[list_no].size();
+    ids[list_no].resize(o + n_entry);
+    memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
+    codes[list_no].resize((o + n_entry) * code_size);
+    memcpy(&codes[list_no][o * code_size], code, code_size * n_entry);
+    attributes[list_no].resize((o + n_entry) * attr_size);
+    memcpy(&attributes[list_no][o * attr_size], attribute, attr_size * n_entry);
+    return o;
+}
+
+size_t ArrayInvertedLists::add_entries_with_two_attribute(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code,
+        const uint8_t* attribute_first,
+        const uint8_t* attribute_second) {
+    if (n_entry == 0)
+        return 0;
+    assert(list_no < nlist);
+
+    if (has_two_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no two_attribute");
+        return (size_t)0; 
+    }
+    
+    size_t o = ids[list_no].size();
+    ids[list_no].resize(o + n_entry);
+    memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
+    codes[list_no].resize((o + n_entry) * code_size);
+    memcpy(&codes[list_no][o * code_size], code, code_size * n_entry);
+    attributes_first[list_no].resize((o + n_entry) * attr_size);
+    memcpy(&attributes_first[list_no][o * attr_size], attribute_first, attr_size * n_entry);
+    attributes_second[list_no].resize((o + n_entry) * attr_size);
+    memcpy(&attributes_second[list_no][o * attr_size], attribute_second, attr_size * n_entry);
+    return o;
+}
+
 size_t ArrayInvertedLists::list_size(size_t list_no) const {
     assert(list_no < nlist);
     return ids[list_no].size();
 }
 
-bool ArrayInvertedLists::is_empty(size_t list_no, void* inverted_list_context)
-        const {
+size_t ArrayInvertedLists::one_attribute_list_size(size_t list_no) const {
+    assert(list_no < nlist);
+
+    if (has_one_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no one_attribute");
+        return (size_t)0;
+    }
+
+    return ids[list_no].size();
+}
+
+size_t ArrayInvertedLists::two_attribute_list_size(size_t list_no) const {
+    assert(list_no < nlist);
+
+    if (has_two_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no two_attribute");
+        return (size_t)0;
+    }
+
+    return ids[list_no].size();
+}
+
+bool ArrayInvertedLists::get_is_include_one_attribute() const {
+    return is_include_one_attribute;
+}
+
+void ArrayInvertedLists::set_is_include_one_attribute() {
+    this->is_include_one_attribute = true;
+    attributes.resize(nlist);
+}
+
+bool ArrayInvertedLists::get_is_include_two_attribute() const {
+    return is_include_two_attribute;
+}
+
+void ArrayInvertedLists::set_is_include_two_attribute() {
+    this->is_include_two_attribute = true;
+    attributes_first.resize(nlist);
+    attributes_second.resize(nlist);
+}
+
+size_t ArrayInvertedLists::get_one_attribute_size() const {
+    return attributes.size();
+}
+
+size_t ArrayInvertedLists::get_two_attribute_size() const {
+    return attributes_first.size();
+}
+
+size_t ArrayInvertedLists::get_codes_size() const { 
+    return codes.size();
+}
+
+bool ArrayInvertedLists::is_empty(size_t list_no, void* inverted_list_context) const {
     FAISS_THROW_IF_NOT(inverted_list_context == nullptr);
     return ids[list_no].size() == 0;
+}
+
+bool ArrayInvertedLists::has_one_attribute(size_t list_no, void* inverted_list_context) const {
+    FAISS_THROW_IF_NOT(inverted_list_context == nullptr);
+    assert(list_no < nlist);
+    return is_include_one_attribute && attributes.size() == codes.size();
+}
+
+bool ArrayInvertedLists::has_two_attribute(size_t list_no, void* inverted_list_context) const {
+    FAISS_THROW_IF_NOT(inverted_list_context == nullptr);
+    assert(list_no < nlist);
+    return is_include_two_attribute && attributes_first.size() == codes.size() && attributes_second.size() == codes.size();
 }
 
 const uint8_t* ArrayInvertedLists::get_codes(size_t list_no) const {
     assert(list_no < nlist);
     return codes[list_no].data();
 }
+
+const uint8_t* ArrayInvertedLists::get_attributes(size_t list_no) const {
+    assert(list_no < nlist);
+    if(has_one_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no one_attribute");
+        return attributes[list_no].data();
+    }
+    return attributes[list_no].data();
+}
+
+const uint8_t* ArrayInvertedLists::get_attributes_first(size_t list_no) const {
+    assert(list_no < nlist);
+    if(has_two_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no two_attribute");
+        return attributes_first[list_no].data();
+    }
+    return attributes_first[list_no].data();
+}
+
+const uint8_t* ArrayInvertedLists::get_attributes_second(size_t list_no) const {
+    assert(list_no < nlist);
+    if(has_two_attribute(list_no) == false) {
+        FAISS_THROW_MSG("Has no two_attribute");
+        return attributes_second[list_no].data();
+    }
+    return attributes_second[list_no].data();
+}
+
+void ArrayInvertedLists::release_attributes(size_t list_no, const uint8_t* attributes) const {}
+void ArrayInvertedLists::release_attributes_first(size_t list_no, const uint8_t* attributes_first) const {}
+void ArrayInvertedLists::release_attributes_second(size_t list_no, const uint8_t* attributes_second) const {}
 
 const idx_t* ArrayInvertedLists::get_ids(size_t list_no) const {
     assert(list_no < nlist);
@@ -315,6 +675,15 @@ const idx_t* ArrayInvertedLists::get_ids(size_t list_no) const {
 void ArrayInvertedLists::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
     codes[list_no].resize(new_size * code_size);
+
+    if (has_one_attribute(list_no)){
+        attributes[list_no].resize(new_size * attr_size); 
+    }
+
+    if (has_two_attribute(list_no)){
+        attributes_first[list_no].resize(new_size * attr_size); 
+        attributes_second[list_no].resize(new_size * attr_size);
+    }
 }
 
 void ArrayInvertedLists::update_entries(
@@ -329,9 +698,42 @@ void ArrayInvertedLists::update_entries(
     memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
 }
 
+void ArrayInvertedLists::update_entries_with_one_attribute(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* codes_in,
+        const uint8_t* attributes_in) {
+    assert(list_no < nlist);
+    assert(n_entry + offset <= ids[list_no].size());
+    memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
+    memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
+    memcpy(&attributes[list_no][offset * attr_size], attributes_in, attr_size * n_entry);
+}
+
+void ArrayInvertedLists::update_entries_with_two_attribute(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* codes_in,
+        const uint8_t* attributes_in_first,
+        const uint8_t* attributes_in_second) {
+    assert(list_no < nlist);
+    assert(n_entry + offset <= ids[list_no].size());
+    memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
+    memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
+    memcpy(&attributes_first[list_no][offset * attr_size], attributes_in_first, attr_size * n_entry);
+    memcpy(&attributes_second[list_no][offset * attr_size], attributes_in_second, attr_size * n_entry);
+}
+
 void ArrayInvertedLists::permute_invlists(const idx_t* map) {
     std::vector<std::vector<uint8_t>> new_codes(nlist);
     std::vector<std::vector<idx_t>> new_ids(nlist);
+    std::vector<std::vector<uint8_t>> new_attributes(nlist);
+    std::vector<std::vector<uint8_t>> new_attributes_first(nlist);
+    std::vector<std::vector<uint8_t>> new_attributes_second(nlist);
 
     for (size_t i = 0; i < nlist; i++) {
         size_t o = map[i];
@@ -341,6 +743,26 @@ void ArrayInvertedLists::permute_invlists(const idx_t* map) {
     }
     std::swap(codes, new_codes);
     std::swap(ids, new_ids);
+
+    if (has_one_attribute(0) == true) {
+        for (size_t i = 0; i < nlist; i++) {
+            size_t o = map[i];
+            FAISS_THROW_IF_NOT(o < nlist);
+            std::swap(new_attributes[i], new_attributes[o]);
+        }
+        std::swap(attributes, new_attributes);
+    }
+
+    if (has_two_attribute(0) == true) {
+        for (size_t i = 0; i < nlist; i++) {
+            size_t o = map[i];
+            FAISS_THROW_IF_NOT(o < nlist);
+            std::swap(new_attributes_first[i], new_attributes_first[o]);
+            std::swap(new_attributes_second[i], new_attributes_second[o]);
+        }
+        std::swap(attributes_first, new_attributes_first);
+        std::swap(attributes_second, new_attributes_second);
+    }
 }
 
 ArrayInvertedLists::~ArrayInvertedLists() {}

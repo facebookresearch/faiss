@@ -163,8 +163,7 @@ struct HNSW {
     int cum_nb_neighbors(int layer_no) const;
 
     /// range of entries in the neighbors table of vertex no at layer_no
-    void neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
-            const;
+    void neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end) const;
 
     /// only mandatory parameter: nb of neighbors
     explicit HNSW(int M = 32);

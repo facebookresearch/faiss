@@ -8,7 +8,6 @@
 // -*- c++ -*-
 
 #include <faiss/invlists/DirectMap.h>
-
 #include <cassert>
 #include <cstdio>
 
@@ -143,14 +142,18 @@ DirectMapAdd::~DirectMapAdd() {
 
 using ScopedCodes = InvertedLists::ScopedCodes;
 using ScopedIds = InvertedLists::ScopedIds;
+using ScopedAttributes = InvertedLists::ScopedAttributes;
+using ScopedAttributesFirst = InvertedLists::ScopedAttributesFirst;
+using ScopedAttributesSecond = InvertedLists::ScopedAttributesSecond;
+
 
 size_t DirectMap::remove_ids(const IDSelector& sel, InvertedLists* invlists) {
     size_t nlist = invlists->nlist;
     std::vector<idx_t> toremove(nlist);
 
     size_t nremove = 0;
-    BlockInvertedLists* block_invlists =
-            dynamic_cast<BlockInvertedLists*>(invlists);
+    BlockInvertedLists* block_invlists = dynamic_cast<BlockInvertedLists*>(invlists);
+
     if (type == NoMap) {
         if (block_invlists != nullptr) {
             return block_invlists->remove_ids(sel);
@@ -163,11 +166,28 @@ size_t DirectMap::remove_ids(const IDSelector& sel, InvertedLists* invlists) {
             while (j < l) {
                 if (sel.is_member(idsi[j])) {
                     l--;
-                    invlists->update_entry(
+                    if (invlists->get_is_include_one_attribute()) {
+                        invlists->update_entry_with_one_attribute(
+                            i,
+                            j,
+                            invlists->get_single_id(i, l),
+                            ScopedCodes(invlists, i, l).get(),
+                            ScopedAttributes(invlists, i, l).get());
+                    } else if (invlists->get_is_include_two_attribute()) {
+                        invlists->update_entry_with_two_attribute(
+                            i,
+                            j,
+                            invlists->get_single_id(i, l),
+                            ScopedCodes(invlists, i, l).get(),
+                            ScopedAttributesFirst(invlists, i, l).get(),
+                            ScopedAttributesSecond(invlists, i, l).get());
+                    } else {
+                        invlists->update_entry(
                             i,
                             j,
                             invlists->get_single_id(i, l),
                             ScopedCodes(invlists, i, l).get());
+                    }
                 } else {
                     j++;
                 }
@@ -201,11 +221,28 @@ size_t DirectMap::remove_ids(const IDSelector& sel, InvertedLists* invlists) {
                 hashtable.erase(res);
                 if (offset < last) {
                     idx_t last_id = invlists->get_single_id(list_no, last);
-                    invlists->update_entry(
+                    if (invlists->get_is_include_one_attribute()) {
+                        invlists->update_entry_with_one_attribute(
+                            list_no,
+                            offset,
+                            last_id,
+                            ScopedCodes(invlists, list_no, last).get(),
+                            ScopedAttributes(invlists, list_no, last).get());
+                    } if (invlists->get_is_include_two_attribute()) {
+                        invlists->update_entry_with_two_attribute(
+                            list_no,
+                            offset,
+                            last_id,
+                            ScopedCodes(invlists, list_no, last).get(),
+                            ScopedAttributesFirst(invlists, list_no, last).get(),
+                            ScopedAttributesSecond(invlists, list_no, last).get());
+                    } else {
+                        invlists->update_entry(
                             list_no,
                             offset,
                             last_id,
                             ScopedCodes(invlists, list_no, last).get());
+                    }
                     // update hash entry for last element
                     hashtable[last_id] = lo_build(list_no, offset);
                 }

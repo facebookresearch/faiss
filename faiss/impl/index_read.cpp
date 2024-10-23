@@ -197,19 +197,44 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         auto ails = new ArrayInvertedLists(0, 0);
         READ1(ails->nlist);
         READ1(ails->code_size);
+        READ1(ails->is_include_one_attribute);
+        READ1(ails->is_include_two_attribute);
+
         ails->ids.resize(ails->nlist);
         ails->codes.resize(ails->nlist);
+        if (ails->is_include_one_attribute) {
+            ails->attributes.resize(ails->nlist);
+        }
+        if (ails->is_include_two_attribute) {
+            ails->attributes_first.resize(ails->nlist);
+            ails->attributes_second.resize(ails->nlist);
+        }
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+
         for (size_t i = 0; i < ails->nlist; i++) {
             ails->ids[i].resize(sizes[i]);
             ails->codes[i].resize(sizes[i] * ails->code_size);
+            if (ails->is_include_one_attribute) {
+                ails->attributes[i].resize(sizes[i] * ails->attr_size);
+            }
+            if (ails->is_include_two_attribute) {
+                ails->attributes_first[i].resize(sizes[i] * ails->attr_size);
+                ails->attributes_second[i].resize(sizes[i] * ails->attr_size);
+            }
         }
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();
             if (n > 0) {
                 READANDCHECK(ails->codes[i].data(), n * ails->code_size);
                 READANDCHECK(ails->ids[i].data(), n);
+                if (ails->is_include_one_attribute) {
+                    READANDCHECK(ails->attributes[i].data(), n * ails->attr_size);
+                }
+                if (ails->is_include_two_attribute) {
+                    READANDCHECK(ails->attributes_first[i].data(), n * ails->attr_size);
+                    READANDCHECK(ails->attributes_second[i].data(), n * ails->attr_size);
+                }
             }
         }
         return ails;
@@ -220,12 +245,16 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         // as "il"
         int h2 = (io_flags & 0xffff0000) | (fourcc("il__") & 0x0000ffff);
         size_t nlist, code_size;
+        bool is_include_one_attribute, is_include_two_attribute;
         READ1(nlist);
         READ1(code_size);
+        READ1(is_include_one_attribute);
+        READ1(is_include_two_attribute);
+
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
         return InvertedListsIOHook::lookup(h2)->read_ArrayInvertedLists(
-                f, io_flags, nlist, code_size, sizes);
+                f, io_flags, nlist, code_size, sizes, is_include_one_attribute, is_include_two_attribute);
     } else {
         return InvertedListsIOHook::lookup(h)->read(f, io_flags);
     }
@@ -551,6 +580,11 @@ Index* read_index(IOReader* f, int io_flags) {
         READXBVECTOR(idxf->codes);
         FAISS_THROW_IF_NOT(
                 idxf->codes.size() == idxf->ntotal * idxf->code_size);
+        READXBVECTOR(idxf->attributes);
+        READXBVECTOR(idxf->attributes_first);
+        READXBVECTOR(idxf->attributes_second);
+        READ1(idxf->is_include_one_attribute);
+        READ1(idxf->is_include_two_attribute);
         // leak!
         idx = idxf;
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
