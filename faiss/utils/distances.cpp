@@ -18,8 +18,6 @@
 
 #ifdef __AVX2__
 #include <immintrin.h>
-#elif defined(__ARM_FEATURE_SVE)
-#include <arm_sve.h>
 #endif
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -140,8 +138,7 @@ void exhaustive_inner_product_seq(
         size_t nx,
         size_t ny,
         BlockResultHandler& res) {
-    using SingleResultHandler =
-            typename BlockResultHandler::SingleResultHandler;
+    using SingleResultHandler = typename BlockResultHandler::SingleResultHandler;
     [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
@@ -165,6 +162,99 @@ void exhaustive_inner_product_seq(
         }
     }
 }
+
+template <class BlockResultHandler>
+void exhaustive_inner_product_seq_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    using SingleResultHandlerOneAttribute = typename BlockResultHandler::SingleResultHandlerOneAttribute;
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandlerOneAttribute resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            const float* attr_j = attributes;
+
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                float current_attribute_score = attr_j[0];
+                attr_j += 1;
+                if (!res.is_in_selection(j)) {
+                    continue;
+                }
+
+                if (current_attribute_score >= lower_attribute && current_attribute_score <= upper_attribute) {
+                    float ip = fvec_inner_product(x_i, y_j, d);
+                    resi.add_result(ip, j, current_attribute_score);
+                }
+            }
+            resi.end();
+        }
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_inner_product_seq_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    using SingleResultHandlerTwoAttribute = typename BlockResultHandler::SingleResultHandlerTwoAttribute;
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandlerTwoAttribute resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            const float* attr_f_j = attributes_first;
+            const float* attr_s_j = attributes_second;
+
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                float current_attribute_score_first = attr_f_j[0];
+                float current_attribute_score_second = attr_s_j[0];
+                attr_f_j += 1;
+                attr_s_j += 1;
+                if (!res.is_in_selection(j)) {
+                    continue;
+                }
+
+                if (current_attribute_score_first >= lower_attribute_first && current_attribute_score_first <= upper_attribute_first) {
+                    if (current_attribute_score_second >= lower_attribute_second && current_attribute_score_second <= upper_attribute_second) {
+                        float ip = fvec_inner_product(x_i, y_j, d);
+                        resi.add_result(ip, j, current_attribute_score_first, current_attribute_score_second);
+                    }
+                }
+            }
+            resi.end();
+        }
+    }
+}
+
 
 template <class BlockResultHandler>
 void exhaustive_L2sqr_seq(
@@ -192,6 +282,96 @@ void exhaustive_L2sqr_seq(
                 }
                 float disij = fvec_L2sqr(x_i, y_j, d);
                 resi.add_result(disij, j);
+            }
+            resi.end();
+        }
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_seq_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    using SingleResultHandlerOneAttribute = typename BlockResultHandler::SingleResultHandlerOneAttribute;
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandlerOneAttribute resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            const float* attr_j = attributes;
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                float current_attribute_score = attr_j[0];
+                attr_j += 1;
+                if (!res.is_in_selection(j)) {
+                    continue;
+                }
+
+                if (current_attribute_score >= lower_attribute && current_attribute_score <= upper_attribute) {
+                    float disij = fvec_L2sqr(x_i, y_j, d);
+                    resi.add_result(disij, j, current_attribute_score);
+                }
+            }
+            resi.end();
+        }
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_seq_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    using SingleResultHandlerTwoAttribute = typename BlockResultHandler::SingleResultHandlerTwoAttribute;
+    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandlerTwoAttribute resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            const float* attr_f_j = attributes_first;
+            const float* attr_s_j = attributes_second;
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                float current_attribute_score_first = attr_f_j[0];
+                float current_attribute_score_second = attr_s_j[0];
+                attr_f_j += 1;
+                attr_s_j += 1;
+                if (!res.is_in_selection(j)) {
+                    continue;
+                }
+
+                if (current_attribute_score_first >= lower_attribute_first && current_attribute_score_first <= upper_attribute_first) {
+                    if (current_attribute_score_second >= lower_attribute_second && current_attribute_score_second <= upper_attribute_second) {
+                        float disij = fvec_L2sqr(x_i, y_j, d);
+                        resi.add_result(disij, j, current_attribute_score_first, current_attribute_score_second);
+                    }
+                }
             }
             resi.end();
         }
@@ -247,6 +427,125 @@ void exhaustive_inner_product_blas(
             }
 
             res.add_results(j0, j1, ip_block.get());
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_inner_product_blas_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+
+            res.add_results_one_attribute_blas(j0, j1, ip_block.get(), lower_attribute, upper_attribute, attributes);
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_inner_product_blas_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+
+            res.add_results_two_attribute_blas(j0, j1, ip_block.get(), lower_attribute_first, upper_attribute_first,
+                                                                       lower_attribute_second, upper_attribute_second, 
+                                                                       attributes_first, attributes_second);
         }
         res.end_multiple();
         InterruptCallback::check();
@@ -341,6 +640,191 @@ void exhaustive_L2sqr_blas_default_impl(
     }
 }
 
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_default_impl_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms = nullptr) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    // const size_t bs_x = 16, bs_y = 16;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float[]> x_norms(new float[nx]);
+    std::unique_ptr<float[]> del2;
+
+    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+
+    if (!y_norms) {
+        float* y_norms2 = new float[ny];
+        del2.reset(y_norms2);
+        fvec_norms_L2sqr(y_norms2, y, d, ny);
+        y_norms = y_norms2;
+    }
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+#pragma omp parallel for
+            for (int64_t i = i0; i < i1; i++) {
+                float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
+
+                for (size_t j = j0; j < j1; j++) {
+                    float ip = *ip_line;
+                    float dis = x_norms[i] + y_norms[j] - 2 * ip;
+
+                    if (!res.is_in_selection(j)) {
+                        dis = HUGE_VALF;
+                    }
+                    // negative values can occur for identical vectors
+                    // due to roundoff errors
+                    if (dis < 0)
+                        dis = 0;
+
+                    *ip_line = dis;
+                    ip_line++;
+                }
+            }
+            res.add_results_one_attribute_blas(j0, j1, ip_block.get(), lower_attribute, upper_attribute, attributes);
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_default_impl_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first, 
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms = nullptr) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    // const size_t bs_x = 16, bs_y = 16;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float[]> x_norms(new float[nx]);
+    std::unique_ptr<float[]> del2;
+
+    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+
+    if (!y_norms) {
+        float* y_norms2 = new float[ny];
+        del2.reset(y_norms2);
+        fvec_norms_L2sqr(y_norms2, y, d, ny);
+        y_norms = y_norms2;
+    }
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+#pragma omp parallel for
+            for (int64_t i = i0; i < i1; i++) {
+                float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
+
+                for (size_t j = j0; j < j1; j++) {
+                    float ip = *ip_line;
+                    float dis = x_norms[i] + y_norms[j] - 2 * ip;
+
+                    if (!res.is_in_selection(j)) {
+                        dis = HUGE_VALF;
+                    }
+                    // negative values can occur for identical vectors
+                    // due to roundoff errors
+                    if (dis < 0)
+                        dis = 0;
+
+                    *ip_line = dis;
+                    ip_line++;
+                }
+            }
+            res.add_results_two_attribute_blas(j0, j1, ip_block.get(), lower_attribute_first, upper_attribute_first,
+                                                                       lower_attribute_second, upper_attribute_second,
+                                                                       attributes_first, attributes_second);
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
+
 template <class BlockResultHandler>
 void exhaustive_L2sqr_blas(
         const float* x,
@@ -351,6 +835,41 @@ void exhaustive_L2sqr_blas(
         BlockResultHandler& res,
         const float* y_norms = nullptr) {
     exhaustive_L2sqr_blas_default_impl(x, y, d, nx, ny, res);
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms = nullptr) {
+    exhaustive_L2sqr_blas_default_impl_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res);
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first, 
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms = nullptr) {
+    exhaustive_L2sqr_blas_default_impl_two_attribute(x, y, lower_attribute_first, upper_attribute_first, 
+                                                           lower_attribute_second, upper_attribute_second,
+                                                           attributes_first, attributes_second, d, nx, ny, res);
 }
 
 #ifdef __AVX2__
@@ -427,15 +946,13 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                 //   into account in order to get rid of extra
                 //   _mm256_add_ps(x_norms[i], ...) instructions
                 //   is distance computations.
-                __m256 min_distances =
-                        _mm256_set1_ps(res.dis_tab[i] - x_norms[i]);
+                __m256 min_distances = _mm256_set1_ps(res.dis_tab[i] - x_norms[i]);
 
                 // these indices are local and are relative to j0.
                 // so, value 0 means j0.
                 __m256i min_indices = _mm256_set1_epi32(0);
 
-                __m256i current_indices =
-                        _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+                __m256i current_indices = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
                 const __m256i indices_delta = _mm256_set1_epi32(8);
 
                 // current j index
@@ -448,10 +965,8 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                     _mm_prefetch((const char*)(ip_line + 48), _MM_HINT_NTA);
 
                     // load values for norms
-                    const __m256 y_norm_0 =
-                            _mm256_loadu_ps(y_norms + idx_j + j0 + 0);
-                    const __m256 y_norm_1 =
-                            _mm256_loadu_ps(y_norms + idx_j + j0 + 8);
+                    const __m256 y_norm_0 = _mm256_loadu_ps(y_norms + idx_j + j0 + 0);
+                    const __m256 y_norm_1 = _mm256_loadu_ps(y_norms + idx_j + j0 + 8);
 
                     // load values for dot products
                     const __m256 ip_0 = _mm256_loadu_ps(ip_line + 0);
@@ -460,50 +975,41 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                     // compute dis = y_norm[j] - 2 * dot(x_norm[i], y_norm[j]).
                     // x_norm[i] was dropped off because it is a constant for a
                     // given i. We'll deal with it later.
-                    __m256 distances_0 =
-                            _mm256_fmadd_ps(ip_0, mul_minus2, y_norm_0);
-                    __m256 distances_1 =
-                            _mm256_fmadd_ps(ip_1, mul_minus2, y_norm_1);
+                    __m256 distances_0 = _mm256_fmadd_ps(ip_0, mul_minus2, y_norm_0);
+                    __m256 distances_1 = _mm256_fmadd_ps(ip_1, mul_minus2, y_norm_1);
 
                     // compare the new distances to the min distances
                     // for each of the first group of 8 AVX2 components.
-                    const __m256 comparison_0 = _mm256_cmp_ps(
-                            min_distances, distances_0, _CMP_LE_OS);
+                    const __m256 comparison_0 = _mm256_cmp_ps(min_distances, distances_0, _CMP_LE_OS);
 
                     // update min distances and indices with closest vectors if
                     // needed.
-                    min_distances = _mm256_blendv_ps(
-                            distances_0, min_distances, comparison_0);
+                    min_distances = _mm256_blendv_ps(distances_0, min_distances, comparison_0);
                     min_indices = _mm256_castps_si256(_mm256_blendv_ps(
                             _mm256_castsi256_ps(current_indices),
                             _mm256_castsi256_ps(min_indices),
                             comparison_0));
-                    current_indices =
-                            _mm256_add_epi32(current_indices, indices_delta);
+                    current_indices = _mm256_add_epi32(current_indices, indices_delta);
 
                     // compare the new distances to the min distances
                     // for each of the second group of 8 AVX2 components.
-                    const __m256 comparison_1 = _mm256_cmp_ps(
-                            min_distances, distances_1, _CMP_LE_OS);
+                    const __m256 comparison_1 = _mm256_cmp_ps(min_distances, distances_1, _CMP_LE_OS);
 
                     // update min distances and indices with closest vectors if
                     // needed.
-                    min_distances = _mm256_blendv_ps(
-                            distances_1, min_distances, comparison_1);
+                    min_distances = _mm256_blendv_ps(distances_1, min_distances, comparison_1);
                     min_indices = _mm256_castps_si256(_mm256_blendv_ps(
                             _mm256_castsi256_ps(current_indices),
                             _mm256_castsi256_ps(min_indices),
                             comparison_1));
-                    current_indices =
-                            _mm256_add_epi32(current_indices, indices_delta);
+                    current_indices = _mm256_add_epi32(current_indices, indices_delta);
                 }
 
                 // dump values and find the minimum distance / minimum index
                 float min_distances_scalar[8];
                 uint32_t min_indices_scalar[8];
                 _mm256_storeu_ps(min_distances_scalar, min_distances);
-                _mm256_storeu_si256(
-                        (__m256i*)(min_indices_scalar), min_indices);
+                _mm256_storeu_si256((__m256i*)(min_indices_scalar), min_indices);
 
                 float current_min_distance = res.dis_tab[i];
                 uint32_t current_min_index = res.ids_tab[i];
@@ -514,8 +1020,7 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                 // the index with the min value is returned.
                 for (size_t jv = 0; jv < 8; jv++) {
                     // add missing x_norms[i]
-                    float distance_candidate =
-                            min_distances_scalar[jv] + x_norms[i];
+                    float distance_candidate = min_distances_scalar[jv] + x_norms[i];
 
                     // negative values can occur for identical vectors
                     //    due to roundoff errors.
@@ -527,9 +1032,7 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                     if (current_min_distance > distance_candidate) {
                         current_min_distance = distance_candidate;
                         current_min_index = index_candidate;
-                    } else if (
-                            current_min_distance == distance_candidate &&
-                            current_min_index > index_candidate) {
+                    } else if (current_min_distance == distance_candidate && current_min_index > index_candidate) {
                         current_min_index = index_candidate;
                     }
                 }
@@ -559,183 +1062,6 @@ void exhaustive_L2sqr_blas_cmax_avx2(
         InterruptCallback::check();
     }
 }
-#elif defined(__ARM_FEATURE_SVE)
-void exhaustive_L2sqr_blas_cmax_sve(
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t nx,
-        size_t ny,
-        Top1BlockResultHandler<CMax<float, int64_t>>& res,
-        const float* y_norms) {
-    // BLAS does not like empty matrices
-    if (nx == 0 || ny == 0)
-        return;
-
-    /* block sizes */
-    const size_t bs_x = distance_compute_blas_query_bs;
-    const size_t bs_y = distance_compute_blas_database_bs;
-    // const size_t bs_x = 16, bs_y = 16;
-    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
-    std::unique_ptr<float[]> x_norms(new float[nx]);
-    std::unique_ptr<float[]> del2;
-
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
-
-    const size_t lanes = svcntw();
-
-    if (!y_norms) {
-        float* y_norms2 = new float[ny];
-        del2.reset(y_norms2);
-        fvec_norms_L2sqr(y_norms2, y, d, ny);
-        y_norms = y_norms2;
-    }
-
-    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-        size_t i1 = i0 + bs_x;
-        if (i1 > nx)
-            i1 = nx;
-
-        res.begin_multiple(i0, i1);
-
-        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-            size_t j1 = j0 + bs_y;
-            if (j1 > ny)
-                j1 = ny;
-            /* compute the actual dot products */
-            {
-                float one = 1, zero = 0;
-                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
-                sgemm_("Transpose",
-                       "Not transpose",
-                       &nyi,
-                       &nxi,
-                       &di,
-                       &one,
-                       y + j0 * d,
-                       &di,
-                       x + i0 * d,
-                       &di,
-                       &zero,
-                       ip_block.get(),
-                       &nyi);
-            }
-#pragma omp parallel for
-            for (int64_t i = i0; i < i1; i++) {
-                const size_t count = j1 - j0;
-                float* ip_line = ip_block.get() + (i - i0) * count;
-
-                svprfw(svwhilelt_b32_u64(0, count), ip_line, SV_PLDL1KEEP);
-                svprfw(svwhilelt_b32_u64(lanes, count),
-                       ip_line + lanes,
-                       SV_PLDL1KEEP);
-
-                // Track lanes min distances + lanes min indices.
-                // All the distances tracked do not take x_norms[i]
-                //   into account in order to get rid of extra
-                //   vaddq_f32(x_norms[i], ...) instructions
-                //   is distance computations.
-                auto min_distances = svdup_n_f32(res.dis_tab[i] - x_norms[i]);
-
-                // these indices are local and are relative to j0.
-                // so, value 0 means j0.
-                auto min_indices = svdup_n_u32(0u);
-
-                auto current_indices = svindex_u32(0u, 1u);
-
-                // process lanes * 2 elements per loop
-                for (size_t idx_j = 0; idx_j < count;
-                     idx_j += lanes * 2, ip_line += lanes * 2) {
-                    svprfw(svwhilelt_b32_u64(idx_j + lanes * 2, count),
-                           ip_line + lanes * 2,
-                           SV_PLDL1KEEP);
-                    svprfw(svwhilelt_b32_u64(idx_j + lanes * 3, count),
-                           ip_line + lanes * 3,
-                           SV_PLDL1KEEP);
-
-                    // mask
-                    const auto mask_0 = svwhilelt_b32_u64(idx_j, count);
-                    const auto mask_1 = svwhilelt_b32_u64(idx_j + lanes, count);
-
-                    // load values for norms
-                    const auto y_norm_0 =
-                            svld1_f32(mask_0, y_norms + idx_j + j0 + 0);
-                    const auto y_norm_1 =
-                            svld1_f32(mask_1, y_norms + idx_j + j0 + lanes);
-
-                    // load values for dot products
-                    const auto ip_0 = svld1_f32(mask_0, ip_line + 0);
-                    const auto ip_1 = svld1_f32(mask_1, ip_line + lanes);
-
-                    // compute dis = y_norm[j] - 2 * dot(x_norm[i], y_norm[j]).
-                    // x_norm[i] was dropped off because it is a constant for a
-                    // given i. We'll deal with it later.
-                    const auto distances_0 =
-                            svmla_n_f32_z(mask_0, y_norm_0, ip_0, -2.f);
-                    const auto distances_1 =
-                            svmla_n_f32_z(mask_1, y_norm_1, ip_1, -2.f);
-
-                    // compare the new distances to the min distances
-                    // for each of the first group of 4 ARM SIMD components.
-                    auto comparison =
-                            svcmpgt_f32(mask_0, min_distances, distances_0);
-
-                    // update min distances and indices with closest vectors if
-                    // needed.
-                    min_distances =
-                            svsel_f32(comparison, distances_0, min_distances);
-                    min_indices =
-                            svsel_u32(comparison, current_indices, min_indices);
-                    current_indices = svadd_n_u32_x(
-                            mask_0,
-                            current_indices,
-                            static_cast<uint32_t>(lanes));
-
-                    // compare the new distances to the min distances
-                    // for each of the second group of 4 ARM SIMD components.
-                    comparison =
-                            svcmpgt_f32(mask_1, min_distances, distances_1);
-
-                    // update min distances and indices with closest vectors if
-                    // needed.
-                    min_distances =
-                            svsel_f32(comparison, distances_1, min_distances);
-                    min_indices =
-                            svsel_u32(comparison, current_indices, min_indices);
-                    current_indices = svadd_n_u32_x(
-                            mask_1,
-                            current_indices,
-                            static_cast<uint32_t>(lanes));
-                }
-
-                // add missing x_norms[i]
-                // negative values can occur for identical vectors
-                //    due to roundoff errors.
-                auto mask = svwhilelt_b32_u64(0, count);
-                min_distances = svadd_n_f32_z(
-                        svcmpge_n_f32(mask, min_distances, -x_norms[i]),
-                        min_distances,
-                        x_norms[i]);
-                min_indices = svadd_n_u32_x(
-                        mask, min_indices, static_cast<uint32_t>(j0));
-                mask = svcmple_n_f32(mask, min_distances, res.dis_tab[i]);
-                if (svcntp_b32(svptrue_b32(), mask) == 0)
-                    res.add_result(i, res.dis_tab[i], res.ids_tab[i]);
-                else {
-                    const auto min_distance = svminv_f32(mask, min_distances);
-                    const auto min_index = svminv_u32(
-                            svcmpeq_n_f32(mask, min_distances, min_distance),
-                            min_indices);
-                    res.add_result(i, min_distance, min_index);
-                }
-            }
-        }
-        // Does nothing for SingleBestResultHandler, but
-        // keeping the call for the consistency.
-        res.end_multiple();
-        InterruptCallback::check();
-    }
-}
 #endif
 
 // an override if only a single closest point is needed
@@ -757,16 +1083,6 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
 
     // run the specialized AVX2 implementation
     exhaustive_L2sqr_blas_cmax_avx2(x, y, d, nx, ny, res, y_norms);
-
-#elif defined(__ARM_FEATURE_SVE)
-    // use a faster fused kernel if available
-    if (exhaustive_L2sqr_fused_cmax(x, y, d, nx, ny, res, y_norms)) {
-        // the kernel is available and it is complete, we're done.
-        return;
-    }
-
-    // run the specialized SVE implementation
-    exhaustive_L2sqr_blas_cmax_sve(x, y, d, nx, ny, res, y_norms);
 
 #elif defined(__aarch64__)
     // use a faster fused kernel if available
@@ -804,6 +1120,53 @@ struct Run_search_inner_product {
     }
 };
 
+struct Run_search_inner_product_one_attribute {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           const float lower_attribute,
+           const float upper_attribute,
+           const float* attributes,
+           size_t d,
+           size_t nx,
+           size_t ny) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res);
+        } else {
+            exhaustive_inner_product_blas_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res);
+        }
+    }
+};
+
+struct Run_search_inner_product_two_attribute {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           const float lower_attribute_first,
+           const float upper_attribute_first,
+           const float lower_attribute_second,
+           const float upper_attribute_second,
+           const float* attributes_first,
+           const float* attributes_second,
+           size_t d,
+           size_t nx,
+           size_t ny) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq_two_attribute(x, y, lower_attribute_first, upper_attribute_first,
+                                                             lower_attribute_second, upper_attribute_second, 
+                                                             attributes_first, attributes_second, d, nx, ny, res);
+        } else {
+            exhaustive_inner_product_blas_two_attribute(x, y, lower_attribute_first, upper_attribute_first,
+                                                              lower_attribute_second, upper_attribute_second, 
+                                                              attributes_first, attributes_second, d, nx, ny, res);
+        }
+    }
+};
+
 struct Run_search_L2sqr {
     using T = void;
     template <class BlockResultHandler>
@@ -818,6 +1181,55 @@ struct Run_search_L2sqr {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
+        }
+    }
+};
+
+struct Run_search_L2sqr_one_attribute {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           const float lower_attribute, 
+           const float upper_attribute,
+           const float* attributes,
+           size_t d,
+           size_t nx,
+           size_t ny,
+           const float* y_norm2) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_L2sqr_seq_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res);
+        } else {
+            exhaustive_L2sqr_blas_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res, y_norm2);
+        }
+    }
+};
+
+struct Run_search_L2sqr_two_attribute {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const float* x,
+           const float* y,
+           const float lower_attribute_first, 
+           const float upper_attribute_first,
+           const float lower_attribute_second, 
+           const float upper_attribute_second,
+           const float* attributes_first,
+           const float* attributes_second,
+           size_t d,
+           size_t nx,
+           size_t ny,
+           const float* y_norm2) {
+        if (res.sel || nx < distance_compute_blas_threshold) {
+            exhaustive_L2sqr_seq_two_attribute(x, y, lower_attribute_first, upper_attribute_first,
+                                                     lower_attribute_second, upper_attribute_second, 
+                                                     attributes_first, attributes_second, d, nx, ny, res);
+        } else {
+            exhaustive_L2sqr_blas_two_attribute(x, y, lower_attribute_first, upper_attribute_first, 
+                                                      lower_attribute_second, upper_attribute_second, 
+                                                      attributes_first, attributes_second, d, nx, ny, res, y_norm2);
         }
     }
 };
@@ -852,14 +1264,99 @@ void knn_inner_product(
         sel = nullptr;
     }
     if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
-        knn_inner_products_by_idx(
-                x, y, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
+        knn_inner_products_by_idx(x, y, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
         return;
     }
 
     Run_search_inner_product r;
-    dispatch_knn_ResultHandler(
-            nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
+    dispatch_knn_ResultHandler(nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
+
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
+        }
+    }
+}
+
+void knn_inner_product_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_inner_products_by_idx_one_attribute(x, y, lower_attribute, upper_attribute, attributes, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
+        return;
+    }
+
+    Run_search_inner_product_one_attribute r;
+    dispatch_knn_ResultHandler_OneAttribute(nx, vals, ids, attrs, k, METRIC_INNER_PRODUCT, sel, r, x, y, lower_attribute, upper_attribute, attributes, d, nx, ny);
+
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
+        }
+    }
+}
+
+void knn_inner_product_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first, 
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_inner_products_by_idx_two_attribute(x, y, lower_attribute_first, upper_attribute_first, 
+                                                      lower_attribute_second, upper_attribute_second, 
+                                                      attributes_first, attributes_second, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0, 0);
+        return;
+    }
+
+    Run_search_inner_product_two_attribute r;
+    dispatch_knn_ResultHandler_TwoAttribute(nx, vals, ids, attrs_first, attrs_second, k, METRIC_INNER_PRODUCT, sel, r, x, y, 
+                                            lower_attribute_first, upper_attribute_first,
+                                            lower_attribute_second, upper_attribute_second,
+                                            attributes_first, attributes_second, d, nx, ny);
 
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {
@@ -880,6 +1377,41 @@ void knn_inner_product(
         const IDSelector* sel) {
     FAISS_THROW_IF_NOT(nx == res->nh);
     knn_inner_product(x, y, d, nx, ny, res->k, res->val, res->ids, sel);
+}
+
+void knn_inner_product_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_minheap_one_attribute_array_t* res,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(nx == res->nh);
+    knn_inner_product_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res->k, res->val, res->ids, res->attr, sel);
+}
+
+void knn_inner_product_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first, 
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_minheap_two_attribute_array_t* res,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(nx == res->nh);
+    knn_inner_product_two_attribute(x, y, lower_attribute_first, upper_attribute_first, 
+                                          lower_attribute_second, upper_attribute_second, 
+                                          attributes_first, attributes_second, d, nx, ny, res->k, res->val, res->ids, res->attr_first, res->attr_second, sel);
 }
 
 void knn_L2sqr(
@@ -907,8 +1439,96 @@ void knn_L2sqr(
     }
 
     Run_search_L2sqr r;
-    dispatch_knn_ResultHandler(
-            nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
+    dispatch_knn_ResultHandler(nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
+
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
+        }
+    }
+}
+
+void knn_L2sqr_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_L2sqr_by_idx_one_attribute(x, y, lower_attribute, upper_attribute, attributes, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0);
+        return;
+    }
+
+    Run_search_L2sqr_one_attribute r;
+    dispatch_knn_ResultHandler_OneAttribute(nx, vals, ids, attrs, k, METRIC_L2, sel, r, x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, y_norm2);
+
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
+        }
+    }
+}
+
+void knn_L2sqr_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_L2sqr_by_idx_two_attribute(x, y, lower_attribute_first, upper_attribute_first, 
+                                             lower_attribute_second, upper_attribute_second, 
+                                             attributes_first, attributes_second, sela->ids, d, nx, ny, sela->n, k, vals, ids, 0, 0);
+        return;
+    }
+
+    Run_search_L2sqr_two_attribute r;
+    dispatch_knn_ResultHandler_TwoAttribute(nx, vals, ids, attrs_first, attrs_second, k, METRIC_L2, sel, r, x, y, 
+                                            lower_attribute_first, upper_attribute_first,
+                                            lower_attribute_second, upper_attribute_second,
+                                            attributes_first, attributes_second, d, nx, ny, y_norm2);
 
     if (imin != 0) {
         for (size_t i = 0; i < nx * k; i++) {
@@ -932,6 +1552,44 @@ void knn_L2sqr(
     knn_L2sqr(x, y, d, nx, ny, res->k, res->val, res->ids, y_norm2, sel);
 }
 
+void knn_L2sqr_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute, 
+        const float upper_attribute,
+        const float* attributes,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_maxheap_one_attribute_array_t* res,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(res->nh == nx);
+    knn_L2sqr_one_attribute(x, y, lower_attribute, upper_attribute, attributes, d, nx, ny, res->k, res->val, res->ids, res->attr, y_norm2, sel);
+}
+
+void knn_L2sqr_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first, 
+        const float upper_attribute_first,
+        const float lower_attribute_second, 
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float_maxheap_two_attribute_array_t* res,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(res->nh == nx);
+    knn_L2sqr_two_attribute(x, y, lower_attribute_first, upper_attribute_first,
+                                  lower_attribute_second, upper_attribute_second,
+                                  attributes_first, attributes_second, d, nx, ny, res->k, res->val, res->ids, res->attr_first, res->attr_second, y_norm2, sel);
+}
+
+
 /***************************************************************************
  * Range search
  ***************************************************************************/
@@ -947,8 +1605,7 @@ void range_search_L2sqr(
         RangeSearchResult* res,
         const IDSelector* sel) {
     Run_search_L2sqr r;
-    dispatch_range_ResultHandler(
-            res, radius, METRIC_L2, sel, r, x, y, d, nx, ny, nullptr);
+    dispatch_range_ResultHandler(res, radius, METRIC_L2, sel, r, x, y, d, nx, ny, nullptr);
 }
 
 void range_search_inner_product(
@@ -961,8 +1618,7 @@ void range_search_inner_product(
         RangeSearchResult* res,
         const IDSelector* sel) {
     Run_search_inner_product r;
-    dispatch_range_ResultHandler(
-            res, radius, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
+    dispatch_range_ResultHandler(res, radius, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
 }
 
 /***************************************************************************
@@ -1096,6 +1752,108 @@ void knn_inner_products_by_idx(
     }
 }
 
+void knn_inner_products_by_idx_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        const int64_t* ids,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        float* res_attrs,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
+
+#pragma omp parallel for if (nx > 100)
+    for (int64_t i = 0; i < nx; i++) {
+        const float* x_ = x + i * d;
+        const int64_t* idsi = ids + i * ld_ids;
+        size_t j;
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
+        float* __restrict attri = res_attrs + i * k;
+        minheap_heapify_one_attribute(k, simi, idxi, attri);
+
+        for (j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
+                break;
+            }
+            float current_attribute_score = (attributes + idsi[j])[0];
+
+            if (current_attribute_score >= lower_attribute && current_attribute_score <= upper_attribute) {
+                float ip = fvec_inner_product(x_, y + d * idsi[j], d);
+                if (ip > simi[0]) {
+                    minheap_replace_top_one_attribute(k, simi, idxi, attri, ip, idsi[j], current_attribute_score);
+                }
+            }
+        }
+        minheap_reorder_one_attribute(k, simi, idxi, attri);
+    }
+}
+
+void knn_inner_products_by_idx_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        const int64_t* ids,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        float* res_attrs_first,
+        float* res_attrs_second,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
+
+#pragma omp parallel for if (nx > 100)
+    for (int64_t i = 0; i < nx; i++) {
+        const float* x_ = x + i * d;
+        const int64_t* idsi = ids + i * ld_ids;
+        size_t j;
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
+        float* __restrict attr_fi = res_attrs_first + i * k;
+        float* __restrict attr_si = res_attrs_second + i * k;
+        minheap_heapify_two_attribute(k, simi, idxi, attr_fi, attr_si);
+
+        for (j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
+                break;
+            }
+            float current_attribute_score_first = (attributes_first + idsi[j])[0];
+            float current_attribute_score_second = (attributes_second + idsi[j])[0];
+
+            if (current_attribute_score_first >= lower_attribute_first && current_attribute_score_first <= upper_attribute_first) {
+                if (current_attribute_score_second >= lower_attribute_second && current_attribute_score_second <= upper_attribute_second) {
+                    float ip = fvec_inner_product(x_, y + d * idsi[j], d);
+                    if (ip > simi[0]) {
+                        minheap_replace_top_two_attribute(k, simi, idxi, attr_fi, attr_si, ip, idsi[j], current_attribute_score_first, current_attribute_score_second);
+                    }
+                }
+            }
+        }
+        minheap_reorder_two_attribute(k, simi, idxi, attr_fi, attr_si);
+    }
+}
+
 void knn_L2sqr_by_idx(
         const float* x,
         const float* y,
@@ -1129,6 +1887,102 @@ void knn_L2sqr_by_idx(
             }
         }
         maxheap_reorder(k, simi, idxi);
+    }
+}
+
+void knn_L2sqr_by_idx_one_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute,
+        const float upper_attribute,
+        const float* attributes,
+        const int64_t* __restrict ids,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        float* res_attrs,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
+#pragma omp parallel for if (nx > 100)
+    for (int64_t i = 0; i < nx; i++) {
+        const float* x_ = x + i * d;
+        const int64_t* __restrict idsi = ids + i * ld_ids;
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
+        float* __restrict attri = res_attrs + i * k;
+        maxheap_heapify_one_attribute(k, simi, idxi, attri);
+        for (size_t j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
+                break;
+            }
+            float current_attribute_score = (attributes + idsi[j])[0];
+
+            if (current_attribute_score >= lower_attribute && current_attribute_score <= upper_attribute) {
+                float disij = fvec_L2sqr(x_, y + d * idsi[j], d);
+                if (disij < simi[0]) {
+                    maxheap_replace_top_one_attribute(k, simi, idxi, attri, disij, idsi[j], current_attribute_score);
+                }
+            }
+        }
+        maxheap_reorder_one_attribute(k, simi, idxi, attri);
+    }
+}
+
+void knn_L2sqr_by_idx_two_attribute(
+        const float* x,
+        const float* y,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        const float* attributes_first,
+        const float* attributes_second,
+        const int64_t* __restrict ids,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t nsubset,
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        float* res_attrs_first,
+        float* res_attrs_second,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
+#pragma omp parallel for if (nx > 100)
+    for (int64_t i = 0; i < nx; i++) {
+        const float* x_ = x + i * d;
+        const int64_t* __restrict idsi = ids + i * ld_ids;
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
+        float* __restrict attr_fi = res_attrs_first + i * k;
+        float* __restrict attr_si = res_attrs_second + i * k;
+        maxheap_heapify_two_attribute(k, simi, idxi, attr_fi, attr_si);
+        for (size_t j = 0; j < nsubset; j++) {
+            if (idsi[j] < 0 || idsi[j] >= ny) {
+                break;
+            }
+            float current_attribute_score_first = (attributes_first + idsi[j])[0];
+            float current_attribute_score_second = (attributes_second + idsi[j])[0];
+
+            if (current_attribute_score_first >= lower_attribute_first && current_attribute_score_first <= upper_attribute_first) {
+                if (current_attribute_score_second >= lower_attribute_second && current_attribute_score_second <= upper_attribute_second) {
+                    float disij = fvec_L2sqr(x_, y + d * idsi[j], d);
+                    if (disij < simi[0]) {
+                        maxheap_replace_top_two_attribute(k, simi, idxi, attr_fi, attr_si, disij, idsi[j], current_attribute_score_first, current_attribute_score_second);
+                    }
+                }
+            }
+        }
+        maxheap_reorder_two_attribute(k, simi, idxi, attr_fi, attr_si);
     }
 }
 

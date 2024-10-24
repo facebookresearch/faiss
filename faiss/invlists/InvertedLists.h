@@ -37,11 +37,17 @@ struct InvertedListsIterator {
 struct InvertedLists {
     size_t nlist;     ///< number of possible key values
     size_t code_size; ///< code size per vector in bytes
+    static const size_t attr_size = sizeof(float);
 
     /// request to use iterator rather than get_codes / get_ids
     bool use_iterator = false;
-
+    bool is_include_one_attribute = false;
+    bool is_include_two_attribute = false;
+    bool mode_two = false;
+    
     InvertedLists(size_t nlist, size_t code_size);
+    InvertedLists(size_t nlist, size_t code_size, bool is_include_one_attribute);
+    InvertedLists(size_t nlist, size_t code_size, bool is_include_two_attribute, bool mode_two);
 
     virtual ~InvertedLists();
 
@@ -54,6 +60,18 @@ struct InvertedLists {
 
     /// get the size of a list
     virtual size_t list_size(size_t list_no) const = 0;
+    virtual size_t one_attribute_list_size(size_t list_no) const;
+    virtual size_t two_attribute_list_size(size_t list_no) const;
+
+    virtual bool get_is_include_one_attribute() const; 
+    virtual void set_is_include_one_attribute();
+    virtual size_t get_one_attribute_size() const;
+
+    virtual bool get_is_include_two_attribute() const; 
+    virtual void set_is_include_two_attribute();
+    virtual size_t get_two_attribute_size() const; 
+
+    virtual size_t get_codes_size() const; 
 
     /** get the codes for an inverted list
      * must be released by release_codes
@@ -61,6 +79,10 @@ struct InvertedLists {
      * @return codes    size list_size * code_size
      */
     virtual const uint8_t* get_codes(size_t list_no) const = 0;
+    virtual const uint8_t* get_attributes(size_t list_no) const;
+    virtual const uint8_t* get_attributes_first(size_t list_no) const;
+    virtual const uint8_t* get_attributes_second(size_t list_no) const;
+
 
     /** get the ids for an inverted list
      * must be released by release_ids
@@ -71,6 +93,9 @@ struct InvertedLists {
 
     /// release codes returned by get_codes (default implementation is nop
     virtual void release_codes(size_t list_no, const uint8_t* codes) const;
+    virtual void release_attributes(size_t list_no, const uint8_t* attributes) const;
+    virtual void release_attributes_first(size_t list_no, const uint8_t* attributes_first) const;
+    virtual void release_attributes_second(size_t list_no, const uint8_t* attributes_second) const;
 
     /// release ids returned by get_ids
     virtual void release_ids(size_t list_no, const idx_t* ids) const;
@@ -81,6 +106,9 @@ struct InvertedLists {
     /// @return a single code in an inverted list
     /// (should be deallocated with release_codes)
     virtual const uint8_t* get_single_code(size_t list_no, size_t offset) const;
+    virtual const uint8_t* get_single_attribute(size_t list_no, size_t offset) const;
+    virtual const uint8_t* get_single_attribute_first(size_t list_no, size_t offset) const;
+    virtual const uint8_t* get_single_attribute_second(size_t list_no, size_t offset) const;
 
     /// prepare the following lists (default does nothing)
     /// a list can be -1 hence the signed long
@@ -90,8 +118,9 @@ struct InvertedLists {
      * Iterator interface (with context)     */
 
     /// check if the list is empty
-    virtual bool is_empty(size_t list_no, void* inverted_list_context = nullptr)
-            const;
+    virtual bool is_empty(size_t list_no, void* inverted_list_context = nullptr) const;
+    virtual bool has_one_attribute(size_t list_no, void* inverted_list_context = nullptr) const;
+    virtual bool has_two_attribute(size_t list_no, void* inverted_list_context = nullptr) const;
 
     /// get iterable for lists that use_iterator
     virtual InvertedListsIterator* get_iterator(
@@ -107,6 +136,21 @@ struct InvertedLists {
             idx_t theid,
             const uint8_t* code,
             void* inverted_list_context = nullptr);
+    
+    virtual size_t add_entry_with_one_attribute(
+            size_t list_no,
+            idx_t theid,
+            const uint8_t* code,
+            const uint8_t* attribute,
+            void* inverted_list_context = nullptr);
+
+    virtual size_t add_entry_with_two_attribute(
+            size_t list_no,
+            idx_t theid,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second,
+            void* inverted_list_context = nullptr);
 
     virtual size_t add_entries(
             size_t list_no,
@@ -114,11 +158,41 @@ struct InvertedLists {
             const idx_t* ids,
             const uint8_t* code) = 0;
 
+    virtual size_t add_entries_with_one_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute);
+
+    virtual size_t add_entries_with_two_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second);
+
     virtual void update_entry(
             size_t list_no,
             size_t offset,
             idx_t id,
             const uint8_t* code);
+
+    virtual void update_entry_with_one_attribute(
+            size_t list_no,
+            size_t offset,
+            idx_t id,
+            const uint8_t* code,
+            const uint8_t* attribute);
+
+    virtual void update_entry_with_two_attribute(
+            size_t list_no,
+            size_t offset,
+            idx_t id,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second);
 
     virtual void update_entries(
             size_t list_no,
@@ -126,6 +200,23 @@ struct InvertedLists {
             size_t n_entry,
             const idx_t* ids,
             const uint8_t* code) = 0;
+
+    virtual void update_entries_with_one_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute);
+
+    virtual void update_entries_with_two_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second);
 
     virtual void resize(size_t list_no, size_t new_size) = 0;
 
@@ -237,17 +328,109 @@ struct InvertedLists {
             il->release_codes(list_no, codes);
         }
     };
+
+    struct ScopedAttributes {
+        const InvertedLists* il;
+        const uint8_t* attributes;
+        size_t list_no;
+
+        ScopedAttributes(const InvertedLists* il, size_t list_no)
+                : il(il), attributes(il->get_attributes(list_no)), list_no(list_no) {}
+
+        ScopedAttributes(const InvertedLists* il, size_t list_no, size_t offset)
+                : il(il),
+                  attributes(il->get_single_attribute(list_no, offset)),
+                  list_no(list_no) {}
+
+        const uint8_t* get() {
+            return attributes;
+        }
+
+        ~ScopedAttributes() {
+            il->release_attributes(list_no, attributes);
+        }
+    };
+
+    struct ScopedAttributesFirst {
+        const InvertedLists* il;
+        const uint8_t* attributes_first;
+        size_t list_no;
+
+        ScopedAttributesFirst(const InvertedLists* il, size_t list_no)
+                : il(il), attributes_first(il->get_attributes_first(list_no)), list_no(list_no) {}
+
+        ScopedAttributesFirst(const InvertedLists* il, size_t list_no, size_t offset)
+                : il(il),
+                  attributes_first(il->get_single_attribute_first(list_no, offset)),
+                  list_no(list_no) {}
+
+        const uint8_t* get() {
+            return attributes_first;
+        }
+
+        ~ScopedAttributesFirst() {
+            il->release_attributes_first(list_no, attributes_first);
+        }
+    };
+
+    struct ScopedAttributesSecond {
+        const InvertedLists* il;
+        const uint8_t* attributes_second;
+        size_t list_no;
+
+        ScopedAttributesSecond(const InvertedLists* il, size_t list_no)
+                : il(il), attributes_second(il->get_attributes_second(list_no)), list_no(list_no) {}
+
+        ScopedAttributesSecond(const InvertedLists* il, size_t list_no, size_t offset)
+                : il(il),
+                  attributes_second(il->get_single_attribute_second(list_no, offset)),
+                  list_no(list_no) {}
+
+        const uint8_t* get() {
+            return attributes_second;
+        }
+
+        ~ScopedAttributesSecond() {
+            il->release_attributes_second(list_no, attributes_second);
+        }
+    };
+
 };
 
 /// simple (default) implementation as an array of inverted lists
 struct ArrayInvertedLists : InvertedLists {
     std::vector<std::vector<uint8_t>> codes; // binary codes, size nlist
     std::vector<std::vector<idx_t>> ids;     ///< Inverted lists for indexes
+    std::vector<std::vector<uint8_t>> attributes;
+    std::vector<std::vector<uint8_t>> attributes_first;
+    std::vector<std::vector<uint8_t>> attributes_second;
 
     ArrayInvertedLists(size_t nlist, size_t code_size);
+    ArrayInvertedLists(size_t nlist, size_t code_size, bool is_include_one_attribute);
+    ArrayInvertedLists(size_t nlist, size_t code_size, bool is_include_two_attribute, bool mode_two);
 
     size_t list_size(size_t list_no) const override;
+    size_t one_attribute_list_size(size_t list_no) const override;
+    size_t two_attribute_list_size(size_t list_no) const override;
+
+    bool get_is_include_one_attribute() const override; 
+    void set_is_include_one_attribute();
+    bool get_is_include_two_attribute() const override; 
+    void set_is_include_two_attribute();
+
     const uint8_t* get_codes(size_t list_no) const override;
+    const uint8_t* get_attributes(size_t list_no) const override;
+    const uint8_t* get_attributes_first(size_t list_no) const override;
+    const uint8_t* get_attributes_second(size_t list_no) const override;
+
+    size_t get_one_attribute_size() const override;
+    size_t get_two_attribute_size() const override;
+    size_t get_codes_size() const override;
+
+    void release_attributes(size_t list_no, const uint8_t* attributes) const override;
+    void release_attributes_first(size_t list_no, const uint8_t* attributes_first) const override;
+    void release_attributes_second(size_t list_no, const uint8_t* attributes_second) const override;
+
     const idx_t* get_ids(size_t list_no) const override;
 
     size_t add_entries(
@@ -256,6 +439,21 @@ struct ArrayInvertedLists : InvertedLists {
             const idx_t* ids,
             const uint8_t* code) override;
 
+    size_t add_entries_with_one_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute) override;
+    
+    size_t add_entries_with_two_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second) override;
+
     void update_entries(
             size_t list_no,
             size_t offset,
@@ -263,13 +461,31 @@ struct ArrayInvertedLists : InvertedLists {
             const idx_t* ids,
             const uint8_t* code) override;
 
+    void update_entries_with_one_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute) override;
+
+    void update_entries_with_two_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second) override;
+
     void resize(size_t list_no, size_t new_size) override;
 
     /// permute the inverted lists, map maps new_id to old_id
     void permute_invlists(const idx_t* map);
 
-    bool is_empty(size_t list_no, void* inverted_list_context = nullptr)
-            const override;
+    bool is_empty(size_t list_no, void* inverted_list_context = nullptr) const override;
+    bool has_one_attribute(size_t list_no, void* inverted_list_context = nullptr) const override;
+    bool has_two_attribute(size_t list_no, void* inverted_list_context = nullptr) const override;
 
     ~ArrayInvertedLists() override;
 };

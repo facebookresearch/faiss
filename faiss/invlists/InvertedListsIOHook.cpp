@@ -95,7 +95,9 @@ InvertedLists* InvertedListsIOHook::read_ArrayInvertedLists(
         int,
         size_t,
         size_t,
-        const std::vector<size_t>&) const {
+        const std::vector<size_t>&,
+        bool,
+        bool) const {
     FAISS_THROW_FMT("read to array not implemented for %s", classname.c_str());
 }
 

@@ -122,6 +122,39 @@ struct IndexIVFInterface : Level1Quantizer {
             bool store_pairs,
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const = 0;
+    
+    virtual void search_preassigned_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute,
+            const float upper_attribute,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const = 0;
+
+    virtual void search_preassigned_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const = 0;
 
     /** Range search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the RangeSearchResults results. The default
@@ -179,6 +212,7 @@ struct IndexIVF : Index, IndexIVFInterface {
     bool own_invlists = false;
 
     size_t code_size = 0; ///< code size per vector in bytes
+    static const size_t attr_size = sizeof(float);
 
     /** Parallel mode determines how queries are parallelized with OpenMP
      *
@@ -212,6 +246,23 @@ struct IndexIVF : Index, IndexIVFInterface {
             size_t code_size,
             MetricType metric = METRIC_L2);
 
+    IndexIVF(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t code_size,
+            bool is_include_one_attribute,
+            MetricType metric = METRIC_L2);
+
+    IndexIVF(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t code_size,
+            bool is_include_two_attribute,
+            bool mode_two,
+            MetricType metric = METRIC_L2);
+
     void reset() override;
 
     /// Trains the quantizer and calls train_encoder to train sub-quantizers
@@ -219,9 +270,13 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /// Calls add_with_ids with NULL ids
     void add(idx_t n, const float* x) override;
+    void add_with_one_attribute(idx_t n, const float* x, const float* attr) override;
+    void add_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second) override;
 
     /// default implementation that calls encode_vectors
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
+    void add_with_ids_with_one_attribute(idx_t n, const float* x, const float* attr, const idx_t* xids) override;
+    void add_with_ids_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second, const idx_t* xids) override;
 
     /** Implementation of vector addition where the vector assignments are
      * predefined. The default implementation hands over the code extraction to
@@ -237,6 +292,23 @@ struct IndexIVF : Index, IndexIVFInterface {
             const idx_t* precomputed_idx,
             void* inverted_list_context = nullptr);
 
+    virtual void add_core_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr);
+
+    virtual void add_core_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr_first,
+            const float* attr_second,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr);      
+        
     /** Encodes a set of vectors as they would appear in the inverted lists
      *
      * @param list_nos   inverted list ids as returned by the
@@ -253,12 +325,34 @@ struct IndexIVF : Index, IndexIVFInterface {
             uint8_t* codes,
             bool include_listno = false) const = 0;
 
+    virtual void encode_vectors_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr,
+            const idx_t* list_nos,
+            uint8_t* codes,
+            uint8_t* attributes,
+            bool include_listno = false) const;
+
+    virtual void encode_vectors_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float* attr_first,
+            const float* attr_second,
+            const idx_t* list_nos,
+            uint8_t* codes,
+            uint8_t* attributes_first,
+            uint8_t* attributes_second,
+            bool include_listno = false) const;
+
     /** Add vectors that are computed with the standalone codec
      *
      * @param codes  codes to add size n * sa_code_size()
      * @param xids   corresponding ids, size n
      */
     void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
+    void add_sa_codes(idx_t n, const uint8_t* codes, const uint8_t* attributes, const idx_t* xids);
+    void add_sa_codes(idx_t n, const uint8_t* codes, const uint8_t* attributes_first, const uint8_t* attributes_second, const idx_t* xids);
 
     /** Train the encoder for the vectors.
      *
@@ -270,6 +364,12 @@ struct IndexIVF : Index, IndexIVFInterface {
     /// they need
     virtual idx_t train_encoder_num_vectors() const;
 
+    void set_is_include_one_attribute();
+    bool get_is_include_one_attribute();
+
+    void set_is_include_two_attribute();
+    bool get_is_include_two_attribute();
+
     void search_preassigned(
             idx_t n,
             const float* x,
@@ -278,6 +378,39 @@ struct IndexIVF : Index, IndexIVFInterface {
             const float* centroid_dis,
             float* distances,
             idx_t* labels,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
+
+    void search_preassigned_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute,
+            const float upper_attribute,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
+
+    void search_preassigned_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
             bool store_pairs,
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
@@ -301,6 +434,31 @@ struct IndexIVF : Index, IndexIVFInterface {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+        
+    void search_with_one_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute,
+            const float upper_attribute,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            const SearchParameters* params = nullptr) const override;
+
+    void search_with_two_attribute(
+            idx_t n,
+            const float* x,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
@@ -320,6 +478,8 @@ struct IndexIVF : Index, IndexIVFInterface {
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
     void reconstruct(idx_t key, float* recons) const override;
+    void reconstruct_one_attribute(idx_t key, float* recons_attr) const override;
+    void reconstruct_two_attribute(idx_t key, float* recons_attr_first, float* recons_attr_second) const override;
 
     /** Update a subset of vectors.
      *
@@ -341,7 +501,9 @@ struct IndexIVF : Index, IndexIVFInterface {
      * @param recons output array of reconstructed vectors, size ni * d
      */
     void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
+    void reconstruct_n_one_attribute(idx_t i0, idx_t ni, float* recons_attr) const override;
+    void reconstruct_n_two_attribute(idx_t i0, idx_t ni, float* recons_attr_first, float* recons_attr_second) const override;
+    
     /** Similar to search, but also reconstructs the stored vectors (or an
      * approximation in the case of lossy coding) for the search results.
      *
@@ -390,6 +552,17 @@ struct IndexIVF : Index, IndexIVFInterface {
             int64_t offset,
             float* recons) const;
 
+    virtual void reconstruct_one_attribute_from_offset(
+            int64_t list_no,
+            int64_t offset,
+            float* recons_attr) const;
+
+    virtual void reconstruct_two_attribute_from_offset(
+            int64_t list_no,
+            int64_t offset,
+            float* recons_attr_first,
+            float* recons_attr_second) const;
+
     /// Dataset manipulation functions
 
     size_t remove_ids(const IDSelector& sel) override;
@@ -433,6 +606,8 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /* The standalone codec interface (except sa_decode that is specific) */
     size_t sa_code_size() const override;
+    size_t sa_one_attribute_code_size() const override;
+    size_t sa_two_attribute_code_size() const override;
 
     /** encode a set of vectors
      * sa_encode will call encode_vector with include_listno=true
@@ -442,6 +617,8 @@ struct IndexIVF : Index, IndexIVFInterface {
      * @return nb of bytes written to codes
      */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
+    void sa_one_attribute_encode(idx_t n, const float* attr, uint8_t* bytes) const override;
+    void sa_two_attribute_encode(idx_t n, const float* attr_first, const float* attr_second, uint8_t* bytes_first, uint8_t* bytes_second) const override;
 
     IndexIVF();
 };
@@ -498,11 +675,56 @@ struct InvertedListScanner {
             idx_t* labels,
             size_t k) const;
 
+    virtual size_t scan_codes_with_one_attribute(
+            size_t n,
+            const uint8_t* codes,
+            const uint8_t* attributes,
+            const float lower_attribute,
+            const float upper_attribute,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            size_t k) const;
+
+    virtual size_t scan_codes_with_two_attribute(
+            size_t n,
+            const uint8_t* codes,
+            const uint8_t* attributes_first,
+            const uint8_t* attributes_second,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
+            size_t k) const;
+
     // same as scan_codes, using an iterator
     virtual size_t iterate_codes(
             InvertedListsIterator* iterator,
             float* distances,
             idx_t* labels,
+            size_t k,
+            size_t& list_size) const;
+
+    virtual size_t iterate_codes_one_attribute(
+            InvertedListsIterator* iterator,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs,
+            size_t k,
+            size_t& list_size) const;
+
+    virtual size_t iterate_codes_two_attribute(
+            InvertedListsIterator* iterator,
+            float* distances,
+            idx_t* labels,
+            float* out_attrs_first,
+            float* out_attrs_second,
             size_t k,
             size_t& list_size) const;
 

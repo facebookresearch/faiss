@@ -19,24 +19,48 @@ struct CodePacker;
  * is in the codes vector */
 struct IndexFlatCodes : Index {
     size_t code_size;
+    static const size_t attr_size = sizeof(float);
 
     /// encoded dataset, size ntotal * code_size
     std::vector<uint8_t> codes;
+    std::vector<uint8_t> attributes;
+    std::vector<uint8_t> attributes_first;
+    std::vector<uint8_t> attributes_second;
+
+    bool is_include_one_attribute = false;
+    bool is_include_two_attribute = false;
+    bool mode_two = false;
 
     IndexFlatCodes();
 
     IndexFlatCodes(size_t code_size, idx_t d, MetricType metric = METRIC_L2);
+    IndexFlatCodes(size_t code_size, idx_t d, bool is_include_one_attribute, MetricType metric = METRIC_L2);
+    IndexFlatCodes(size_t code_size, idx_t d, bool is_include_two_attribute, bool mode_two, MetricType metric = METRIC_L2);
 
     /// default add uses sa_encode
     void add(idx_t n, const float* x) override;
+    void add_with_one_attribute(idx_t n, const float* x, const float* attr) override;
+    void add_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second) override;
+
+    void set_is_include_one_attribute();
+    bool get_is_include_one_attribute();
+    
+    void set_is_include_two_attribute();
+    bool get_is_include_two_attribute();
 
     void reset() override;
 
     void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
+    void reconstruct_n_one_attribute(idx_t i0, idx_t ni, float* recons_attr) const override;
+    void reconstruct_n_two_attribute(idx_t i0, idx_t ni, float* recons_attr_first, float* recons_attr_second) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
+    void reconstruct_one_attribute(idx_t key, float* recons_attr) const override;
+    void reconstruct_two_attribute(idx_t key, float* recons_attr_first, float* recons_attr_second) const override;
 
     size_t sa_code_size() const override;
+    size_t sa_one_attribute_code_size() const override;
+    size_t sa_two_attribute_code_size() const override;
 
     /** remove some ids. NB that because of the structure of the
      * index, the semantics of this operation are
@@ -52,22 +76,6 @@ struct IndexFlatCodes : Index {
     DistanceComputer* get_distance_computer() const override {
         return get_FlatCodesDistanceComputer();
     }
-
-    /** Search implemented by decoding */
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
-
-    void range_search(
-            idx_t n,
-            const float* x,
-            float radius,
-            RangeSearchResult* result,
-            const SearchParameters* params = nullptr) const override;
 
     // returns a new instance of a CodePacker
     CodePacker* get_CodePacker() const;

@@ -20,10 +20,18 @@ namespace faiss {
 IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, MetricType metric)
         : Index(d, metric), code_size(code_size) {}
 
+IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, bool is_include_one_attribute, MetricType metric)
+        : Index(d, metric), code_size(code_size), is_include_one_attribute(is_include_one_attribute) {}
+
+IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, bool is_include_two_attribute, bool mode_two, MetricType metric)
+        : Index(d, metric), code_size(code_size), is_include_two_attribute(is_include_two_attribute), mode_two(mode_two) {}
+
 IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
 void IndexFlatCodes::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(is_include_one_attribute==false, "Index now has one attribute, add vector without one attribute cause conflict");
+    FAISS_THROW_IF_NOT_MSG(is_include_two_attribute==false, "Index now has two attribute, add vector without two attribute cause conflict");
     if (n == 0) {
         return;
     }
@@ -32,13 +40,72 @@ void IndexFlatCodes::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+void IndexFlatCodes::add_with_one_attribute(idx_t n, const float* x, const float* attr) {
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(is_include_one_attribute, "Current Index dont't include one attribute yet !");
+    if (n == 0) {
+        return;
+    }
+    codes.resize((ntotal + n) * code_size);
+    attributes.resize((ntotal + n) * attr_size);
+    sa_encode(n, x, codes.data() + (ntotal * code_size));
+    sa_one_attribute_encode(n, attr, attributes.data() + (ntotal * attr_size));
+    ntotal += n;
+}
+
+void IndexFlatCodes::add_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second) {
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(is_include_two_attribute, "Current Index dont't include two attribute yet !");
+    if (n == 0) {
+        return;
+    }
+    codes.resize((ntotal + n) * code_size);
+    attributes_first.resize((ntotal + n) * attr_size);
+    attributes_second.resize((ntotal + n) * attr_size);
+    sa_encode(n, x, codes.data() + (ntotal * code_size));
+    sa_two_attribute_encode(n, attr_first, attr_second, 
+                            attributes_first.data() + (ntotal * attr_size), attributes_second.data() + (ntotal * attr_size));
+    ntotal += n;
+}
+
+bool IndexFlatCodes::get_is_include_one_attribute() {
+    return is_include_one_attribute;
+}
+
+void IndexFlatCodes::set_is_include_one_attribute() {
+    this->is_include_one_attribute = true;
+}
+
+bool IndexFlatCodes::get_is_include_two_attribute() {
+    return is_include_two_attribute;
+}
+
+void IndexFlatCodes::set_is_include_two_attribute() {
+    this->is_include_two_attribute = true;
+}
+
 void IndexFlatCodes::reset() {
     codes.clear();
+    if (get_is_include_one_attribute()) {
+        attributes.clear();
+    }
+    if (get_is_include_two_attribute()) {
+        attributes_first.clear();
+        attributes_second.clear();
+    }
     ntotal = 0;
 }
 
 size_t IndexFlatCodes::sa_code_size() const {
     return code_size;
+}
+
+size_t IndexFlatCodes::sa_one_attribute_code_size() const {
+    return attr_size;
+}
+
+size_t IndexFlatCodes::sa_two_attribute_code_size() const {
+    return attr_size;
 }
 
 size_t IndexFlatCodes::remove_ids(const IDSelector& sel) {
@@ -51,6 +118,21 @@ size_t IndexFlatCodes::remove_ids(const IDSelector& sel) {
                 memmove(&codes[code_size * j],
                         &codes[code_size * i],
                         code_size);
+
+                if (get_is_include_one_attribute()) {
+                    memmove(&attributes[attr_size * j],
+                            &attributes[attr_size * i],
+                            attr_size);
+                }
+
+                if (get_is_include_two_attribute()) {
+                    memmove(&attributes_first[attr_size * j],
+                            &attributes_first[attr_size * i],
+                            attr_size);
+                    memmove(&attributes_second[attr_size * j],
+                            &attributes_second[attr_size * i],
+                            attr_size);
+                }
             }
             j++;
         }
@@ -59,6 +141,15 @@ size_t IndexFlatCodes::remove_ids(const IDSelector& sel) {
     if (nremove > 0) {
         ntotal = j;
         codes.resize(ntotal * code_size);
+
+        if (get_is_include_one_attribute()) {
+            attributes.resize(ntotal * attr_size);
+        }
+
+        if (get_is_include_two_attribute()) {
+            attributes_first.resize(ntotal * attr_size);
+            attributes_second.resize(ntotal * attr_size);
+        }
     }
     return nremove;
 }
@@ -68,20 +159,54 @@ void IndexFlatCodes::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
     sa_decode(ni, codes.data() + i0 * code_size, recons);
 }
 
+void IndexFlatCodes::reconstruct_n_one_attribute(idx_t i0, idx_t ni, float* recons_attr) const {
+    FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
+    FAISS_THROW_IF_NOT(is_include_one_attribute);
+    sa_one_attribute_decode(ni, attributes.data() + i0 * attr_size, recons_attr);
+}
+
+void IndexFlatCodes::reconstruct_n_two_attribute(idx_t i0, idx_t ni, float* recons_attr_first, float* recons_attr_second) const {
+    FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
+    FAISS_THROW_IF_NOT(is_include_two_attribute);
+    sa_two_attribute_decode(ni, attributes_first.data() + i0 * attr_size, attributes_second.data() + i0 * attr_size,
+                            recons_attr_first, recons_attr_second);
+}
+
 void IndexFlatCodes::reconstruct(idx_t key, float* recons) const {
     reconstruct_n(key, 1, recons);
 }
 
+void IndexFlatCodes::reconstruct_one_attribute(idx_t key, float* recons_attr) const {
+    reconstruct_n_one_attribute(key, 1, recons_attr);
+}
+
+void IndexFlatCodes::reconstruct_two_attribute(idx_t key, float* recons_attr_first, float* recons_attr_second) const {
+    reconstruct_n_two_attribute(key, 1, recons_attr_first, recons_attr_second);
+}
+
+FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
+        const {
+    FAISS_THROW_MSG("not implemented");
+}
+
 void IndexFlatCodes::check_compatible_for_merge(const Index& otherIndex) const {
     // minimal sanity checks
-    const IndexFlatCodes* other =
-            dynamic_cast<const IndexFlatCodes*>(&otherIndex);
+    const IndexFlatCodes* other = dynamic_cast<const IndexFlatCodes*>(&otherIndex);
     FAISS_THROW_IF_NOT(other);
     FAISS_THROW_IF_NOT(other->d == d);
     FAISS_THROW_IF_NOT(other->code_size == code_size);
+    FAISS_THROW_IF_NOT(other->attr_size == attr_size);
     FAISS_THROW_IF_NOT_MSG(
             typeid(*this) == typeid(*other),
             "can only merge indexes of the same type");
+    
+    FAISS_THROW_IF_NOT_MSG(
+            is_include_one_attribute == other->is_include_one_attribute,
+            "both indexes must have same is_include_one_attribute status");
+
+    FAISS_THROW_IF_NOT_MSG(
+            is_include_two_attribute == other->is_include_two_attribute,
+            "both indexes must have same is_include_two_attribute status");
 }
 
 void IndexFlatCodes::merge_from(Index& otherIndex, idx_t add_id) {
@@ -92,16 +217,40 @@ void IndexFlatCodes::merge_from(Index& otherIndex, idx_t add_id) {
     memcpy(codes.data() + (ntotal * code_size),
            other->codes.data(),
            other->ntotal * code_size);
+
+    if(get_is_include_one_attribute()) {
+        attributes.resize((ntotal + other->ntotal) * attr_size);
+        memcpy(attributes.data() + (ntotal * attr_size),
+               other->attributes.data(),
+               other->ntotal * attr_size);
+    }
+
+    if(get_is_include_two_attribute()) {
+        attributes_first.resize((ntotal + other->ntotal) * attr_size);
+        attributes_second.resize((ntotal + other->ntotal) * attr_size);
+        memcpy(attributes_first.data() + (ntotal * attr_size),
+               other->attributes_first.data(),
+               other->ntotal * attr_size);
+        memcpy(attributes_second.data() + (ntotal * attr_size),
+               other->attributes_second.data(),
+               other->ntotal * attr_size);
+    }
+
     ntotal += other->ntotal;
     other->reset();
 }
 
 CodePacker* IndexFlatCodes::get_CodePacker() const {
+    FAISS_THROW_IF_NOT_MSG(is_include_one_attribute == false, "get_CodePacker for IndexFlatCodes not support for one attribute now");
+    FAISS_THROW_IF_NOT_MSG(is_include_two_attribute == false, "get_CodePacker for IndexFlatCodes not support for two attribute now");
     return new CodePackerFlat(code_size);
 }
 
 void IndexFlatCodes::permute_entries(const idx_t* perm) {
     std::vector<uint8_t> new_codes(codes.size());
+    std::vector<uint8_t> new_attributes(attributes.size());
+    std::vector<uint8_t> new_attributes_first(attributes_first.size());
+    std::vector<uint8_t> new_attributes_second(attributes_second.size());
 
     for (idx_t i = 0; i < ntotal; i++) {
         memcpy(new_codes.data() + i * code_size,
@@ -109,163 +258,29 @@ void IndexFlatCodes::permute_entries(const idx_t* perm) {
                code_size);
     }
     std::swap(codes, new_codes);
-}
 
-namespace {
 
-template <class VD>
-struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
-    const IndexFlatCodes& codec;
-    const VD vd;
-    // temp buffers
-    std::vector<uint8_t> code_buffer;
-    std::vector<float> vec_buffer;
-    const float* query = nullptr;
-
-    GenericFlatCodesDistanceComputer(const IndexFlatCodes* codec, const VD& vd)
-            : FlatCodesDistanceComputer(codec->codes.data(), codec->code_size),
-              codec(*codec),
-              vd(vd),
-              code_buffer(codec->code_size * 4),
-              vec_buffer(codec->d * 4) {}
-
-    void set_query(const float* x) override {
-        query = x;
-    }
-
-    float operator()(idx_t i) override {
-        codec.sa_decode(1, codes + i * code_size, vec_buffer.data());
-        return vd(query, vec_buffer.data());
-    }
-
-    float distance_to_code(const uint8_t* code) override {
-        codec.sa_decode(1, code, vec_buffer.data());
-        return vd(query, vec_buffer.data());
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        codec.sa_decode(1, codes + i * code_size, vec_buffer.data());
-        codec.sa_decode(1, codes + j * code_size, vec_buffer.data() + vd.d);
-        return vd(vec_buffer.data(), vec_buffer.data() + vd.d);
-    }
-
-    void distances_batch_4(
-            const idx_t idx0,
-            const idx_t idx1,
-            const idx_t idx2,
-            const idx_t idx3,
-            float& dis0,
-            float& dis1,
-            float& dis2,
-            float& dis3) override {
-        uint8_t* cp = code_buffer.data();
-        for (idx_t i : {idx0, idx1, idx2, idx3}) {
-            memcpy(cp, codes + i * code_size, code_size);
-            cp += code_size;
+    if (get_is_include_one_attribute()) {
+        for (idx_t i = 0; i < ntotal; i++) {
+            memcpy(new_attributes.data() + i * attr_size,
+                   attributes.data() + perm[i] * attr_size,
+                   attr_size);
         }
-        // potential benefit is if batch decoding is more efficient than 1 by 1
-        // decoding
-        codec.sa_decode(4, code_buffer.data(), vec_buffer.data());
-        dis0 = vd(query, vec_buffer.data());
-        dis1 = vd(query, vec_buffer.data() + vd.d);
-        dis2 = vd(query, vec_buffer.data() + 2 * vd.d);
-        dis3 = vd(query, vec_buffer.data() + 3 * vd.d);
+        std::swap(attributes, new_attributes);
     }
-};
 
-struct Run_get_distance_computer {
-    using T = FlatCodesDistanceComputer*;
-
-    template <class VD>
-    FlatCodesDistanceComputer* f(const VD& vd, const IndexFlatCodes* codec) {
-        return new GenericFlatCodesDistanceComputer<VD>(codec, vd);
-    }
-};
-
-template <class BlockResultHandler>
-struct Run_search_with_decompress {
-    using T = void;
-
-    template <class VectorDistance>
-    void f(VectorDistance& vd,
-           const IndexFlatCodes* index_ptr,
-           const float* xq,
-           BlockResultHandler& res) {
-        // Note that there seems to be a clang (?) bug that "sometimes" passes
-        // the const Index & parameters by value, so to be on the safe side,
-        // it's better to use pointers.
-        const IndexFlatCodes& index = *index_ptr;
-        size_t ntotal = index.ntotal;
-        using SingleResultHandler =
-                typename BlockResultHandler::SingleResultHandler;
-        using DC = GenericFlatCodesDistanceComputer<VectorDistance>;
-#pragma omp parallel // if (res.nq > 100)
-        {
-            std::unique_ptr<DC> dc(new DC(&index, vd));
-            SingleResultHandler resi(res);
-#pragma omp for
-            for (int64_t q = 0; q < res.nq; q++) {
-                resi.begin(q);
-                dc->set_query(xq + vd.d * q);
-                for (size_t i = 0; i < ntotal; i++) {
-                    if (res.is_in_selection(i)) {
-                        float dis = (*dc)(i);
-                        resi.add_result(dis, i);
-                    }
-                }
-                resi.end();
-            }
+    if (get_is_include_two_attribute()) {
+        for (idx_t i = 0; i < ntotal; i++) {
+            memcpy(new_attributes_first.data() + i * attr_size,
+                   attributes_first.data() + perm[i] * attr_size,
+                   attr_size);
+            
+            memcpy(new_attributes_second.data() + i * attr_size,
+                   attributes_second.data() + perm[i] * attr_size,
+                   attr_size);
         }
+        std::swap(attributes_first, new_attributes_first);
+        std::swap(attributes_second, new_attributes_second);
     }
-};
-
-struct Run_search_with_decompress_res {
-    using T = void;
-
-    template <class ResultHandler>
-    void f(ResultHandler& res, const IndexFlatCodes* index, const float* xq) {
-        Run_search_with_decompress<ResultHandler> r;
-        dispatch_VectorDistance(
-                index->d,
-                index->metric_type,
-                index->metric_arg,
-                r,
-                index,
-                xq,
-                res);
-    }
-};
-
-} // anonymous namespace
-
-FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
-        const {
-    Run_get_distance_computer r;
-    return dispatch_VectorDistance(d, metric_type, metric_arg, r, this);
 }
-
-void IndexFlatCodes::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Run_search_with_decompress_res r;
-    const IDSelector* sel = params ? params->sel : nullptr;
-    dispatch_knn_ResultHandler(
-            n, distances, labels, k, metric_type, sel, r, this, x);
 }
-
-void IndexFlatCodes::range_search(
-        idx_t n,
-        const float* x,
-        float radius,
-        RangeSearchResult* result,
-        const SearchParameters* params) const {
-    const IDSelector* sel = params ? params->sel : nullptr;
-    Run_search_with_decompress_res r;
-    dispatch_range_ResultHandler(result, radius, metric_type, sel, r, this, x);
-}
-
-} // namespace faiss

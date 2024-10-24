@@ -114,4 +114,22 @@ void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
     }
 }
 
+void IndexLattice::add(idx_t, const float*) {
+    FAISS_THROW_MSG("not implemented");
+}
+
+void IndexLattice::search(
+        idx_t,
+        const float*,
+        idx_t,
+        float*,
+        idx_t*,
+        const SearchParameters*) const {
+    FAISS_THROW_MSG("not implemented");
+}
+
+void IndexLattice::reset() {
+    FAISS_THROW_MSG("not implemented");
+}
+
 } // namespace faiss

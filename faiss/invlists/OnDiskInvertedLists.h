@@ -83,6 +83,9 @@ struct OnDiskInvertedLists : InvertedLists {
     size_t list_size(size_t list_no) const override;
     const uint8_t* get_codes(size_t list_no) const override;
     const idx_t* get_ids(size_t list_no) const override;
+    const uint8_t* get_attributes(size_t list_no) const override;
+    const uint8_t* get_attributes_first(size_t list_no) const override;
+    const uint8_t* get_attributes_second(size_t list_no) const override;
 
     size_t add_entries(
             size_t list_no,
@@ -90,12 +93,44 @@ struct OnDiskInvertedLists : InvertedLists {
             const idx_t* ids,
             const uint8_t* code) override;
 
+    size_t add_entries_with_one_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute) override;
+
+    size_t add_entries_with_two_attribute(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second) override;
+
     void update_entries(
             size_t list_no,
             size_t offset,
             size_t n_entry,
             const idx_t* ids,
             const uint8_t* code) override;
+
+    void update_entries_with_one_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute) override;
+        
+    void update_entries_with_two_attribute(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code,
+            const uint8_t* attribute_first,
+            const uint8_t* attribute_second) override;
 
     void resize(size_t list_no, size_t new_size) override;
 
@@ -148,7 +183,9 @@ struct OnDiskInvertedListsIOHook : InvertedListsIOHook {
             int io_flags,
             size_t nlist,
             size_t code_size,
-            const std::vector<size_t>& sizes) const override;
+            const std::vector<size_t>& sizes,
+            bool is_include_one_attribute,
+            bool is_include_two_attribute) const override;
 };
 
 } // namespace faiss

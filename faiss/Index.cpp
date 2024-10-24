@@ -38,11 +38,72 @@ void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     search(n, x, k, distances.data(), labels);
 }
 
+void Index::add_with_one_attribute(
+    idx_t /*n*/,
+    const float* /*x*/,
+    const float* /*attr*/) {
+        FAISS_THROW_MSG("add with one attribute not implemented for this type of index");
+    }
+
+void Index::add_with_two_attribute(
+    idx_t /*n*/,
+    const float* /*x*/,
+    const float* /*attr_first*/,
+    const float* /*attr_second*/) {
+        FAISS_THROW_MSG("add with two attribute not implemented for this type of index");
+    }
+
+void Index::search_with_one_attribute(
+        idx_t, /*n*/
+        const float*, /*x*/
+        const float, /*lower_attribute*/
+        const float, /*upper_attribute*/
+        idx_t, /*k*/
+        float*, /*distances*/
+        idx_t*, /*labels*/
+        float*, /*out_attrs*/
+        const SearchParameters* params) const {
+    FAISS_THROW_MSG("search with one attribute not implemented");
+}
+
+void Index::search_with_two_attribute(
+        idx_t, /*n*/
+        const float*, /*x*/
+        const float, /*lower_attribute_first*/
+        const float, /*upper_attribute_first*/
+        const float, /*lower_attribute_second*/
+        const float, /*upper_attribute_second*/
+        idx_t, /*k*/
+        float*, /*distances*/
+        idx_t*, /*labels*/
+        float*, /*out_attrs_first*/
+        float*, /*out_attrs_second*/
+        const SearchParameters* params) const {
+    FAISS_THROW_MSG("search with two attribute not implemented");
+}
+
 void Index::add_with_ids(
         idx_t /*n*/,
         const float* /*x*/,
         const idx_t* /*xids*/) {
     FAISS_THROW_MSG("add_with_ids not implemented for this type of index");
+}
+
+void Index::add_with_ids_with_one_attribute(
+        idx_t /*n*/,
+        const float* /*x*/,
+        const float* /*attr*/,
+        const idx_t* /*xids*/) {
+    FAISS_THROW_MSG("add_with_ids_with_one_attribute not implemented for this type of index");
+}
+
+void Index::add_with_ids_with_two_attribute(
+        idx_t /*n*/,
+        const float* /*x*/,
+        const float* /*attr_first*/,
+        const float* /*attr_second*/,
+        const idx_t* /*xids*/) {
+    FAISS_THROW_MSG("add_with_ids_with_two_attribute not implemented for this type of index");
 }
 
 size_t Index::remove_ids(const IDSelector& /*sel*/) {
@@ -52,6 +113,14 @@ size_t Index::remove_ids(const IDSelector& /*sel*/) {
 
 void Index::reconstruct(idx_t, float*) const {
     FAISS_THROW_MSG("reconstruct not implemented for this type of index");
+}
+
+void Index::reconstruct_one_attribute(idx_t, float*) const {
+    FAISS_THROW_MSG("reconstruct_one_attribute not implemented for this type of index");
+}
+
+void Index::reconstruct_two_attribute(idx_t, float*, float*) const {
+    FAISS_THROW_MSG("reconstruct_two_attribute not implemented for this type of index");
 }
 
 void Index::reconstruct_batch(idx_t n, const idx_t* keys, float* recons) const {
@@ -75,6 +144,20 @@ void Index::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
 #pragma omp parallel for if (ni > 1000)
     for (idx_t i = 0; i < ni; i++) {
         reconstruct(i0 + i, recons + i * d);
+    }
+}
+
+void Index::reconstruct_n_one_attribute(idx_t i0, idx_t ni, float* recons_attr) const {
+#pragma omp parallel for if (ni > 1000)
+    for (idx_t i = 0; i < ni; i++) {
+        reconstruct_one_attribute(i0 + i, recons_attr + i);
+    }
+}
+
+void Index::reconstruct_n_two_attribute(idx_t i0, idx_t ni, float* recons_attr_first, float* recons_attr_second) const {
+#pragma omp parallel for if (ni > 1000)
+    for (idx_t i = 0; i < ni; i++) {
+        reconstruct_two_attribute(i0 + i, recons_attr_first + i, recons_attr_second + i);
     }
 }
 
@@ -126,13 +209,46 @@ size_t Index::sa_code_size() const {
     FAISS_THROW_MSG("standalone codec not implemented for this type of index");
 }
 
+size_t Index::sa_one_attribute_code_size() const {
+    FAISS_THROW_MSG("standalone codec for one attribute not implemented for this type of index");
+}
+
+size_t Index::sa_two_attribute_code_size() const {
+    FAISS_THROW_MSG("standalone codec for two attribute not implemented for this type of index");
+}
+
 void Index::sa_encode(idx_t, const float*, uint8_t*) const {
     FAISS_THROW_MSG("standalone codec not implemented for this type of index");
+}
+
+void Index::sa_one_attribute_encode(idx_t, const float*, uint8_t*) const {
+    FAISS_THROW_MSG("standalone codec for one attribute not implemented for this type of index");
+}
+
+void Index::sa_two_attribute_encode(idx_t, const float*, const float*, uint8_t*, uint8_t*) const {
+    FAISS_THROW_MSG("standalone codec for two attribute not implemented for this type of index");
 }
 
 void Index::sa_decode(idx_t, const uint8_t*, float*) const {
     FAISS_THROW_MSG("standalone codec not implemented for this type of index");
 }
+
+void Index::sa_one_attribute_decode(idx_t, const uint8_t*, float*) const {
+    FAISS_THROW_MSG("standalone codec for one attribute not implemented for this type of index");
+}
+
+void Index::sa_two_attribute_decode(idx_t, const uint8_t*, const uint8_t*, float*, float*) const {
+    FAISS_THROW_MSG("standalone codec for two attribute not implemented for this type of index");
+}
+
+void Index::set_is_include_one_attribute() {
+    FAISS_THROW_MSG("set_is_include_one_attribute not implemented for this type of index");
+}
+
+void Index::set_is_include_two_attribute() {
+    FAISS_THROW_MSG("set_is_include_two_attribute not implemented for this type of index");
+}
+
 
 namespace {
 

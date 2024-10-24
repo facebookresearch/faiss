@@ -2177,6 +2177,85 @@ struct IVFSQScannerIP : InvertedListScanner {
         return nup;
     }
 
+    size_t scan_codes_with_one_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes,
+            const float lower_attribute,
+            const float upper_attribute,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attri,
+            size_t k) const override {
+        size_t nup = 0;
+        const float* current_attributes = (float*) attributes;
+
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
+            float current_attribute = current_attributes[0];
+            current_attributes += 1;
+
+            if (current_attribute >= lower_attribute && current_attribute <= upper_attribute) {
+                float accu = accu0 + dc.query_to_code(codes);
+
+                if (accu > simi[0]) {
+                    int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
+                    minheap_replace_top_one_attribute(k, simi, idxi, attri, accu, id, current_attribute);
+                    nup++;
+                }
+            }
+        }
+        return nup;
+    }
+
+    size_t scan_codes_with_two_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes_first,
+            const uint8_t* attributes_second,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attrfi,
+            float* attrsi,
+            size_t k) const override {
+        size_t nup = 0;
+        const float* current_attributes_first = (float*) attributes_first;
+        const float* current_attributes_second = (float*) attributes_second;
+
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
+            float current_attribute_first = current_attributes_first[0];
+            float current_attribute_second = current_attributes_second[0];
+            current_attributes_first += 1;
+            current_attributes_second += 1;
+
+            if (current_attribute_first >= lower_attribute_first && current_attribute_first <= upper_attribute_first) {
+                if (current_attribute_second >= lower_attribute_second && current_attribute_second <= upper_attribute_second) {
+                    float accu = accu0 + dc.query_to_code(codes);
+
+                    if (accu > simi[0]) {
+                        int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
+                        minheap_replace_top_two_attribute(k, simi, idxi, attrfi, attrsi, accu, id, current_attribute_first, current_attribute_second);
+                        nup++;
+                    }
+                }
+            }
+        }
+        return nup;
+    }
+
     void scan_codes_range(
             size_t list_size,
             const uint8_t* codes,
@@ -2270,6 +2349,83 @@ struct IVFSQScannerL2 : InvertedListScanner {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 maxheap_replace_top(k, simi, idxi, dis, id);
                 nup++;
+            }
+        }
+        return nup;
+    }
+
+    size_t scan_codes_with_one_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes,
+            const float lower_attribute,
+            const float upper_attribute,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attri,
+            size_t k) const override {
+        size_t nup = 0;
+        const float* current_attributes = (float*) attributes; 
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
+            float current_attribute = current_attributes[0];
+            current_attributes += 1;
+
+            if (current_attribute >= lower_attribute && current_attribute <= upper_attribute) {
+                float dis = dc.query_to_code(codes);
+
+                if (dis < simi[0]) {
+                    int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
+                    maxheap_replace_top_one_attribute(k, simi, idxi, attri, dis, id, current_attribute);
+                    nup++;
+                }
+            }
+        }
+        return nup;
+    }
+
+    size_t scan_codes_with_two_attribute(
+            size_t list_size,
+            const uint8_t* codes,
+            const uint8_t* attributes_first,
+            const uint8_t* attributes_second,
+            const float lower_attribute_first,
+            const float upper_attribute_first,
+            const float lower_attribute_second,
+            const float upper_attribute_second,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            float* attrfi,
+            float* attrsi,
+            size_t k) const override {
+        size_t nup = 0;
+        const float* current_attributes_first = (float*) attributes_first;
+        const float* current_attributes_second = (float*) attributes_second; 
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
+            float current_attribute_first = current_attributes_first[0];
+            float current_attribute_second = current_attributes_second[0];
+            current_attributes_first += 1;
+            current_attributes_second += 1;
+
+            if (current_attribute_first >= lower_attribute_first && current_attribute_first <= upper_attribute_first) {
+                if (current_attribute_second >= lower_attribute_second && current_attribute_second <= upper_attribute_second) {
+                    float dis = dc.query_to_code(codes);
+
+                    if (dis < simi[0]) {
+                        int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
+                        maxheap_replace_top_two_attribute(k, simi, idxi, attrfi, attrsi, dis, id, current_attribute_first, current_attribute_second);
+                        nup++;
+                    }
+                }
             }
         }
         return nup;

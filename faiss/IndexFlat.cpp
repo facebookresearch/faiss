@@ -24,6 +24,12 @@ namespace faiss {
 IndexFlat::IndexFlat(idx_t d, MetricType metric)
         : IndexFlatCodes(sizeof(float) * d, d, metric) {}
 
+IndexFlat::IndexFlat(idx_t d, bool is_include_one_attribute, MetricType metric)
+        : IndexFlatCodes(sizeof(float) * d, d, is_include_one_attribute, metric) {}
+
+IndexFlat::IndexFlat(idx_t d, bool is_include_two_attribute, bool mode_two, MetricType metric)
+        : IndexFlatCodes(sizeof(float) * d, d, is_include_two_attribute, mode_two, metric) {}
+
 void IndexFlat::search(
         idx_t n,
         const float* x,
@@ -56,6 +62,93 @@ void IndexFlat::search(
                 labels);
     }
 }
+
+void IndexFlat::search_with_one_attribute(
+        idx_t n,
+        const float* x,
+        const float lower_attribute,
+        const float upper_attribute,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        float* out_attrs,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_THROW_IF_NOT(k > 0);
+
+    FAISS_THROW_IF_NOT(is_include_one_attribute == true);
+    FAISS_THROW_IF_NOT(int(ntotal * attr_size) == attributes.size());
+
+    // we see the distances and labels as heaps
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        float_minheap_one_attribute_array_t res = {size_t(n), size_t(k), labels, distances, out_attrs};
+        knn_inner_product_one_attribute(x, get_xb(), lower_attribute, upper_attribute, get_one_attributes(), d, n, ntotal, &res, sel);
+    } else if (metric_type == METRIC_L2) {
+        float_maxheap_one_attribute_array_t res = {size_t(n), size_t(k), labels, distances, out_attrs};
+        knn_L2sqr_one_attribute(x, get_xb(), lower_attribute, upper_attribute, get_one_attributes(), d, n, ntotal, &res, nullptr, sel);
+    } else {
+        FAISS_THROW_IF_NOT(!sel); // TODO implement with selector
+        knn_extra_metrics(
+                x,
+                get_xb(),
+                d,
+                n,
+                ntotal,
+                metric_type,
+                metric_arg,
+                k,
+                distances,
+                labels);
+    }
+}
+
+void IndexFlat::search_with_two_attribute(
+        idx_t n,
+        const float* x,
+        const float lower_attribute_first,
+        const float upper_attribute_first,
+        const float lower_attribute_second,
+        const float upper_attribute_second,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        float* out_attrs_first,
+        float* out_attrs_second,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_THROW_IF_NOT(k > 0);
+
+    FAISS_THROW_IF_NOT(is_include_two_attribute == true);
+    FAISS_THROW_IF_NOT(int(ntotal * attr_size) == attributes_first.size());
+    FAISS_THROW_IF_NOT(int(ntotal * attr_size) == attributes_second.size());
+
+    // we see the distances and labels as heaps
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        float_minheap_two_attribute_array_t res = {size_t(n), size_t(k), labels, distances, out_attrs_first, out_attrs_second};
+        knn_inner_product_two_attribute(x, get_xb(), lower_attribute_first, upper_attribute_first,
+                                                     lower_attribute_second, upper_attribute_second,
+                                                     get_two_attributes_first(), get_two_attributes_second(), d, n, ntotal, &res, sel);
+    } else if (metric_type == METRIC_L2) {
+        float_maxheap_two_attribute_array_t res = {size_t(n), size_t(k), labels, distances, out_attrs_first, out_attrs_second};
+        knn_L2sqr_two_attribute(x, get_xb(), lower_attribute_first, upper_attribute_first,
+                                             lower_attribute_second, upper_attribute_second, 
+                                             get_two_attributes_first(), get_two_attributes_second(), d, n, ntotal, &res, nullptr, sel);
+    } else {
+        FAISS_THROW_IF_NOT(!sel); // TODO implement with selector
+        knn_extra_metrics(
+                x,
+                get_xb(),
+                d,
+                n,
+                ntotal,
+                metric_type,
+                metric_arg,
+                k,
+                distances,
+                labels);
+    }
+}
+
 
 void IndexFlat::range_search(
         idx_t n,
@@ -243,9 +336,31 @@ void IndexFlat::reconstruct(idx_t key, float* recons) const {
     memcpy(recons, &(codes[key * code_size]), code_size);
 }
 
+void IndexFlat::reconstruct_one_attribute(idx_t key, float* recons_attr) const {
+    memcpy(recons_attr, &(attributes[key * attr_size]), attr_size);
+}
+
+void IndexFlat::reconstruct_two_attribute(idx_t key, float* recons_attr_first, float* recons_attr_second) const {
+    memcpy(recons_attr_first, &(attributes_first[key * attr_size]), attr_size);
+    memcpy(recons_attr_second, &(attributes_second[key * attr_size]), attr_size);
+}
+
 void IndexFlat::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     if (n > 0) {
         memcpy(bytes, x, sizeof(float) * d * n);
+    }
+}
+
+void IndexFlat::sa_one_attribute_encode(idx_t n, const float* attr, uint8_t* bytes) const {
+    if (n > 0) {
+        memcpy(bytes, attr, sizeof(float) * 1 * n);
+    }
+}
+
+void IndexFlat::sa_two_attribute_encode(idx_t n, const float* attr_first, const float* attr_second, uint8_t* bytes_first, uint8_t* bytes_second) const {
+    if (n > 0) {
+        memcpy(bytes_first, attr_first, sizeof(float) * 1 * n);
+        memcpy(bytes_second, attr_second, sizeof(float) * 1 * n);
     }
 }
 
@@ -254,6 +369,20 @@ void IndexFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
         memcpy(x, bytes, sizeof(float) * d * n);
     }
 }
+
+void IndexFlat::sa_one_attribute_decode(idx_t n, const uint8_t* bytes, float* attr) const {
+    if (n > 0) {
+        memcpy(attr, bytes, sizeof(float) * 1 * n);
+    }
+}
+
+void IndexFlat::sa_two_attribute_decode(idx_t n, const uint8_t* bytes_first, const uint8_t* bytes_second, float* attr_first, float* attr_second) const {
+    if (n > 0) {
+        memcpy(attr_first, bytes_first, sizeof(float) * 1 * n);
+        memcpy(attr_second, bytes_second, sizeof(float) * 1 * n);
+    }
+}
+
 
 /***************************************************
  * IndexFlatL2
@@ -403,6 +532,19 @@ void IndexFlat1D::add(idx_t n, const float* x) {
     if (continuous_update)
         update_permutation();
 }
+
+void IndexFlat1D::add_with_one_attribute(idx_t n, const float* x, const float* attr) {
+    IndexFlatL2::add_with_one_attribute(n, x, attr);
+    if (continuous_update)
+        update_permutation();
+}
+
+void IndexFlat1D::add_with_two_attribute(idx_t n, const float* x, const float* attr_first, const float* attr_second) {
+    IndexFlatL2::add_with_two_attribute(n, x, attr_first, attr_second);
+    if (continuous_update)
+        update_permutation();
+}
+
 
 void IndexFlat1D::reset() {
     IndexFlatL2::reset();

@@ -114,6 +114,63 @@ size_t compress_array(
     return wp;
 }
 
+template <class C>
+size_t compress_array_one_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs,
+        size_t n,
+        typename C::T thresh,
+        size_t n_eq) {
+    size_t wp = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (C::cmp(thresh, vals[i])) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs[wp] = attrs[i];
+            wp++;
+        } else if (n_eq > 0 && vals[i] == thresh) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs[wp] = attrs[i];
+            wp++;
+            n_eq--;
+        }
+    }
+    assert(n_eq == 0);
+    return wp;
+}
+
+template <class C>
+size_t compress_array_two_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs_first,
+        typename C::T* attrs_second,
+        size_t n,
+        typename C::T thresh,
+        size_t n_eq) {
+    size_t wp = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (C::cmp(thresh, vals[i])) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs_first[wp] = attrs_first[i];
+            attrs_second[wp] = attrs_second[i];
+            wp++;
+        } else if (n_eq > 0 && vals[i] == thresh) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs_first[wp] = attrs_first[i];
+            attrs_second[wp] = attrs_second[i];
+            wp++;
+            n_eq--;
+        }
+    }
+    assert(n_eq == 0);
+    return wp;
+}
+
 #define IFV if (false)
 
 template <class C>
@@ -208,6 +265,209 @@ typename C::T partition_fuzzy_median3(
 
     [[maybe_unused]] const int wp =
             compress_array<C>(vals, ids, n, thresh, n_eq_1);
+
+    assert(wp == q);
+    if (q_out) {
+        *q_out = q;
+    }
+
+    return thresh;
+}
+
+template <class C>
+typename C::T partition_fuzzy_median3_one_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+    if (q_min == 0) {
+        if (q_out) {
+            *q_out = C::Crev::neutral();
+        }
+        return 0;
+    }
+    if (q_max >= n) {
+        if (q_out) {
+            *q_out = q_max;
+        }
+        return C::neutral();
+    }
+
+    using T = typename C::T;
+
+    // here we use bissection with a median of 3 to find the threshold and
+    // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
+    // qselect's O(n) but it avoids shuffling around the array.
+
+    FAISS_THROW_IF_NOT(n >= 3);
+
+    T thresh_inf = C::Crev::neutral();
+    T thresh_sup = C::neutral();
+    T thresh = median3(vals[0], vals[n / 2], vals[n - 1]);
+
+    size_t n_eq = 0, n_lt = 0;
+    size_t q = 0;
+
+    for (int it = 0; it < 200; it++) {
+        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
+
+        IFV printf(
+                "   thresh=%g [%g %g] n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                float(thresh),
+                float(thresh_inf),
+                float(thresh_sup),
+                long(n_lt),
+                long(n_eq),
+                long(q_min),
+                long(q_max),
+                long(n));
+
+        if (n_lt <= q_min) {
+            if (n_lt + n_eq >= q_min) {
+                q = q_min;
+                break;
+            } else {
+                thresh_inf = thresh;
+            }
+        } else if (n_lt <= q_max) {
+            q = n_lt;
+            break;
+        } else {
+            thresh_sup = thresh;
+        }
+
+        // FIXME avoid a second pass over the array to sample the threshold
+        IFV printf(
+                "     sample thresh in [%g %g]\n",
+                float(thresh_inf),
+                float(thresh_sup));
+        T new_thresh =
+                sample_threshold_median3<C>(vals, n, thresh_inf, thresh_sup);
+        if (new_thresh == thresh_inf) {
+            // then there is nothing between thresh_inf and thresh_sup
+            break;
+        }
+        thresh = new_thresh;
+    }
+
+    int64_t n_eq_1 = q - n_lt;
+
+    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", float(thresh), long(n_eq_1));
+
+    if (n_eq_1 < 0) { // happens when > q elements are at lower bound
+        q = q_min;
+        thresh = C::Crev::nextafter(thresh);
+        n_eq_1 = q;
+    } else {
+        assert(n_eq_1 <= n_eq);
+    }
+
+    [[maybe_unused]] const int wp = compress_array_one_attribute<C>(vals, ids, attrs, n, thresh, n_eq_1);
+
+    assert(wp == q);
+    if (q_out) {
+        *q_out = q;
+    }
+
+    return thresh;
+}
+
+template <class C>
+typename C::T partition_fuzzy_median3_two_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs_first,
+        typename C::T* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+    if (q_min == 0) {
+        if (q_out) {
+            *q_out = C::Crev::neutral();
+        }
+        return 0;
+    }
+    if (q_max >= n) {
+        if (q_out) {
+            *q_out = q_max;
+        }
+        return C::neutral();
+    }
+
+    using T = typename C::T;
+
+    // here we use bissection with a median of 3 to find the threshold and
+    // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
+    // qselect's O(n) but it avoids shuffling around the array.
+
+    FAISS_THROW_IF_NOT(n >= 3);
+
+    T thresh_inf = C::Crev::neutral();
+    T thresh_sup = C::neutral();
+    T thresh = median3(vals[0], vals[n / 2], vals[n - 1]);
+
+    size_t n_eq = 0, n_lt = 0;
+    size_t q = 0;
+
+    for (int it = 0; it < 200; it++) {
+        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
+
+        IFV printf(
+                "   thresh=%g [%g %g] n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                float(thresh),
+                float(thresh_inf),
+                float(thresh_sup),
+                long(n_lt),
+                long(n_eq),
+                long(q_min),
+                long(q_max),
+                long(n));
+
+        if (n_lt <= q_min) {
+            if (n_lt + n_eq >= q_min) {
+                q = q_min;
+                break;
+            } else {
+                thresh_inf = thresh;
+            }
+        } else if (n_lt <= q_max) {
+            q = n_lt;
+            break;
+        } else {
+            thresh_sup = thresh;
+        }
+
+        // FIXME avoid a second pass over the array to sample the threshold
+        IFV printf(
+                "     sample thresh in [%g %g]\n",
+                float(thresh_inf),
+                float(thresh_sup));
+        T new_thresh =
+                sample_threshold_median3<C>(vals, n, thresh_inf, thresh_sup);
+        if (new_thresh == thresh_inf) {
+            // then there is nothing between thresh_inf and thresh_sup
+            break;
+        }
+        thresh = new_thresh;
+    }
+
+    int64_t n_eq_1 = q - n_lt;
+
+    IFV printf("shrink: thresh=%g n_eq_1=%ld\n", float(thresh), long(n_eq_1));
+
+    if (n_eq_1 < 0) { // happens when > q elements are at lower bound
+        q = q_min;
+        thresh = C::Crev::nextafter(thresh);
+        n_eq_1 = q;
+    } else {
+        assert(n_eq_1 <= n_eq);
+    }
+
+    [[maybe_unused]] const int wp = compress_array_two_attribute<C>(vals, ids, attrs_first, attrs_second, n, thresh, n_eq_1);
 
     assert(wp == q);
     if (q_out) {
@@ -385,6 +645,188 @@ int simd_compress_array(
     return wp;
 }
 
+template <class C>
+int simd_compress_array_one_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs,
+        size_t n,
+        uint16_t thresh,
+        int n_eq) {
+    simd16uint16 thr16(thresh);
+    simd16uint16 mixmask(0xff00);
+
+    int wp = 0;
+    size_t i0;
+
+    // loop while there are eqs to collect
+    for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
+        simd16uint16 v(vals + i0);
+        simd16uint16 max2 = max_func<C>(v, thr16);
+        simd16uint16 gemask = (v == max2);
+        simd16uint16 eqmask = (v == thr16);
+        uint32_t bits = get_MSBs(
+                blendv(simd32uint8(eqmask),
+                       simd32uint8(gemask),
+                       simd32uint8(mixmask)));
+        bits ^= 0xAAAAAAAA;
+        // bit 2*i     : eq
+        // bit 2*i + 1 : lt
+
+        while (bits) {
+            int j = __builtin_ctz(bits) & (~1);
+            bool is_eq = (bits >> j) & 1;
+            bool is_lt = (bits >> j) & 2;
+            bits &= ~(3 << j);
+            j >>= 1;
+
+            if (is_lt) {
+                vals[wp] = vals[i0 + j];
+                ids[wp] = ids[i0 + j];
+                attrs[wp] = attrs[i0 + j];
+                wp++;
+            } else if (is_eq && n_eq > 0) {
+                vals[wp] = vals[i0 + j];
+                ids[wp] = ids[i0 + j];
+                attrs[wp] = attrs[i0 + j];
+                wp++;
+                n_eq--;
+            }
+        }
+    }
+
+    // handle remaining, only striclty lt ones.
+    for (; i0 + 15 < n; i0 += 16) {
+        simd16uint16 v(vals + i0);
+        simd16uint16 max2 = max_func<C>(v, thr16);
+        simd16uint16 gemask = (v == max2);
+        uint32_t bits = ~get_MSBs(simd32uint8(gemask));
+
+        while (bits) {
+            int j = __builtin_ctz(bits);
+            bits &= ~(3 << j);
+            j >>= 1;
+
+            vals[wp] = vals[i0 + j];
+            ids[wp] = ids[i0 + j];
+            attrs[wp] = attrs[i0 + j];
+            wp++;
+        }
+    }
+
+    // end with scalar
+    for (int i = (n & ~15); i < n; i++) {
+        if (C::cmp(thresh, vals[i])) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs[wp] = attrs[i];
+            wp++;
+        } else if (vals[i] == thresh && n_eq > 0) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs[wp] = attrs[i];
+            wp++;
+            n_eq--;
+        }
+    }
+    assert(n_eq == 0);
+    return wp;
+}
+
+template <class C>
+int simd_compress_array_two_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        uint16_t thresh,
+        int n_eq) {
+    simd16uint16 thr16(thresh);
+    simd16uint16 mixmask(0xff00);
+
+    int wp = 0;
+    size_t i0;
+
+    // loop while there are eqs to collect
+    for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
+        simd16uint16 v(vals + i0);
+        simd16uint16 max2 = max_func<C>(v, thr16);
+        simd16uint16 gemask = (v == max2);
+        simd16uint16 eqmask = (v == thr16);
+        uint32_t bits = get_MSBs(
+                blendv(simd32uint8(eqmask),
+                       simd32uint8(gemask),
+                       simd32uint8(mixmask)));
+        bits ^= 0xAAAAAAAA;
+        // bit 2*i     : eq
+        // bit 2*i + 1 : lt
+
+        while (bits) {
+            int j = __builtin_ctz(bits) & (~1);
+            bool is_eq = (bits >> j) & 1;
+            bool is_lt = (bits >> j) & 2;
+            bits &= ~(3 << j);
+            j >>= 1;
+
+            if (is_lt) {
+                vals[wp] = vals[i0 + j];
+                ids[wp] = ids[i0 + j];
+                attrs_first[wp] = attrs_first[i0 + j];
+                attrs_second[wp] = attrs_second[i0 + j];
+                wp++;
+            } else if (is_eq && n_eq > 0) {
+                vals[wp] = vals[i0 + j];
+                ids[wp] = ids[i0 + j];
+                attrs_first[wp] = attrs_first[i0 + j];
+                attrs_second[wp] = attrs_second[i0 + j];
+                wp++;
+                n_eq--;
+            }
+        }
+    }
+
+    // handle remaining, only striclty lt ones.
+    for (; i0 + 15 < n; i0 += 16) {
+        simd16uint16 v(vals + i0);
+        simd16uint16 max2 = max_func<C>(v, thr16);
+        simd16uint16 gemask = (v == max2);
+        uint32_t bits = ~get_MSBs(simd32uint8(gemask));
+
+        while (bits) {
+            int j = __builtin_ctz(bits);
+            bits &= ~(3 << j);
+            j >>= 1;
+
+            vals[wp] = vals[i0 + j];
+            ids[wp] = ids[i0 + j];
+            attrs_first[wp] = attrs_first[i0 + j];
+            attrs_second[wp] = attrs_second[i0 + j];
+            wp++;
+        }
+    }
+
+    // end with scalar
+    for (int i = (n & ~15); i < n; i++) {
+        if (C::cmp(thresh, vals[i])) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs_first[wp] = attrs_first[i];
+            attrs_second[wp] = attrs_second[i];
+            wp++;
+        } else if (vals[i] == thresh && n_eq > 0) {
+            vals[wp] = vals[i];
+            ids[wp] = ids[i];
+            attrs_first[wp] = attrs_first[i];
+            attrs_second[wp] = attrs_second[i];
+            wp++;
+            n_eq--;
+        }
+    }
+    assert(n_eq == 0);
+    return wp;
+}
+
 // #define MICRO_BENCHMARK
 
 static uint64_t get_cy() {
@@ -497,6 +939,235 @@ uint16_t simd_partition_fuzzy_with_bounds(
     }
 
     size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);
+
+    IFV printf("wp=%ld\n", wp);
+    assert(wp == q);
+    if (q_out) {
+        *q_out = q;
+    }
+
+    uint64_t t2 = get_cy();
+
+    partition_stats.bissect_cycles += t1 - t0;
+    partition_stats.compress_cycles += t2 - t1;
+
+    return thresh;
+}
+
+template <class C>
+uint16_t simd_partition_fuzzy_with_bounds_one_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out,
+        uint16_t s0i,
+        uint16_t s1i) {
+    if (q_min == 0) {
+        if (q_out) {
+            *q_out = 0;
+        }
+        return 0;
+    }
+    if (q_max >= n) {
+        if (q_out) {
+            *q_out = q_max;
+        }
+        return 0xffff;
+    }
+    if (s0i == s1i) {
+        if (q_out) {
+            *q_out = q_min;
+        }
+        return s0i;
+    }
+    uint64_t t0 = get_cy();
+
+    // lower bound inclusive, upper exclusive
+    size_t s0 = s0i, s1 = s1i + 1;
+
+    IFV printf("bounds: %ld %ld\n", s0, s1 - 1);
+
+    int thresh;
+    size_t n_eq = 0, n_lt = 0;
+    size_t q = 0;
+
+    for (int it = 0; it < 200; it++) {
+        // while(s0 + 1 < s1) {
+        thresh = (s0 + s1) / 2;
+        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
+
+        IFV printf(
+                "   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                s0,
+                s1,
+                thresh,
+                n_lt,
+                n_eq,
+                q_min,
+                q_max,
+                n);
+        if (n_lt <= q_min) {
+            if (n_lt + n_eq >= q_min) {
+                q = q_min;
+                break;
+            } else {
+                if (C::is_max) {
+                    s0 = thresh;
+                } else {
+                    s1 = thresh;
+                }
+            }
+        } else if (n_lt <= q_max) {
+            q = n_lt;
+            break;
+        } else {
+            if (C::is_max) {
+                s1 = thresh;
+            } else {
+                s0 = thresh;
+            }
+        }
+    }
+
+    uint64_t t1 = get_cy();
+
+    // number of equal values to keep
+    int64_t n_eq_1 = q - n_lt;
+
+    IFV printf("shrink: thresh=%d q=%ld n_eq_1=%ld\n", thresh, q, n_eq_1);
+    if (n_eq_1 < 0) { // happens when > q elements are at lower bound
+        assert(s0 + 1 == s1);
+        q = q_min;
+        if (C::is_max) {
+            thresh--;
+        } else {
+            thresh++;
+        }
+        n_eq_1 = q;
+        IFV printf("  override: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
+    } else {
+        assert(n_eq_1 <= n_eq);
+    }
+
+    size_t wp = simd_compress_array_one_attribute<C>(vals, ids, attrs, n, thresh, n_eq_1);
+
+    IFV printf("wp=%ld\n", wp);
+    assert(wp == q);
+    if (q_out) {
+        *q_out = q;
+    }
+
+    uint64_t t2 = get_cy();
+
+    partition_stats.bissect_cycles += t1 - t0;
+    partition_stats.compress_cycles += t2 - t1;
+
+    return thresh;
+}
+
+template <class C>
+uint16_t simd_partition_fuzzy_with_bounds_two_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out,
+        uint16_t s0i,
+        uint16_t s1i) {
+    if (q_min == 0) {
+        if (q_out) {
+            *q_out = 0;
+        }
+        return 0;
+    }
+    if (q_max >= n) {
+        if (q_out) {
+            *q_out = q_max;
+        }
+        return 0xffff;
+    }
+    if (s0i == s1i) {
+        if (q_out) {
+            *q_out = q_min;
+        }
+        return s0i;
+    }
+    uint64_t t0 = get_cy();
+
+    // lower bound inclusive, upper exclusive
+    size_t s0 = s0i, s1 = s1i + 1;
+
+    IFV printf("bounds: %ld %ld\n", s0, s1 - 1);
+
+    int thresh;
+    size_t n_eq = 0, n_lt = 0;
+    size_t q = 0;
+
+    for (int it = 0; it < 200; it++) {
+        // while(s0 + 1 < s1) {
+        thresh = (s0 + s1) / 2;
+        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
+
+        IFV printf(
+                "   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                s0,
+                s1,
+                thresh,
+                n_lt,
+                n_eq,
+                q_min,
+                q_max,
+                n);
+        if (n_lt <= q_min) {
+            if (n_lt + n_eq >= q_min) {
+                q = q_min;
+                break;
+            } else {
+                if (C::is_max) {
+                    s0 = thresh;
+                } else {
+                    s1 = thresh;
+                }
+            }
+        } else if (n_lt <= q_max) {
+            q = n_lt;
+            break;
+        } else {
+            if (C::is_max) {
+                s1 = thresh;
+            } else {
+                s0 = thresh;
+            }
+        }
+    }
+
+    uint64_t t1 = get_cy();
+
+    // number of equal values to keep
+    int64_t n_eq_1 = q - n_lt;
+
+    IFV printf("shrink: thresh=%d q=%ld n_eq_1=%ld\n", thresh, q, n_eq_1);
+    if (n_eq_1 < 0) { // happens when > q elements are at lower bound
+        assert(s0 + 1 == s1);
+        q = q_min;
+        if (C::is_max) {
+            thresh--;
+        } else {
+            thresh++;
+        }
+        n_eq_1 = q;
+        IFV printf("  override: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
+    } else {
+        assert(n_eq_1 <= n_eq);
+    }
+
+    size_t wp = simd_compress_array_two_attribute<C>(vals, ids, attrs_first, attrs_second, n, thresh, n_eq_1);
 
     IFV printf("wp=%ld\n", wp);
     assert(wp == q);
@@ -704,6 +1375,45 @@ uint16_t simd_partition_fuzzy(
 }
 
 template <class C>
+uint16_t simd_partition_fuzzy_one_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+    assert(is_aligned_pointer(vals));
+
+    uint16_t s0i, s1i;
+    find_minimax(vals, n, s0i, s1i);
+    // QSelect_stats.t0 += get_cy() - t0;
+
+    return simd_partition_fuzzy_with_bounds_one_attribute<C>(
+            vals, ids, attrs, n, q_min, q_max, q_out, s0i, s1i);
+}
+
+template <class C>
+uint16_t simd_partition_fuzzy_two_attribute(
+        uint16_t* vals,
+        typename C::TI* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+    assert(is_aligned_pointer(vals));
+
+    uint16_t s0i, s1i;
+    find_minimax(vals, n, s0i, s1i);
+    // QSelect_stats.t0 += get_cy() - t0;
+
+    return simd_partition_fuzzy_with_bounds_two_attribute<C>(
+            vals, ids, attrs_first, attrs_second, n, q_min, q_max, q_out, s0i, s1i);
+}
+
+template <class C>
 uint16_t simd_partition(
         uint16_t* vals,
         typename C::TI* ids,
@@ -762,6 +1472,47 @@ typename C::T partition_fuzzy(
             vals, ids, n, q_min, q_max, q_out);
 }
 
+template <class C>
+typename C::T partition_fuzzy_one_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+#ifdef __AVX2__
+    constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
+    if (is_uint16 && is_aligned_pointer(vals)) {
+        return simd_partitioning::simd_partition_fuzzy_one_attribute<C>(
+                (uint16_t*)vals, ids, attrs, n, q_min, q_max, q_out);
+    }
+#endif
+    return partitioning::partition_fuzzy_median3_one_attribute<C>(
+            vals, ids, attrs, n, q_min, q_max, q_out);
+}
+
+template <class C>
+typename C::T partition_fuzzy_two_attribute(
+        typename C::T* vals,
+        typename C::TI* ids,
+        typename C::T* attrs_first,
+        typename C::T* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out) {
+#ifdef __AVX2__
+    constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
+    if (is_uint16 && is_aligned_pointer(vals)) {
+        return simd_partitioning::simd_partition_fuzzy_two_attribute<C>(
+                (uint16_t*)vals, ids, attrs_first, attrs_second, n, q_min, q_max, q_out);
+    }
+#endif
+    return partitioning::partition_fuzzy_median3_two_attribute<C>(
+            vals, ids, attrs_first, attrs_second, n, q_min, q_max, q_out);
+}
+
 // explicit template instanciations
 
 template float partition_fuzzy<CMin<float, int64_t>>(
@@ -807,6 +1558,120 @@ template uint16_t partition_fuzzy<CMin<uint16_t, int>>(
 template uint16_t partition_fuzzy<CMax<uint16_t, int>>(
         uint16_t* vals,
         int* ids,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template float partition_fuzzy_one_attribute<CMin<float, int64_t>>(
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template float partition_fuzzy_one_attribute<CMax<float, int64_t>>(
+        float* vals,
+        int64_t* ids,
+        float* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_one_attribute<CMin<uint16_t, int64_t>>(
+        uint16_t* vals,
+        int64_t* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_one_attribute<CMax<uint16_t, int64_t>>(
+        uint16_t* vals,
+        int64_t* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_one_attribute<CMin<uint16_t, int>>(
+        uint16_t* vals,
+        int* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_one_attribute<CMax<uint16_t, int>>(
+        uint16_t* vals,
+        int* ids,
+        uint16_t* attrs,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template float partition_fuzzy_two_attribute<CMin<float, int64_t>>(
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template float partition_fuzzy_two_attribute<CMax<float, int64_t>>(
+        float* vals,
+        int64_t* ids,
+        float* attrs_first,
+        float* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_two_attribute<CMin<uint16_t, int64_t>>(
+        uint16_t* vals,
+        int64_t* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_two_attribute<CMax<uint16_t, int64_t>>(
+        uint16_t* vals,
+        int64_t* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_two_attribute<CMin<uint16_t, int>>(
+        uint16_t* vals,
+        int* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
+        size_t n,
+        size_t q_min,
+        size_t q_max,
+        size_t* q_out);
+
+template uint16_t partition_fuzzy_two_attribute<CMax<uint16_t, int>>(
+        uint16_t* vals,
+        int* ids,
+        uint16_t* attrs_first,
+        uint16_t* attrs_second,
         size_t n,
         size_t q_min,
         size_t q_max,
