@@ -7,6 +7,7 @@
     <includes refid="IDSelector_8h" local="no">faiss/impl/IDSelector.h</includes>
     <includes local="no">unordered_map</includes>
     <includes local="no">vector</includes>
+    <includedby refid="factory__tools_8h" local="no">faiss/cppcontrib/factory_tools.h</includedby>
     <includedby refid="MetaIndexes_8h" local="no">faiss/MetaIndexes.h</includedby>
     <incdepgraph>
       <node id="4">
@@ -106,10 +107,16 @@
         <link refid="IndexIDMap_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss/MetaIndexes.h</label>
         <link refid="MetaIndexes_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexIDMapTemplate" prot="public">faiss::IndexIDMapTemplate</innerclass>

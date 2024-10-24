@@ -297,6 +297,8 @@
       <node id="77">
         <label>faiss/IndexIDMap.h</label>
         <link refid="IndexIDMap_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
         <childnode refid="70" relation="include">
         </childnode>
       </node>

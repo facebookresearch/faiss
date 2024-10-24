@@ -93,6 +93,8 @@
       <node id="18">
         <label>faiss/IndexIDMap.h</label>
         <link refid="IndexIDMap_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
       </node>
@@ -155,6 +157,10 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+      </node>
+      <node id="19">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="4">
         <label>faiss/gpu/GpuCloner.h</label>

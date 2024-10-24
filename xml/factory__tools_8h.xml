@@ -3,6 +3,7 @@
   <compounddef id="factory__tools_8h" kind="file" language="C++">
     <compoundname>factory_tools.h</compoundname>
     <includes refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includes>
+    <includes refid="IndexIDMap_8h" local="no">faiss/IndexIDMap.h</includes>
     <includes refid="IndexIVFFlat_8h" local="no">faiss/IndexIVFFlat.h</includes>
     <includes refid="IndexIVFPQFastScan_8h" local="no">faiss/IndexIVFPQFastScan.h</includes>
     <includes refid="IndexLSH_8h" local="no">faiss/IndexLSH.h</includes>
@@ -10,7 +11,7 @@
     <includes refid="IndexPreTransform_8h" local="no">faiss/IndexPreTransform.h</includes>
     <includes refid="IndexRefine_8h" local="no">faiss/IndexRefine.h</includes>
     <incdepgraph>
-      <node id="57">
+      <node id="59">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
         <childnode refid="3" relation="include">
@@ -21,7 +22,7 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -39,7 +40,7 @@
       <node id="42">
         <label>queue</label>
       </node>
-      <node id="55">
+      <node id="57">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
         <childnode refid="25" relation="include">
@@ -50,7 +51,7 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="56" relation="include">
+        <childnode refid="58" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
@@ -114,7 +115,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="59">
+      <node id="61">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
         <childnode refid="16" relation="include">
@@ -143,12 +144,12 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="62">
+      <node id="64">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="59" relation="include">
+        <childnode refid="61" relation="include">
         </childnode>
       </node>
       <node id="19">
@@ -229,6 +230,20 @@
       <node id="12">
         <label>string</label>
       </node>
+      <node id="52">
+        <label>faiss/IndexIDMap.h</label>
+        <link refid="IndexIDMap_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="29">
         <label>faiss/impl/ProductQuantizer-inl.h</label>
         <link refid="ProductQuantizer-inl_8h_source"/>
@@ -264,7 +279,7 @@
       <node id="46">
         <label>exception</label>
       </node>
-      <node id="52">
+      <node id="54">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
         <childnode refid="16" relation="include">
@@ -284,14 +299,14 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="56">
         <label>faiss/IndexIVFFastScan.h</label>
         <link refid="IndexIVFFastScan_8h_source"/>
         <childnode refid="32" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="49">
@@ -315,16 +330,16 @@
       <node id="27">
         <label>utility</label>
       </node>
-      <node id="60">
+      <node id="62">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
-        <childnode refid="61" relation="include">
+        <childnode refid="63" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="11">
@@ -376,22 +391,36 @@
         <childnode refid="38" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="55">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
         <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="57" relation="include">
+        <childnode refid="59" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="47">
         <label>cstdlib</label>
+      </node>
+      <node id="53">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
       <node id="38">
         <label>faiss/impl/ScalarQuantizer.h</label>
@@ -426,12 +455,12 @@
       <node id="40">
         <label>mutex</label>
       </node>
-      <node id="61">
+      <node id="63">
         <label>faiss/IndexFastScan.h</label>
         <link refid="IndexFastScan_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -441,15 +470,17 @@
         </childnode>
         <childnode refid="52" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
-        <childnode refid="58" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="60" relation="include">
         </childnode>
         <childnode refid="62" relation="include">
         </childnode>
-        <childnode refid="63" relation="include">
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
         </childnode>
       </node>
       <node id="7">
@@ -476,7 +507,7 @@
         <childnode refid="29" relation="include">
         </childnode>
       </node>
-      <node id="63">
+      <node id="65">
         <label>faiss/IndexRefine.h</label>
         <link refid="IndexRefine_8h_source"/>
         <childnode refid="6" relation="include">
@@ -493,17 +524,17 @@
       <node id="51">
         <label>set</label>
       </node>
-      <node id="58">
+      <node id="60">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="59" relation="include">
+        <childnode refid="61" relation="include">
         </childnode>
       </node>
-      <node id="56">
+      <node id="58">
         <label>algorithm</label>
       </node>
       <node id="24">
@@ -561,18 +592,19 @@
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexHNSW.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVFFlat.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVFPQFastScan.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexLSH.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexPQFastScan.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexPreTransform.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexRefine.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal">std::string<sp/>reverse_index_factory(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIDMap.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVFFlat.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVFPQFastScan.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexLSH.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexPQFastScan.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexPreTransform.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexRefine.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal">std::string<sp/>reverse_index_factory(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/factory_tools.h"/>
   </compounddef>
