@@ -18,8 +18,8 @@
 #include <faiss/gpu/utils/Float16.cuh>
 #include <limits>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#if defined USE_NVIDIA_CUVS
+#include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #endif
 
 namespace faiss {
@@ -93,19 +93,19 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
 
-    if (should_use_raft(config_)) {
-        data_.reset(new RaftFlatIndex(
+    if (should_use_cuvs(config_)) {
+        data_.reset(new CuvsFlatIndex(
                 resources_.get(),
                 dims,
                 flatConfig_.useFloat16,
                 config_.memorySpace));
     } else
 #else
-    if (should_use_raft(config_)) {
+    if (should_use_cuvs(config_)) {
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
     } else
 #endif
     {

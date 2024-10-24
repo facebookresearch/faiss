@@ -42,9 +42,9 @@ macro(configure_swigfaiss source)
         COMPILE_DEFINITIONS FAISS_ENABLE_ROCM
       )
     endif()
-    if (FAISS_ENABLE_RAFT)
+    if (FAISS_ENABLE_CUVS)
       set_property(SOURCE ${source} APPEND PROPERTY
-        COMPILE_DEFINITIONS FAISS_ENABLE_RAFT
+        COMPILE_DEFINITIONS FAISS_ENABLE_CUVS
       )
     endif()
   endif()
@@ -191,21 +191,13 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(faiss_example_external_module PRIVATE hip::host)
   else()
     find_package(CUDAToolkit REQUIRED)
-    if(FAISS_ENABLE_RAFT)
-      find_package(raft COMPONENTS compiled distributed)
+    if(FAISS_ENABLE_CUVS)
+      find_package(cuvs)
     endif()
-    target_link_libraries(swigfaiss PRIVATE CUDA::cudart
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-    target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-    target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
-    target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-      $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+    target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+    target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+    target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+    target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
   endif()
 endif()
 
