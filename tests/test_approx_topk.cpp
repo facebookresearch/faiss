@@ -17,7 +17,6 @@
 
 #include <faiss/utils/approx_topk/approx_topk.h>
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/utils/Heap.h>
 

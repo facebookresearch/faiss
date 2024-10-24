@@ -8,9 +8,6 @@
 #include <omp.h>
 #include <algorithm>
 #include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <map>
 #include <random>
 #include <set>
@@ -20,7 +17,6 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/index_io.h>
 
 namespace {
 

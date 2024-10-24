@@ -12,7 +12,6 @@
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
-#include <limits>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>

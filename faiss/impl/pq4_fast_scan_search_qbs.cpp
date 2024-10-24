@@ -10,7 +10,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/simd_result_handlers.h>
-#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 

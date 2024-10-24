@@ -13,7 +13,6 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
-#include <faiss/index_io.h>
 
 TEST(IVFPQ, accuracy) {
     // dimension of the vectors to index

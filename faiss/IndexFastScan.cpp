@@ -17,11 +17,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances.h>
-#include <faiss/utils/extra_distances.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>

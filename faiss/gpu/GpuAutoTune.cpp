@@ -17,10 +17,7 @@
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
-#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
 #include <faiss/gpu/impl/IndexUtils.h>
-#include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 namespace gpu {

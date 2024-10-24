@@ -16,7 +16,6 @@
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
-#include <faiss/utils/utils.h>
 #include <cstring>
 
 namespace faiss {

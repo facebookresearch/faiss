@@ -18,7 +18,6 @@
 #include <cinttypes>
 #include <cstdio>
 #include <limits>
-#include <memory>
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
