@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -368,10 +368,10 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
-                    T dis = d32tab[j];
-                    if (C::cmp(heap_dis[0], dis)) {
+                    T dis_2 = d32tab[j];
+                    if (C::cmp(heap_dis[0], dis_2)) {
                         heap_replace_top<C>(
-                                k, heap_dis, heap_ids, dis, real_idx);
+                                k, heap_dis, heap_ids, dis_2, real_idx);
                     }
                 }
             }
@@ -380,10 +380,10 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
-                T dis = d32tab[j];
-                if (C::cmp(heap_dis[0], dis)) {
+                T dis_2 = d32tab[j];
+                if (C::cmp(heap_dis[0], dis_2)) {
                     int64_t idx = this->adjust_id(b, j);
-                    heap_replace_top<C>(k, heap_dis, heap_ids, dis, idx);
+                    heap_replace_top<C>(k, heap_dis, heap_ids, dis_2, idx);
                 }
             }
         }
@@ -480,8 +480,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
-                    T dis = d32tab[j];
-                    res.add(dis, real_idx);
+                    T dis_2 = d32tab[j];
+                    res.add(dis_2, real_idx);
                 }
             }
         } else {
@@ -489,8 +489,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
-                T dis = d32tab[j];
-                res.add(dis, this->adjust_id(b, j));
+                T dis_2 = d32tab[j];
+                res.add(dis_2, this->adjust_id(b, j));
             }
         }
     }
@@ -719,10 +719,10 @@ void dispatch_SIMDResultHandler_fixedCW(
         Types... args) {
     if (auto resh = dynamic_cast<SingleResultHandler<C, W>*>(&res)) {
         consumer.template f<SingleResultHandler<C, W>>(*resh, args...);
-    } else if (auto resh = dynamic_cast<HeapHandler<C, W>*>(&res)) {
-        consumer.template f<HeapHandler<C, W>>(*resh, args...);
-    } else if (auto resh = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
-        consumer.template f<ReservoirHandler<C, W>>(*resh, args...);
+    } else if (auto resh_2 = dynamic_cast<HeapHandler<C, W>*>(&res)) {
+        consumer.template f<HeapHandler<C, W>>(*resh_2, args...);
+    } else if (auto resh_2 = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
+        consumer.template f<ReservoirHandler<C, W>>(*resh_2, args...);
     } else { // generic handler -- will not be inlined
         FAISS_THROW_IF_NOT_FMT(
                 simd_result_handlers_accept_virtual,
@@ -752,8 +752,8 @@ void dispatch_SIMDResultHandler(
     if (res.sizeof_ids == 0) {
         if (auto resh = dynamic_cast<StoreResultHandler*>(&res)) {
             consumer.template f<StoreResultHandler>(*resh, args...);
-        } else if (auto resh = dynamic_cast<DummyResultHandler*>(&res)) {
-            consumer.template f<DummyResultHandler>(*resh, args...);
+        } else if (auto resh_2 = dynamic_cast<DummyResultHandler*>(&res)) {
+            consumer.template f<DummyResultHandler>(*resh_2, args...);
         } else { // generic path
             FAISS_THROW_IF_NOT_FMT(
                     simd_result_handlers_accept_virtual,

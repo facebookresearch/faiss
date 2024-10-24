@@ -63,7 +63,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
+          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
           conda install -y -q pytorch -c pytorch
         fi
@@ -101,10 +101,6 @@ runs:
         sudo apt-get -qq autoclean >/dev/null
         sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-    - name: ROCm - Hipify
-      if: inputs.rocm == 'ON'
-      shell: bash
-      run: ./faiss/gpu/hipify.sh
     - name: Symblink system dependencies
       if: inputs.raft == 'ON' || inputs.rocm == 'ON'
       shell: bash

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -186,10 +186,10 @@ struct AQInvertedListScannerDecompress : AQInvertedListScanner {
     float coarse_dis = 0;
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        AQInvertedListScanner::set_list(list_no, coarse_dis);
+    void set_list(idx_t list_no, float coarse_dis_2) override {
+        AQInvertedListScanner::set_list(list_no, coarse_dis_2);
         if (ia.by_residual) {
-            this->coarse_dis = coarse_dis;
+            this->coarse_dis = coarse_dis_2;
         }
     }
 

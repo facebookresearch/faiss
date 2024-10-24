@@ -1,7 +1,6 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
-# This source code is licensed under the BSD-style license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
@@ -40,55 +39,13 @@ set(FAISS_TEST_SRC
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
-  target_link_libraries(faiss_test PRIVATE faiss)
-endif()
+include(../cmake/link_to_faiss_lib.cmake)
 
-if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  if(NOT WIN32)
-    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma>)
-  else()
-    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
-  endif()
-  target_link_libraries(faiss_test PRIVATE faiss_avx2)
-endif()
+link_to_faiss_lib(faiss_test)
 
-if(FAISS_OPT_LEVEL STREQUAL "avx512")
-  if(NOT WIN32)
-    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mavx512f -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw>)
-  else()
-    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
-  endif()
-  target_link_libraries(faiss_test PRIVATE faiss_avx512)
+if (FAISS_ENABLE_PYTHON)
+  target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
 endif()
-
-if(FAISS_OPT_LEVEL STREQUAL "sve")
-  if(NOT WIN32)
-    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=native")
-      # Do nothing, expect SVE to be enabled by -march=native
-    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-      # Add +sve
-      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${CMAKE_MATCH_2}+sve>)
-    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=armv")
-      # No valid -march, so specify -march=armv8-a+sve as the default
-      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:-march=armv8-a+sve>)
-    endif()
-    if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=native")
-      # Do nothing, expect SVE to be enabled by -march=native
-    elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-      # Add +sve
-      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${CMAKE_MATCH_2}+sve>)
-    elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
-      # No valid -march, so specify -march=armv8-a+sve as the default
-      target_compile_options(faiss_test PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
-    endif()
-  else()
-    # TODO: support Windows
-  endif()
-  target_link_libraries(faiss_test PRIVATE faiss_sve)
-endif()
-
-target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
 
 include(FetchContent)
 FetchContent_Declare(

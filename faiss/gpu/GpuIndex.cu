@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,11 +42,17 @@ constexpr idx_t kAddVecSize = (idx_t)512 * 1024;
 // FIXME: parameterize based on algorithm need
 constexpr idx_t kSearchVecSize = (idx_t)32 * 1024;
 
-bool should_use_raft(GpuIndexConfig config_) {
-    cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, config_.device);
+/// Caches device major version
+extern int device_major_version;
 
-    if (prop.major < 7)
+bool should_use_raft(GpuIndexConfig config_) {
+    if (device_major_version < 0) {
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties(&prop, config_.device);
+        device_major_version = prop.major;
+    }
+
+    if (device_major_version < 7)
         return false;
 
     return config_.use_raft;
