@@ -144,6 +144,10 @@ std::string reverse_index_factory(const faiss::Index* index) {
             const faiss::IndexScalarQuantizer* sq_index =
                     dynamic_cast<const faiss::IndexScalarQuantizer*>(index)) {
         return std::string("SQ") + sq_types.at(sq_index->sq.qtype);
+    } else if (
+            const faiss::IndexIDMap* idmap =
+                    dynamic_cast<const faiss::IndexIDMap*>(index)) {
+        return std::string("IDMap,") + reverse_index_factory(idmap->index);
     }
     // Avoid runtime error, just return empty string for logging.
     return "";

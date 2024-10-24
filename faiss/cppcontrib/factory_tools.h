@@ -10,6 +10,7 @@
 #pragma once
 
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexLSH.h>
