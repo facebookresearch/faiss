@@ -273,11 +273,8 @@ void IndexIVF::add_core(
 }
 
 void IndexIVF::make_direct_map(bool b) {
-    if (b) {
-        direct_map.set_type(DirectMap::Array, invlists, ntotal);
-    } else {
-        direct_map.set_type(DirectMap::NoMap, invlists, ntotal);
-    }
+    direct_map.set_type(
+            b ? DirectMap::Array : DirectMap::NoMap, invlists, ntotal);
 }
 
 void IndexIVF::set_direct_map_type(DirectMap::Type type) {
