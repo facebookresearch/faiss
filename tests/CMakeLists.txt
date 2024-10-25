@@ -43,6 +43,10 @@ include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_test)
 
+if (FAISS_ENABLE_PYTHON)
+  target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+endif()
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
