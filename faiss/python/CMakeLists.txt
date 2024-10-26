@@ -1,7 +1,6 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
-# This source code is licensed under the BSD-style license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
@@ -61,6 +60,7 @@ configure_swigfaiss(swigfaiss.swig)
 configure_swigfaiss(swigfaiss_avx2.swig)
 configure_swigfaiss(swigfaiss_avx512.swig)
 configure_swigfaiss(swigfaiss_sve.swig)
+configure_swigfaiss(faiss_example_external_module.swig)
 
 if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
@@ -74,6 +74,8 @@ if(TARGET faiss)
       "${faiss_SOURCE_DIR}/faiss/${h}")
     list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
   if(FAISS_ENABLE_ROCM)
     foreach(h ${FAISS_GPU_HEADERS})
@@ -82,6 +84,8 @@ if(TARGET faiss)
       list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
       list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
     endforeach()
   else()
@@ -93,6 +97,8 @@ if(TARGET faiss)
       list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
       list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
     endforeach()
   endif()
@@ -152,18 +158,29 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
   set_target_properties(swigfaiss_sve PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
+set_property(SOURCE faiss_example_external_module.swig
+  PROPERTY SWIG_MODULE_NAME faiss_example_external_module)
+swig_add_library(faiss_example_external_module
+  TYPE SHARED
+  LANGUAGE python
+  SOURCES faiss_example_external_module.swig
+)
+set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+
 if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx512 PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_sve PROPERTIES SUFFIX .so)
+  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
 else()
   # we need bigobj for the swig wrapper
   target_compile_options(swigfaiss PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx512 PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
+  target_compile_options(faiss_example_external_module PRIVATE /bigobj)
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -171,6 +188,7 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss PRIVATE hip::host)
     target_link_libraries(swigfaiss_avx2 PRIVATE hip::host)
     target_link_libraries(swigfaiss_avx512 PRIVATE hip::host)
+    target_link_libraries(faiss_example_external_module PRIVATE hip::host)
   else()
     find_package(CUDAToolkit REQUIRED)
     if(FAISS_ENABLE_RAFT)
@@ -221,12 +239,21 @@ target_link_libraries(swigfaiss_sve PRIVATE
   OpenMP::OpenMP_CXX
 )
 
+target_link_libraries(faiss_example_external_module PRIVATE
+  Python::Module
+  Python::NumPy
+  OpenMP::OpenMP_CXX
+  swigfaiss
+  faiss
+)
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
 target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx2 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx512 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
   COMPONENTS Development NumPy
@@ -252,6 +279,7 @@ target_link_libraries(swigfaiss PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx2 PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx512 PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_sve PRIVATE faiss_python_callbacks)
+target_link_libraries(faiss_example_external_module PRIVATE faiss_python_callbacks)
 
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)
