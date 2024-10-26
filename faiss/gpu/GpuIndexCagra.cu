@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -41,6 +42,7 @@ GpuIndexCagra::GpuIndexCagra(
 }
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
+    DeviceScope scope(config_.device);
     if (this->is_trained) {
         FAISS_ASSERT(index_);
         return;

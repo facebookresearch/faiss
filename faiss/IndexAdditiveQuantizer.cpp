@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -273,6 +273,7 @@ void IndexAdditiveQuantizer::search(
                 DISPATCH(ST_norm_qint8)
                 DISPATCH(ST_norm_qint4)
                 DISPATCH(ST_norm_cqint4)
+                DISPATCH(ST_norm_from_LUT)
                 case AdditiveQuantizer::ST_norm_cqint8:
                 case AdditiveQuantizer::ST_norm_lsq2x4:
                 case AdditiveQuantizer::ST_norm_rq2x4:

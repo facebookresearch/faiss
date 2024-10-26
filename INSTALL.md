@@ -130,8 +130,9 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `avx2` and `avx512`, by increasing order of optimization),
+  generate code using optimized SIMD/Vector instructions. Possible values are below:
+    - On x86-64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
+    - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
@@ -146,9 +147,7 @@ Several options can be passed to CMake, among which:
   to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
   determine which architecture(s) you should pick),
   - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
-  The hipify script must be executed before using this option. 
-  Invoke `./faiss/gpu/hipify.sh` to execute. `-DFAISS_ENABLE_GPU` must be `ON`
-  when using this option. (possible values are `ON` and `OFF`),
+ `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see

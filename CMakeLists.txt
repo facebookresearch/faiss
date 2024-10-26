@@ -1,3 +1,4 @@
+# @lint-ignore-every LICENSELINT
 # Copyright (c) Facebook, Inc. and its affiliates.
 # All rights reserved.
 #
@@ -72,6 +73,7 @@ if(FAISS_ENABLE_GPU)
     find_package(HIP REQUIRED)
     find_package(hipBLAS REQUIRED)
     set(GPU_EXT_PREFIX "hip")
+    execute_process(COMMAND ${PROJECT_SOURCE_DIR}/faiss/gpu/hipify.sh)
   else ()
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
     enable_language(CUDA)

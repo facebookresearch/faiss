@@ -8,7 +8,7 @@ env:
 jobs:
   linux-x86_64-nightly:
     name: Linux x86_64 nightlies
-    runs-on: ubuntu-latest
+    runs-on: 4-core-ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v4

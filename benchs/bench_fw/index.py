@@ -73,7 +73,10 @@ class IndexBase:
     def set_index_param(index, name, val, assert_same=False):
         index = faiss.downcast_index(index)
         val = int(val)
-        if isinstance(index, faiss.IndexPreTransform):
+        if (
+            isinstance(index, faiss.IndexPreTransform)
+            or isinstance(index, faiss.IndexIDMap)
+        ):
             Index.set_index_param(index.index, name, val)
             return
         elif name == "snap":
