@@ -63,7 +63,9 @@ struct AlignedTableTightAlloc {
     }
 
     void clear() {
-        memset(ptr, 0, nbytes());
+        if (numel > 0) {
+            memset(ptr, 0, nbytes());
+        }
     }
     size_t size() const {
         return numel;
