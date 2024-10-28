@@ -103,4 +103,15 @@ void IndexBinary::check_compatible_for_merge(
     FAISS_THROW_MSG("check_compatible_for_merge() not implemented");
 }
 
+size_t IndexBinary::sa_code_size() const {
+    return code_size;
+}
+
+void IndexBinary::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* xids) {
+    add_with_ids(n, codes, xids);
+}
+
 } // namespace faiss

@@ -32,6 +32,15 @@ void IndexFlatCodes::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+void IndexFlatCodes::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes_in,
+        const idx_t* /* xids */) {
+    codes.resize((ntotal + n) * code_size);
+    memcpy(codes.data() + (ntotal * code_size), codes_in, n * code_size);
+    ntotal += n;
+}
+
 void IndexFlatCodes::reset() {
     codes.clear();
     ntotal = 0;
