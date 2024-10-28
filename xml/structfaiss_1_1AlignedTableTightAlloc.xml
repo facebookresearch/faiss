@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="65" column="10" bodyfile="faiss/utils/AlignedTable.h" bodystart="65" bodyend="67"/>
+        <location file="faiss/utils/AlignedTable.h" line="65" column="10" bodyfile="faiss/utils/AlignedTable.h" bodystart="65" bodyend="69"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a95edb8ba58300d07b7614aa60c59dfb2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -126,7 +126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="68" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="68" bodyend="70"/>
+        <location file="faiss/utils/AlignedTable.h" line="70" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="70" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a160913c89b3962c7e7083501021eea60" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="71" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="71" bodyend="73"/>
+        <location file="faiss/utils/AlignedTable.h" line="73" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="73" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a310c97ac4599ed101b72ad5fa9e9d286" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
@@ -152,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="75" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="75" bodyend="77"/>
+        <location file="faiss/utils/AlignedTable.h" line="77" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="77" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a288edd0b015fd0bc68c8a2156a0392aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="78" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="78" bodyend="80"/>
+        <location file="faiss/utils/AlignedTable.h" line="80" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="80" bodyend="82"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a68591460932924a4b86200092450b1ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="81" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="81" bodyend="83"/>
+        <location file="faiss/utils/AlignedTable.h" line="83" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="83" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a98a8c3286c2404b8d60a15dadbcac389" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
@@ -191,7 +191,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="84" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="84" bodyend="86"/>
+        <location file="faiss/utils/AlignedTable.h" line="86" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="86" bodyend="88"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1aa65719800d8856a89ece5f1aae7621ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T &amp;</type>
@@ -208,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="87" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="87" bodyend="89"/>
+        <location file="faiss/utils/AlignedTable.h" line="89" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="89" bodyend="91"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1acd6fcef13ac75c51b0e4d6a6daf86a9e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>T</type>
@@ -225,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="90" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="90" bodyend="92"/>
+        <location file="faiss/utils/AlignedTable.h" line="92" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="92" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a65f5bb7dda82982fd580d8d15e368300" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -238,7 +238,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="94" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="94" bodyend="96"/>
+        <location file="faiss/utils/AlignedTable.h" line="96" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="96" bodyend="98"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a2dc8b4db4ad7e1a3abf96989737ab86e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref>&lt; T, A &gt; &amp;</type>
@@ -255,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="98" column="28" bodyfile="faiss/utils/AlignedTable.h" bodystart="98" bodyend="105"/>
+        <location file="faiss/utils/AlignedTable.h" line="100" column="28" bodyfile="faiss/utils/AlignedTable.h" bodystart="100" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a7b654f8c2f7031624090f130c063bdba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -272,14 +272,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/AlignedTable.h" line="107" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="107" bodyend="110"/>
+        <location file="faiss/utils/AlignedTable.h" line="109" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="109" bodyend="112"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/AlignedTable.h" line="30" column="1" bodyfile="faiss/utils/AlignedTable.h" bodystart="30" bodyend="111"/>
+    <location file="faiss/utils/AlignedTable.h" line="30" column="1" bodyfile="faiss/utils/AlignedTable.h" bodystart="30" bodyend="113"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1adfa5bdd33fd82107cabdd6c20f65c119" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a33196314d0a8c11ab2bb0c010d9f1324" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
