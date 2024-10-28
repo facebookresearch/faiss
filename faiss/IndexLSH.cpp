@@ -15,7 +15,6 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/utils.h>
 
 namespace faiss {
 

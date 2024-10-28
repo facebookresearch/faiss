@@ -7,8 +7,6 @@
 
 #include <faiss/utils/distances_fused/distances_fused.h>
 
-#include <faiss/impl/platform_macros.h>
-
 #include <faiss/utils/distances_fused/avx512.h>
 #include <faiss/utils/distances_fused/simdlib_based.h>
 
