@@ -9187,6 +9187,7 @@
     <member refid="namespacefaiss_1aa052b2baf4ccdf2c7d2841f6db35e4bc" kind="function"><name>clone_binary_index</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" kind="function"><name>reverse_index_factory</name></member>
+    <member refid="namespacefaiss_1ab296cc828e119931af0b6bb2daf3ebfa" kind="function"><name>reverse_index_factory</name></member>
     <member refid="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" kind="function"><name>distance_single_code_generic</name></member>
     <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
     <member refid="namespacefaiss_1a4f5a40d297ddf6822a9262a333f938a3" kind="function"><name>distance_single_code</name></member>

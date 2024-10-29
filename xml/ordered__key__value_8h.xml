@@ -83,7 +83,7 @@
         <link refid="HNSW_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="49">
@@ -95,7 +95,7 @@
         <link refid="IndexPQ_8h_source"/>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -107,6 +107,8 @@
       <node id="4">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="44">
         <label>faiss/utils/approx_topk/generic.h</label>
@@ -164,10 +166,10 @@
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -209,7 +211,7 @@
       <node id="36">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="41">
@@ -237,6 +239,8 @@
       <node id="27">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="32">
         <label>faiss/impl/index_read_utils.h</label>
@@ -253,7 +257,7 @@
       <node id="20">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="37">
@@ -323,7 +327,7 @@
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -337,7 +341,7 @@
       <node id="18">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="16">
@@ -362,7 +366,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="6">
+      <node id="5">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
       </node>
@@ -407,7 +411,7 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>

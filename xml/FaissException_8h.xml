@@ -72,7 +72,7 @@
         <link refid="HNSW_8h_source"/>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
       <node id="40">
@@ -94,6 +94,8 @@
       <node id="22">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
       </node>
       <node id="37">
         <label>faiss/utils/approx_topk/generic.h</label>
@@ -127,10 +129,10 @@
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
       </node>
-      <node id="23">
+      <node id="24">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="38">
@@ -223,7 +225,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="24">
+      <node id="23">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
       </node>

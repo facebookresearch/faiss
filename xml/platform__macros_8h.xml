@@ -330,6 +330,8 @@
       <node id="42">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
       <node id="92">
         <label>faiss/Clustering.h</label>
@@ -618,6 +620,8 @@
       <node id="75">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
       <node id="128">
         <label>faiss/utils/partitioning.h</label>
@@ -1010,6 +1014,8 @@
       <node id="111">
         <label>faiss/IndexBinaryFlat.h</label>
         <link refid="IndexBinaryFlat_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="29" relation="include">
         </childnode>
         <childnode refid="72" relation="include">

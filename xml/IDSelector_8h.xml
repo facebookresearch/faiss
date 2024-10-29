@@ -182,6 +182,8 @@
       <node id="18">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="16">
         <label>faiss/impl/index_read_utils.h</label>

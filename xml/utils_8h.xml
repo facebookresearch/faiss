@@ -133,11 +133,13 @@
       <node id="9">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -158,7 +160,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
       </node>
@@ -177,7 +179,7 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>

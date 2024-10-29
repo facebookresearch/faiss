@@ -212,6 +212,8 @@
       <node id="25">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
       <node id="27">
         <label>faiss/impl/index_read_utils.h</label>

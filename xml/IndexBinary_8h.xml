@@ -86,14 +86,16 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/IndexIDMap.h</label>
         <link refid="IndexIDMap_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
@@ -112,7 +114,7 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
         <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
@@ -120,15 +122,17 @@
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss/IndexBinaryFromFloat.h</label>
         <link refid="IndexBinaryFromFloat_8h_source"/>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/IndexBinaryHash.h</label>
         <link refid="IndexBinaryHash_8h_source"/>
       </node>
@@ -145,20 +149,20 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="13">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
       </node>
@@ -182,6 +186,8 @@
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="6">

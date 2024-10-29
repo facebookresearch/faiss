@@ -26,23 +26,25 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
         <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
@@ -55,12 +57,12 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexBinaryHash.h</label>
         <link refid="IndexBinaryHash_8h_source"/>
       </node>
@@ -80,6 +82,10 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="10">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
+      </node>
       <node id="6">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
@@ -92,6 +98,8 @@
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="8">
