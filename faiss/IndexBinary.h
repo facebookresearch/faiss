@@ -171,6 +171,12 @@ struct IndexBinary {
      * parameters). Otherwise throw. */
     virtual void check_compatible_for_merge(
             const IndexBinary& otherIndex) const;
+
+    /** size of the produced codes in bytes */
+    virtual size_t sa_code_size() const;
+
+    /** Same as add_with_ids for IndexBinary. */
+    virtual void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
 };
 
 } // namespace faiss
