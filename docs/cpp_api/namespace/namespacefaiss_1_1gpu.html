@@ -1820,6 +1820,20 @@
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu8GpuIndex12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu8GpuIndex12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu8GpuIndex12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndex::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -2183,6 +2197,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary"></span><span id="faiss::gpu::GpuIndexBinaryFlat::check_compatible_for_merge__IndexBinaryCRC"></span><span class="target" id="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat12sa_code_sizeEv">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat12sa_code_sizeEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>size of the produced codes in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Same as add_with_ids for <a class="reference internal" href="../struct/structfaiss_1_1IndexBinary.html#structfaiss_1_1IndexBinary"><span class="std std-ref">IndexBinary</span></a>. </p>
 </dd></dl>
 
 </div>
@@ -2761,6 +2787,20 @@
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexCagra12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexCagra12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexCagra12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexCagra::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -3157,6 +3197,20 @@
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu12GpuIndexFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu12GpuIndexFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu12GpuIndexFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexFlat::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -3523,6 +3577,20 @@
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu14GpuIndexFlatL212add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu14GpuIndexFlatL212add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu14GpuIndexFlatL212add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexFlatL2::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -3887,6 +3955,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu14GpuIndexFlatIP26check_compatible_for_mergeERK5Index">
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatIP26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatIP26check_compatible_for_mergeERK5Index"></span><span id="faiss::gpu::GpuIndexFlatIP::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu14GpuIndexFlatIP12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu14GpuIndexFlatIP12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu14GpuIndexFlatIP12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexFlatIP::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -4378,6 +4460,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu11GpuIndexIVF26check_compatible_for_mergeERK5Index">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF26check_compatible_for_mergeERK5Index"></span><span id="faiss::gpu::GpuIndexIVF::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11GpuIndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu11GpuIndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexIVF::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4985,6 +5081,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat26check_compatible_for_mergeERK5Index">
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat26check_compatible_for_mergeERK5Index"></span><span id="faiss::gpu::GpuIndexIVFFlat::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15GpuIndexIVFFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu15GpuIndexIVFFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu15GpuIndexIVFFlat12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexIVFFlat::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -5664,6 +5774,20 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexIVFPQ::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIndexIVFPQ8train_q1E6size_tPKfb10MetricType">
 <span id="_CPPv3N5faiss3gpu13GpuIndexIVFPQ8train_q1E6size_tPKfb10MetricType"></span><span id="_CPPv2N5faiss3gpu13GpuIndexIVFPQ8train_q1E6size_tPKfb10MetricType"></span><span id="faiss::gpu::GpuIndexIVFPQ::train_q1__s.floatCP.b.MetricType"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_q1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">verbose</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric_type</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
@@ -6319,6 +6443,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu26GpuIndexIVFScalarQuantizer26check_compatible_for_mergeERK5Index">
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer26check_compatible_for_mergeERK5Index"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss3gpu26GpuIndexIVFScalarQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu26GpuIndexIVFScalarQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIndexCagra.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a></p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
