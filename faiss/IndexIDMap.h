@@ -60,6 +60,9 @@ struct IndexIDMapTemplate : IndexT {
     void merge_from(IndexT& otherIndex, idx_t add_id = 0) override;
     void check_compatible_for_merge(const IndexT& otherIndex) const override;
 
+    size_t sa_code_size() const override;
+    void add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids) override;
+
     ~IndexIDMapTemplate() override;
     IndexIDMapTemplate() {
         own_fields = false;

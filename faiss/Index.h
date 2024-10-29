@@ -348,6 +348,7 @@ struct Index {
     virtual void check_compatible_for_merge(const Index& otherIndex) const;
     virtual void set_is_include_one_attribute();
     virtual void set_is_include_two_attribute();
+
 };
 
 } // namespace faiss

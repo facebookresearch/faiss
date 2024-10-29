@@ -353,7 +353,7 @@ struct IndexIVF : Index, IndexIVFInterface {
     void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
     void add_sa_codes(idx_t n, const uint8_t* codes, const uint8_t* attributes, const idx_t* xids);
     void add_sa_codes(idx_t n, const uint8_t* codes, const uint8_t* attributes_first, const uint8_t* attributes_second, const idx_t* xids);
-
+  
     /** Train the encoder for the vectors.
      *
      * If by_residual then it is called with residuals and corresponding assign

@@ -249,7 +249,6 @@ void Index::set_is_include_two_attribute() {
     FAISS_THROW_MSG("set_is_include_two_attribute not implemented for this type of index");
 }
 
-
 namespace {
 
 // storage that explicitly reconstructs vectors before computing distances
