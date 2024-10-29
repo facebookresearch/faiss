@@ -60,7 +60,7 @@ struct CommonData {
 };
 
 CommonData cd;
-
+std::string temp_filename_template = "/tmp/faiss_tmp_XXXXXX";
 /// perform a search on shards, then merge and search again and
 /// compare results.
 int compare_merged(
@@ -71,7 +71,7 @@ int compare_merged(
     std::vector<float> refD(k * nq);
 
     index_shards->search(nq, cd.queries.data(), k, refD.data(), refI.data());
-    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
     std::vector<idx_t> newI(k * nq);
     std::vector<float> newD(k * nq);
@@ -191,7 +191,7 @@ TEST(MERGE, merge_flat_vt) {
 TEST(MERGE, merge_flat_ondisk) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_indices = true;
-    Tempfilename filename(&temp_file_mutex, "/tmp/faiss_tmp_XXXXXX");
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
     for (int i = 0; i < nindex; i++) {
         auto ivf = new faiss::IndexIVFFlat(&cd.quantizer, d, nlist);

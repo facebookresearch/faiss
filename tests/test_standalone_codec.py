@@ -360,6 +360,27 @@ class TestIVFTransfer(unittest.TestCase):
         np.testing.assert_array_equal(Dref, Dnew)
 
 
+class TestIDMap(unittest.TestCase):
+    def test_idmap(self):
+        ds = SyntheticDataset(32, 2000, 200, 100)
+        ids = np.random.randint(10000, size=ds.nb, dtype='int64')
+        index = faiss.index_factory(ds.d, "IDMap2,PQ8x2")
+        index.train(ds.get_train())
+        index.add_with_ids(ds.get_database(), ids)
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        index.reset()
+
+        index.train(ds.get_train())
+        codes = index.index.sa_encode(ds.get_database())
+        index.add_sa_codes(codes, ids)
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+        
+
+
 class TestRefine(unittest.TestCase):
 
     def test_refine(self):
