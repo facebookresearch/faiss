@@ -11,8 +11,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include <omp.h>
-
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/maybe_owned_vector.h>
@@ -182,7 +180,7 @@ struct HNSW {
             storage_idx_t nearest,
             float d_nearest,
             int level,
-            omp_lock_t* locks,
+            // mop_lock_t* locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
@@ -192,7 +190,7 @@ struct HNSW {
             DistanceComputer& ptdis,
             int pt_level,
             int pt_id,
-            std::vector<omp_lock_t>& locks,
+            // std::vector<mop_lock_t>& locks,
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 

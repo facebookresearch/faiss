@@ -14,8 +14,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include <omp.h>
-
 #ifdef __AVX2__
 #include <immintrin.h>
 #elif defined(__ARM_FEATURE_SVE)
@@ -143,7 +141,7 @@ void exhaustive_inner_product_seq(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+    [[maybe_unused]] int nt = std::min(int(nx), 1/*mop_get_max_threads()*/);
 
 #pragma omp parallel num_threads(nt)
     {
@@ -177,7 +175,7 @@ void exhaustive_L2sqr_seq(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+    [[maybe_unused]] int nt = std::min(int(nx), 1/*mop_get_max_threads()*/);
 
 #pragma omp parallel num_threads(nt)
     {

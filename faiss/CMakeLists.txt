@@ -250,6 +250,7 @@ endif()
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
 add_library(faiss ${FAISS_SRC})
+target_compile_options(faiss PRIVATE -Wno-suggest-override -Wno-sign-compare)
 
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
@@ -377,12 +378,13 @@ if(FAISS_USE_LTO)
   endif()
 endif()
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+
+# find_package(OpenMP REQUIRED)
+# target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
+# target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+# target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+# target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
+# target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
 
 if(FAISS_ENABLE_MKL)
   find_package(MKL)

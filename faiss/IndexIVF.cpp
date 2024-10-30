@@ -9,7 +9,6 @@
 
 #include <faiss/IndexIVF.h>
 
-#include <omp.h>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -248,8 +247,8 @@ void IndexIVF::add_core(
 
 #pragma omp parallel reduction(+ : nadd)
     {
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
+        int nt = 1; // mop_get_num_threads();
+        int rank = 0; // mop_get_thread_num();
 
         // each thread takes care of a subset of lists
         for (size_t i = 0; i < n; i++) {
@@ -353,7 +352,7 @@ void IndexIVF::search(
     };
 
     if ((parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT) == 0) {
-        int nt = std::min(omp_get_max_threads(), int(n));
+        int nt = std::min(1/*mop_get_max_threads()*/, int(n));
         std::vector<IndexIVFStats> stats(nt);
         std::mutex exception_mutex;
         std::string exception_string;
@@ -450,11 +449,12 @@ void IndexIVF::search_preassigned(
         max_codes = unlimited_list_size;
     }
 
-    [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
-            (pmode == 0           ? false
-                     : pmode == 3 ? n > 1
-                     : pmode == 1 ? nprobe > 1
-                                  : nprobe * n > 1);
+    [[maybe_unused]] bool do_parallel = false;
+    // mop_get_max_threads() >= 2 &&
+    //         (pmode == 0           ? false
+    //                  : pmode == 3 ? n > 1
+    //                  : pmode == 1 ? nprobe > 1
+    //                               : nprobe * n > 1);
 
     void* inverted_list_context =
             params ? params->inverted_list_context : nullptr;
@@ -788,15 +788,16 @@ void IndexIVF::range_search_preassigned(
     std::mutex exception_mutex;
     std::string exception_string;
 
-    std::vector<RangeSearchPartialResult*> all_pres(omp_get_max_threads());
+    std::vector<RangeSearchPartialResult*> all_pres(1); // mop_get_max_threads()
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     // don't start parallel section if single query
-    [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
-            (pmode == 3           ? false
-                     : pmode == 0 ? nx > 1
-                     : pmode == 1 ? nprobe > 1
-                                  : nprobe * nx > 1);
+    [[maybe_unused]] bool do_parallel = false;
+    // mop_get_max_threads() >= 2 &&
+    //         (pmode == 3           ? false
+    //                  : pmode == 0 ? nx > 1
+    //                  : pmode == 1 ? nprobe > 1
+    //                               : nprobe * nx > 1);
 
     void* inverted_list_context =
             params ? params->inverted_list_context : nullptr;
@@ -807,7 +808,7 @@ void IndexIVF::range_search_preassigned(
         std::unique_ptr<InvertedListScanner> scanner(
                 get_InvertedListScanner(store_pairs, sel, params));
         FAISS_THROW_IF_NOT(scanner.get());
-        all_pres[omp_get_thread_num()] = &pres;
+        all_pres[0/*mop_get_thread_num()*/] = &pres;
 
         // prepare the list scanning function
 

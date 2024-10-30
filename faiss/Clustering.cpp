@@ -17,8 +17,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include <omp.h>
-
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/kmeans1d.h>
@@ -153,8 +151,8 @@ void compute_centroids(
 
 #pragma omp parallel
     {
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
+        int nt = 1; // mop_get_num_threads();
+        int rank = 0; // mop_get_thread_num();
 
         // this thread is taking care of centroids c0:c1
         size_t c0 = (k * rank) / nt;

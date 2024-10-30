@@ -9,7 +9,6 @@
 
 #include <faiss/utils/sorting.h>
 
-#include <omp.h>
 #include <algorithm>
 
 #include <faiss/impl/FaissAssert.h>
@@ -133,6 +132,7 @@ void fvec_argsort(size_t n, const float* vals, size_t* perm) {
     std::sort(perm, perm + n, comp);
 }
 
+/*
 void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
     size_t* perm2 = new size_t[n];
     // 2 result tables, during merging, flip between them
@@ -199,6 +199,7 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
     omp_set_nested(prev_nested);
     delete[] perm2;
 }
+*/
 
 /*****************************************************************************
  * Bucket sort
@@ -258,8 +259,8 @@ void bucket_sort_parallel(
     memset(lims, 0, sizeof(*lims) * (vmax + 1));
 #pragma omp parallel num_threads(nt_in)
     {
-        int nt = omp_get_num_threads(); // might be different from nt_in
-        int rank = omp_get_thread_num();
+        int nt = 1; // mop_get_num_threads(); // might be different from nt_in
+        int rank = 0; // mop_get_thread_num();
         std::vector<int64_t> local_lims(vmax + 1);
 
         // range of indices handled by this thread
@@ -484,8 +485,8 @@ void bucket_sort_inplace_parallel(
 
 #pragma omp parallel num_threads(nt_in)
     {
-        int nt = omp_get_num_threads(); // might be different from nt_in (?)
-        int rank = omp_get_thread_num();
+        int nt = 1; // mop_get_num_threads(); // might be different from nt_in (?)
+        int rank = 0; // mop_get_thread_num();
         std::vector<int64_t> local_lims(nbucket + 1);
 
         // range of indices handled by this thread
@@ -742,7 +743,7 @@ void hashtable_int64_to_int64_add(
             nbucket,
             lims.data(),
             perm.data(),
-            omp_get_max_threads());
+            1/*mop_get_max_threads()*/);
 
     int num_errors = 0;
 #pragma omp parallel for reduction(+ : num_errors)

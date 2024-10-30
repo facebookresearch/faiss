@@ -24,8 +24,6 @@
 #include <unistd.h>
 #endif // !_MSC_VER
 
-#include <omp.h>
-
 #include <algorithm>
 #include <set>
 #include <type_traits>
@@ -520,45 +518,6 @@ uint64_t hash_bytes(const uint8_t* bytes, int64_t n) {
     }
     x ^= n;
     return x;
-}
-
-bool check_openmp() {
-    omp_set_num_threads(10);
-
-    if (omp_get_max_threads() != 10) {
-        return false;
-    }
-
-    std::vector<int> nt_per_thread(10);
-    size_t sum = 0;
-    bool in_parallel = true;
-#pragma omp parallel reduction(+ : sum)
-    {
-        if (!omp_in_parallel()) {
-            in_parallel = false;
-        }
-
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
-
-        nt_per_thread[rank] = nt;
-#pragma omp for
-        for (int i = 0; i < 1000 * 1000 * 10; i++) {
-            sum += i;
-        }
-    }
-
-    if (!in_parallel) {
-        return false;
-    }
-    if (nt_per_thread[0] != 10) {
-        return false;
-    }
-    if (sum == 0) {
-        return false;
-    }
-
-    return true;
 }
 
 namespace {

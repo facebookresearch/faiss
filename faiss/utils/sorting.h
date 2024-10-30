@@ -21,7 +21,7 @@ namespace faiss {
 void fvec_argsort(size_t n, const float* vals, size_t* perm);
 
 /** Same as fvec_argsort, parallelized */
-void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm);
+// void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm);
 
 /// increase verbosity of the bucket_sort functions
 FAISS_API extern int bucket_sort_verbose;

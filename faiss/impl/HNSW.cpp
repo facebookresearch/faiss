@@ -493,7 +493,7 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
+        // mop_lock_t* locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
@@ -515,13 +515,13 @@ void HNSW::add_links_starting_from(
         link_targets.pop();
     }
 
-    omp_unset_lock(&locks[pt_id]);
-    for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
+    // mop_unset_lock(&locks[pt_id]);
+    for (storage_idx_t other_id : neighbors_2) {
+        // mop_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
+        // mop_unset_lock(&locks[other_id]);
     }
-    omp_set_lock(&locks[pt_id]);
+    // mop_set_lock(&locks[pt_id]);
 }
 
 /**************************************************************
@@ -532,7 +532,7 @@ void HNSW::add_with_locks(
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
+        // std::vector<mop_lock_t>& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     //  greedy search on upper levels
@@ -552,7 +552,7 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
+    // mop_set_lock(&locks[pt_id]);
 
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
@@ -568,12 +568,12 @@ void HNSW::add_with_locks(
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
+                // locks.data(),
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    // mop_unset_lock(&locks[pt_id]);
 
     if (pt_level > max_level) {
         max_level = pt_level;

@@ -6,7 +6,6 @@
  */
 
 #include <faiss/IVFlib.h>
-#include <omp.h>
 
 #include <memory>
 
@@ -516,8 +515,8 @@ void ivf_residual_add_from_flat_codes(
     {
         std::vector<uint8_t> tmp_code(index->code_size);
         std::vector<float> tmp(rq.d);
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
+        int nt = 1; // mop_get_num_threads();
+        int rank = 0; // mop_get_thread_num();
 
 #pragma omp for
         for (idx_t i = 0; i < nb; i++) {

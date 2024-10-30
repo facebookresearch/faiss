@@ -159,9 +159,6 @@ void real_to_binary(size_t d, const float* x_in, uint8_t* x_out);
 /** A reasonable hashing function */
 uint64_t hash_bytes(const uint8_t* bytes, int64_t n);
 
-/** Whether OpenMP annotations were respected. */
-bool check_openmp();
-
 /** This class is used to combine range and knn search results
  * in contrib.exhaustive_search.range_search_gpu */
 

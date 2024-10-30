@@ -7,7 +7,8 @@
 
 #include <faiss/IndexHNSW.h>
 
-#include <omp.h>
+
+#include <cassert>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -81,10 +82,9 @@ void hnsw_add_vertices(
         printf("  max_level = %d\n", max_level);
     }
 
-    std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+    // std::vector<mop_lock_t> locks(ntotal);
+    // for (int i = 0; i < ntotal; i++)
+    //     mop_init_lock(&locks[i]);
 
     // add vectors from highest to lowest level
     std::vector<int> hist;
@@ -147,7 +147,7 @@ void hnsw_add_vertices(
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
                 int prev_display =
-                        verbose && omp_get_thread_num() == 0 ? 0 : -1;
+                        verbose /*&& mop_get_thread_num() == 0*/ ? 0 : -1;
                 size_t counter = 0;
 
                 // here we should do schedule(dynamic) but this segfaults for
@@ -167,7 +167,7 @@ void hnsw_add_vertices(
                             *dis,
                             pt_level,
                             pt_id,
-                            locks,
+                            // locks,
                             vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
@@ -199,9 +199,9 @@ void hnsw_add_vertices(
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
-    }
+    // for (int i = 0; i < ntotal; i++) {
+    //     mop_destroy_lock(&locks[i]);
+    // }
 }
 
 } // namespace
@@ -507,10 +507,10 @@ void IndexHNSW::init_level_0_from_entry_points(
         int n,
         const storage_idx_t* points,
         const storage_idx_t* nearests) {
-    std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+
+    // std::vector<mop_lock_t> locks(ntotal);
+    // for (int i = 0; i < ntotal; i++)
+    //     mop_init_lock(&locks[i]);
 
 #pragma omp parallel
     {
@@ -528,7 +528,7 @@ void IndexHNSW::init_level_0_from_entry_points(
             dis->set_query(vec.data());
 
             hnsw.add_links_starting_from(
-                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks.data(), vt);
+                    *dis, pt_id, nearest, (*dis)(nearest), 0, /*locks.data(),*/ vt);
 
             if (verbose && i % 10000 == 0) {
                 printf("  %d / %d\r", i, n);
@@ -540,9 +540,9 @@ void IndexHNSW::init_level_0_from_entry_points(
         printf("\n");
     }
 
-    for (int i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
-    }
+    // for (int i = 0; i < ntotal; i++)
+    //     mop_destroy_lock(&locks[i]);
+>>>>>>> c13ba702 (Disable OpenMP)
 }
 
 void IndexHNSW::reorder_links() {

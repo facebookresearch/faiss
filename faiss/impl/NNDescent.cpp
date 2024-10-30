@@ -220,7 +220,7 @@ void NNDescent::update() {
     // Randomly choose R reverse links.
 #pragma omp parallel
     {
-        std::mt19937 rng(random_seed * 5081 + omp_get_thread_num());
+        std::mt19937 rng(random_seed * 5081); // + mop_get_thread_num());
 #pragma omp for
         for (int n = 0; n < ntotal; ++n) {
             auto& node = graph[n];
@@ -294,7 +294,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
     int num_eval_points = std::min(NUM_EVAL_POINTS, ntotal);
     std::vector<int> eval_points(num_eval_points);
     std::vector<std::vector<int>> acc_eval_set(num_eval_points);
-    std::mt19937 rng(random_seed * 6577 + omp_get_thread_num());
+    std::mt19937 rng(random_seed * 6577); // + mop_get_thread_num());
     gen_random(rng, eval_points.data(), eval_points.size(), ntotal);
     generate_eval_set(qdis, eval_points, acc_eval_set, ntotal);
     for (int it = 0; it < iter; it++) {
@@ -365,7 +365,7 @@ void NNDescent::init_graph(DistanceComputer& qdis) {
     }
 #pragma omp parallel
     {
-        std::mt19937 rng(random_seed * 7741 + omp_get_thread_num());
+        std::mt19937 rng(random_seed * 7741); // + mop_get_thread_num());
 #pragma omp for
         for (int i = 0; i < ntotal; i++) {
             std::vector<int> tmp(S);

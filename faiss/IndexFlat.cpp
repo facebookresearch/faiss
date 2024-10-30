@@ -391,11 +391,11 @@ IndexFlat1D::IndexFlat1D(bool continuous_update)
 /// the first search
 void IndexFlat1D::update_permutation() {
     perm.resize(ntotal);
-    if (ntotal < 1000000) {
+    // if (ntotal < 1000000) {
         fvec_argsort(ntotal, get_xb(), (size_t*)perm.data());
-    } else {
-        fvec_argsort_parallel(ntotal, get_xb(), (size_t*)perm.data());
-    }
+    // } else {
+    //     fvec_argsort_parallel(ntotal, get_xb(), (size_t*)perm.data());
+    // }
 }
 
 void IndexFlat1D::add(idx_t n, const float* x) {

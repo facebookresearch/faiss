@@ -9,7 +9,6 @@
 
 #include <faiss/utils/extra_distances.h>
 
-#include <omp.h>
 #include <algorithm>
 #include <cmath>
 
@@ -66,7 +65,7 @@ struct Run_knn_extra_metrics {
         size_t d = vd.d;
         using C = typename VD::C;
         size_t check_period = InterruptCallback::get_period_hint(ny * d);
-        check_period *= omp_get_max_threads();
+        check_period *= 1; // mop_get_max_threads();
 
         for (size_t i0 = 0; i0 < nx; i0 += check_period) {
             size_t i1 = std::min(i0 + check_period, nx);
