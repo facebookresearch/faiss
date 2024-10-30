@@ -76,6 +76,9 @@ struct IndexFlatCodes : Index {
 
     virtual void merge_from(Index& otherIndex, idx_t add_id = 0) override;
 
+    virtual void add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids)
+            override;
+
     // permute_entries. perm of size ntotal maps new to old positions
     void permute_entries(const idx_t* perm);
 };

@@ -134,6 +134,10 @@ void Index::sa_decode(idx_t, const uint8_t*, float*) const {
     FAISS_THROW_MSG("standalone codec not implemented for this type of index");
 }
 
+void Index::add_sa_codes(idx_t, const uint8_t*, const idx_t*) {
+    FAISS_THROW_MSG("add_sa_codes not implemented for this type of index");
+}
+
 namespace {
 
 // storage that explicitly reconstructs vectors before computing distances
