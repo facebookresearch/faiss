@@ -32,8 +32,8 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q -c conda-forge cmake
-        conda install -y -q python=3.11 make swig numpy scipy pytest gflags
+        conda install -y -q -c conda-forge cmake make
+        conda install -y -q python=3.11 swig numpy scipy pytest gflags
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
