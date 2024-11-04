@@ -129,6 +129,12 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
 
     FAISS_ASSERT_MSG(
             !allocError, "GPU memory allocations not properly cleaned up");
+    
+#if defined USE_NVIDIA_CUVS
+    for (auto it = raftHandles_.begin(); it != raftHandles_.end(); it++) {
+        raftHandles_.erase(it); // Remove the current element and move to the next
+    }
+#endif
 
     for (auto& entry : defaultStreams_) {
         DeviceScope scope(entry.first);
@@ -147,7 +153,6 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
 
     for (auto& entry : asyncCopyStreams_) {
         DeviceScope scope(entry.first);
-
         CUDA_VERIFY(cudaStreamDestroy(entry.second));
     }
 
@@ -392,7 +397,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     // Create streams
     cudaStream_t defaultStream = nullptr;
     CUDA_VERIFY(
-            cudaStreamCreateWithFlags(&defaultStream, cudaStreamNonBlocking));
+            cudaStreamCreate(&defaultStream));
 
     defaultStreams_[device] = defaultStream;
 
@@ -402,14 +407,14 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
-            cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
+            cudaStreamCreate(&asyncCopyStream));
 
     asyncCopyStreams_[device] = asyncCopyStream;
 
     std::vector<cudaStream_t> deviceStreams;
     for (int j = 0; j < kNumStreams; ++j) {
         cudaStream_t stream = nullptr;
-        CUDA_VERIFY(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+        CUDA_VERIFY(cudaStreamCreate(&stream));
 
         deviceStreams.push_back(stream);
     }
@@ -632,12 +637,19 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
     }
 
     if (req.space == MemorySpace::Temporary) {
+        std::cout << "deallocating temp memory" << std::endl;
         tempMemory_[device]->deallocMemory(device, req.stream, req.size, p);
     } else if (
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_CUVS
-        req.mr->deallocate_async(p, req.size, req.stream);
+        std::cout << "now doing rmm dealloc" << std::endl;
+        // sleep(10);
+        cudaPointerAttributes attributes;
+        auto err = cudaPointerGetAttributes(&attributes, p);
+        if (err == cudaSuccess && attributes.type == cudaMemoryTypeDevice) {
+            req.mr->deallocate_async(p, req.size, req.stream);
+        }
 #else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(
