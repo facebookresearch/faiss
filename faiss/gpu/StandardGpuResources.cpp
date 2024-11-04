@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
 #include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/device/per_device_resource.hpp>
@@ -91,7 +91,7 @@ std::string allocsToString(const std::unordered_map<void*, AllocRequest>& map) {
 
 StandardGpuResourcesImpl::StandardGpuResourcesImpl()
         :
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
           mmr_(new rmm::mr::managed_memory_resource),
           pmr_(new rmm::mr::pinned_memory_resource),
 #endif
@@ -129,12 +129,6 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
 
     FAISS_ASSERT_MSG(
             !allocError, "GPU memory allocations not properly cleaned up");
-    
-#if defined USE_NVIDIA_CUVS
-    for (auto it = raftHandles_.begin(); it != raftHandles_.end(); it++) {
-        raftHandles_.erase(it); // Remove the current element and move to the next
-    }
-#endif
 
     for (auto& entry : defaultStreams_) {
         DeviceScope scope(entry.first);
@@ -153,6 +147,7 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
 
     for (auto& entry : asyncCopyStreams_) {
         DeviceScope scope(entry.first);
+
         CUDA_VERIFY(cudaStreamDestroy(entry.second));
     }
 
@@ -164,7 +159,7 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
     }
 
     if (pinnedMemAlloc_) {
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
         pmr_->deallocate(pinnedMemAlloc_, pinnedMemAllocSize_);
 #else
         auto err = cudaFreeHost(pinnedMemAlloc_);
@@ -263,12 +258,12 @@ void StandardGpuResourcesImpl::setDefaultStream(
         if (prevStream != stream) {
             streamWait({stream}, {prevStream});
         }
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
         // delete the raft handle for this device, which will be initialized
         // with the updated stream during any subsequent calls to getRaftHandle
         auto it2 = raftHandles_.find(device);
         if (it2 != raftHandles_.end()) {
-            raft::resource::set_cuda_stream(it2->second, stream);
+            raftHandles_.erase(it2);
         }
 #endif
     }
@@ -288,25 +283,15 @@ void StandardGpuResourcesImpl::revertDefaultStream(int device) {
             cudaStream_t newStream = defaultStreams_[device];
 
             streamWait({newStream}, {prevStream});
-
-#if defined USE_NVIDIA_CUVS
-            // update the stream on the raft handle for this device
-            auto it2 = raftHandles_.find(device);
-            if (it2 != raftHandles_.end()) {
-                raft::resource::set_cuda_stream(it2->second, newStream);
-            }
-#endif
-        } else {
-#if defined USE_NVIDIA_CUVS
-            // delete the raft handle for this device, which will be initialized
-            // with the updated stream during any subsequent calls to
-            // getRaftHandle
-            auto it2 = raftHandles_.find(device);
-            if (it2 != raftHandles_.end()) {
-                raftHandles_.erase(it2);
-            }
-#endif
         }
+#if defined USE_NVIDIA_RAFT
+        // delete the raft handle for this device, which will be initialized
+        // with the updated stream during any subsequent calls to getRaftHandle
+        auto it2 = raftHandles_.find(device);
+        if (it2 != raftHandles_.end()) {
+            raftHandles_.erase(it2);
+        }
+#endif
     }
 
     userDefaultStreams_.erase(device);
@@ -339,7 +324,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     // If this is the first device that we're initializing, create our
     // pinned memory allocation
     if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
         // If this is the first device that we're initializing, create our
         // pinned memory allocation
         if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
@@ -397,24 +382,24 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     // Create streams
     cudaStream_t defaultStream = nullptr;
     CUDA_VERIFY(
-            cudaStreamCreate(&defaultStream));
+            cudaStreamCreateWithFlags(&defaultStream, cudaStreamNonBlocking));
 
     defaultStreams_[device] = defaultStream;
 
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
     raftHandles_.emplace(std::make_pair(device, defaultStream));
 #endif
 
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
-            cudaStreamCreate(&asyncCopyStream));
+            cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
 
     asyncCopyStreams_[device] = asyncCopyStream;
 
     std::vector<cudaStream_t> deviceStreams;
     for (int j = 0; j < kNumStreams; ++j) {
         cudaStream_t stream = nullptr;
-        CUDA_VERIFY(cudaStreamCreate(&stream));
+        CUDA_VERIFY(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 
         deviceStreams.push_back(stream);
     }
@@ -467,7 +452,7 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     return defaultStreams_[device];
 }
 
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
 raft::device_resources& StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
 
@@ -538,7 +523,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
         // Otherwise, we can handle this locally
         p = tempMemory_[adjReq.device]->allocMemory(adjReq.stream, adjReq.size);
     } else if (adjReq.space == MemorySpace::Device) {
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
         try {
             rmm::mr::device_memory_resource* current_mr =
                     rmm::mr::get_per_device_resource(
@@ -572,7 +557,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
         }
 #endif
     } else if (adjReq.space == MemorySpace::Unified) {
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
         try {
             // for now, use our own managed MR to do Unified Memory allocations.
             // TODO: change this to use the current device resource once RMM has
@@ -637,19 +622,12 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
     }
 
     if (req.space == MemorySpace::Temporary) {
-        std::cout << "deallocating temp memory" << std::endl;
         tempMemory_[device]->deallocMemory(device, req.stream, req.size, p);
     } else if (
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
-#if defined USE_NVIDIA_CUVS
-        std::cout << "now doing rmm dealloc" << std::endl;
-        // sleep(10);
-        cudaPointerAttributes attributes;
-        auto err = cudaPointerGetAttributes(&attributes, p);
-        if (err == cudaSuccess && attributes.type == cudaMemoryTypeDevice) {
-            req.mr->deallocate_async(p, req.size, req.stream);
-        }
+#if defined USE_NVIDIA_RAFT
+        req.mr->deallocate_async(p, req.size, req.stream);
 #else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(
@@ -742,7 +720,7 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
 
-#if defined USE_NVIDIA_CUVS
+#if defined USE_NVIDIA_RAFT
 raft::device_resources& StandardGpuResources::getRaftHandle(int device) {
     return res_->getRaftHandle(device);
 }
