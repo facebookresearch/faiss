@@ -1,4 +1,4 @@
-#!/usr/bin/env -S grimaldi --kernel bento_kernel_faiss
+#!/usr/bin/env -S grimaldi --kernel faiss_binary_local
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -39,7 +39,6 @@ def read_ids_codes():
 
 
 def write_ids_codes(ids, codes):
-    # print(ids, codes)
     np.save("/tmp/ids.npy", ids)
     np.save("/tmp/codes.npy", codes.reshape(len(ids), -1))
 
@@ -49,46 +48,40 @@ def write_template_index(template_index):
 
 
 def read_template_index_instance():
-    pq_index = faiss.read_index("/tmp/template.index")
-    return pq_index, faiss.IndexIDMap2(pq_index)
+    return faiss.read_index("/tmp/template.index")
 
 """:py"""
 # at train time
 
-template_index = faiss.IndexPQ(d, M, nbits)
+template_index = faiss.index_factory(d, f"IDMap2,PQ{M}x{nbits}")
 template_index.train(training_data)
 write_template_index(template_index)
 
 """:py"""
 # New database vector
 
-template_instance_index, id_wrapper_index = read_template_index_instance()
-database_vector_id, database_vector_float32 = np.int64(
-    np.random.rand() * 10000
-), np.random.rand(1, d).astype("float32")
+index = read_template_index_instance()
+database_vector_id, database_vector_float32 = np.random.randint(10000), np.random.rand(1, d).astype(np.float32)
 ids, codes = read_ids_codes()
-# print(ids, codes)
-code = template_instance_index.sa_encode(database_vector_float32)
+
+code = index.index.sa_encode(database_vector_float32)
+
 if ids is not None and codes is not None:
     ids = np.concatenate((ids, [database_vector_id]))
     codes = np.vstack((codes, code))
 else:
     ids = np.array([database_vector_id])
     codes = np.array([code])
+
 write_ids_codes(ids, codes)
 
-""":py '1545041403561975'"""
+""":py '331546060044009'"""
 # then at query time
-query_vector_float32 = np.random.rand(1, d).astype("float32")
-template_index_instance, id_wrapper_index = read_template_index_instance()
+query_vector_float32 = np.random.rand(1, d).astype(np.float32)
+id_wrapper_index = read_template_index_instance()
 ids, codes = read_ids_codes()
 
-for code in codes:
-    for c in code:
-        template_index_instance.codes.push_back(int(c))
-template_index_instance.ntotal = len(codes)
-for i in ids:
-    id_wrapper_index.id_map.push_back(int(i))
+id_wrapper_index.add_sa_codes(codes, ids)
 
 id_wrapper_index.search(query_vector_float32, k=5)
 

@@ -25,7 +25,15 @@ const std::map<faiss::ScalarQuantizer::QuantizerType, std::string> sq_types = {
 };
 
 int get_hnsw_M(const faiss::IndexHNSW* index) {
-    if (index->hnsw.cum_nneighbor_per_level.size() >= 1) {
+    if (index->hnsw.cum_nneighbor_per_level.size() > 1) {
+        return index->hnsw.cum_nneighbor_per_level[1] / 2;
+    }
+    // Avoid runtime error, just return 0.
+    return 0;
+}
+
+int get_hnsw_M(const faiss::IndexBinaryHNSW* index) {
+    if (index->hnsw.cum_nneighbor_per_level.size() > 1) {
         return index->hnsw.cum_nneighbor_per_level[1] / 2;
     }
     // Avoid runtime error, just return 0.
@@ -143,11 +151,39 @@ std::string reverse_index_factory(const faiss::Index* index) {
     } else if (
             const faiss::IndexScalarQuantizer* sq_index =
                     dynamic_cast<const faiss::IndexScalarQuantizer*>(index)) {
-        return std::string("SQ") + sq_types.at(sq_index->sq.qtype);
+        return sq_types.at(sq_index->sq.qtype);
     } else if (
             const faiss::IndexIDMap* idmap =
                     dynamic_cast<const faiss::IndexIDMap*>(index)) {
         return std::string("IDMap,") + reverse_index_factory(idmap->index);
+    }
+    // Avoid runtime error, just return empty string for logging.
+    return "";
+}
+
+std::string reverse_index_factory(const faiss::IndexBinary* index) {
+    std::string prefix;
+    if (dynamic_cast<const faiss::IndexBinaryFlat*>(index)) {
+        return "BFlat";
+    } else if (
+            const faiss::IndexBinaryIVF* ivf_index =
+                    dynamic_cast<const faiss::IndexBinaryIVF*>(index)) {
+        const faiss::IndexBinary* quantizer = ivf_index->quantizer;
+
+        if (dynamic_cast<const faiss::IndexBinaryFlat*>(quantizer)) {
+            return "BIVF" + std::to_string(ivf_index->nlist);
+        } else if (
+                const faiss::IndexBinaryHNSW* hnsw_index =
+                        dynamic_cast<const faiss::IndexBinaryHNSW*>(
+                                quantizer)) {
+            return "BIVF" + std::to_string(ivf_index->nlist) + "_HNSW" +
+                    std::to_string(get_hnsw_M(hnsw_index));
+        }
+        // Add further cases for BinaryIVF here.
+    } else if (
+            const faiss::IndexBinaryHNSW* hnsw_index =
+                    dynamic_cast<const faiss::IndexBinaryHNSW*>(index)) {
+        return "BHNSW" + std::to_string(get_hnsw_M(hnsw_index));
     }
     // Avoid runtime error, just return empty string for logging.
     return "";
