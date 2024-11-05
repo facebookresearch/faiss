@@ -33,7 +33,7 @@ runs:
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.11 make swig numpy scipy pytest gflags
-        conda install -y -q -c conda-forge cmake=3.27
+        conda install -y -q -c conda-forge cmake=3.30
 
         #apt-cache show libc6
         #sudo apt-get update
