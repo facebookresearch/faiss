@@ -16,6 +16,12 @@
 #define FAISS_USE_FULL_FLOAT16 1
 #endif // __CUDA_ARCH__ types
 
+// Some compute capabilities even have bfloat16!
+#if __CUDA_ARCH__ >= 800 || defined(USE_AMD_ROCM)
+#define FAISS_USE_FULL_BFLOAT16 1
+#endif // __CUDA_ARCH__ types
+
+
 #include <cuda_fp16.h>
 
 namespace faiss {

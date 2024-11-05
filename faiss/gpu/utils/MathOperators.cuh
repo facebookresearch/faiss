@@ -10,6 +10,8 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
+#include <cuda_bf16.h>
+
 //
 // Templated wrappers to express math for different scalar and vector
 // types, so kernels can have the same written form but can operate
@@ -562,7 +564,7 @@ struct Math<__nv_bfloat16> {
 
     static inline __device__ __nv_bfloat16
     add(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hadd(a, b);
 #else
         return __float2bfloat16(__bfloat162float(a) + __bfloat162float(b));
@@ -571,7 +573,7 @@ struct Math<__nv_bfloat16> {
 
     static inline __device__ __nv_bfloat16
     sub(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hsub(a, b);
 #else
         return __float2bfloat16(__bfloat162float(a) - __bfloat162float(b));
@@ -580,7 +582,7 @@ struct Math<__nv_bfloat16> {
 
     static inline __device__ __nv_bfloat16
     mul(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hmul(a, b);
 #else
         return __float2bfloat16(__bfloat162float(a) * __bfloat162float(b));
@@ -588,7 +590,7 @@ struct Math<__nv_bfloat16> {
     }
 
     static inline __device__ __nv_bfloat16 neg(__nv_bfloat16 v) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hneg(v);
 #else
         return __float2bfloat16(-__bfloat162float(v));
@@ -600,7 +602,7 @@ struct Math<__nv_bfloat16> {
     }
 
     static inline __device__ bool lt(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hlt(a, b);
 #else
         return __bfloat162float(a) < __bfloat162float(b);
@@ -608,7 +610,7 @@ struct Math<__nv_bfloat16> {
     }
 
     static inline __device__ bool gt(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hgt(a, b);
 #else
         return __bfloat162float(a) > __bfloat162float(b);
@@ -616,7 +618,7 @@ struct Math<__nv_bfloat16> {
     }
 
     static inline __device__ bool eq(__nv_bfloat16 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __heq(a, b);
 #else
         return __bfloat162float(a) == __bfloat162float(b);
@@ -625,7 +627,7 @@ struct Math<__nv_bfloat16> {
 
     static inline __device__ __nv_bfloat16 zero() {
 #if CUDA_VERSION >= 9000 || defined(USE_AMD_ROCM)
-        return 0;
+        return 0.0f;
 #else
         __nv_bfloat16 h;
         h.x = 0;
@@ -638,9 +640,38 @@ template <>
 struct Math<__nv_bfloat162> {
     typedef __nv_bfloat16 ScalarType;
 
+#ifndef FAISS_USE_FULL_BFLOAT16
+    // define a few conversion functions that don't exist on cuda 11
+    // this overrides their definition in cuda 12 but we use native bf16 on this
+    // platform anyways.
+
+    static inline __device__ float2 __bfloat1622float2(__nv_bfloat162 a) {
+        float2 af;
+        af.x = __bfloat162float(a.x);
+        af.y = __bfloat162float(a.y);
+        return af;
+    }
+
+    static inline __device__ __nv_bfloat162 __float22bfloat162_rn(float2 af) {
+        __nv_bfloat162 a;
+        a.x = __float2bfloat16_rn(af.x);
+        a.y = __float2bfloat16_rn(af.y);
+        return a;
+    }
+
+    static inline __device__ __nv_bfloat162
+    __bfloat162bfloat162(__nv_bfloat16 v) {
+        __nv_bfloat162 a;
+        a.x = v;
+        a.y = v;
+        return a;
+    }
+
+#endif
+
     static inline __device__ __nv_bfloat162
     add(__nv_bfloat162 a, __nv_bfloat162 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hadd2(a, b);
 #else
         float2 af = __bfloat1622float2(a);
@@ -655,7 +686,7 @@ struct Math<__nv_bfloat162> {
 
     static inline __device__ __nv_bfloat162
     sub(__nv_bfloat162 a, __nv_bfloat162 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hsub2(a, b);
 #else
         float2 af = __bfloat1622float2(a);
@@ -670,7 +701,7 @@ struct Math<__nv_bfloat162> {
 
     static inline __device__ __nv_bfloat162
     add(__nv_bfloat162 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         __nv_bfloat162 b2 = __bfloat162bfloat162(b);
         return __hadd2(a, b2);
 #else
@@ -686,7 +717,7 @@ struct Math<__nv_bfloat162> {
 
     static inline __device__ __nv_bfloat162
     sub(__nv_bfloat162 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         __nv_bfloat162 b2 = __bfloat162bfloat162(b);
         return __hsub2(a, b2);
 #else
@@ -702,7 +733,7 @@ struct Math<__nv_bfloat162> {
 
     static inline __device__ __nv_bfloat162
     mul(__nv_bfloat162 a, __nv_bfloat162 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hmul2(a, b);
 #else
         float2 af = __bfloat1622float2(a);
@@ -717,7 +748,7 @@ struct Math<__nv_bfloat162> {
 
     static inline __device__ __nv_bfloat162
     mul(__nv_bfloat162 a, __nv_bfloat16 b) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         __nv_bfloat162 b2 = __bfloat162bfloat162(b);
         return __hmul2(a, b2);
 #else
@@ -732,7 +763,7 @@ struct Math<__nv_bfloat162> {
     }
 
     static inline __device__ __nv_bfloat162 neg(__nv_bfloat162 v) {
-#ifdef FAISS_USE_FULL_FLOAT16
+#ifdef FAISS_USE_FULL_BFLOAT16
         return __hneg2(v);
 #else
         float2 vf = __bfloat1622float2(v);
