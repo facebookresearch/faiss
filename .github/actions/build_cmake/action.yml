@@ -34,17 +34,17 @@ runs:
 
         conda install -y -q python=3.11 cmake=3.29.0 make swig numpy scipy pytest gflags
 
-#       apt-cache show libc6
-#       sudo apt-get update
-#       sudo apt-get install libssl-dev
-#       mkdir /tmp/cmake-build
-#       pushd /tmp/cmake-build
-#       git clone -b v3.30.5 https://gitlab.kitware.com/cmake/cmake.git
-#       mkdir cmake/build
-#       cd cmake/build
-#       ../bootstrap -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
-#       make -j8
-#       popd
+        #apt-cache show libc6
+        #sudo apt-get update
+        #sudo apt-get install libssl-dev
+        #mkdir /tmp/cmake-build
+        #pushd /tmp/cmake-build
+        #git clone -b v3.30.5 https://gitlab.kitware.com/cmake/cmake.git
+        #mkdir cmake/build
+        #cd cmake/build
+        #../bootstrap -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
+        #make -j8
+        #popd
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -127,7 +127,7 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
-#       export PATH="/tmp/cmake-build/cmake/build/bin:$PATH"
+        #export PATH="/tmp/cmake-build/cmake/build/bin:$PATH"
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
