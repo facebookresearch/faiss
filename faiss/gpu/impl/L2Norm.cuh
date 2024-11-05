@@ -27,5 +27,12 @@ void runL2Norm(
         bool normSquared,
         cudaStream_t stream);
 
+void runL2Norm(
+        Tensor<__nv_bfloat16, 2, true>& input,
+        bool inputRowMajor,
+        Tensor<float, 1, true>& output,
+        bool normSquared,
+        cudaStream_t stream);
+
 } // namespace gpu
 } // namespace faiss

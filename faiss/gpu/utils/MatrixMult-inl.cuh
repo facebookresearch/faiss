@@ -30,6 +30,11 @@ template <>
 struct GetCudaType<half> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16F;
 };
+
+template <>
+struct GetCudaType<__nv_bfloat16> {
+    static constexpr hipblasDatatype_t Type = HIPBLAS_R_16B;
+};
 #else
 template <>
 struct GetCudaType<float> {
@@ -39,6 +44,11 @@ struct GetCudaType<float> {
 template <>
 struct GetCudaType<half> {
     static constexpr cudaDataType_t Type = CUDA_R_16F;
+};
+
+template <>
+struct GetCudaType<__nv_bfloat16> {
+    static constexpr cudaDataType_t Type = CUDA_R_16BF;
 };
 #endif
 
