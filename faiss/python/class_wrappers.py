@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -812,8 +812,7 @@ def handle_Index(the_class):
                    replacement_range_search_preassigned, ignore_missing=True)
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
-    replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
-                   ignore_missing=True)
+    replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes)
     replace_method(the_class, 'permute_entries', replacement_permute_entries,
                    ignore_missing=True)
 

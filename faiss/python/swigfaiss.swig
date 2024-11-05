@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,24 @@
 #pragma SWIG nowarn=512
 #pragma SWIG nowarn=362
 
-%include <stdint.i>
+// we need explict control of these typedefs...
+// %include <stdint.i>
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+
+// char != unsigned char AND char != signed char so be explicit
+typedef signed char int8_t;
+typedef short int16_t;
+typedef int int32_t;
+
+#ifdef SWIGWORDSIZE64
+typedef unsigned long uint64_t;
+typedef long int64_t;
+#else
+typedef unsigned long long uint64_t;
+typedef long long int64_t;
+#endif
 
 typedef uint64_t size_t;
 
@@ -239,10 +256,15 @@ namespace std {
 // primitive array types
 %template(Float32Vector) std::vector<float>;
 %template(Float64Vector) std::vector<double>;
+
+// weird interaction within C++ between char and signed char
+%ignore Int8Vector::swap;
+
 %template(Int8Vector) std::vector<int8_t>;
 %template(Int16Vector) std::vector<int16_t>;
 %template(Int32Vector) std::vector<int32_t>;
 %template(Int64Vector) std::vector<int64_t>;
+
 %template(UInt8Vector) std::vector<uint8_t>;
 %template(UInt16Vector) std::vector<uint16_t>;
 %template(UInt32Vector) std::vector<uint32_t>;
@@ -1086,6 +1108,13 @@ void *memcpy(void *dest, const void *src, size_t n);
 
 #ifdef SWIGPYTHON
 
+// transfer SWIG flag to C++
+#ifdef SWIGWORDSIZE64
+%{
+#define SWIGWORDSIZE64_CPP
+%}
+#endif
+
 %{
 PyObject *swig_ptr (PyObject *a)
 {
@@ -1120,7 +1149,7 @@ PyObject *swig_ptr (PyObject *a)
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_INT8) {
-        return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_signed_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT16) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_short, 0);
@@ -1141,14 +1170,14 @@ PyObject *swig_ptr (PyObject *a)
     // Convert npy64 either long or long long  and it depends on how compiler define int64_t.
     // In the 64bit machine, typically the int64_t should be long but it is not hold for Apple osx.
     // In this case, we want to convert npy64 to long_Long in osx
-#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
+#ifdef SWIGWORDSIZE64_CPP
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_unsigned_long_long, 0);
 #endif
     }
     if(PyArray_TYPE(ao) == NPY_INT64) {
-#if __SIZEOF_LONG__ == 8 && !defined(__APPLE__)
+#ifdef SWIGWORDSIZE64_CPP
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long, 0);
 #else
         return SWIG_NewPointerObj(data, SWIGTYPE_p_long_long, 0);
@@ -1205,8 +1234,8 @@ PyObject * rev_swig_ptr(ctype *src, size_t size);
 
 REV_SWIG_PTR(float, NPY_FLOAT32);
 REV_SWIG_PTR(double, NPY_FLOAT64);
-REV_SWIG_PTR(unsigned char, NPY_UINT8);
-REV_SWIG_PTR(char, NPY_INT8);
+REV_SWIG_PTR(uint8_t, NPY_UINT8);
+REV_SWIG_PTR(int8_t, NPY_INT8);
 REV_SWIG_PTR(unsigned short, NPY_UINT16);
 REV_SWIG_PTR(short, NPY_INT16);
 REV_SWIG_PTR(int, NPY_INT32);

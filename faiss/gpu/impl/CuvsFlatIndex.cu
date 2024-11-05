@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,8 @@ void CuvsFlatIndex::query(
 
         cuvs::neighbors::brute_force::index idx(
                 handle, index, norms_view, distance, metricArg);
-        cuvs::neighbors::brute_force::search(handle, idx, search, inds, dists);
+        cuvs::neighbors::brute_force::search(
+                handle, idx, search, inds, dists, std::nullopt);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(

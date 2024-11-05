@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -307,6 +307,13 @@ struct Index {
      * trained in the same way and have the same
      * parameters). Otherwise throw. */
     virtual void check_compatible_for_merge(const Index& otherIndex) const;
+
+    /** Add vectors that are computed with the standalone codec
+     *
+     * @param codes  codes to add size n * sa_code_size()
+     * @param xids   corresponding ids, size n
+     */
+    virtual void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
 };
 
 } // namespace faiss

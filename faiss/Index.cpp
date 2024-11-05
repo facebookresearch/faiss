@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -132,6 +132,10 @@ void Index::sa_encode(idx_t, const float*, uint8_t*) const {
 
 void Index::sa_decode(idx_t, const uint8_t*, float*) const {
     FAISS_THROW_MSG("standalone codec not implemented for this type of index");
+}
+
+void Index::add_sa_codes(idx_t, const uint8_t*, const idx_t*) {
+    FAISS_THROW_MSG("add_sa_codes not implemented for this type of index");
 }
 
 namespace {

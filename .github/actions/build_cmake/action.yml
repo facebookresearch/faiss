@@ -32,7 +32,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 make swig numpy scipy pytest gflags cmake=3.29
+        conda install -y -q python=3.11 cmake=3.29.0 make swig numpy scipy pytest gflags
 
 #       apt-cache show libc6 #       sudo apt-get update
 #       sudo apt-get install libssl-dev
@@ -65,7 +65,7 @@ runs:
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=24.10 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
+          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
         fi
 
         # install test packages
@@ -74,7 +74,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
+          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
           conda install -y -q pytorch -c pytorch
         fi
@@ -113,7 +113,7 @@ runs:
         sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 #   - name: Symblink system dependencies
-#     if: inputs.cuvs == 'ON' || inputs.rocm == 'ON'
+#     if: inputs.rocm == 'ON'
 #     shell: bash
 #     run: |
 #       # symblink system libraries for HIP compiler
