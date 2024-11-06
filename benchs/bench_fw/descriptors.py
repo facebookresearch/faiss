@@ -85,6 +85,15 @@ class DatasetDescriptor:
 
     embedding_id_column: Optional[str] = None
 
+    # unused in open-source
+    splits_distribution: Optional[List[List[bytes]]] = None
+
+    # unused in open-source
+    splits: Optional[List[bytes]] = None
+
+    # unused in open-source
+    serialized_df: Optional[str] = None
+
     sampling_rate: Optional[float] = None
 
     # sampling column for xdb
