@@ -130,6 +130,10 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
     FAISS_ASSERT_MSG(
             !allocError, "GPU memory allocations not properly cleaned up");
 
+#if defined USE_NVIDIA_CUVS
+    raftHandles_.clear();
+#endif
+
     for (auto& entry : defaultStreams_) {
         DeviceScope scope(entry.first);
 
