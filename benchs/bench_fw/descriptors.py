@@ -83,6 +83,8 @@ class DatasetDescriptor:
 
     embedding_column: Optional[str] = None
 
+    embedding_id_column: Optional[str] = None
+
     sampling_rate: Optional[float] = None
 
     # sampling column for xdb
