@@ -301,8 +301,8 @@ void NSG::search_on_graph(
             retset[k].flag = false;
             int n = retset[k].id;
 
-            size_t nneigh = graph.get_neighbors(n, neighbors.data());
-            for (int m = 0; m < nneigh; m++) {
+            size_t nneigh_2 = graph.get_neighbors(n, neighbors.data());
+            for (int m = 0; m < nneigh_2; m++) {
                 int id = neighbors[m];
                 if (id > ntotal || vt.get(id)) {
                     continue;
