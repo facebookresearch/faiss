@@ -44,13 +44,11 @@ int main() {
     int k = 32;
 
 
-	int cfgs[2] = {1, 16};
+	int cfgs[1] = {1};
 
 
 	for (int run = 0; run < 3; run++){
 		printf("------------------- Run %d -------------------\n", run);
-	for (int i = 0; i < 2; i++)
-    { 
 		printf("nq = %d\n", cfgs[i]);
 		int nq = cfgs[i];
 		float gflop = (nb * nq * (2.0 * d - 1)) / 1000000000; 
@@ -83,7 +81,8 @@ int main() {
         delete[] D;
 		delete[] xq;
     }
-	}
+
+
 
     delete[] xb;
 
