@@ -828,9 +828,9 @@ struct Run_search_L2sqr {
  * KNN driver functions
  *******************************************************/
 
-int distance_compute_blas_threshold = 20;
+int distance_compute_blas_threshold = 0;
 int distance_compute_blas_query_bs = 4096;
-int distance_compute_blas_database_bs = 1024;
+int distance_compute_blas_database_bs = 16384;
 int distance_compute_min_k_reservoir = 100;
 
 void knn_inner_product(
