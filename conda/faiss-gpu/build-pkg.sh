@@ -7,17 +7,17 @@
 set -e
 
 
-# Build swigfaiss.so/swigfaiss_avx2.so/swigfaiss_avx512.so
+# Build swigfaiss.so/swigfaiss_avx2.so/swigfaiss_avx512.so/swigfaiss_avx512_sr.so
 cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
-      -DFAISS_OPT_LEVEL=avx512 \
+      -DFAISS_OPT_LEVEL=avx512-sr \
       -DFAISS_ENABLE_GPU=ON \
       -DFAISS_ENABLE_CUVS=OFF \
       -DCMAKE_BUILD_TYPE=Release \
       -DPython_EXECUTABLE=$PYTHON \
       faiss/python
 
-make -C _build_python_${PY_VER} -j$(nproc) swigfaiss swigfaiss_avx2 swigfaiss_avx512
+make -C _build_python_${PY_VER} -j$(nproc) swigfaiss swigfaiss_avx2 swigfaiss_avx512 swigfaiss_avx512_sr
 
 # Build actual python module.
 cd _build_python_${PY_VER}/

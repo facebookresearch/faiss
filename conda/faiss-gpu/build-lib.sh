@@ -13,11 +13,11 @@ if [ -n "$FAISS_FLATTEN_CONDA_INCLUDES" ] && [ "$FAISS_FLATTEN_CONDA_INCLUDES" =
   cp -r -n "$CONDA_PREFIX/x86_64-conda-linux-gnu/include/c++/11.2.0/x86_64-conda-linux-gnu/"* "$CONDA_PREFIX/include/"
 fi
 
-# Build libfaiss.so/libfaiss_avx2.so/libfaiss_avx512.so
+# Build libfaiss.so/libfaiss_avx2.so/libfaiss_avx512.so/libfaiss_avx512_sr.so
 cmake -B _build \
       -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TESTING=OFF \
-      -DFAISS_OPT_LEVEL=avx512 \
+      -DFAISS_OPT_LEVEL=avx512-sr \
       -DFAISS_ENABLE_GPU=ON \
       -DFAISS_ENABLE_CUVS=OFF \
       -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
@@ -26,7 +26,7 @@ cmake -B _build \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
-make -C _build -j$(nproc) faiss faiss_avx2 faiss_avx512
+make -C _build -j$(nproc) faiss faiss_avx2 faiss_avx512 faiss_avx512_sr
 
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/
