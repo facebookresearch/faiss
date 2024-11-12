@@ -277,7 +277,7 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "avx512-sr")
   set_target_properties(faiss_avx512_sr PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
-  # Architecture mode to support AVX512 extensions available since Intel (R) Sapphire Rapids.
+  # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
 	# Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
   target_compile_options(faiss_avx512_sr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt -mavx512vpopcntdq -mavx512fp16>)
 else()
