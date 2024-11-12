@@ -38,7 +38,7 @@ outputs:
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_raft{{ suffix }}"
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_cuvs{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
@@ -58,7 +58,7 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - libraft =24.06
+        - libcuvs =24.08
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
@@ -66,7 +66,7 @@ outputs:
         - openblas  # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libraft =24.06
+        - libcuvs =24.08
         - cuda-version {{ cuda_constraints }}
     test:
       requires:
@@ -77,7 +77,7 @@ outputs:
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
-  - name: faiss-gpu-raft
+  - name: faiss-gpu-cuvs
     script: build-pkg.sh  # [x86_64 and not win and not osx]
     script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]

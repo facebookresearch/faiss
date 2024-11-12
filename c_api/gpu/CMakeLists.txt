@@ -19,9 +19,7 @@ if (FAISS_ENABLE_ROCM)
   target_link_libraries(faiss_c PUBLIC hip::host roc::hipblas)
 else()
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas
-    $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
-    $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+  target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
 endif()
 
 add_executable(example_gpu_c EXCLUDE_FROM_ALL example_gpu_c.c)

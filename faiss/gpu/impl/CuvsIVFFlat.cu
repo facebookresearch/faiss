@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,17 @@
 #include <cstdint>
 
 #include <faiss/gpu/GpuIndexFlat.h>
-#include <faiss/gpu/utils/RaftUtils.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/CuvsUtils.h>
+#include <faiss/gpu/impl/CuvsIVFFlat.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
-#include <raft/neighbors/ivf_flat_codepacker.hpp>
-#include <raft/neighbors/ivf_flat.cuh>
-#include <raft/neighbors/ivf_flat_helpers.cuh>
+#include <cuvs/neighbors/common.hpp>
+#include <cuvs/neighbors/ivf_flat.hpp>
+#include <raft/linalg/map.cuh>
+#include <raft/linalg/norm.cuh>
 
 #include <limits>
 #include <memory>
@@ -41,7 +43,7 @@
 namespace faiss {
 namespace gpu {
 
-RaftIVFFlat::RaftIVFFlat(
+CuvsIVFFlat::CuvsIVFFlat(
         GpuResources* res,
         int dim,
         int nlist,
@@ -60,32 +62,34 @@ RaftIVFFlat::RaftIVFFlat(
                   useResidual,
                   scalarQ,
                   interleavedLayout,
-                  // skip ptr allocations in base class (handled by RAFT
+                  // skip ptr allocations in base class (handled by cuVS
                   // internally)
                   indicesOptions,
                   space) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == INDICES_64_BIT,
-            "only INDICES_64_BIT is supported for RAFT index");
+            "only INDICES_64_BIT is supported for cuVS index");
 }
 
-RaftIVFFlat::~RaftIVFFlat() {}
+CuvsIVFFlat::~CuvsIVFFlat() {}
 
-void RaftIVFFlat::reserveMemory(idx_t numVecs) {
+void CuvsIVFFlat::reserveMemory(idx_t numVecs) {
     fprintf(stderr,
-            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with RAFT enabled.\n");
+            "WARN: reserveMemory is NOP. Pre-allocation of IVF lists is not supported with cuVS enabled.\n");
 }
 
-void RaftIVFFlat::reset() {
-    raft_knn_index.reset();
+void CuvsIVFFlat::reset() {
+    cuvs_index.reset();
 }
 
-void RaftIVFFlat::setRaftIndex(
-        raft::neighbors::ivf_flat::index<float, idx_t>&& idx) {
-    raft_knn_index.emplace(std::move(idx));
+void CuvsIVFFlat::setCuvsIndex(
+        cuvs::neighbors::ivf_flat::index<float, idx_t>&& idx) {
+    cuvs_index =
+            std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(
+                    std::move(idx));
 }
 
-void RaftIVFFlat::search(
+void CuvsIVFFlat::search(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& queries,
         int nprobe,
@@ -93,7 +97,7 @@ void RaftIVFFlat::search(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to modify the RAFT index if the quantizer was
+    /// called updateQuantizer() to modify the cuVS index if the quantizer was
     /// modified externally
 
     uint32_t numQueries = queries.getSize(0);
@@ -101,14 +105,14 @@ void RaftIVFFlat::search(
     uint32_t k_ = k;
 
     // Device is already set in GpuIndex::search
-    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
     FAISS_ASSERT(numQueries > 0);
     FAISS_ASSERT(cols == dim_);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
-    raft::neighbors::ivf_flat::search_params pams;
+    cuvs::neighbors::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
 
     auto queries_view = raft::make_device_matrix_view<const float, idx_t>(
@@ -118,10 +122,10 @@ void RaftIVFFlat::search(
     auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
             outDistances.data(), (idx_t)numQueries, (idx_t)k_);
 
-    raft::neighbors::ivf_flat::search<float, idx_t>(
+    cuvs::neighbors::ivf_flat::search(
             raft_handle,
             pams,
-            raft_knn_index.value(),
+            *cuvs_index,
             queries_view,
             out_inds_view,
             out_dists_view);
@@ -158,15 +162,15 @@ void RaftIVFFlat::search(
             });
 }
 
-idx_t RaftIVFFlat::addVectors(
+idx_t CuvsIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     /// NB: The coarse quantizer is ignored here. The user is assumed to have
-    /// called updateQuantizer() to update the RAFT index if the quantizer was
+    /// called updateQuantizer() to update the cuVS index if the quantizer was
     /// modified externally
 
-    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -174,27 +178,27 @@ idx_t RaftIVFFlat::addVectors(
     /// Remove rows containing NaNs
     idx_t n_rows_valid = inplaceGatherFilteredRows(resources_, vecs, indices);
 
-    raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
+    cuvs::neighbors::ivf_flat::extend(
             raft_handle,
             raft::make_device_matrix_view<const float, idx_t>(
                     vecs.data(), n_rows_valid, dim_),
             std::make_optional<raft::device_vector_view<const idx_t, idx_t>>(
                     raft::make_device_vector_view<const idx_t, idx_t>(
                             indices.data(), n_rows_valid)),
-            raft_knn_index.value()));
+            cuvs_index.get());
 
     return n_rows_valid;
 }
 
-idx_t RaftIVFFlat::getListLength(idx_t listId) const {
-    FAISS_ASSERT(raft_knn_index.has_value());
+idx_t CuvsIVFFlat::getListLength(idx_t listId) const {
+    FAISS_ASSERT(cuvs_index != nullptr);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     uint32_t size;
     raft::update_host(
             &size,
-            raft_knn_index.value().list_sizes().data_handle() + listId,
+            cuvs_index->list_sizes().data_handle() + listId,
             1,
             raft_handle.get_stream());
     raft_handle.sync_stream();
@@ -203,8 +207,8 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
 }
 
 /// Return the list indices of a particular list back to the CPU
-std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
-    FAISS_ASSERT(raft_knn_index.has_value());
+std::vector<idx_t> CuvsIVFFlat::getListIndices(idx_t listId) const {
+    FAISS_ASSERT(cuvs_index != nullptr);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     auto stream = raft_handle.get_stream();
@@ -218,9 +222,7 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 
     raft::update_host(
             &list_indices_ptr,
-            const_cast<idx_t**>(
-                    raft_knn_index.value().inds_ptrs().data_handle()) +
-                    listId,
+            const_cast<idx_t**>(cuvs_index->inds_ptrs().data_handle()) + listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -232,13 +234,13 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
-std::vector<uint8_t> RaftIVFFlat::getListVectorData(
+std::vector<uint8_t> CuvsIVFFlat::getListVectorData(
         idx_t listId,
         bool gpuFormat) const {
     if (gpuFormat) {
-        FAISS_THROW_MSG("gpuFormat should be false for RAFT indices");
+        FAISS_THROW_MSG("gpuFormat should be false for cuVS indices");
     }
-    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -259,7 +261,7 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(
     // fetch the list data ptr on host
     raft::update_host(
             &list_data_ptr,
-            raft_knn_index.value().data_ptrs().data_handle() + listId,
+            cuvs_index->data_ptrs().data_handle() + listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -271,15 +273,15 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(
             stream);
     raft_handle.sync_stream();
 
-    RaftIVFFlatCodePackerInterleaved packer(
-            (size_t)listSize, dim_, raft_knn_index.value().veclen());
+    CuvsIVFFlatCodePackerInterleaved packer(
+            (size_t)listSize, dim_, cuvs_index->veclen());
     packer.unpack_all(interleaved_codes.data(), flat_codes.data());
     return flat_codes;
 }
 
 /// Performs search when we are already given the IVF cells to look at
 /// (GpuIndexIVF::search_preassigned implementation)
-void RaftIVFFlat::searchPreassigned(
+void CuvsIVFFlat::searchPreassigned(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfDistances,
@@ -291,7 +293,7 @@ void RaftIVFFlat::searchPreassigned(
     // TODO: Fill this in!
 }
 
-void RaftIVFFlat::updateQuantizer(Index* quantizer) {
+void CuvsIVFFlat::updateQuantizer(Index* quantizer) {
     FAISS_THROW_IF_NOT(quantizer->is_trained);
 
     // Must match our basic IVF parameters
@@ -304,14 +306,15 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    raft::neighbors::ivf_flat::index_params pams;
+    cuvs::neighbors::ivf_flat::index_params pams;
     pams.add_data_on_build = false;
-    pams.metric = metricFaissToRaft(metric_, false);
+    pams.metric = metricFaissToCuvs(metric_, false);
     pams.n_lists = numLists_;
-    raft_knn_index.emplace(raft_handle, pams, static_cast<uint32_t>(dim_));
-
-    raft::neighbors::ivf_flat::helpers::reset_index(
-            raft_handle, &raft_knn_index.value());
+    cuvs_index =
+            std::make_shared<cuvs::neighbors::ivf_flat::index<float, idx_t>>(
+                    raft_handle, pams, static_cast<uint32_t>(dim_));
+    cuvs::neighbors::ivf_flat::helpers::reset_index(
+            raft_handle, cuvs_index.get());
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
@@ -330,7 +333,7 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             gpuData->reconstruct(0, gpuData->getSize(), centroids);
 
             raft::update_device(
-                    raft_knn_index.value().centers().data_handle(),
+                    cuvs_index->centers().data_handle(),
                     centroids.data(),
                     total_elems,
                     stream);
@@ -339,7 +342,7 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             auto centroids = gpuData->getVectorsFloat32Ref();
 
             raft::update_device(
-                    raft_knn_index.value().centers().data_handle(),
+                    cuvs_index->centers().data_handle(),
                     centroids.data(),
                     total_elems,
                     stream);
@@ -352,14 +355,14 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
         quantizer->reconstruct_n(0, quantizer->ntotal, vecs.data());
 
         raft::update_device(
-                raft_knn_index.value().centers().data_handle(),
+                cuvs_index->centers().data_handle(),
                 vecs.data(),
                 total_elems,
                 stream);
     }
 }
 
-void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
+void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     size_t nlist = ivf ? ivf->nlist : 0;
     size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
 
@@ -370,12 +373,12 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     std::vector<idx_t> indices_(ntotal);
 
     // the index must already exist
-    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(cuvs_index != nullptr);
 
-    auto& raft_lists = raft_knn_index.value().lists();
+    auto& cuvs_index_lists = cuvs_index->lists();
 
     // conservative memory alloc for cloning cpu inverted lists
-    raft::neighbors::ivf_flat::list_spec<uint32_t, float, idx_t> raft_list_spec{
+    cuvs::neighbors::ivf_flat::list_spec<uint32_t, float, idx_t> ivf_list_spec{
             static_cast<uint32_t>(dim_), true};
 
     for (size_t i = 0; i < nlist; ++i) {
@@ -392,20 +395,20 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
         // store the list size
         list_sizes_[i] = static_cast<uint32_t>(listSize);
 
-        // This RAFT list must currently be empty
+        // This cuVS list must currently be empty
         FAISS_ASSERT(getListLength(i) == 0);
 
-        raft::neighbors::ivf::resize_list(
+        cuvs::neighbors::ivf::resize_list(
                 raft_handle,
-                raft_lists[i],
-                raft_list_spec,
+                cuvs_index_lists[i],
+                ivf_list_spec,
                 (uint32_t)listSize,
                 (uint32_t)0);
     }
 
     // Update the pointers and the sizes
-    raft::neighbors::ivf_flat::helpers::recompute_internal_state(
-            raft_handle, &(raft_knn_index.value()));
+    cuvs::neighbors::ivf_flat::helpers::recompute_internal_state(
+            raft_handle, cuvs_index.get());
 
     for (size_t i = 0; i < nlist; ++i) {
         size_t listSize = ivf->list_size(i);
@@ -414,18 +417,18 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 
     raft::update_device(
-            raft_knn_index.value().list_sizes().data_handle(),
+            cuvs_index->list_sizes().data_handle(),
             list_sizes_.data(),
             nlist,
             raft_handle.get_stream());
 
     // Precompute the centers vector norms for L2Expanded distance
     if (this->metric_ == faiss::METRIC_L2) {
-        raft_knn_index.value().allocate_center_norms(raft_handle);
+        cuvs_index->allocate_center_norms(raft_handle);
         raft::linalg::rowNorm(
-                raft_knn_index.value().center_norms().value().data_handle(),
-                raft_knn_index.value().centers().data_handle(),
-                raft_knn_index.value().dim(),
+                cuvs_index->center_norms().value().data_handle(),
+                cuvs_index->centers().data_handle(),
+                cuvs_index->dim(),
                 (uint32_t)nlist,
                 raft::linalg::L2Norm,
                 true,
@@ -433,7 +436,7 @@ void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     }
 }
 
-size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
+size_t CuvsIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
     idx_t bits = 32 /* float */;
 
     // bytes to encode a block of 32 vectors (single dimension)
@@ -444,13 +447,13 @@ size_t RaftIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
 
     // number of blocks of 32 vectors we have
     idx_t numBlocks =
-            utils::divUp(numVecs, raft::neighbors::ivf_flat::kIndexGroupSize);
+            utils::divUp(numVecs, cuvs::neighbors::ivf_flat::kIndexGroupSize);
 
     // total size to encode numVecs
     return bytesPerBlock * numBlocks;
 }
 
-void RaftIVFFlat::addEncodedVectorsToList_(
+void CuvsIVFFlat::addEncodedVectorsToList_(
         idx_t listId,
         const void* codes,
         const idx_t* indices,
@@ -470,8 +473,8 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
 
     std::vector<uint8_t> interleaved_codes(gpuListSizeInBytes);
-    RaftIVFFlatCodePackerInterleaved packer(
-            (size_t)numVecs, (uint32_t)dim_, raft_knn_index.value().veclen());
+    CuvsIVFFlatCodePackerInterleaved packer(
+            (size_t)numVecs, (uint32_t)dim_, cuvs_index->veclen());
 
     packer.pack_all(
             reinterpret_cast<const uint8_t*>(codes), interleaved_codes.data());
@@ -483,7 +486,7 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     /// fetch the list data ptr on host
     raft::update_host(
             &list_data_ptr,
-            raft_knn_index.value().data_ptrs().data_handle() + listId,
+            cuvs_index->data_ptrs().data_handle() + listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -500,7 +503,7 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     // fetch the list indices ptr on host
     raft::update_host(
             &list_indices_ptr,
-            raft_knn_index.value().inds_ptrs().data_handle() + listId,
+            cuvs_index->inds_ptrs().data_handle() + listId,
             1,
             stream);
     raft_handle.sync_stream();
@@ -508,7 +511,7 @@ void RaftIVFFlat::addEncodedVectorsToList_(
     raft::update_device(list_indices_ptr, indices, numVecs, stream);
 }
 
-RaftIVFFlatCodePackerInterleaved::RaftIVFFlatCodePackerInterleaved(
+CuvsIVFFlatCodePackerInterleaved::CuvsIVFFlatCodePackerInterleaved(
         size_t list_size,
         uint32_t dim,
         uint32_t chunk_size) {
@@ -519,28 +522,28 @@ RaftIVFFlatCodePackerInterleaved::RaftIVFFlatCodePackerInterleaved(
     nvec = list_size;
     code_size = dim * 4;
     block_size =
-            utils::roundUp(nvec, raft::neighbors::ivf_flat::kIndexGroupSize);
+            utils::roundUp(nvec, cuvs::neighbors::ivf_flat::kIndexGroupSize);
 }
 
-void RaftIVFFlatCodePackerInterleaved::pack_1(
+void CuvsIVFFlatCodePackerInterleaved::pack_1(
         const uint8_t* flat_code,
         size_t offset,
         uint8_t* block) const {
-    raft::neighbors::ivf_flat::codepacker::pack_1(
-            reinterpret_cast<const uint32_t*>(flat_code),
-            reinterpret_cast<uint32_t*>(block),
+    cuvs::neighbors::ivf_flat::helpers::codepacker::pack_1(
+            reinterpret_cast<const float*>(flat_code),
+            reinterpret_cast<float*>(block),
             dim,
             chunk_size,
             static_cast<uint32_t>(offset));
 }
 
-void RaftIVFFlatCodePackerInterleaved::unpack_1(
+void CuvsIVFFlatCodePackerInterleaved::unpack_1(
         const uint8_t* block,
         size_t offset,
         uint8_t* flat_code) const {
-    raft::neighbors::ivf_flat::codepacker::unpack_1(
-            reinterpret_cast<const uint32_t*>(block),
-            reinterpret_cast<uint32_t*>(flat_code),
+    cuvs::neighbors::ivf_flat::helpers::codepacker::unpack_1(
+            reinterpret_cast<const float*>(block),
+            reinterpret_cast<float*>(flat_code),
             dim,
             chunk_size,
             static_cast<uint32_t>(offset));
