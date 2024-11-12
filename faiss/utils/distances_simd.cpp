@@ -3759,7 +3759,7 @@ void fvec_add(size_t d, const float* a, float b, float* c) {
     size_t i;
     simd8float32 bv(b);
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
+        simd8float32 ci, ai;
         ai.loadu(a + i);
         ci = ai + bv;
         ci.storeu(c + i);
