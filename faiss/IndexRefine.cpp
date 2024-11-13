@@ -54,6 +54,14 @@ void IndexRefine::add(idx_t n, const float* x) {
     ntotal = refine_index->ntotal;
 }
 
+size_t IndexRefine::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_NOT(is_trained);
+    base_index->remove_ids(sel);
+    refine_index->remove_ids(sel);
+    ntotal = refine_index->ntotal;
+    return -1;
+}
+
 void IndexRefine::reset() {
     base_index->reset();
     refine_index->reset();
