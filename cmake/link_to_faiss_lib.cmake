@@ -29,8 +29,8 @@ function(link_to_faiss_lib target)
 
   if(FAISS_OPT_LEVEL STREQUAL "avx512-sr")
     if(NOT WIN32)
-			# Architecture mode to support AVX512 extensions available since Intel (R) Sapphire Rapids.
-			# Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
+      # Architecture mode to support AVX512 extensions available since Intel (R) Sapphire Rapids.
+      # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
       target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
     else()
       target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
