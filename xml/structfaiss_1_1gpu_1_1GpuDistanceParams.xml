@@ -267,20 +267,20 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuDistance.h" line="107" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="107" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9128234c9958512df5f08ad6a3e50205" prot="public" static="no" mutable="no">
         <type>bool</type>
-        <definition>bool faiss::gpu::GpuDistanceParams::use_raft</definition>
+        <definition>bool faiss::gpu::GpuDistanceParams::use_cuvs</definition>
         <argsstring></argsstring>
-        <name>use_raft</name>
+        <name>use_cuvs</name>
         <initializer>= false</initializer>
         <briefdescription>
+<para>Should the index dispatch down to cuVS? </para>
         </briefdescription>
         <detaileddescription>
-<para>Should the index dispatch down to RAFT? TODO: change default to true if RAFT is enabled </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="111" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="111" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="113" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -288,7 +288,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuDistance.h" line="31" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="31" bodyend="112"/>
+    <location file="faiss/gpu/GpuDistance.h" line="31" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="31" bodyend="115"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>dims</name></member>
@@ -304,7 +304,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queries</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a27221aaa9e83abf2875ae0e5b76f5f9b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queriesRowMajor</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ac3e25631561ebfdb2df21e69b402061b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>queryType</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>use_raft</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9128234c9958512df5f08ad6a3e50205" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>use_cuvs</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectorNorms</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectors</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a784111949c261dcd9c1e0f174ece623b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>vectorsRowMajor</name></member>

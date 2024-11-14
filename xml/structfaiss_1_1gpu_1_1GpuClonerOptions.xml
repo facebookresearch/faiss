@@ -111,14 +111,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuClonerOptions.h" line="38" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="38" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a6447350832ec555c4fc8fe6ce0f3c750" prot="public" static="no" mutable="no">
         <type>bool</type>
-        <definition>bool faiss::gpu::GpuClonerOptions::use_raft</definition>
+        <definition>bool faiss::gpu::GpuClonerOptions::use_cuvs</definition>
         <argsstring></argsstring>
-        <name>use_raft</name>
+        <name>use_cuvs</name>
         <initializer>= false</initializer>
         <briefdescription>
-<para>use the RAFT implementation </para>
+<para>use the cuVS implementation </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -177,7 +177,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>reserveVecs</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>storeTransposed</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>use_raft</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a6447350832ec555c4fc8fe6ce0f3c750" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>use_cuvs</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>useFloat16</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>useFloat16CoarseQuantizer</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuClonerOptions</scope><name>usePrecomputed</name></member>

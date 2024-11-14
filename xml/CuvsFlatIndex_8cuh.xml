@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
-  <compounddef id="RaftFlatIndex_8cuh" kind="file" language="C++">
-    <compoundname>RaftFlatIndex.cuh</compoundname>
+  <compounddef id="CuvsFlatIndex_8cuh" kind="file" language="C++">
+    <compoundname>CuvsFlatIndex.cuh</compoundname>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -15,7 +15,7 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline><highlight class="normal">/*</highlight></codeline>
-<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2023,<sp/>NVIDIA<sp/>CORPORATION.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2024,<sp/>NVIDIA<sp/>CORPORATION.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
@@ -49,9 +49,9 @@
 <codeline><highlight class="normal">///<sp/>the<sp/>vectors<sp/>in<sp/>float32.</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>If<sp/>float16,<sp/>we<sp/>store<sp/>the<sp/>vectors<sp/>in<sp/>both<sp/>float16<sp/>and<sp/>float32,<sp/>where<sp/>float32</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>data<sp/>is<sp/>possibly<sp/>needed<sp/>for<sp/>certain<sp/>residual<sp/>operations</highlight></codeline>
-<codeline><highlight class="normal">class<sp/>RaftFlatIndex<sp/>:<sp/>public<sp/>FlatIndex<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>CuvsFlatIndex<sp/>:<sp/>public<sp/>FlatIndex<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>RaftFlatIndex(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CuvsFlatIndex(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>useFloat16,</highlight></codeline>
@@ -80,6 +80,6 @@
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>GCC<sp/>visibility<sp/>pop</highlight></codeline>
     </programlisting>
-    <location file="faiss/gpu/impl/RaftFlatIndex.cuh"/>
+    <location file="faiss/gpu/impl/CuvsFlatIndex.cuh"/>
   </compounddef>
 </doxygen>

@@ -8,6 +8,7 @@
     <innerfile refid="Comparators_8cuh">Comparators.cuh</innerfile>
     <innerfile refid="ConversionOperators_8cuh">ConversionOperators.cuh</innerfile>
     <innerfile refid="CopyUtils_8cuh">CopyUtils.cuh</innerfile>
+    <innerfile refid="CuvsUtils_8h">CuvsUtils.h</innerfile>
     <innerfile refid="DeviceDefs_8cuh">DeviceDefs.cuh</innerfile>
     <innerfile refid="DeviceTensor-inl_8cuh">DeviceTensor-inl.cuh</innerfile>
     <innerfile refid="DeviceTensor_8cuh">DeviceTensor.cuh</innerfile>
@@ -27,7 +28,6 @@
     <innerfile refid="NoTypeTensor_8cuh">NoTypeTensor.cuh</innerfile>
     <innerfile refid="Pair_8cuh">Pair.cuh</innerfile>
     <innerfile refid="PtxUtils_8cuh">PtxUtils.cuh</innerfile>
-    <innerfile refid="RaftUtils_8h">RaftUtils.h</innerfile>
     <innerfile refid="ReductionOperators_8cuh">ReductionOperators.cuh</innerfile>
     <innerfile refid="Reductions_8cuh">Reductions.cuh</innerfile>
     <innerfile refid="Select_8cuh">Select.cuh</innerfile>

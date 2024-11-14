@@ -2,11 +2,11 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="Tensor_8cuh" kind="file" language="C++">
     <compoundname>Tensor.cuh</compoundname>
-    <includedby refid="RaftUtils_8h" local="no">faiss/gpu/utils/RaftUtils.h</includedby>
+    <includedby refid="CuvsUtils_8h" local="no">faiss/gpu/utils/CuvsUtils.h</includedby>
     <invincdepgraph>
       <node id="2">
-        <label>faiss/gpu/utils/RaftUtils.h</label>
-        <link refid="RaftUtils_8h_source"/>
+        <label>faiss/gpu/utils/CuvsUtils.h</label>
+        <link refid="CuvsUtils_8h_source"/>
       </node>
       <node id="1">
         <label>faiss/gpu/utils/Tensor.cuh</label>

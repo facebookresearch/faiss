@@ -517,6 +517,10 @@
         <childnode refid="62" relation="include">
         </childnode>
       </node>
+      <node id="36">
+        <label>faiss/gpu/utils/CuvsUtils.h</label>
+        <link refid="CuvsUtils_8h_source"/>
+      </node>
       <node id="35">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
@@ -684,10 +688,6 @@
       <node id="78">
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
-      </node>
-      <node id="36">
-        <label>faiss/gpu/utils/RaftUtils.h</label>
-        <link refid="RaftUtils_8h_source"/>
       </node>
       <node id="88">
         <label>faiss/python/python_callbacks.h</label>

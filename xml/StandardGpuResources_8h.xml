@@ -182,7 +182,7 @@
 <codeline lineno="6"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline lineno="7"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
-<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2023,<sp/>NVIDIA<sp/>CORPORATION.</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2023-2024,<sp/>NVIDIA<sp/>CORPORATION.</highlight></codeline>
 <codeline lineno="10"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="11"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>&quot;License&quot;);</highlight></codeline>
 <codeline lineno="12"><highlight class="comment"><sp/>*<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
@@ -199,7 +199,7 @@
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;raft/core/device_resources.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/host/pinned_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
@@ -256,7 +256,7 @@
 <codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>this<sp/>stream<sp/>upon<sp/>exit<sp/>from<sp/>an<sp/>index<sp/>or<sp/>other<sp/>Faiss<sp/>GPU<sp/>call.</highlight></codeline>
 <codeline lineno="81" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ade7aa26366d1dae8b5eafc445bdbc465" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ade7aa26366d1dae8b5eafc445bdbc465" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>raft<sp/>handle<sp/>for<sp/>the<sp/>given<sp/>device<sp/>which<sp/>can<sp/>be<sp/>used<sp/>to</highlight></codeline>
 <codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>calls<sp/>to<sp/>other<sp/>raft<sp/>primitives.</highlight></codeline>
 <codeline lineno="86"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>raft::device_resources&amp;<sp/>getRaftHandle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
@@ -328,7 +328,7 @@
 <codeline lineno="152"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cuBLAS<sp/>handle<sp/>for<sp/>each<sp/>device</highlight></codeline>
 <codeline lineno="153" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af1c41ca22c2e5b2c7451759223f9f3db" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;int,<sp/>cublasHandle_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af1c41ca22c2e5b2c7451759223f9f3db" kindref="member">blasHandles_</ref>;</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="156"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>raft<sp/>handle<sp/>for<sp/>each<sp/>device</highlight></codeline>
 <codeline lineno="157"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;int,<sp/>raft::device_resources&gt;<sp/>raftHandles_;</highlight></codeline>
 <codeline lineno="158"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -411,7 +411,7 @@
 <codeline lineno="235"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>current<sp/>default<sp/>stream</highlight></codeline>
 <codeline lineno="236" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
 <codeline lineno="237"><highlight class="normal"></highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="239"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>raft<sp/>handle<sp/>for<sp/>the<sp/>given<sp/>device<sp/>which<sp/>can<sp/>be<sp/>used<sp/>to</highlight></codeline>
 <codeline lineno="240"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>calls<sp/>to<sp/>other<sp/>raft<sp/>primitives.</highlight></codeline>
 <codeline lineno="241"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>raft::device_resources&amp;<sp/>getRaftHandle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>

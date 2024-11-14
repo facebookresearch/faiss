@@ -11,7 +11,7 @@
     <includedby refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includedby>
     <includedby refid="GpuIndexBinaryFlat_8h" local="no">faiss/gpu/GpuIndexBinaryFlat.h</includedby>
     <includedby refid="StandardGpuResources_8h" local="no">faiss/gpu/StandardGpuResources.h</includedby>
-    <includedby refid="RaftUtils_8h" local="no">faiss/gpu/utils/RaftUtils.h</includedby>
+    <includedby refid="CuvsUtils_8h" local="no">faiss/gpu/utils/CuvsUtils.h</includedby>
     <includedby refid="StackDeviceMemory_8h" local="no">faiss/gpu/utils/StackDeviceMemory.h</includedby>
     <incdepgraph>
       <node id="5">
@@ -118,6 +118,10 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
+      <node id="13">
+        <label>faiss/gpu/utils/CuvsUtils.h</label>
+        <link refid="CuvsUtils_8h_source"/>
+      </node>
       <node id="12">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
@@ -143,10 +147,6 @@
       <node id="5">
         <label>faiss/gpu/GpuIndexCagra.h</label>
         <link refid="GpuIndexCagra_8h_source"/>
-      </node>
-      <node id="13">
-        <label>faiss/gpu/utils/RaftUtils.h</label>
-        <link refid="RaftUtils_8h_source"/>
       </node>
       <node id="9">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
@@ -233,7 +233,7 @@
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;raft/core/device_resources.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rmm/mr/device/device_memory_resource.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
@@ -364,7 +364,7 @@
 <codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>the<sp/>allocation</highlight></codeline>
 <codeline lineno="163" refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" kindref="member">size</ref><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"></highlight></codeline>
-<codeline lineno="165"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/>rmm::mr::device_memory_resource*<sp/>mr<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="168"><highlight class="normal">};</highlight></codeline>
@@ -414,7 +414,7 @@
 <codeline lineno="212"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>given<sp/>device</highlight></codeline>
 <codeline lineno="213" refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="214"><highlight class="normal"></highlight></codeline>
-<codeline lineno="215"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_RAFT</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>USE_NVIDIA_CUVS</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="216"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>raft<sp/>handle<sp/>for<sp/>the<sp/>given<sp/>device<sp/>which<sp/>can<sp/>be<sp/>used<sp/>to</highlight></codeline>
 <codeline lineno="217"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>calls<sp/>to<sp/>other<sp/>raft<sp/>primitives.</highlight></codeline>
 <codeline lineno="218"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>raft::device_resources&amp;<sp/>getRaftHandle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/>=<sp/>0;</highlight></codeline>

@@ -43,7 +43,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Use the alternative memory layout for the IVF lists WARNING: this is a feature under development, and is only supported with RAFT enabled for the index. Do not use if RAFT is not enabled. </para>
+<para>Use the alternative memory layout for the IVF lists WARNING: this is a feature under development, and is only supported with cuVS enabled for the index. Do not use if cuVS is not enabled. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -139,14 +139,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="39" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="39" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" prot="public" static="no" mutable="no">
         <type>bool</type>
-        <definition>bool faiss::gpu::GpuIndexConfig::use_raft</definition>
+        <definition>bool faiss::gpu::GpuIndexConfig::use_cuvs</definition>
         <argsstring></argsstring>
-        <name>use_raft</name>
+        <name>use_cuvs</name>
         <initializer>= false</initializer>
         <briefdescription>
-<para>Should the index dispatch down to RAFT? </para>
+<para>Should the index dispatch down to cuVS? </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -212,7 +212,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1af432221761d48e4753f501208a60264d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a3698bd46d5a0003ec43d434a58794532" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>interleavedLayout</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>memorySpace</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>use_raft</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>use_cuvs</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a9dbbec78d77d90b7b150f543e477cc49" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>useFloat16LookupTables</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a45b88d1deb299970d887a4aa3ec8dd2a" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>useMMCodeDistance</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ae5b5c7acc06743e5bcca197bc33c30ec" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQConfig</scope><name>usePrecomputedTables</name></member>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
-  <compounddef id="RaftCagra_8cuh" kind="file" language="C++">
-    <compoundname>RaftCagra.cuh</compoundname>
+  <compounddef id="CuvsCagra_8cuh" kind="file" language="C++">
+    <compoundname>CuvsCagra.cuh</compoundname>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -40,8 +40,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;raft/neighbors/cagra_types.hpp&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;raft/neighbors/ivf_pq_types.hpp&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuvs/neighbors/cagra.hpp&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuvs/neighbors/ivf_pq.hpp&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline></codeline>
@@ -54,24 +54,26 @@
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">class<sp/>RaftCagra<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>CuvsCagra<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>RaftCagra(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CuvsCagra(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>intermediate_graph_degree,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>graph_degree,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faiss::cagra_build_algo<sp/>graph_build_algo,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>nn_descent_niter,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>store_dataset,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndicesOptions<sp/>indicesOptions,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;raft::neighbors::ivf_pq::index_params&gt;<sp/>ivf_pq_params<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;cuvs::neighbors::ivf_pq::index_params&gt;<sp/>ivf_pq_params<sp/>=</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::nullopt,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;raft::neighbors::ivf_pq::search_params&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ivf_pq_search_params<sp/>=<sp/>std::nullopt);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;cuvs::neighbors::ivf_pq::search_params&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ivf_pq_search_params<sp/>=<sp/>std::nullopt,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>refine_rate<sp/>=<sp/>2.0f);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>RaftCagra(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CuvsCagra(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>n,</highlight></codeline>
@@ -82,7 +84,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndicesOptions<sp/>indicesOptions);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>~RaftCagra()<sp/>=<sp/>default;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>~CuvsCagra()<sp/>=<sp/>default;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>train(idx_t<sp/>n,<sp/>const<sp/>float*<sp/>x);</highlight></codeline>
 <codeline></codeline>
@@ -111,14 +113,22 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/>get_knngraph()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>get_training_dataset()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>float*<sp/>get_training_dataset()<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>private:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Collection<sp/>of<sp/>GPU<sp/>resources<sp/>that<sp/>we<sp/>use</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources_;</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Training<sp/>dataset</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>float*<sp/>storage_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>n_;</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Expected<sp/>dimensionality<sp/>of<sp/>the<sp/>vectors</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>int<sp/>dim_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Controls<sp/>the<sp/>underlying<sp/>cuVS<sp/>index<sp/>if<sp/>it<sp/>should<sp/>store<sp/>the<sp/>dataset<sp/>in</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>device<sp/>memory</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>store_dataset_;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Metric<sp/>type<sp/>of<sp/>the<sp/>index</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric_;</highlight></codeline>
@@ -126,21 +136,26 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Metric<sp/>arg</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>metricArg_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>RAFT<sp/>CAGRA<sp/>index</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>raft::neighbors::cagra::index_params<sp/>index_params_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>cuVS<sp/>CAGRA<sp/>index</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::cagra_build_algo<sp/>graph_build_algo_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>cuvs::neighbors::cagra::index_params<sp/>index_params_;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>CAGRA<sp/>graph<sp/>using<sp/>IVF<sp/>PQ</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;raft::neighbors::ivf_pq::index_params&gt;<sp/>ivf_pq_params_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;raft::neighbors::ivf_pq::search_params&gt;<sp/>ivf_pq_search_params_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;cuvs::neighbors::ivf_pq::index_params&gt;<sp/>ivf_pq_params_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;cuvs::neighbors::ivf_pq::search_params&gt;<sp/>ivf_pq_search_params_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;float&gt;<sp/>refine_rate_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Instance<sp/>of<sp/>trained<sp/>RAFT<sp/>CAGRA<sp/>index</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;raft::neighbors::cagra::index&lt;float,<sp/>uint32_t&gt;&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>raft_knn_index{std::nullopt};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Parameters<sp/>to<sp/>build<sp/>CAGRA<sp/>graph<sp/>using<sp/>NN<sp/>Descent</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size_t<sp/>nn_descent_niter_<sp/>=<sp/>20;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Instance<sp/>of<sp/>trained<sp/>cuVS<sp/>CAGRA<sp/>index</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;cuvs::neighbors::cagra::index&lt;float,<sp/>uint32_t&gt;&gt;<sp/>cuvs_index{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nullptr};</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
-    <location file="faiss/gpu/impl/RaftCagra.cuh"/>
+    <location file="faiss/gpu/impl/CuvsCagra.cuh"/>
   </compounddef>
 </doxygen>

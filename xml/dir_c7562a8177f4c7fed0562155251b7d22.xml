@@ -6,6 +6,10 @@
     <innerfile refid="BinaryDistance_8cuh">BinaryDistance.cuh</innerfile>
     <innerfile refid="BinaryFlatIndex_8cuh">BinaryFlatIndex.cuh</innerfile>
     <innerfile refid="BroadcastSum_8cuh">BroadcastSum.cuh</innerfile>
+    <innerfile refid="CuvsCagra_8cuh">CuvsCagra.cuh</innerfile>
+    <innerfile refid="CuvsFlatIndex_8cuh">CuvsFlatIndex.cuh</innerfile>
+    <innerfile refid="CuvsIVFFlat_8cuh">CuvsIVFFlat.cuh</innerfile>
+    <innerfile refid="CuvsIVFPQ_8cuh">CuvsIVFPQ.cuh</innerfile>
     <innerfile refid="Distance_8cuh">Distance.cuh</innerfile>
     <innerfile refid="DistanceUtils_8cuh">DistanceUtils.cuh</innerfile>
     <innerfile refid="FlatIndex_8cuh">FlatIndex.cuh</innerfile>
@@ -29,10 +33,6 @@
     <innerfile refid="PQScanMultiPassNoPrecomputed-inl_8cuh">PQScanMultiPassNoPrecomputed-inl.cuh</innerfile>
     <innerfile refid="PQScanMultiPassNoPrecomputed_8cuh">PQScanMultiPassNoPrecomputed.cuh</innerfile>
     <innerfile refid="PQScanMultiPassPrecomputed_8cuh">PQScanMultiPassPrecomputed.cuh</innerfile>
-    <innerfile refid="RaftCagra_8cuh">RaftCagra.cuh</innerfile>
-    <innerfile refid="RaftFlatIndex_8cuh">RaftFlatIndex.cuh</innerfile>
-    <innerfile refid="RaftIVFFlat_8cuh">RaftIVFFlat.cuh</innerfile>
-    <innerfile refid="RaftIVFPQ_8cuh">RaftIVFPQ.cuh</innerfile>
     <innerfile refid="RemapIndices_8h">RemapIndices.h</innerfile>
     <innerfile refid="VectorResidual_8cuh">VectorResidual.cuh</innerfile>
     <briefdescription>
