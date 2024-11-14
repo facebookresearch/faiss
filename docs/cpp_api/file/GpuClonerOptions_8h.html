@@ -68,6 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsCagra_8cuh.html">File CuvsCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsFlatIndex_8cuh.html">File CuvsFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFFlat_8cuh.html">File CuvsIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFPQ_8cuh.html">File CuvsIVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsUtils_8h.html">File CuvsUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
@@ -200,11 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -398,9 +398,9 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions8use_raftE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions8use_raftE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions8use_raftE"></span><span id="faiss::gpu::GpuClonerOptions::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions8use_raftE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>use the RAFT implementation </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions8use_cuvsE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions8use_cuvsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions8use_cuvsE"></span><span id="faiss::gpu::GpuClonerOptions::use_cuvs__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a6447350832ec555c4fc8fe6ce0f3c750"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_cuvs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions8use_cuvsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>use the cuVS implementation </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -414,7 +414,7 @@
 
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="faiss::gpu::GpuClonerOptions"><span class="n"><span class="pre">GpuClonerOptions</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="CuvsUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="faiss::gpu::GpuClonerOptions"><span class="n"><span class="pre">GpuClonerOptions</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html#structfaiss_1_1gpu_1_1ToGpuClonerMultiple"><span class="std std-ref">faiss::gpu::ToGpuClonerMultiple</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -479,9 +479,9 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions8use_raftE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions8use_raftE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions8use_raftE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions8use_raftE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>use the RAFT implementation </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions8use_cuvsE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions8use_cuvsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions8use_cuvsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::use_cuvs__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a6447350832ec555c4fc8fe6ce0f3c750"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_cuvs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions8use_cuvsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>use the cuVS implementation </p>
 </dd></dl>
 
 <dl class="cpp var">

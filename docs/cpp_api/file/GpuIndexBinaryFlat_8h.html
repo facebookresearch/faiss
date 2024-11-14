@@ -68,6 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsCagra_8cuh.html">File CuvsCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsFlatIndex_8cuh.html">File CuvsFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFFlat_8cuh.html">File CuvsIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFPQ_8cuh.html">File CuvsIVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsUtils_8h.html">File CuvsUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
@@ -200,11 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -348,7 +348,7 @@
 <span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><br /></dt>
 <dd><dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE">
-<span id="_CPPv3N5faiss3gpu24GpuIndexBinaryFlatConfigE"></span><span id="_CPPv2N5faiss3gpu24GpuIndexBinaryFlatConfigE"></span><span id="faiss::gpu::GpuIndexBinaryFlatConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexBinaryFlatConfig</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss3gpu24GpuIndexBinaryFlatConfigE"></span><span id="_CPPv2N5faiss3gpu24GpuIndexBinaryFlatConfigE"></span><span id="faiss::gpu::GpuIndexBinaryFlatConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexBinaryFlatConfig</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="CuvsUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuIndexBinaryFlatConfigE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp class">

@@ -68,6 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsCagra_8cuh.html">File CuvsCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsFlatIndex_8cuh.html">File CuvsFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFFlat_8cuh.html">File CuvsIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFPQ_8cuh.html">File CuvsIVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsUtils_8h.html">File CuvsUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
@@ -200,11 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -384,9 +384,9 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15should_use_raftE17GpuDistanceParams">
-<span id="_CPPv3N5faiss3gpu15should_use_raftE17GpuDistanceParams"></span><span id="_CPPv2N5faiss3gpu15should_use_raftE17GpuDistanceParams"></span><span id="faiss::gpu::should_use_raft__GpuDistanceParams"></span><span class="target" id="GpuDistance_8h_1a2cfc72202868622221a8b69ec9a788e4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">should_use_raft</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu17GpuDistanceParamsE" title="faiss::gpu::GpuDistanceParams"><span class="n"><span class="pre">GpuDistanceParams</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu15should_use_raftE17GpuDistanceParams" title="Permalink to this definition"></a><br /></dt>
-<dd><p>A function that determines whether RAFT should be used based on various conditions (such as unsupported architecture) </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15should_use_cuvsE17GpuDistanceParams">
+<span id="_CPPv3N5faiss3gpu15should_use_cuvsE17GpuDistanceParams"></span><span id="_CPPv2N5faiss3gpu15should_use_cuvsE17GpuDistanceParams"></span><span id="faiss::gpu::should_use_cuvs__GpuDistanceParams"></span><span class="target" id="GpuDistance_8h_1abd4378248b25ecbc8f277ce7ce5bfbe5"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">should_use_cuvs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu17GpuDistanceParamsE" title="faiss::gpu::GpuDistanceParams"><span class="n"><span class="pre">GpuDistanceParams</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu15should_use_cuvsE17GpuDistanceParams" title="Permalink to this definition"></a><br /></dt>
+<dd><p>A function that determines whether cuVS should be used based on various conditions (such as unsupported architecture) </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -519,9 +519,9 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE">
-<span id="_CPPv3N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="faiss::gpu::GpuDistanceParams::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Should the index dispatch down to RAFT? TODO: change default to true if RAFT is enabled </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams8use_cuvsE">
+<span id="_CPPv3N5faiss3gpu17GpuDistanceParams8use_cuvsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams8use_cuvsE"></span><span id="faiss::gpu::GpuDistanceParams::use_cuvs__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9128234c9958512df5f08ad6a3e50205"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_cuvs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams8use_cuvsE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Should the index dispatch down to cuVS? </p>
 </dd></dl>
 
 </div>

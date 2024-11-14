@@ -6,12 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File RaftIVFFlat.cuh &mdash; Faiss  documentation</title>
+  <title>File CuvsCagra.cuh &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/file/RaftIVFFlat_8cuh.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/file/CuvsCagra_8cuh.html" />
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="File RaftIVFPQ.cuh" href="RaftIVFPQ_8cuh.html" />
-    <link rel="prev" title="File RaftFlatIndex.cuh" href="RaftFlatIndex_8cuh.html" /> 
+    <link rel="next" title="File CuvsFlatIndex.cuh" href="CuvsFlatIndex_8cuh.html" />
+    <link rel="prev" title="File CopyUtils.cuh" href="CopyUtils_8cuh.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -68,6 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File CuvsCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsFlatIndex_8cuh.html">File CuvsFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFFlat_8cuh.html">File CuvsIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFPQ_8cuh.html">File CuvsIVFPQ.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsUtils_8h.html">File CuvsUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
@@ -200,11 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftCagra_8cuh.html">File RaftCagra.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">File RaftIVFFlat.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -310,9 +310,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../filelist.html">File list</a></li>
-      <li class="breadcrumb-item active">File RaftIVFFlat.cuh</li>
+      <li class="breadcrumb-item active">File CuvsCagra.cuh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/cpp_api/file/RaftIVFFlat_8cuh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/file/CuvsCagra_8cuh.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -320,16 +320,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="file-raftivfflat-cuh">
-<h1>File RaftIVFFlat.cuh<a class="headerlink" href="#file-raftivfflat-cuh" title="Permalink to this heading"></a></h1>
+  <section id="file-cuvscagra-cuh">
+<h1>File CuvsCagra.cuh<a class="headerlink" href="#file-cuvscagra-cuh" title="Permalink to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="RaftFlatIndex_8cuh.html" class="btn btn-neutral float-left" title="File RaftFlatIndex.cuh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="RaftIVFPQ_8cuh.html" class="btn btn-neutral float-right" title="File RaftIVFPQ.cuh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CopyUtils_8cuh.html" class="btn btn-neutral float-left" title="File CopyUtils.cuh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CuvsFlatIndex_8cuh.html" class="btn btn-neutral float-right" title="File CuvsFlatIndex.cuh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

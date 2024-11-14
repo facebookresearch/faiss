@@ -432,7 +432,7 @@
 <h1>Struct faiss::gpu::GpuIndexCagraConfig<a class="headerlink" href="#struct-faiss-gpu-gpuindexcagraconfig" title="Permalink to this heading"></a></h1>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfigE">
-<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="faiss::gpu::GpuIndexCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><br /></dt>
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfigE"></span><span id="faiss::gpu::GpuIndexCagraConfig"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIndexCagraConfig</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/CuvsUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/GpuIndex_8h.html#_CPPv4N5faiss3gpu14GpuIndexConfigE" title="faiss::gpu::GpuIndexConfig"><span class="n"><span class="pre">GpuIndexConfig</span></span></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
@@ -470,6 +470,16 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig11refine_rateE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig11refine_rateE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig11refine_rateE"></span><span id="faiss::gpu::GpuIndexCagraConfig::refine_rate__float"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a7aa44a80bd06361d2b706b640b2b9ebc"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">refine_rate</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2.0f</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig13store_datasetE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig13store_datasetE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig13store_datasetE"></span><span id="faiss::gpu::GpuIndexCagraConfig::store_dataset__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a9e78e2878d8e67a123577adb36d9d190"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">store_dataset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig6deviceE">
 <span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig6deviceE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig6deviceE"></span><span id="faiss::gpu::GpuIndexCagraConfig::device__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd><p>GPU device on which the index is resident. </p>
@@ -482,9 +492,9 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig8use_raftE">
-<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig8use_raftE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig8use_raftE"></span><span id="faiss::gpu::GpuIndexCagraConfig::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
-<dd><p>Should the index dispatch down to RAFT? </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19GpuIndexCagraConfig8use_cuvsE">
+<span id="_CPPv3N5faiss3gpu19GpuIndexCagraConfig8use_cuvsE"></span><span id="_CPPv2N5faiss3gpu19GpuIndexCagraConfig8use_cuvsE"></span><span id="faiss::gpu::GpuIndexCagraConfig::use_cuvs__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_cuvs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>Should the index dispatch down to cuVS? </p>
 </dd></dl>
 
 </div>

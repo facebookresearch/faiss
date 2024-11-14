@@ -6,12 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File RaftCagra.cuh &mdash; Faiss  documentation</title>
+  <title>File CuvsUtils.h &mdash; Faiss  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/file/RaftCagra_8cuh.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/file/CuvsUtils_8h.html" />
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="File RaftFlatIndex.cuh" href="RaftFlatIndex_8cuh.html" />
-    <link rel="prev" title="File Quantizer.h" href="Quantizer_8h.html" /> 
+    <link rel="next" title="File DeviceDefs.cuh" href="DeviceDefs_8cuh.html" />
+    <link rel="prev" title="File CuvsIVFPQ.cuh" href="CuvsIVFPQ_8cuh.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -68,6 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsCagra_8cuh.html">File CuvsCagra.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsFlatIndex_8cuh.html">File CuvsFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFFlat_8cuh.html">File CuvsIVFFlat.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CuvsIVFPQ_8cuh.html">File CuvsIVFPQ.cuh</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File CuvsUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceDefs_8cuh.html">File DeviceDefs.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor-inl_8cuh.html">File DeviceTensor-inl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DeviceTensor_8cuh.html">File DeviceTensor.cuh</a></li>
@@ -200,11 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">File RaftCagra.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFFlat_8cuh.html">File RaftIVFFlat.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftIVFPQ_8cuh.html">File RaftIVFPQ.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -310,9 +310,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../filelist.html">File list</a></li>
-      <li class="breadcrumb-item active">File RaftCagra.cuh</li>
+      <li class="breadcrumb-item active">File CuvsUtils.h</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/cpp_api/file/RaftCagra_8cuh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/file/CuvsUtils_8h.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -320,16 +320,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="file-raftcagra-cuh">
-<h1>File RaftCagra.cuh<a class="headerlink" href="#file-raftcagra-cuh" title="Permalink to this heading"></a></h1>
+  <section id="file-cuvsutils-h">
+<h1>File CuvsUtils.h<a class="headerlink" href="#file-cuvsutils-h" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
+<dd><p>Implementation of k-means clustering with many variants.</p>
+<p>Copyright (c) Facebook, Inc. and its affiliates.</p>
+<p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
+<p><a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a> is intended to define a subset of vectors to handle (for removal or as subset to search)</p>
+<p>PQ4 SIMD packing and accumulation functions</p>
+<p>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</p>
+<p>The implementation of these functions is spread over 3 cpp files to reduce parallel compile times. Templates are instantiated explicitly.</p>
+<p>This file contains callbacks for kernels that compute distances.</p>
+<p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
+<p>x[ i * d + j ]</p>
+<p>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</p>
+<p>I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</p>
+<p>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</p>
+<p>Definition of inverted lists + a few common classes that implement the interface.</p>
+<p>Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">IndexPreTransform</span></a>.</p>
+<p>In this file are the implementations of extra metrics beyond L2 and inner product</p>
+<p>Implements a few neural net layers, mainly to support <a class="reference internal" href="../struct/structfaiss_1_1QINCo.html#structfaiss_1_1QINCo"><span class="std std-ref">QINCo</span></a></p>
+<p>Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpuE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17metricFaissToCuvsE10MetricTypeb">
+<span id="_CPPv3N5faiss3gpu17metricFaissToCuvsE10MetricTypeb"></span><span id="_CPPv2N5faiss3gpu17metricFaissToCuvsE10MetricTypeb"></span><span id="faiss::gpu::metricFaissToCuvs__MetricType.b"></span><span class="target" id="CuvsUtils_8h_1a4ad217abc64c139f6788145db3b4b4b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">cuvsDistanceType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metricFaissToCuvs</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">exactDistance</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu17metricFaissToCuvsE10MetricTypeb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu15validRowIndicesEP12GpuResourcesR6TensorIfXL2EEXL1EEEPb">
+<span id="_CPPv3N5faiss3gpu15validRowIndicesEP12GpuResourcesR6TensorIfXL2EEXL1EEEPb"></span><span id="_CPPv2N5faiss3gpu15validRowIndicesEP12GpuResourcesR6TensorIfX2EXtrueEEPb"></span><span id="faiss::gpu::validRowIndices__GpuResourcesP.Tensor:float.2.true:R.bP"></span><span class="target" id="CuvsUtils_8h_1a96b52c4a7d364a661afad37f4a75adfb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">validRowIndices</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vecs</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">validRows</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu15validRowIndicesEP12GpuResourcesR6TensorIfXL2EEXL1EEEPb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Identify matrix rows containing non NaN values. validRows[i] is false if row i contains a NaN value and true otherwise. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu25inplaceGatherFilteredRowsEP12GpuResourcesR6TensorIfXL2EEXL1EEER6TensorI5idx_tXL1EEXL1EEE">
+<span id="_CPPv3N5faiss3gpu25inplaceGatherFilteredRowsEP12GpuResourcesR6TensorIfXL2EEXL1EEER6TensorI5idx_tXL1EEXL1EEE"></span><span id="_CPPv2N5faiss3gpu25inplaceGatherFilteredRowsEP12GpuResourcesR6TensorIfX2EXtrueEER6TensorI5idx_tX1EXtrueEE"></span><span id="faiss::gpu::inplaceGatherFilteredRows__GpuResourcesP.Tensor:float.2.true:R.Tensor:idx_t.1.true:R"></span><span class="target" id="CuvsUtils_8h_1a3cc563a7cb538b461187b53cc29188ac"></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inplaceGatherFilteredRows</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vecs</span></span>, <span class="n"><span class="pre">Tensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">indices</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu25inplaceGatherFilteredRowsEP12GpuResourcesR6TensorIfXL2EEXL1EEER6TensorI5idx_tXL1EEXL1EEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Filter out matrix rows containing NaN values. The vectors and indices are updated in-place. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Quantizer_8h.html" class="btn btn-neutral float-left" title="File Quantizer.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="RaftFlatIndex_8cuh.html" class="btn btn-neutral float-right" title="File RaftFlatIndex.cuh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CuvsIVFPQ_8cuh.html" class="btn btn-neutral float-left" title="File CuvsIVFPQ.cuh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="DeviceDefs_8cuh.html" class="btn btn-neutral float-right" title="File DeviceDefs.cuh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
