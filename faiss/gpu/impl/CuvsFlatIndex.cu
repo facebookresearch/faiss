@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,33 +21,33 @@
  * limitations under the License.
  */
 
-#include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#include <faiss/gpu/utils/CuvsUtils.h>
+#include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 
+#include <optional>
 #include <vector>
 
+#include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
 #include <raft/distance/distance_types.hpp>
-#include <raft/neighbors/brute_force.cuh>
-
-#define RAFT_NAME "raft"
+#include <raft/linalg/unary_op.cuh>
 
 namespace faiss {
 namespace gpu {
 
-using namespace raft::distance;
-using namespace raft::neighbors;
+using namespace cuvs::distance;
+using namespace cuvs::neighbors;
 
-RaftFlatIndex::RaftFlatIndex(
+CuvsFlatIndex::CuvsFlatIndex(
         GpuResources* res,
         int dim,
         bool useFloat16,
         MemorySpace space)
         : FlatIndex(res, dim, useFloat16, space) {}
 
-void RaftFlatIndex::query(
+void CuvsFlatIndex::query(
         Tensor<float, 2, true>& input,
         int k,
         faiss::MetricType metric,
@@ -56,7 +56,7 @@ void RaftFlatIndex::query(
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
     /**
-     * RAFT doesn't yet support half-precision in bfknn.
+     * cuVS doesn't yet support half-precision in bfknn.
      * Use FlatIndex for float16 for now
      */
     if (useFloat16_) {
@@ -92,16 +92,16 @@ void RaftFlatIndex::query(
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        DistanceType distance = metricFaissToRaft(metric, exactDistance);
+        cuvsDistanceType distance = metricFaissToCuvs(metric, exactDistance);
 
         std::optional<raft::device_vector_view<const float, int64_t>>
                 norms_view = raft::make_device_vector_view(
                         norms_.data(), norms_.getSize(0));
 
-        raft::neighbors::brute_force::index idx(
+        cuvs::neighbors::brute_force::index idx(
                 handle, index, norms_view, distance, metricArg);
-        raft::neighbors::brute_force::search<float, int64_t>(
-                handle, idx, search, inds, dists);
+        cuvs::neighbors::brute_force::search(
+                handle, idx, search, inds, dists, std::nullopt);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
@@ -121,7 +121,7 @@ void RaftFlatIndex::query(
     }
 }
 
-void RaftFlatIndex::query(
+void CuvsFlatIndex::query(
         Tensor<half, 2, true>& vecs,
         int k,
         faiss::MetricType metric,

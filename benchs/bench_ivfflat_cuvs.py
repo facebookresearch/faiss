@@ -4,7 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-# Copyright (c) 2023, NVIDIA CORPORATION.
+# Copyright (c) 2024, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ aa('--bm_add', default=False, action='store_true',
    help='whether to benchmark add operation on GPU index')
 aa('--bm_search', default=True,
    help='whether to benchmark search operation on GPU index')
-aa('--raft_only', default=False, action='store_true',
-   help='whether to only produce RAFT enabled benchmarks')
+aa('--cuvs_only', default=False, action='store_true',
+   help='whether to only produce cuVS enabled benchmarks')
 
 
 group = parser.add_argument_group('IVF options')
@@ -70,9 +70,9 @@ res = faiss.StandardGpuResources()
 mr = rmm.mr.PoolMemoryResource(rmm.mr.CudaMemoryResource())
 rmm.mr.set_current_device_resource(mr)
 
-def bench_train_milliseconds(index, trainVecs, use_raft):
+def bench_train_milliseconds(index, trainVecs, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     t0 = time.time()
     index_gpu.train(trainVecs)
@@ -89,21 +89,21 @@ if args.bm_train:
         for n_cols in dataset_dims:
             index = faiss.index_factory(n_cols, "IVF{},Flat".format(args.n_centroids))
             trainVecs = rs.rand(n_rows, n_cols).astype('float32')
-            raft_gpu_train_time = bench_train_milliseconds(
+            cuvs_gpu_train_time = bench_train_milliseconds(
                 index, trainVecs, True)
-            if args.raft_only:
-                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, RAFT enabled GPU train time: %.3f milliseconds" % (
-                    n_cols, args.n_centroids, n_rows, raft_gpu_train_time))
+            if args.cuvs_only:
+                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, cuVS enabled GPU train time: %.3f milliseconds" % (
+                    n_cols, args.n_centroids, n_rows, cuvs_gpu_train_time))
             else:
                 classical_gpu_train_time = bench_train_milliseconds(
                     index, trainVecs, False)
-                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, classical GPU train time: %.3f milliseconds, RAFT enabled GPU train time: %.3f milliseconds" % (
-                    n_cols, args.n_centroids, n_rows, classical_gpu_train_time, raft_gpu_train_time))
+                print("Method: IVFFlat, Operation: TRAIN, dim: %d, n_centroids %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds" % (
+                    n_cols, args.n_centroids, n_rows, classical_gpu_train_time, cuvs_gpu_train_time))
 
 
-def bench_add_milliseconds(index, addVecs, use_raft):
+def bench_add_milliseconds(index, addVecs, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     index_gpu.copyFrom(index)
     t0 = time.time()
@@ -125,20 +125,20 @@ if args.bm_add:
     for n_rows in addset_sizes:
         for n_cols in dataset_dims:
             addVecs = rs.rand(n_rows, n_cols).astype('float32')
-            raft_gpu_add_time = bench_add_milliseconds(index, addVecs, True)
-            if args.raft_only:
-                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, RAFT enabled GPU add time: %.3f milliseconds" % (
-                    n_train, n_rows, n_cols, args.n_centroids, raft_gpu_add_time))
+            cuvs_gpu_add_time = bench_add_milliseconds(index, addVecs, True)
+            if args.cuvs_only:
+                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, cuVS enabled GPU add time: %.3f milliseconds" % (
+                    n_train, n_rows, n_cols, args.n_centroids, cuvs_gpu_add_time))
             else:
                 classical_gpu_add_time = bench_add_milliseconds(
                     index, addVecs, False)
-                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, classical GPU add time: %.3f milliseconds, RAFT enabled GPU add time: %.3f milliseconds" % (
-                    n_train, n_rows, n_cols, args.n_centroids, classical_gpu_add_time, raft_gpu_add_time))
+                print("Method: IVFFlat, Operation: ADD, dim: %d, n_centroids %d, numAdd: %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds" % (
+                    n_train, n_rows, n_cols, args.n_centroids, classical_gpu_add_time, cuvs_gpu_add_time))
 
 
-def bench_search_milliseconds(index, addVecs, queryVecs, nprobe, k, use_raft):
+def bench_search_milliseconds(index, addVecs, queryVecs, nprobe, k, use_cuvs):
     co = faiss.GpuMultipleClonerOptions()
-    co.use_raft = use_raft
+    co.use_cuvs = use_cuvs
     index_gpu = faiss.index_cpu_to_gpu(res, 0, index, co)
     index_gpu.copyFrom(index)
     index_gpu.add(addVecs)
@@ -163,19 +163,19 @@ if args.bm_search:
         addVecs = rs.rand(n_add, n_cols).astype('float32')
         for n_rows in queryset_sizes:
             queryVecs = rs.rand(n_rows, n_cols).astype('float32')
-            raft_gpu_search_time = bench_search_milliseconds(
+            cuvs_gpu_search_time = bench_search_milliseconds(
                 index, addVecs, queryVecs, args.nprobe, args.k, True)
-            if args.raft_only:
-                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, RAFT enabled GPU search time: %.3f milliseconds" % (
-                    n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, raft_gpu_search_time))
+            if args.cuvs_only:
+                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, cuVS enabled GPU search time: %.3f milliseconds" % (
+                    n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, cuvs_gpu_search_time))
             else:
                 classical_gpu_search_time = bench_search_milliseconds(
                     index, addVecs, queryVecs, args.nprobe, args.k, False)
-                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, RAFT enabled GPU search time: %.3f milliseconds" % (
-                    n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, raft_gpu_search_time))
+                print("Method: IVFFlat, Operation: SEARCH, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU search time: %.3f milliseconds, cuVS enabled GPU search time: %.3f milliseconds" % (
+                    n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, classical_gpu_search_time, cuvs_gpu_search_time))
 
     print("=" * 40)
-    print("Large RAFT Enabled Benchmarks")
+    print("Large cuVS Enabled Benchmarks")
     print("=" * 40)
     # Avoid classical GPU Benchmarks for large datasets because of OOM for more than 500000 queries and/or large dims as well as for large k
     queryset_sizes = [100000, 500000, 1000000]
@@ -188,7 +188,7 @@ if args.bm_search:
         addVecs = rs.rand(n_add, n_cols).astype('float32')
         for n_rows in queryset_sizes:
             queryVecs = rs.rand(n_rows, n_cols).astype('float32')
-            raft_gpu_search_time = bench_search_milliseconds(
+            cuvs_gpu_search_time = bench_search_milliseconds(
                 index, addVecs, queryVecs, args.nprobe, args.k, True)
-            print("Method: IVFFlat, Operation: SEARCH, numTrain: %d, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, RAFT enabled GPU search time: %.3f milliseconds" % (
-                n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, raft_gpu_search_time))
+            print("Method: IVFFlat, Operation: SEARCH, numTrain: %d, dim: %d, n_centroids: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, cuVS enabled GPU search time: %.3f milliseconds" % (
+                n_cols, args.n_centroids, n_add, n_rows, args.nprobe, args.k, cuvs_gpu_search_time))
