@@ -9,8 +9,6 @@
 
 #include <faiss/IndexNSG.h>
 
-#include <omp.h>
-
 #include <cinttypes>
 #include <memory>
 
@@ -18,7 +16,6 @@
 #include <faiss/IndexNNDescent.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 
 namespace faiss {

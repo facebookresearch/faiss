@@ -11,8 +11,6 @@
 #include <cinttypes>
 #include <cstdio>
 
-#include <omp.h>
-
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -23,7 +21,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
-#include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {

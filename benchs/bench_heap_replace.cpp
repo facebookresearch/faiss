@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <omp.h>
 #include <cstdio>
 
 #include <faiss/impl/FaissAssert.h>
