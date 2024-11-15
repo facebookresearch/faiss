@@ -59,7 +59,11 @@ size_t IndexRefine::remove_ids(const IDSelector& sel) {
     base_index->remove_ids(sel);
     refine_index->remove_ids(sel);
     ntotal = refine_index->ntotal;
-    return ntotal;
+    ntotal_before = refine_index->ntotal
+    base_index->remove_ids(sel);
+    refine_index->remove_ids(sel);
+    ntotal_after = refine_index->ntotal;
+    return ntotal_after - ntotal_before;
 }
 
 void IndexRefine::reset() {
