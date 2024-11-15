@@ -17,7 +17,6 @@
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
