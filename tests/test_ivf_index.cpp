@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,6 @@
 #include <omp.h>
 #include <algorithm>
 #include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <map>
 #include <random>
 #include <set>
@@ -20,7 +17,6 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/index_io.h>
 
 namespace {
 

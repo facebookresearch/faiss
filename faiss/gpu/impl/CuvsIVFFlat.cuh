@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -5,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
-#include <raft/neighbors/ivf_flat.cuh>
+#include <cuvs/neighbors/ivf_flat.hpp>
 
 #include <optional>
 
@@ -34,9 +35,9 @@
 namespace faiss {
 namespace gpu {
 
-class RaftIVFFlat : public IVFFlat {
+class CuvsIVFFlat : public IVFFlat {
    public:
-    RaftIVFFlat(
+    CuvsIVFFlat(
             GpuResources* resources,
             int dim,
             int nlist,
@@ -49,7 +50,7 @@ class RaftIVFFlat : public IVFFlat {
             IndicesOptions indicesOptions,
             MemorySpace space);
 
-    ~RaftIVFFlat() override;
+    ~CuvsIVFFlat() override;
 
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
@@ -85,7 +86,7 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
 
-    /// Clear out the Raft index
+    /// Clear out the cuVS index
     void reset() override;
 
     /// For debugging purposes, return the list length of a particular
@@ -99,15 +100,15 @@ class RaftIVFFlat : public IVFFlat {
     std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
-    /// Update our Raft index with this quantizer instance; may be a CPU
+    /// Update our cuVS index with this quantizer instance; may be a CPU
     /// or GPU quantizer
     void updateQuantizer(Index* quantizer) override;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     void copyInvertedListsFrom(const InvertedLists* ivf) override;
 
-    /// Replace the Raft index
-    void setRaftIndex(raft::neighbors::ivf_flat::index<float, idx_t>&& idx);
+    /// Replace the cuVS index
+    void setCuvsIndex(cuvs::neighbors::ivf_flat::index<float, idx_t>&& idx);
 
    private:
     /// Adds a set of codes and indices to a list, with the representation
@@ -126,12 +127,12 @@ class RaftIVFFlat : public IVFFlat {
     /// this is the size for an entire IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
 
-    std::optional<raft::neighbors::ivf_flat::index<float, idx_t>>
-            raft_knn_index{std::nullopt};
+    std::shared_ptr<cuvs::neighbors::ivf_flat::index<float, idx_t>> cuvs_index{
+            nullptr};
 };
 
-struct RaftIVFFlatCodePackerInterleaved : CodePacker {
-    RaftIVFFlatCodePackerInterleaved(
+struct CuvsIVFFlatCodePackerInterleaved : CodePacker {
+    CuvsIVFFlatCodePackerInterleaved(
             size_t list_size,
             uint32_t dim,
             uint32_t chuk_size);

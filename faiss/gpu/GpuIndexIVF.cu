@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,7 +92,7 @@ void GpuIndexIVF::init_() {
         GpuIndexFlatConfig config = ivfConfig_.flatConfig;
         // inherit our same device
         config.device = config_.device;
-        config.use_raft = config_.use_raft;
+        config.use_cuvs = config_.use_cuvs;
 
         if (metric_type == faiss::METRIC_L2) {
             quantizer = new GpuIndexFlatL2(resources_, d, config);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -3759,7 +3759,7 @@ void fvec_add(size_t d, const float* a, float b, float* c) {
     size_t i;
     simd8float32 bv(b);
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
+        simd8float32 ci, ai;
         ai.loadu(a + i);
         ci = ai + bv;
         ci.storeu(c + i);

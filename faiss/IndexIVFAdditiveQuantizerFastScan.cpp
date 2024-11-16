@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,8 +11,6 @@
 #include <cinttypes>
 #include <cstdio>
 
-#include <omp.h>
-
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -23,7 +21,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
-#include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {

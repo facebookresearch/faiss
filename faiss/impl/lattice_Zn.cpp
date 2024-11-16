@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include <queue>
-#include <unordered_map>
 #include <unordered_set>
 
 #include <faiss/impl/platform_macros.h>

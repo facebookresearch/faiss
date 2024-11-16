@@ -8,8 +8,8 @@ inputs:
     description: 'Enable GPU support.'
     required: false
     default: OFF
-  raft:
-    description: 'Enable RAFT support.'
+  cuvs:
+    description: 'Enable cuVS support.'
     required: false
     default: OFF
   rocm:
@@ -50,11 +50,11 @@ runs:
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           :
         # regular CUDA for GPU builds
-        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.raft }}" = "OFF" ]; then
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        # and CUDA from RAFT channel for RAFT builds
-        elif [ "${{ inputs.raft }}" = "ON" ]; then
-          conda install -y -q libraft=24.06 cuda-version=12.4 cuda-toolkit -c rapidsai -c "nvidia/label/cuda-12.4.0" -c conda-forge
+        # and CUDA from cuVS channel for cuVS builds
+        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
+          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
         fi
 
         # install test packages
@@ -63,7 +63,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q pytorch pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
+          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
           conda install -y -q pytorch -c pytorch
         fi
@@ -101,12 +101,8 @@ runs:
         sudo apt-get -qq autoclean >/dev/null
         sudo apt-get -qq clean >/dev/null
         sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-    - name: ROCm - Hipify
-      if: inputs.rocm == 'ON'
-      shell: bash
-      run: ./faiss/gpu/hipify.sh
     - name: Symblink system dependencies
-      if: inputs.raft == 'ON' || inputs.rocm == 'ON'
+      if: inputs.rocm == 'ON'
       shell: bash
       run: |
         # symblink system libraries for HIP compiler
@@ -123,7 +119,7 @@ runs:
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
-              -DFAISS_ENABLE_RAFT=${{ inputs.raft }} \
+              -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
@@ -178,5 +174,5 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-raft=${{ inputs.raft }}-rocm=${{ inputs.rocm }}
+        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
         path: test-results

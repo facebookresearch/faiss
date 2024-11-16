@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -11,8 +11,8 @@ from faiss.contrib import datasets, evaluation
 
 
 @unittest.skipIf(
-    "RAFT" not in faiss.get_compile_options(),
-    "only if RAFT is compiled in")
+    "CUVS" not in faiss.get_compile_options(),
+    "only if cuVS is compiled in")
 class TestComputeGT(unittest.TestCase):
 
     def do_compute_GT(self, metric):
@@ -36,8 +36,8 @@ class TestComputeGT(unittest.TestCase):
         self.do_compute_GT(faiss.METRIC_INNER_PRODUCT)
 
 @unittest.skipIf(
-    "RAFT" not in faiss.get_compile_options(),
-    "only if RAFT is compiled in")
+    "CUVS" not in faiss.get_compile_options(),
+    "only if cuVS is compiled in")
 class TestInterop(unittest.TestCase):
 
     def do_interop(self, metric):

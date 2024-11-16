@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,13 +13,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
 

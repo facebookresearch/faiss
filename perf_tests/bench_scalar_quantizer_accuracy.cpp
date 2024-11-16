@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,6 @@
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 using namespace faiss;
 DEFINE_uint32(d, 128, "dimension");

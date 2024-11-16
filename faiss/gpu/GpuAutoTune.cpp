@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,10 +17,7 @@
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
-#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
 #include <faiss/gpu/impl/IndexUtils.h>
-#include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 namespace gpu {

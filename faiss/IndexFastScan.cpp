@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,11 +17,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances.h>
-#include <faiss/utils/extra_distances.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>

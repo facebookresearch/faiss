@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,6 +75,9 @@ struct IndexFlatCodes : Index {
     void check_compatible_for_merge(const Index& otherIndex) const override;
 
     virtual void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
+    virtual void add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids)
+            override;
 
     // permute_entries. perm of size ntotal maps new to old positions
     void permute_entries(const idx_t* perm);

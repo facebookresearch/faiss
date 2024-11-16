@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -168,7 +169,7 @@ cudaStream_t GpuResources::getDefaultStreamCurrentDevice() {
     return getDefaultStream(getCurrentDevice());
 }
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
 raft::device_resources& GpuResources::getRaftHandleCurrentDevice() {
     return getRaftHandle(getCurrentDevice());
 }

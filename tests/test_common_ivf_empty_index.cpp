@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include <omp.h>
 #include <cstddef>
 #include <memory>
 #include <vector>

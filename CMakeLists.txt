@@ -1,3 +1,4 @@
+# @lint-ignore-every LICENSELINT
 # Copyright (c) Facebook, Inc. and its affiliates.
 # All rights reserved.
 #
@@ -32,7 +33,7 @@ if(FAISS_ENABLE_GPU)
   endif()
 endif()
 
-if(FAISS_ENABLE_RAFT)
+if(FAISS_ENABLE_CUVS)
 include(cmake/thirdparty/fetch_rapids.cmake)
 include(rapids-cmake)
 include(rapids-cpm)
@@ -59,7 +60,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Valid values are "generic", "avx2", "avx512", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
-option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
 option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
@@ -72,6 +73,7 @@ if(FAISS_ENABLE_GPU)
     find_package(HIP REQUIRED)
     find_package(hipBLAS REQUIRED)
     set(GPU_EXT_PREFIX "hip")
+    execute_process(COMMAND ${PROJECT_SOURCE_DIR}/faiss/gpu/hipify.sh)
   else ()
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
     enable_language(CUDA)
@@ -79,9 +81,9 @@ if(FAISS_ENABLE_GPU)
   endif()
 endif()
 
-if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
-  find_package(raft COMPONENTS compiled distributed)
-endif()
+if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
+   find_package(cuvs)
+ endif()
 
 add_subdirectory(faiss)
 

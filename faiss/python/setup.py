@@ -1,13 +1,15 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 from __future__ import print_function
-from setuptools import setup, find_packages
+
 import os
-import shutil
 import platform
+import shutil
+
+from setuptools import find_packages, setup
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
@@ -20,25 +22,32 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
-ext = ".pyd" if platform.system() == 'Windows' else ".so"
-prefix = "Release/" * (platform.system() == 'Windows')
+ext = ".pyd" if platform.system() == "Windows" else ".so"
+prefix = "Release/" * (platform.system() == "Windows")
 
 swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
 swigfaiss_avx2_lib = f"{prefix}_swigfaiss_avx2{ext}"
 swigfaiss_avx512_lib = f"{prefix}_swigfaiss_avx512{ext}"
 callbacks_lib = f"{prefix}libfaiss_python_callbacks{ext}"
 swigfaiss_sve_lib = f"{prefix}_swigfaiss_sve{ext}"
+faiss_example_external_module_lib = f"_faiss_example_external_module{ext}"
 
 found_swigfaiss_generic = os.path.exists(swigfaiss_generic_lib)
 found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
 found_swigfaiss_avx512 = os.path.exists(swigfaiss_avx512_lib)
 found_callbacks = os.path.exists(callbacks_lib)
 found_swigfaiss_sve = os.path.exists(swigfaiss_sve_lib)
+found_faiss_example_external_module_lib = os.path.exists(
+    faiss_example_external_module_lib
+)
 
-assert (found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512 or found_swigfaiss_sve), \
-    f"Could not find {swigfaiss_generic_lib} or " \
-    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_sve_lib}. " \
+assert (
+    found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512 or found_swigfaiss_sve or found_faiss_example_external_module_lib
+), (
+    f"Could not find {swigfaiss_generic_lib} or "
+    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
     f"Faiss may not be compiled yet."
+)
 
 if found_swigfaiss_generic:
     print(f"Copying {swigfaiss_generic_lib}")
@@ -64,7 +73,17 @@ if found_swigfaiss_sve:
     shutil.copyfile("swigfaiss_sve.py", "faiss/swigfaiss_sve.py")
     shutil.copyfile(swigfaiss_sve_lib, f"faiss/_swigfaiss_sve{ext}")
 
-long_description="""
+if found_faiss_example_external_module_lib:
+    print(f"Copying {faiss_example_external_module_lib}")
+    shutil.copyfile(
+        "faiss_example_external_module.py", "faiss/faiss_example_external_module.py"
+    )
+    shutil.copyfile(
+        faiss_example_external_module_lib,
+        f"faiss/_faiss_example_external_module{ext}",
+    )
+
+long_description = """
 Faiss is a library for efficient similarity search and clustering of dense
 vectors. It contains algorithms that search in sets of vectors of any size,
  up to ones that possibly do not fit in RAM. It also contains supporting
@@ -73,20 +92,19 @@ complete wrappers for Python/numpy. Some of the most useful algorithms
 are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
-    name='faiss',
-    version='1.9.0',
-    description='A library for efficient similarity search and clustering of dense vectors',
+    name="faiss",
+    version="1.9.0",
+    description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
-    url='https://github.com/facebookresearch/faiss',
-    author='Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini',
-    author_email='matthijs@meta.com',
-    license='MIT',
-    keywords='search nearest neighbors',
-
-    install_requires=['numpy', 'packaging'],
-    packages=['faiss', 'faiss.contrib', 'faiss.contrib.torch'],
+    url="https://github.com/facebookresearch/faiss",
+    author="Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini",
+    author_email="matthijs@meta.com",
+    license="MIT",
+    keywords="search nearest neighbors",
+    install_requires=["numpy", "packaging"],
+    packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
     package_data={
-        'faiss': ['*.so', '*.pyd'],
+        "faiss": ["*.so", "*.pyd"],
     },
     zip_safe=False,
 )
