@@ -16,6 +16,10 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  dnnl:
+    description: 'Enable DNNL support.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -55,6 +59,11 @@ runs:
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
+        fi
+
+        # install DNNL package
+        if [ "${{ inputs.dnnl }}" = "ON" ]; then
+          conda install -y -q conda-forge::onednn
         fi
 
         # install test packages
@@ -122,6 +131,7 @@ runs:
               -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_DNNL=${{ inputs.dnnl }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
