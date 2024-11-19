@@ -23,7 +23,6 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
@@ -57,17 +56,17 @@ IndexIVFFastScan::IndexIVFFastScan() {
 
 void IndexIVFFastScan::init_fastscan(
         size_t M,
-        size_t nbits,
+        size_t nbits_2,
         size_t nlist,
         MetricType /* metric */,
-        int bbs) {
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    FAISS_THROW_IF_NOT(nbits == 4);
+        int bbs_2) {
+    FAISS_THROW_IF_NOT(bbs_2 % 32 == 0);
+    FAISS_THROW_IF_NOT(nbits_2 == 4);
 
     this->M = M;
-    this->nbits = nbits;
-    this->bbs = bbs;
-    ksub = (1 << nbits);
+    this->nbits = nbits_2;
+    this->bbs = bbs_2;
+    ksub = (1 << nbits_2);
     M2 = roundup(M, 2);
     code_size = M2 / 2;
 
@@ -1029,11 +1028,11 @@ void IndexIVFFastScan::search_implem_12(
 
     // prepare the result handlers
 
-    int qbs2 = this->qbs2 ? this->qbs2 : 11;
+    int qbs2_2 = this->qbs2 ? this->qbs2 : 11;
 
     std::vector<uint16_t> tmp_bias;
     if (biases.get()) {
-        tmp_bias.resize(qbs2);
+        tmp_bias.resize(qbs2_2);
         handler.dbias = tmp_bias.data();
     }
 
@@ -1046,7 +1045,7 @@ void IndexIVFFastScan::search_implem_12(
         int list_no = qcs[i0].list_no;
         size_t i1 = i0 + 1;
 
-        while (i1 < qcs.size() && i1 < i0 + qbs2) {
+        while (i1 < qcs.size() && i1 < i0 + qbs2_2) {
             if (qcs[i1].list_no != list_no) {
                 break;
             }
@@ -1066,7 +1065,7 @@ void IndexIVFFastScan::search_implem_12(
         std::vector<int> q_map(nc), lut_entries(nc);
         AlignedTable<uint8_t> LUT(nc * dim12);
         memset(LUT.get(), -1, nc * dim12);
-        int qbs = pq4_preferred_qbs(nc);
+        int qbs_2 = pq4_preferred_qbs(nc);
 
         for (size_t i = i0; i < i1; i++) {
             const QC& qc = qcs[i];
@@ -1078,7 +1077,7 @@ void IndexIVFFastScan::search_implem_12(
             }
         }
         pq4_pack_LUT_qbs_q_map(
-                qbs, M2, dis_tables.get(), lut_entries.data(), LUT.get());
+                qbs_2, M2, dis_tables.get(), lut_entries.data(), LUT.get());
 
         // access the inverted list
 
@@ -1094,7 +1093,7 @@ void IndexIVFFastScan::search_implem_12(
         handler.id_map = ids.get();
 
         pq4_accumulate_loop_qbs(
-                qbs, list_size, M2, codes.get(), LUT.get(), handler, scaler);
+                qbs_2, list_size, M2, codes.get(), LUT.get(), handler, scaler);
         // prepare for next loop
         i0 = i1;
     }
@@ -1232,11 +1231,11 @@ void IndexIVFFastScan::search_implem_14(
                 is_max, impl, n, k, local_dis.data(), local_idx.data(), sel));
         handler->begin(normalizers.get());
 
-        int qbs2 = this->qbs2 ? this->qbs2 : 11;
+        int qbs2_2 = this->qbs2 ? this->qbs2 : 11;
 
         std::vector<uint16_t> tmp_bias;
         if (biases.get()) {
-            tmp_bias.resize(qbs2);
+            tmp_bias.resize(qbs2_2);
             handler->dbias = tmp_bias.data();
         }
 
@@ -1256,7 +1255,7 @@ void IndexIVFFastScan::search_implem_14(
             std::vector<int> q_map(nc), lut_entries(nc);
             AlignedTable<uint8_t> LUT(nc * dim12);
             memset(LUT.get(), -1, nc * dim12);
-            int qbs = pq4_preferred_qbs(nc);
+            int qbs_2 = pq4_preferred_qbs(nc);
 
             for (size_t i = i0; i < i1; i++) {
                 const QC& qc = qcs[i];
@@ -1269,7 +1268,7 @@ void IndexIVFFastScan::search_implem_14(
                 }
             }
             pq4_pack_LUT_qbs_q_map(
-                    qbs, M2, dis_tables.get(), lut_entries.data(), LUT.get());
+                    qbs_2, M2, dis_tables.get(), lut_entries.data(), LUT.get());
 
             // access the inverted list
 
@@ -1285,7 +1284,7 @@ void IndexIVFFastScan::search_implem_14(
             handler->id_map = ids.get();
 
             pq4_accumulate_loop_qbs(
-                    qbs,
+                    qbs_2,
                     list_size,
                     M2,
                     codes.get(),

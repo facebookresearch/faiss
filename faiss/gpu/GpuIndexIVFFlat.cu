@@ -15,10 +15,10 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
-#include <raft/neighbors/ivf_flat.cuh>
+#if defined USE_NVIDIA_CUVS
+#include <cuvs/neighbors/ivf_flat.hpp>
+#include <faiss/gpu/utils/CuvsUtils.h>
+#include <faiss/gpu/impl/CuvsIVFFlat.cuh>
 #endif
 
 #include <limits>
@@ -73,8 +73,8 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
           ivfFlatConfig_(config),
           reserveMemoryVecs_(0) {
     FAISS_THROW_IF_NOT_MSG(
-            !should_use_raft(config),
-            "GpuIndexIVFFlat: RAFT does not support separate coarseQuantizer");
+            !should_use_cuvs(config),
+            "GpuIndexIVFFlat: cuVS does not support separate coarseQuantizer");
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
     if (this->is_trained) {
@@ -100,9 +100,9 @@ GpuIndexIVFFlat::~GpuIndexIVFFlat() {}
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
     DeviceScope scope(config_.device);
 
-    if (should_use_raft(config_)) {
+    if (should_use_cuvs(config_)) {
         FAISS_THROW_MSG(
-                "Pre-allocation of IVF lists is not supported with RAFT enabled.");
+                "Pre-allocation of IVF lists is not supported with cuVS enabled.");
     }
 
     reserveMemoryVecs_ = numVecs;
@@ -120,8 +120,8 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     // Clear out our old data
     index_.reset();
 
-    // skip base class allocations if RAFT is enabled
-    if (!should_use_raft(config_)) {
+    // skip base class allocations if cuVS is enabled
+    if (!should_use_cuvs(config_)) {
         baseIndex_.reset();
     }
 
@@ -213,12 +213,12 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     if (this->is_trained) {
         FAISS_ASSERT(index_);
-        if (should_use_raft(config_)) {
-            // if RAFT is enabled, copy the IVF centroids to the RAFT index in
-            // case it has been reset. This is because reset clears the RAFT
-            // index and its centroids.
+        if (should_use_cuvs(config_)) {
+            // copy the IVF centroids to the cuVS index
+            // in case it has been reset. This is because `reset` clears the
+            // cuVS index and its centroids.
             // TODO: change this once the coarse quantizer is separated from
-            // RAFT index
+            // cuVS index
             updateQuantizer();
         };
         return;
@@ -226,8 +226,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    if (should_use_raft(config_)) {
-#if defined USE_NVIDIA_RAFT
+    if (should_use_cuvs(config_)) {
+#if defined USE_NVIDIA_CUVS
         setIndex_(
                 resources_.get(),
                 this->d,
@@ -242,30 +242,43 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        raft::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = metricFaissToRaft(metric_type, false);
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction =
+        cuvs::neighbors::ivf_flat::index_params cuvs_index_params;
+        cuvs_index_params.n_lists = nlist;
+        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
+        cuvs_index_params.add_data_on_build = false;
+        cuvs_index_params.kmeans_trainset_fraction =
                 static_cast<double>(cp.max_points_per_centroid * nlist) /
                 static_cast<double>(n);
-        raft_idx_params.kmeans_n_iters = cp.niter;
+        cuvs_index_params.kmeans_n_iters = cp.niter;
 
-        auto raftIndex_ =
-                std::static_pointer_cast<RaftIVFFlat, IVFFlat>(index_);
+        auto cuvsIndex_ =
+                std::static_pointer_cast<CuvsIVFFlat, IVFFlat>(index_);
 
-        raft::neighbors::ivf_flat::index<float, idx_t> raft_ivfflat_index =
-                raft::neighbors::ivf_flat::build<float, idx_t>(
-                        raft_handle, raft_idx_params, x, n, (idx_t)d);
+        std::optional<cuvs::neighbors::ivf_flat::index<float, idx_t>>
+                cuvs_ivfflat_index;
 
-        quantizer->train(nlist, raft_ivfflat_index.centers().data_handle());
-        quantizer->add(nlist, raft_ivfflat_index.centers().data_handle());
+        if (getDeviceForAddress(x) >= 0) {
+            auto dataset_d =
+                    raft::make_device_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
+                    raft_handle, cuvs_index_params, dataset_d);
+        } else {
+            auto dataset_h =
+                    raft::make_host_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfflat_index = cuvs::neighbors::ivf_flat::build(
+                    raft_handle, cuvs_index_params, dataset_h);
+        }
+
+        quantizer->train(
+                nlist, cuvs_ivfflat_index.value().centers().data_handle());
+        quantizer->add(
+                nlist, cuvs_ivfflat_index.value().centers().data_handle());
         raft_handle.sync_stream();
 
-        raftIndex_->setRaftIndex(std::move(raft_ivfflat_index));
+        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfflat_index));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         // FIXME: GPUize more of this
@@ -295,9 +308,9 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
 
     if (reserveMemoryVecs_) {
-        if (should_use_raft(config_)) {
+        if (should_use_cuvs(config_)) {
             FAISS_THROW_MSG(
-                    "Pre-allocation of IVF lists is not supported with RAFT enabled.");
+                    "Pre-allocation of IVF lists is not supported with cuVS enabled.");
         } else
             index_->reserveMemory(reserveMemoryVecs_);
     }
@@ -317,16 +330,16 @@ void GpuIndexIVFFlat::setIndex_(
         bool interleavedLayout,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (should_use_raft(config_)) {
-#if defined USE_NVIDIA_RAFT
+    if (should_use_cuvs(config_)) {
+#if defined USE_NVIDIA_CUVS
         FAISS_THROW_IF_NOT_MSG(
                 ivfFlatConfig_.indicesOptions == INDICES_64_BIT,
-                "RAFT only supports INDICES_64_BIT");
+                "cuVS only supports INDICES_64_BIT");
         if (!ivfFlatConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.\n");
+                    "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
         }
-        index_.reset(new RaftIVFFlat(
+        index_.reset(new CuvsIVFFlat(
                 resources,
                 dim,
                 nlist,
@@ -339,7 +352,7 @@ void GpuIndexIVFFlat::setIndex_(
                 space));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         index_.reset(new IVFFlat(

@@ -21,9 +21,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPreTransform.h>
-#include <faiss/VectorTransform.h>
 #include <faiss/index_factory.h>
-#include <faiss/index_io.h>
 
 using namespace faiss;
 

@@ -16,7 +16,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
-#include <faiss/utils/utils.h>
 
 namespace faiss {
 

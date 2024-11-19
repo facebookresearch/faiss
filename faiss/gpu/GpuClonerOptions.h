@@ -37,11 +37,11 @@ struct GpuClonerOptions {
     /// Set verbose options on the index
     bool verbose = false;
 
-    /// use the RAFT implementation
-#if defined USE_NVIDIA_RAFT
-    bool use_raft = true;
+    /// use the cuVS implementation
+#if defined USE_NVIDIA_CUVS
+    bool use_cuvs = true;
 #else
-    bool use_raft = false;
+    bool use_cuvs = false;
 #endif
 
     /// This flag controls the CPU fallback logic for coarse quantizer
