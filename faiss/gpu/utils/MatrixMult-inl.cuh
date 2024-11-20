@@ -21,6 +21,7 @@ template <typename T>
 struct GetCudaType;
 
 #ifdef USE_AMD_ROCM
+
 template <>
 struct GetCudaType<float> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_32F;
@@ -30,7 +31,15 @@ template <>
 struct GetCudaType<half> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16F;
 };
+
+// FIXME: no AMD support for bf16
+// template <>
+// struct GetCudaType<__nv_bfloat16> {
+//     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16B;
+// };
+
 #else
+
 template <>
 struct GetCudaType<float> {
     static constexpr cudaDataType_t Type = CUDA_R_32F;
@@ -40,6 +49,12 @@ template <>
 struct GetCudaType<half> {
     static constexpr cudaDataType_t Type = CUDA_R_16F;
 };
+
+template <>
+struct GetCudaType<__nv_bfloat16> {
+    static constexpr cudaDataType_t Type = CUDA_R_16BF;
+};
+
 #endif
 
 template <typename AT, typename BT>
