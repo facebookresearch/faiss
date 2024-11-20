@@ -151,10 +151,10 @@ __launch_bounds__(TILE_SIZE* TILE_SIZE) __global__ void generalDistance(
                 bool kInBounds = k < query.getSize(1);
 
                 queryTileBase[threadIdx.x + i * TILE_SIZE] =
-                        kInBounds ? queryBase[k] : ConvertTo<T>::to(0);
+                        kInBounds ? queryBase[k] : ConvertTo<T>::to(0.0f);
 
                 vecTileBase[threadIdx.x + i * TILE_SIZE] =
-                        kInBounds ? vecBase[k] : ConvertTo<T>::to(0);
+                        kInBounds ? vecBase[k] : ConvertTo<T>::to(0.0f);
             }
 
             __syncthreads();
@@ -185,10 +185,10 @@ __launch_bounds__(TILE_SIZE* TILE_SIZE) __global__ void generalDistance(
         for (idx_t k = threadIdx.x; k < limit; k += TILE_SIZE) {
             // Load query tile
             queryTileBase[threadIdx.x] =
-                    queryThreadInBounds ? queryBase[k] : ConvertTo<T>::to(0);
+                    queryThreadInBounds ? queryBase[k] : ConvertTo<T>::to(0.0f);
 
             vecTileBase[threadIdx.x] =
-                    vecThreadInBoundsLoad ? vecBase[k] : ConvertTo<T>::to(0);
+                    vecThreadInBoundsLoad ? vecBase[k] : ConvertTo<T>::to(0.0f);
 
             __syncthreads();
 
@@ -211,11 +211,11 @@ __launch_bounds__(TILE_SIZE* TILE_SIZE) __global__ void generalDistance(
             // Load query tile
             queryTileBase[threadIdx.x] = queryThreadInBounds && kInBounds
                     ? queryBase[k]
-                    : ConvertTo<T>::to(0);
+                    : ConvertTo<T>::to(0.0f);
 
             vecTileBase[threadIdx.x] = vecThreadInBoundsLoad && kInBounds
                     ? vecBase[k]
-                    : ConvertTo<T>::to(0);
+                    : ConvertTo<T>::to(0.0f);
 
             __syncthreads();
 

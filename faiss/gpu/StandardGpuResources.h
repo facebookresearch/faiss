@@ -48,6 +48,9 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     ~StandardGpuResourcesImpl() override;
 
+    /// Does the given GPU support bfloat16?
+    bool supportsBFloat16(int device) override;
+
     /// Disable allocation of temporary memory; all temporary memory
     /// requests will call cudaMalloc / cudaFree at the point of use
     void noTempMemory();
@@ -198,6 +201,12 @@ class StandardGpuResources : public GpuResourcesProvider {
     ~StandardGpuResources() override;
 
     std::shared_ptr<GpuResources> getResources() override;
+
+    /// Whether or not the given device supports native bfloat16 arithmetic
+    bool supportsBFloat16(int device);
+
+    /// Whether or not the current device supports native bfloat16 arithmetic
+    bool supportsBFloat16CurrentDevice();
 
     /// Disable allocation of temporary memory; all temporary memory
     /// requests will call cudaMalloc / cudaFree at the point of use

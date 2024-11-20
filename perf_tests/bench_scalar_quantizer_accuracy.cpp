@@ -14,7 +14,6 @@
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 using namespace faiss;
 DEFINE_uint32(d, 128, "dimension");

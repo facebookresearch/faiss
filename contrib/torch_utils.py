@@ -56,6 +56,13 @@ def swig_ptr_from_FloatTensor(x):
     return faiss.cast_integer_to_float_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
+def swig_ptr_from_BFloat16Tensor(x):
+    """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
+    assert x.is_contiguous()
+    assert x.dtype == torch.bfloat16
+    return faiss.cast_integer_to_void_ptr(
+        x.untyped_storage().data_ptr() + x.storage_offset() * 2)
+
 
 def swig_ptr_from_IntTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -606,8 +613,11 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     elif xb.dtype == torch.float16:
         xb_type = faiss.DistanceDataType_F16
         xb_ptr = swig_ptr_from_HalfTensor(xb)
+    elif xb.dtype == torch.bfloat16:
+        xb_type = faiss.DistanceDataType_BF16
+        xb_ptr = swig_ptr_from_BFloat16Tensor(xb)
     else:
-        raise TypeError('xb must be f32 or f16')
+        raise TypeError('xq must be float32, float16 or bfloat16')
 
     nq, d2 = xq.size()
     assert d2 == d
@@ -625,8 +635,11 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     elif xq.dtype == torch.float16:
         xq_type = faiss.DistanceDataType_F16
         xq_ptr = swig_ptr_from_HalfTensor(xq)
+    elif xq.dtype == torch.bfloat16:
+        xq_type = faiss.DistanceDataType_BF16
+        xq_ptr = swig_ptr_from_BFloat16Tensor(xq)
     else:
-        raise TypeError('xq must be f32 or f16')
+        raise TypeError('xq must be float32, float16 or bfloat16')
 
     if D is None:
         D = torch.empty(nq, k, device=xb.device, dtype=torch.float32)

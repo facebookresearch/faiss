@@ -504,6 +504,30 @@ void runAllPairwiseL2Distance(
             outDistances);
 }
 
+// no bf16 support for AMD
+#ifndef USE_AMD_ROCM
+void runAllPairwiseL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<__nv_bfloat16>(
+            true,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+#endif // USE_AMD_ROCM
+
 void runAllPairwiseIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -543,6 +567,29 @@ void runAllPairwiseIPDistance(
             queriesRowMajor,
             outDistances);
 }
+
+// no bf16 support for AMD
+#ifndef USE_AMD_ROCM
+void runAllPairwiseIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<__nv_bfloat16>(
+            false,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            nullptr,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+#endif // USE_AMD_ROCM
 
 void runL2Distance(
         GpuResources* res,
@@ -596,6 +643,35 @@ void runL2Distance(
             ignoreOutDistances);
 }
 
+// no bf16 support for AMD
+#ifndef USE_AMD_ROCM
+void runL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        bool ignoreOutDistances) {
+    runL2Distance<__nv_bfloat16>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices,
+            ignoreOutDistances);
+}
+#endif // USE_AMD_ROCM
+
 void runIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -639,6 +715,31 @@ void runIPDistance(
             outDistances,
             outIndices);
 }
+
+// no bf16 support for AMD
+#ifndef USE_AMD_ROCM
+void runIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices) {
+    runIPDistance<__nv_bfloat16>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices);
+}
+#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss
