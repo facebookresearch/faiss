@@ -50,6 +50,19 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances);</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">//<sp/>no<sp/>bf16<sp/>support<sp/>for<sp/>AMD</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runAllPairwiseL2Distance(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>vectors,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vectorsRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>1,<sp/>true&gt;*<sp/>vectorNorms,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances);</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">void<sp/>runAllPairwiseIPDistance(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
@@ -67,6 +80,18 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>no<sp/>bf16<sp/>support<sp/>for<sp/>AMD</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runAllPairwiseIPDistance(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>vectors,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vectorsRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances);</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Calculates<sp/>brute-force<sp/>L2<sp/>distance<sp/>between<sp/>`vectors`<sp/>and</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>`queries`,<sp/>returning<sp/>the<sp/>k<sp/>closest<sp/>results<sp/>seen</highlight></codeline>
@@ -100,6 +125,22 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>ignoreOutDistances<sp/>=<sp/>false);</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">//<sp/>no<sp/>bf16<sp/>support<sp/>for<sp/>AMD</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runL2Distance(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>vectors,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vectorsRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>1,<sp/>true&gt;*<sp/>vectorNorms,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>ignoreOutDistances<sp/>=<sp/>false);</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Calculates<sp/>brute-force<sp/>inner<sp/>product<sp/>distance<sp/>between<sp/>`vectors`</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>and<sp/>`queries`,<sp/>returning<sp/>the<sp/>k<sp/>closest<sp/>results<sp/>seen</highlight></codeline>
 <codeline><highlight class="normal">void<sp/>runIPDistance(</highlight></codeline>
@@ -123,6 +164,20 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>no<sp/>bf16<sp/>support<sp/>for<sp/>AMD</highlight></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runIPDistance(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>vectors,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>vectorsRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;__nv_bfloat16,<sp/>2,<sp/>true&gt;&amp;<sp/>queries,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>queriesRowMajor,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices);</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>General<sp/>distance<sp/>implementation,<sp/>assumes<sp/>that<sp/>all<sp/>arguments<sp/>are<sp/>on<sp/>the</highlight></codeline>

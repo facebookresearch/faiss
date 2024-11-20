@@ -22,7 +22,7 @@
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>Templated<sp/>wrappers<sp/>to<sp/>express<sp/>math<sp/>for<sp/>different<sp/>scalar<sp/>and<sp/>vector</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>types,<sp/>so<sp/>kernels<sp/>can<sp/>have<sp/>the<sp/>same<sp/>written<sp/>form<sp/>but<sp/>can<sp/>operate</highlight></codeline>
-<codeline><highlight class="normal">//<sp/>over<sp/>half<sp/>and<sp/>float,<sp/>and<sp/>on<sp/>vector<sp/>types<sp/>transparently</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>over<sp/>half,<sp/>bfloat16<sp/>and<sp/>float,<sp/>and<sp/>on<sp/>vector<sp/>types<sp/>transparently</highlight></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
@@ -564,6 +564,241 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Math&lt;__nv_bfloat16&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>__nv_bfloat16<sp/>ScalarType;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>add(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2bfloat16(__bfloat162float(a)<sp/>+<sp/>__bfloat162float(b));</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>sub(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2bfloat16(__bfloat162float(a)<sp/>-<sp/>__bfloat162float(b));</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mul(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2bfloat16(__bfloat162float(a)<sp/>*<sp/>__bfloat162float(b));</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat16<sp/>neg(__nv_bfloat16<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hneg(v);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2bfloat16(-__bfloat162float(v));</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(__nv_bfloat16<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hlt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__bfloat162float(a)<sp/>&lt;<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hgt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__bfloat162float(a)<sp/>&gt;<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(__nv_bfloat16<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__heq(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__bfloat162float(a)<sp/>==<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat16<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat16<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Math&lt;__nv_bfloat162&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>__nv_bfloat16<sp/>ScalarType;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#ifndef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>define<sp/>a<sp/>few<sp/>conversion<sp/>functions<sp/>that<sp/>don&apos;t<sp/>exist<sp/>on<sp/>cuda<sp/>11</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>this<sp/>overrides<sp/>their<sp/>definition<sp/>in<sp/>cuda<sp/>12<sp/>but<sp/>we<sp/>use<sp/>native<sp/>bf16<sp/>on<sp/>this</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>platform<sp/>anyways.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>__bfloat1622float2(__nv_bfloat162<sp/>a)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>=<sp/>__bfloat162float(a.x);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>=<sp/>__bfloat162float(a.y);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>af;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162<sp/>__float22bfloat162_rn(float2<sp/>af)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat162<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.x<sp/>=<sp/>__float2bfloat16_rn(af.x);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.y<sp/>=<sp/>__float2bfloat16_rn(af.y);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__bfloat162bfloat162(__nv_bfloat16<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat162<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.x<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.y<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>add(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__bfloat1622float2(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>+=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>+=<sp/>bf.y;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>sub(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__bfloat1622float2(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>-=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>-=<sp/>bf.y;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>add(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat162<sp/>b2<sp/>=<sp/>__bfloat162bfloat162(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>+=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>+=<sp/>bf;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>sub(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat162<sp/>b2<sp/>=<sp/>__bfloat162bfloat162(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>-=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>-=<sp/>bf;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mul(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__bfloat1622float2(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>*=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>*=<sp/>bf.y;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mul(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat16<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__nv_bfloat162<sp/>b2<sp/>=<sp/>__bfloat162bfloat162(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__bfloat1622float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__bfloat162float(b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>*=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>*=<sp/>bf;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(af);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162<sp/>neg(__nv_bfloat162<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_BFLOAT16</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hneg2(v);</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__bfloat1622float2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.x<sp/>=<sp/>-vf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.y<sp/>=<sp/>-vf.y;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22bfloat162_rn(vf);</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(__nv_bfloat162<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__bfloat1622float2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.x<sp/>+=<sp/>vf.y;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>vf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(__nv_bfloat162<sp/>a,<sp/>__nv_bfloat162<sp/>b);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>__nv_bfloat162<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__bfloat162bfloat162(Math&lt;__nv_bfloat16&gt;::zero());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>!USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>

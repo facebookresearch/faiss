@@ -25,7 +25,21 @@
 <codeline><highlight class="normal">#define<sp/>FAISS_USE_FULL_FLOAT16<sp/>1</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__<sp/>types</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Some<sp/>compute<sp/>capabilities<sp/>have<sp/>full<sp/>bfloat16<sp/>ALUs.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>FIXME:<sp/>no<sp/>support<sp/>in<sp/>ROCm<sp/>yet</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>800<sp/>//<sp/>||<sp/>defined(USE_AMD_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>FAISS_USE_FULL_BFLOAT16<sp/>1</highlight></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>__CUDA_ARCH__<sp/>types</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda_fp16.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>!defined(USE_AMD_ROCM)</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda_bf16.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>#else</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/>FIXME:<sp/>no<sp/>support<sp/>in<sp/>ROCm<sp/>yet</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/>#include<sp/>&lt;amd_hip_bf16.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">//<sp/><sp/>#include<sp/>&lt;amd_hip_fp16.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>#endif<sp/>//<sp/>!defined(USE_AMD_ROCM)</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>

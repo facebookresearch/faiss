@@ -68,13 +68,20 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268af656bbf613964dcf710b771b0918ab30" prot="public">
+          <name>BF16</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="19" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="19" bodyend="22"/>
+        <location file="faiss/gpu/GpuDistance.h" line="19" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="19" bodyend="23"/>
       </memberdef>
       <memberdef kind="enum" id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" prot="public" static="no" strong="yes">
         <type></type>
@@ -100,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="25" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="25" bodyend="28"/>
+        <location file="faiss/gpu/GpuDistance.h" line="26" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="26" bodyend="29"/>
       </memberdef>
       <memberdef kind="enum" id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992ac" prot="public" static="no" strong="yes">
         <type></type>
@@ -566,7 +573,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="119" column="6" declfile="faiss/gpu/GpuDistance.h" declline="119" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="120" column="6" declfile="faiss/gpu/GpuDistance.h" declline="120" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -590,7 +597,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="133" column="6" declfile="faiss/gpu/GpuDistance.h" declline="133" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="134" column="6" declfile="faiss/gpu/GpuDistance.h" declline="134" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -619,7 +626,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="147" column="6" declfile="faiss/gpu/GpuDistance.h" declline="147" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="148" column="6" declfile="faiss/gpu/GpuDistance.h" declline="148" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -681,7 +688,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="154" column="6" declfile="faiss/gpu/GpuDistance.h" declline="154" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="155" column="6" declfile="faiss/gpu/GpuDistance.h" declline="155" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a575dd856231662ae3e06b1fd2147a8a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>

@@ -163,7 +163,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>void<sp/>decode(void*<sp/>data,<sp/>idx_t<sp/>vec,<sp/>int<sp/>d,<sp/>float*<sp/>out)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half*<sp/>p<sp/>=<sp/>(half*)&amp;((uint8_t*)data)[vec<sp/>*<sp/>bytesPerVec];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[0]<sp/>=<sp/>Convert&lt;half,<sp/>float&gt;()(p[d]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[0]<sp/>=<sp/>ConvertTo&lt;float&gt;::to(p[d]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>float<sp/>decodePartial(</highlight></codeline>
@@ -181,7 +181,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>d,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>v[kDimPerIter])<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half*<sp/>p<sp/>=<sp/>(half*)&amp;((uint8_t*)data)[vec<sp/>*<sp/>bytesPerVec];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>p[d]<sp/>=<sp/>Convert&lt;float,<sp/>half&gt;()(v[0]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>p[d]<sp/>=<sp/>ConvertTo&lt;half&gt;::to(v[0]);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>void<sp/>encodePartial(</highlight></codeline>
@@ -200,11 +200,11 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kEncodeBits<sp/>=<sp/>16;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>EncodeT<sp/>encodeNew(int<sp/>dim,<sp/>float<sp/>v)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Convert&lt;float,<sp/>half&gt;()(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;half&gt;::to(v);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>float<sp/>decodeNew(int<sp/>dim,<sp/>EncodeT<sp/>v)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Convert&lt;half,<sp/>float&gt;()(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>bytesPerVec;</highlight></codeline>

@@ -1549,6 +1549,7 @@
   <compound refid="classfaiss_1_1gpu_1_1GpuResources" kind="class"><name>faiss::gpu::GpuResources</name>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a979a487daf95fc077321e4cd8020278c" kind="function"><name>~GpuResources</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" kind="function"><name>initializeForDevice</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuResources_1ab4b064a700f9d3d6ecf486be6e23c55c" kind="function"><name>supportsBFloat16</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1aa2682b8503dfdab4f7f5ef867035ad29" kind="function"><name>getBlasHandle</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a6c564198df6ba675920c993e2af34b8c" kind="function"><name>getDefaultStream</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1ac7a6bad94585904e17907844736165ec" kind="function"><name>setDefaultStream</name></member>
@@ -1558,6 +1559,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1abfad190786252900370003ed02b3f411" kind="function"><name>getTempMemoryAvailable</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1ad1b018745239e03d0044b659335c17a8" kind="function"><name>getPinnedMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a104b291ed4116033752144e90856c2e7" kind="function"><name>getAsyncCopyStream</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuResources_1a867681740486f732c786f0d1af782076" kind="function"><name>supportsBFloat16CurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" kind="function"><name>getBlasHandleCurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" kind="function"><name>getDefaultStreamCurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" kind="function"><name>getTempMemoryAvailableCurrentDevice</name></member>
@@ -8725,6 +8727,8 @@
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1ad1ef27033798e5250230a339099e07db" kind="function"><name>StandardGpuResources</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1ae26840fd6490cfaf7311f2eed81def34" kind="function"><name>~StandardGpuResources</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" kind="function"><name>getResources</name></member>
+    <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1acbb018d9baccc288a6d36f5509c83fb9" kind="function"><name>supportsBFloat16</name></member>
+    <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a3166b521fbdf5a1f1ccb14a8ced3ae00" kind="function"><name>supportsBFloat16CurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651" kind="function"><name>noTempMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a367102e65b16bfdc7a32770a4f5854a6" kind="function"><name>setTempMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1af9acb23ac323f85fa5dab4ed968ccd51" kind="function"><name>setPinnedMemory</name></member>
@@ -8752,6 +8756,7 @@
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad157e95342116754b0be81a8e5775343" kind="variable"><name>allocLogging_</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a416835fae3db3685e40f42c8260f8745" kind="function"><name>StandardGpuResourcesImpl</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a6c05d4e676be74d65d44ccb23eb63f63" kind="function"><name>~StandardGpuResourcesImpl</name></member>
+    <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad2267943823c25e95b28733bf1177935" kind="function"><name>supportsBFloat16</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a37459ad7862e50792e6498289c7f81b7" kind="function"><name>noTempMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a95ec5cc373c8aeefcacd55ee0be0dff3" kind="function"><name>setTempMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a63bd261de7e331760dea2e59ac26c036" kind="function"><name>setPinnedMemory</name></member>
@@ -8769,6 +8774,7 @@
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af8760dfaf89fac90208e8c73b718437c" kind="function"><name>getMemoryInfo</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a86dea0d55d2ab7226f173e2ec998c6b4" kind="function"><name>getPinnedMemory</name></member>
     <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a28beb152642c2621724c7eedb088630c" kind="function"><name>getAsyncCopyStream</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuResources_1a867681740486f732c786f0d1af782076" kind="function"><name>supportsBFloat16CurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12" kind="function"><name>getBlasHandleCurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1aa0354aa570c24e17a9f8a6a45b153ed2" kind="function"><name>getDefaultStreamCurrentDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1aeb57bc66a9823aaf140324e22985a71d" kind="function"><name>getTempMemoryAvailableCurrentDevice</name></member>
@@ -9508,6 +9514,7 @@
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>
+    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268af656bbf613964dcf710b771b0918ab30" kind="enumvalue"><name>BF16</name></member>
     <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" kind="enum"><name>IndicesDataType</name></member>
     <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" kind="enumvalue"><name>I64</name></member>
     <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" kind="enumvalue"><name>I32</name></member>
