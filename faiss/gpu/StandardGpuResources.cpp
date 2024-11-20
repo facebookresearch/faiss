@@ -206,6 +206,13 @@ size_t StandardGpuResourcesImpl::getDefaultTempMemForGPU(
     return requested;
 }
 
+/// Does the given GPU support bfloat16?
+bool StandardGpuResourcesImpl::supportsBFloat16(int device) {
+    initializeForDevice(device);
+    auto& prop = getDeviceProperties(device);
+    return prop.major >= 8;
+}
+
 void StandardGpuResourcesImpl::noTempMemory() {
     setTempMemory(0);
 }
@@ -699,6 +706,14 @@ StandardGpuResources::~StandardGpuResources() = default;
 
 std::shared_ptr<GpuResources> StandardGpuResources::getResources() {
     return res_;
+}
+
+bool StandardGpuResources::supportsBFloat16(int device) {
+    return res_->supportsBFloat16(device);
+}
+
+bool StandardGpuResources::supportsBFloat16CurrentDevice() {
+    return res_->supportsBFloat16CurrentDevice();
 }
 
 void StandardGpuResources::noTempMemory() {

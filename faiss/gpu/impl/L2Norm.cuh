@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <cuda_fp16.h>
+#include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss {
@@ -26,6 +26,16 @@ void runL2Norm(
         Tensor<float, 1, true>& output,
         bool normSquared,
         cudaStream_t stream);
+
+// no bf16 support for AMD
+#ifndef USE_AMD_ROCM
+void runL2Norm(
+        Tensor<__nv_bfloat16, 2, true>& input,
+        bool inputRowMajor,
+        Tensor<float, 1, true>& output,
+        bool normSquared,
+        cudaStream_t stream);
+#endif
 
 } // namespace gpu
 } // namespace faiss
