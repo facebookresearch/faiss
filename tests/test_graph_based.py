@@ -335,7 +335,7 @@ class TestNSG(unittest.TestCase):
         """Make some invalid entries in the input knn graph.
 
         It would cause a warning but IndexNSG should be able
-        to handel this.
+        to handle this.
         """
         knn_graph = self.make_knn_graph(faiss.METRIC_L2)
         knn_graph[:100, 5] = -111
