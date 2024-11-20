@@ -365,6 +365,12 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei">
+<span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei"></span><span id="faiss::gpu::StandardGpuResourcesImpl::supportsBFloat16__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad2267943823c25e95b28733bf1177935"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Does the given GPU support bfloat16? </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv"></span><span id="faiss::gpu::StandardGpuResourcesImpl::noTempMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a37459ad7862e50792e6498289c7f81b7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">noTempMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>
@@ -584,6 +590,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources12getResourcesEv">
 <span id="_CPPv3N5faiss3gpu20StandardGpuResources12getResourcesEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources12getResourcesEv"></span><span id="faiss::gpu::StandardGpuResources::getResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getResources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>Returns the shared resources object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei"></span><span id="faiss::gpu::StandardGpuResources::supportsBFloat16__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1acbb018d9baccc288a6d36f5509c83fb9"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Whether or not the given device supports native bfloat16 arithmetic. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv"></span><span id="faiss::gpu::StandardGpuResources::supportsBFloat16CurrentDevice"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a3166b521fbdf5a1f1ccb14a8ced3ae00"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16CurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Whether or not the current device supports native bfloat16 arithmetic. </p>
 </dd></dl>
 
 <dl class="cpp function">

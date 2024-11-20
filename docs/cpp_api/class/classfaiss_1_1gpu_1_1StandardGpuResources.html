@@ -133,6 +133,18 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei"></span><span id="faiss::gpu::StandardGpuResources::supportsBFloat16__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1acbb018d9baccc288a6d36f5509c83fb9"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources16supportsBFloat16Ei" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Whether or not the given device supports native bfloat16 arithmetic. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv"></span><span id="faiss::gpu::StandardGpuResources::supportsBFloat16CurrentDevice"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a3166b521fbdf5a1f1ccb14a8ced3ae00"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16CurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources29supportsBFloat16CurrentDeviceEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Whether or not the current device supports native bfloat16 arithmetic. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20StandardGpuResources12noTempMemoryEv">
 <span id="_CPPv3N5faiss3gpu20StandardGpuResources12noTempMemoryEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources12noTempMemoryEv"></span><span id="faiss::gpu::StandardGpuResources::noTempMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a6431477a7328ac147797b3b4e3fcf651"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">noTempMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20StandardGpuResources12noTempMemoryEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>

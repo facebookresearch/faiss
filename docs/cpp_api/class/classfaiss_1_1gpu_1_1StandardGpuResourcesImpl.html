@@ -127,6 +127,12 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei">
+<span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei"></span><span id="faiss::gpu::StandardGpuResourcesImpl::supportsBFloat16__i"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad2267943823c25e95b28733bf1177935"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24StandardGpuResourcesImpl16supportsBFloat16Ei" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Does the given GPU support bfloat16? </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv"></span><span id="faiss::gpu::StandardGpuResourcesImpl::noTempMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a37459ad7862e50792e6498289c7f81b7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">noTempMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24StandardGpuResourcesImpl12noTempMemoryEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Disable allocation of temporary memory; all temporary memory requests will call cudaMalloc / cudaFree at the point of use </p>
@@ -230,10 +236,16 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl29supportsBFloat16CurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl29supportsBFloat16CurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl29supportsBFloat16CurrentDeviceEv"></span><span id="faiss::gpu::StandardGpuResourcesImpl::supportsBFloat16CurrentDevice"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuResources_1a867681740486f732c786f0d1af782076"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">supportsBFloat16CurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24StandardGpuResourcesImpl29supportsBFloat16CurrentDeviceEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Does the current GPU support bfloat16? </p>
+<p>Functions provided by default </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl26getBlasHandleCurrentDeviceEv">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl26getBlasHandleCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl26getBlasHandleCurrentDeviceEv"></span><span id="faiss::gpu::StandardGpuResourcesImpl::getBlasHandleCurrentDevice"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuResources_1a00cb7bcbc5f1a00da673f30749149b12"></span><span class="n"><span class="pre">cublasHandle_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBlasHandleCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24StandardGpuResourcesImpl26getBlasHandleCurrentDeviceEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls getBlasHandle with the current device. </p>
-<p>Functions provided by default </p>
 </dd></dl>
 
 <dl class="cpp function">
