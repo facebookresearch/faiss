@@ -301,7 +301,7 @@
 <codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>lower-level<sp/>encode<sp/>function</highlight></codeline>
 <codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>hanlde</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>handle</highlight></codeline>
 <codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>residuals<sp/><sp/><sp/><sp/><sp/><sp/>vectors<sp/>to<sp/>encode,<sp/>size<sp/>(n,<sp/>beam_size,<sp/>d)</highlight></codeline>
 <codeline lineno="117"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>beam_size<sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>beam<sp/>size</highlight></codeline>
 <codeline lineno="118"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>new_beam_size<sp/><sp/>output<sp/>beam<sp/>size<sp/>(should<sp/>be<sp/>&lt;=<sp/>K<sp/>*<sp/>beam_size)</highlight></codeline>
