@@ -60,7 +60,9 @@ configure_swigfaiss(swigfaiss.swig)
 configure_swigfaiss(swigfaiss_avx2.swig)
 configure_swigfaiss(swigfaiss_avx512.swig)
 configure_swigfaiss(swigfaiss_sve.swig)
-configure_swigfaiss(faiss_example_external_module.swig)
+if (BUILD_SHARED_LIBS)
+  configure_swigfaiss(faiss_example_external_module.swig)
+endif()
 
 if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
@@ -74,8 +76,10 @@ if(TARGET faiss)
       "${faiss_SOURCE_DIR}/faiss/${h}")
     list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/${h}")
-    list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-      "${faiss_SOURCE_DIR}/faiss/${h}")
+    if (BUILD_SHARED_LIBS)
+      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/${h}")
+    endif()
   endforeach()
   if(FAISS_ENABLE_ROCM)
     foreach(h ${FAISS_GPU_HEADERS})
@@ -85,8 +89,10 @@ if(TARGET faiss)
         "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
       list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+      if (BUILD_SHARED_LIBS)
+        list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+          "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
+      endif()
     endforeach()
   else()
     foreach(h ${FAISS_GPU_HEADERS})
@@ -98,8 +104,10 @@ if(TARGET faiss)
         "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
       list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
         "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      if (BUILD_SHARED_LIBS)
+        list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+          "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+      endif()
     endforeach()
   endif()
 else()
@@ -158,14 +166,16 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
   set_target_properties(swigfaiss_sve PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
-set_property(SOURCE faiss_example_external_module.swig
-  PROPERTY SWIG_MODULE_NAME faiss_example_external_module)
-swig_add_library(faiss_example_external_module
-  TYPE SHARED
-  LANGUAGE python
-  SOURCES faiss_example_external_module.swig
-)
-set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+if (BUILD_SHARED_LIBS)
+  set_property(SOURCE faiss_example_external_module.swig
+    PROPERTY SWIG_MODULE_NAME faiss_example_external_module)
+  swig_add_library(faiss_example_external_module
+    TYPE SHARED
+    LANGUAGE python
+    SOURCES faiss_example_external_module.swig
+  )
+  set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+endif()
 
 if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
@@ -173,14 +183,18 @@ if(NOT WIN32)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx512 PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_sve PROPERTIES SUFFIX .so)
-  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
+  if (BUILD_SHARED_LIBS)
+    set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
+  endif()
 else()
   # we need bigobj for the swig wrapper
   target_compile_options(swigfaiss PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
   target_compile_options(swigfaiss_avx512 PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
-  target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+  if (BUILD_SHARED_LIBS)
+    target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+  endif()
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -188,7 +202,9 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss PRIVATE hip::host)
     target_link_libraries(swigfaiss_avx2 PRIVATE hip::host)
     target_link_libraries(swigfaiss_avx512 PRIVATE hip::host)
-    target_link_libraries(faiss_example_external_module PRIVATE hip::host)
+    if (BUILD_SHARED_LIBS)
+      target_link_libraries(faiss_example_external_module PRIVATE hip::host)
+    endif()
   else()
     find_package(CUDAToolkit REQUIRED)
     if(FAISS_ENABLE_CUVS)
@@ -231,13 +247,15 @@ target_link_libraries(swigfaiss_sve PRIVATE
   OpenMP::OpenMP_CXX
 )
 
-target_link_libraries(faiss_example_external_module PRIVATE
-  Python::Module
-  Python::NumPy
-  OpenMP::OpenMP_CXX
-  swigfaiss
-  faiss
-)
+if (BUILD_SHARED_LIBS)
+  target_link_libraries(faiss_example_external_module PRIVATE
+    Python::Module
+    Python::NumPy
+    OpenMP::OpenMP_CXX
+    swigfaiss
+    faiss
+  )
+endif()
 
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
@@ -245,7 +263,9 @@ target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx2 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx512 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
-target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+if (BUILD_SHARED_LIBS)
+  target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+endif()
 
 find_package(Python REQUIRED
   COMPONENTS Development NumPy
@@ -271,7 +291,9 @@ target_link_libraries(swigfaiss PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx2 PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx512 PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_sve PRIVATE faiss_python_callbacks)
-target_link_libraries(faiss_example_external_module PRIVATE faiss_python_callbacks)
+if (BUILD_SHARED_LIBS)
+  target_link_libraries(faiss_example_external_module PRIVATE faiss_python_callbacks)
+endif()
 
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)

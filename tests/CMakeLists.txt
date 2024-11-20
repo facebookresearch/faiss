@@ -43,7 +43,7 @@ include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_test)
 
-if (FAISS_ENABLE_PYTHON)
+if (FAISS_ENABLE_PYTHON AND BUILD_SHARED_LIBS)
   target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
 endif()
 

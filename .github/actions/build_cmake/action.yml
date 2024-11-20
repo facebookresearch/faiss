@@ -117,7 +117,7 @@ runs:
         conda activate
         cmake -B build \
               -DBUILD_TESTING=ON \
-              -DBUILD_SHARED_LIBS=ON \
+              -DBUILD_SHARED_LIBS=OFF \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
               -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
