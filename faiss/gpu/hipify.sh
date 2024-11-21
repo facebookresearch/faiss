@@ -3,6 +3,9 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+#
+# Usage: ./gpu/hipify.sh
+#
 
 function hipify_dir()
 {
@@ -10,10 +13,36 @@ function hipify_dir()
     cd "$1" || exit
     echo "Hipifying $(pwd)"
 
+    if [ -d ./gpu-tmp ]; then
+        #Clearing out any leftover files and directories
+        echo "Removing old ./gpu-tmp"
+        rm -rf ./gpu-tmp
+    fi
+
+    if [ -d ./gpu ]; then
+        #Making a temp directory to implement pre hipify rules
+        echo "Creating ./gpu-tmp"
+        cp -r ./gpu ./gpu-tmp
+
+        # adjust __nv_bfloat162 before hipify because of inaccurate conversions
+        # adjust __nv_bfloat16 before hipify because of inaccurate conversions
+        for ext in hip cuh h cpp c cu cuh
+        do
+            while IFS= read -r -d '' src
+            do
+                sed -i 's@__nv_bfloat162@__hip_bfloat162@' "$src"
+                sed -i 's@__nv_bfloat16@__hip_bfloat16@' "$src"
+            done <   <(find ./gpu-tmp -name "*.$ext" -print0)
+        done
+    else
+        echo "Can't find the gpu/ dir"
+        exit
+    fi
+
     # create all destination directories for hipified files into sibling 'gpu-rocm' directory
     while IFS= read -r -d '' src
     do
-        dst="${src//gpu/gpu-rocm}"
+        dst="${src//gpu-tmp/gpu-rocm}"
 
         if [ -d $dst ]; then
             #Clearing out any leftover files and directories
@@ -24,7 +53,7 @@ function hipify_dir()
         #Making directories
         echo "Creating $dst"
         mkdir -p "$dst"
-    done <   <(find ./gpu -type d -print0)
+    done <   <(find ./gpu-tmp -type d -print0)
 
     # run hipify-perl against all *.cu *.cuh *.h *.cpp files, no renaming
     # run all files in parallel to speed up
@@ -32,9 +61,9 @@ function hipify_dir()
     do
         while IFS= read -r -d '' src
         do
-            dst="${src//\.\/gpu/\.\/gpu-rocm}"
+            dst="${src//\.\/gpu-tmp/\.\/gpu-rocm}"
             hipify-perl -o="$dst.tmp" "$src" &
-        done <   <(find ./gpu -name "*.$ext" -print0)
+        done <   <(find ./gpu-tmp -name "*.$ext" -print0)
     done
     wait
 
@@ -44,6 +73,12 @@ function hipify_dir()
         dst=${src%.cu.tmp}.hip.tmp
         mv "$src" "$dst"
     done <   <(find ./gpu-rocm -name "*.cu.tmp" -print0)
+
+    if [ -d ./gpu-tmp ]; then
+        #Clearing out any leftover files and directories
+        echo "Removing ./gpu-tmp"
+        rm -rf ./gpu-tmp
+    fi
 
     # replace header include statements "<faiss/gpu/" with "<faiss/gpu-rocm"
     # replace thrust::cuda::par with thrust::hip::par

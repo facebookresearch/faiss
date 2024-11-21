@@ -32,11 +32,10 @@ struct GetCudaType<half> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16F;
 };
 
-// FIXME: no AMD support for bf16
-// template <>
-// struct GetCudaType<__nv_bfloat16> {
-//     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16B;
-// };
+ template <>
+ struct GetCudaType<__hip_bfloat16> {
+     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16B;
+ };
 
 #else
 

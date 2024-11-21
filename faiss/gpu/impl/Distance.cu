@@ -504,8 +504,6 @@ void runAllPairwiseL2Distance(
             outDistances);
 }
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runAllPairwiseL2Distance(
         GpuResources* res,
         cudaStream_t stream,
@@ -526,7 +524,6 @@ void runAllPairwiseL2Distance(
             queriesRowMajor,
             outDistances);
 }
-#endif // USE_AMD_ROCM
 
 void runAllPairwiseIPDistance(
         GpuResources* res,
@@ -568,8 +565,6 @@ void runAllPairwiseIPDistance(
             outDistances);
 }
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runAllPairwiseIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -589,7 +584,6 @@ void runAllPairwiseIPDistance(
             queriesRowMajor,
             outDistances);
 }
-#endif // USE_AMD_ROCM
 
 void runL2Distance(
         GpuResources* res,
@@ -643,8 +637,6 @@ void runL2Distance(
             ignoreOutDistances);
 }
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runL2Distance(
         GpuResources* res,
         cudaStream_t stream,
@@ -670,7 +662,6 @@ void runL2Distance(
             outIndices,
             ignoreOutDistances);
 }
-#endif // USE_AMD_ROCM
 
 void runIPDistance(
         GpuResources* res,
@@ -716,8 +707,6 @@ void runIPDistance(
             outIndices);
 }
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -739,7 +728,6 @@ void runIPDistance(
             outDistances,
             outIndices);
 }
-#endif // USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss
