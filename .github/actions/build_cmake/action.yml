@@ -52,8 +52,9 @@ runs:
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ]
           conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        # and CUDA from cuVS channel for cuVS builds
         fi
+        
+        # and CUDA from cuVS channel for cuVS builds
         if [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q cuda-version=12.4 -c nvidia
           conda install -y -q libcuvs=24.10 -c rapidsai
