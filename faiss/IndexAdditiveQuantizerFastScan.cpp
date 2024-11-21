@@ -8,10 +8,7 @@
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 
 #include <cassert>
-#include <climits>
 #include <memory>
-
-#include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>

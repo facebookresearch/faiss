@@ -8,10 +8,7 @@
 #include <faiss/IndexPQFastScan.h>
 
 #include <cassert>
-#include <climits>
 #include <memory>
-
-#include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/pq4_fast_scan.h>

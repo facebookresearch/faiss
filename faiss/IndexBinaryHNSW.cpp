@@ -15,11 +15,6 @@
 #include <cstring>
 #include <memory>
 
-#include <queue>
-#include <unordered_set>
-
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <cstdint>
 
 #include <faiss/IndexBinaryFlat.h>

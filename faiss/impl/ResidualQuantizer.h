@@ -112,7 +112,7 @@ struct ResidualQuantizer : AdditiveQuantizer {
 
     /** lower-level encode function
      *
-     * @param n              number of vectors to hanlde
+     * @param n              number of vectors to handle
      * @param residuals      vectors to encode, size (n, beam_size, d)
      * @param beam_size      input beam size
      * @param new_beam_size  output beam size (should be <= K * beam_size)

@@ -161,6 +161,10 @@ GpuMemoryReservation::~GpuMemoryReservation() {
 
 GpuResources::~GpuResources() = default;
 
+bool GpuResources::supportsBFloat16CurrentDevice() {
+    return supportsBFloat16(getCurrentDevice());
+}
+
 cublasHandle_t GpuResources::getBlasHandleCurrentDevice() {
     return getBlasHandle(getCurrentDevice());
 }
