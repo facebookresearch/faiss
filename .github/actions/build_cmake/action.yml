@@ -50,16 +50,12 @@ runs:
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           :
         # regular CUDA for GPU builds
-        elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
-        fi
-        
+        elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
+          conda install -y -q cuda-toolkit=12.4 -c nvidia
         # and CUDA from cuVS channel for cuVS builds
-        if [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q cuda-version=12.4 -c nvidia
-          conda install -y -q libcuvs=24.10 -c rapidsai
+        elif [ "${{ inputs.cuvs }}" = "ON" ]; then
+          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit=12.4 -c rapidsai -c conda-forge -c nvidia
         fi
-
         # install test packages
         conda install -y pytest
         if [ "${{ inputs.rocm }}" = "ON" ]; then
