@@ -34,8 +34,8 @@ runs:
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        conda update -y -q conda
-        conda install -y -q conda-build
+        conda update -y -q "conda<24.11.0"
+        conda install -y -q "conda-build<24.11.0"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
