@@ -3,28 +3,34 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import faiss
-import unittest
-import numpy as np
-import platform
 import os
-import random
+import platform
 import shutil
 import tempfile
+import unittest
+from contextlib import contextmanager
 
-from faiss.contrib import datasets
-from faiss.contrib import inspect_tools
-from faiss.contrib import evaluation
-from faiss.contrib import ivf_tools
-from faiss.contrib import clustering
-from faiss.contrib import big_batch_search
-from faiss.contrib.ondisk import merge_ondisk
+import faiss
+import numpy as np
 
 from common_faiss_tests import get_dataset_2
-from faiss.contrib.exhaustive_search import \
-    knn_ground_truth, knn, range_ground_truth, \
-    range_search_max_results, exponential_query_iterator
-from contextlib import contextmanager
+
+from faiss.contrib import (
+    big_batch_search,
+    clustering,
+    datasets,
+    evaluation,
+    inspect_tools,
+    ivf_tools,
+)
+from faiss.contrib.exhaustive_search import (
+    exponential_query_iterator,
+    knn,
+    knn_ground_truth,
+    range_ground_truth,
+    range_search_max_results,
+)
+from faiss.contrib.ondisk import merge_ondisk
 
 
 class TestComputeGT(unittest.TestCase):
@@ -664,7 +670,10 @@ class TestInvlistSort(unittest.TestCase):
         np.testing.assert_equal(Inew, Iref)
 
     def test_hnsw_permute(self):
-        """ make sure HNSW permutation works (useful when used as coarse quantizer) """
+        """
+            make sure HNSW permutation works
+            (useful when used as coarse quantizer)
+        """
         ds = datasets.SyntheticDataset(32, 0, 1000, 50)
         index = faiss.index_factory(ds.d, "HNSW32,Flat")
         index.add(ds.get_database())
@@ -692,8 +701,10 @@ class TestCodeSet(unittest.TestCase):
             np.sort(codes[inserted], axis=None))
 
 
-@unittest.skipIf(platform.system() == 'Windows',
-                'OnDiskInvertedLists is unsupported on Windows.')
+@unittest.skipIf(
+    platform.system() == 'Windows',
+    'OnDiskInvertedLists is unsupported on Windows.'
+)
 class TestMerge(unittest.TestCase):
     @contextmanager
     def temp_directory(self):

@@ -205,6 +205,9 @@ class GpuResources {
     /// of demand
     virtual void initializeForDevice(int device) = 0;
 
+    /// Does the given GPU support bfloat16?
+    virtual bool supportsBFloat16(int device) = 0;
+
     /// Returns the cuBLAS handle that we use for the given device
     virtual cublasHandle_t getBlasHandle(int device) = 0;
 
@@ -251,6 +254,9 @@ class GpuResources {
     ///
     /// Functions provided by default
     ///
+
+    /// Does the current GPU support bfloat16?
+    bool supportsBFloat16CurrentDevice();
 
     /// Calls getBlasHandle with the current device
     cublasHandle_t getBlasHandleCurrentDevice();

@@ -19,6 +19,7 @@ class GpuResourcesProvider;
 enum class DistanceDataType {
     F32 = 1,
     F16,
+    BF16,
 };
 
 // Scalar type of the indices data
