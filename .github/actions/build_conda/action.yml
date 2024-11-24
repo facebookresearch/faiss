@@ -79,7 +79,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda build faiss-gpu-cuvs --variants "${{ inputs.cuda }}" }' \
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
