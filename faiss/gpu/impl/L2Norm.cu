@@ -275,8 +275,6 @@ void runL2Norm(
     runL2Norm<half, half2>(input, inputRowMajor, output, normSquared, stream);
 }
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runL2Norm(
         Tensor<__nv_bfloat16, 2, true>& input,
         bool inputRowMajor,
@@ -286,7 +284,6 @@ void runL2Norm(
     runL2Norm<__nv_bfloat16, __nv_bfloat162>(
             input, inputRowMajor, output, normSquared, stream);
 }
-#endif
 
 } // namespace gpu
 } // namespace faiss

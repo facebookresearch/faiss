@@ -402,16 +402,11 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     } else if (args.vectorType == DistanceDataType::F16) {
         bfKnnConvert<half>(prov, args);
     } else if (args.vectorType == DistanceDataType::BF16) {
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
         if (prov->getResources()->supportsBFloat16CurrentDevice()) {
             bfKnnConvert<__nv_bfloat16>(prov, args);
         } else {
             FAISS_THROW_MSG("not compiled with bfloat16 support");
         }
-#else
-        FAISS_THROW_MSG("no AMD bfloat16 support");
-#endif
     } else {
         FAISS_THROW_MSG("unknown vectorType");
     }

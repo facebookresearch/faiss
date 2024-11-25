@@ -27,15 +27,12 @@ void runL2Norm(
         bool normSquared,
         cudaStream_t stream);
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runL2Norm(
         Tensor<__nv_bfloat16, 2, true>& input,
         bool inputRowMajor,
         Tensor<float, 1, true>& output,
         bool normSquared,
         cudaStream_t stream);
-#endif
 
 } // namespace gpu
 } // namespace faiss
