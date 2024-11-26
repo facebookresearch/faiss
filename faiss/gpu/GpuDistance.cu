@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2023-2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -320,12 +320,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
             cuvs::neighbors::brute_force::search(
-                    handle,
-                    idx,
-                    search.view(),
-                    inds.view(),
-                    dists.view(),
-                    std::nullopt);
+                    handle, idx, search.view(), inds.view(), dists.view());
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
                     const float,
@@ -364,12 +359,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
             cuvs::neighbors::brute_force::search(
-                    handle,
-                    idx,
-                    search.view(),
-                    inds.view(),
-                    dists.view(),
-                    std::nullopt);
+                    handle, idx, search.view(), inds.view(), dists.view());
         }
 
         if (args.metric == MetricType::METRIC_Lp) {
