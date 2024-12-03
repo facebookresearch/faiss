@@ -58,6 +58,7 @@ runs:
         fi
 
         # install test packages
+        conda install -y pytest
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
