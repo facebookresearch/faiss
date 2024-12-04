@@ -51,10 +51,10 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-toolkit=12.4 -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit=12.4 gxx_linux-64=12.4 -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit gxx_linux-64=12.4 -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
         fi
 
         # install test packages
