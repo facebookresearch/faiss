@@ -60,7 +60,6 @@ void IndexBinaryFlat::search(
                     ntotal,
                     code_size,
                     /* ordered = */ true,
-                    /* init_heap = */ true,
                     approx_topk_mode,
                     sel);
         } else {

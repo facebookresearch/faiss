@@ -170,10 +170,10 @@ void hammings_knn_hc(
         const uint8_t* __restrict bs1,
         const uint8_t* __restrict bs2,
         size_t n2,
-        bool order,
-        bool init_heap,
-        ApproxTopK_mode_t approx_topk_mode,
-        const IDSelector* sel) {
+        bool order = true,
+        bool init_heap = true,
+        ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK
+        const IDSelector* sel = nullptr) {
     size_t k = ha->k;
     if (init_heap)
         ha->heapify();
@@ -500,12 +500,11 @@ void hammings_knn_hc(
         size_t nb,
         size_t ncodes,
         int order,
-        bool init_heap,
-        ApproxTopK_mode_t approx_topk_mode,
+        ApproxTopK_mode_t approx_topk_mode
         const IDSelector* sel) {
     Run_hammings_knn_hc r;
     dispatch_HammingComputer(
-            ncodes, r, ncodes, ha, a, b, nb, order, init_heap, approx_topk_mode, sel);
+            ncodes, r, ncodes, ha, a, b, nb, order, true, approx_topk_mode, sel);
 }
 
 void hammings_knn_mc(
