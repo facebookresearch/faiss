@@ -160,6 +160,16 @@ def add_ref_in_function(function_name, parameter_no):
     setattr(this_module, function_name, replacement_function)
 
 
+try:
+    from swigfaiss_gpu import GpuIndexIVFFlat, GpuIndexBinaryFlat, GpuIndexFlat, GpuIndexIVFPQ, GpuIndexIVFScalarQuantizer
+    add_ref_in_constructor(GpuIndexIVFFlat, 1)
+    add_ref_in_constructor(GpuIndexBinaryFlat, 1)
+    add_ref_in_constructor(GpuIndexFlat, 1)
+    add_ref_in_constructor(GpuIndexIVFPQ, 1)
+    add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 1)
+except ImportError as e:
+    print("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes." % e.args[0])
+
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
 add_ref_in_constructor(IndexPreTransform, {2: [0, 1], 1: [0]})
