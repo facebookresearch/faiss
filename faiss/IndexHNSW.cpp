@@ -351,6 +351,17 @@ void IndexHNSW::reconstruct(idx_t key, float* recons) const {
     storage->reconstruct(key, recons);
 }
 
+/**************************************************************
+ * This section of functions were used during the development of HNSW support.
+ * They may be useful in the future but are dormant for now, and thus are not
+ * unit tested at the moment.
+ * shrink_level_0_neighbors
+ * search_level_0
+ * init_level_0_from_knngraph
+ * init_level_0_from_entry_points
+ * reorder_links
+ * link_singletons
+ **************************************************************/
 void IndexHNSW::shrink_level_0_neighbors(int new_size) {
 #pragma omp parallel
     {
