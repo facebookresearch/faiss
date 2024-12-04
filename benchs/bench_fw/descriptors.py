@@ -78,6 +78,9 @@ class DatasetDescriptor:
     # eg. ["ds=2021-09-01"]
     partitions: Optional[List[str]] = None
 
+    # the list of filters to be applied on the dataset
+    filters: Optional[List[str]] = None
+
     # number of vectors to load from the dataset
     num_vectors: Optional[int] = None
 
