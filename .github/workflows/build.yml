@@ -9,8 +9,8 @@ on:
       - 'v*'
 jobs:
   build-pull-request:
-    uses: ./internal/build-pull-request.yml
+    uses: ./.github/workflows/internal/build-pull-request.yml
   build-release:
-    uses: ./internal/build-pull-request.yml
-    uses: ./internal/build-release.yml
+    uses: ./.github/workflows/internal/build-pull-request.yml
+    uses: ./.github/workflows/internal/build-release.yml
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
