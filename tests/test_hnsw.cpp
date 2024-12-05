@@ -425,6 +425,62 @@ std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded
     return top_candidates;
 }
 
+/// search neighbors on a single level, starting from an entry point
+void reference_search_neighbors_to_add(
+        faiss::HNSW& hnsw,
+        faiss::DistanceComputer& qdis,
+        std::priority_queue<faiss::HNSW::NodeDistCloser>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        faiss::VisitedTable& vt) {
+    // top is nearest candidate
+    std::priority_queue<faiss::HNSW::NodeDistFarther> candidates;
+
+    faiss::HNSW::NodeDistFarther ev(d_entry_point, entry_point);
+    candidates.push(ev);
+    results.emplace(d_entry_point, entry_point);
+    vt.set(entry_point);
+
+    while (!candidates.empty()) {
+        // get nearest
+        const faiss::HNSW::NodeDistFarther& currEv = candidates.top();
+
+        if (currEv.d > results.top().d) {
+            break;
+        }
+        int currNode = currEv.id;
+        candidates.pop();
+
+        // loop over neighbors
+        size_t begin, end;
+        hnsw.neighbor_range(currNode, level, &begin, &end);
+
+        // a reference version
+        for (size_t i = begin; i < end; i++) {
+            faiss::HNSW::storage_idx_t nodeId = hnsw.neighbors[i];
+            if (nodeId < 0)
+                break;
+            if (vt.get(nodeId))
+                continue;
+            vt.set(nodeId);
+
+            float dis = qdis(nodeId);
+            faiss::HNSW::NodeDistFarther evE1(dis, nodeId);
+
+            if (results.size() < hnsw.efConstruction || results.top().d > dis) {
+                results.emplace(dis, nodeId);
+                candidates.emplace(dis, nodeId);
+                if (results.size() > hnsw.efConstruction) {
+                    results.pop();
+                }
+            }
+        }
+    }
+
+    vt.advance();
+}
+
 TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
     omp_set_num_threads(1);
     auto nearest = index->hnsw.entry_point;
@@ -540,4 +596,42 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
     EXPECT_EQ(reference_stats.nhops, stats.nhops);
     EXPECT_EQ(reference_stats.n1, stats.n1);
     EXPECT_EQ(reference_stats.n2, stats.n2);
+}
+
+TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
+    omp_set_num_threads(1);
+
+    faiss::VisitedTable vt(index->ntotal);
+    faiss::VisitedTable reference_vt(index->ntotal);
+
+    std::priority_queue<faiss::HNSW::NodeDistCloser> link_targets;
+    std::priority_queue<faiss::HNSW::NodeDistCloser> reference_link_targets;
+
+    faiss::search_neighbors_to_add(
+            index->hnsw,
+            *dis,
+            link_targets,
+            index->hnsw.entry_point,
+            (*dis)(index->hnsw.entry_point),
+            index->hnsw.max_level,
+            vt);
+
+    reference_search_neighbors_to_add(
+            index->hnsw,
+            *dis,
+            reference_link_targets,
+            index->hnsw.entry_point,
+            (*dis)(index->hnsw.entry_point),
+            index->hnsw.max_level,
+            reference_vt);
+
+    EXPECT_EQ(link_targets.size(), reference_link_targets.size());
+    while (!link_targets.empty()) {
+        auto val = link_targets.top();
+        auto reference_val = reference_link_targets.top();
+        EXPECT_EQ(val.d, reference_val.d);
+        EXPECT_EQ(val.id, reference_val.id);
+        link_targets.pop();
+        reference_link_targets.pop();
+    }
 }

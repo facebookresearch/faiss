@@ -351,6 +351,8 @@ void add_link(
     }
 }
 
+} // namespace
+
 /// search neighbors on a single level, starting from an entry point
 void search_neighbors_to_add(
         HNSW& hnsw,
@@ -360,9 +362,6 @@ void search_neighbors_to_add(
         float d_entry_point,
         int level,
         VisitedTable& vt) {
-    // selects a version
-    const bool reference_version = false;
-
     // top is nearest candidate
     std::priority_queue<NodeDistFarther> candidates;
 
@@ -385,92 +384,63 @@ void search_neighbors_to_add(
         size_t begin, end;
         hnsw.neighbor_range(currNode, level, &begin, &end);
 
-        // select a version, based on a flag
-        if (reference_version) {
-            // a reference version
-            for (size_t i = begin; i < end; i++) {
-                storage_idx_t nodeId = hnsw.neighbors[i];
-                if (nodeId < 0)
-                    break;
-                if (vt.get(nodeId))
-                    continue;
-                vt.set(nodeId);
-
-                float dis = qdis(nodeId);
-                NodeDistFarther evE1(dis, nodeId);
-
-                if (results.size() < hnsw.efConstruction ||
-                    results.top().d > dis) {
-                    results.emplace(dis, nodeId);
-                    candidates.emplace(dis, nodeId);
-                    if (results.size() > hnsw.efConstruction) {
-                        results.pop();
-                    }
+        // process 4 neighbors at a time
+        // Compare this to reference version in test_hnsw.cpp
+        auto update_with_candidate = [&](const storage_idx_t idx,
+                                         const float dis) {
+            if (results.size() < hnsw.efConstruction || results.top().d > dis) {
+                results.emplace(dis, idx);
+                candidates.emplace(dis, idx);
+                if (results.size() > hnsw.efConstruction) {
+                    results.pop();
                 }
             }
-        } else {
-            // a faster version
+        };
 
-            // the following version processes 4 neighbors at a time
-            auto update_with_candidate = [&](const storage_idx_t idx,
-                                             const float dis) {
-                if (results.size() < hnsw.efConstruction ||
-                    results.top().d > dis) {
-                    results.emplace(dis, idx);
-                    candidates.emplace(dis, idx);
-                    if (results.size() > hnsw.efConstruction) {
-                        results.pop();
-                    }
-                }
-            };
+        int n_buffered = 0;
+        storage_idx_t buffered_ids[4];
 
-            int n_buffered = 0;
-            storage_idx_t buffered_ids[4];
-
-            for (size_t j = begin; j < end; j++) {
-                storage_idx_t nodeId = hnsw.neighbors[j];
-                if (nodeId < 0)
-                    break;
-                if (vt.get(nodeId)) {
-                    continue;
-                }
-                vt.set(nodeId);
-
-                buffered_ids[n_buffered] = nodeId;
-                n_buffered += 1;
-
-                if (n_buffered == 4) {
-                    float dis[4];
-                    qdis.distances_batch_4(
-                            buffered_ids[0],
-                            buffered_ids[1],
-                            buffered_ids[2],
-                            buffered_ids[3],
-                            dis[0],
-                            dis[1],
-                            dis[2],
-                            dis[3]);
-
-                    for (size_t id4 = 0; id4 < 4; id4++) {
-                        update_with_candidate(buffered_ids[id4], dis[id4]);
-                    }
-
-                    n_buffered = 0;
-                }
+        for (size_t j = begin; j < end; j++) {
+            storage_idx_t nodeId = hnsw.neighbors[j];
+            if (nodeId < 0)
+                break;
+            if (vt.get(nodeId)) {
+                continue;
             }
+            vt.set(nodeId);
 
-            // process leftovers
-            for (size_t icnt = 0; icnt < n_buffered; icnt++) {
-                float dis = qdis(buffered_ids[icnt]);
-                update_with_candidate(buffered_ids[icnt], dis);
+            buffered_ids[n_buffered] = nodeId;
+            n_buffered += 1;
+
+            if (n_buffered == 4) {
+                float dis[4];
+                qdis.distances_batch_4(
+                        buffered_ids[0],
+                        buffered_ids[1],
+                        buffered_ids[2],
+                        buffered_ids[3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+
+                for (size_t id4 = 0; id4 < 4; id4++) {
+                    update_with_candidate(buffered_ids[id4], dis[id4]);
+                }
+
+                n_buffered = 0;
             }
+        }
+
+        // process leftovers
+        for (size_t icnt = 0; icnt < n_buffered; icnt++) {
+            float dis = qdis(buffered_ids[icnt]);
+            update_with_candidate(buffered_ids[icnt], dis);
         }
     }
 
     vt.advance();
 }
-
-} // namespace
 
 /// Finds neighbors and builds links with them, starting from an entry
 /// point. The own neighbor list is assumed to be locked.
