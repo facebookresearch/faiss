@@ -2589,6 +2589,7 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
 
 float fvec_L1(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
+    // signmask used for absolute value
     __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
 
     while (d >= 8) {
@@ -2596,7 +2597,9 @@ float fvec_L1(const float* x, const float* y, size_t d) {
         x += 8;
         __m256 my = _mm256_loadu_ps(y);
         y += 8;
+        // subtract
         const __m256 a_m_b = _mm256_sub_ps(mx, my);
+        // find sum of absolute value of distances (manhattan distance)
         msum1 = _mm256_add_ps(msum1, _mm256_and_ps(signmask, a_m_b));
         d -= 8;
     }
@@ -2629,6 +2632,7 @@ float fvec_L1(const float* x, const float* y, size_t d) {
 
 float fvec_Linf(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
+    // signmask used for absolute value
     __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
 
     while (d >= 8) {
@@ -2636,7 +2640,9 @@ float fvec_Linf(const float* x, const float* y, size_t d) {
         x += 8;
         __m256 my = _mm256_loadu_ps(y);
         y += 8;
+        // subtract
         const __m256 a_m_b = _mm256_sub_ps(mx, my);
+        // find max of absolute value of distances (chebyshev distance)
         msum1 = _mm256_max_ps(msum1, _mm256_and_ps(signmask, a_m_b));
         d -= 8;
     }
