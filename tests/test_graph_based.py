@@ -81,6 +81,8 @@ class TestHNSW(unittest.TestCase):
         index.add(self.xb)
         Dhnsw, Ihnsw = index.search(self.xq, 1)
 
+        # This is expected to be smaller because we are not initializing
+        # vectors into level 0.
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 25)
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
@@ -110,6 +112,24 @@ class TestHNSW(unittest.TestCase):
         Dhnsw, Ihnsw = index.search(self.xq, 1)
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 307)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
+    def test_hnsw_2level_mixed_search(self):
+        d = self.xq.shape[1]
+
+        quant = faiss.IndexFlatL2(d)
+
+        storage = faiss.IndexIVFPQ(quant, d, 32, 8, 8)
+        storage.make_direct_map()
+        index = faiss.IndexHNSW2Level(quant, 32, 8, 8)
+        index.storage = storage
+        index.train(self.xb)
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        # It is expected that the mixed search will perform worse.
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 200)
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
