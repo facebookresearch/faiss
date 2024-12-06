@@ -7,9 +7,6 @@ on:
   push:
     tags:
       - 'v*'
-env:
-  OMP_NUM_THREADS: '10'
-  MKL_THREADING_LAYER: GNU
 jobs:
   format:
     name: Format
@@ -308,16 +305,3 @@ jobs:
   linux-arm64-packages:
     name: Linux arm64 packages
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: 2-core-ubuntu-arm
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - name: Build and Package (conda)
-        uses: ./.github/actions/build_conda
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
-        with:
-          label: main

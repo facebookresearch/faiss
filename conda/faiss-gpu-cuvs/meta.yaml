@@ -46,10 +46,10 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - sysroot_linux-64  # [linux64]
+        - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.26.4
-        - make  # [not win]
+        - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
@@ -57,13 +57,13 @@ outputs:
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas  # [not x86_64]
+        - openblas =0.3 # [not x86_64]
         - libcuvs =24.08
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas  # [not x86_64]
+        - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
         - libcuvs =24.08
@@ -88,9 +88,9 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig
+        - swig =4.0
         - cmake >=3.24.0
-        - make  # [not win]
+        - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
@@ -107,9 +107,9 @@ outputs:
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy
-        - scipy
-        - pytorch
+        - numpy >=1.19,<2
+        - scipy =1.14
+        - pytorch <2.5
         - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
