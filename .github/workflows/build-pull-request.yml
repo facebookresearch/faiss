@@ -1,4 +1,3 @@
-name: Build Pull Request
 on:
   workflow_call:
 env:
