@@ -351,6 +351,8 @@ void add_link(
     }
 }
 
+} // namespace
+
 /// search neighbors on a single level, starting from an entry point
 void search_neighbors_to_add(
         HNSW& hnsw,
@@ -359,10 +361,8 @@ void search_neighbors_to_add(
         int entry_point,
         float d_entry_point,
         int level,
-        VisitedTable& vt) {
-    // selects a version
-    const bool reference_version = false;
-
+        VisitedTable& vt,
+        bool reference_version) {
     // top is nearest candidate
     std::priority_queue<NodeDistFarther> candidates;
 
@@ -385,7 +385,14 @@ void search_neighbors_to_add(
         size_t begin, end;
         hnsw.neighbor_range(currNode, level, &begin, &end);
 
-        // select a version, based on a flag
+        // The reference version is not used, but kept here because:
+        // 1. It is easier to switch back if the optimized version has a problem
+        // 2. It serves as a starting point for new optimizations
+        // 3. It helps understand the code
+        // 4. It ensures the reference version is still compilable if the
+        // optimized version changes
+        // The reference and the optimized versions' results are compared in
+        // test_hnsw.cpp
         if (reference_version) {
             // a reference version
             for (size_t i = begin; i < end; i++) {
@@ -469,8 +476,6 @@ void search_neighbors_to_add(
 
     vt.advance();
 }
-
-} // namespace
 
 /// Finds neighbors and builds links with them, starting from an entry
 /// point. The own neighbor list is assumed to be locked.
