@@ -541,3 +541,43 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
     EXPECT_EQ(reference_stats.n1, stats.n1);
     EXPECT_EQ(reference_stats.n2, stats.n2);
 }
+
+TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
+    omp_set_num_threads(1);
+
+    faiss::VisitedTable vt(index->ntotal);
+    faiss::VisitedTable reference_vt(index->ntotal);
+
+    std::priority_queue<faiss::HNSW::NodeDistCloser> link_targets;
+    std::priority_queue<faiss::HNSW::NodeDistCloser> reference_link_targets;
+
+    faiss::search_neighbors_to_add(
+            index->hnsw,
+            *dis,
+            link_targets,
+            index->hnsw.entry_point,
+            (*dis)(index->hnsw.entry_point),
+            index->hnsw.max_level,
+            vt,
+            false);
+
+    faiss::search_neighbors_to_add(
+            index->hnsw,
+            *dis,
+            reference_link_targets,
+            index->hnsw.entry_point,
+            (*dis)(index->hnsw.entry_point),
+            index->hnsw.max_level,
+            reference_vt,
+            true);
+
+    EXPECT_EQ(link_targets.size(), reference_link_targets.size());
+    while (!link_targets.empty()) {
+        auto val = link_targets.top();
+        auto reference_val = reference_link_targets.top();
+        EXPECT_EQ(val.d, reference_val.d);
+        EXPECT_EQ(val.id, reference_val.id);
+        link_targets.pop();
+        reference_link_targets.pop();
+    }
+}
