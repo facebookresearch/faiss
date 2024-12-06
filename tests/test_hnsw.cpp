@@ -581,3 +581,46 @@ TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
         reference_link_targets.pop();
     }
 }
+
+TEST_F(HNSWTest, TEST_search_level_0) {
+    omp_set_num_threads(1);
+    std::vector<faiss::idx_t> I(k * nq);
+    std::vector<float> D(k * nq);
+
+    using RH = faiss::HeapBlockResultHandler<faiss::HNSW::C>;
+    RH bres1(nq, D.data(), I.data(), k);
+    faiss::HeapBlockResultHandler<faiss::HNSW::C>::SingleResultHandler res1(
+            bres1);
+    RH bres2(nq, D.data(), I.data(), k);
+    faiss::HeapBlockResultHandler<faiss::HNSW::C>::SingleResultHandler res2(
+            bres2);
+
+    faiss::HNSWStats stats1, stats2;
+    faiss::VisitedTable vt1(index->ntotal);
+    faiss::VisitedTable vt2(index->ntotal);
+    auto nprobe = 5;
+    const faiss::HNSW::storage_idx_t values[] = {1, 2, 3, 4, 5};
+    const faiss::HNSW::storage_idx_t* nearest_i = values;
+    const float distances[] = {0.1, 0.2, 0.3, 0.4, 0.5};
+    const float* nearest_d = distances;
+
+    // search_type == 1
+    res1.begin(0);
+    index->hnsw.search_level_0(
+            *dis, res1, nprobe, nearest_i, nearest_d, 1, stats1, vt1, nullptr);
+    res1.end();
+
+    // search_type == 2
+    res2.begin(0);
+    index->hnsw.search_level_0(
+            *dis, res2, nprobe, nearest_i, nearest_d, 2, stats2, vt2, nullptr);
+    res2.end();
+
+    // search_type 1 calls search_from_candidates in a loop nprobe times.
+    // search_type 2 pushes the candidates and just calls search_from_candidates
+    // once, so those stats will be much less.
+    EXPECT_GT(stats1.ndis, stats2.ndis);
+    EXPECT_GT(stats1.nhops, stats2.nhops);
+    EXPECT_GT(stats1.n1, stats2.n1);
+    EXPECT_GT(stats1.n2, stats2.n2);
+}
