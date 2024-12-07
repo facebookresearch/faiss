@@ -66,6 +66,10 @@ struct ScalarQuantizer : Quantizer {
     /// updates internal values based on qtype and d
     void set_derived_sizes();
 
+    // Adjust the trained parameters of QT_*bit to simulate old behavior
+    // which had an off-by-one error in the upper bound.
+    void migrate_legacy_qt();
+
     void train(size_t n, const float* x) override;
 
     /** Encode a set of vectors
