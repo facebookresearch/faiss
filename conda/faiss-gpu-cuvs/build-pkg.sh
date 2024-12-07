@@ -12,6 +12,7 @@ cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
       -DFAISS_OPT_LEVEL=avx512 \
       -DFAISS_ENABLE_GPU=ON \
+      -DCMAKE_CUDA_COMPILER=$(which nvcc) \
       -DFAISS_ENABLE_CUVS=ON \
       -DCMAKE_BUILD_TYPE=Release \
       -DPython_EXECUTABLE=$PYTHON \
