@@ -37,8 +37,8 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 # GPU(+CPU) version
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
-# GPU(+CPU) version with NVIDIA RAFT
-conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0 pytorch pytorch-cuda numpy
+# GPU(+CPU) version with NVIDIA cuVS (nightly)
+conda install -c pytorch -c rapidsai -c conda-forge faiss-gpu-cuvs pytorch pytorch-cuda numpy
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -119,8 +119,9 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_CUVS=ON` in order to enable building the cuVS implementations
-    of the IVF-Flat and IVF-PQ GPU-accelerated indices (default is `OFF`, possible
+    of the IVF-Flat, IVF-PQ and CAGRA GPU-accelerated indices (default is `ON`, possible
     values are `ON` and `OFF`)
+  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
