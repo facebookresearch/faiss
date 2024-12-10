@@ -125,6 +125,7 @@ set(FAISS_HEADERS
   IndexIVFPQR.h
   IndexIVFSpectralHash.h
   IndexLSH.h
+  IndexNeuralNetCodec.h
   IndexLattice.h
   IndexNNDescent.h
   IndexNSG.h
@@ -168,6 +169,7 @@ set(FAISS_HEADERS
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
+  impl/index_read_utils.h
   impl/io.h
   impl/io_macros.h
   impl/kmeans1d.h
@@ -179,13 +181,17 @@ set(FAISS_HEADERS
   impl/code_distance/code_distance.h
   impl/code_distance/code_distance-generic.h
   impl/code_distance/code_distance-avx2.h
+  impl/code_distance/code_distance-avx512.h
+  impl/code_distance/code_distance-sve.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
+  invlists/OnDiskInvertedLists.h
   utils/AlignedTable.h
   utils/bf16.h
   utils/Heap.h
+  utils/NeuralNet.h
   utils/WorkerThread.h
   utils/distances.h
   utils/extra_distances-inl.h
@@ -204,8 +210,10 @@ set(FAISS_HEADERS
   utils/sorting.h
   utils/simdlib.h
   utils/simdlib_avx2.h
+  utils/simdlib_avx512.h
   utils/simdlib_emulated.h
   utils/simdlib_neon.h
+  utils/simdlib_ppc64.h
   utils/utils.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
@@ -216,6 +224,7 @@ set(FAISS_HEADERS
   utils/approx_topk/mode.h
   utils/approx_topk_hamming/approx_topk_hamming.h
   utils/transpose/transpose-avx2-inl.h
+  utils/transpose/transpose-avx512-inl.h
   utils/hamming_distance/common.h
   utils/hamming_distance/generic-inl.h
   utils/hamming_distance/hamdis-inl.h

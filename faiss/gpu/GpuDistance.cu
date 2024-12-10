@@ -30,6 +30,7 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 #include <optional>
 
 #if defined USE_NVIDIA_CUVS
@@ -231,7 +232,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     FAISS_THROW_IF_NOT_MSG(
             args.vectorType == args.queryType,
             "limitation: both vectorType and queryType must currently "
-            "be the same (F32 or F16");
+            "be the same (F32 / F16 / BF16");
 
 #if defined USE_NVIDIA_CUVS
     // Note: For now, cuVS bfknn requires queries and vectors to be same layout
@@ -400,6 +401,12 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         bfKnnConvert<float>(prov, args);
     } else if (args.vectorType == DistanceDataType::F16) {
         bfKnnConvert<half>(prov, args);
+    } else if (args.vectorType == DistanceDataType::BF16) {
+        if (prov->getResources()->supportsBFloat16CurrentDevice()) {
+            bfKnnConvert<__nv_bfloat16>(prov, args);
+        } else {
+            FAISS_THROW_MSG("not compiled with bfloat16 support");
+        }
     } else {
         FAISS_THROW_MSG("unknown vectorType");
     }
@@ -466,8 +473,10 @@ void bfKnn_single_query_shard(
             args.k > 0,
             "bfKnn_tiling: tiling vectors is only supported for k > 0");
     size_t distance_size = args.vectorType == DistanceDataType::F32 ? 4
-            : args.vectorType == DistanceDataType::F16              ? 2
-                                                                    : 0;
+            : (args.vectorType == DistanceDataType::F16 ||
+               args.vectorType == DistanceDataType::BF16)
+            ? 2
+            : 0;
     FAISS_THROW_IF_NOT_MSG(
             distance_size > 0, "bfKnn_tiling: unknown vectorType");
     size_t shard_size = vectorsMemoryLimit / (args.dims * distance_size);
@@ -524,8 +533,10 @@ void bfKnn_tiling(
             args.k > 0,
             "bfKnn_tiling: tiling queries is only supported for k > 0");
     size_t distance_size = args.queryType == DistanceDataType::F32 ? 4
-            : args.queryType == DistanceDataType::F16              ? 2
-                                                                   : 0;
+            : (args.queryType == DistanceDataType::F16 ||
+               args.queryType == DistanceDataType::BF16)
+            ? 2
+            : 0;
     FAISS_THROW_IF_NOT_MSG(
             distance_size > 0, "bfKnn_tiling: unknown queryType");
     size_t label_size = args.outIndicesType == IndicesDataType::I64 ? 8

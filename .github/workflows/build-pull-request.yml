@@ -1,0 +1,158 @@
+on:
+  workflow_call:
+env:
+  OMP_NUM_THREADS: '10'
+  MKL_THREADING_LAYER: GNU
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install clang-format
+        run: |
+            sudo apt-get update -y
+            sudo apt-get install -y wget
+            sudo apt install -y lsb-release wget software-properties-common gnupg
+            wget https://apt.llvm.org/llvm.sh
+            chmod u+x llvm.sh
+            sudo ./llvm.sh 18
+            sudo apt-get install -y git-core clang-format-18
+      - name: Verify clang-format
+        run: |
+            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
+            if git diff --quiet; then
+              echo "Formatting OK!"
+            else
+              echo "Formatting not OK!"
+              echo "------------------"
+              git --no-pager diff --color
+              exit 1
+            fi
+  linux-x86_64-cmake:
+    name: Linux x86_64 (cmake)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+  linux-x86_64-AVX2-cmake:
+    name: Linux x86_64 AVX2 (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          opt_level: avx2
+  linux-x86_64-AVX512-cmake:
+    name: Linux x86_64 AVX512 (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: faiss-aws-m7i.large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          opt_level: avx512
+  linux-x86_64-GPU-cmake:
+    name: Linux x86_64 GPU (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: 4-core-ubuntu-gpu-t4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+  linux-x86_64-GPU-w-CUVS-cmake:
+    name: Linux x86_64 GPU w/ cuVS (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: 4-core-ubuntu-gpu-t4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+          cuvs: ON
+  linux-x86_64-GPU-w-ROCm-cmake:
+    name: Linux x86_64 GPU w/ ROCm (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: faiss-amd-MI200
+    container:
+      image: ubuntu:22.04
+      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
+    steps:
+      - name: Container setup
+        run: |
+            if [ -f /.dockerenv ]; then
+              apt-get update && apt-get install -y sudo && apt-get install -y git
+              git config --global --add safe.directory '*'
+            else
+              echo 'Skipping. Current job is not running inside a container.'
+            fi
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+          rocm: ON
+  linux-arm64-SVE-cmake:
+    name: Linux arm64 SVE (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: faiss-aws-r8g.large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          opt_level: sve
+        env:
+          # Context: https://github.com/facebookresearch/faiss/wiki/Troubleshooting#surprising-faiss-openmp-and-openblas-interaction
+          OPENBLAS_NUM_THREADS: '1'
+  linux-x86_64-conda:
+    name: Linux x86_64 (conda)
+    needs: linux-x86_64-cmake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+  windows-x86_64-conda:
+    name: Windows x86_64 (conda)
+    needs: linux-x86_64-cmake
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+  linux-arm64-conda:
+    name: Linux arm64 (conda)
+    needs: linux-x86_64-cmake
+    runs-on: 2-core-ubuntu-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda

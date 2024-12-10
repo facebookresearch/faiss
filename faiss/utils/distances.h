@@ -469,7 +469,7 @@ void compute_PQ_dis_tables_dsub2(
  * @param n   size of the tables
  * @param a   size n
  * @param b   size n
- * @param c   restult table, size n
+ * @param c   result table, size n
  */
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 

@@ -527,7 +527,7 @@ void ResidualCoarseQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params_in) const {
-    float beam_factor_2 = this->beam_factor;
+    float actual_beam_factor = this->beam_factor;
     if (params_in) {
         auto params =
                 dynamic_cast<const SearchParametersResidualCoarseQuantizer*>(
@@ -535,15 +535,15 @@ void ResidualCoarseQuantizer::search(
         FAISS_THROW_IF_NOT_MSG(
                 params,
                 "need SearchParametersResidualCoarseQuantizer parameters");
-        beam_factor_2 = params->beam_factor;
+        actual_beam_factor = params->beam_factor;
     }
 
-    if (beam_factor_2 < 0) {
+    if (actual_beam_factor < 0) {
         AdditiveCoarseQuantizer::search(n, x, k, distances, labels);
         return;
     }
 
-    int beam_size = int(k * beam_factor_2);
+    int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
         beam_size = ntotal;
     }

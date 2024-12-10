@@ -154,7 +154,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
     inline __device__ void decode(void* data, idx_t vec, int d, float* out)
             const {
         half* p = (half*)&((uint8_t*)data)[vec * bytesPerVec];
-        out[0] = Convert<half, float>()(p[d]);
+        out[0] = ConvertTo<float>::to(p[d]);
     }
 
     inline __device__ float decodePartial(
@@ -172,7 +172,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
             int d,
             float v[kDimPerIter]) const {
         half* p = (half*)&((uint8_t*)data)[vec * bytesPerVec];
-        p[d] = Convert<float, half>()(v[0]);
+        p[d] = ConvertTo<half>::to(v[0]);
     }
 
     inline __device__ void encodePartial(
@@ -191,11 +191,11 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
     static constexpr int kEncodeBits = 16;
 
     inline __device__ EncodeT encodeNew(int dim, float v) const {
-        return Convert<float, half>()(v);
+        return ConvertTo<half>::to(v);
     }
 
     inline __device__ float decodeNew(int dim, EncodeT v) const {
-        return Convert<half, float>()(v);
+        return ConvertTo<float>::to(v);
     }
 
     int bytesPerVec;
