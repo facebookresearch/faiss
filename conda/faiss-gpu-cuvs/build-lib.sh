@@ -14,7 +14,6 @@ cmake -B _build \
       -DFAISS_OPT_LEVEL=avx512 \
       -DFAISS_ENABLE_GPU=ON \
       -DFAISS_ENABLE_CUVS=ON \
-      -DCMAKE_CUDA_COMPILER=$(which nvcc) \
       -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
