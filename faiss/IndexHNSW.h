@@ -53,6 +53,8 @@ struct IndexHNSW : Index {
 
     void add(idx_t n, const float* x) override;
 
+    void delete_recnst(size_t n, idx_t* idx);
+
     /// Trains the storage if needed
     void train(idx_t n, const float* x) override;
 

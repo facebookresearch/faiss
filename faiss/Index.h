@@ -314,6 +314,11 @@ struct Index {
      * @param xids   corresponding ids, size n
      */
     virtual void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
+
+    /** get codes.data() as float pointer
+     * 
+     */
+    virtual float* get_codes_float();
 };
 
 } // namespace faiss

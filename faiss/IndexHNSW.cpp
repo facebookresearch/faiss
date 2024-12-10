@@ -28,6 +28,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
@@ -339,6 +340,19 @@ void IndexHNSW::add(idx_t n, const float* x) {
     ntotal = storage->ntotal;
 
     hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+}
+
+void IndexHNSW::delete_recnst(size_t n, idx_t* idx) {
+    // 1. remove vector with indicated ids from storage
+	IDSelectorArray sel(n, idx);
+	storage->remove_ids(sel);
+	n = storage->ntotal;
+	
+	// 2. reset hnsw
+	hnsw.reset();
+	
+	// 3. reconstruct hnsw
+	hnsw_add_vertices(*this, 0, n, storage->get_codes_float(), verbose, hnsw.levels.size() == ntotal);
 }
 
 void IndexHNSW::reset() {

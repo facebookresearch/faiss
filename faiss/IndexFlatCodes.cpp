@@ -22,6 +22,12 @@ IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, MetricType metric)
 
 IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
+/* DIY function*/
+float* IndexFlatCodes::get_codes_float() {
+	return reinterpret_cast<float*>(codes.data());
+}
+
+
 void IndexFlatCodes::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
     if (n == 0) {

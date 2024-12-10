@@ -138,6 +138,12 @@ void Index::add_sa_codes(idx_t, const uint8_t*, const idx_t*) {
     FAISS_THROW_MSG("add_sa_codes not implemented for this type of index");
 }
 
+/*DIY function*/
+float* Index::get_codes_float() {
+    FAISS_THROW_MSG("get_codes_float not implemented");
+} 
+
+
 namespace {
 
 // storage that explicitly reconstructs vectors before computing distances

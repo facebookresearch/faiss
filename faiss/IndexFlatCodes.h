@@ -27,6 +27,9 @@ struct IndexFlatCodes : Index {
 
     IndexFlatCodes(size_t code_size, idx_t d, MetricType metric = METRIC_L2);
 
+    /* DIY function*/
+    float* get_codes_float() override;
+
     /// default add uses sa_encode
     void add(idx_t n, const float* x) override;
 
