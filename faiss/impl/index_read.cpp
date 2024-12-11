@@ -350,7 +350,7 @@ static void read_ProductLocalSearchQuantizer(
     }
 }
 
-void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
+void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f, bool legacyQt) {
     READ1(ivsc->qtype);
     READ1(ivsc->rangestat);
     READ1(ivsc->rangestat_arg);
@@ -358,6 +358,9 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->code_size);
     READVECTOR(ivsc->trained);
     ivsc->set_derived_sizes();
+    if (legacyQt) {
+        ivsc->migrate_legacy_qt();
+    }
 }
 
 static void read_HNSW(HNSW* hnsw, IOReader* f) {
@@ -785,10 +788,15 @@ Index* read_index(IOReader* f, int io_flags) {
         ivfl->code_size = ivfl->d * sizeof(float);
         read_InvertedLists(ivfl, f, io_flags);
         idx = ivfl;
-    } else if (h == fourcc("IxSQ")) {
+    } else if (
+            h == fourcc("IxSQ") // legacy
+            || h == fourcc("IxSq")) {
         IndexScalarQuantizer* idxs = new IndexScalarQuantizer();
         read_index_header(idxs, f);
-        read_ScalarQuantizer(&idxs->sq, f);
+        read_ScalarQuantizer(
+                &idxs->sq,
+                f,
+                /* legacyQt */ h == fourcc("IxSQ"));
         READVECTOR(idxs->codes);
         idxs->code_size = idxs->sq.code_size;
         idx = idxs;
@@ -806,16 +814,16 @@ Index* read_index(IOReader* f, int io_flags) {
         IndexIVFScalarQuantizer* ivsc = new IndexIVFScalarQuantizer();
         std::vector<std::vector<idx_t>> ids;
         read_ivf_header(ivsc, f, &ids);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, /* legacyQt */ true);
         READ1(ivsc->code_size);
         ArrayInvertedLists* ail = set_array_invlist(ivsc, ids);
         for (int i = 0; i < ivsc->nlist; i++)
             READVECTOR(ail->codes[i]);
         idx = ivsc;
-    } else if (h == fourcc("IwSQ") || h == fourcc("IwSq")) {
+    } else if (h == fourcc("IwSQ") || h == fourcc("IwSq")) { // legacy
         IndexIVFScalarQuantizer* ivsc = new IndexIVFScalarQuantizer();
         read_ivf_header(ivsc, f);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, /* legacyQt */ true);
         READ1(ivsc->code_size);
         if (h == fourcc("IwSQ")) {
             ivsc->by_residual = true;
