@@ -66,7 +66,7 @@ outputs:
         - openblas  # [not x86_64]
         - libcuvs =24.08
         - cuda-version {{ cudatoolkit }}
-        {% if cuda_major == "11" %}
+        {% if cudatoolkit == '11.8.0' %}
         - cuda-profiler-api =11.8.86
         {% endif %}
       run:
