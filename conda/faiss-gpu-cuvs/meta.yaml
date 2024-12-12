@@ -46,6 +46,11 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
+        {% if cudatoolkit == '11.8.0' %}
+        - {{ compiler('cuda11') }} ={{ cudatoolkit }}
+        {% else %}
+        - {{ compiler('cuda') }}
+        {% endif %}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.26.4
@@ -54,18 +59,25 @@ outputs:
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
+        - cuda-version {{ cudatoolkit }}
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - libcuvs =24.08
         - cuda-version {{ cudatoolkit }}
-        - cudatoolkit {{ cudatoolkit }}
+        {% if cuda_major == "11" %}
+        - cuda-profiler-api =11.8.86
+        {% endif %}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-cudart {{ cuda_constraints }}
+        {% if cudatoolkit == '11.8.0' %}
+        - cudatoolkit
+        {% else %}
+        - cuda-cudart
+        {% endif %}
         - libcublas {{ libcublas_constraints }}
         - libcuvs =24.08
         - cuda-version {{ cuda_constraints }}
