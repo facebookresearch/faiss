@@ -79,8 +79,9 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        conda install -c nvidia cuda-profiler-api=${{ inputs.cuda }}
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --override-channels conda-forge -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -88,5 +89,6 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
+        conda install -c nvidia cuda-profiler-api=${{ inputs.cuda }}
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }}--override-channels conda-forge -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
