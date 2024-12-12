@@ -135,14 +135,16 @@ void CuvsIVFFlat::search(
 
     validRowIndices(resources_, queries, nan_flag.data_handle());
 
+    faiss::idx_t max_ind = std::numeric_limits<faiss::idx_t>::max();
     raft::linalg::map_offset(
             raft_handle,
             raft::make_device_vector_view(outIndices.data(), numQueries * k_),
             [nan_flag = nan_flag.data_handle(),
              out_inds = outIndices.data(),
+             max_ind,
              k_] __device__(uint32_t i) {
                 uint32_t row = i / k_;
-                if (!nan_flag[row])
+                if (!nan_flag[row] || out_inds[i] == max_ind)
                     return idx_t(-1);
                 return out_inds[i];
             });
@@ -291,6 +293,7 @@ void CuvsIVFFlat::searchPreassigned(
         Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     // TODO: Fill this in!
+    FAISS_THROW_MSG("searchPreassigned is not implemented for cuVS index");
 }
 
 void CuvsIVFFlat::updateQuantizer(Index* quantizer) {

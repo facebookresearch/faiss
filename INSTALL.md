@@ -6,7 +6,7 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86-64 only) for CUDA 11.8 and 12.1.
+- faiss-gpu-cuvs containing GPU indices provided by NVIDIA cuVS, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4.
 
 To install the latest stable release:
 
@@ -26,7 +26,7 @@ $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
 published in the main anaconda channel.
 
-For faiss-gpu-raft, the nvidia, rapidsai and conda-forge channels are required.
+For faiss-gpu-cuvs, the rapidsai and conda-forge channels are required.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -37,7 +37,7 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 # GPU(+CPU) version
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
-# GPU(+CPU) version with NVIDIA cuVS (nightly)
+# GPU(+CPU) version with NVIDIA cuVS
 conda install -c pytorch -c rapidsai -c conda-forge faiss-gpu-cuvs pytorch pytorch-cuda numpy
 
 # GPU(+CPU) version using AMD ROCm not yet available
