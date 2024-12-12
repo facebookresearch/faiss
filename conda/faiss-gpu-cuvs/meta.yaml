@@ -47,7 +47,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         {% if cudatoolkit == '11.8.0' %}
-        - {{ compiler('cuda11') }} ={{ 11.8 }}
+        - {{ compiler('cuda11') }}
         {% else %}
         - {{ compiler('cuda') }}
         {% endif %}
