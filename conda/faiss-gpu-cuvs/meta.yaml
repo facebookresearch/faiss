@@ -47,9 +47,9 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         {% if cudatoolkit == '11.8.0' %}
-        - {{ compiler('cuda11') }}
+        - {{ compiler('nvcc') }}
         {% else %}
-        - {{ compiler('cuda') }}
+        - {{ compiler('cuda-nvcc') }}
         {% endif %}
         - sysroot_linux-64  # [linux64]
         - llvm-openmp  # [osx]
