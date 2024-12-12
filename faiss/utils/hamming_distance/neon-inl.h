@@ -98,9 +98,9 @@ inline hamdis_t hamming<256>(const uint64_t* pa, const uint64_t* pb) {
 
 /* Hamming distances for multiple of 64 bits */
 inline hamdis_t hamming(const uint64_t* pa, const uint64_t* pb, size_t nwords) {
-    const size_t nwords256 = nwords / 256;
-    const size_t nwords128 = (nwords - nwords256 * 256) / 128;
-    const size_t nwords64 = (nwords - nwords256 * 256 - nwords128 * 128) / 64;
+    const size_t nwords256 = nwords / 4;
+    const size_t nwords128 = (nwords % 4) / 2;
+    const size_t nwords64 = nwords % 2;
 
     hamdis_t h = 0;
     if (nwords256 > 0) {
