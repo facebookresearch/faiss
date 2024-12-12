@@ -101,6 +101,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         {% if cudatoolkit == '11.8.0' %}
+        - nvcc_linux-64
         - {{ compiler('nvcc') }}
         {% else %}
         - cuda-toolkit {{ cudatoolkit }}
