@@ -79,7 +79,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda install -c nvidia cuda-profiler-api=${{ inputs.cuda }}
+        conda install -c nvidia/label/cuda-${{ inputs.cuda }} cuda-profiler-api
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
@@ -89,6 +89,6 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
-        conda install -c nvidia cuda-profiler-api=${{ inputs.cuda }}
+        conda install -c -c nvidia/label/cuda-${{ inputs.cuda }} cuda-profiler-api
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
