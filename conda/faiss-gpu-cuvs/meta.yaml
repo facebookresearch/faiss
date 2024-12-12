@@ -60,6 +60,7 @@ outputs:
         - openblas  # [not x86_64]
         - libcuvs =24.08
         - cuda-version {{ cudatoolkit }}
+        - cuda-runtime {{ cudatoolkit }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
