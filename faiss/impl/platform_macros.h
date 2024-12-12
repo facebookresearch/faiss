@@ -59,8 +59,12 @@ inline int __builtin_ctz(unsigned long x) {
 
 #ifndef __clang__
 inline int __builtin_clzll(uint64_t x) {
-    return (int)__lzcnt64(x);
-}
+    #if defined(_M_X64) || defined(__x86_64__)
+        return (int)__lzcnt64(x);
+    #elif defined(_M_ARM64)
+        return (x == 0) ? 64 : __builtin_clzll(x);
+    #endif
+    }
 #endif
 
 #define __builtin_popcount __popcnt
