@@ -170,7 +170,7 @@ try:
     add_ref_in_constructor(GpuIndexIVFPQ, 1)
     add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 1)
 except NameError as e:
-    logging.info("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes." % e.args[0])
+    logger.info("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes." % e.args[0])
 
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
