@@ -36,6 +36,8 @@ runs:
       run: |
         conda install -y -q "conda!=24.11.0"
         conda install -y -q "conda-build!=24.11.0"
+        which nvcc
+        echo $CUDA_HOME
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
