@@ -35,6 +35,7 @@ set(FAISS_TEST_SRC
   test_common_ivf_empty_index.cpp
   test_callback.cpp
   test_utils.cpp
+  test_hamming.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
