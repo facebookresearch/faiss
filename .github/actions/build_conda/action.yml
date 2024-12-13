@@ -36,7 +36,6 @@ runs:
       run: |
         conda install -y -q "conda!=24.11.0"
         conda install -y -q "conda-build!=24.11.0"
-        export CUDA_HOME="/usr/local/cuda-11.8"
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
