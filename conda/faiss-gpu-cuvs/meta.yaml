@@ -49,7 +49,6 @@ outputs:
         {% if cudatoolkit == '11.8.0' %}
         - {{ compiler('nvcc') }} =11.8.0
         {% else %}
-        - cuda-toolkit {{ cudatoolkit }}
         - {{ compiler('cuda-nvcc') }}
         {% endif %}
         - sysroot_linux-64  # [linux64]
@@ -60,6 +59,7 @@ outputs:
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-version {{ cudatoolkit }}
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
@@ -103,7 +103,6 @@ outputs:
         {% if cudatoolkit == '11.8.0' %}
         - {{ compiler('nvcc') }} =11.8.0
         {% else %}
-        - cuda-toolkit {{ cudatoolkit }}
         - {{ compiler('cuda-nvcc') }}
         {% endif %}
         - sysroot_linux-64 =2.17 # [linux64]
@@ -112,6 +111,7 @@ outputs:
         - make  # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
