@@ -263,7 +263,8 @@ class TestScalarQuantizer(unittest.TestCase):
         for d in 3, 6, 8, 16, 36:
             trainset = np.zeros((2, d), dtype='float32')
             trainset[0, :] = 0
-            trainset[0, :] = 63
+            # Last float32 before 2^6
+            trainset[1, :] = 2**6-2**(6-23)
 
             index = faiss.IndexScalarQuantizer(
                 d, faiss.ScalarQuantizer.QT_6bit)

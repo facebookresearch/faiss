@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <numeric>
 
 #include <faiss/impl/platform_macros.h>
 #include <omp.h>
@@ -70,24 +71,55 @@ typedef ScalarQuantizer::QuantizerType QuantizerType;
 typedef ScalarQuantizer::RangeStat RangeStat;
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
 
+// Base class for fixed precision encoders, mapping a uniform distribution of
+// floating point values in [0.f, 1.f] to a uniform distribution of values in
+// [0, 2^b-1] and back.
+template <uint8_t bits>
+struct CodecBase {
+    constexpr static float kSize = 1 << bits;
+    constexpr static float kScale =
+            kSize * (1 - std::numeric_limits<float>::epsilon());
+    static_assert(kScale < kSize);
+    constexpr static float kInvScale = 1.f / kScale;
+
+    // precondition: 0 <= x <= 1.
+    constexpr static uint32_t toBits(float x) {
+        return x * kScale;
+    }
+
+    // map code values back to floats, centered at the middle of the bin.
+    constexpr static float fromBits(uint32_t i) {
+        return (i + 0.5f) * kInvScale;
+    }
+
+    // Adjust the trained vmax to simulate prior behavior where
+    // toBits() scaled by kSize - 1 instead of kSize - eps.
+    static void migrateLegacy(std::vector<float>& trained) {
+        for (size_t i = trained.size() / 2; i < trained.size(); ++i) {
+            float& vdiff = trained[i];
+            vdiff *= kScale / (kSize - 1);
+        }
+    }
+};
+
 /*******************************************************************
  * Codec: converts between values in [0, 1] and an index in a code
  * array. The "i" parameter is the vector component index (not byte
  * index).
  */
 
-struct Codec8bit {
+struct Codec8bit : CodecBase<8> {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
             int i) {
-        code[i] = (int)(255 * x);
+        code[i] = toBits(x);
     }
 
     static FAISS_ALWAYS_INLINE float decode_component(
             const uint8_t* code,
             int i) {
-        return (code[i] + 0.5f) / 255.0f;
+        return fromBits(code[i]);
     }
 
 #if defined(__AVX512F__)
@@ -96,9 +128,9 @@ struct Codec8bit {
         const __m128i c16 = _mm_loadu_si128((__m128i*)(code + i));
         const __m512i i32 = _mm512_cvtepu8_epi32(c16);
         const __m512 f16 = _mm512_cvtepi32_ps(i32);
-        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 255.f);
-        const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
-        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+        const __m512 half_scale = _mm512_set1_ps(0.5f * kInvScale);
+        const __m512 scale = _mm512_set1_ps(kInvScale);
+        return _mm512_fmadd_ps(f16, scale, half_scale);
     }
 #elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
@@ -108,9 +140,9 @@ struct Codec8bit {
         const __m128i i8 = _mm_set1_epi64x(c8);
         const __m256i i32 = _mm256_cvtepu8_epi32(i8);
         const __m256 f8 = _mm256_cvtepi32_ps(i32);
-        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
-        const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return _mm256_fmadd_ps(f8, one_255, half_one_255);
+        const __m256 half_scale = _mm256_set1_ps(0.5f * kInvScale);
+        const __m256 scale = _mm256_set1_ps(kInvScale);
+        return _mm256_fmadd_ps(f8, scale, half_scale);
     }
 #endif
 
@@ -128,18 +160,18 @@ struct Codec8bit {
 #endif
 };
 
-struct Codec4bit {
+struct Codec4bit : CodecBase<4> {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
             int i) {
-        code[i / 2] |= (int)(x * 15.0) << ((i & 1) << 2);
+        code[i / 2] |= toBits(x) << ((i & 1) << 2);
     }
 
     static FAISS_ALWAYS_INLINE float decode_component(
             const uint8_t* code,
             int i) {
-        return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
+        return fromBits((code[i / 2] >> ((i & 1) << 2)) & 0xf);
     }
 
 #if defined(__AVX512F__)
@@ -157,9 +189,9 @@ struct Codec4bit {
         __m512i i16 = _mm512_castsi256_si512(c8lo);
         i16 = _mm512_inserti32x8(i16, c8hi, 1);
         __m512 f16 = _mm512_cvtepi32_ps(i16);
-        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 15.f);
-        const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
-        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+        const __m512 half_scale = _mm512_set1_ps(0.5f * kInvScale);
+        const __m512 scale = _mm512_set1_ps(kInvScale);
+        return _mm512_fmadd_ps(f16, scale, half_scale);
     }
 #elif defined(__AVX2__)
     static FAISS_ALWAYS_INLINE __m256
@@ -179,8 +211,8 @@ struct Codec4bit {
         __m256 f8 = _mm256_cvtepi32_ps(i8);
         __m256 half = _mm256_set1_ps(0.5f);
         f8 = _mm256_add_ps(f8, half);
-        __m256 one_255 = _mm256_set1_ps(1.f / 15.f);
-        return _mm256_mul_ps(f8, one_255);
+        __m256 scale = _mm256_set1_ps(kInvScale);
+        return _mm256_mul_ps(f8, scale);
     }
 #endif
 
@@ -198,12 +230,12 @@ struct Codec4bit {
 #endif
 };
 
-struct Codec6bit {
+struct Codec6bit : CodecBase<6> {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
             int i) {
-        int bits = (int)(x * 63.0);
+        uint8_t bits = toBits(x);
         code += (i >> 2) * 3;
         switch (i & 3) {
             case 0:
@@ -244,7 +276,7 @@ struct Codec6bit {
                 bits = code[2] >> 2;
                 break;
         }
-        return (bits + 0.5f) / 63.0f;
+        return fromBits(bits);
     }
 
 #if defined(__AVX512F__)
@@ -289,9 +321,9 @@ struct Codec6bit {
         // scale
         const __m512 f8 =
                 _mm512_cvtepi32_ps(_mm512_cvtepi16_epi32(shuffled_shifted));
-        const __m512 half_one_255 = _mm512_set1_ps(0.5f / 63.f);
-        const __m512 one_255 = _mm512_set1_ps(1.f / 63.f);
-        return _mm512_fmadd_ps(f8, one_255, half_one_255);
+        const __m512 scale = _mm512_set1_ps(kInvScale);
+        const __m512 half_scale = _mm512_set1_ps(0.5f *kInvScale);
+        return _mm512_fmadd_ps(f8, scale, half_scale);
 
         // clang-format on
     }
@@ -330,17 +362,17 @@ struct Codec6bit {
         // const __m128i i8 = _mm_set1_epi64x(vext);
         // const __m256i i32 = _mm256_cvtepi8_epi32(i8);
         // const __m256 f8 = _mm256_cvtepi32_ps(i32);
-        // const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
-        // const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
-        // return _mm256_fmadd_ps(f8, one_255, half_one_255);
+        // const __m256 half_scale = _mm256_set1_ps(0.5f * kInvScale);
+        // const __m256 scale = _mm256_set1_ps(kInvScale);
+        // return _mm256_fmadd_ps(f8, scale, half_scale);
 
         __m256i i8 = load6((const uint16_t*)(code + (i >> 2) * 3));
         __m256 f8 = _mm256_cvtepi32_ps(i8);
         // this could also be done with bit manipulations but it is
         // not obviously faster
-        const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
-        const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
-        return _mm256_fmadd_ps(f8, one_255, half_one_255);
+        const __m256 half_scale = _mm256_set1_ps(0.5f * kInvScale);
+        const __m256 scale = _mm256_set1_ps(kInvScale);
+        return _mm256_fmadd_ps(f8, scale, half_scale);
     }
 
 #endif
@@ -977,6 +1009,9 @@ void train_Uniform(
         int k,
         const float* x,
         std::vector<float>& trained) {
+    if (n < 2) {
+        FAISS_THROW_MSG("Not enough data points to train");
+    }
     trained.resize(2);
     float& vmin = trained[0];
     float& vmax = trained[1];
@@ -1091,6 +1126,9 @@ void train_NonUniform(
         int k,
         const float* x,
         std::vector<float>& trained) {
+    if (n < 2) {
+        FAISS_THROW_MSG("Not enough data points to train");
+    }
     trained.resize(2 * d);
     float* vmin = trained.data();
     float* vmax = trained.data() + d;
@@ -2001,6 +2039,27 @@ void ScalarQuantizer::set_derived_sizes() {
         case QT_bf16:
             code_size = d * 2;
             bits = 16;
+            break;
+    }
+}
+void ScalarQuantizer::migrate_legacy_qt() {
+    switch (qtype) {
+        case QT_8bit:
+        case QT_8bit_uniform:
+            CodecBase<8>::migrateLegacy(trained);
+            break;
+        case QT_4bit:
+        case QT_4bit_uniform:
+            CodecBase<4>::migrateLegacy(trained);
+            break;
+        case QT_6bit:
+            CodecBase<6>::migrateLegacy(trained);
+            break;
+        case QT_8bit_direct:
+        case QT_8bit_direct_signed:
+        case QT_fp16:
+        case QT_bf16:
+            // no fixup needed.
             break;
     }
 }
