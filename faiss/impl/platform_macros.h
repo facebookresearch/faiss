@@ -39,6 +39,7 @@
 // redefine the GCC intrinsics with Windows equivalents
 
 #include <intrin.h>
+#include <limits.h>
 
 #ifndef __clang__
 inline int __builtin_ctzll(uint64_t x) {
@@ -62,7 +63,12 @@ inline int __builtin_clzll(uint64_t x) {
     #if defined(_M_X64) || defined(__x86_64__)
         return (int)__lzcnt64(x);
     #elif defined(_M_ARM64)
-        return (x == 0) ? 64 : __builtin_clzll(x);
+        unsigned long index;
+        int count = sizeof(uint64_t) * CHAR_BIT;
+        if (_BitScanReverse64(&index, x)) {
+            count = count - 1 - index;
+        }
+        return count;
     #endif
     }
 #endif
