@@ -43,7 +43,6 @@ outputs:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
-        - CUDA_HOME ={{ CONDA_PREFIX }}
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -98,8 +97,6 @@ outputs:
     script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
-      script_env:
-        - CUDA_HOME ={{ CONDA_PREFIX }}
     requirements:
       build:
         - {{ compiler('cxx') }}

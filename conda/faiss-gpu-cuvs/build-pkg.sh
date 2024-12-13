@@ -6,6 +6,7 @@
 
 set -e
 
+export CUDA_HOME=$BUILD_PREFIX
 
 # Build swigfaiss.so/swigfaiss_avx2.so/swigfaiss_avx512.so
 cmake -B _build_python_${PY_VER} \

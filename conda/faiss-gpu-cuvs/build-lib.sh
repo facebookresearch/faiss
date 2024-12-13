@@ -6,7 +6,7 @@
 
 set -e
 
-
+export CUDA_HOME=$BUILD_PREFIX
 # Build libfaiss.so/libfaiss_avx2.so/libfaiss_avx512.so
 cmake -B _build \
       -DBUILD_SHARED_LIBS=ON \
