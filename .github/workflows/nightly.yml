@@ -1,7 +1,9 @@
 name: Nightly
 on:
-  schedule:
-    - cron:  '10 6 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
