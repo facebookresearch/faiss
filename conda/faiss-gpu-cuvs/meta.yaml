@@ -53,26 +53,18 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
-        - cuda-version {{ cudatoolkit }}
         - cuda-toolkit {{ cudatoolkit }}
-        - cuda-profiler-api =11.8.86
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
         - libcuvs =24.08
-        - cuda-version {{ cudatoolkit }}
-        {% if cudatoolkit == '11.8.0' %}
-        - cuda-profiler-api =11.8.86
-        {% endif %}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas  # [not x86_64]
-        - cuda-cudart
         - libcublas {{ libcublas_constraints }}
         - libcuvs =24.08
-        - cuda-version {{ cuda_constraints }}
     test:
       requires:
         - conda-build
