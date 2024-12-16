@@ -281,4 +281,14 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         VisitedTable* vt,
         HNSWStats& stats);
 
+void search_neighbors_to_add(
+        HNSW& hnsw,
+        DistanceComputer& qdis,
+        std::priority_queue<HNSW::NodeDistCloser>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        VisitedTable& vt,
+        bool reference_version = false);
+
 } // namespace faiss

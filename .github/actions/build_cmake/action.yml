@@ -32,17 +32,17 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake make swig "numpy<2" scipy pytest gflags
+        conda install -y -q python=3.11 cmake=3.26 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas gxx_linux-aarch64 sysroot_linux-aarch64
+          conda install -y -q -c conda-forge openblas=0.3 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
 
         # install base packages for X86_64
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
-          conda install -y -q -c conda-forge gxx_linux-64 sysroot_linux-64
+          conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
@@ -51,21 +51,20 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-toolkit -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q cuda-toolkit=12.4 -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
         fi
 
         # install test packages
-        conda install -y pytest
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
           conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
         else
-          conda install -y -q pytorch -c pytorch
+          conda install -y -q "pytorch<2.5" -c pytorch
         fi
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
