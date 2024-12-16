@@ -1355,22 +1355,16 @@ void IndexIVFFastScan::reconstruct_from_offset(
     // unpack codes
     InvertedLists::ScopedCodes list_codes(invlists, list_no);
     std::vector<uint8_t> code(code_size, 0);
-    BitstringWriter bsw(code.data(), code_size);
+    encode_listno(list_no, code.data());
+    BitstringWriter bsw(code.data() + coarse_code_size(), code_size);
+
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
                 pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m);
         bsw.write(c, nbits);
     }
-    sa_decode(1, code.data(), recons);
 
-    // add centroid to it
-    if (by_residual) {
-        std::vector<float> centroid(d);
-        quantizer->reconstruct(list_no, centroid.data());
-        for (int i = 0; i < d; ++i) {
-            recons[i] += centroid[i];
-        }
-    }
+    sa_decode(1, code.data(), recons);
 }
 
 void IndexIVFFastScan::reconstruct_orig_invlists() {
