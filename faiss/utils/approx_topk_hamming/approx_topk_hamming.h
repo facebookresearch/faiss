@@ -101,17 +101,19 @@ struct HeapWithBucketsForHamming32<
                     uint32_t hamming_distances[8];
                     uint8_t valid_counter = 0;
                     for (size_t j8 = 0; j8 < 8; j8++) {
-                        const uint32_t idx = j8 + j * 8 + ip + n_per_beam * beam_index;
+                        const uint32_t idx = 
+                                j8 + j * 8 + ip + n_per_beam * beam_index;
                         if (!sel || sel->is_member(idx)) {
                             hamming_distances[j8] = hc.hamming(
                                     binary_vectors + idx * code_size);
                             valid_counter++;
                         } else {
-                            hamming_distances[j8] = std::numeric_limits<int32_t>::max();
+                            hamming_distances[j8] =
+                                    std::numeric_limits<int32_t>::max();
                         }
                     }
 
-                    if (valid_counter == 0) {
+                    if (valid_counter == 8) {
                         continue; // Skip if all vectors are filtered out
                     }
 

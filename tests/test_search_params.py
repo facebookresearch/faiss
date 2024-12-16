@@ -22,22 +22,27 @@ class TestSelector(unittest.TestCase):
     combinations as possible.
     """
 
-    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2, k=10, params=None):
+    def do_test_id_selector(
+        self, 
+        index_key, 
+        id_selector_type="batch", 
+        mt=faiss.METRIC_L2, 
+        k=10, 
+        use_heap=True
+    ):
         """ Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
         Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
-        params: optional SearchParameters object to override default settings
         """
         d = 32  # make sure dimension is multiple of 8 for binary
         ds = datasets.SyntheticDataset(d, 1000, 100, 20)
 
         if index_key == "BinaryFlat":
-            # Create proper binary vectors following test_index_binary.py pattern
             rs = np.random.RandomState(123)
             xb = rs.randint(256, size=(ds.nb, d // 8), dtype='uint8')
             xq = rs.randint(256, size=(ds.nq, d // 8), dtype='uint8')
-            xt = None  # No training needed for binary flat
             index = faiss.IndexBinaryFlat(d)
+            index.use_heap = use_heap
             # Use smaller radius for Hamming distance
             base_radius = 4
         else:
@@ -137,15 +142,11 @@ class TestSelector(unittest.TestCase):
         else:
             sel = faiss.IDSelectorBatch(subset)
 
-        if params is None:
-            params = (
-                faiss.SearchParametersIVF(sel=sel) if "IVF" in index_key else
-                faiss.SearchParametersPQ(sel=sel) if "PQ" in index_key else
-                faiss.SearchParameters(sel=sel)
-            )
-        else:
-            # Use provided params but ensure selector is set
-            params.sel = sel
+        params = (
+            faiss.SearchParametersIVF(sel=sel) if "IVF" in index_key else
+            faiss.SearchParametersPQ(sel=sel) if "PQ" in index_key else
+            faiss.SearchParameters(sel=sel)
+        )
 
         Dnew, Inew = index.search(xq, k, params=params)
         np.testing.assert_array_equal(Iref, Inew)
@@ -317,10 +318,7 @@ class TestSelector(unittest.TestCase):
         self.do_test_id_selector("BinaryFlat", id_selector_type="array")
 
     def test_BinaryFlat_no_heap(self):
-        params = faiss.SearchParameters()
-        params.use_heap = False
-        self.do_test_id_selector("BinaryFlat", params=params)
-
+        self.do_test_id_selector("BinaryFlat", use_heap=False)
 
 class TestSearchParams(unittest.TestCase):
 

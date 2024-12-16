@@ -110,7 +110,8 @@ void IndexBinaryFlat::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     const IDSelector* sel = params ? params->sel : nullptr;
-    hamming_range_search(x, xb.data(), n, ntotal, radius, code_size, result, sel);
+    hamming_range_search(
+            x, xb.data(), n, ntotal, radius, code_size, result, sel);
 }
 
 } // namespace faiss

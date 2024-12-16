@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
