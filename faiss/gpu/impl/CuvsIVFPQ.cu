@@ -332,16 +332,14 @@ void CuvsIVFPQ::search(
 
     validRowIndices(resources_, queries, nan_flag.data_handle());
 
-    auto max_ind = std::numeric_limits<faiss::idx_t>();
     raft::linalg::map_offset(
             raft_handle,
             raft::make_device_vector_view(outIndices.data(), numQueries * k_),
             [nan_flag = nan_flag.data_handle(),
              out_inds = outIndices.data(),
-             max_ind,
              k_] __device__(uint32_t i) {
                 uint32_t row = i / k_;
-                if (!nan_flag[row] || out_inds[i] == max_ind)
+                if (!nan_flag[row])
                     return idx_t(-1);
                 return out_inds[i];
             });
