@@ -60,17 +60,17 @@ inline int __builtin_ctz(unsigned long x) {
 
 #ifndef __clang__
 inline int __builtin_clzll(uint64_t x) {
-    #if defined(_M_X64) || defined(__x86_64__)
-        return (int)__lzcnt64(x);
-    #elif defined(_M_ARM64)
-        unsigned long index;
-        int count = sizeof(uint64_t) * CHAR_BIT;
-        if (_BitScanReverse64(&index, x)) {
-            count = count - 1 - index;
-        }
-        return count;
-    #endif
+#if defined(_M_X64) || defined(__x86_64__)
+    return (int)__lzcnt64(x);
+#elif defined(_M_ARM64)
+    unsigned long index;
+    int count = sizeof(uint64_t) * CHAR_BIT;
+    if (_BitScanReverse64(&index, x)) {
+        count = count - 1 - index;
     }
+    return count;
+#endif
+}
 #endif
 
 #define __builtin_popcount __popcnt
