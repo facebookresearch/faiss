@@ -131,7 +131,7 @@ Several options can be passed to CMake, among which:
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
   generate code using optimized SIMD/Vector instructions. Possible values are below:
-    - On x86-64, `generic`, `avx2`, 'avx512', and `avx512-sr`, by increasing order of optimization,
+    - On x86-64, `generic`, `avx2`, 'avx512', and `avx512_spr` (for features available since Intel(R) Sapphire Rapids), by increasing order of optimization,
     - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
@@ -180,10 +180,10 @@ For AVX512:
 $ make -C build -j faiss_avx512
 ```
 
-For AVX512 (advanced):
+For AVX512-FP16 and other features available since Intel(R) Sapphire Rapids.
 
 ``` shell
-$ make -C build -j faiss_avx512_sr
+$ make -C build -j faiss_avx512_spr
 ```
 
 This will ensure the creation of neccesary files when building and installing the python package.
