@@ -1353,10 +1353,11 @@ void IndexIVFFastScan::reconstruct_from_offset(
         int64_t offset,
         float* recons) const {
     // unpack codes
-    InvertedLists::ScopedCodes list_codes(invlists, list_no);
-    std::vector<uint8_t> code(code_size, 0);
+    size_t coarse_size = coarse_code_size();
+    std::vector<uint8_t> code(coarse_size + code_size, 0);
     encode_listno(list_no, code.data());
-    BitstringWriter bsw(code.data() + coarse_code_size(), code_size);
+    InvertedLists::ScopedCodes list_codes(invlists, list_no);
+    BitstringWriter bsw(code.data() + coarse_size, code_size);
 
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
