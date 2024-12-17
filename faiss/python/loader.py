@@ -67,8 +67,9 @@ def supported_instruction_sets():
             result.add("AVX2")
         if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
             result.add("AVX512")
-        if "avx512-sr" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
-            result.add("AVX512_SR")
+        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+            # avx512_fp16 is supported starting SPR
+            result.add("AVX512_SPR")
         if is_sve_supported():
             result.add("SVE")
         for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
@@ -94,15 +95,15 @@ else:
     instruction_sets.add(opt_level)
 
 loaded = False
-has_AVX512_SR = any("AVX512_SR" in x.upper() for x in instruction_sets)
-if has_AVX512_SR:
+has_AVX512_SPR = any("AVX512_SPR" in x.upper() for x in instruction_sets)
+if has_AVX512_SPR:
     try:
-        logger.info("Loading faiss with AVX512-SR support.")
-        from .swigfaiss_avx512_sr import *
-        logger.info("Successfully loaded faiss with AVX512-SR support.")
+        logger.info("Loading faiss with AVX512-SPR support.")
+        from .swigfaiss_avx512_spr import *
+        logger.info("Successfully loaded faiss with AVX512-SPR support.")
         loaded = True
     except ImportError as e:
-        logger.info(f"Could not load library with AVX512-SR support due to:\n{e!r}")
+        logger.info(f"Could not load library with AVX512-SPR support due to:\n{e!r}")
         # reset so that we load without AVX512 below
         loaded = False
 

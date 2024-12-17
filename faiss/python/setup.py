@@ -28,7 +28,7 @@ prefix = "Release/" * (platform.system() == "Windows")
 swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
 swigfaiss_avx2_lib = f"{prefix}_swigfaiss_avx2{ext}"
 swigfaiss_avx512_lib = f"{prefix}_swigfaiss_avx512{ext}"
-swigfaiss_avx512_sr_lib = f"{prefix}_swigfaiss_avx512_sr{ext}"
+swigfaiss_avx512_spr_lib = f"{prefix}_swigfaiss_avx512_spr{ext}"
 callbacks_lib = f"{prefix}libfaiss_python_callbacks{ext}"
 swigfaiss_sve_lib = f"{prefix}_swigfaiss_sve{ext}"
 faiss_example_external_module_lib = f"_faiss_example_external_module{ext}"
@@ -36,7 +36,7 @@ faiss_example_external_module_lib = f"_faiss_example_external_module{ext}"
 found_swigfaiss_generic = os.path.exists(swigfaiss_generic_lib)
 found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
 found_swigfaiss_avx512 = os.path.exists(swigfaiss_avx512_lib)
-found_swigfaiss_avx512_sr = os.path.exists(swigfaiss_avx512_sr_lib)
+found_swigfaiss_avx512_spr = os.path.exists(swigfaiss_avx512_spr_lib)
 found_callbacks = os.path.exists(callbacks_lib)
 found_swigfaiss_sve = os.path.exists(swigfaiss_sve_lib)
 found_faiss_example_external_module_lib = os.path.exists(
@@ -44,10 +44,10 @@ found_faiss_example_external_module_lib = os.path.exists(
 )
 
 assert (
-    found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512 or found_swigfaiss_avx512_sr or found_swigfaiss_sve or found_faiss_example_external_module_lib
+    found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512 or found_swigfaiss_avx512_spr or found_swigfaiss_sve or found_faiss_example_external_module_lib
 ), (
     f"Could not find {swigfaiss_generic_lib} or "
-    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_sr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
+    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
     f"Faiss may not be compiled yet."
 )
 
@@ -66,10 +66,10 @@ if found_swigfaiss_avx512:
     shutil.copyfile("swigfaiss_avx512.py", "faiss/swigfaiss_avx512.py")
     shutil.copyfile(swigfaiss_avx512_lib, f"faiss/_swigfaiss_avx512{ext}")
 
-if found_swigfaiss_avx512_sr:
-    print(f"Copying {swigfaiss_avx512_sr_lib}")
-    shutil.copyfile("swigfaiss_avx512_sr.py", "faiss/swigfaiss_avx512_sr.py")
-    shutil.copyfile(swigfaiss_avx512_sr_lib, f"faiss/_swigfaiss_avx512_sr{ext}")
+if found_swigfaiss_avx512_spr:
+    print(f"Copying {swigfaiss_avx512_spr_lib}")
+    shutil.copyfile("swigfaiss_avx512_spr.py", "faiss/swigfaiss_avx512_spr.py")
+    shutil.copyfile(swigfaiss_avx512_spr_lib, f"faiss/_swigfaiss_avx512_spr{ext}")
 
 if found_callbacks:
     print(f"Copying {callbacks_lib}")
