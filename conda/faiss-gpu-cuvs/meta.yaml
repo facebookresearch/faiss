@@ -10,7 +10,7 @@
 {% set cuda_constraints=">=11.4,<=11.8" %}
 {% set libcublas_constraints=">=11.6,<12" %}
 {% elif cudatoolkit == '12.4.0' %}
-{% set cuda_constraints=">=12.1,<=12.5" %}
+{% set cuda_constraints=">=12.1,<=12.4" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% endif %}
 
