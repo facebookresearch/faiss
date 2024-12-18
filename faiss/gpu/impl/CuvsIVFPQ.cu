@@ -229,6 +229,7 @@ void CuvsIVFPQ::searchPreassigned(
         Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     // TODO: Fill this in!
+    FAISS_THROW_MSG("searchPreassigned is not implemented for cuVS index");
 }
 
 size_t CuvsIVFPQ::getGpuListEncodingSize_(idx_t listId) {
