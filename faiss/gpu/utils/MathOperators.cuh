@@ -556,8 +556,6 @@ struct Math<Half8> {
     }
 };
 
-#ifndef USE_AMD_ROCM
-
 template <>
 struct Math<__nv_bfloat16> {
     typedef __nv_bfloat16 ScalarType;
@@ -626,7 +624,7 @@ struct Math<__nv_bfloat16> {
     }
 
     static inline __device__ __nv_bfloat16 zero() {
-#if CUDA_VERSION >= 9000
+#if CUDA_VERSION >= 9000 || defined(USE_AMD_ROCM)
         return 0.0f;
 #else
         __nv_bfloat16 h;
@@ -788,8 +786,6 @@ struct Math<__nv_bfloat162> {
         return __bfloat162bfloat162(Math<__nv_bfloat16>::zero());
     }
 };
-
-#endif // !USE_AMD_ROCM
 
 } // namespace gpu
 } // namespace faiss

@@ -32,30 +32,31 @@ IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
 }
 
 void IndexAdditiveQuantizerFastScan::init(
-        AdditiveQuantizer* aq_2,
+        AdditiveQuantizer* aq_init,
         MetricType metric,
         int bbs) {
-    FAISS_THROW_IF_NOT(aq_2 != nullptr);
-    FAISS_THROW_IF_NOT(!aq_2->nbits.empty());
-    FAISS_THROW_IF_NOT(aq_2->nbits[0] == 4);
+    FAISS_THROW_IF_NOT(aq_init != nullptr);
+    FAISS_THROW_IF_NOT(!aq_init->nbits.empty());
+    FAISS_THROW_IF_NOT(aq_init->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
-                aq_2->search_type == AdditiveQuantizer::ST_LUT_nonorm,
+                aq_init->search_type == AdditiveQuantizer::ST_LUT_nonorm,
                 "Search type must be ST_LUT_nonorm for IP metric");
     } else {
         FAISS_THROW_IF_NOT_MSG(
-                aq_2->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
-                        aq_2->search_type == AdditiveQuantizer::ST_norm_rq2x4,
+                aq_init->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+                        aq_init->search_type ==
+                                AdditiveQuantizer::ST_norm_rq2x4,
                 "Search type must be lsq2x4 or rq2x4 for L2 metric");
     }
 
-    this->aq = aq_2;
+    this->aq = aq_init;
     if (metric == METRIC_L2) {
-        M = aq_2->M + 2; // 2x4 bits AQ
+        M = aq_init->M + 2; // 2x4 bits AQ
     } else {
-        M = aq_2->M;
+        M = aq_init->M;
     }
-    init_fastscan(aq_2->d, M, 4, metric, bbs);
+    init_fastscan(aq_init->d, M, 4, metric, bbs);
 
     max_train_points = 1024 * ksub * M;
 }

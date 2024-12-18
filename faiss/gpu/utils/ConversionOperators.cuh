@@ -38,12 +38,9 @@ struct ConvertTo<float> {
     static inline __device__ float to(half v) {
         return __half2float(v);
     }
-
-#ifndef USE_AMD_ROCM
     static inline __device__ float to(__nv_bfloat16 v) {
         return __bfloat162float(v);
     }
-#endif // !USE_AMD_ROCM
 };
 
 template <>
@@ -96,9 +93,6 @@ struct ConvertTo<Half4> {
     }
 };
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
-
 template <>
 struct ConvertTo<__nv_bfloat16> {
     static inline __device__ __nv_bfloat16 to(float v) {
@@ -111,8 +105,6 @@ struct ConvertTo<__nv_bfloat16> {
         return v;
     }
 };
-
-#endif // USE_AMD_ROCM
 
 template <typename From, typename To>
 struct Convert {

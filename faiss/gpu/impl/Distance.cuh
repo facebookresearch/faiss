@@ -41,8 +41,6 @@ void runAllPairwiseL2Distance(
         bool queriesRowMajor,
         Tensor<float, 2, true>& outDistances);
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runAllPairwiseL2Distance(
         GpuResources* res,
         cudaStream_t stream,
@@ -52,7 +50,6 @@ void runAllPairwiseL2Distance(
         Tensor<__nv_bfloat16, 2, true>& queries,
         bool queriesRowMajor,
         Tensor<float, 2, true>& outDistances);
-#endif // USE_AMD_ROCM
 
 void runAllPairwiseIPDistance(
         GpuResources* res,
@@ -72,8 +69,6 @@ void runAllPairwiseIPDistance(
         bool queriesRowMajor,
         Tensor<float, 2, true>& outDistances);
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runAllPairwiseIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -82,7 +77,6 @@ void runAllPairwiseIPDistance(
         Tensor<__nv_bfloat16, 2, true>& queries,
         bool queriesRowMajor,
         Tensor<float, 2, true>& outDistances);
-#endif // USE_AMD_ROCM
 
 /// Calculates brute-force L2 distance between `vectors` and
 /// `queries`, returning the k closest results seen
@@ -116,8 +110,6 @@ void runL2Distance(
         Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances = false);
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runL2Distance(
         GpuResources* resources,
         cudaStream_t stream,
@@ -130,7 +122,6 @@ void runL2Distance(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances = false);
-#endif // USE_AMD_ROCM
 
 /// Calculates brute-force inner product distance between `vectors`
 /// and `queries`, returning the k closest results seen
@@ -156,8 +147,6 @@ void runIPDistance(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices);
 
-// no bf16 support for AMD
-#ifndef USE_AMD_ROCM
 void runIPDistance(
         GpuResources* resources,
         cudaStream_t stream,
@@ -168,7 +157,6 @@ void runIPDistance(
         int k,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices);
-#endif // USE_AMD_ROCM
 
 //
 // General distance implementation, assumes that all arguments are on the

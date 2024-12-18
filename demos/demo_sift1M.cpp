@@ -50,7 +50,7 @@ float* fvecs_read(const char* fname, size_t* d_out, size_t* n_out) {
     *d_out = d;
     *n_out = n;
     float* x = new float[n * (d + 1)];
-    size_t nr = fread(x, sizeof(float), n * (d + 1), f);
+    size_t nr __attribute__((unused)) = fread(x, sizeof(float), n * (d + 1), f);
     assert(nr == n * (d + 1) || !"could not read whole file");
 
     // shift array to remove row headers

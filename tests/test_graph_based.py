@@ -73,6 +73,20 @@ class TestHNSW(unittest.TestCase):
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
+    def test_hnsw_no_init_level0(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.init_level0 = False
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        # This is expected to be smaller because we are not initializing
+        # vectors into level 0.
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 25)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
     def io_and_retest(self, index, Dhnsw, Ihnsw):
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
         Dhnsw2, Ihnsw2 = index2.search(self.xq, 1)
@@ -98,6 +112,24 @@ class TestHNSW(unittest.TestCase):
         Dhnsw, Ihnsw = index.search(self.xq, 1)
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 307)
+
+        self.io_and_retest(index, Dhnsw, Ihnsw)
+
+    def test_hnsw_2level_mixed_search(self):
+        d = self.xq.shape[1]
+
+        quant = faiss.IndexFlatL2(d)
+
+        storage = faiss.IndexIVFPQ(quant, d, 32, 8, 8)
+        storage.make_direct_map()
+        index = faiss.IndexHNSW2Level(quant, 32, 8, 8)
+        index.storage = storage
+        index.train(self.xb)
+        index.add(self.xb)
+        Dhnsw, Ihnsw = index.search(self.xq, 1)
+
+        # It is expected that the mixed search will perform worse.
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 200)
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
@@ -175,7 +207,7 @@ class TestHNSW(unittest.TestCase):
         xb = self.xb - self.xb.mean(axis=0)  # need to be centered to give interesting directions
         xq = self.xq - self.xq.mean(axis=0)
         Dref, Iref = faiss.knn(xq, xb, 10, faiss.METRIC_ABS_INNER_PRODUCT)
-        
+
         index = faiss.IndexHNSWFlat(d, 32, faiss.METRIC_ABS_INNER_PRODUCT)
         index.add(xb)
         Dnew, Inew = index.search(xq, 10)
@@ -183,8 +215,23 @@ class TestHNSW(unittest.TestCase):
         inter = faiss.eval_intersection(Iref, Inew)
         # 4769 vs. 500*10
         self.assertGreater(inter, Iref.size * 0.9)
- 
- 
+
+    def test_hnsw_reset(self):
+        d = self.xb.shape[1]
+        index_flat = faiss.IndexFlat(d)
+        index_flat.add(self.xb)
+        self.assertEqual(index_flat.ntotal, self.xb.shape[0])
+        index_hnsw = faiss.IndexHNSW(index_flat)
+        index_hnsw.add(self.xb)
+        # * 2 because we add to storage twice. This is just for testing
+        # that storage gets cleared correctly.
+        self.assertEqual(index_hnsw.ntotal, self.xb.shape[0] * 2)
+
+        index_hnsw.reset()
+
+        self.assertEqual(index_flat.ntotal, 0)
+        self.assertEqual(index_hnsw.ntotal, 0)
+
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
