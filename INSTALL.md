@@ -26,7 +26,7 @@ $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
 published in the main anaconda channel.
 
-For faiss-gpu-cuvs, the rapidsai and conda-forge channels are required.
+For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -38,7 +38,7 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
 # GPU(+CPU) version with NVIDIA cuVS
-conda install -c pytorch -c rapidsai -c conda-forge faiss-gpu-cuvs pytorch pytorch-cuda numpy
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs pytorch pytorch-cuda numpy
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -95,10 +95,22 @@ The optional requirements are:
   - the CUDA toolkit,
 - for AMD GPUs:
   - AMD ROCm,
+- for using NVIDIA cuVS implementations:
+  - libcuvs=24.08
 - for the python bindings:
   - python 3,
   - numpy,
   - and swig.
+
+To install the libcuvs optional dependency:
+1. With CUDA 12.4
+```
+conda install -c rapidsai -c conda-forge libcuvs=24.08 cuda-version=12.4
+```
+2. With CUDA 11.8
+```
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.08 cuda-version=11.8 
+```
 
 Indications for specific configurations are available in the [troubleshooting
 section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshooting).
@@ -118,10 +130,10 @@ Several options can be passed to CMake, among which:
   values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
+  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_CUVS=ON` in order to enable building the cuVS implementations
     of the IVF-Flat, IVF-PQ and CAGRA GPU-accelerated indices (default is `ON`, possible
-    values are `ON` and `OFF`)
-  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
+    values are `ON` and `OFF`). Ensure that `-DFAISS_ENABLE_GPU` is set to `ON` when enabling this option
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
