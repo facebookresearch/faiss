@@ -205,6 +205,20 @@ TEST(IVF, list_context) {
                 << "should have correct number of list numbers";
     }
     {
+        constexpr size_t num_vecs = 5; // number of vectors
+        std::vector<float> vecs(num_vecs * d);
+        for (size_t i = 0; i < num_vecs * d; i++) {
+            vecs[i] = distrib(rng);
+        }
+        const size_t codeSize = index.sa_code_size();
+        std::vector<uint8_t> encodedData(num_vecs * codeSize);
+        index.sa_encode(num_vecs, vecs.data(), encodedData.data());
+        std::vector<float> decodedVecs(num_vecs * d);
+        index.sa_decode(num_vecs, encodedData.data(), decodedVecs.data());
+        EXPECT_EQ(vecs, decodedVecs)
+                << "decoded vectors should be the same as the original vectors that were encoded";
+    }
+    {
         constexpr faiss::idx_t k = 100;
         constexpr size_t nprobe = 10;
         std::vector<float> distances(k);
