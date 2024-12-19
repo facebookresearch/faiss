@@ -71,18 +71,18 @@ jobs:
         uses: ./.github/actions/build_cmake
         with:
           gpu: ON
-  # linux-x86_64-GPU-w-CUVS-cmake:
-  #   name: Linux x86_64 GPU w/ cuVS (cmake)
-  #   needs: linux-x86_64-cmake
-  #   runs-on: 4-core-ubuntu-gpu-t4
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #     - name: Build and Test (cmake)
-  #       uses: ./.github/actions/build_cmake
-  #       with:
-  #         gpu: ON
-  #         cuvs: ON
+  linux-x86_64-GPU-w-CUVS-cmake:
+    name: Linux x86_64 GPU w/ cuVS (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: 4-core-ubuntu-gpu-t4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          gpu: ON
+          cuvs: ON
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
     needs: linux-x86_64-cmake
