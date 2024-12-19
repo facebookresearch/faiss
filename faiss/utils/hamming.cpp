@@ -205,7 +205,7 @@ void hammings_knn_hc(
                 NB,                                                          \
                 BD,                                                          \
                 HammingComputer>::                                           \
-                addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_, sel);          \
+                addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_, sel);           \
         break;
 
             switch (approx_topk_mode) {
