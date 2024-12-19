@@ -54,15 +54,14 @@ runs:
           conda install -y -q cuda-toolkit=12.4 -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=24.08 cuda-version=12.4 cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q libcuvs=24.12 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge
         fi
-
         # install test packages
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c nvidia/label/cuda-12.4.0
+          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c "nvidia/label/cuda-12.4.0"
         else
           conda install -y -q "pytorch<2.5" -c pytorch
         fi
