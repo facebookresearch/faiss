@@ -64,6 +64,7 @@ option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
 option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
+option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
 
 if(FAISS_ENABLE_GPU)
@@ -103,10 +104,11 @@ if(FAISS_ENABLE_C_API)
   add_subdirectory(c_api)
 endif()
 
-add_subdirectory(demos)
-add_subdirectory(benchs)
-add_subdirectory(tutorial/cpp)
-
+if(FAISS_ENABLE_EXTRAS)
+  add_subdirectory(demos)
+  add_subdirectory(benchs)
+  add_subdirectory(tutorial/cpp)
+endif()
 
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)
