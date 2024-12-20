@@ -34,8 +34,12 @@ runs:
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        conda install -y -q "conda!=24.11.0"
-        conda install -y -q "conda-build!=24.11.0"
+        conda install -y "conda!=24.11.0"
+        conda install -y "conda-build!=24.11.0"
+    - name: Fix CI failure
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      if: runner.os != 'Windows'
+      run: conda remove conda-anaconda-telemetry
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -79,14 +83,8 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        # avoid using nvidia channel for CUDA 12.4
-        if [ "${{ inputs.cuda }}" != "11.8.0" ]; then
-          conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-              -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
-        else
-          conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-              -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
-        fi
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -94,11 +92,5 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
-        # avoid using nvidia channel for CUDA 12.4
-        if [ "${{ inputs.cuda }}" != "11.8.0" ]; then
-          conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-              --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
-        else
-          conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-              --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge
-        fi
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia

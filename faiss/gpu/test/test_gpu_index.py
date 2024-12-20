@@ -439,7 +439,6 @@ class TestIVFIndices(unittest.TestCase):
         xb_indices = (xb_indices_base + 4294967296).astype('int64')
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.use_cuvs = False
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)
@@ -450,6 +449,8 @@ class TestIVFIndices(unittest.TestCase):
 
         # Store values using 32-bit indices instead
         config.indicesOptions = faiss.INDICES_32_BIT
+        # 32-bit indices are not supported with cuVS
+        config.use_cuvs = False
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)
