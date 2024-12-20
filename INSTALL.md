@@ -26,7 +26,7 @@ $ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1
 For faiss-gpu, the nvidia channel is required for CUDA, which is not
 published in the main anaconda channel.
 
-For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
+For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required. The `cuda-version` package is used to identify the CUDA version of the nightly.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -37,8 +37,11 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 # GPU(+CPU) version
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
-# GPU(+CPU) version with NVIDIA cuVS
-conda install -c pytorch -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs pytorch pytorch-cuda numpy
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
+conda install -c pytorch/label/nightly -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
+
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 11.8)
+conda install -c pytorch/label/nightly -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
