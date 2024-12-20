@@ -132,6 +132,36 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+  linux-x86_64-GPU-CUVS-CUDA11-8-0-conda:
+    name: Linux x86_64 GPU w/ cuVS conda (CUDA 11.8.0)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          cuvs: "ON"
+          cuda: "11.8.0"
+  linux-x86_64-GPU-CUVS-CUDA12-4-0-conda:
+    name: Linux x86_64 GPU w/ cuVS conda (CUDA 12.4.0)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/build_conda
+        with:
+          cuvs: "ON"
+          cuda: "12.4.0"
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
     needs: linux-x86_64-cmake
