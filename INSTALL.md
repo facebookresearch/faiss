@@ -136,7 +136,7 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_CUVS=ON` in order to use the NVIDIA cuVS implementations
-    of the IVF-Flat, IVF-PQ and [CAGRA](https://arxiv.org/pdf/2308.15136) GPU-accelerated indices (default is `ON`, possible, values are `ON` and `OFF`).
+    of the IVF-Flat, IVF-PQ and [CAGRA](https://arxiv.org/pdf/2308.15136) GPU-accelerated indices (default is `OFF`, possible, values are `ON` and `OFF`).
     Note: `-DFAISS_ENABLE_GPU` must be set to `ON` when enabling this option.
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
