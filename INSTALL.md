@@ -27,8 +27,6 @@ For faiss-gpu, the nvidia channel is required for CUDA, which is not published i
 
 For faiss-gpu-raft, the rapidsai, conda-forge and nvidia channels are required.
 
-[^1] The vector search and clustering algorithms in NVIDIA RAFT have been formally migrated to [NVIDIA cuVS](https://github.com/rapidsai/cuvs). This package is being renamed to `faiss-gpu-cuvs` in the next stable release, which will use these GPU implementations from the pre-compiled `libcuvs=24.12` binary.
-
 Nightly pre-release packages can be installed as follows:
 
 ``` shell
@@ -116,7 +114,7 @@ The libcuvs dependency should be installed via conda:
 ```
 conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=12.0,<=12.5'
 ```
-1. With CUDA 11.4 - 11.8
+2. With CUDA 11.4 - 11.8
 ```
 conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=11.4,<=11.8'
 ```
@@ -315,3 +313,5 @@ and you can run
 $ python demos/demo_auto_tune.py
 ```
 to test the GPU code.
+
+[^1]: The vector search and clustering algorithms in NVIDIA RAFT have been formally migrated to [NVIDIA cuVS](https://github.com/rapidsai/cuvs). This package is being renamed to `faiss-gpu-cuvs` in the next stable release, which will use these GPU implementations from the pre-compiled `libcuvs=24.12` binary.
