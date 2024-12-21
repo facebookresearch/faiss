@@ -291,6 +291,8 @@ void CuvsIVFFlat::searchPreassigned(
         Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     // TODO: Fill this in!
+    // Reference issue: https://github.com/facebookresearch/faiss/issues/3243
+    FAISS_THROW_MSG("searchPreassigned is not implemented for cuVS index");
 }
 
 void CuvsIVFFlat::updateQuantizer(Index* quantizer) {
