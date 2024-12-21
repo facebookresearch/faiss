@@ -37,10 +37,11 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
-conda install -c pytorch/label/nightly -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 11.8)
-conda install -c pytorch/label/nightly -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 
+'cuda-version>=11.4,<=11.8'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
