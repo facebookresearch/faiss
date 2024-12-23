@@ -341,6 +341,8 @@ class KnnDescriptor(IndexBaseDescriptor):
         return hash(str(self))
 
     def get_name(self):
+        if self.desc_name is not None:
+            return self.desc_name
         name = self.index_desc.get_name()
         name += IndexBaseDescriptor.param_dict_to_name(self.search_params)
         name += self.query_dataset.get_filename(KnnDescriptor.FILENAME_PREFIX)
@@ -350,6 +352,7 @@ class KnnDescriptor(IndexBaseDescriptor):
             name += "rec."
         else:
             name += "knn."
+        self.desc_name = name
         return name
 
     def flat_name(self):
