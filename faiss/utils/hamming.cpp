@@ -539,7 +539,7 @@ void hamming_range_search(
         int radius,
         size_t code_size,
         RangeSearchResult* result,
-        const IDSelector* sel = nullptr) {
+        const IDSelector* sel) {
     Run_hamming_range_search r;
     dispatch_HammingComputer(
             code_size, r, a, b, na, nb, radius, code_size, result, sel);
