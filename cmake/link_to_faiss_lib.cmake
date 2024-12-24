@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 function(link_to_faiss_lib target)
-  if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
+  if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
     target_link_libraries(${target} PRIVATE faiss)
   endif()
 
@@ -25,6 +25,17 @@ function(link_to_faiss_lib target)
       target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
     endif()
     target_link_libraries(${target} PRIVATE faiss_avx512)
+  endif()
+
+  if(FAISS_OPT_LEVEL STREQUAL "avx512_spr")
+    if(NOT WIN32)
+      # Architecture mode to support AVX512 extensions available since Intel (R) Sapphire Rapids.
+      # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+    else()
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
+    endif()
+    target_link_libraries(${target} PRIVATE faiss_avx512_spr)
   endif()
 
   if(FAISS_OPT_LEVEL STREQUAL "sve")

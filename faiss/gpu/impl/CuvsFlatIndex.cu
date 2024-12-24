@@ -100,8 +100,7 @@ void CuvsFlatIndex::query(
 
         cuvs::neighbors::brute_force::index idx(
                 handle, index, norms_view, distance, metricArg);
-        cuvs::neighbors::brute_force::search(
-                handle, idx, search, inds, dists, std::nullopt);
+        cuvs::neighbors::brute_force::search(handle, idx, search, inds, dists);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
