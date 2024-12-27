@@ -36,10 +36,10 @@ runs:
       run: |
         conda install -y -q "conda!=24.11.0"
         conda install -y -q "conda-build!=24.11.0"
-    - name: Fix CI failure
-      shell: ${{ steps.choose_shell.outputs.shell }}
-      if: runner.os != 'Windows'
-      run: conda remove conda-anaconda-telemetry
+    # - name: Fix CI failure
+    #   shell: ${{ steps.choose_shell.outputs.shell }}
+    #   if: runner.os != 'Windows'
+    #   run: conda remove conda-anaconda-telemetry
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
