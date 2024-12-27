@@ -705,6 +705,9 @@
     <member refid="structfaiss_1_1GenHammingComputer16_1ae80aa32faf79439faaa46bf0eb924d5e" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1a30961932f5bade747453bb9b13fff9df" kind="function"><name>GenHammingComputer16</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1ae80aa32faf79439faaa46bf0eb924d5e" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16_1a30961932f5bade747453bb9b13fff9df" kind="function"><name>GenHammingComputer16</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16_1ae80aa32faf79439faaa46bf0eb924d5e" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16_1af4202dd5e8862da856b5c72b3dafd9e3" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1af4202dd5e8862da856b5c72b3dafd9e3" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1af4202dd5e8862da856b5c72b3dafd9e3" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -718,6 +721,9 @@
     <member refid="structfaiss_1_1GenHammingComputer32_1afb7d108eadd7adb7ebbc8bc6a45f5f28" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1a6bbcc00bcfab59e6581debc48fe911aa" kind="function"><name>GenHammingComputer32</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1afb7d108eadd7adb7ebbc8bc6a45f5f28" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32_1a6bbcc00bcfab59e6581debc48fe911aa" kind="function"><name>GenHammingComputer32</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32_1afb7d108eadd7adb7ebbc8bc6a45f5f28" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32_1aec58319f05449977c19ec1caf530c3a7" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1aec58319f05449977c19ec1caf530c3a7" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1aec58319f05449977c19ec1caf530c3a7" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -727,12 +733,18 @@
     <member refid="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1a435b03f06449e1948609f658c2bb0af3" kind="function"><name>GenHammingComputer8</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8_1a435b03f06449e1948609f658c2bb0af3" kind="function"><name>GenHammingComputer8</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8_1ad96688e4881d5d01b5d9de304fac9bb6" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1ad96688e4881d5d01b5d9de304fac9bb6" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1ad96688e4881d5d01b5d9de304fac9bb6" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputerM8" kind="struct"><name>faiss::GenHammingComputerM8</name>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a62badfbabf1ad93fc25d4c6fc800ffcf" kind="variable"><name>a</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a72fd506e611fda59d86cfc5d3f96694f" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" kind="function"><name>GenHammingComputerM8</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" kind="function"><name>GenHammingComputerM8</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" kind="function"><name>get_code_size</name></member>
@@ -1595,9 +1607,12 @@
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2" kind="variable"><name>a8</name></member>
@@ -1615,6 +1630,11 @@
     <member refid="structfaiss_1_1HammingComputer16_1a11aefbd5ff66bd895ac6563410622ae4" kind="function"><name>HammingComputer16</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1a22a66f390eddd54563e1255b1a1c0184" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1ab9589c7dfca5ed5993b4b79cebcb3ee0" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1ab601ee8d7ca9e50cc882ebb18354a89e" kind="function"><name>HammingComputer16</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1a11aefbd5ff66bd895ac6563410622ae4" kind="function"><name>HammingComputer16</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1a22a66f390eddd54563e1255b1a1c0184" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1ab9589c7dfca5ed5993b4b79cebcb3ee0" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1a33ece3f5c55052c67c674958d7847127" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1a33ece3f5c55052c67c674958d7847127" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1a33ece3f5c55052c67c674958d7847127" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1630,6 +1650,11 @@
     <member refid="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" kind="function"><name>HammingComputer20</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1abf473d14e68eec988af8cd98dfd42813" kind="function"><name>HammingComputer20</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" kind="function"><name>HammingComputer20</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1646,6 +1671,11 @@
     <member refid="structfaiss_1_1HammingComputer32_1a9019f812a483c0c7efe8dedb5c7c8352" kind="function"><name>HammingComputer32</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a5e121e89d304e9ba6601f8ef4b86c38c" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a0d92afe4a71725e8dd912ad1bf7fa20f" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1ad2f9cd4919916cbc11482e46c5f49ddb" kind="function"><name>HammingComputer32</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1a9019f812a483c0c7efe8dedb5c7c8352" kind="function"><name>HammingComputer32</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1a5e121e89d304e9ba6601f8ef4b86c38c" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1a0d92afe4a71725e8dd912ad1bf7fa20f" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1a1e3373d91109d5506ae84db7b21161ae" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a1e3373d91109d5506ae84db7b21161ae" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a1e3373d91109d5506ae84db7b21161ae" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1659,6 +1689,11 @@
     <member refid="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" kind="function"><name>HammingComputer4</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1a727351f6b05e23f443ac5d0750cb9d93" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1a371053baf6ea27ab7948387f96ad911e" kind="function"><name>HammingComputer4</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" kind="function"><name>HammingComputer4</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1a727351f6b05e23f443ac5d0750cb9d93" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1671,6 +1706,7 @@
     <member refid="structfaiss_1_1HammingComputer64_1a6a0420274afe5a1e79e2e21e54faa5d6" kind="variable"><name>a5</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1ab2f838d37017be5a7cd1110b58befe89" kind="variable"><name>a6</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a3dd9e61e461e3acfe316c9ac3cdc3323" kind="variable"><name>a7</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1a810126ecabd355ee9b552e91b465753f" kind="variable"><name>a</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1aa5eca842b60c85b575ebd8292a94d01b" kind="function"><name>HammingComputer64</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a2892834dd399b08bc9ef97ecf64eaa2a" kind="function"><name>HammingComputer64</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a712b3c2c8aa5e73f7a9d3618afd893c3" kind="function"><name>set</name></member>
@@ -1679,6 +1715,11 @@
     <member refid="structfaiss_1_1HammingComputer64_1a2892834dd399b08bc9ef97ecf64eaa2a" kind="function"><name>HammingComputer64</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a712b3c2c8aa5e73f7a9d3618afd893c3" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1aff38c89e2d4d7a5a9fd844cbd33c11bd" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1aa5eca842b60c85b575ebd8292a94d01b" kind="function"><name>HammingComputer64</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1a2892834dd399b08bc9ef97ecf64eaa2a" kind="function"><name>HammingComputer64</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1a712b3c2c8aa5e73f7a9d3618afd893c3" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1aff38c89e2d4d7a5a9fd844cbd33c11bd" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1a70628d1411ae9d96d23420842b029c91" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a70628d1411ae9d96d23420842b029c91" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a70628d1411ae9d96d23420842b029c91" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1692,6 +1733,11 @@
     <member refid="structfaiss_1_1HammingComputer8_1a197b240151415fbb113b29f9f9df5853" kind="function"><name>HammingComputer8</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1a0c57fbf4538c57ea27d6fc88de898a90" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1a1725426ae8afcc13132cea6b49e13058" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1ad603a84bbc0e2dd1ecdca318de8927f8" kind="function"><name>HammingComputer8</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1a197b240151415fbb113b29f9f9df5853" kind="function"><name>HammingComputer8</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1a0c57fbf4538c57ea27d6fc88de898a90" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1a1725426ae8afcc13132cea6b49e13058" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1aa0a046051749d7e4ded2cac67d0ba27f" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1aa0a046051749d7e4ded2cac67d0ba27f" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1aa0a046051749d7e4ded2cac67d0ba27f" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -1699,6 +1745,11 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2" kind="variable"><name>a8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" kind="variable"><name>quotient8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
@@ -9450,13 +9501,13 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d145" kind="namespace"><name>faiss::@145</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d162" kind="namespace"><name>faiss::@162</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
+  <compound refid="namespacefaiss_1_1_0d163" kind="namespace"><name>faiss::@163</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d165" kind="namespace"><name>faiss::@165</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d166" kind="namespace"><name>faiss::@166</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d167" kind="namespace"><name>faiss::@167</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -10160,6 +10211,8 @@
   <compound refid="hamming-inl_8h" kind="file"><name>hamming-inl.h</name>
   </compound>
   <compound refid="hamming_8h" kind="file"><name>hamming.h</name>
+  </compound>
+  <compound refid="avx512-inl_8h" kind="file"><name>avx512-inl.h</name>
   </compound>
   <compound refid="common_8h" kind="file"><name>common.h</name>
     <member refid="common_8h_1af54d4643f130c0bc719a8d181ca68a2b" kind="typedef"><name>hamdis_t</name></member>

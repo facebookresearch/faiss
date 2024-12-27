@@ -3,6 +3,7 @@
   <compounddef id="dir_a990053ab0ed2a0e35fd7924fe582c4e" kind="dir">
     <compoundname>faiss/utils/hamming_distance</compoundname>
     <innerfile refid="hamming__distance_2avx2-inl_8h">avx2-inl.h</innerfile>
+    <innerfile refid="avx512-inl_8h">avx512-inl.h</innerfile>
     <innerfile refid="common_8h">common.h</innerfile>
     <innerfile refid="generic-inl_8h">generic-inl.h</innerfile>
     <innerfile refid="hamdis-inl_8h">hamdis-inl.h</innerfile>

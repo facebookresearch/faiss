@@ -7131,7 +7131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="46" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="46" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="49" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="49" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -7147,7 +7147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="47" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="47" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="50" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="50" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -7163,7 +7163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="48" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="48" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="51" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="51" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -7179,7 +7179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="49" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="49" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="52" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="52" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -7195,7 +7195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="50" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="50" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="53" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="53" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -7211,7 +7211,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="51" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="51" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="54" column="1" declfile="faiss/utils/hamming_distance/hamdis-inl.h" declline="54" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af53a51eeba20beeeefb82758e28c7712" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -7246,7 +7246,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="62" column="22" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="62" bodyend="80"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="65" column="22" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="65" bodyend="83"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d40aec5723474516de576263cc03048" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

@@ -101,6 +101,57 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx512-inl.h" line="458" column="5" bodyfile="faiss/utils/hamming_distance/avx512-inl.h" bodystart="458" bodyend="462"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::GenHammingComputerM8::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx512-inl.h" line="464" column="9" bodyfile="faiss/utils/hamming_distance/avx512-inl.h" bodystart="464" bodyend="481"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::GenHammingComputerM8::get_code_size</definition>
+        <argsstring>() const</argsstring>
+        <name>get_code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx512-inl.h" line="483" column="16" bodyfile="faiss/utils/hamming_distance/avx512-inl.h" bodystart="483" bodyend="485"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::GenHammingComputerM8::GenHammingComputerM8</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>GenHammingComputerM8</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="429" column="5" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="429" bodyend="433"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
@@ -143,8 +194,11 @@
       <member refid="structfaiss_1_1GenHammingComputerM8_1a62badfbabf1ad93fc25d4c6fc800ffcf" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>a</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>GenHammingComputerM8</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>GenHammingComputerM8</name></member>
+      <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>GenHammingComputerM8</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>get_code_size</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1GenHammingComputerM8_1a72fd506e611fda59d86cfc5d3f96694f" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputerM8</scope><name>n</name></member>

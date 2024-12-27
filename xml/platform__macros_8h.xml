@@ -31,6 +31,7 @@
     <includedby refid="fp16_8h" local="no">faiss/utils/fp16.h</includedby>
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <includedby refid="hamming__distance_2avx2-inl_8h" local="no">faiss/utils/hamming_distance/avx2-inl.h</includedby>
+    <includedby refid="avx512-inl_8h" local="no">faiss/utils/hamming_distance/avx512-inl.h</includedby>
     <includedby refid="common_8h" local="no">faiss/utils/hamming_distance/common.h</includedby>
     <includedby refid="generic-inl_8h" local="no">faiss/utils/hamming_distance/generic-inl.h</includedby>
     <includedby refid="partitioning_8h" local="no">faiss/utils/partitioning.h</includedby>
@@ -276,7 +277,7 @@
         </childnode>
         <childnode refid="125" relation="include">
         </childnode>
-        <childnode refid="127" relation="include">
+        <childnode refid="126" relation="include">
         </childnode>
         <childnode refid="128" relation="include">
         </childnode>
@@ -287,6 +288,8 @@
         <childnode refid="131" relation="include">
         </childnode>
         <childnode refid="132" relation="include">
+        </childnode>
+        <childnode refid="133" relation="include">
         </childnode>
       </node>
       <node id="39">
@@ -457,7 +460,7 @@
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
-      <node id="126">
+      <node id="127">
         <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
         <link refid="hamdis-inl_8h_source"/>
         <childnode refid="123" relation="include">
@@ -467,10 +470,10 @@
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
       </node>
-      <node id="127">
+      <node id="128">
         <label>faiss/utils/hamming_distance/generic-inl.h</label>
         <link refid="generic-inl_8h_source"/>
-        <childnode refid="126" relation="include">
+        <childnode refid="127" relation="include">
         </childnode>
       </node>
       <node id="87">
@@ -615,10 +618,10 @@
         <childnode refid="37" relation="include">
         </childnode>
       </node>
-      <node id="129">
+      <node id="130">
         <label>faiss/utils/simdlib_avx2.h</label>
         <link refid="simdlib__avx2_8h_source"/>
-        <childnode refid="130" relation="include">
+        <childnode refid="131" relation="include">
         </childnode>
       </node>
       <node id="75">
@@ -627,7 +630,7 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="128">
+      <node id="129">
         <label>faiss/utils/partitioning.h</label>
         <link refid="partitioning_8h_source"/>
         <childnode refid="12" relation="include">
@@ -675,7 +678,7 @@
         <label>faiss/IndexBinaryHash.h</label>
         <link refid="IndexBinaryHash_8h_source"/>
       </node>
-      <node id="131">
+      <node id="132">
         <label>faiss/utils/sorting.h</label>
         <link refid="sorting_8h_source"/>
       </node>
@@ -797,7 +800,7 @@
         <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="130">
+      <node id="131">
         <label>faiss/utils/simdlib_avx512.h</label>
         <link refid="simdlib__avx512_8h_source"/>
       </node>
@@ -818,6 +821,10 @@
       <node id="20">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="125">
+        <label>faiss/utils/hamming_distance/avx512-inl.h</label>
+        <link refid="avx512-inl_8h_source"/>
       </node>
       <node id="89">
         <label>faiss/Index.h</label>
@@ -1061,7 +1068,7 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="132">
+      <node id="133">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="57" relation="include">
@@ -1075,10 +1082,10 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="125">
+      <node id="126">
         <label>faiss/utils/hamming_distance/common.h</label>
         <link refid="common_8h_source"/>
-        <childnode refid="126" relation="include">
+        <childnode refid="127" relation="include">
         </childnode>
       </node>
       <node id="24">
