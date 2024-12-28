@@ -31,7 +31,7 @@ runs:
       with:
         python-version: '3.11'
         miniconda-version:  latest
-        reports: {'quiet': false}
+        reports: {'quiet': 'False'}
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
