@@ -44,6 +44,8 @@ struct IndexRefine : Index {
 
     void add(idx_t n, const float* x) override;
 
+    size_t remove_ids(const IDSelector& sel) override;
+
     void reset() override;
 
     void search(
