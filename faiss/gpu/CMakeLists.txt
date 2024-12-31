@@ -270,6 +270,7 @@ if(FAISS_ENABLE_CUVS)
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_CUVS=1)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_CUVS=1)
   target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_CUVS=1)
+  target_compile_definitions(faiss_avx512_spr PUBLIC USE_NVIDIA_CUVS=1)
 
   # Mark all functions as hidden so that we don't generate
   # global 'public' functions that also exist in libraft.so
@@ -305,6 +306,7 @@ set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss_avx512_spr PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 target_link_libraries(faiss_sve PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
 
 foreach(header ${FAISS_GPU_HEADERS})
