@@ -4,13 +4,14 @@
 # LICENSE file in the root directory of this source tree.
 
 import torch  # usort: skip
-import unittest   # usort: skip
-import numpy as np   # usort: skip
+import unittest  # usort: skip
+import numpy as np  # usort: skip
 
-import faiss   # usort: skip
+import faiss  # usort: skip
 import faiss.contrib.torch_utils  # usort: skip
 from faiss.contrib import datasets
-from faiss.contrib.torch import clustering
+from faiss.contrib.torch import clustering, quantization
+
 
 
 
@@ -400,3 +401,27 @@ class TestClustering(unittest.TestCase):
         # 33498.332 33380.477
         # print(err, err2)        1/0
         self.assertLess(err2, err * 1.1)
+
+
+class TestQuantization(unittest.TestCase):
+    def test_python_product_quantization(self):
+        """ Test the python implementation of product quantization """
+        d = 64
+        n = 10000
+        cs = 4
+        nbits = 8
+        M = 4
+        x = np.random.random(size=(n, d)).astype('float32')
+        pq = faiss.ProductQuantizer(d, cs, nbits)
+        pq.train(x)
+        codes = pq.compute_codes(x)
+        x2 = pq.decode(codes)
+        diff = ((x - x2)**2).sum()
+        # vs pure pytorch impl
+        xt = torch.from_numpy(x)
+        my_pq = quantization.ProductQuantizer(d, M, nbits)
+        my_pq.train(xt)
+        my_codes = my_pq.encode(xt)
+        xt2 = my_pq.decode(my_codes)
+        my_diff = ((xt - xt2)**2).sum()
+        self.assertLess(abs(diff - my_diff), 100)
