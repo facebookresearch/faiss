@@ -24,6 +24,7 @@ import faiss
 import time
 import argparse
 import rmm
+import ctypes
 
 try:
     from faiss.contrib.datasets_fb import \
@@ -86,6 +87,8 @@ args = parser.parse_args()
 print("args:", args)
 
 gt = gt[:, :args.k]
+nlist = args.nlist
+bits_per_code = args.bits_per_code
 
 rs = np.random.RandomState(123)
 
@@ -128,7 +131,7 @@ if args.bm_train:
     cuvs_gpu_train_time = bench_train_milliseconds(xt, True)
     classical_gpu_train_time = bench_train_milliseconds(xt, False)
     print("TRAIN, dim: %d, nlist %d, numTrain: %d, classical GPU train time: %.3f milliseconds, cuVS enabled GPU train time: %.3f milliseconds" % (
-        d, args.nlist, nt, classical_gpu_train_time, cuvs_gpu_train_time))
+        d, nlist, nt, classical_gpu_train_time, cuvs_gpu_train_time))
 
 
 def bench_add_milliseconds(addVecs, index_cpu, use_cuvs):
@@ -152,7 +155,7 @@ if args.bm_add:
     cuvs_gpu_add_time = bench_add_milliseconds(xb, index_cpu, True)
     classical_gpu_add_time = bench_add_milliseconds(xb, index_cpu, False)
     print("ADD, dim: %d, nlist %d, numAdd: %d, classical GPU add time: %.3f milliseconds, cuVS enabled GPU add time: %.3f milliseconds" % (
-        d, args.nlist, nb, classical_gpu_add_time, cuvs_gpu_add_time))
+        d, nlist, nb, classical_gpu_add_time, cuvs_gpu_add_time))
 
 
 def bench_search_milliseconds(index, queryVecs, nprobe, k, use_cuvs):
@@ -181,4 +184,4 @@ if args.bm_search:
     cuvs_recall, cuvs_qps = eval_recall(cuvs_indices, cuvs_gpu_search_time)
     classical_recall, classical_qps = eval_recall(classical_gpu_indices, classical_gpu_search_time)
     print("SEARCH, dim: %d, nlist: %d, numVecs: %d, numQuery: %d, nprobe: %d, k: %d, classical GPU qps: %.3f, cuVS enabled GPU qps: %.3f"  % (
-        d, args.nlist, nb, nq, args.nprobe, args.k, classical_qps, cuvs_qps))
+        d, nlist, nb, nq, args.nprobe, args.k, classical_qps, cuvs_qps))
