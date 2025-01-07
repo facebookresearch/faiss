@@ -8,7 +8,6 @@ import os
 import unittest
 import tempfile
 
-import faiss.invlists
 import numpy as np
 import faiss
 
