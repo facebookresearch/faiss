@@ -16,6 +16,9 @@
 #ifdef __aarch64__
 // ARM compilers may produce inoptimal code for Hamming distance somewhy.
 #include <faiss/utils/hamming_distance/neon-inl.h>
+#elif __AVX512F__
+// offers better performance where __AVX512VPOPCNTDQ__ is supported
+#include <faiss/utils/hamming_distance/avx512-inl.h>
 #elif __AVX2__
 // better versions for GenHammingComputer
 #include <faiss/utils/hamming_distance/avx2-inl.h>
