@@ -243,8 +243,26 @@
 <codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
 <codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
 <codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/>scaler<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"></highlight></codeline>
-<codeline lineno="192"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="192"><highlight class="comment">/**<sp/>Wrapper<sp/>of<sp/>pq4_accumulate_loop_qbs<sp/>using<sp/>simple<sp/>StoreResultHandler</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/>*<sp/><sp/>and<sp/>DummyScaler</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/>*<sp/>@param<sp/>ntotal2<sp/>number<sp/>of<sp/>database<sp/>elements<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="198"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
+<codeline lineno="199"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
+<codeline lineno="200"><highlight class="comment"><sp/>*<sp/>@param<sp/>accu<sp/><sp/><sp/><sp/>array<sp/>to<sp/>store<sp/>the<sp/>results</highlight></codeline>
+<codeline lineno="201"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202" refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" kindref="member">accumulate_to_mem</ref>(</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal2,</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t*<sp/>accu);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/pq4_fast_scan.h"/>
   </compounddef>
