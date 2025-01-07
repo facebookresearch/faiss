@@ -8,6 +8,7 @@ import os
 import unittest
 import tempfile
 
+import faiss.invlists
 import numpy as np
 import faiss
 
@@ -541,6 +542,37 @@ class TestTraining(unittest.TestCase):
 
     def test_by_residual_odd_dim(self):
         self.do_test(by_residual=True, d=30)
+
+
+class TestReconstruct(unittest.TestCase):
+
+    def do_test(self, by_residual=False):
+        d = 32
+        metric = faiss.METRIC_L2
+
+        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+
+        index = faiss.IndexIVFPQFastScan(faiss.IndexFlatL2(d), d, 50, d // 2, 4, metric)
+        index.by_residual = by_residual
+        index.make_direct_map(True)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Test reconstruction
+        index.reconstruct(123) # single id
+        index.reconstruct_n(123, 10) # single id
+        index.reconstruct_batch(np.arange(10))
+
+        # Test original list reconstruction
+        index.orig_invlists = faiss.ArrayInvertedLists(index.nlist, index.code_size)
+        index.reconstruct_orig_invlists()
+        assert index.orig_invlists.compute_ntotal() == index.ntotal
+
+    def test_no_residual(self):
+        self.do_test(by_residual=False)
+
+    def test_by_residual(self):
+        self.do_test(by_residual=True)
 
 
 class TestIsTrained(unittest.TestCase):

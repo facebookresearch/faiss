@@ -1372,10 +1372,11 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
     FAISS_THROW_IF_NOT(orig_invlists != nullptr);
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
+#pragma omp parallel for if (nlist > 100)
     for (size_t list_no = 0; list_no < nlist; list_no++) {
         InvertedLists::ScopedCodes codes(invlists, list_no);
         InvertedLists::ScopedIds ids(invlists, list_no);
-        size_t list_size = orig_invlists->list_size(list_no);
+        size_t list_size = invlists->list_size(list_no);
         std::vector<uint8_t> code(code_size, 0);
 
         for (size_t offset = 0; offset < list_size; offset++) {
