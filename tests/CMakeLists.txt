@@ -82,7 +82,6 @@ find_package(GTest CONFIG REQUIRED)
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   GTest::gtest_main
-  $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 

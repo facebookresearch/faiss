@@ -7,10 +7,10 @@
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 {% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.8,<12" %}
-{% set libcublas_constraints=">=11.11,<12" %}
+{% set cuda_constraints=">=11.4,<12" %}
+{% set libcublas_constraints=">=11.6,<12" %}
 {% elif cudatoolkit == '12.4.0' %}
-{% set cuda_constraints=">=12.1,<13" %}
+{% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% endif %}
 
@@ -45,7 +45,7 @@ outputs:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }}
+        - {{ compiler('cxx') }} =12.4
         - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.26.4
@@ -58,15 +58,15 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas =0.3 # [not x86_64]
-        - libcuvs =24.08
-        - cuda-version {{ cudatoolkit }}
+        - libcuvs =24.12
+        - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =24.08
+        - libcuvs =24.12
         - cuda-version {{ cuda_constraints }}
     test:
       requires:
@@ -86,10 +86,10 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }}
+        - {{ compiler('cxx') }} =12.4
         - sysroot_linux-64 =2.17 # [linux64]
         - swig =4.0
-        - cmake >=3.24.0
+        - cmake >=3.26.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
