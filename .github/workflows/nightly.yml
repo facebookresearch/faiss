@@ -144,5 +144,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_DEBUG: api
         run: |
-          gh workflow run retry_build.yml \
-            -F run_id=${{ github.run_id }}
+          echo Disabled auto retry workflow
+          # gh workflow run retry_build.yml \
+          #   -F run_id=${{ github.run_id }}
