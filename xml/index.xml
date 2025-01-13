@@ -9997,7 +9997,6 @@
     <member refid="io__macros_8h_1aed09814957532b112bf0c0a43568a30b" kind="define"><name>READ1</name></member>
     <member refid="io__macros_8h_1add0f5a8af3ebd34824e15fc59a42d189" kind="define"><name>READ1_DUMMY</name></member>
     <member refid="io__macros_8h_1a427bc1a4fa8135dce027d760efc3efc3" kind="define"><name>READVECTOR</name></member>
-    <member refid="io__macros_8h_1aa24ab8dd67634fc9a6944d4b2bc592cd" kind="define"><name>READSTRING</name></member>
     <member refid="io__macros_8h_1a6af83cbb9a95cfed703bd3c473afcc8a" kind="define"><name>WRITEANDCHECK</name></member>
     <member refid="io__macros_8h_1ab2ab8423dfe163bb2a58a6d55894e402" kind="define"><name>WRITE1</name></member>
     <member refid="io__macros_8h_1a7c550f9e6b4165a2381c1c14f2807a23" kind="define"><name>WRITEVECTOR</name></member>
