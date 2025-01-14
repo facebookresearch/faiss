@@ -189,4 +189,22 @@ void pq4_accumulate_loop_qbs(
         SIMDResultHandler& res,
         const NormTableScaler* scaler = nullptr);
 
+/** Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler
+ *  and DummyScaler
+ *
+ * @param nq      number of queries
+ * @param ntotal2 number of database elements (multiple of 32)
+ * @param nsq     number of sub-quantizers (muliple of 2)
+ * @param codes   packed codes array
+ * @param LUT     packed look-up table
+ * @param accu    array to store the results
+ */
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu);
+
 } // namespace faiss
