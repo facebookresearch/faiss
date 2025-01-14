@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd_result_handlers::RangeHandler::Triplet</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a65b7c58a233553ad10e792d12143a7b2" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
         <definition>idx_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::q</definition>
         <argsstring></argsstring>
         <name>q</name>
+        <qualifiedname>faiss::simd_result_handlers::RangeHandler::Triplet::q</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>idx_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::b</definition>
         <argsstring></argsstring>
         <name>b</name>
+        <qualifiedname>faiss::simd_result_handlers::RangeHandler::Triplet::b</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>uint16_t faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;::Triplet::dis</definition>
         <argsstring></argsstring>
         <name>dis</name>
+        <qualifiedname>faiss::simd_result_handlers::RangeHandler::Triplet::dis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,7 +45,7 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="561" column="18" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="561" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

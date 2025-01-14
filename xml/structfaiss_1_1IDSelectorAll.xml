@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorAll" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorAll</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorAll_1a5df9a20a2815f75f4e7fbde75d3eb07a" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>
         <definition>bool faiss::IDSelectorAll::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorAll::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -28,6 +29,7 @@
         <definition>virtual faiss::IDSelectorAll::~IDSelectorAll</definition>
         <argsstring>()</argsstring>
         <name>~IDSelectorAll</name>
+        <qualifiedname>faiss::IDSelectorAll::~IDSelectorAll</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,7 +38,7 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="131" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="131" bodyend="131"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>selects all entries (useful for benchmarking) </para>
     </briefdescription>

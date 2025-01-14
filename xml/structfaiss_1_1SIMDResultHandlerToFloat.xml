@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1SIMDResultHandlerToFloat" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::SIMDResultHandlerToFloat</compoundname>
     <basecompoundref refid="structfaiss_1_1SIMDResultHandler" prot="public" virt="non-virtual">faiss::SIMDResultHandler</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;</derivedcompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a30494be4f565d354faf49c9c2db31b07" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::SIMDResultHandlerToFloat::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::nq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -24,6 +25,7 @@
         <definition>size_t faiss::SIMDResultHandlerToFloat::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::ntotal</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>const idx_t* faiss::SIMDResultHandlerToFloat::id_map</definition>
         <argsstring></argsstring>
         <name>id_map</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::id_map</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>these fields are used mainly for the IVF variants (with_id_map=true) </para>
@@ -52,6 +55,7 @@
         <definition>const int* faiss::SIMDResultHandlerToFloat::q_map</definition>
         <argsstring></argsstring>
         <name>q_map</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::q_map</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -66,6 +70,7 @@
         <definition>const uint16_t* faiss::SIMDResultHandlerToFloat::dbias</definition>
         <argsstring></argsstring>
         <name>dbias</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::dbias</qualifiedname>
         <initializer>=
             nullptr</initializer>
         <briefdescription>
@@ -81,6 +86,7 @@
         <definition>const float* faiss::SIMDResultHandlerToFloat::normalizers</definition>
         <argsstring></argsstring>
         <name>normalizers</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::normalizers</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -95,6 +101,7 @@
         <definition>bool faiss::SIMDResultHandler::is_CMax</definition>
         <argsstring></argsstring>
         <name>is_CMax</name>
+        <qualifiedname>faiss::SIMDResultHandler::is_CMax</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -109,6 +116,7 @@
         <definition>uint8_t faiss::SIMDResultHandler::sizeof_ids</definition>
         <argsstring></argsstring>
         <name>sizeof_ids</name>
+        <qualifiedname>faiss::SIMDResultHandler::sizeof_ids</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -123,6 +131,7 @@
         <definition>bool faiss::SIMDResultHandler::with_fields</definition>
         <argsstring></argsstring>
         <name>with_fields</name>
+        <qualifiedname>faiss::SIMDResultHandler::with_fields</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -132,13 +141,14 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="33" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="33" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1SIMDResultHandlerToFloat_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::SIMDResultHandlerToFloat::SIMDResultHandlerToFloat</definition>
         <argsstring>(size_t nq, size_t ntotal)</argsstring>
         <name>SIMDResultHandlerToFloat</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::SIMDResultHandlerToFloat</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nq</declname>
@@ -160,6 +170,7 @@
         <definition>virtual void faiss::SIMDResultHandlerToFloat::begin</definition>
         <argsstring>(const float *norms)</argsstring>
         <name>begin</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::begin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ad59767ad0df655c1a13960a76b336efb">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1ad59767ad0df655c1a13960a76b336efb">begin</reimplementedby>
         <param>
@@ -179,6 +190,7 @@
         <definition>virtual void faiss::SIMDResultHandlerToFloat::end</definition>
         <argsstring>()</argsstring>
         <name>end</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::end</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a151b1cc499f4eb45f78e64b86c83d26c">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1aa1f6f778663743229ad2807196d6bda6">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1aae0ab7c71bf50c5f4260df5ccc76087c">end</reimplementedby>
@@ -198,6 +210,7 @@
         <definition>virtual void faiss::SIMDResultHandler::handle</definition>
         <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)=0</argsstring>
         <name>handle</name>
+        <qualifiedname>faiss::SIMDResultHandler::handle</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1adabe2dfd3f4c1aff7f35be2d567478f3">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aa310066f336b87f88ffdb208a5242549">handle</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a97d6149a2d0fcbc7b008598de4b6332b">handle</reimplementedby>
@@ -236,6 +249,7 @@
         <definition>virtual void faiss::SIMDResultHandler::set_block_origin</definition>
         <argsstring>(size_t i0, size_t j0)=0</argsstring>
         <name>set_block_origin</name>
+        <qualifiedname>faiss::SIMDResultHandler::set_block_origin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aa756592f887c6c21419586b562ba431b">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a10711e49314dc174bbf4dff5f2811f84">set_block_origin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7366fd76db0d66840a68bc91da8ba6ea">set_block_origin</reimplementedby>
@@ -258,28 +272,16 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="44" column="18"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="9">
+      <node id="5">
         <label>faiss::simd_result_handlers::RangeHandler&lt; C, false &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler"/>
-        <childnode refid="8" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;</label>
-        <link refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss::simd_result_handlers::PartialRangeHandler&lt; C, with_id_map &gt;</label>
-        <link refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">
@@ -288,51 +290,63 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
-        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map &gt;</label>
-        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler"/>
-        <childnode refid="3" relation="public-inheritance">
+      <node id="2">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
+      <node id="1">
+        <label>faiss::SIMDResultHandlerToFloat</label>
+        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="6">
         <label>faiss::simd_result_handlers::HeapHandler&lt; C, with_id_map &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="8">
+        <label>faiss::simd_result_handlers::PartialRangeHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::SIMDResultHandlerToFloat</label>
-        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
-      </node>
-      <node id="7">
+      <node id="10">
         <label>faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
       <node id="1">
         <label>faiss::SIMDResultHandlerToFloat</label>
         <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/simd_result_handlers.h" line="50" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="50" bodyend="73"/>

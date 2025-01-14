@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1NNDescent" kind="struct" language="C++" prot="public">
     <compoundname>faiss::NNDescent</compoundname>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1NNDescent_1a89f6a4a16ff35c94af7f796d68663959" prot="public" static="no">
         <type>int</type>
         <definition>using faiss::NNDescent::storage_idx_t =  int</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
+        <qualifiedname>faiss::NNDescent::storage_idx_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>using faiss::NNDescent::KNNGraph =  std::vector&lt;nndescent::Nhood&gt;</definition>
         <argsstring></argsstring>
         <name>KNNGraph</name>
+        <qualifiedname>faiss::NNDescent::KNNGraph</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="94" column="5" bodyfile="faiss/impl/NNDescent.h" bodystart="94" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1afe4cebe8e80b64aff2001f869455f5a8" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::NNDescent::has_built</definition>
         <argsstring></argsstring>
         <name>has_built</name>
+        <qualifiedname>faiss::NNDescent::has_built</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -50,6 +53,7 @@
         <definition>int faiss::NNDescent::S</definition>
         <argsstring></argsstring>
         <name>S</name>
+        <qualifiedname>faiss::NNDescent::S</qualifiedname>
         <initializer>= 10</initializer>
         <briefdescription>
         </briefdescription>
@@ -64,6 +68,7 @@
         <definition>int faiss::NNDescent::R</definition>
         <argsstring></argsstring>
         <name>R</name>
+        <qualifiedname>faiss::NNDescent::R</qualifiedname>
         <initializer>= 100</initializer>
         <briefdescription>
         </briefdescription>
@@ -78,6 +83,7 @@
         <definition>int faiss::NNDescent::iter</definition>
         <argsstring></argsstring>
         <name>iter</name>
+        <qualifiedname>faiss::NNDescent::iter</qualifiedname>
         <initializer>= 10</initializer>
         <briefdescription>
         </briefdescription>
@@ -92,6 +98,7 @@
         <definition>int faiss::NNDescent::search_L</definition>
         <argsstring></argsstring>
         <name>search_L</name>
+        <qualifiedname>faiss::NNDescent::search_L</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -106,6 +113,7 @@
         <definition>int faiss::NNDescent::random_seed</definition>
         <argsstring></argsstring>
         <name>random_seed</name>
+        <qualifiedname>faiss::NNDescent::random_seed</qualifiedname>
         <initializer>= 2021</initializer>
         <briefdescription>
         </briefdescription>
@@ -120,6 +128,7 @@
         <definition>int faiss::NNDescent::K</definition>
         <argsstring></argsstring>
         <name>K</name>
+        <qualifiedname>faiss::NNDescent::K</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -133,6 +142,7 @@
         <definition>int faiss::NNDescent::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::NNDescent::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -146,6 +156,7 @@
         <definition>int faiss::NNDescent::L</definition>
         <argsstring></argsstring>
         <name>L</name>
+        <qualifiedname>faiss::NNDescent::L</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -159,6 +170,7 @@
         <definition>int faiss::NNDescent::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::NNDescent::ntotal</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -173,6 +185,7 @@
         <definition>KNNGraph faiss::NNDescent::graph</definition>
         <argsstring></argsstring>
         <name>graph</name>
+        <qualifiedname>faiss::NNDescent::graph</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -186,6 +199,7 @@
         <definition>std::vector&lt;int&gt; faiss::NNDescent::final_graph</definition>
         <argsstring></argsstring>
         <name>final_graph</name>
+        <qualifiedname>faiss::NNDescent::final_graph</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -194,13 +208,14 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="151" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="151" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a5545a425b856663b797877faa736ba5e" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::NNDescent::NNDescent</definition>
         <argsstring>(const int d, const int K)</argsstring>
         <name>NNDescent</name>
+        <qualifiedname>faiss::NNDescent::NNDescent</qualifiedname>
         <param>
           <type>const int</type>
           <declname>d</declname>
@@ -222,6 +237,7 @@
         <definition>faiss::NNDescent::~NNDescent</definition>
         <argsstring>()</argsstring>
         <name>~NNDescent</name>
+        <qualifiedname>faiss::NNDescent::~NNDescent</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -235,6 +251,7 @@
         <definition>void faiss::NNDescent::build</definition>
         <argsstring>(DistanceComputer &amp;qdis, const int n, bool verbose)</argsstring>
         <name>build</name>
+        <qualifiedname>faiss::NNDescent::build</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -260,6 +277,7 @@
         <definition>void faiss::NNDescent::search</definition>
         <argsstring>(DistanceComputer &amp;qdis, const int topk, idx_t *indices, float *dists, VisitedTable &amp;vt) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::NNDescent::search</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -293,6 +311,7 @@
         <definition>void faiss::NNDescent::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::NNDescent::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -306,6 +325,7 @@
         <definition>void faiss::NNDescent::init_graph</definition>
         <argsstring>(DistanceComputer &amp;qdis)</argsstring>
         <name>init_graph</name>
+        <qualifiedname>faiss::NNDescent::init_graph</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -324,6 +344,7 @@
         <definition>void faiss::NNDescent::nndescent</definition>
         <argsstring>(DistanceComputer &amp;qdis, bool verbose)</argsstring>
         <name>nndescent</name>
+        <qualifiedname>faiss::NNDescent::nndescent</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -346,6 +367,7 @@
         <definition>void faiss::NNDescent::join</definition>
         <argsstring>(DistanceComputer &amp;qdis)</argsstring>
         <name>join</name>
+        <qualifiedname>faiss::NNDescent::join</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -364,6 +386,7 @@
         <definition>void faiss::NNDescent::update</definition>
         <argsstring>()</argsstring>
         <name>update</name>
+        <qualifiedname>faiss::NNDescent::update</qualifiedname>
         <briefdescription>
 <para>Sample new neighbors for each node to peform local join later. </para>
         </briefdescription>
@@ -373,11 +396,12 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="121" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1NNDescent_1a72cd1488fbb36bafbff89727095da552" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::NNDescent::generate_eval_set</definition>
-        <argsstring>(DistanceComputer &amp;qdis, std::vector&lt; int &gt; &amp;c, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;v, int N)</argsstring>
+        <argsstring>(DistanceComputer &amp;qdis, std::vector&lt; int &gt; &amp;c, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;v, int N)</argsstring>
         <name>generate_eval_set</name>
+        <qualifiedname>faiss::NNDescent::generate_eval_set</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -387,7 +411,7 @@
           <declname>c</declname>
         </param>
         <param>
-          <type>std::vector&lt; std::vector&lt; int &gt;&gt; &amp;</type>
+          <type>std::vector&lt; std::vector&lt; int &gt; &gt; &amp;</type>
           <declname>v</declname>
         </param>
         <param>
@@ -403,17 +427,18 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="124" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1NNDescent_1ad254e42df43c3503d4ae6aa5dd543e54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::NNDescent::eval_recall</definition>
-        <argsstring>(std::vector&lt; int &gt; &amp;ctrl_points, std::vector&lt; std::vector&lt; int &gt;&gt; &amp;acc_eval_set)</argsstring>
+        <argsstring>(std::vector&lt; int &gt; &amp;ctrl_points, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;acc_eval_set)</argsstring>
         <name>eval_recall</name>
+        <qualifiedname>faiss::NNDescent::eval_recall</qualifiedname>
         <param>
           <type>std::vector&lt; int &gt; &amp;</type>
           <declname>ctrl_points</declname>
         </param>
         <param>
-          <type>std::vector&lt; std::vector&lt; int &gt;&gt; &amp;</type>
+          <type>std::vector&lt; std::vector&lt; int &gt; &gt; &amp;</type>
           <declname>acc_eval_set</declname>
         </param>
         <briefdescription>
@@ -425,7 +450,7 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="131" column="11"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -434,9 +459,9 @@
     <listofallmembers>
       <member refid="structfaiss_1_1NNDescent_1abb92ad084a9c1a8cd6667aa131783dfe" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>build</name></member>
       <member refid="structfaiss_1_1NNDescent_1a371ff399bc88f102521e8feb82162b58" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>d</name></member>
-      <member refid="structfaiss_1_1NNDescent_1ad254e42df43c3503d4ae6aa5dd543e54" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>eval_recall</name></member>
+      <member refid="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>eval_recall</name></member>
       <member refid="structfaiss_1_1NNDescent_1a94ffe1f35ee9dbcbe41524053f6ae2b3" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>final_graph</name></member>
-      <member refid="structfaiss_1_1NNDescent_1a72cd1488fbb36bafbff89727095da552" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>generate_eval_set</name></member>
+      <member refid="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>generate_eval_set</name></member>
       <member refid="structfaiss_1_1NNDescent_1aeec712e2a2d4ccf437b2d424079a234c" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>graph</name></member>
       <member refid="structfaiss_1_1NNDescent_1afe4cebe8e80b64aff2001f869455f5a8" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>has_built</name></member>
       <member refid="structfaiss_1_1NNDescent_1afeec7588482fd3fbae0d8dfd0b649ffa" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>init_graph</name></member>

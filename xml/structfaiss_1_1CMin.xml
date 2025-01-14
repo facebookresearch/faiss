@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CMin" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CMin</compoundname>
     <templateparamlist>
@@ -10,12 +10,13 @@
         <type>typename TI_</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1CMin_1a88da78a6e6df33028f753bac4ec5504b" prot="public" static="no">
         <type>T_</type>
         <definition>typedef T_ faiss::CMin&lt; T_, TI_ &gt;::T</definition>
         <argsstring></argsstring>
         <name>T</name>
+        <qualifiedname>faiss::CMin::T</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>typedef TI_ faiss::CMin&lt; T_, TI_ &gt;::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
+        <qualifiedname>faiss::CMin::TI</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,6 +44,7 @@
         <definition>typedef CMax&lt;T_, TI_&gt; faiss::CMin&lt; T_, TI_ &gt;::Crev</definition>
         <argsstring></argsstring>
         <name>Crev</name>
+        <qualifiedname>faiss::CMin::Crev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,13 +53,14 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="45" column="18" bodyfile="faiss/utils/ordered_key_value.h" bodystart="45" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-attrib">
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CMin_1a3b3249c8b7a6dd60fd4004e128da9fe0" prot="public" static="yes" mutable="no">
         <type>const bool</type>
         <definition>const bool faiss::CMin&lt; T_, TI_ &gt;::is_max</definition>
         <argsstring></argsstring>
         <name>is_max</name>
+        <qualifiedname>faiss::CMin::is_max</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -66,13 +70,14 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="57" column="23" bodyfile="faiss/utils/ordered_key_value.h" bodystart="57" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1CMin_1a89143e2cd7f0cf758952178ee55ed88b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
         <definition>static bool faiss::CMin&lt; T_, TI_ &gt;::cmp</definition>
         <argsstring>(T a, T b)</argsstring>
         <name>cmp</name>
+        <qualifiedname>faiss::CMin::cmp</qualifiedname>
         <param>
           <type>T</type>
           <declname>a</declname>
@@ -94,6 +99,7 @@
         <definition>static bool faiss::CMin&lt; T_, TI_ &gt;::cmp2</definition>
         <argsstring>(T a1, T b1, TI a2, TI b2)</argsstring>
         <name>cmp2</name>
+        <qualifiedname>faiss::CMin::cmp2</qualifiedname>
         <param>
           <type>T</type>
           <declname>a1</declname>
@@ -123,6 +129,7 @@
         <definition>static T faiss::CMin&lt; T_, TI_ &gt;::neutral</definition>
         <argsstring>()</argsstring>
         <name>neutral</name>
+        <qualifiedname>faiss::CMin::neutral</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -136,6 +143,7 @@
         <definition>static T faiss::CMin&lt; T_, TI_ &gt;::nextafter</definition>
         <argsstring>(T x)</argsstring>
         <name>nextafter</name>
+        <qualifiedname>faiss::CMin::nextafter</qualifiedname>
         <param>
           <type>T</type>
           <declname>x</declname>
@@ -148,7 +156,7 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="59" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="59" bodyend="61"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

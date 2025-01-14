@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1CublasHandleScope" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::CublasHandleScope</compoundname>
     <includes refid="DeviceUtils_8h" local="no">DeviceUtils.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1" prot="private" static="no" mutable="no">
         <type>cublasHandle_t</type>
         <definition>cublasHandle_t faiss::gpu::CublasHandleScope::blasHandle_</definition>
         <argsstring></argsstring>
         <name>blasHandle_</name>
+        <qualifiedname>faiss::gpu::CublasHandleScope::blasHandle_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="113" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="113" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::CublasHandleScope::CublasHandleScope</definition>
         <argsstring>()</argsstring>
         <name>CublasHandleScope</name>
+        <qualifiedname>faiss::gpu::CublasHandleScope::CublasHandleScope</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>faiss::gpu::CublasHandleScope::~CublasHandleScope</definition>
         <argsstring>()</argsstring>
         <name>~CublasHandleScope</name>
+        <qualifiedname>faiss::gpu::CublasHandleScope::~CublasHandleScope</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,6 +53,7 @@
         <definition>cublasHandle_t faiss::gpu::CublasHandleScope::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::gpu::CublasHandleScope::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -58,7 +62,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="108" column="20" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="108" bodyend="110"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>RAII object to manage a cublasHandle_t. </para>
     </briefdescription>

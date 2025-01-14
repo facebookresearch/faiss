@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorTransform" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::VectorTransform</compoundname>
     <derivedcompoundref refid="structfaiss_1_1CenteringTransform" prot="public" virt="non-virtual">faiss::CenteringTransform</derivedcompoundref>
@@ -8,12 +8,13 @@
     <derivedcompoundref refid="structfaiss_1_1NormalizationTransform" prot="public" virt="non-virtual">faiss::NormalizationTransform</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1RemapDimensionsTransform" prot="public" virt="non-virtual">faiss::RemapDimensionsTransform</derivedcompoundref>
     <includes refid="VectorTransform_8h" local="no">VectorTransform.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::VectorTransform::d_in</definition>
         <argsstring></argsstring>
         <name>d_in</name>
+        <qualifiedname>faiss::VectorTransform::d_in</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -27,6 +28,7 @@
         <definition>int faiss::VectorTransform::d_out</definition>
         <argsstring></argsstring>
         <name>d_out</name>
+        <qualifiedname>faiss::VectorTransform::d_out</qualifiedname>
         <briefdescription>
 <para>! input dimension </para>
         </briefdescription>
@@ -41,6 +43,7 @@
         <definition>bool faiss::VectorTransform::is_trained</definition>
         <argsstring></argsstring>
         <name>is_trained</name>
+        <qualifiedname>faiss::VectorTransform::is_trained</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,13 +53,14 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="34" column="10" bodyfile="faiss/VectorTransform.h" bodystart="34" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::VectorTransform::VectorTransform</definition>
         <argsstring>(int d_in=0, int d_out=0)</argsstring>
         <name>VectorTransform</name>
+        <qualifiedname>faiss::VectorTransform::VectorTransform</qualifiedname>
         <param>
           <type>int</type>
           <declname>d_in</declname>
@@ -81,6 +85,7 @@
         <definition>virtual void faiss::VectorTransform::train</definition>
         <argsstring>(idx_t n, const float *x)</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::VectorTransform::train</qualifiedname>
         <reimplementedby refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073">train</reimplementedby>
@@ -122,11 +127,12 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="42" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
-        <definition>float* faiss::VectorTransform::apply</definition>
+        <definition>float * faiss::VectorTransform::apply</definition>
         <argsstring>(idx_t n, const float *x) const</argsstring>
         <name>apply</name>
+        <qualifiedname>faiss::VectorTransform::apply</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -168,6 +174,7 @@
         <definition>virtual void faiss::VectorTransform::apply_noalloc</definition>
         <argsstring>(idx_t n, const float *x, float *xt) const =0</argsstring>
         <name>apply_noalloc</name>
+        <qualifiedname>faiss::VectorTransform::apply_noalloc</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d">apply_noalloc</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a">apply_noalloc</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e">apply_noalloc</reimplementedby>
@@ -224,6 +231,7 @@
         <definition>virtual void faiss::VectorTransform::reverse_transform</definition>
         <argsstring>(idx_t n, const float *xt, float *x) const</argsstring>
         <name>reverse_transform</name>
+        <qualifiedname>faiss::VectorTransform::reverse_transform</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563">reverse_transform</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3">reverse_transform</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1">reverse_transform</reimplementedby>
@@ -254,6 +262,7 @@
         <definition>virtual void faiss::VectorTransform::check_identical</definition>
         <argsstring>(const VectorTransform &amp;other) const =0</argsstring>
         <name>check_identical</name>
+        <qualifiedname>faiss::VectorTransform::check_identical</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506">check_identical</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1a84b7defd5ebf855ac2e4038bdbd1fdd6">check_identical</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ae8f62cc0239c222b35ee3406ad8e7815">check_identical</reimplementedby>
@@ -276,6 +285,7 @@
         <definition>virtual faiss::VectorTransform::~VectorTransform</definition>
         <argsstring>()</argsstring>
         <name>~VectorTransform</name>
+        <qualifiedname>faiss::VectorTransform::~VectorTransform</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -284,35 +294,13 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="65" column="13" bodyfile="faiss/VectorTransform.h" bodystart="65" bodyend="65"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Any transformation applied on a set of vectors </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="4">
-        <label>faiss::LinearTransform</label>
-        <link refid="structfaiss_1_1LinearTransform"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::ITQTransform</label>
-        <link refid="structfaiss_1_1ITQTransform"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss::VectorTransform</label>
-        <link refid="structfaiss_1_1VectorTransform"/>
-      </node>
-      <node id="8">
-        <label>faiss::RandomRotationMatrix</label>
-        <link refid="structfaiss_1_1RandomRotationMatrix"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss::CenteringTransform</label>
         <link refid="structfaiss_1_1CenteringTransform"/>
@@ -325,15 +313,21 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
-        <label>faiss::NormalizationTransform</label>
-        <link refid="structfaiss_1_1NormalizationTransform"/>
+      <node id="3">
+        <label>faiss::ITQTransform</label>
+        <link refid="structfaiss_1_1ITQTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
-        <label>faiss::RemapDimensionsTransform</label>
-        <link refid="structfaiss_1_1RemapDimensionsTransform"/>
+      <node id="4">
+        <label>faiss::LinearTransform</label>
+        <link refid="structfaiss_1_1LinearTransform"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::NormalizationTransform</label>
+        <link refid="structfaiss_1_1NormalizationTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
@@ -349,10 +343,26 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="8">
+        <label>faiss::RandomRotationMatrix</label>
+        <link refid="structfaiss_1_1RandomRotationMatrix"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss::RemapDimensionsTransform</label>
+        <link refid="structfaiss_1_1RemapDimensionsTransform"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::VectorTransform</label>
+        <link refid="structfaiss_1_1VectorTransform"/>
+      </node>
     </inheritancegraph>
     <location file="faiss/VectorTransform.h" line="25" column="1" bodyfile="faiss/VectorTransform.h" bodystart="25" bodyend="66"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>apply</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" prot="public" virt="pure-virtual"><scope>faiss::VectorTransform</scope><name>apply_noalloc</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab6ac3b3be9e794a5eaa6b122709b4f99" prot="public" virt="pure-virtual"><scope>faiss::VectorTransform</scope><name>check_identical</name></member>
       <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>d_in</name></member>

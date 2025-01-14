@@ -1,58 +1,59 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1gpu" kind="namespace" language="C++">
     <compoundname>faiss::gpu</compoundname>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public">faiss::gpu::AllocRequest</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CpuTimer" prot="public">faiss::gpu::CpuTimer</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CublasHandleScope" prot="public">faiss::gpu::CublasHandleScope</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1DeviceScope" prot="public">faiss::gpu::DeviceScope</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public">faiss::gpu::GpuClonerOptions</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public">faiss::gpu::GpuMultipleClonerOptions</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuDistanceParams" prot="public">faiss::gpu::GpuDistanceParams</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" prot="public">faiss::gpu::GpuIcmEncoder</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" prot="public">faiss::gpu::GpuIcmEncoderFactory</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public">faiss::gpu::GpuIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndex" prot="public">faiss::gpu::GpuIndex</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public">faiss::gpu::GpuIndexBinaryFlat</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" prot="public">faiss::gpu::IVFPQBuildCagraConfig</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" prot="public">faiss::gpu::IVFPQSearchCagraConfig</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig" prot="public">faiss::gpu::GpuIndexCagraConfig</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1SearchParametersCagra" prot="public">faiss::gpu::SearchParametersCagra</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexCagra" prot="public">faiss::gpu::GpuIndexCagra</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" prot="public">faiss::gpu::GpuIndexFlatConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig" prot="public">faiss::gpu::GpuIndexCagraConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public">faiss::gpu::GpuIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlat" prot="public">faiss::gpu::GpuIndexFlat</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatL2" prot="public">faiss::gpu::GpuIndexFlatL2</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" prot="public">faiss::gpu::GpuIndexFlatConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP" prot="public">faiss::gpu::GpuIndexFlatIP</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public">faiss::gpu::GpuIndexIVFConfig</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatL2" prot="public">faiss::gpu::GpuIndexFlatL2</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public">faiss::gpu::GpuIndexIVF</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig" prot="public">faiss::gpu::GpuIndexIVFFlatConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public">faiss::gpu::GpuIndexIVFConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" prot="public">faiss::gpu::GpuIndexIVFFlat</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" prot="public">faiss::gpu::GpuIndexIVFPQConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig" prot="public">faiss::gpu::GpuIndexIVFFlatConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" prot="public">faiss::gpu::GpuIndexIVFPQ</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizerConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" prot="public">faiss::gpu::GpuIndexIVFPQConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public">faiss::gpu::AllocRequest</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizerConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" prot="public">faiss::gpu::GpuMemoryReservation</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public">faiss::gpu::GpuMultipleClonerOptions</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResources" prot="public">faiss::gpu::GpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public">faiss::gpu::GpuResourcesProvider</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public">faiss::gpu::GpuResourcesProviderFromInstance</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1IndexWrapper" prot="public">faiss::gpu::IndexWrapper</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1DeviceScope" prot="public">faiss::gpu::DeviceScope</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CublasHandleScope" prot="public">faiss::gpu::CublasHandleScope</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" prot="public">faiss::gpu::IVFPQBuildCagraConfig</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" prot="public">faiss::gpu::IVFPQSearchCagraConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CpuTimer" prot="public">faiss::gpu::CpuTimer</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1SearchParametersCagra" prot="public">faiss::gpu::SearchParametersCagra</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
     <innernamespace refid="namespacefaiss_1_1gpu_1_1utils">faiss::gpu::utils</innernamespace>
-      <sectiondef kind="enum">
+    <sectiondef kind="enum">
       <memberdef kind="enum" id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" prot="public" static="no" strong="yes">
         <type></type>
         <name>DistanceDataType</name>
+        <qualifiedname>faiss::gpu::DistanceDataType</qualifiedname>
         <enumvalue id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" prot="public">
           <name>F32</name>
           <initializer>= 1</initializer>
@@ -86,6 +87,7 @@
       <memberdef kind="enum" id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" prot="public" static="no" strong="yes">
         <type></type>
         <name>IndicesDataType</name>
+        <qualifiedname>faiss::gpu::IndicesDataType</qualifiedname>
         <enumvalue id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" prot="public">
           <name>I64</name>
           <initializer>= 1</initializer>
@@ -112,6 +114,7 @@
       <memberdef kind="enum" id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992ac" prot="public" static="no" strong="yes">
         <type></type>
         <name>graph_build_algo</name>
+        <qualifiedname>faiss::gpu::graph_build_algo</qualifiedname>
         <enumvalue id="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992aca024a07775560847f41dcb5aa52c37418" prot="public">
           <name>IVF_PQ</name>
           <briefdescription>
@@ -139,6 +142,7 @@
       <memberdef kind="enum" id="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" prot="public" static="no" strong="yes">
         <type></type>
         <name>codebook_gen</name>
+        <qualifiedname>faiss::gpu::codebook_gen</qualifiedname>
         <enumvalue id="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39a5056773a9c21a05e14106e853dc39c42" prot="public">
           <name>PER_SUBSPACE</name>
           <initializer>= 0</initializer>
@@ -167,6 +171,7 @@
       <memberdef kind="enum" id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02" prot="public" static="no" strong="yes">
         <type></type>
         <name>search_algo</name>
+        <qualifiedname>faiss::gpu::search_algo</qualifiedname>
         <enumvalue id="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" prot="public">
           <name>SINGLE_CTA</name>
           <briefdescription>
@@ -208,6 +213,7 @@
       <memberdef kind="enum" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821e" prot="public" static="no" strong="yes">
         <type></type>
         <name>hash_mode</name>
+        <qualifiedname>faiss::gpu::hash_mode</qualifiedname>
         <enumvalue id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821ea50b7748612b28db487d115f220bb77ab" prot="public">
           <name>HASH</name>
           <briefdescription>
@@ -240,6 +246,7 @@
       <memberdef kind="enum" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no" strong="no">
         <type></type>
         <name>IndicesOptions</name>
+        <qualifiedname>faiss::gpu::IndicesOptions</qualifiedname>
         <enumvalue id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81" prot="public">
           <name>INDICES_CPU</name>
           <initializer>= 0</initializer>
@@ -288,6 +295,7 @@
       <memberdef kind="enum" id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437" prot="public" static="no" strong="no">
         <type></type>
         <name>AllocType</name>
+        <qualifiedname>faiss::gpu::AllocType</qualifiedname>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a0fcde2e6fdc2c0afd9a35bde9e99a269" prot="public">
           <name>Other</name>
           <initializer>= 0</initializer>
@@ -362,6 +370,7 @@
       <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
         <type></type>
         <name>MemorySpace</name>
+        <qualifiedname>faiss::gpu::MemorySpace</qualifiedname>
         <enumvalue id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a3cbdb1d642f55fc4c351b62f6f259f76" prot="public">
           <name>Temporary</name>
           <initializer>= 0</initializer>
@@ -398,13 +407,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="88" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="88" bodyend="100"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="func">
-      <memberdef kind="function" id="GpuCloner_8h_1a500b37234fbe71aed08ff67c3d7926dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="GpuCloner_8h_1a5f1fb499181c1e6a2a156ce4b071e54e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
-        <definition>faiss::Index* faiss::gpu::index_gpu_to_cpu</definition>
+        <definition>faiss::Index * faiss::gpu::index_gpu_to_cpu</definition>
         <argsstring>(const faiss::Index *gpu_index)</argsstring>
         <name>index_gpu_to_cpu</name>
+        <qualifiedname>faiss::gpu::index_gpu_to_cpu</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>gpu_index</declname>
@@ -418,11 +428,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="70" column="14" declfile="faiss/gpu/GpuCloner.h" declline="70" declcolumn="14"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1a056f88b1bc8e3bbb2160fe35a67bc28b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
-        <definition>faiss::Index* faiss::gpu::index_cpu_to_gpu</definition>
+        <definition>faiss::Index * faiss::gpu::index_cpu_to_gpu</definition>
         <argsstring>(GpuResourcesProvider *provider, int device, const faiss::Index *index, const GpuClonerOptions *options=nullptr)</argsstring>
         <name>index_cpu_to_gpu</name>
+        <qualifiedname>faiss::gpu::index_cpu_to_gpu</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
           <declname>provider</declname>
@@ -449,11 +460,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="73" column="14" declfile="faiss/gpu/GpuCloner.h" declline="73" declcolumn="14"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1a4d22dc47b90fe147b32189ca1a899533" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
-        <definition>faiss::Index* faiss::gpu::index_cpu_to_gpu_multiple</definition>
+        <definition>faiss::Index * faiss::gpu::index_cpu_to_gpu_multiple</definition>
         <argsstring>(std::vector&lt; GpuResourcesProvider * &gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const faiss::Index *index, const GpuMultipleClonerOptions *options=nullptr)</argsstring>
         <name>index_cpu_to_gpu_multiple</name>
+        <qualifiedname>faiss::gpu::index_cpu_to_gpu_multiple</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
           <declname>provider</declname>
@@ -479,11 +491,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="79" column="14" declfile="faiss/gpu/GpuCloner.h" declline="79" declcolumn="14"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a3c1d63b6841829a0a51c42e041589adb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1aca74bf972d4db094d43771a2fa5f338f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
-        <definition>faiss::IndexBinary* faiss::gpu::index_binary_gpu_to_cpu</definition>
+        <definition>faiss::IndexBinary * faiss::gpu::index_binary_gpu_to_cpu</definition>
         <argsstring>(const faiss::IndexBinary *gpu_index)</argsstring>
         <name>index_binary_gpu_to_cpu</name>
+        <qualifiedname>faiss::gpu::index_binary_gpu_to_cpu</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
           <declname>gpu_index</declname>
@@ -496,11 +509,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="104" column="20" declfile="faiss/gpu/GpuCloner.h" declline="104" declcolumn="20"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a912ba9955075b7e10790c311f574d781" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1aea7a3f16c36dbe87022432f6a704bde5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
-        <definition>faiss::IndexBinary* faiss::gpu::index_binary_cpu_to_gpu</definition>
+        <definition>faiss::IndexBinary * faiss::gpu::index_binary_cpu_to_gpu</definition>
         <argsstring>(GpuResourcesProvider *provider, int device, const faiss::IndexBinary *index, const GpuClonerOptions *options=nullptr)</argsstring>
         <name>index_binary_cpu_to_gpu</name>
+        <qualifiedname>faiss::gpu::index_binary_cpu_to_gpu</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
           <declname>provider</declname>
@@ -527,11 +541,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="108" column="20" declfile="faiss/gpu/GpuCloner.h" declline="108" declcolumn="20"/>
       </memberdef>
-      <memberdef kind="function" id="GpuCloner_8h_1a0738a578f6f04c79a547a842c7e3a0e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuCloner_8h_1ac850eca0a26eea1be04e90bb9a0f03c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">faiss::IndexBinary</ref> *</type>
-        <definition>faiss::IndexBinary* faiss::gpu::index_binary_cpu_to_gpu_multiple</definition>
+        <definition>faiss::IndexBinary * faiss::gpu::index_binary_cpu_to_gpu_multiple</definition>
         <argsstring>(std::vector&lt; GpuResourcesProvider * &gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const faiss::IndexBinary *index, const GpuMultipleClonerOptions *options=nullptr)</argsstring>
         <name>index_binary_cpu_to_gpu_multiple</name>
+        <qualifiedname>faiss::gpu::index_binary_cpu_to_gpu_multiple</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
           <declname>provider</declname>
@@ -562,6 +577,7 @@
         <definition>bool faiss::gpu::should_use_cuvs</definition>
         <argsstring>(GpuDistanceParams args)</argsstring>
         <name>should_use_cuvs</name>
+        <qualifiedname>faiss::gpu::should_use_cuvs</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1gpu_1_1GpuDistanceParams" kindref="compound">GpuDistanceParams</ref></type>
           <declname>args</declname>
@@ -580,6 +596,7 @@
         <definition>void faiss::gpu::bfKnn</definition>
         <argsstring>(GpuResourcesProvider *resources, const GpuDistanceParams &amp;args)</argsstring>
         <name>bfKnn</name>
+        <qualifiedname>faiss::gpu::bfKnn</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
           <declname>resources</declname>
@@ -604,6 +621,7 @@
         <definition>void faiss::gpu::bfKnn_tiling</definition>
         <argsstring>(GpuResourcesProvider *resources, const GpuDistanceParams &amp;args, size_t vectorsMemoryLimit, size_t queriesMemoryLimit)</argsstring>
         <name>bfKnn_tiling</name>
+        <qualifiedname>faiss::gpu::bfKnn_tiling</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
           <declname>resources</declname>
@@ -633,6 +651,7 @@
         <definition>void faiss::gpu::bruteForceKnn</definition>
         <argsstring>(GpuResourcesProvider *resources, faiss::MetricType metric, const float *vectors, bool vectorsRowMajor, idx_t numVectors, const float *queries, bool queriesRowMajor, idx_t numQueries, int dims, int k, float *outDistances, idx_t *outIndices)</argsstring>
         <name>bruteForceKnn</name>
+        <qualifiedname>faiss::gpu::bruteForceKnn</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
           <declname>resources</declname>
@@ -695,6 +714,7 @@
         <definition>bool faiss::gpu::should_use_cuvs</definition>
         <argsstring>(GpuIndexConfig config_)</argsstring>
         <name>should_use_cuvs</name>
+        <qualifiedname>faiss::gpu::should_use_cuvs</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kindref="compound">GpuIndexConfig</ref></type>
           <declname>config_</declname>
@@ -708,11 +728,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="51" column="6" declfile="faiss/gpu/GpuIndex.h" declline="51" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuIndex_8h_1ade84aeef8931feb5d026c6f5b02070f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
-        <definition>GpuIndex* faiss::gpu::tryCastGpuIndex</definition>
+        <definition>GpuIndex * faiss::gpu::tryCastGpuIndex</definition>
         <argsstring>(faiss::Index *index)</argsstring>
         <name>tryCastGpuIndex</name>
+        <qualifiedname>faiss::gpu::tryCastGpuIndex</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>index</declname>
@@ -731,6 +752,7 @@
         <definition>bool faiss::gpu::isGpuIndex</definition>
         <argsstring>(faiss::Index *index)</argsstring>
         <name>isGpuIndex</name>
+        <qualifiedname>faiss::gpu::isGpuIndex</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>index</declname>
@@ -749,6 +771,7 @@
         <definition>bool faiss::gpu::isGpuIndexImplemented</definition>
         <argsstring>(faiss::Index *index)</argsstring>
         <name>isGpuIndexImplemented</name>
+        <qualifiedname>faiss::gpu::isGpuIndexImplemented</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>index</declname>
@@ -767,6 +790,7 @@
         <definition>std::string faiss::gpu::allocTypeToString</definition>
         <argsstring>(AllocType t)</argsstring>
         <name>allocTypeToString</name>
+        <qualifiedname>faiss::gpu::allocTypeToString</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>t</declname>
@@ -785,6 +809,7 @@
         <definition>std::string faiss::gpu::memorySpaceToString</definition>
         <argsstring>(MemorySpace s)</argsstring>
         <name>memorySpaceToString</name>
+        <qualifiedname>faiss::gpu::memorySpaceToString</qualifiedname>
         <param>
           <type>MemorySpace</type>
           <declname>s</declname>
@@ -803,6 +828,7 @@
         <definition>AllocInfo faiss::gpu::makeDevAlloc</definition>
         <argsstring>(AllocType at, cudaStream_t st)</argsstring>
         <name>makeDevAlloc</name>
+        <qualifiedname>faiss::gpu::makeDevAlloc</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>at</declname>
@@ -825,6 +851,7 @@
         <definition>AllocInfo faiss::gpu::makeTempAlloc</definition>
         <argsstring>(AllocType at, cudaStream_t st)</argsstring>
         <name>makeTempAlloc</name>
+        <qualifiedname>faiss::gpu::makeTempAlloc</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>at</declname>
@@ -847,6 +874,7 @@
         <definition>AllocInfo faiss::gpu::makeSpaceAlloc</definition>
         <argsstring>(AllocType at, MemorySpace sp, cudaStream_t st)</argsstring>
         <name>makeSpaceAlloc</name>
+        <qualifiedname>faiss::gpu::makeSpaceAlloc</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>at</declname>
@@ -873,6 +901,7 @@
         <definition>int faiss::gpu::getMaxKSelection</definition>
         <argsstring>()</argsstring>
         <name>getMaxKSelection</name>
+        <qualifiedname>faiss::gpu::getMaxKSelection</qualifiedname>
         <briefdescription>
 <para>A collection of various utility functions for index implementation. </para>
         </briefdescription>
@@ -888,6 +917,7 @@
         <definition>void faiss::gpu::validateKSelect</definition>
         <argsstring>(int k)</argsstring>
         <name>validateKSelect</name>
+        <qualifiedname>faiss::gpu::validateKSelect</qualifiedname>
         <param>
           <type>int</type>
           <declname>k</declname>
@@ -905,6 +935,7 @@
         <definition>void faiss::gpu::validateNProbe</definition>
         <argsstring>(size_t nprobe)</argsstring>
         <name>validateNProbe</name>
+        <qualifiedname>faiss::gpu::validateNProbe</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nprobe</declname>
@@ -917,11 +948,12 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/IndexUtils.h" line="26" column="6" declfile="faiss/gpu/impl/IndexUtils.h" declline="26" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="InterleavedCodes_8h_1a6fa800d7de6859fa719c43184a021775" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="InterleavedCodes_8h_1acda5ee38c3dac001ea72db98c99b74a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; uint8_t &gt;</type>
-        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::unpackNonInterleaved</definition>
+        <definition>std::vector&lt; uint8_t &gt; faiss::gpu::unpackNonInterleaved</definition>
         <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
         <name>unpackNonInterleaved</name>
+        <qualifiedname>faiss::gpu::unpackNonInterleaved</qualifiedname>
         <param>
           <type>std::vector&lt; uint8_t &gt;</type>
           <declname>data</declname>
@@ -946,11 +978,12 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="23" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="23" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="InterleavedCodes_8h_1aaf252105b63cae024ead79790da77591" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="InterleavedCodes_8h_1a6751f9cbfed27f2fa200b6a46e0300c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; uint8_t &gt;</type>
-        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::unpackInterleaved</definition>
+        <definition>std::vector&lt; uint8_t &gt; faiss::gpu::unpackInterleaved</definition>
         <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
         <name>unpackInterleaved</name>
+        <qualifiedname>faiss::gpu::unpackInterleaved</qualifiedname>
         <param>
           <type>std::vector&lt; uint8_t &gt;</type>
           <declname>data</declname>
@@ -975,11 +1008,12 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="34" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="34" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="InterleavedCodes_8h_1aa5fbf46e73968e7535eb83ef86cbcd16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="InterleavedCodes_8h_1af5fa5a4ee8352024850c45cdceeca8df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; uint8_t &gt;</type>
-        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::packNonInterleaved</definition>
+        <definition>std::vector&lt; uint8_t &gt; faiss::gpu::packNonInterleaved</definition>
         <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
         <name>packNonInterleaved</name>
+        <qualifiedname>faiss::gpu::packNonInterleaved</qualifiedname>
         <param>
           <type>std::vector&lt; uint8_t &gt;</type>
           <declname>data</declname>
@@ -1004,11 +1038,12 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="42" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="42" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="InterleavedCodes_8h_1ac7600011e96df9221930dcdfa0c790f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="InterleavedCodes_8h_1ab4c5f626cbe81460dde953a379142215" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; uint8_t &gt;</type>
-        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::packInterleaved</definition>
+        <definition>std::vector&lt; uint8_t &gt; faiss::gpu::packInterleaved</definition>
         <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
         <name>packInterleaved</name>
+        <qualifiedname>faiss::gpu::packInterleaved</qualifiedname>
         <param>
           <type>std::vector&lt; uint8_t &gt;</type>
           <declname>data</declname>
@@ -1033,11 +1068,12 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="50" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="50" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="RemapIndices_8h_1a515c8e59be866b46dc43041c138022f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::ivfOffsetToUserIndex</definition>
-        <argsstring>(idx_t *indices, idx_t numLists, idx_t queries, int k, const std::vector&lt; std::vector&lt; idx_t &gt;&gt; &amp;listOffsetToUserIndex)</argsstring>
+        <argsstring>(idx_t *indices, idx_t numLists, idx_t queries, int k, const std::vector&lt; std::vector&lt; idx_t &gt; &gt; &amp;listOffsetToUserIndex)</argsstring>
         <name>ivfOffsetToUserIndex</name>
+        <qualifiedname>faiss::gpu::ivfOffsetToUserIndex</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>indices</declname>
@@ -1055,7 +1091,7 @@
           <declname>k</declname>
         </param>
         <param>
-          <type>const std::vector&lt; std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;&gt; &amp;</type>
+          <type>const std::vector&lt; std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &gt; &amp;</type>
           <declname>listOffsetToUserIndex</declname>
         </param>
         <briefdescription>
@@ -1072,6 +1108,7 @@
         <definition>void faiss::gpu::newTestSeed</definition>
         <argsstring>()</argsstring>
         <name>newTestSeed</name>
+        <qualifiedname>faiss::gpu::newTestSeed</qualifiedname>
         <briefdescription>
 <para>Generates and displays a new seed for the test. </para>
         </briefdescription>
@@ -1086,6 +1123,7 @@
         <definition>void faiss::gpu::setTestSeed</definition>
         <argsstring>(long seed)</argsstring>
         <name>setTestSeed</name>
+        <qualifiedname>faiss::gpu::setTestSeed</qualifiedname>
         <param>
           <type>long</type>
           <declname>seed</declname>
@@ -1104,6 +1142,7 @@
         <definition>float faiss::gpu::relativeError</definition>
         <argsstring>(float a, float b)</argsstring>
         <name>relativeError</name>
+        <qualifiedname>faiss::gpu::relativeError</qualifiedname>
         <param>
           <type>float</type>
           <declname>a</declname>
@@ -1126,6 +1165,7 @@
         <definition>int faiss::gpu::randVal</definition>
         <argsstring>(int a, int b)</argsstring>
         <name>randVal</name>
+        <qualifiedname>faiss::gpu::randVal</qualifiedname>
         <param>
           <type>int</type>
           <declname>a</declname>
@@ -1148,6 +1188,7 @@
         <definition>bool faiss::gpu::randBool</definition>
         <argsstring>()</argsstring>
         <name>randBool</name>
+        <qualifiedname>faiss::gpu::randBool</qualifiedname>
         <briefdescription>
 <para>Generates a random bool. </para>
         </briefdescription>
@@ -1167,6 +1208,7 @@
         <definition>T faiss::gpu::randSelect</definition>
         <argsstring>(std::initializer_list&lt; T &gt; vals)</argsstring>
         <name>randSelect</name>
+        <qualifiedname>faiss::gpu::randSelect</qualifiedname>
         <param>
           <type>std::initializer_list&lt; T &gt;</type>
           <declname>vals</declname>
@@ -1180,11 +1222,12 @@
         </inbodydescription>
         <location file="faiss/gpu/test/TestUtils.h" line="42" column="3" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="42" bodyend="55"/>
       </memberdef>
-      <memberdef kind="function" id="TestUtils_8h_1ae9641002715e79d0aa4c594bbc3daa01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="TestUtils_8h_1aca3d71130e61aebd85684e5c7b443c23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
-        <definition>std::vector&lt;float&gt; faiss::gpu::randVecs</definition>
+        <definition>std::vector&lt; float &gt; faiss::gpu::randVecs</definition>
         <argsstring>(size_t num, size_t dim)</argsstring>
         <name>randVecs</name>
+        <qualifiedname>faiss::gpu::randVecs</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>num</declname>
@@ -1202,11 +1245,12 @@
         </inbodydescription>
         <location file="faiss/gpu/test/TestUtils.h" line="58" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="58" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="TestUtils_8h_1a237b6df9cf96b9ab805c46aef32a37b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="TestUtils_8h_1a43baee1452f9fc4b3a6e60cfbb4c08e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; unsigned char &gt;</type>
-        <definition>std::vector&lt;unsigned char&gt; faiss::gpu::randBinaryVecs</definition>
+        <definition>std::vector&lt; unsigned char &gt; faiss::gpu::randBinaryVecs</definition>
         <argsstring>(size_t num, size_t dim)</argsstring>
         <name>randBinaryVecs</name>
+        <qualifiedname>faiss::gpu::randBinaryVecs</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>num</declname>
@@ -1224,11 +1268,12 @@
         </inbodydescription>
         <location file="faiss/gpu/test/TestUtils.h" line="61" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="61" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="TestUtils_8h_1a9a3c3ce871cb0ea52f9263e86022acb0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="TestUtils_8h_1ac9eef9d99be03444b5391bc5615d0d08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
-        <definition>std::vector&lt;float&gt; faiss::gpu::roundToHalf</definition>
+        <definition>std::vector&lt; float &gt; faiss::gpu::roundToHalf</definition>
         <argsstring>(const std::vector&lt; float &gt; &amp;v)</argsstring>
         <name>roundToHalf</name>
+        <qualifiedname>faiss::gpu::roundToHalf</qualifiedname>
         <param>
           <type>const std::vector&lt; float &gt; &amp;</type>
           <declname>v</declname>
@@ -1246,6 +1291,7 @@
         <definition>void faiss::gpu::compareIndices</definition>
         <argsstring>(const std::vector&lt; float &gt; &amp;queryVecs, faiss::Index &amp;refIndex, faiss::Index &amp;testIndex, int numQuery, int dim, int k, const std::string &amp;configMsg, float maxRelativeError=6e-5f, float pctMaxDiff1=0.1f, float pctMaxDiffN=0.005f)</argsstring>
         <name>compareIndices</name>
+        <qualifiedname>faiss::gpu::compareIndices</qualifiedname>
         <param>
           <type>const std::vector&lt; float &gt; &amp;</type>
           <declname>queryVecs</declname>
@@ -1303,6 +1349,7 @@
         <definition>void faiss::gpu::compareIndices</definition>
         <argsstring>(faiss::Index &amp;refIndex, faiss::Index &amp;testIndex, int numQuery, int dim, int k, const std::string &amp;configMsg, float maxRelativeError=6e-5f, float pctMaxDiff1=0.1f, float pctMaxDiffN=0.005f)</argsstring>
         <name>compareIndices</name>
+        <qualifiedname>faiss::gpu::compareIndices</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> &amp;</type>
           <declname>refIndex</declname>
@@ -1356,6 +1403,7 @@
         <definition>void faiss::gpu::compareLists</definition>
         <argsstring>(const float *refDist, const faiss::idx_t *refInd, const float *testDist, const faiss::idx_t *testInd, int dim1, int dim2, const std::string &amp;configMsg, bool printBasicStats, bool printDiffs, bool assertOnErr, float maxRelativeError=6e-5f, float pctMaxDiff1=0.1f, float pctMaxDiffN=0.005f)</argsstring>
         <name>compareLists</name>
+        <qualifiedname>faiss::gpu::compareLists</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>refDist</declname>
@@ -1433,6 +1481,7 @@
         <definition>void faiss::gpu::testIVFEquality</definition>
         <argsstring>(A &amp;cpuIndex, B &amp;gpuIndex)</argsstring>
         <name>testIVFEquality</name>
+        <qualifiedname>faiss::gpu::testIVFEquality</qualifiedname>
         <param>
           <type>A &amp;</type>
           <declname>cpuIndex</declname>
@@ -1455,6 +1504,7 @@
         <definition>cuvsDistanceType faiss::gpu::metricFaissToCuvs</definition>
         <argsstring>(MetricType metric, bool exactDistance)</argsstring>
         <name>metricFaissToCuvs</name>
+        <qualifiedname>faiss::gpu::metricFaissToCuvs</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
           <declname>metric</declname>
@@ -1476,6 +1526,7 @@
         <definition>void faiss::gpu::validRowIndices</definition>
         <argsstring>(GpuResources *res, Tensor&lt; float, 2, true &gt; &amp;vecs, bool *validRows)</argsstring>
         <name>validRowIndices</name>
+        <qualifiedname>faiss::gpu::validRowIndices</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
           <declname>res</declname>
@@ -1502,6 +1553,7 @@
         <definition>idx_t faiss::gpu::inplaceGatherFilteredRows</definition>
         <argsstring>(GpuResources *res, Tensor&lt; float, 2, true &gt; &amp;vecs, Tensor&lt; idx_t, 1, true &gt; &amp;indices)</argsstring>
         <name>inplaceGatherFilteredRows</name>
+        <qualifiedname>faiss::gpu::inplaceGatherFilteredRows</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
           <declname>res</declname>
@@ -1528,6 +1580,7 @@
         <definition>int faiss::gpu::getCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Returns the current thread-local GPU device. </para>
         </briefdescription>
@@ -1542,6 +1595,7 @@
         <definition>void faiss::gpu::setCurrentDevice</definition>
         <argsstring>(int device)</argsstring>
         <name>setCurrentDevice</name>
+        <qualifiedname>faiss::gpu::setCurrentDevice</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1560,6 +1614,7 @@
         <definition>int faiss::gpu::getNumDevices</definition>
         <argsstring>()</argsstring>
         <name>getNumDevices</name>
+        <qualifiedname>faiss::gpu::getNumDevices</qualifiedname>
         <briefdescription>
 <para>Returns the number of available GPU devices. </para>
         </briefdescription>
@@ -1574,6 +1629,7 @@
         <definition>void faiss::gpu::profilerStart</definition>
         <argsstring>()</argsstring>
         <name>profilerStart</name>
+        <qualifiedname>faiss::gpu::profilerStart</qualifiedname>
         <briefdescription>
 <para>Starts the CUDA profiler (exposed via SWIG) </para>
         </briefdescription>
@@ -1588,6 +1644,7 @@
         <definition>void faiss::gpu::profilerStop</definition>
         <argsstring>()</argsstring>
         <name>profilerStop</name>
+        <qualifiedname>faiss::gpu::profilerStop</qualifiedname>
         <briefdescription>
 <para>Stops the CUDA profiler (exposed via SWIG) </para>
         </briefdescription>
@@ -1602,6 +1659,7 @@
         <definition>void faiss::gpu::synchronizeAllDevices</definition>
         <argsstring>()</argsstring>
         <name>synchronizeAllDevices</name>
+        <qualifiedname>faiss::gpu::synchronizeAllDevices</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1611,11 +1669,12 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="35" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="35" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="DeviceUtils_8h_1a5ccce882c56a92a4830ce2fc7bedbc72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="DeviceUtils_8h_1a542b2a71bc3a5e411606a7adca087acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const cudaDeviceProp &amp;</type>
-        <definition>const cudaDeviceProp&amp; faiss::gpu::getDeviceProperties</definition>
+        <definition>const cudaDeviceProp &amp; faiss::gpu::getDeviceProperties</definition>
         <argsstring>(int device)</argsstring>
         <name>getDeviceProperties</name>
+        <qualifiedname>faiss::gpu::getDeviceProperties</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1629,11 +1688,12 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="38" column="22" declfile="faiss/gpu/utils/DeviceUtils.h" declline="38" declcolumn="22"/>
       </memberdef>
-      <memberdef kind="function" id="DeviceUtils_8h_1af758bcee021c4fd616724dbf287e292a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="DeviceUtils_8h_1a210fa34b658677ebf264f99fb84ba166" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const cudaDeviceProp &amp;</type>
-        <definition>const cudaDeviceProp&amp; faiss::gpu::getCurrentDeviceProperties</definition>
+        <definition>const cudaDeviceProp &amp; faiss::gpu::getCurrentDeviceProperties</definition>
         <argsstring>()</argsstring>
         <name>getCurrentDeviceProperties</name>
+        <qualifiedname>faiss::gpu::getCurrentDeviceProperties</qualifiedname>
         <briefdescription>
 <para>Returns the cached cudaDeviceProp for the current device. </para>
         </briefdescription>
@@ -1648,6 +1708,7 @@
         <definition>int faiss::gpu::getMaxThreads</definition>
         <argsstring>(int device)</argsstring>
         <name>getMaxThreads</name>
+        <qualifiedname>faiss::gpu::getMaxThreads</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1666,6 +1727,7 @@
         <definition>int faiss::gpu::getMaxThreadsCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getMaxThreadsCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getMaxThreadsCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getMaxThreads(getCurrentDevice()) </para>
         </briefdescription>
@@ -1680,6 +1742,7 @@
         <definition>dim3 faiss::gpu::getMaxGrid</definition>
         <argsstring>(int device)</argsstring>
         <name>getMaxGrid</name>
+        <qualifiedname>faiss::gpu::getMaxGrid</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1698,6 +1761,7 @@
         <definition>dim3 faiss::gpu::getMaxGridCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getMaxGridCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getMaxGridCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getMaxGrid(getCurrentDevice()) </para>
         </briefdescription>
@@ -1712,6 +1776,7 @@
         <definition>size_t faiss::gpu::getMaxSharedMemPerBlock</definition>
         <argsstring>(int device)</argsstring>
         <name>getMaxSharedMemPerBlock</name>
+        <qualifiedname>faiss::gpu::getMaxSharedMemPerBlock</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1730,6 +1795,7 @@
         <definition>size_t faiss::gpu::getMaxSharedMemPerBlockCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getMaxSharedMemPerBlockCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getMaxSharedMemPerBlockCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getMaxSharedMemPerBlock(getCurrentDevice()) </para>
         </briefdescription>
@@ -1744,6 +1810,7 @@
         <definition>int faiss::gpu::getDeviceForAddress</definition>
         <argsstring>(const void *p)</argsstring>
         <name>getDeviceForAddress</name>
+        <qualifiedname>faiss::gpu::getDeviceForAddress</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>p</declname>
@@ -1762,6 +1829,7 @@
         <definition>bool faiss::gpu::getFullUnifiedMemSupport</definition>
         <argsstring>(int device)</argsstring>
         <name>getFullUnifiedMemSupport</name>
+        <qualifiedname>faiss::gpu::getFullUnifiedMemSupport</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1780,6 +1848,7 @@
         <definition>bool faiss::gpu::getFullUnifiedMemSupportCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getFullUnifiedMemSupportCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getFullUnifiedMemSupportCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getFullUnifiedMemSupport(getCurrentDevice()) </para>
         </briefdescription>
@@ -1794,6 +1863,7 @@
         <definition>bool faiss::gpu::getTensorCoreSupport</definition>
         <argsstring>(int device)</argsstring>
         <name>getTensorCoreSupport</name>
+        <qualifiedname>faiss::gpu::getTensorCoreSupport</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1812,6 +1882,7 @@
         <definition>bool faiss::gpu::getTensorCoreSupportCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getTensorCoreSupportCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getTensorCoreSupportCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getTensorCoreSupport(getCurrentDevice()) </para>
         </briefdescription>
@@ -1826,6 +1897,7 @@
         <definition>int faiss::gpu::getWarpSize</definition>
         <argsstring>(int device)</argsstring>
         <name>getWarpSize</name>
+        <qualifiedname>faiss::gpu::getWarpSize</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1844,6 +1916,7 @@
         <definition>int faiss::gpu::getWarpSizeCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getWarpSizeCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getWarpSizeCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getWarpSize(getCurrentDevice()) </para>
         </briefdescription>
@@ -1858,6 +1931,7 @@
         <definition>size_t faiss::gpu::getFreeMemory</definition>
         <argsstring>(int device)</argsstring>
         <name>getFreeMemory</name>
+        <qualifiedname>faiss::gpu::getFreeMemory</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -1876,6 +1950,7 @@
         <definition>size_t faiss::gpu::getFreeMemoryCurrentDevice</definition>
         <argsstring>()</argsstring>
         <name>getFreeMemoryCurrentDevice</name>
+        <qualifiedname>faiss::gpu::getFreeMemoryCurrentDevice</qualifiedname>
         <briefdescription>
 <para>Equivalent to getFreeMemory(getCurrentDevice()) </para>
         </briefdescription>
@@ -1898,6 +1973,7 @@
         <definition>void faiss::gpu::streamWaitBase</definition>
         <argsstring>(const L1 &amp;listWaiting, const L2 &amp;listWaitOn)</argsstring>
         <name>streamWaitBase</name>
+        <qualifiedname>faiss::gpu::streamWaitBase</qualifiedname>
         <param>
           <type>const L1 &amp;</type>
           <declname>listWaiting</declname>
@@ -1925,6 +2001,7 @@
         <definition>void faiss::gpu::streamWait</definition>
         <argsstring>(const L1 &amp;a, const std::initializer_list&lt; cudaStream_t &gt; &amp;b)</argsstring>
         <name>streamWait</name>
+        <qualifiedname>faiss::gpu::streamWait</qualifiedname>
         <param>
           <type>const L1 &amp;</type>
           <declname>a</declname>
@@ -1952,6 +2029,7 @@
         <definition>void faiss::gpu::streamWait</definition>
         <argsstring>(const std::initializer_list&lt; cudaStream_t &gt; &amp;a, const L2 &amp;b)</argsstring>
         <name>streamWait</name>
+        <qualifiedname>faiss::gpu::streamWait</qualifiedname>
         <param>
           <type>const std::initializer_list&lt; cudaStream_t &gt; &amp;</type>
           <declname>a</declname>
@@ -1973,6 +2051,7 @@
         <definition>void faiss::gpu::streamWait</definition>
         <argsstring>(const std::initializer_list&lt; cudaStream_t &gt; &amp;a, const std::initializer_list&lt; cudaStream_t &gt; &amp;b)</argsstring>
         <name>streamWait</name>
+        <qualifiedname>faiss::gpu::streamWait</qualifiedname>
         <param>
           <type>const std::initializer_list&lt; cudaStream_t &gt; &amp;</type>
           <declname>a</declname>
@@ -1989,7 +2068,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="204" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="204" bodyend="208"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="partitioning_8h" kind="file" language="C++">
     <compoundname>partitioning.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -16,12 +16,6 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>cstdint</label>
-      </node>
-      <node id="2">
-        <label>stdint.h</label>
-      </node>
       <node id="1">
         <label>faiss/utils/partitioning.h</label>
         <link refid="partitioning_8h"/>
@@ -32,38 +26,20 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
       <node id="6">
         <label>cstdio</label>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
       </node>
       <node id="3">
         <label>stdio.h</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="4">
-        <label>faiss/utils/distances_fused/avx512.h</label>
-        <link refid="avx512_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/impl/simd_result_handlers.h</label>
-        <link refid="simd__result__handlers_8h_source"/>
-      </node>
-      <node id="6">
-        <label>faiss/utils/distances_fused/simdlib_based.h</label>
-        <link refid="simdlib__based_8h_source"/>
-      </node>
-      <node id="5">
-        <label>faiss/utils/distances_fused/distances_fused.h</label>
-        <link refid="distances__fused_8h_source"/>
-      </node>
-      <node id="1">
-        <label>faiss/utils/partitioning.h</label>
-        <link refid="partitioning_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h_source"/>
@@ -74,6 +50,30 @@
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/utils/distances_fused/avx512.h</label>
+        <link refid="avx512_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/utils/distances_fused/distances_fused.h</label>
+        <link refid="distances__fused_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/utils/distances_fused/simdlib_based.h</label>
+        <link refid="simdlib__based_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/utils/partitioning.h</label>
+        <link refid="partitioning_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

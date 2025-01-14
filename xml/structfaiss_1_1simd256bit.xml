@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd256bit" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd256bit</compoundname>
     <derivedcompoundref refid="structfaiss_1_1simd16uint16" prot="public" virt="non-virtual">faiss::simd16uint16</derivedcompoundref>
@@ -15,12 +15,13 @@
     <derivedcompoundref refid="structfaiss_1_1simd8uint32" prot="public" virt="non-virtual">faiss::simd8uint32</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd8uint32" prot="public" virt="non-virtual">faiss::simd8uint32</derivedcompoundref>
     <includes refid="simdlib__avx2_8h" local="no">simdlib_avx2.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" prot="public" static="no" mutable="no">
         <type>__m256i</type>
         <definition>__m256i faiss::simd256bit::i</definition>
         <argsstring></argsstring>
         <name>i</name>
+        <qualifiedname>faiss::simd256bit::i</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +35,7 @@
         <definition>__m256 faiss::simd256bit::f</definition>
         <argsstring></argsstring>
         <name>f</name>
+        <qualifiedname>faiss::simd256bit::f</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,10 +45,11 @@
         <location file="faiss/utils/simdlib_avx2.h" line="31" column="16" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" prot="public" static="no" mutable="no">
-        <type>union faiss::simd256bit::@0</type>
-        <definition>union faiss::simd256bit::@0 faiss::simd256bit::@1</definition>
+        <type>union <ref refid="structfaiss_1_1simd256bit" kindref="compound">faiss::simd256bit</ref></type>
+        <definition>union faiss::simd256bit faiss::simd256bit</definition>
         <argsstring></argsstring>
-        <name>@1</name>
+        <name></name>
+        <qualifiedname>faiss::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +63,7 @@
         <definition>uint8_t faiss::simd256bit::u8[32]</definition>
         <argsstring>[32]</argsstring>
         <name>u8</name>
+        <qualifiedname>faiss::simd256bit::u8</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,6 +77,7 @@
         <definition>uint16_t faiss::simd256bit::u16[16]</definition>
         <argsstring>[16]</argsstring>
         <name>u16</name>
+        <qualifiedname>faiss::simd256bit::u16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -86,6 +91,7 @@
         <definition>uint32_t faiss::simd256bit::u32[8]</definition>
         <argsstring>[8]</argsstring>
         <name>u32</name>
+        <qualifiedname>faiss::simd256bit::u32</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -99,6 +105,7 @@
         <definition>float faiss::simd256bit::f32[8]</definition>
         <argsstring>[8]</argsstring>
         <name>f32</name>
+        <qualifiedname>faiss::simd256bit::f32</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -108,10 +115,11 @@
         <location file="faiss/utils/simdlib_emulated.h" line="22" column="15" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a7c8581ec29fc18c1d165dbb76b050732" prot="public" static="no" mutable="no">
-        <type>union faiss::simd256bit::@4</type>
-        <definition>union faiss::simd256bit::@4 faiss::simd256bit::@5</definition>
+        <type>union <ref refid="structfaiss_1_1simd256bit" kindref="compound">faiss::simd256bit</ref></type>
+        <definition>union faiss::simd256bit faiss::simd256bit</definition>
         <argsstring></argsstring>
-        <name>@5</name>
+        <name></name>
+        <qualifiedname>faiss::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -121,10 +129,11 @@
         <location file="faiss/utils/simdlib_emulated.h" line="23" column="5"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a915f57d853b8aa23b7a57da1e32c0b6a" prot="public" static="no" mutable="no">
-        <type>union faiss::simd256bit::@6</type>
-        <definition>union faiss::simd256bit::@6 faiss::simd256bit::@7</definition>
+        <type>union <ref refid="structfaiss_1_1simd256bit" kindref="compound">faiss::simd256bit</ref></type>
+        <definition>union faiss::simd256bit faiss::simd256bit</definition>
         <argsstring></argsstring>
-        <name>@7</name>
+        <name></name>
+        <qualifiedname>faiss::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -133,13 +142,14 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_ppc64.h" line="23" column="5"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1simd256bit_1a7c98ba53fe0ec7eca4deb7ce4e47f20a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>()</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -153,6 +163,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>(__m256i i)</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <param>
           <type>__m256i</type>
           <declname>i</declname>
@@ -170,6 +181,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>(__m256 f)</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <param>
           <type>__m256</type>
           <declname>f</declname>
@@ -187,6 +199,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>(const void *x)</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>x</declname>
@@ -204,6 +217,7 @@
         <definition>void faiss::simd256bit::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::simd256bit::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -217,6 +231,7 @@
         <definition>void faiss::simd256bit::storeu</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>storeu</name>
+        <qualifiedname>faiss::simd256bit::storeu</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -234,6 +249,7 @@
         <definition>void faiss::simd256bit::loadu</definition>
         <argsstring>(const void *ptr)</argsstring>
         <name>loadu</name>
+        <qualifiedname>faiss::simd256bit::loadu</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>ptr</declname>
@@ -251,6 +267,7 @@
         <definition>void faiss::simd256bit::store</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::simd256bit::store</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -268,6 +285,7 @@
         <definition>void faiss::simd256bit::bin</definition>
         <argsstring>(char bits[257]) const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <param>
           <type>char</type>
           <declname>bits</declname>
@@ -286,6 +304,7 @@
         <definition>std::string faiss::simd256bit::bin</definition>
         <argsstring>() const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -299,6 +318,7 @@
         <definition>bool faiss::simd256bit::is_same_as</definition>
         <argsstring>(simd256bit other) const</argsstring>
         <name>is_same_as</name>
+        <qualifiedname>faiss::simd256bit::is_same_as</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
           <declname>other</declname>
@@ -316,6 +336,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>()</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -329,6 +350,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>(const void *x)</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>x</declname>
@@ -346,6 +368,7 @@
         <definition>void faiss::simd256bit::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::simd256bit::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -359,6 +382,7 @@
         <definition>void faiss::simd256bit::storeu</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>storeu</name>
+        <qualifiedname>faiss::simd256bit::storeu</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -376,6 +400,7 @@
         <definition>void faiss::simd256bit::loadu</definition>
         <argsstring>(const void *ptr)</argsstring>
         <name>loadu</name>
+        <qualifiedname>faiss::simd256bit::loadu</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>ptr</declname>
@@ -393,6 +418,7 @@
         <definition>void faiss::simd256bit::store</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::simd256bit::store</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -410,6 +436,7 @@
         <definition>void faiss::simd256bit::bin</definition>
         <argsstring>(char bits[257]) const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <param>
           <type>char</type>
           <declname>bits</declname>
@@ -428,6 +455,7 @@
         <definition>std::string faiss::simd256bit::bin</definition>
         <argsstring>() const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -441,6 +469,7 @@
         <definition>bool faiss::simd256bit::is_same_as</definition>
         <argsstring>(simd256bit other) const</argsstring>
         <name>is_same_as</name>
+        <qualifiedname>faiss::simd256bit::is_same_as</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
           <declname>other</declname>
@@ -458,6 +487,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>()</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -471,6 +501,7 @@
         <definition>faiss::simd256bit::simd256bit</definition>
         <argsstring>(const void *x)</argsstring>
         <name>simd256bit</name>
+        <qualifiedname>faiss::simd256bit::simd256bit</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>x</declname>
@@ -488,6 +519,7 @@
         <definition>void faiss::simd256bit::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::simd256bit::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -501,6 +533,7 @@
         <definition>void faiss::simd256bit::storeu</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>storeu</name>
+        <qualifiedname>faiss::simd256bit::storeu</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -518,6 +551,7 @@
         <definition>void faiss::simd256bit::loadu</definition>
         <argsstring>(const void *ptr)</argsstring>
         <name>loadu</name>
+        <qualifiedname>faiss::simd256bit::loadu</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>ptr</declname>
@@ -535,6 +569,7 @@
         <definition>void faiss::simd256bit::store</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::simd256bit::store</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -552,6 +587,7 @@
         <definition>void faiss::simd256bit::bin</definition>
         <argsstring>(char bits[257]) const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <param>
           <type>char</type>
           <declname>bits</declname>
@@ -570,6 +606,7 @@
         <definition>std::string faiss::simd256bit::bin</definition>
         <argsstring>() const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd256bit::bin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -583,6 +620,7 @@
         <definition>bool faiss::simd256bit::is_same_as</definition>
         <argsstring>(simd256bit other) const</argsstring>
         <name>is_same_as</name>
+        <qualifiedname>faiss::simd256bit::is_same_as</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
           <declname>other</declname>
@@ -595,7 +633,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_ppc64.h" line="62" column="10" bodyfile="faiss/utils/simdlib_ppc64.h" bodystart="62" bodyend="70"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>256-bit representation without interpretation as a vector </para>
     </briefdescription>
@@ -604,19 +642,9 @@
 <para>The objective is to separate the different interpretations of the same registers (as a vector of uint8, uint16 or uint32), to provide printing functions, and to give more readable names to the AVX intrinsics. It does not pretend to be exhausitve, functions are added as needed. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::simd32uint8</label>
-        <link refid="structfaiss_1_1simd32uint8"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::simd8uint32</label>
-        <link refid="structfaiss_1_1simd8uint32"/>
+      <node id="2">
+        <label>faiss::simd16uint16</label>
+        <link refid="structfaiss_1_1simd16uint16"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
         <childnode refid="1" relation="public-inheritance">
@@ -628,9 +656,9 @@
         <label>faiss::simd256bit</label>
         <link refid="structfaiss_1_1simd256bit"/>
       </node>
-      <node id="2">
-        <label>faiss::simd16uint16</label>
-        <link refid="structfaiss_1_1simd16uint16"/>
+      <node id="3">
+        <label>faiss::simd32uint8</label>
+        <link refid="structfaiss_1_1simd32uint8"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
         <childnode refid="1" relation="public-inheritance">
@@ -641,6 +669,16 @@
       <node id="4">
         <label>faiss::simd8float32</label>
         <link refid="structfaiss_1_1simd8float32"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::simd8uint32</label>
+        <link refid="structfaiss_1_1simd8uint32"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
         <childnode refid="1" relation="public-inheritance">

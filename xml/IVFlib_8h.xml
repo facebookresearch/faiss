@@ -1,24 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="IVFlib_8h" kind="file" language="C++">
     <compoundname>IVFlib.h</compoundname>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes local="no">vector</includes>
     <incdepgraph>
-      <node id="25">
-        <label>limits</label>
-      </node>
-      <node id="10">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>cstdint</label>
-      </node>
       <node id="7">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
@@ -27,8 +13,27 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>stdint.h</label>
+      <node id="1">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexIVF.h</label>
@@ -56,25 +61,11 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="19">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="9" relation="include">
+      <node id="9">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>cmath</label>
-      </node>
-      <node id="24">
-        <label>cassert</label>
-      </node>
-      <node id="14">
-        <label>string</label>
-      </node>
-      <node id="17">
-        <label>unordered_set</label>
       </node>
       <node id="16">
         <label>faiss/impl/IDSelector.h</label>
@@ -86,20 +77,29 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="15">
-        <label>typeinfo</label>
+      <node id="10">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
-      <node id="12">
-        <label>cstdio</label>
+      <node id="18">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
-      <node id="6">
-        <label>vector</label>
-      </node>
-      <node id="26">
-        <label>utility</label>
-      </node>
-      <node id="13">
-        <label>sstream</label>
+      <node id="19">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
       <node id="20">
         <label>faiss/utils/Heap.h</label>
@@ -133,53 +133,53 @@
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>unordered_map</label>
+      <node id="24">
+        <label>cassert</label>
       </node>
       <node id="21">
         <label>climits</label>
       </node>
-      <node id="8">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
+      <node id="22">
+        <label>cmath</label>
       </node>
-      <node id="9">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
+      <node id="11">
+        <label>cstdint</label>
       </node>
-      <node id="18">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
+      <node id="12">
+        <label>cstdio</label>
       </node>
       <node id="23">
         <label>cstring</label>
       </node>
+      <node id="25">
+        <label>limits</label>
+      </node>
       <node id="4">
         <label>memory</label>
       </node>
-      <node id="1">
-        <label>faiss/IVFlib.h</label>
-        <link refid="IVFlib_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
+      <node id="13">
+        <label>sstream</label>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="14">
+        <label>string</label>
+      </node>
+      <node id="15">
+        <label>typeinfo</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="17">
+        <label>unordered_set</label>
+      </node>
+      <node id="26">
+        <label>utility</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>

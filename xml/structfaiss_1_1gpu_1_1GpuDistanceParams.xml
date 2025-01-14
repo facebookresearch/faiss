@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuDistanceParams" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuDistanceParams</compoundname>
     <includes refid="GpuDistance_8h" local="no">GpuDistance.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
         <definition>faiss::MetricType faiss::gpu::GpuDistanceParams::metric</definition>
         <argsstring></argsstring>
         <name>metric</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::metric</qualifiedname>
         <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
         <briefdescription>
 <para>Search parameter: distance metric. </para>
@@ -24,6 +25,7 @@
         <definition>float faiss::gpu::GpuDistanceParams::metricArg</definition>
         <argsstring></argsstring>
         <name>metricArg</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::metricArg</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -39,6 +41,7 @@
         <definition>int faiss::gpu::GpuDistanceParams::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::k</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -54,6 +57,7 @@
         <definition>int faiss::gpu::GpuDistanceParams::dims</definition>
         <argsstring></argsstring>
         <name>dims</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::dims</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>Vector dimensionality. </para>
@@ -69,6 +73,7 @@
         <definition>const void* faiss::gpu::GpuDistanceParams::vectors</definition>
         <argsstring></argsstring>
         <name>vectors</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::vectors</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -84,6 +89,7 @@
         <definition>DistanceDataType faiss::gpu::GpuDistanceParams::vectorType</definition>
         <argsstring></argsstring>
         <name>vectorType</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::vectorType</qualifiedname>
         <initializer>= DistanceDataType::F32</initializer>
         <briefdescription>
         </briefdescription>
@@ -98,6 +104,7 @@
         <definition>bool faiss::gpu::GpuDistanceParams::vectorsRowMajor</definition>
         <argsstring></argsstring>
         <name>vectorsRowMajor</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::vectorsRowMajor</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
@@ -112,6 +119,7 @@
         <definition>idx_t faiss::gpu::GpuDistanceParams::numVectors</definition>
         <argsstring></argsstring>
         <name>numVectors</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::numVectors</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -126,6 +134,7 @@
         <definition>const float* faiss::gpu::GpuDistanceParams::vectorNorms</definition>
         <argsstring></argsstring>
         <name>vectorNorms</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::vectorNorms</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -141,6 +150,7 @@
         <definition>const void* faiss::gpu::GpuDistanceParams::queries</definition>
         <argsstring></argsstring>
         <name>queries</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::queries</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -156,6 +166,7 @@
         <definition>DistanceDataType faiss::gpu::GpuDistanceParams::queryType</definition>
         <argsstring></argsstring>
         <name>queryType</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::queryType</qualifiedname>
         <initializer>= DistanceDataType::F32</initializer>
         <briefdescription>
         </briefdescription>
@@ -170,6 +181,7 @@
         <definition>bool faiss::gpu::GpuDistanceParams::queriesRowMajor</definition>
         <argsstring></argsstring>
         <name>queriesRowMajor</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::queriesRowMajor</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
@@ -184,6 +196,7 @@
         <definition>idx_t faiss::gpu::GpuDistanceParams::numQueries</definition>
         <argsstring></argsstring>
         <name>numQueries</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::numQueries</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -198,6 +211,7 @@
         <definition>float* faiss::gpu::GpuDistanceParams::outDistances</definition>
         <argsstring></argsstring>
         <name>outDistances</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::outDistances</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -213,6 +227,7 @@
         <definition>bool faiss::gpu::GpuDistanceParams::ignoreOutDistances</definition>
         <argsstring></argsstring>
         <name>ignoreOutDistances</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::ignoreOutDistances</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -228,6 +243,7 @@
         <definition>IndicesDataType faiss::gpu::GpuDistanceParams::outIndicesType</definition>
         <argsstring></argsstring>
         <name>outIndicesType</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::outIndicesType</qualifiedname>
         <initializer>= IndicesDataType::I64</initializer>
         <briefdescription>
         </briefdescription>
@@ -243,6 +259,7 @@
         <definition>void* faiss::gpu::GpuDistanceParams::outIndices</definition>
         <argsstring></argsstring>
         <name>outIndices</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::outIndices</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -257,6 +274,7 @@
         <definition>int faiss::gpu::GpuDistanceParams::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::device</qualifiedname>
         <initializer>= -1</initializer>
         <briefdescription>
         </briefdescription>
@@ -272,6 +290,7 @@
         <definition>bool faiss::gpu::GpuDistanceParams::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuDistanceParams::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Should the index dispatch down to cuVS? </para>
@@ -282,7 +301,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuDistance.h" line="114" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="114" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Arguments to brute-force GPU k-nearest neighbor searching. </para>
     </briefdescription>

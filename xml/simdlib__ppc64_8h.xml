@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simdlib__ppc64_8h" kind="file" language="C++">
     <compoundname>simdlib_ppc64.h</compoundname>
     <includes local="no">algorithm</includes>
@@ -7,9 +7,6 @@
     <includes local="no">cstring</includes>
     <includes local="no">string</includes>
     <incdepgraph>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/utils/simdlib_ppc64.h</label>
         <link refid="simdlib__ppc64_8h"/>
@@ -22,14 +19,17 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>string</label>
-      </node>
       <node id="2">
         <label>algorithm</label>
       </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
       <node id="4">
         <label>cstring</label>
+      </node>
+      <node id="5">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>

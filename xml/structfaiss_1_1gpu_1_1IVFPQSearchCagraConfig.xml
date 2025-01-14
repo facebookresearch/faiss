@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::IVFPQSearchCagraConfig</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1afeb146ff3cef908dc0fa53c50dfd10df" prot="public" static="no" mutable="no">
         <type>uint32_t</type>
         <definition>uint32_t faiss::gpu::IVFPQSearchCagraConfig::n_probes</definition>
         <argsstring></argsstring>
         <name>n_probes</name>
+        <qualifiedname>faiss::gpu::IVFPQSearchCagraConfig::n_probes</qualifiedname>
         <initializer>= 20</initializer>
         <briefdescription>
 <para>The number of clusters to search. </para>
@@ -23,6 +24,7 @@
         <definition>cudaDataType_t faiss::gpu::IVFPQSearchCagraConfig::lut_dtype</definition>
         <argsstring></argsstring>
         <name>lut_dtype</name>
+        <qualifiedname>faiss::gpu::IVFPQSearchCagraConfig::lut_dtype</qualifiedname>
         <initializer>= CUDA_R_32F</initializer>
         <briefdescription>
         </briefdescription>
@@ -40,6 +42,7 @@
         <definition>cudaDataType_t faiss::gpu::IVFPQSearchCagraConfig::internal_distance_dtype</definition>
         <argsstring></argsstring>
         <name>internal_distance_dtype</name>
+        <qualifiedname>faiss::gpu::IVFPQSearchCagraConfig::internal_distance_dtype</qualifiedname>
         <initializer>= CUDA_R_32F</initializer>
         <briefdescription>
         </briefdescription>
@@ -57,6 +60,7 @@
         <definition>double faiss::gpu::IVFPQSearchCagraConfig::preferred_shmem_carveout</definition>
         <argsstring></argsstring>
         <name>preferred_shmem_carveout</name>
+        <qualifiedname>faiss::gpu::IVFPQSearchCagraConfig::preferred_shmem_carveout</qualifiedname>
         <initializer>= 1.0</initializer>
         <briefdescription>
         </briefdescription>
@@ -70,7 +74,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexCagra.h" line="163" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="163" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

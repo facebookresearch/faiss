@@ -1,16 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="fp16-fp16c_8h" kind="file" language="C++">
     <compoundname>fp16-fp16c.h</compoundname>
     <includes local="no">immintrin.h</includes>
     <includes local="no">cstdint</includes>
     <incdepgraph>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="2">
-        <label>immintrin.h</label>
-      </node>
       <node id="1">
         <label>faiss/utils/fp16-fp16c.h</label>
         <link refid="fp16-fp16c_8h"/>
@@ -18,6 +12,12 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="2">
+        <label>immintrin.h</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

@@ -1,27 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="Clustering_8h" kind="file" language="C++">
     <compoundname>Clustering.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes local="no">vector</includes>
+    <includedby refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includedby>
+    <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
     <includedby refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includedby>
     <includedby refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includedby>
     <includedby refid="ResidualQuantizer_8h" local="no">faiss/impl/ResidualQuantizer.h</includedby>
-    <includedby refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includedby>
-    <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
     <incdepgraph>
-      <node id="4">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h"/>
@@ -29,21 +18,6 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="10">
-        <label>vector</label>
-      </node>
-      <node id="7">
-        <label>sstream</label>
       </node>
       <node id="2">
         <label>faiss/Index.h</label>
@@ -65,261 +39,287 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-    </incdepgraph>
-    <invincdepgraph>
-      <node id="14">
-        <label>faiss/IndexIVFPQ.h</label>
-        <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>faiss/IndexAdditiveQuantizer.h</label>
-        <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
-        <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/gpu/GpuIndexIVF.h</label>
-        <link refid="GpuIndexIVF_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
+      <node id="4">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="17">
-        <label>faiss/IndexNSG.h</label>
-        <link refid="IndexNSG_8h_source"/>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>sstream</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>typeinfo</label>
       </node>
       <node id="10">
-        <label>faiss/IndexPQ.h</label>
-        <link refid="IndexPQ_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
+        <label>vector</label>
       </node>
+    </incdepgraph>
+    <invincdepgraph>
       <node id="1">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/Index2Layer.h</label>
+        <link refid="Index2Layer_8h_source"/>
+      </node>
+      <node id="33">
+        <label>faiss/IndexAdditiveQuantizer.h</label>
+        <link refid="IndexAdditiveQuantizer_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/IndexBinaryIVF.h</label>
+        <link refid="IndexBinaryIVF_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+      </node>
+      <node id="17">
+        <label>faiss/IndexHNSW.h</label>
+        <link refid="IndexHNSW_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+      </node>
+      <node id="4">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="26">
-        <label>faiss/IndexIVF.h</label>
-        <link refid="IndexIVF_8h_source"/>
-        <childnode refid="6" relation="include">
+      <node id="7">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+        <childnode refid="8" relation="include">
         </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="9">
+        <label>faiss/IndexIVFFastScan.h</label>
+        <link refid="IndexIVFFastScan_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/IndexIVFFlat.h</label>
+        <link refid="IndexIVFFlat_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+      </node>
+      <node id="12">
+        <label>faiss/IndexIVFIndependentQuantizer.h</label>
+        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
+      </node>
+      <node id="13">
+        <label>faiss/IndexIVFPQ.h</label>
+        <link refid="IndexIVFPQ_8h_source"/>
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+      </node>
+      <node id="10">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="14">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="15">
+        <label>faiss/IndexIVFSpectralHash.h</label>
+        <link refid="IndexIVFSpectralHash_8h_source"/>
+      </node>
+      <node id="18">
+        <label>faiss/IndexNSG.h</label>
+        <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="29">
+        <label>faiss/IndexPQ.h</label>
+        <link refid="IndexPQ_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>faiss/IndexPQFastScan.h</label>
+        <link refid="IndexPQFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/IndexScalarQuantizer.h</label>
+        <link refid="IndexScalarQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/IndexShardsIVF.h</label>
+        <link refid="IndexShardsIVF_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
+      </node>
+      <node id="27">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
+      </node>
+      <node id="21">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h_source"/>
+      </node>
+      <node id="22">
+        <label>faiss/gpu/GpuIndexIVF.h</label>
+        <link refid="GpuIndexIVF_8h_source"/>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
+        <link refid="GpuIndexIVFFlat_8h_source"/>
+      </node>
+      <node id="24">
+        <label>faiss/gpu/GpuIndexIVFPQ.h</label>
+        <link refid="GpuIndexIVFPQ_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="31">
+        <label>faiss/impl/PolysemousTraining.h</label>
+        <link refid="PolysemousTraining_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
+        <link refid="ProductAdditiveQuantizer_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>faiss/impl/ProductQuantizer.h</label>
+        <link refid="ProductQuantizer_8h_source"/>
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
+      </node>
+      <node id="32">
+        <label>faiss/impl/ResidualQuantizer.h</label>
+        <link refid="ResidualQuantizer_8h_source"/>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
       </node>
-      <node id="9">
-        <label>faiss/impl/PolysemousTraining.h</label>
-        <link refid="PolysemousTraining_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss/IndexHNSW.h</label>
-        <link refid="IndexHNSW_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="31">
-        <label>faiss/IndexIVFSpectralHash.h</label>
-        <link refid="IndexIVFSpectralHash_8h_source"/>
-      </node>
-      <node id="29">
-        <label>faiss/IndexIVFFlat.h</label>
-        <link refid="IndexIVFFlat_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="34">
-        <label>faiss/invlists/OnDiskInvertedLists.h</label>
-        <link refid="OnDiskInvertedLists_8h_source"/>
-      </node>
-      <node id="33">
-        <label>faiss/IndexShardsIVF.h</label>
-        <link refid="IndexShardsIVF_8h_source"/>
-      </node>
-      <node id="28">
-        <label>faiss/IndexIVFFastScan.h</label>
-        <link refid="IndexIVFFastScan_8h_source"/>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
       <node id="25">
-        <label>faiss/IndexBinaryIVF.h</label>
-        <link refid="IndexBinaryIVF_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="27">
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="6">
-        <label>faiss/gpu/GpuIndexCagra.h</label>
-        <link refid="GpuIndexCagra_8h_source"/>
-      </node>
-      <node id="18">
-        <label>faiss/IndexPQFastScan.h</label>
-        <link refid="IndexPQFastScan_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="30">
-        <label>faiss/IndexIVFIndependentQuantizer.h</label>
-        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
-      </node>
-      <node id="32">
-        <label>faiss/IndexScalarQuantizer.h</label>
-        <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss/gpu/GpuIndexIVFPQ.h</label>
-        <link refid="GpuIndexIVFPQ_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/IndexIVFPQFastScan.h</label>
-        <link refid="IndexIVFPQFastScan_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>faiss/impl/ResidualQuantizer.h</label>
-        <link refid="ResidualQuantizer_8h_source"/>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss/Index2Layer.h</label>
-        <link refid="Index2Layer_8h_source"/>
-      </node>
-      <node id="23">
-        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
-        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
-        <childnode refid="24" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
-      <node id="4">
-        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
-        <link refid="GpuIndexIVFFlat_8h_source"/>
-      </node>
-      <node id="7">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
-      </node>
-      <node id="13">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
-      </node>
-      <node id="2">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
-      </node>
-      <node id="22">
-        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-      <node id="8">
-        <label>faiss/impl/ProductQuantizer.h</label>
-        <link refid="ProductQuantizer_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
-      <node id="35">
-        <label>faiss/IVFlib.h</label>
-        <link refid="IVFlib_8h_source"/>
-      </node>
-      <node id="24">
-        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      <node id="26">
+        <label>faiss/invlists/OnDiskInvertedLists.h</label>
+        <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1ClusteringParameters" prot="public">faiss::ClusteringParameters</innerclass>
@@ -463,7 +463,7 @@
 <codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>includes<sp/>optional<sp/>L2<sp/>normalization<sp/>and<sp/>nearest<sp/>integer<sp/>rounding</highlight></codeline>
 <codeline lineno="127" refid="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" kindref="member">post_process_centroids</ref>();</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1Clustering" kindref="compound">Clustering</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Clustering" kindref="compound">~Clustering</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="130"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="132"><highlight class="comment">/**<sp/>Exact<sp/>1D<sp/>clustering<sp/>algorithm</highlight></codeline>
@@ -477,7 +477,7 @@
 <codeline lineno="140"><highlight class="normal"></highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>train_exact(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1Clustering1D" kindref="compound">Clustering1D</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Clustering1D" kindref="compound">~Clustering1D</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="144"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"></highlight></codeline>
 <codeline lineno="146" refid="structfaiss_1_1ProgressiveDimClusteringParameters" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ProgressiveDimClusteringParameters" kindref="compound">ProgressiveDimClusteringParameters</ref><sp/>:<sp/><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref><sp/>{</highlight></codeline>
@@ -490,9 +490,9 @@
 <codeline lineno="153"><highlight class="comment">/**<sp/>generates<sp/>an<sp/>index<sp/>suitable<sp/>for<sp/>clustering<sp/>when<sp/>called<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="154" refid="structfaiss_1_1ProgressiveDimIndexFactory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ProgressiveDimIndexFactory" kindref="compound">ProgressiveDimIndexFactory</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ownership<sp/>transferred<sp/>to<sp/>caller</highlight></codeline>
-<codeline lineno="156" refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim);</highlight></codeline>
+<codeline lineno="156" refid="structfaiss_1_1ProgressiveDimIndexFactory_1a9e063b5c17a5d4ff6ca27e2f3807c933" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ProgressiveDimIndexFactory_1a9e063b5c17a5d4ff6ca27e2f3807c933" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim);</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1ProgressiveDimIndexFactory" kindref="compound">ProgressiveDimIndexFactory</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ProgressiveDimIndexFactory" kindref="compound">~ProgressiveDimIndexFactory</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="159"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="161"><highlight class="comment">/**<sp/>K-means<sp/>clustering<sp/>with<sp/>progressive<sp/>dimensions<sp/>used</highlight></codeline>
@@ -526,7 +526,7 @@
 <codeline lineno="189"><highlight class="normal"></highlight></codeline>
 <codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>train(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/><ref refid="structfaiss_1_1ProgressiveDimIndexFactory" kindref="compound">ProgressiveDimIndexFactory</ref>&amp;<sp/>factory);</highlight></codeline>
 <codeline lineno="191"><highlight class="normal"></highlight></codeline>
-<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1ProgressiveDimClustering" kindref="compound">ProgressiveDimClustering</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ProgressiveDimClustering" kindref="compound">~ProgressiveDimClustering</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="193"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="195"><highlight class="comment">/**<sp/>simplified<sp/>interface</highlight></codeline>

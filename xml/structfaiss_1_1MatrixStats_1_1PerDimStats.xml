@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1MatrixStats_1_1PerDimStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats::PerDimStats</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1a868f5f042ce9f8c1d9cbb18884ad7603" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::MatrixStats::PerDimStats::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::n</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>counts of various special entries </para>
@@ -23,6 +24,7 @@
         <definition>size_t faiss::MatrixStats::PerDimStats::n_nan</definition>
         <argsstring></argsstring>
         <name>n_nan</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::n_nan</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>size_t faiss::MatrixStats::PerDimStats::n_inf</definition>
         <argsstring></argsstring>
         <name>n_inf</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::n_inf</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -51,6 +54,7 @@
         <definition>size_t faiss::MatrixStats::PerDimStats::n0</definition>
         <argsstring></argsstring>
         <name>n0</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::n0</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -65,6 +69,7 @@
         <definition>float faiss::MatrixStats::PerDimStats::min</definition>
         <argsstring></argsstring>
         <name>min</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::min</qualifiedname>
         <initializer>= HUGE_VALF</initializer>
         <briefdescription>
 <para>to get min/max and stddev values </para>
@@ -80,6 +85,7 @@
         <definition>float faiss::MatrixStats::PerDimStats::max</definition>
         <argsstring></argsstring>
         <name>max</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::max</qualifiedname>
         <initializer>= -HUGE_VALF</initializer>
         <briefdescription>
         </briefdescription>
@@ -94,6 +100,7 @@
         <definition>double faiss::MatrixStats::PerDimStats::sum</definition>
         <argsstring></argsstring>
         <name>sum</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::sum</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -108,6 +115,7 @@
         <definition>double faiss::MatrixStats::PerDimStats::sum2</definition>
         <argsstring></argsstring>
         <name>sum2</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::sum2</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -122,6 +130,7 @@
         <definition>size_t faiss::MatrixStats::PerDimStats::n_valid</definition>
         <argsstring></argsstring>
         <name>n_valid</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::n_valid</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -136,6 +145,7 @@
         <definition>double faiss::MatrixStats::PerDimStats::mean</definition>
         <argsstring></argsstring>
         <name>mean</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::mean</qualifiedname>
         <initializer>= NAN</initializer>
         <briefdescription>
         </briefdescription>
@@ -150,6 +160,7 @@
         <definition>double faiss::MatrixStats::PerDimStats::stddev</definition>
         <argsstring></argsstring>
         <name>stddev</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::stddev</qualifiedname>
         <initializer>= NAN</initializer>
         <briefdescription>
         </briefdescription>
@@ -159,13 +170,14 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="53" column="16" bodyfile="faiss/MatrixStats.h" bodystart="53" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::MatrixStats::PerDimStats::add</definition>
         <argsstring>(float x)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::add</qualifiedname>
         <param>
           <type>float</type>
           <declname>x</declname>
@@ -183,6 +195,7 @@
         <definition>void faiss::MatrixStats::PerDimStats::compute_mean_std</definition>
         <argsstring>()</argsstring>
         <name>compute_mean_std</name>
+        <qualifiedname>faiss::MatrixStats::PerDimStats::compute_mean_std</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -191,7 +204,7 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="56" column="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

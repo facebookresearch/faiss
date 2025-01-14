@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="bf16_8h" kind="file" language="C++">
     <compoundname>bf16.h</compoundname>
     <includes local="no">cstdint</includes>
     <incdepgraph>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/utils/bf16.h</label>
         <link refid="bf16_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
-      <sectiondef kind="var">
+    <sectiondef kind="var">
       <memberdef kind="variable" id="bf16_8h_1a04fff3a147b71de5a0e6ca4bcefb0232" prot="public" static="no" mutable="no">
         <type>uint32_t</type>
         <definition>uint32_t as_u32</definition>
@@ -42,7 +42,7 @@
         </inbodydescription>
         <location file="faiss/utils/bf16.h" line="18" column="11" bodyfile="faiss/utils/bf16.h" bodystart="18" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

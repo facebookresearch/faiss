@@ -1,14 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="fp16-inl_8h" kind="file" language="C++">
     <compoundname>fp16-inl.h</compoundname>
     <includes local="no">algorithm</includes>
     <includes local="no">cstdint</includes>
     <includedby refid="fp16_8h" local="no">faiss/utils/fp16.h</includedby>
     <incdepgraph>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/utils/fp16-inl.h</label>
         <link refid="fp16-inl_8h"/>
@@ -20,16 +17,19 @@
       <node id="2">
         <label>algorithm</label>
       </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
       <node id="4">
         <label>faiss/cppcontrib/SaDecodeKernels.h</label>
         <link refid="SaDecodeKernels_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/utils/fp16.h</label>
-        <link refid="fp16_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="3">
+        <label>faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</label>
+        <link refid="MinMaxFP16-inl_8h_source"/>
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -38,10 +38,10 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</label>
-        <link refid="MinMaxFP16-inl_8h_source"/>
-        <childnode refid="4" relation="include">
+      <node id="2">
+        <label>faiss/utils/fp16.h</label>
+        <link refid="fp16_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorAnd" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorAnd</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorAnd_1af172563e73021fbdac4579d20be34300" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
         <definition>const IDSelector* faiss::IDSelectorAnd::lhs</definition>
         <argsstring></argsstring>
         <name>lhs</name>
+        <qualifiedname>faiss::IDSelectorAnd::lhs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>const IDSelector* faiss::IDSelectorAnd::rhs</definition>
         <argsstring></argsstring>
         <name>rhs</name>
+        <qualifiedname>faiss::IDSelectorAnd::rhs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -31,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="138" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="138" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorAnd_1a29761cbdaca7b740363302e1115afc66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorAnd::IDSelectorAnd</definition>
         <argsstring>(const IDSelector *lhs, const IDSelector *rhs)</argsstring>
         <name>IDSelectorAnd</name>
+        <qualifiedname>faiss::IDSelectorAnd::IDSelectorAnd</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
           <declname>lhs</declname>
@@ -59,6 +62,7 @@
         <definition>bool faiss::IDSelectorAnd::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorAnd::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -77,6 +81,7 @@
         <definition>virtual faiss::IDSelectorAnd::~IDSelectorAnd</definition>
         <argsstring>()</argsstring>
         <name>~IDSelectorAnd</name>
+        <qualifiedname>faiss::IDSelectorAnd::~IDSelectorAnd</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -85,7 +90,7 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="144" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="144" bodyend="144"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexIVFPQStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIVFPQStats</compoundname>
     <includes refid="IndexIVFPQ_8h" local="no">IndexIVFPQ.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQStats_1a85d2d75d38483d9929383448e4e8cb33" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IndexIVFPQStats::nrefine</definition>
         <argsstring></argsstring>
         <name>nrefine</name>
+        <qualifiedname>faiss::IndexIVFPQStats::nrefine</qualifiedname>
         <briefdescription>
 <para>nb of refines (IVFPQR) </para>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>size_t faiss::IndexIVFPQStats::n_hamming_pass</definition>
         <argsstring></argsstring>
         <name>n_hamming_pass</name>
+        <qualifiedname>faiss::IndexIVFPQStats::n_hamming_pass</qualifiedname>
         <briefdescription>
 <para>nb of passed Hamming distance tests (for polysemous) </para>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>size_t faiss::IndexIVFPQStats::search_cycles</definition>
         <argsstring></argsstring>
         <name>search_cycles</name>
+        <qualifiedname>faiss::IndexIVFPQStats::search_cycles</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,6 +53,7 @@
         <definition>size_t faiss::IndexIVFPQStats::refine_cycles</definition>
         <argsstring></argsstring>
         <name>refine_cycles</name>
+        <qualifiedname>faiss::IndexIVFPQStats::refine_cycles</qualifiedname>
         <briefdescription>
 <para>only for IVFPQR </para>
         </briefdescription>
@@ -59,13 +63,14 @@
         </inbodydescription>
         <location file="faiss/IndexIVFPQ.h" line="177" column="12" bodyfile="faiss/IndexIVFPQ.h" bodystart="177" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexIVFPQStats_1aded5c391a06a3ccb0b519433faf6cc30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIVFPQStats::IndexIVFPQStats</definition>
         <argsstring>()</argsstring>
         <name>IndexIVFPQStats</name>
+        <qualifiedname>faiss::IndexIVFPQStats::IndexIVFPQStats</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -79,6 +84,7 @@
         <definition>void faiss::IndexIVFPQStats::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::IndexIVFPQStats::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -87,11 +93,11 @@
         </inbodydescription>
         <location file="faiss/IndexIVFPQ.h" line="182" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
+<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVFInterface_1a79e6f1be6c93c72138bf591551891374" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
     </detaileddescription>
     <location file="faiss/IndexIVFPQ.h" line="169" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="169" bodyend="183"/>
     <listofallmembers>

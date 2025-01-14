@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1cppcontrib_1_1detail" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib::detail</compoundname>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" prot="public">faiss::cppcontrib::detail::CoarseBitType</innerclass>
-    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</innerclass>
-      <sectiondef kind="typedef">
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</innerclass>
+    <sectiondef kind="typedef">
       <memberdef kind="typedef" id="UintReader_8h_1a7d4c5421a72ecb5ccaf38b8d13c639b8" prot="public" static="no">
         <templateparamlist>
           <param>
@@ -33,6 +33,7 @@
         <definition>using faiss::cppcontrib::detail::UintReader = typedef typename UintReaderImplType&lt;DIM / CODE_SIZE, CODE_BITS, CPOS&gt;:: reader_type</definition>
         <argsstring></argsstring>
         <name>UintReader</name>
+        <qualifiedname>faiss::cppcontrib::detail::UintReader</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +64,7 @@
         <definition>using faiss::cppcontrib::detail::UintReaderRaw = typedef typename UintReaderImplType&lt;N_ELEMENTS, CODE_BITS, CPOS&gt;::reader_type</definition>
         <argsstring></argsstring>
         <name>UintReaderRaw</name>
+        <qualifiedname>faiss::cppcontrib::detail::UintReaderRaw</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -71,7 +73,7 @@
         </inbodydescription>
         <location file="faiss/cppcontrib/detail/UintReader.h" line="346" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="347" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ProgressiveDimClustering" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ProgressiveDimClustering</compoundname>
     <basecompoundref refid="structfaiss_1_1ProgressiveDimClusteringParameters" prot="public" virt="non-virtual">faiss::ProgressiveDimClusteringParameters</basecompoundref>
     <includes refid="Clustering_8h" local="no">Clustering.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::ProgressiveDimClustering::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::d</qualifiedname>
         <briefdescription>
 <para>dimension of the vectors </para>
         </briefdescription>
@@ -24,6 +25,7 @@
         <definition>size_t faiss::ProgressiveDimClustering::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::k</qualifiedname>
         <briefdescription>
 <para>nb of centroids </para>
         </briefdescription>
@@ -38,6 +40,7 @@
         <definition>std::vector&lt;float&gt; faiss::ProgressiveDimClustering::centroids</definition>
         <argsstring></argsstring>
         <name>centroids</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -52,6 +55,7 @@
         <definition>std::vector&lt;ClusteringIterationStats&gt; faiss::ProgressiveDimClustering::iteration_stats</definition>
         <argsstring></argsstring>
         <name>iteration_stats</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::iteration_stats</qualifiedname>
         <briefdescription>
 <para>stats at every iteration of clustering </para>
         </briefdescription>
@@ -66,6 +70,7 @@
         <definition>int faiss::ProgressiveDimClusteringParameters::progressive_dim_steps</definition>
         <argsstring></argsstring>
         <name>progressive_dim_steps</name>
+        <qualifiedname>faiss::ProgressiveDimClusteringParameters::progressive_dim_steps</qualifiedname>
         <briefdescription>
 <para>number of incremental steps </para>
         </briefdescription>
@@ -80,6 +85,7 @@
         <definition>bool faiss::ProgressiveDimClusteringParameters::apply_pca</definition>
         <argsstring></argsstring>
         <name>apply_pca</name>
+        <qualifiedname>faiss::ProgressiveDimClusteringParameters::apply_pca</qualifiedname>
         <briefdescription>
 <para>apply PCA on input </para>
         </briefdescription>
@@ -94,6 +100,7 @@
         <definition>int faiss::ClusteringParameters::niter</definition>
         <argsstring></argsstring>
         <name>niter</name>
+        <qualifiedname>faiss::ClusteringParameters::niter</qualifiedname>
         <initializer>= 25</initializer>
         <briefdescription>
 <para>number of clustering iterations </para>
@@ -109,6 +116,7 @@
         <definition>int faiss::ClusteringParameters::nredo</definition>
         <argsstring></argsstring>
         <name>nredo</name>
+        <qualifiedname>faiss::ClusteringParameters::nredo</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
         </briefdescription>
@@ -124,6 +132,7 @@
         <definition>bool faiss::ClusteringParameters::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::ClusteringParameters::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -138,6 +147,7 @@
         <definition>bool faiss::ClusteringParameters::spherical</definition>
         <argsstring></argsstring>
         <name>spherical</name>
+        <qualifiedname>faiss::ClusteringParameters::spherical</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -153,6 +163,7 @@
         <definition>bool faiss::ClusteringParameters::int_centroids</definition>
         <argsstring></argsstring>
         <name>int_centroids</name>
+        <qualifiedname>faiss::ClusteringParameters::int_centroids</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>round centroids coordinates to integer after each iteration? </para>
@@ -168,6 +179,7 @@
         <definition>bool faiss::ClusteringParameters::update_index</definition>
         <argsstring></argsstring>
         <name>update_index</name>
+        <qualifiedname>faiss::ClusteringParameters::update_index</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>re-train index after each iteration? </para>
@@ -183,6 +195,7 @@
         <definition>bool faiss::ClusteringParameters::frozen_centroids</definition>
         <argsstring></argsstring>
         <name>frozen_centroids</name>
+        <qualifiedname>faiss::ClusteringParameters::frozen_centroids</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -198,6 +211,7 @@
         <definition>int faiss::ClusteringParameters::min_points_per_centroid</definition>
         <argsstring></argsstring>
         <name>min_points_per_centroid</name>
+        <qualifiedname>faiss::ClusteringParameters::min_points_per_centroid</qualifiedname>
         <initializer>= 39</initializer>
         <briefdescription>
         </briefdescription>
@@ -213,6 +227,7 @@
         <definition>int faiss::ClusteringParameters::max_points_per_centroid</definition>
         <argsstring></argsstring>
         <name>max_points_per_centroid</name>
+        <qualifiedname>faiss::ClusteringParameters::max_points_per_centroid</qualifiedname>
         <initializer>= 256</initializer>
         <briefdescription>
 <para>to limit size of dataset, otherwise the training set is subsampled </para>
@@ -228,6 +243,7 @@
         <definition>int faiss::ClusteringParameters::seed</definition>
         <argsstring></argsstring>
         <name>seed</name>
+        <qualifiedname>faiss::ClusteringParameters::seed</qualifiedname>
         <initializer>= 1234</initializer>
         <briefdescription>
         </briefdescription>
@@ -243,6 +259,7 @@
         <definition>size_t faiss::ClusteringParameters::decode_block_size</definition>
         <argsstring></argsstring>
         <name>decode_block_size</name>
+        <qualifiedname>faiss::ClusteringParameters::decode_block_size</qualifiedname>
         <initializer>= 32768</initializer>
         <briefdescription>
 <para>when the training set is encoded, batch size of the codec decoder </para>
@@ -258,6 +275,7 @@
         <definition>bool faiss::ClusteringParameters::check_input_data_for_NaNs</definition>
         <argsstring></argsstring>
         <name>check_input_data_for_NaNs</name>
+        <qualifiedname>faiss::ClusteringParameters::check_input_data_for_NaNs</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
 <para>whether to check for NaNs in an input data </para>
@@ -273,6 +291,7 @@
         <definition>bool faiss::ClusteringParameters::use_faster_subsampling</definition>
         <argsstring></argsstring>
         <name>use_faster_subsampling</name>
+        <qualifiedname>faiss::ClusteringParameters::use_faster_subsampling</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -283,13 +302,14 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="59" column="10" bodyfile="faiss/Clustering.h" bodystart="59" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ProgressiveDimClustering::ProgressiveDimClustering</definition>
         <argsstring>(int d, int k)</argsstring>
         <name>ProgressiveDimClustering</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::ProgressiveDimClustering</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -311,6 +331,7 @@
         <definition>faiss::ProgressiveDimClustering::ProgressiveDimClustering</definition>
         <argsstring>(int d, int k, const ProgressiveDimClusteringParameters &amp;cp)</argsstring>
         <name>ProgressiveDimClustering</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::ProgressiveDimClustering</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -336,6 +357,7 @@
         <definition>void faiss::ProgressiveDimClustering::train</definition>
         <argsstring>(idx_t n, const float *x, ProgressiveDimIndexFactory &amp;factory)</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::train</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -361,6 +383,7 @@
         <definition>virtual faiss::ProgressiveDimClustering::~ProgressiveDimClustering</definition>
         <argsstring>()</argsstring>
         <name>~ProgressiveDimClustering</name>
+        <qualifiedname>faiss::ProgressiveDimClustering::~ProgressiveDimClustering</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -369,7 +392,7 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="192" column="13" bodyfile="faiss/Clustering.h" bodystart="192" bodyend="192"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -381,11 +404,9 @@ Nearest Neighbor Search&quot;</para>
 <para><ulink url="https://arxiv.org/abs/1509.05195">https://arxiv.org/abs/1509.05195</ulink> </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::ProgressiveDimClusteringParameters</label>
-        <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
+      <node id="3">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
       <node id="1">
         <label>faiss::ProgressiveDimClustering</label>
@@ -393,17 +414,17 @@ Nearest Neighbor Search&quot;</para>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::ClusteringParameters</label>
-        <link refid="structfaiss_1_1ClusteringParameters"/>
+      <node id="2">
+        <label>faiss::ProgressiveDimClusteringParameters</label>
+        <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::ProgressiveDimClusteringParameters</label>
-        <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
+      <node id="3">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
       <node id="1">
         <label>faiss::ProgressiveDimClustering</label>
@@ -411,9 +432,11 @@ Nearest Neighbor Search&quot;</para>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::ClusteringParameters</label>
-        <link refid="structfaiss_1_1ClusteringParameters"/>
+      <node id="2">
+        <label>faiss::ProgressiveDimClusteringParameters</label>
+        <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/Clustering.h" line="174" column="1" bodyfile="faiss/Clustering.h" bodystart="174" bodyend="193"/>

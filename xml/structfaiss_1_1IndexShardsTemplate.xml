@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexShardsTemplate" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexShardsTemplate</compoundname>
     <basecompoundref refid="classfaiss_1_1ThreadedIndex" prot="public" virt="non-virtual">faiss::ThreadedIndex&lt; IndexT &gt;</basecompoundref>
@@ -10,12 +10,13 @@
         <type>typename IndexT</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559" prot="public" static="no">
         <type>typename IndexT::component_t</type>
         <definition>using faiss::IndexShardsTemplate&lt; IndexT &gt;::component_t =  typename IndexT::component_t</definition>
         <argsstring></argsstring>
         <name>component_t</name>
+        <qualifiedname>faiss::IndexShardsTemplate::component_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>using faiss::IndexShardsTemplate&lt; IndexT &gt;::distance_t =  typename IndexT::distance_t</definition>
         <argsstring></argsstring>
         <name>distance_t</name>
+        <qualifiedname>faiss::IndexShardsTemplate::distance_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,13 +39,14 @@
         </inbodydescription>
         <location file="faiss/IndexShards.h" line="22" column="5" bodyfile="faiss/IndexShards.h" bodystart="22" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::IndexShardsTemplate&lt; IndexT &gt;::successive_ids</definition>
         <argsstring></argsstring>
         <name>successive_ids</name>
+        <qualifiedname>faiss::IndexShardsTemplate::successive_ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,6 +60,7 @@
         <definition>bool faiss::ThreadedIndex&lt; IndexT &gt;::own_indices</definition>
         <argsstring></argsstring>
         <name>own_indices</name>
+        <qualifiedname>faiss::ThreadedIndex::own_indices</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Whether or not we are responsible for deleting our contained indices. </para>
@@ -67,13 +71,14 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="65" column="10" bodyfile="faiss/impl/ThreadedIndex.h" bodystart="65" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a2ffc0edbce1815fae55cae188b83a5cf" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexShardsTemplate&lt; IndexT &gt;::IndexShardsTemplate</definition>
         <argsstring>(bool threaded=false, bool successive_ids=true)</argsstring>
         <name>IndexShardsTemplate</name>
+        <qualifiedname>faiss::IndexShardsTemplate::IndexShardsTemplate</qualifiedname>
         <param>
           <type>bool</type>
           <declname>threaded</declname>
@@ -116,6 +121,7 @@
         <definition>faiss::IndexShardsTemplate&lt; IndexT &gt;::IndexShardsTemplate</definition>
         <argsstring>(idx_t d, bool threaded=false, bool successive_ids=true)</argsstring>
         <name>IndexShardsTemplate</name>
+        <qualifiedname>faiss::IndexShardsTemplate::IndexShardsTemplate</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>d</declname>
@@ -161,6 +167,7 @@
         <definition>faiss::IndexShardsTemplate&lt; IndexT &gt;::IndexShardsTemplate</definition>
         <argsstring>(int d, bool threaded=false, bool successive_ids=true)</argsstring>
         <name>IndexShardsTemplate</name>
+        <qualifiedname>faiss::IndexShardsTemplate::IndexShardsTemplate</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -189,6 +196,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::add_shard</definition>
         <argsstring>(IndexT *index)</argsstring>
         <name>add_shard</name>
+        <qualifiedname>faiss::IndexShardsTemplate::add_shard</qualifiedname>
         <param>
           <type>IndexT *</type>
           <declname>index</declname>
@@ -207,6 +215,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::remove_shard</definition>
         <argsstring>(IndexT *index)</argsstring>
         <name>remove_shard</name>
+        <qualifiedname>faiss::IndexShardsTemplate::remove_shard</qualifiedname>
         <param>
           <type>IndexT *</type>
           <declname>index</declname>
@@ -225,6 +234,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::add</definition>
         <argsstring>(idx_t n, const component_t *x) override</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexShardsTemplate::add</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -247,6 +257,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::add_with_ids</definition>
         <argsstring>(idx_t n, const component_t *x, const idx_t *xids) override</argsstring>
         <name>add_with_ids</name>
+        <qualifiedname>faiss::IndexShardsTemplate::add_with_ids</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -279,6 +290,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::search</definition>
         <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::IndexShardsTemplate::search</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -317,6 +329,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::train</definition>
         <argsstring>(idx_t n, const component_t *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::IndexShardsTemplate::train</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -338,6 +351,7 @@
         <definition>virtual void faiss::IndexShardsTemplate&lt; IndexT &gt;::syncWithSubIndexes</definition>
         <argsstring>()</argsstring>
         <name>syncWithSubIndexes</name>
+        <qualifiedname>faiss::IndexShardsTemplate::syncWithSubIndexes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -352,6 +366,7 @@
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::addIndex</definition>
         <argsstring>(IndexT *index)</argsstring>
         <name>addIndex</name>
+        <qualifiedname>faiss::ThreadedIndex::addIndex</qualifiedname>
         <param>
           <type>IndexT *</type>
           <declname>index</declname>
@@ -370,6 +385,7 @@
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::removeIndex</definition>
         <argsstring>(IndexT *index)</argsstring>
         <name>removeIndex</name>
+        <qualifiedname>faiss::ThreadedIndex::removeIndex</qualifiedname>
         <param>
           <type>IndexT *</type>
           <declname>index</declname>
@@ -388,6 +404,7 @@
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::runOnIndex</definition>
         <argsstring>(std::function&lt; void(int, IndexT *)&gt; f)</argsstring>
         <name>runOnIndex</name>
+        <qualifiedname>faiss::ThreadedIndex::runOnIndex</qualifiedname>
         <param>
           <type>std::function&lt; void(int, IndexT *)&gt;</type>
           <declname>f</declname>
@@ -406,6 +423,7 @@
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::runOnIndex</definition>
         <argsstring>(std::function&lt; void(int, const IndexT *)&gt; f) const</argsstring>
         <name>runOnIndex</name>
+        <qualifiedname>faiss::ThreadedIndex::runOnIndex</qualifiedname>
         <param>
           <type>std::function&lt; void(int, const IndexT *)&gt;</type>
           <declname>f</declname>
@@ -423,6 +441,7 @@
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::reset</definition>
         <argsstring>() override</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::ThreadedIndex::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -437,6 +456,7 @@
         <definition>int faiss::ThreadedIndex&lt; IndexT &gt;::count</definition>
         <argsstring>() const</argsstring>
         <name>count</name>
+        <qualifiedname>faiss::ThreadedIndex::count</qualifiedname>
         <briefdescription>
 <para>Returns the number of sub-indices. </para>
         </briefdescription>
@@ -446,11 +466,12 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="50" column="9" bodyfile="faiss/impl/ThreadedIndex.h" bodystart="50" bodyend="52"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1af4d21ab1540ed9445f26d236666c224f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a357254021639c167dedf37fce2427d9d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>IndexT *</type>
-        <definition>IndexT* faiss::ThreadedIndex&lt; IndexT &gt;::at</definition>
+        <definition>IndexT * faiss::ThreadedIndex&lt; IndexT &gt;::at</definition>
         <argsstring>(size_t i)</argsstring>
         <name>at</name>
+        <qualifiedname>faiss::ThreadedIndex::at</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -464,11 +485,12 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="55" column="12" bodyfile="faiss/impl/ThreadedIndex.h" bodystart="55" bodyend="57"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a79489c10d41a74d0b29a236e720adc90" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a8f8108166de42429361baa030698c119" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const IndexT *</type>
-        <definition>const IndexT* faiss::ThreadedIndex&lt; IndexT &gt;::at</definition>
+        <definition>const IndexT * faiss::ThreadedIndex&lt; IndexT &gt;::at</definition>
         <argsstring>(size_t i) const</argsstring>
         <name>at</name>
+        <qualifiedname>faiss::ThreadedIndex::at</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -482,13 +504,14 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="60" column="18" bodyfile="faiss/impl/ThreadedIndex.h" bodystart="60" bodyend="62"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="protected-func">
+    </sectiondef>
+    <sectiondef kind="protected-func">
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::onAfterAddIndex</definition>
         <argsstring>(IndexT *index) override</argsstring>
         <name>onAfterAddIndex</name>
+        <qualifiedname>faiss::IndexShardsTemplate::onAfterAddIndex</qualifiedname>
         <reimplements refid="classfaiss_1_1ThreadedIndex_1abdcae15f8589c53d4fa648fb2d5ab625">onAfterAddIndex</reimplements>
         <param>
           <type>IndexT *</type>
@@ -508,6 +531,7 @@
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::onAfterRemoveIndex</definition>
         <argsstring>(IndexT *index) override</argsstring>
         <name>onAfterRemoveIndex</name>
+        <qualifiedname>faiss::IndexShardsTemplate::onAfterRemoveIndex</qualifiedname>
         <reimplements refid="classfaiss_1_1ThreadedIndex_1a3bfc1a3002a150d850b20dc40c5d31fe">onAfterRemoveIndex</reimplements>
         <param>
           <type>IndexT *</type>
@@ -522,13 +546,14 @@
         </inbodydescription>
         <location file="faiss/IndexShards.h" line="105" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="protected-attrib">
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" prot="protected" static="no" mutable="no">
         <type>std::vector&lt; std::pair&lt; IndexT *, std::unique_ptr&lt; <ref refid="classfaiss_1_1WorkerThread" kindref="compound">WorkerThread</ref> &gt; &gt; &gt;</type>
         <definition>std::vector&lt;std::pair&lt;IndexT*, std::unique_ptr&lt;WorkerThread&gt; &gt; &gt; faiss::ThreadedIndex&lt; IndexT &gt;::indices_</definition>
         <argsstring></argsstring>
         <name>indices_</name>
+        <qualifiedname>faiss::ThreadedIndex::indices_</qualifiedname>
         <briefdescription>
 <para>Collection of <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> instances, with their managing worker thread if any. </para>
         </briefdescription>
@@ -543,6 +568,7 @@
         <definition>bool faiss::ThreadedIndex&lt; IndexT &gt;::isThreaded_</definition>
         <argsstring></argsstring>
         <name>isThreaded_</name>
+        <qualifiedname>faiss::ThreadedIndex::isThreaded_</qualifiedname>
         <briefdescription>
 <para>Is this index multi-threaded? </para>
         </briefdescription>
@@ -552,15 +578,16 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="81" column="10" bodyfile="faiss/impl/ThreadedIndex.h" bodystart="81" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="protected-static-func">
-      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a26c2b3a37f612f8654a855831ad828a6" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a4ef2398a63568d069b17ef56a4b3ac09" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ThreadedIndex&lt; IndexT &gt;::waitAndHandleFutures</definition>
-        <argsstring>(std::vector&lt; std::future&lt; bool &gt;&gt; &amp;v)</argsstring>
+        <argsstring>(std::vector&lt; std::future&lt; bool &gt; &gt; &amp;v)</argsstring>
         <name>waitAndHandleFutures</name>
+        <qualifiedname>faiss::ThreadedIndex::waitAndHandleFutures</qualifiedname>
         <param>
-          <type>std::vector&lt; std::future&lt; bool &gt;&gt; &amp;</type>
+          <type>std::vector&lt; std::future&lt; bool &gt; &gt; &amp;</type>
           <declname>v</declname>
         </param>
         <briefdescription>
@@ -571,18 +598,15 @@
         </inbodydescription>
         <location file="faiss/impl/ThreadedIndex.h" line="75" column="17" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="170" bodyend="188"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> that concatenates the results from several sub-indexes </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::IndexShardsTemplate&lt; IndexT &gt;</label>
-        <link refid="structfaiss_1_1IndexShardsTemplate"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
+      <node id="3">
+        <label>IndexT</label>
       </node>
       <node id="4">
         <label>faiss::IndexShardsIVF&lt; Index &gt;</label>
@@ -590,17 +614,6 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss::ThreadedIndex&lt; IndexT &gt;</label>
-        <link refid="classfaiss_1_1ThreadedIndex"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>IndexT</label>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::IndexShardsTemplate&lt; IndexT &gt;</label>
         <link refid="structfaiss_1_1IndexShardsTemplate"/>
@@ -613,8 +626,22 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="3">
         <label>IndexT</label>
+      </node>
+      <node id="1">
+        <label>faiss::IndexShardsTemplate&lt; IndexT &gt;</label>
+        <link refid="structfaiss_1_1IndexShardsTemplate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ThreadedIndex&lt; IndexT &gt;</label>
+        <link refid="classfaiss_1_1ThreadedIndex"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexShards.h" line="20" column="1" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="106"/>
@@ -623,8 +650,8 @@
       <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add_shard</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a15e0b4a2fd85f9345537d215a331ed91" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add_with_ids</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" prot="public" virt="virtual"><scope>faiss::IndexShardsTemplate</scope><name>addIndex</name></member>
-      <member refid="classfaiss_1_1ThreadedIndex_1af4d21ab1540ed9445f26d236666c224f" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>at</name></member>
-      <member refid="classfaiss_1_1ThreadedIndex_1a79489c10d41a74d0b29a236e720adc90" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>at</name></member>
+      <member refid="classfaiss_1_1ThreadedIndex_1a357254021639c167dedf37fce2427d9d" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>at</name></member>
+      <member refid="classfaiss_1_1ThreadedIndex_1a8f8108166de42429361baa030698c119" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>at</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>component_t</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a2f9cadbcb9335c0833f61259230429a7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>count</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a94570791e9f70d2bef77d76564571417" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>distance_t</name></member>
@@ -647,7 +674,7 @@
       <member refid="classfaiss_1_1ThreadedIndex_1ac603a659e678e154a49722bc428538e9" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>ThreadedIndex</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a52a2c216ed16feb3be6a57e15253b368" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>ThreadedIndex</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>train</name></member>
-      <member refid="classfaiss_1_1ThreadedIndex_1a26c2b3a37f612f8654a855831ad828a6" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>waitAndHandleFutures</name></member>
+      <member refid="classfaiss_1_1ThreadedIndex_1a4ef2398a63568d069b17ef56a4b3ac09" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>waitAndHandleFutures</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a79fdffee4cc4aef5dd3d91183e2be5f9" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>~ThreadedIndex</name></member>
     </listofallmembers>
   </compounddef>

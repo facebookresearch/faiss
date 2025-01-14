@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PQEncoder16" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PQEncoder16</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PQEncoder16_1a6218a32c8034826c8327bc11876b2650" prot="public" static="no" mutable="no">
         <type>uint16_t *</type>
         <definition>uint16_t* faiss::PQEncoder16::code</definition>
         <argsstring></argsstring>
         <name>code</name>
+        <qualifiedname>faiss::PQEncoder16::code</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -16,13 +17,14 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="216" column="14" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="216" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PQEncoder16_1afef8a1fdac4353482358561b0a74b3bd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::PQEncoder16::PQEncoder16</definition>
         <argsstring>(uint8_t *code, int nbits)</argsstring>
         <name>PQEncoder16</name>
+        <qualifiedname>faiss::PQEncoder16::PQEncoder16</qualifiedname>
         <param>
           <type>uint8_t *</type>
           <declname>code</declname>
@@ -44,6 +46,7 @@
         <definition>void faiss::PQEncoder16::encode</definition>
         <argsstring>(uint64_t x)</argsstring>
         <name>encode</name>
+        <qualifiedname>faiss::PQEncoder16::encode</qualifiedname>
         <param>
           <type>uint64_t</type>
           <declname>x</declname>
@@ -56,7 +59,7 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="218" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="59" bodyend="61"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

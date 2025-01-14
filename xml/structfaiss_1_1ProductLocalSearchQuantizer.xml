@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ProductLocalSearchQuantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ProductLocalSearchQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1ProductAdditiveQuantizer" prot="public" virt="non-virtual">faiss::ProductAdditiveQuantizer</basecompoundref>
     <includes refid="ProductAdditiveQuantizer_8h" local="no">ProductAdditiveQuantizer.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ProductLocalSearchQuantizer_1a9fef2a094cd606f45dea7a538134af41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ProductLocalSearchQuantizer::ProductLocalSearchQuantizer</definition>
         <argsstring>(size_t d, size_t nsplits, size_t Msub, size_t nbits, Search_type_t search_type=ST_decompress)</argsstring>
         <name>ProductLocalSearchQuantizer</name>
+        <qualifiedname>faiss::ProductLocalSearchQuantizer::ProductLocalSearchQuantizer</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -87,6 +88,7 @@
         <definition>faiss::ProductLocalSearchQuantizer::ProductLocalSearchQuantizer</definition>
         <argsstring>()</argsstring>
         <name>ProductLocalSearchQuantizer</name>
+        <qualifiedname>faiss::ProductLocalSearchQuantizer::ProductLocalSearchQuantizer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -100,6 +102,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::init</definition>
         <argsstring>(size_t d, const std::vector&lt; AdditiveQuantizer * &gt; &amp;aqs, Search_type_t search_type)</argsstring>
         <name>init</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::init</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -120,11 +123,12 @@
         </inbodydescription>
         <location file="faiss/impl/ProductAdditiveQuantizer.h" line="51" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ProductAdditiveQuantizer_1abfcb126b479930e8accaba98abff8511" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ProductAdditiveQuantizer_1aae278a802b6965b86b9412b121c224bf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref> *</type>
-        <definition>AdditiveQuantizer* faiss::ProductAdditiveQuantizer::subquantizer</definition>
+        <definition>AdditiveQuantizer * faiss::ProductAdditiveQuantizer::subquantizer</definition>
         <argsstring>(size_t m) const</argsstring>
         <name>subquantizer</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::subquantizer</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>m</declname>
@@ -143,6 +147,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::train</definition>
         <argsstring>(size_t n, const float *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::train</qualifiedname>
         <reimplements refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9">train</reimplements>
         <param>
           <type>size_t</type>
@@ -176,6 +181,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::compute_codes_add_centroids</definition>
         <argsstring>(const float *x, uint8_t *codes, size_t n, const float *centroids=nullptr) const override</argsstring>
         <name>compute_codes_add_centroids</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::compute_codes_add_centroids</qualifiedname>
         <reimplements refid="structfaiss_1_1AdditiveQuantizer_1a19e8ca592df42631e8308dbafc26c3c4">compute_codes_add_centroids</reimplements>
         <param>
           <type>const float *</type>
@@ -234,6 +240,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::compute_unpacked_codes</definition>
         <argsstring>(const float *x, int32_t *codes, size_t n, const float *centroids=nullptr) const</argsstring>
         <name>compute_unpacked_codes</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::compute_unpacked_codes</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -264,6 +271,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::decode_unpacked</definition>
         <argsstring>(const int32_t *codes, float *x, size_t n, int64_t ld_codes=-1) const override</argsstring>
         <name>decode_unpacked</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::decode_unpacked</qualifiedname>
         <reimplements refid="structfaiss_1_1AdditiveQuantizer_1a586e5004af97df05082f7771ea432f97">decode_unpacked</reimplements>
         <param>
           <type>const int32_t *</type>
@@ -314,6 +322,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::decode</definition>
         <argsstring>(const uint8_t *codes, float *x, size_t n) const override</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::decode</qualifiedname>
         <reimplements refid="structfaiss_1_1AdditiveQuantizer_1a851fda9f520d3a358abbf0bffe34135f">decode</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -359,6 +368,7 @@
         <definition>void faiss::ProductAdditiveQuantizer::compute_LUT</definition>
         <argsstring>(size_t n, const float *xq, float *LUT, float alpha=1.0f, long ld_lut=-1) const override</argsstring>
         <name>compute_LUT</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::compute_LUT</qualifiedname>
         <reimplements refid="structfaiss_1_1AdditiveQuantizer_1ad6ef68786fb519e41de5a1d0a3e7d55e">compute_LUT</reimplements>
         <param>
           <type>size_t</type>
@@ -430,6 +440,7 @@
         <definition>void faiss::AdditiveQuantizer::compute_codebook_tables</definition>
         <argsstring>()</argsstring>
         <name>compute_codebook_tables</name>
+        <qualifiedname>faiss::AdditiveQuantizer::compute_codebook_tables</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -443,6 +454,7 @@
         <definition>uint64_t faiss::AdditiveQuantizer::encode_norm</definition>
         <argsstring>(float norm) const</argsstring>
         <name>encode_norm</name>
+        <qualifiedname>faiss::AdditiveQuantizer::encode_norm</qualifiedname>
         <param>
           <type>float</type>
           <declname>norm</declname>
@@ -461,6 +473,7 @@
         <definition>uint32_t faiss::AdditiveQuantizer::encode_qcint</definition>
         <argsstring>(float x) const</argsstring>
         <name>encode_qcint</name>
+        <qualifiedname>faiss::AdditiveQuantizer::encode_qcint</qualifiedname>
         <param>
           <type>float</type>
           <declname>x</declname>
@@ -479,6 +492,7 @@
         <definition>float faiss::AdditiveQuantizer::decode_qcint</definition>
         <argsstring>(uint32_t c) const</argsstring>
         <name>decode_qcint</name>
+        <qualifiedname>faiss::AdditiveQuantizer::decode_qcint</qualifiedname>
         <param>
           <type>uint32_t</type>
           <declname>c</declname>
@@ -497,6 +511,7 @@
         <definition>void faiss::AdditiveQuantizer::set_derived_values</definition>
         <argsstring>()</argsstring>
         <name>set_derived_values</name>
+        <qualifiedname>faiss::AdditiveQuantizer::set_derived_values</qualifiedname>
         <briefdescription>
 <para>Train the norm quantizer. </para>
         </briefdescription>
@@ -511,6 +526,7 @@
         <definition>void faiss::AdditiveQuantizer::train_norm</definition>
         <argsstring>(size_t n, const float *norms)</argsstring>
         <name>train_norm</name>
+        <qualifiedname>faiss::AdditiveQuantizer::train_norm</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -532,6 +548,7 @@
         <definition>void faiss::AdditiveQuantizer::compute_codes</definition>
         <argsstring>(const float *x, uint8_t *codes, size_t n) const override</argsstring>
         <name>compute_codes</name>
+        <qualifiedname>faiss::AdditiveQuantizer::compute_codes</qualifiedname>
         <reimplements refid="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205">compute_codes</reimplements>
         <param>
           <type>const float *</type>
@@ -577,6 +594,7 @@
         <definition>void faiss::AdditiveQuantizer::pack_codes</definition>
         <argsstring>(size_t n, const int32_t *codes, uint8_t *packed_codes, int64_t ld_codes=-1, const float *norms=nullptr, const float *centroids=nullptr) const</argsstring>
         <name>pack_codes</name>
+        <qualifiedname>faiss::AdditiveQuantizer::pack_codes</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -672,6 +690,7 @@
         <definition>float faiss::AdditiveQuantizer::compute_1_distance_LUT</definition>
         <argsstring>(const uint8_t *codes, const float *LUT) const</argsstring>
         <name>compute_1_distance_LUT</name>
+        <qualifiedname>faiss::AdditiveQuantizer::compute_1_distance_LUT</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>codes</declname>
@@ -693,6 +712,7 @@
         <definition>void faiss::AdditiveQuantizer::decode_64bit</definition>
         <argsstring>(idx_t n, float *x) const</argsstring>
         <name>decode_64bit</name>
+        <qualifiedname>faiss::AdditiveQuantizer::decode_64bit</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -715,6 +735,7 @@
         <definition>void faiss::AdditiveQuantizer::knn_centroids_inner_product</definition>
         <argsstring>(idx_t n, const float *xq, idx_t k, float *distances, idx_t *labels) const</argsstring>
         <name>knn_centroids_inner_product</name>
+        <qualifiedname>faiss::AdditiveQuantizer::knn_centroids_inner_product</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -749,6 +770,7 @@
         <definition>void faiss::AdditiveQuantizer::compute_centroid_norms</definition>
         <argsstring>(float *norms) const</argsstring>
         <name>compute_centroid_norms</name>
+        <qualifiedname>faiss::AdditiveQuantizer::compute_centroid_norms</qualifiedname>
         <param>
           <type>float *</type>
           <declname>norms</declname>
@@ -777,6 +799,7 @@
         <definition>void faiss::AdditiveQuantizer::knn_centroids_L2</definition>
         <argsstring>(idx_t n, const float *xq, idx_t k, float *distances, idx_t *labels, const float *centroid_norms) const</argsstring>
         <name>knn_centroids_L2</name>
+        <qualifiedname>faiss::AdditiveQuantizer::knn_centroids_L2</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -810,13 +833,14 @@
         </inbodydescription>
         <location file="faiss/impl/AdditiveQuantizer.h" line="207" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ProductAdditiveQuantizer_1a663baa191f587f0945a06f35d7433bf4" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::ProductAdditiveQuantizer::nsplits</definition>
         <argsstring></argsstring>
         <name>nsplits</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::nsplits</qualifiedname>
         <briefdescription>
 <para>number of sub-vectors we split a vector into </para>
         </briefdescription>
@@ -831,6 +855,7 @@
         <definition>std::vector&lt;AdditiveQuantizer*&gt; faiss::ProductAdditiveQuantizer::quantizers</definition>
         <argsstring></argsstring>
         <name>quantizers</name>
+        <qualifiedname>faiss::ProductAdditiveQuantizer::quantizers</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -844,6 +869,7 @@
         <definition>size_t faiss::AdditiveQuantizer::M</definition>
         <argsstring></argsstring>
         <name>M</name>
+        <qualifiedname>faiss::AdditiveQuantizer::M</qualifiedname>
         <briefdescription>
 <para>number of codebooks </para>
         </briefdescription>
@@ -858,6 +884,7 @@
         <definition>std::vector&lt;size_t&gt; faiss::AdditiveQuantizer::nbits</definition>
         <argsstring></argsstring>
         <name>nbits</name>
+        <qualifiedname>faiss::AdditiveQuantizer::nbits</qualifiedname>
         <briefdescription>
 <para>bits for each step </para>
         </briefdescription>
@@ -872,6 +899,7 @@
         <definition>std::vector&lt;float&gt; faiss::AdditiveQuantizer::codebooks</definition>
         <argsstring></argsstring>
         <name>codebooks</name>
+        <qualifiedname>faiss::AdditiveQuantizer::codebooks</qualifiedname>
         <briefdescription>
 <para>codebooks </para>
         </briefdescription>
@@ -886,6 +914,7 @@
         <definition>std::vector&lt;uint64_t&gt; faiss::AdditiveQuantizer::codebook_offsets</definition>
         <argsstring></argsstring>
         <name>codebook_offsets</name>
+        <qualifiedname>faiss::AdditiveQuantizer::codebook_offsets</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -900,6 +929,7 @@
         <definition>size_t faiss::AdditiveQuantizer::tot_bits</definition>
         <argsstring></argsstring>
         <name>tot_bits</name>
+        <qualifiedname>faiss::AdditiveQuantizer::tot_bits</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>total number of bits (indexes + norms) </para>
@@ -915,6 +945,7 @@
         <definition>size_t faiss::AdditiveQuantizer::norm_bits</definition>
         <argsstring></argsstring>
         <name>norm_bits</name>
+        <qualifiedname>faiss::AdditiveQuantizer::norm_bits</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>bits allocated for the norms </para>
@@ -930,6 +961,7 @@
         <definition>size_t faiss::AdditiveQuantizer::total_codebook_size</definition>
         <argsstring></argsstring>
         <name>total_codebook_size</name>
+        <qualifiedname>faiss::AdditiveQuantizer::total_codebook_size</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>size of the codebook in vectors </para>
@@ -945,6 +977,7 @@
         <definition>bool faiss::AdditiveQuantizer::only_8bit</definition>
         <argsstring></argsstring>
         <name>only_8bit</name>
+        <qualifiedname>faiss::AdditiveQuantizer::only_8bit</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>are all nbits = 8 (use faster decoder) </para>
@@ -960,6 +993,7 @@
         <definition>bool faiss::AdditiveQuantizer::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::AdditiveQuantizer::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>verbose during training? </para>
@@ -975,6 +1009,7 @@
         <definition>bool faiss::AdditiveQuantizer::is_trained</definition>
         <argsstring></argsstring>
         <name>is_trained</name>
+        <qualifiedname>faiss::AdditiveQuantizer::is_trained</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>is trained or not </para>
@@ -990,6 +1025,7 @@
         <definition>std::vector&lt;float&gt; faiss::AdditiveQuantizer::norm_tabs</definition>
         <argsstring></argsstring>
         <name>norm_tabs</name>
+        <qualifiedname>faiss::AdditiveQuantizer::norm_tabs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1004,6 +1040,7 @@
         <definition>IndexFlat1D faiss::AdditiveQuantizer::qnorm</definition>
         <argsstring></argsstring>
         <name>qnorm</name>
+        <qualifiedname>faiss::AdditiveQuantizer::qnorm</qualifiedname>
         <briefdescription>
 <para>store and search norms </para>
         </briefdescription>
@@ -1018,6 +1055,7 @@
         <definition>std::vector&lt;float&gt; faiss::AdditiveQuantizer::centroid_norms</definition>
         <argsstring></argsstring>
         <name>centroid_norms</name>
+        <qualifiedname>faiss::AdditiveQuantizer::centroid_norms</qualifiedname>
         <briefdescription>
 <para>norms of all codebook entries (size total_codebook_size) </para>
         </briefdescription>
@@ -1032,6 +1070,7 @@
         <definition>std::vector&lt;float&gt; faiss::AdditiveQuantizer::codebook_cross_products</definition>
         <argsstring></argsstring>
         <name>codebook_cross_products</name>
+        <qualifiedname>faiss::AdditiveQuantizer::codebook_cross_products</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1046,6 +1085,7 @@
         <definition>size_t faiss::AdditiveQuantizer::max_mem_distances</definition>
         <argsstring></argsstring>
         <name>max_mem_distances</name>
+        <qualifiedname>faiss::AdditiveQuantizer::max_mem_distances</qualifiedname>
         <initializer>= 5 * (size_t(1) &lt;&lt; 30)</initializer>
         <briefdescription>
         </briefdescription>
@@ -1061,6 +1101,7 @@
         <definition>Search_type_t faiss::AdditiveQuantizer::search_type</definition>
         <argsstring></argsstring>
         <name>search_type</name>
+        <qualifiedname>faiss::AdditiveQuantizer::search_type</qualifiedname>
         <briefdescription>
 <para>Also determines what&apos;s in the codes. </para>
         </briefdescription>
@@ -1075,6 +1116,7 @@
         <definition>float faiss::AdditiveQuantizer::norm_min</definition>
         <argsstring></argsstring>
         <name>norm_min</name>
+        <qualifiedname>faiss::AdditiveQuantizer::norm_min</qualifiedname>
         <initializer>= NAN</initializer>
         <briefdescription>
 <para>min/max for quantization of norms </para>
@@ -1090,6 +1132,7 @@
         <definition>float faiss::AdditiveQuantizer::norm_max</definition>
         <argsstring></argsstring>
         <name>norm_max</name>
+        <qualifiedname>faiss::AdditiveQuantizer::norm_max</qualifiedname>
         <initializer>= NAN</initializer>
         <briefdescription>
         </briefdescription>
@@ -1104,6 +1147,7 @@
         <definition>size_t faiss::Quantizer::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::Quantizer::d</qualifiedname>
         <briefdescription>
 <para>size of the input vectors </para>
         </briefdescription>
@@ -1118,6 +1162,7 @@
         <definition>size_t faiss::Quantizer::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::Quantizer::code_size</qualifiedname>
         <briefdescription>
 <para>bytes per indexed vector </para>
         </briefdescription>
@@ -1127,11 +1172,12 @@
         </inbodydescription>
         <location file="faiss/impl/Quantizer.h" line="17" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="17" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-type">
+    </sectiondef>
+    <sectiondef kind="public-type">
       <memberdef kind="enum" id="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" prot="public" static="no" strong="no">
         <type></type>
         <name>Search_type_t</name>
+        <qualifiedname>faiss::AdditiveQuantizer::Search_type_t</qualifiedname>
         <enumvalue id="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daad867ba8b63c1a5e9a1ece814a0115ff" prot="public">
           <name>ST_decompress</name>
           <briefdescription>
@@ -1219,13 +1265,19 @@
         </inbodydescription>
         <location file="faiss/impl/AdditiveQuantizer.h" line="71" column="5" bodyfile="faiss/impl/AdditiveQuantizer.h" bodystart="71" bodyend="86"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Product Local Search <ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref> </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>faiss::ProductAdditiveQuantizer</label>
         <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
@@ -1236,12 +1288,6 @@
         <label>faiss::ProductLocalSearchQuantizer</label>
         <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::AdditiveQuantizer</label>
-        <link refid="structfaiss_1_1AdditiveQuantizer"/>
-        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
@@ -1250,17 +1296,18 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::ProductAdditiveQuantizer</label>
-        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
-        <childnode refid="3" relation="public-inheritance">
+      <node id="3">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>qnorm</edgelabel>
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::ProductLocalSearchQuantizer</label>
-        <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
+      <node id="9">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
       </node>
       <node id="7">
         <label>faiss::IndexFlat</label>
@@ -1274,34 +1321,33 @@
         <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="8">
+        <label>faiss::IndexFlatCodes</label>
+        <link refid="structfaiss_1_1IndexFlatCodes"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="6">
         <label>faiss::IndexFlatL2</label>
         <link refid="structfaiss_1_1IndexFlatL2"/>
         <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
-        <label>faiss::Index</label>
-        <link refid="structfaiss_1_1Index"/>
-      </node>
-      <node id="3">
-        <label>faiss::AdditiveQuantizer</label>
-        <link refid="structfaiss_1_1AdditiveQuantizer"/>
-        <childnode refid="4" relation="public-inheritance">
+      <node id="2">
+        <label>faiss::ProductAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="5" relation="usage">
-          <edgelabel>qnorm</edgelabel>
+      </node>
+      <node id="1">
+        <label>faiss::ProductLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
-      </node>
-      <node id="8">
-        <label>faiss::IndexFlatCodes</label>
-        <link refid="structfaiss_1_1IndexFlatCodes"/>
-        <childnode refid="9" relation="public-inheritance">
-        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/ProductAdditiveQuantizer.h" line="114" column="1" bodyfile="faiss/impl/ProductAdditiveQuantizer.h" bodystart="114" bodyend="131"/>
@@ -1361,7 +1407,7 @@
       <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437dad6fc8bf97ff3082204873faefe4ce643" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>ST_norm_qint4</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3e4ce3de42ff657f037bd8f8b1b761fb" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>ST_norm_qint8</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>ST_norm_rq2x4</name></member>
-      <member refid="structfaiss_1_1ProductAdditiveQuantizer_1abfcb126b479930e8accaba98abff8511" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>subquantizer</name></member>
+      <member refid="structfaiss_1_1ProductAdditiveQuantizer_1aae278a802b6965b86b9412b121c224bf" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>subquantizer</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a3e118ab9d0d1e83b43bbb264ec1d27a1" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>tot_bits</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a609e902b891025b69eb7442a54a59084" prot="public" virt="non-virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>total_codebook_size</name></member>
       <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843" prot="public" virt="virtual"><scope>faiss::ProductLocalSearchQuantizer</scope><name>train</name></member>

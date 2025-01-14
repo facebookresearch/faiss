@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structPyCallbackIOReader" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOReader</compoundname>
     <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
         <definition>PyObject* PyCallbackIOReader::callback</definition>
         <argsstring></argsstring>
         <name>callback</name>
+        <qualifiedname>PyCallbackIOReader::callback</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t PyCallbackIOReader::bs</definition>
         <argsstring></argsstring>
         <name>bs</name>
+        <qualifiedname>PyCallbackIOReader::bs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::string faiss::IOReader::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structPyCallbackIOReader_1a718f82e79ff6e2ffbd0cfd4635587da8" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>PyCallbackIOReader::PyCallbackIOReader</definition>
         <argsstring>(PyObject *callback, size_t bs=1024 *1024)</argsstring>
         <name>PyCallbackIOReader</name>
+        <qualifiedname>PyCallbackIOReader::PyCallbackIOReader</qualifiedname>
         <param>
           <type>PyObject *</type>
           <declname>callback</declname>
@@ -73,6 +77,7 @@
         <definition>size_t PyCallbackIOReader::operator()</definition>
         <argsstring>(void *ptrv, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>PyCallbackIOReader::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a">operator()</reimplements>
         <param>
           <type>void *</type>
@@ -99,6 +104,7 @@
         <definition>PyCallbackIOReader::~PyCallbackIOReader</definition>
         <argsstring>() override</argsstring>
         <name>~PyCallbackIOReader</name>
+        <qualifiedname>PyCallbackIOReader::~PyCallbackIOReader</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -112,6 +118,7 @@
         <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOReader::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -121,7 +128,7 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="35" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

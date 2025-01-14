@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kind="struct" language="C++" prot="public">
     <compoundname>faiss::detail::simdlib::unary_func_impl</compoundname>
     <templateparamlist>
@@ -10,12 +10,13 @@
         <type>typename U</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1a0845a998aad6e2984f59e280e7300597" prot="public" static="no">
         <type>remove_cv_ref_t&lt; decltype(std::declval&lt; T &gt;().val[0])&gt;</type>
         <definition>using faiss::detail::simdlib::unary_func_impl&lt; T, U &gt;::Telem =  remove_cv_ref_t&lt;decltype(std::declval&lt;T&gt;().val[0])&gt;</definition>
         <argsstring></argsstring>
         <name>Telem</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func_impl::Telem</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>using faiss::detail::simdlib::unary_func_impl&lt; T, U &gt;::Uelem =  remove_cv_ref_t&lt;decltype(std::declval&lt;U&gt;().val[0])&gt;</definition>
         <argsstring></argsstring>
         <name>Uelem</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func_impl::Uelem</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,13 +39,14 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="185" column="5" bodyfile="faiss/utils/simdlib_neon.h" bodystart="185" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1a8e3723f3559820bcfb4253d55934a167" prot="public" static="no" mutable="no">
         <type>const U &amp;</type>
         <definition>const U&amp; faiss::detail::simdlib::unary_func_impl&lt; T, U &gt;::a</definition>
         <argsstring></argsstring>
         <name>a</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func_impl::a</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -52,8 +55,8 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="183" column="13" bodyfile="faiss/utils/simdlib_neon.h" bodystart="183" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1af55381b36dd0844ac3438fd8798221e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -66,6 +69,7 @@
         <definition>T faiss::detail::simdlib::unary_func_impl&lt; T, U &gt;::call</definition>
         <argsstring>()</argsstring>
         <name>call</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func_impl::call</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -74,7 +78,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="187" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="187" bodyend="192"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

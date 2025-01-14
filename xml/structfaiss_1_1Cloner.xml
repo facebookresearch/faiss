@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1Cloner" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Cloner</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public" virt="non-virtual">faiss::gpu::ToCPUCloner</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public" virt="non-virtual">faiss::gpu::ToGpuCloner</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public" virt="non-virtual">faiss::gpu::ToGpuClonerMultiple</derivedcompoundref>
     <includes refid="clone__index_8h" local="no">clone_index.h</includes>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1Cloner_1a26f63f3d397316d90e87e263978002a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
-        <definition>virtual VectorTransform* faiss::Cloner::clone_VectorTransform</definition>
+        <definition>virtual VectorTransform * faiss::Cloner::clone_VectorTransform</definition>
         <argsstring>(const VectorTransform *)</argsstring>
         <name>clone_VectorTransform</name>
+        <qualifiedname>faiss::Cloner::clone_VectorTransform</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
         </param>
@@ -23,14 +24,15 @@
         </inbodydescription>
         <location file="faiss/clone_index.h" line="29" column="29"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Cloner_1a5f0fb5f41123b4cf2a444399eddfaa77" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>virtual Index* faiss::Cloner::clone_Index</definition>
+        <definition>virtual Index * faiss::Cloner::clone_Index</definition>
         <argsstring>(const Index *)</argsstring>
         <name>clone_Index</name>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1ToCPUCloner_1a213e9050200bc81d808892216f6a578c">clone_Index</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb">clone_Index</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff">clone_Index</reimplementedby>
+        <qualifiedname>faiss::Cloner::clone_Index</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1ToCPUCloner_1aaa9877f57b8dd3b3dcdb40ccc520b9b6">clone_Index</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1ToGpuCloner_1a71b173f55968e96fcad8f5a049a799d1">clone_Index</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a13c5cbc34e65171b9be19a26645a8b58">clone_Index</reimplementedby>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
         </param>
@@ -42,11 +44,12 @@
         </inbodydescription>
         <location file="faiss/clone_index.h" line="30" column="19"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Cloner_1aa412f66e7d83a740f85ff7d885aec492" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
-        <definition>virtual IndexIVF* faiss::Cloner::clone_IndexIVF</definition>
+        <definition>virtual IndexIVF * faiss::Cloner::clone_IndexIVF</definition>
         <argsstring>(const IndexIVF *)</argsstring>
         <name>clone_IndexIVF</name>
+        <qualifiedname>faiss::Cloner::clone_IndexIVF</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
         </param>
@@ -63,6 +66,7 @@
         <definition>virtual faiss::Cloner::~Cloner</definition>
         <argsstring>()</argsstring>
         <name>~Cloner</name>
+        <qualifiedname>faiss::Cloner::~Cloner</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -71,7 +75,7 @@
         </inbodydescription>
         <location file="faiss/clone_index.h" line="32" column="13" bodyfile="faiss/clone_index.h" bodystart="32" bodyend="32"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -88,24 +92,24 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::gpu::ToGpuClonerMultiple</label>
-        <link refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="3">
         <label>faiss::gpu::ToGpuCloner</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="4">
+        <label>faiss::gpu::ToGpuClonerMultiple</label>
+        <link refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
     </inheritancegraph>
     <location file="faiss/clone_index.h" line="28" column="1" bodyfile="faiss/clone_index.h" bodystart="28" bodyend="33"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_Index</name></member>
-      <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_IndexIVF</name></member>
-      <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_VectorTransform</name></member>
+      <member refid="structfaiss_1_1Cloner_1a5f0fb5f41123b4cf2a444399eddfaa77" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_Index</name></member>
+      <member refid="structfaiss_1_1Cloner_1aa412f66e7d83a740f85ff7d885aec492" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_IndexIVF</name></member>
+      <member refid="structfaiss_1_1Cloner_1a26f63f3d397316d90e87e263978002a7" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_VectorTransform</name></member>
       <member refid="structfaiss_1_1Cloner_1a2931dddcacef11d21a6a26b923fcb990" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>~Cloner</name></member>
     </listofallmembers>
   </compounddef>

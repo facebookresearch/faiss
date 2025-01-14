@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1AlignedTable" kind="struct" language="C++" prot="public">
     <compoundname>faiss::AlignedTable</compoundname>
     <templateparamlist>
@@ -13,12 +13,13 @@
         <defval>32</defval>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1AlignedTable_1a6b71c9654cff088a16e5c24466379774" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref>&lt; T, A &gt;</type>
         <definition>AlignedTableTightAlloc&lt;T, A&gt; faiss::AlignedTable&lt; T, A &gt;::tab</definition>
         <argsstring></argsstring>
         <name>tab</name>
+        <qualifiedname>faiss::AlignedTable::tab</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -32,6 +33,7 @@
         <definition>size_t faiss::AlignedTable&lt; T, A &gt;::numel</definition>
         <argsstring></argsstring>
         <name>numel</name>
+        <qualifiedname>faiss::AlignedTable::numel</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -41,13 +43,14 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="119" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="119" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1AlignedTable_1ae0743223b636cb6797dc8c339754fffa" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
         <definition>static size_t faiss::AlignedTable&lt; T, A &gt;::round_capacity</definition>
         <argsstring>(size_t n)</argsstring>
         <name>round_capacity</name>
+        <qualifiedname>faiss::AlignedTable::round_capacity</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -60,13 +63,14 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="121" column="19" bodyfile="faiss/utils/AlignedTable.h" bodystart="121" bodyend="133"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a9df42e6d089361f2660ea055bea750af" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::AlignedTable&lt; T, A &gt;::AlignedTable</definition>
         <argsstring>()</argsstring>
         <name>AlignedTable</name>
+        <qualifiedname>faiss::AlignedTable::AlignedTable</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -80,6 +84,7 @@
         <definition>faiss::AlignedTable&lt; T, A &gt;::AlignedTable</definition>
         <argsstring>(size_t n)</argsstring>
         <name>AlignedTable</name>
+        <qualifiedname>faiss::AlignedTable::AlignedTable</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -97,6 +102,7 @@
         <definition>size_t faiss::AlignedTable&lt; T, A &gt;::itemsize</definition>
         <argsstring>() const</argsstring>
         <name>itemsize</name>
+        <qualifiedname>faiss::AlignedTable::itemsize</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -110,6 +116,7 @@
         <definition>void faiss::AlignedTable&lt; T, A &gt;::resize</definition>
         <argsstring>(size_t n)</argsstring>
         <name>resize</name>
+        <qualifiedname>faiss::AlignedTable::resize</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -127,6 +134,7 @@
         <definition>void faiss::AlignedTable&lt; T, A &gt;::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::AlignedTable::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -140,6 +148,7 @@
         <definition>size_t faiss::AlignedTable&lt; T, A &gt;::size</definition>
         <argsstring>() const</argsstring>
         <name>size</name>
+        <qualifiedname>faiss::AlignedTable::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -153,6 +162,7 @@
         <definition>size_t faiss::AlignedTable&lt; T, A &gt;::nbytes</definition>
         <argsstring>() const</argsstring>
         <name>nbytes</name>
+        <qualifiedname>faiss::AlignedTable::nbytes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -161,11 +171,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="154" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="154" bodyend="156"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a77281d0543fda8a4c5362c42913195ad" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a8e57df86086ebe37a6262170bf2b651a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
-        <definition>T* faiss::AlignedTable&lt; T, A &gt;::get</definition>
+        <definition>T * faiss::AlignedTable&lt; T, A &gt;::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::AlignedTable::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -174,11 +185,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="158" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="158" bodyend="160"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1af2dc947e8eafb723e75162002344abcb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a47dcc7d9cdf1e102a46ea1b8f62672cc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
-        <definition>const T* faiss::AlignedTable&lt; T, A &gt;::get</definition>
+        <definition>const T * faiss::AlignedTable&lt; T, A &gt;::get</definition>
         <argsstring>() const</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::AlignedTable::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -187,11 +199,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="161" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="161" bodyend="163"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a967bc8fe668a1196511fe632870f521b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a3c7347b9eb1963900c93618cbfb3229e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
-        <definition>T* faiss::AlignedTable&lt; T, A &gt;::data</definition>
+        <definition>T * faiss::AlignedTable&lt; T, A &gt;::data</definition>
         <argsstring>()</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::AlignedTable::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -200,11 +213,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="164" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="164" bodyend="166"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a326db828d632470c9aa7777a449c0574" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a6f2a331a02aaeda8e33d5c784eb9e137" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
-        <definition>const T* faiss::AlignedTable&lt; T, A &gt;::data</definition>
+        <definition>const T * faiss::AlignedTable&lt; T, A &gt;::data</definition>
         <argsstring>() const</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::AlignedTable::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -213,11 +227,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="167" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="167" bodyend="169"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1a670ac13606df9d8767de64f3e97b3bfa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTable_1ac0bdb3d5d82ff9b99f823878858f6edf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T &amp;</type>
-        <definition>T&amp; faiss::AlignedTable&lt; T, A &gt;::operator[]</definition>
+        <definition>T &amp; faiss::AlignedTable&lt; T, A &gt;::operator[]</definition>
         <argsstring>(size_t i)</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::AlignedTable::operator[]</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -235,6 +250,7 @@
         <definition>T faiss::AlignedTable&lt; T, A &gt;::operator[]</definition>
         <argsstring>(size_t i) const</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::AlignedTable::operator[]</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -247,7 +263,7 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="173" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="173" bodyend="175"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -270,14 +286,14 @@
       <member refid="structfaiss_1_1AlignedTable_1a9df42e6d089361f2660ea055bea750af" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>AlignedTable</name></member>
       <member refid="structfaiss_1_1AlignedTable_1ab2d470841a876c31018c80de70f93032" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>AlignedTable</name></member>
       <member refid="structfaiss_1_1AlignedTable_1a0fc44abce1af64d2f3ec818c4a162322" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>clear</name></member>
-      <member refid="structfaiss_1_1AlignedTable_1a967bc8fe668a1196511fe632870f521b" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>data</name></member>
-      <member refid="structfaiss_1_1AlignedTable_1a326db828d632470c9aa7777a449c0574" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>data</name></member>
-      <member refid="structfaiss_1_1AlignedTable_1a77281d0543fda8a4c5362c42913195ad" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>get</name></member>
-      <member refid="structfaiss_1_1AlignedTable_1af2dc947e8eafb723e75162002344abcb" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>get</name></member>
+      <member refid="structfaiss_1_1AlignedTable_1a3c7347b9eb1963900c93618cbfb3229e" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>data</name></member>
+      <member refid="structfaiss_1_1AlignedTable_1a6f2a331a02aaeda8e33d5c784eb9e137" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>data</name></member>
+      <member refid="structfaiss_1_1AlignedTable_1a8e57df86086ebe37a6262170bf2b651a" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>get</name></member>
+      <member refid="structfaiss_1_1AlignedTable_1a47dcc7d9cdf1e102a46ea1b8f62672cc" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>get</name></member>
       <member refid="structfaiss_1_1AlignedTable_1a3108042082ac79a6b52fa66fc7f3dbf4" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>itemsize</name></member>
       <member refid="structfaiss_1_1AlignedTable_1ad1dc0523838baffe40691da967bc2323" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>nbytes</name></member>
       <member refid="structfaiss_1_1AlignedTable_1a9faf9b717285bba439b0868722a34186" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>numel</name></member>
-      <member refid="structfaiss_1_1AlignedTable_1a670ac13606df9d8767de64f3e97b3bfa" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>operator[]</name></member>
+      <member refid="structfaiss_1_1AlignedTable_1ac0bdb3d5d82ff9b99f823878858f6edf" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>operator[]</name></member>
       <member refid="structfaiss_1_1AlignedTable_1a0dfea251fe4b4de54ea13e2f7a94bb1b" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>operator[]</name></member>
       <member refid="structfaiss_1_1AlignedTable_1a4ad035d22369fd0d96690cc3dd56b627" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>resize</name></member>
       <member refid="structfaiss_1_1AlignedTable_1ae0743223b636cb6797dc8c339754fffa" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>round_capacity</name></member>

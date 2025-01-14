@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="NNDescent_8h" kind="file" language="C++">
     <compoundname>NNDescent.h</compoundname>
     <includes local="no">algorithm</includes>
@@ -16,6 +16,40 @@
     <includes refid="random_8h" local="no">faiss/utils/random.h</includes>
     <includedby refid="IndexNNDescent_8h" local="no">faiss/IndexNNDescent.h</includedby>
     <incdepgraph>
+      <node id="9">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
       <node id="18">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
@@ -28,18 +62,32 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>queue</label>
-      </node>
-      <node id="28">
-        <label>limits</label>
-      </node>
-      <node id="30">
-        <label>faiss/utils/random.h</label>
-        <link refid="random_8h_source"/>
-        <childnode refid="26" relation="include">
+      <node id="1">
+        <label>faiss/impl/NNDescent.h</label>
+        <link refid="NNDescent_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
       <node id="11">
@@ -49,48 +97,6 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-      </node>
-      <node id="12">
-        <label>cstdint</label>
-      </node>
-      <node id="26">
-        <label>stdint.h</label>
-      </node>
-      <node id="24">
-        <label>cmath</label>
-      </node>
-      <node id="27">
-        <label>cassert</label>
-      </node>
-      <node id="15">
-        <label>string</label>
-      </node>
-      <node id="6">
-        <label>unordered_set</label>
-      </node>
-      <node id="8">
-        <label>omp.h</label>
-      </node>
-      <node id="19">
-        <label>exception</label>
-      </node>
-      <node id="5">
-        <label>random</label>
-      </node>
-      <node id="16">
-        <label>typeinfo</label>
-      </node>
-      <node id="13">
-        <label>cstdio</label>
-      </node>
-      <node id="7">
-        <label>vector</label>
-      </node>
-      <node id="20">
-        <label>utility</label>
-      </node>
-      <node id="14">
-        <label>sstream</label>
       </node>
       <node id="22">
         <label>faiss/utils/Heap.h</label>
@@ -124,85 +130,85 @@
         <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss/impl/NNDescent.h</label>
-        <link refid="NNDescent_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
+      <node id="30">
+        <label>faiss/utils/random.h</label>
+        <link refid="random_8h_source"/>
+        <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>cstdlib</label>
-      </node>
-      <node id="23">
-        <label>climits</label>
-      </node>
-      <node id="9">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>mutex</label>
-      </node>
-      <node id="10">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>algorithm</label>
       </node>
+      <node id="27">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>climits</label>
+      </node>
+      <node id="24">
+        <label>cmath</label>
+      </node>
+      <node id="12">
+        <label>cstdint</label>
+      </node>
+      <node id="13">
+        <label>cstdio</label>
+      </node>
+      <node id="21">
+        <label>cstdlib</label>
+      </node>
       <node id="25">
         <label>cstring</label>
       </node>
-      <node id="17">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
+      <node id="19">
+        <label>exception</label>
+      </node>
+      <node id="28">
+        <label>limits</label>
+      </node>
+      <node id="3">
+        <label>mutex</label>
+      </node>
+      <node id="8">
+        <label>omp.h</label>
+      </node>
+      <node id="4">
+        <label>queue</label>
+      </node>
+      <node id="5">
+        <label>random</label>
+      </node>
+      <node id="14">
+        <label>sstream</label>
+      </node>
+      <node id="26">
+        <label>stdint.h</label>
+      </node>
+      <node id="15">
+        <label>string</label>
+      </node>
+      <node id="16">
+        <label>typeinfo</label>
+      </node>
+      <node id="6">
+        <label>unordered_set</label>
+      </node>
+      <node id="20">
+        <label>utility</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexNNDescent.h</label>
+        <link refid="IndexNNDescent_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
@@ -211,12 +217,6 @@
         <label>faiss/impl/NNDescent.h</label>
         <link refid="NNDescent_8h"/>
         <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/IndexNNDescent.h</label>
-        <link refid="IndexNNDescent_8h_source"/>
-        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -321,13 +321,13 @@
 <codeline lineno="89"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>nndescent</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
 <codeline lineno="91" refid="structfaiss_1_1NNDescent" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref><sp/>{</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>storage_idx_t<sp/>=<sp/>int;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">storage_idx_t<sp/>=<sp/>int;</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"></highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>KNNGraph<sp/>=<sp/>std::vector&lt;nndescent::Nhood&gt;;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">KNNGraph<sp/>=<sp/>std::vector&lt;nndescent::Nhood&gt;;</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"></highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>K);</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref>();</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1NNDescent" kindref="compound">~NNDescent</ref>();</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>build(<ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose);</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"></highlight></codeline>
@@ -353,14 +353,14 @@
 <codeline lineno="121" refid="structfaiss_1_1NNDescent_1a01e3a14cdcf0fba4bca0b94646e796e9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent_1a01e3a14cdcf0fba4bca0b94646e796e9" kindref="member">update</ref>();</highlight></codeline>
 <codeline lineno="122"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="123"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Sample<sp/>a<sp/>small<sp/>number<sp/>of<sp/>points<sp/>to<sp/>evaluate<sp/>the<sp/>quality<sp/>of<sp/>KNNG<sp/>built</highlight></codeline>
-<codeline lineno="124" refid="structfaiss_1_1NNDescent_1a72cd1488fbb36bafbff89727095da552" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent_1a72cd1488fbb36bafbff89727095da552" kindref="member">generate_eval_set</ref>(</highlight></codeline>
+<codeline lineno="124" refid="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" kindref="member">generate_eval_set</ref>(</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>c,</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;int&gt;&gt;&amp;<sp/>v,</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>N);</highlight></codeline>
 <codeline lineno="129"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Evaluate<sp/>the<sp/>quality<sp/>of<sp/>KNNG<sp/>built</highlight></codeline>
-<codeline lineno="131" refid="structfaiss_1_1NNDescent_1ad254e42df43c3503d4ae6aa5dd543e54" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent_1ad254e42df43c3503d4ae6aa5dd543e54" kindref="member">eval_recall</ref>(</highlight></codeline>
+<codeline lineno="131" refid="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" kindref="member">eval_recall</ref>(</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>ctrl_points,</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;int&gt;&gt;&amp;<sp/>acc_eval_set);</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"></highlight></codeline>

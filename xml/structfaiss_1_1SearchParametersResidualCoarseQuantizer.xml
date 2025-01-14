@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1SearchParametersResidualCoarseQuantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::SearchParametersResidualCoarseQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1aa4e4f4aaeba8c80fc24f34c8f858e78f" prot="public" static="no" mutable="no">
         <type>float</type>
         <definition>float faiss::SearchParametersResidualCoarseQuantizer::beam_factor</definition>
         <argsstring></argsstring>
         <name>beam_factor</name>
+        <qualifiedname>faiss::SearchParametersResidualCoarseQuantizer::beam_factor</qualifiedname>
         <initializer>= 4.0f</initializer>
         <briefdescription>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>IDSelector* faiss::SearchParameters::sel</definition>
         <argsstring></argsstring>
         <name>sel</name>
+        <qualifiedname>faiss::SearchParameters::sel</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>if non-null, only these IDs will be considered during search. </para>
@@ -33,13 +35,14 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1ac0b4d3b2ce2e0873b3d2c52632df0040" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::SearchParametersResidualCoarseQuantizer::~SearchParametersResidualCoarseQuantizer</definition>
         <argsstring>()</argsstring>
         <name>~SearchParametersResidualCoarseQuantizer</name>
+        <qualifiedname>faiss::SearchParametersResidualCoarseQuantizer::~SearchParametersResidualCoarseQuantizer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,7 +51,7 @@
         </inbodydescription>
         <location file="faiss/IndexAdditiveQuantizer.h" line="192" column="5" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="192" bodyend="192"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -66,16 +69,16 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="2">
         <label>faiss::SearchParameters</label>
         <link refid="structfaiss_1_1SearchParameters"/>
         <childnode refid="3" relation="usage">
           <edgelabel>sel</edgelabel>
         </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
       <node id="1">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>

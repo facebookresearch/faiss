@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuParameterSpace" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuParameterSpace</compoundname>
     <basecompoundref refid="structfaiss_1_1ParameterSpace" prot="public" virt="non-virtual">faiss::ParameterSpace</basecompoundref>
     <includes refid="GpuAutoTune_8h" local="no">GpuAutoTune.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuParameterSpace_1ab2bf33a6f1579c3d42f656ded1df3398" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::gpu::GpuParameterSpace::initialize</definition>
         <argsstring>(const faiss::Index *index) override</argsstring>
         <name>initialize</name>
+        <qualifiedname>faiss::gpu::GpuParameterSpace::initialize</qualifiedname>
         <reimplements refid="structfaiss_1_1ParameterSpace_1a3e2e52e7b04f838473e01d018afde832">initialize</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -29,6 +30,7 @@
         <definition>void faiss::gpu::GpuParameterSpace::set_index_parameter</definition>
         <argsstring>(faiss::Index *index, const std::string &amp;name, double val) const override</argsstring>
         <name>set_index_parameter</name>
+        <qualifiedname>faiss::gpu::GpuParameterSpace::set_index_parameter</qualifiedname>
         <reimplements refid="structfaiss_1_1ParameterSpace_1ad9e630ff62561acf6a55b972ee7bb309">set_index_parameter</reimplements>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -56,6 +58,7 @@
         <definition>size_t faiss::ParameterSpace::n_combinations</definition>
         <argsstring>() const</argsstring>
         <name>n_combinations</name>
+        <qualifiedname>faiss::ParameterSpace::n_combinations</qualifiedname>
         <briefdescription>
 <para>nb of combinations, = product of values sizes </para>
         </briefdescription>
@@ -70,6 +73,7 @@
         <definition>bool faiss::ParameterSpace::combination_ge</definition>
         <argsstring>(size_t c1, size_t c2) const</argsstring>
         <name>combination_ge</name>
+        <qualifiedname>faiss::ParameterSpace::combination_ge</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>c1</declname>
@@ -92,6 +96,7 @@
         <definition>std::string faiss::ParameterSpace::combination_name</definition>
         <argsstring>(size_t cno) const</argsstring>
         <name>combination_name</name>
+        <qualifiedname>faiss::ParameterSpace::combination_name</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>cno</declname>
@@ -110,6 +115,7 @@
         <definition>void faiss::ParameterSpace::display</definition>
         <argsstring>() const</argsstring>
         <name>display</name>
+        <qualifiedname>faiss::ParameterSpace::display</qualifiedname>
         <briefdescription>
 <para>print a description on stdout </para>
         </briefdescription>
@@ -119,11 +125,12 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="166" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a6fa126b026197762f34ce097833c6f7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref> &amp;</type>
-        <definition>ParameterRange&amp; faiss::ParameterSpace::add_range</definition>
+        <definition>ParameterRange &amp; faiss::ParameterSpace::add_range</definition>
         <argsstring>(const std::string &amp;name)</argsstring>
         <name>add_range</name>
+        <qualifiedname>faiss::ParameterSpace::add_range</qualifiedname>
         <param>
           <type>const std::string &amp;</type>
           <declname>name</declname>
@@ -142,6 +149,7 @@
         <definition>void faiss::ParameterSpace::set_index_parameters</definition>
         <argsstring>(Index *index, size_t cno) const</argsstring>
         <name>set_index_parameters</name>
+        <qualifiedname>faiss::ParameterSpace::set_index_parameters</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>index</declname>
@@ -164,6 +172,7 @@
         <definition>void faiss::ParameterSpace::set_index_parameters</definition>
         <argsstring>(Index *index, const char *param_string) const</argsstring>
         <name>set_index_parameters</name>
+        <qualifiedname>faiss::ParameterSpace::set_index_parameters</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>index</declname>
@@ -186,6 +195,7 @@
         <definition>void faiss::ParameterSpace::update_bounds</definition>
         <argsstring>(size_t cno, const OperatingPoint &amp;op, double *upper_bound_perf, double *lower_bound_t) const</argsstring>
         <name>update_bounds</name>
+        <qualifiedname>faiss::ParameterSpace::update_bounds</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>cno</declname>
@@ -216,6 +226,7 @@
         <definition>void faiss::ParameterSpace::explore</definition>
         <argsstring>(Index *index, size_t nq, const float *xq, const AutoTuneCriterion &amp;crit, OperatingPoints *ops) const</argsstring>
         <name>explore</name>
+        <qualifiedname>faiss::ParameterSpace::explore</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>index</declname>
@@ -278,13 +289,14 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="200" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ParameterSpace_1a334c1bb54bc2b70950a4a63950728cbb" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1ParameterRange" kindref="compound">ParameterRange</ref> &gt;</type>
         <definition>std::vector&lt;ParameterRange&gt; faiss::ParameterSpace::parameter_ranges</definition>
         <argsstring></argsstring>
         <name>parameter_ranges</name>
+        <qualifiedname>faiss::ParameterSpace::parameter_ranges</qualifiedname>
         <briefdescription>
 <para>all tunable parameters </para>
         </briefdescription>
@@ -299,6 +311,7 @@
         <definition>int faiss::ParameterSpace::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::ParameterSpace::verbose</qualifiedname>
         <briefdescription>
 <para>verbosity during exploration </para>
         </briefdescription>
@@ -313,6 +326,7 @@
         <definition>int faiss::ParameterSpace::n_experiments</definition>
         <argsstring></argsstring>
         <name>n_experiments</name>
+        <qualifiedname>faiss::ParameterSpace::n_experiments</qualifiedname>
         <briefdescription>
 <para>nb of experiments during optimization (0 = try all combinations) </para>
         </briefdescription>
@@ -327,6 +341,7 @@
         <definition>size_t faiss::ParameterSpace::batchsize</definition>
         <argsstring></argsstring>
         <name>batchsize</name>
+        <qualifiedname>faiss::ParameterSpace::batchsize</qualifiedname>
         <briefdescription>
 <para>maximum number of queries to submit at a time. </para>
         </briefdescription>
@@ -341,6 +356,7 @@
         <definition>bool faiss::ParameterSpace::thread_over_batches</definition>
         <argsstring></argsstring>
         <name>thread_over_batches</name>
+        <qualifiedname>faiss::ParameterSpace::thread_over_batches</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -355,6 +371,7 @@
         <definition>double faiss::ParameterSpace::min_test_duration</definition>
         <argsstring></argsstring>
         <name>min_test_duration</name>
+        <qualifiedname>faiss::ParameterSpace::min_test_duration</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -364,7 +381,7 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="152" column="12" bodyfile="faiss/AutoTune.h" bodystart="152" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>parameter space and setters for GPU indexes </para>
     </briefdescription>
@@ -396,7 +413,7 @@
     </collaborationgraph>
     <location file="faiss/gpu/GpuAutoTune.h" line="17" column="1" bodyfile="faiss/gpu/GpuAutoTune.h" bodystart="17" bodyend="26"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>add_range</name></member>
+      <member refid="structfaiss_1_1ParameterSpace_1a6fa126b026197762f34ce097833c6f7c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>add_range</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>batchsize</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1ab311c622327c18b42aa66e2b9bcd5a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>combination_ge</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1af5081b3739982c6be702e46df666fec4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuParameterSpace</scope><name>combination_name</name></member>

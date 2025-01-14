@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CenteringTransform" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CenteringTransform</compoundname>
     <basecompoundref refid="structfaiss_1_1VectorTransform" prot="public" virt="non-virtual">faiss::VectorTransform</basecompoundref>
     <includes refid="VectorTransform_8h" local="no">VectorTransform.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CenteringTransform_1af96e272f0f51d71ed098cdfe3e4ff87d" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
         <definition>std::vector&lt;float&gt; faiss::CenteringTransform::mean</definition>
         <argsstring></argsstring>
         <name>mean</name>
+        <qualifiedname>faiss::CenteringTransform::mean</qualifiedname>
         <briefdescription>
 <para>Mean, size d_in = d_out. </para>
         </briefdescription>
@@ -24,6 +25,7 @@
         <definition>int faiss::VectorTransform::d_in</definition>
         <argsstring></argsstring>
         <name>d_in</name>
+        <qualifiedname>faiss::VectorTransform::d_in</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>int faiss::VectorTransform::d_out</definition>
         <argsstring></argsstring>
         <name>d_out</name>
+        <qualifiedname>faiss::VectorTransform::d_out</qualifiedname>
         <briefdescription>
 <para>! input dimension </para>
         </briefdescription>
@@ -51,6 +54,7 @@
         <definition>bool faiss::VectorTransform::is_trained</definition>
         <argsstring></argsstring>
         <name>is_trained</name>
+        <qualifiedname>faiss::VectorTransform::is_trained</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,13 +64,14 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="34" column="10" bodyfile="faiss/VectorTransform.h" bodystart="34" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1CenteringTransform_1a4a2345b2c3c17a64a89574ddbbf2fef3" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::CenteringTransform::CenteringTransform</definition>
         <argsstring>(int d=0)</argsstring>
         <name>CenteringTransform</name>
+        <qualifiedname>faiss::CenteringTransform::CenteringTransform</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -85,6 +90,7 @@
         <definition>void faiss::CenteringTransform::train</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::CenteringTransform::train</qualifiedname>
         <reimplements refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5">train</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -108,6 +114,7 @@
         <definition>void faiss::CenteringTransform::apply_noalloc</definition>
         <argsstring>(idx_t n, const float *x, float *xt) const override</argsstring>
         <name>apply_noalloc</name>
+        <qualifiedname>faiss::CenteringTransform::apply_noalloc</qualifiedname>
         <reimplements refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0">apply_noalloc</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -135,6 +142,7 @@
         <definition>void faiss::CenteringTransform::reverse_transform</definition>
         <argsstring>(idx_t n, const float *xt, float *x) const override</argsstring>
         <name>reverse_transform</name>
+        <qualifiedname>faiss::CenteringTransform::reverse_transform</qualifiedname>
         <reimplements refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb">reverse_transform</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -162,6 +170,7 @@
         <definition>void faiss::CenteringTransform::check_identical</definition>
         <argsstring>(const VectorTransform &amp;other) const override</argsstring>
         <name>check_identical</name>
+        <qualifiedname>faiss::CenteringTransform::check_identical</qualifiedname>
         <reimplements refid="structfaiss_1_1VectorTransform_1ab6ac3b3be9e794a5eaa6b122709b4f99">check_identical</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> &amp;</type>
@@ -175,11 +184,12 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="308" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
-        <definition>float* faiss::VectorTransform::apply</definition>
+        <definition>float * faiss::VectorTransform::apply</definition>
         <argsstring>(idx_t n, const float *x) const</argsstring>
         <name>apply</name>
+        <qualifiedname>faiss::VectorTransform::apply</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -216,39 +226,39 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="49" column="11"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Subtract the mean of each component from the vectors. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::VectorTransform</label>
-        <link refid="structfaiss_1_1VectorTransform"/>
-      </node>
       <node id="1">
         <label>faiss::CenteringTransform</label>
         <link refid="structfaiss_1_1CenteringTransform"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::VectorTransform</label>
+        <link refid="structfaiss_1_1VectorTransform"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::VectorTransform</label>
-        <link refid="structfaiss_1_1VectorTransform"/>
-      </node>
       <node id="1">
         <label>faiss::CenteringTransform</label>
         <link refid="structfaiss_1_1CenteringTransform"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::VectorTransform</label>
+        <link refid="structfaiss_1_1VectorTransform"/>
       </node>
     </collaborationgraph>
     <location file="faiss/VectorTransform.h" line="293" column="1" bodyfile="faiss/VectorTransform.h" bodystart="293" bodyend="309"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>apply</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>apply_noalloc</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1a4a2345b2c3c17a64a89574ddbbf2fef3" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>CenteringTransform</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1a31952d08f3041c30fd537934dad3368d" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>check_identical</name></member>

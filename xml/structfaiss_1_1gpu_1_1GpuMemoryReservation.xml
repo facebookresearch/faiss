@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuMemoryReservation" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuMemoryReservation</compoundname>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a211012d3090fce8c79f7b7404c4b749c" prot="public" static="no" mutable="no">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
         <definition>GpuResources* faiss::gpu::GpuMemoryReservation::res</definition>
         <argsstring></argsstring>
         <name>res</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::res</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>int faiss::gpu::GpuMemoryReservation::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::device</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>cudaStream_t faiss::gpu::GpuMemoryReservation::stream</definition>
         <argsstring></argsstring>
         <name>stream</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::stream</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>void* faiss::gpu::GpuMemoryReservation::data</definition>
         <argsstring></argsstring>
         <name>data</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -61,6 +65,7 @@
         <definition>size_t faiss::gpu::GpuMemoryReservation::size</definition>
         <argsstring></argsstring>
         <name>size</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -69,13 +74,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="194" column="12" bodyfile="faiss/gpu/GpuResources.h" bodystart="194" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a8631ed006dff5fce027220a1ea42a91d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</definition>
         <argsstring>()</argsstring>
         <name>GpuMemoryReservation</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -89,6 +95,7 @@
         <definition>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</definition>
         <argsstring>(GpuResources *r, int dev, cudaStream_t str, void *p, size_t sz)</argsstring>
         <name>GpuMemoryReservation</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
           <declname>r</declname>
@@ -122,6 +129,7 @@
         <definition>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</definition>
         <argsstring>(GpuMemoryReservation &amp;&amp;m) noexcept</argsstring>
         <name>GpuMemoryReservation</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::GpuMemoryReservation</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref> &amp;&amp;</type>
           <declname>m</declname>
@@ -139,6 +147,7 @@
         <definition>faiss::gpu::GpuMemoryReservation::~GpuMemoryReservation</definition>
         <argsstring>()</argsstring>
         <name>~GpuMemoryReservation</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::~GpuMemoryReservation</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -147,11 +156,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="180" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a2e36ac15a92691b0037d2f0ec9db833b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ac4ca46d0f2628a73d71cf884f99385f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref> &amp;</type>
-        <definition>GpuMemoryReservation&amp; faiss::gpu::GpuMemoryReservation::operator=</definition>
+        <definition>GpuMemoryReservation &amp; faiss::gpu::GpuMemoryReservation::operator=</definition>
         <argsstring>(GpuMemoryReservation &amp;&amp;m)</argsstring>
         <name>operator=</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::operator=</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kindref="compound">GpuMemoryReservation</ref> &amp;&amp;</type>
           <declname>m</declname>
@@ -164,11 +174,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="182" column="26"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a4894ba319a954367fc9a7d8e17ce0200" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a3fb43debf3421d9f75905fffcf4d5a00" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void *</type>
-        <definition>void* faiss::gpu::GpuMemoryReservation::get</definition>
+        <definition>void * faiss::gpu::GpuMemoryReservation::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -182,6 +193,7 @@
         <definition>void faiss::gpu::GpuMemoryReservation::release</definition>
         <argsstring>()</argsstring>
         <name>release</name>
+        <qualifiedname>faiss::gpu::GpuMemoryReservation::release</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -190,17 +202,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="188" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>A RAII object that manages a temporary memory request. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::gpu::GpuResources</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuMemoryReservation</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMemoryReservation"/>
@@ -208,16 +216,20 @@
           <edgelabel>res</edgelabel>
         </childnode>
       </node>
+      <node id="2">
+        <label>faiss::gpu::GpuResources</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
+      </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuResources.h" line="171" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="171" bodyend="195"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ae8b2f577d470cccf55e138708151cba1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>data</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a88f82c738e2527dfec47cf526237757c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>device</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a4894ba319a954367fc9a7d8e17ce0200" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>get</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a3fb43debf3421d9f75905fffcf4d5a00" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>get</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a8631ed006dff5fce027220a1ea42a91d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>GpuMemoryReservation</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a21e29e3f8f04d34f03718c3eaad3d7ab" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>GpuMemoryReservation</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a9f40022a8ca5ff60fe704b9d462fa096" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>GpuMemoryReservation</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a2e36ac15a92691b0037d2f0ec9db833b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ac4ca46d0f2628a73d71cf884f99385f8" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>operator=</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a3420ab9b0a349ca60b9763268174c120" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>release</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a211012d3090fce8c79f7b7404c4b749c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>res</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a9d6c29b2ff05c2b3aa6bc0183719444e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>size</name></member>

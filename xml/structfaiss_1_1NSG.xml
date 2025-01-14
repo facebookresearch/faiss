@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1NSG" kind="struct" language="C++" prot="public">
     <compoundname>faiss::NSG</compoundname>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1NSG_1a4a60736c534e8753071308fdb0e6eeab" prot="public" static="no">
         <type>int32_t</type>
         <definition>using faiss::NSG::storage_idx_t =  int32_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
+        <qualifiedname>faiss::NSG::storage_idx_t</qualifiedname>
         <briefdescription>
 <para>internal storage of vectors (32 bits: this is expensive) </para>
         </briefdescription>
@@ -22,6 +23,7 @@
         <definition>using faiss::NSG::Node =  nsg::Node</definition>
         <argsstring></argsstring>
         <name>Node</name>
+        <qualifiedname>faiss::NSG::Node</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>using faiss::NSG::Neighbor =  nsg::Neighbor</definition>
         <argsstring></argsstring>
         <name>Neighbor</name>
+        <qualifiedname>faiss::NSG::Neighbor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/impl/NSG.h" line="113" column="5" bodyfile="faiss/impl/NSG.h" bodystart="113" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1NSG_1a59ba6c8149371bba021032b85ef4c05f" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::NSG::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::NSG::ntotal</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>nb of nodes </para>
@@ -65,6 +69,7 @@
         <definition>int faiss::NSG::R</definition>
         <argsstring></argsstring>
         <name>R</name>
+        <qualifiedname>faiss::NSG::R</qualifiedname>
         <briefdescription>
 <para>nb of neighbors per node </para>
         </briefdescription>
@@ -79,6 +84,7 @@
         <definition>int faiss::NSG::L</definition>
         <argsstring></argsstring>
         <name>L</name>
+        <qualifiedname>faiss::NSG::L</qualifiedname>
         <briefdescription>
 <para>length of the search path at construction time </para>
         </briefdescription>
@@ -93,6 +99,7 @@
         <definition>int faiss::NSG::C</definition>
         <argsstring></argsstring>
         <name>C</name>
+        <qualifiedname>faiss::NSG::C</qualifiedname>
         <briefdescription>
 <para>candidate pool size at construction time </para>
         </briefdescription>
@@ -107,6 +114,7 @@
         <definition>int faiss::NSG::search_L</definition>
         <argsstring></argsstring>
         <name>search_L</name>
+        <qualifiedname>faiss::NSG::search_L</qualifiedname>
         <initializer>= 16</initializer>
         <briefdescription>
 <para>length of the search path </para>
@@ -122,6 +130,7 @@
         <definition>int faiss::NSG::enterpoint</definition>
         <argsstring></argsstring>
         <name>enterpoint</name>
+        <qualifiedname>faiss::NSG::enterpoint</qualifiedname>
         <briefdescription>
 <para>enterpoint </para>
         </briefdescription>
@@ -136,6 +145,7 @@
         <definition>std::shared_ptr&lt;nsg::Graph&lt;int32_t&gt; &gt; faiss::NSG::final_graph</definition>
         <argsstring></argsstring>
         <name>final_graph</name>
+        <qualifiedname>faiss::NSG::final_graph</qualifiedname>
         <briefdescription>
 <para><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> graph structure. </para>
         </briefdescription>
@@ -150,6 +160,7 @@
         <definition>bool faiss::NSG::is_built</definition>
         <argsstring></argsstring>
         <name>is_built</name>
+        <qualifiedname>faiss::NSG::is_built</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> is built or not. </para>
@@ -165,6 +176,7 @@
         <definition>RandomGenerator faiss::NSG::rng</definition>
         <argsstring></argsstring>
         <name>rng</name>
+        <qualifiedname>faiss::NSG::rng</qualifiedname>
         <briefdescription>
 <para>random generator </para>
         </briefdescription>
@@ -174,13 +186,14 @@
         </inbodydescription>
         <location file="faiss/impl/NSG.h" line="131" column="21" bodyfile="faiss/impl/NSG.h" bodystart="131" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1NSG_1a2d1f59aa68aee326953b222c8a460805" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::NSG::NSG</definition>
         <argsstring>(int R=32)</argsstring>
         <name>NSG</name>
+        <qualifiedname>faiss::NSG::NSG</qualifiedname>
         <param>
           <type>int</type>
           <declname>R</declname>
@@ -199,6 +212,7 @@
         <definition>void faiss::NSG::build</definition>
         <argsstring>(Index *storage, idx_t n, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, bool verbose)</argsstring>
         <name>build</name>
+        <qualifiedname>faiss::NSG::build</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>storage</declname>
@@ -228,6 +242,7 @@
         <definition>void faiss::NSG::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::NSG::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -241,6 +256,7 @@
         <definition>void faiss::NSG::search</definition>
         <argsstring>(DistanceComputer &amp;dis, int k, idx_t *I, float *D, VisitedTable &amp;vt) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::NSG::search</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>dis</declname>
@@ -274,6 +290,7 @@
         <definition>void faiss::NSG::init_graph</definition>
         <argsstring>(Index *storage, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph)</argsstring>
         <name>init_graph</name>
+        <qualifiedname>faiss::NSG::init_graph</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>storage</declname>
@@ -305,6 +322,7 @@
         <definition>void faiss::NSG::search_on_graph</definition>
         <argsstring>(const nsg::Graph&lt; index_t &gt; &amp;graph, DistanceComputer &amp;dis, VisitedTable &amp;vt, int ep, int pool_size, std::vector&lt; Neighbor &gt; &amp;retset, std::vector&lt; Node &gt; &amp;fullset) const</argsstring>
         <name>search_on_graph</name>
+        <qualifiedname>faiss::NSG::search_on_graph</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; index_t &gt; &amp;</type>
           <declname>graph</declname>
@@ -346,6 +364,7 @@
         <definition>void faiss::NSG::add_reverse_links</definition>
         <argsstring>(int q, std::vector&lt; std::mutex &gt; &amp;locks, DistanceComputer &amp;dis, nsg::Graph&lt; Node &gt; &amp;graph)</argsstring>
         <name>add_reverse_links</name>
+        <qualifiedname>faiss::NSG::add_reverse_links</qualifiedname>
         <param>
           <type>int</type>
           <declname>q</declname>
@@ -375,6 +394,7 @@
         <definition>void faiss::NSG::sync_prune</definition>
         <argsstring>(int q, std::vector&lt; Node &gt; &amp;pool, DistanceComputer &amp;dis, VisitedTable &amp;vt, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, nsg::Graph&lt; Node &gt; &amp;graph)</argsstring>
         <name>sync_prune</name>
+        <qualifiedname>faiss::NSG::sync_prune</qualifiedname>
         <param>
           <type>int</type>
           <declname>q</declname>
@@ -412,6 +432,7 @@
         <definition>void faiss::NSG::link</definition>
         <argsstring>(Index *storage, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, nsg::Graph&lt; Node &gt; &amp;graph, bool verbose)</argsstring>
         <name>link</name>
+        <qualifiedname>faiss::NSG::link</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>storage</declname>
@@ -441,6 +462,7 @@
         <definition>int faiss::NSG::tree_grow</definition>
         <argsstring>(Index *storage, std::vector&lt; int &gt; &amp;degrees)</argsstring>
         <name>tree_grow</name>
+        <qualifiedname>faiss::NSG::tree_grow</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>storage</declname>
@@ -462,6 +484,7 @@
         <definition>int faiss::NSG::dfs</definition>
         <argsstring>(VisitedTable &amp;vt, int root, int cnt) const</argsstring>
         <name>dfs</name>
+        <qualifiedname>faiss::NSG::dfs</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
           <declname>vt</declname>
@@ -487,6 +510,7 @@
         <definition>int faiss::NSG::attach_unlinked</definition>
         <argsstring>(Index *storage, VisitedTable &amp;vt, VisitedTable &amp;vt2, std::vector&lt; int &gt; &amp;degrees)</argsstring>
         <name>attach_unlinked</name>
+        <qualifiedname>faiss::NSG::attach_unlinked</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>storage</declname>
@@ -516,6 +540,7 @@
         <definition>void faiss::NSG::check_graph</definition>
         <argsstring>() const</argsstring>
         <name>check_graph</name>
+        <qualifiedname>faiss::NSG::check_graph</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -524,22 +549,22 @@
         </inbodydescription>
         <location file="faiss/impl/NSG.h" line="205" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::RandomGenerator</label>
-        <link refid="structfaiss_1_1RandomGenerator"/>
-      </node>
       <node id="1">
         <label>faiss::NSG</label>
         <link refid="structfaiss_1_1NSG"/>
         <childnode refid="2" relation="usage">
           <edgelabel>rng</edgelabel>
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::RandomGenerator</label>
+        <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/NSG.h" line="109" column="1" bodyfile="faiss/impl/NSG.h" bodystart="109" bodyend="206"/>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1DummyScaler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DummyScaler</compoundname>
     <includes refid="LookupTableScaler_8h" local="no">LookupTableScaler.h</includes>
-      <sectiondef kind="public-static-attrib">
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1DummyScaler_1a973b155186da752549ed428708d59ed0" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr int</type>
         <definition>constexpr int faiss::DummyScaler::nscale</definition>
         <argsstring></argsstring>
         <name>nscale</name>
+        <qualifiedname>faiss::DummyScaler::nscale</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -18,13 +19,14 @@
         </inbodydescription>
         <location file="faiss/impl/LookupTableScaler.h" line="24" column="26" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="24" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1af2b7da16687684fa931767f1711f1f97" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref></type>
         <definition>simd32uint8 faiss::DummyScaler::lookup</definition>
         <argsstring>(const simd32uint8 &amp;, const simd32uint8 &amp;) const</argsstring>
         <name>lookup</name>
+        <qualifiedname>faiss::DummyScaler::lookup</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
         </param>
@@ -44,6 +46,7 @@
         <definition>simd16uint16 faiss::DummyScaler::scale_lo</definition>
         <argsstring>(const simd32uint8 &amp;) const</argsstring>
         <name>scale_lo</name>
+        <qualifiedname>faiss::DummyScaler::scale_lo</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
         </param>
@@ -60,6 +63,7 @@
         <definition>simd16uint16 faiss::DummyScaler::scale_hi</definition>
         <argsstring>(const simd32uint8 &amp;) const</argsstring>
         <name>scale_hi</name>
+        <qualifiedname>faiss::DummyScaler::scale_hi</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
         </param>
@@ -81,6 +85,7 @@
         <definition>dist_t faiss::DummyScaler::scale_one</definition>
         <argsstring>(const dist_t &amp;) const</argsstring>
         <name>scale_one</name>
+        <qualifiedname>faiss::DummyScaler::scale_one</qualifiedname>
         <param>
           <type>const dist_t &amp;</type>
         </param>
@@ -92,7 +97,7 @@
         </inbodydescription>
         <location file="faiss/impl/LookupTableScaler.h" line="59" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="59" bodyend="62"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>no-op handler </para>
     </briefdescription>

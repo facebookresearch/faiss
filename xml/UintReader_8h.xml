@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="UintReader_8h" kind="file" language="C++">
     <compoundname>UintReader.h</compoundname>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
@@ -9,6 +9,14 @@
     <includedby refid="PQ-avx2-inl_8h" local="no">faiss/cppcontrib/sa_decode/PQ-avx2-inl.h</includedby>
     <includedby refid="PQ-neon-inl_8h" local="no">faiss/cppcontrib/sa_decode/PQ-neon-inl.h</includedby>
     <incdepgraph>
+      <node id="1">
+        <label>faiss/cppcontrib/detail/UintReader.h</label>
+        <link refid="UintReader_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="2">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -23,24 +31,8 @@
       <node id="4">
         <label>cstdio</label>
       </node>
-      <node id="1">
-        <label>faiss/cppcontrib/detail/UintReader.h</label>
-        <link refid="UintReader_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
-        <label>faiss/cppcontrib/sa_decode/Level2-neon-inl.h</label>
-        <link refid="Level2-neon-inl_8h_source"/>
-      </node>
-      <node id="4">
-        <label>faiss/cppcontrib/sa_decode/PQ-avx2-inl.h</label>
-        <link refid="PQ-avx2-inl_8h_source"/>
-      </node>
       <node id="1">
         <label>faiss/cppcontrib/detail/UintReader.h</label>
         <link refid="UintReader_8h"/>
@@ -56,6 +48,14 @@
       <node id="2">
         <label>faiss/cppcontrib/sa_decode/Level2-avx2-inl.h</label>
         <link refid="Level2-avx2-inl_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/cppcontrib/sa_decode/Level2-neon-inl.h</label>
+        <link refid="Level2-neon-inl_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/cppcontrib/sa_decode/PQ-avx2-inl.h</label>
+        <link refid="PQ-avx2-inl_8h_source"/>
       </node>
       <node id="5">
         <label>faiss/cppcontrib/sa_decode/PQ-neon-inl.h</label>
@@ -90,14 +90,14 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Uint8Reader<sp/>{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>intptr_t<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__restrict<sp/>codes)<sp/>{</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Read<sp/>using<sp/>4-bytes,<sp/>if<sp/>possible.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Reading<sp/>using<sp/>8-byte<sp/>takes<sp/>too<sp/>many<sp/>registers<sp/>somewhy.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(SUB_ELEMENT)<sp/>{</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:<sp/>{</highlight></codeline>
@@ -165,13 +165,13 @@
 <codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>33<sp/>33333333</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Uint10Reader<sp/>{</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"></highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>intptr_t<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__restrict<sp/>codes)<sp/>{</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Read<sp/>using<sp/>4-bytes<sp/>or<sp/>2-bytes.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(SUB_ELEMENT)<sp/>{</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:<sp/>{</highlight></codeline>
@@ -246,13 +246,13 @@
 <codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3333<sp/>33333333</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="175"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="176"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Uint12Reader<sp/>{</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight></codeline>
 <codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>intptr_t<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__restrict<sp/>codes)<sp/>{</highlight></codeline>
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Read<sp/>using<sp/>4-bytes<sp/>or<sp/>2-bytes.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="181"><highlight class="normal"></highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>4;</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>4;</highlight></codeline>
 <codeline lineno="184"><highlight class="normal"></highlight></codeline>
 <codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(SUB_ELEMENT)<sp/>{</highlight></codeline>
 <codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:<sp/>{</highlight></codeline>
@@ -330,14 +330,14 @@
 <codeline lineno="258"><highlight class="normal"></highlight><highlight class="comment">//<sp/>reduces<sp/>the<sp/>number<sp/>of<sp/>read<sp/>operations<sp/>from<sp/>RAM</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="259"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="260"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">Uint16Reader<sp/>{</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(CPOS<sp/>&lt;<sp/>N_ELEMENTS,<sp/></highlight><highlight class="stringliteral">&quot;CPOS<sp/>should<sp/>be<sp/>less<sp/>than<sp/>N_ELEMENTS&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="262"><highlight class="normal"></highlight></codeline>
 <codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>intptr_t<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__restrict<sp/>codes)<sp/>{</highlight></codeline>
 <codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Read<sp/>using<sp/>4-bytes<sp/>or<sp/>2-bytes.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Reading<sp/>using<sp/>8-byte<sp/>takes<sp/>too<sp/>many<sp/>registers<sp/>somewhy.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="266"><highlight class="normal"></highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>2;</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>2;</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>ELEMENT_TO_READ<sp/>=<sp/>CPOS<sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>SUB_ELEMENT<sp/>=<sp/>CPOS<sp/>%<sp/>2;</highlight></codeline>
 <codeline lineno="269"><highlight class="normal"></highlight></codeline>
 <codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(SUB_ELEMENT)<sp/>{</highlight></codeline>
 <codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:<sp/>{</highlight></codeline>
@@ -388,34 +388,34 @@
 <codeline lineno="316"><highlight class="normal"></highlight></codeline>
 <codeline lineno="317"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="318"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">UintReaderImplType&lt;N_ELEMENTS,<sp/>8,<sp/>CPOS&gt;<sp/>{</highlight></codeline>
-<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>reader_type<sp/>=<sp/>Uint8Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">reader_type<sp/>=<sp/>Uint8Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
 <codeline lineno="320"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="321"><highlight class="normal"></highlight></codeline>
 <codeline lineno="322"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="323"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">UintReaderImplType&lt;N_ELEMENTS,<sp/>10,<sp/>CPOS&gt;<sp/>{</highlight></codeline>
-<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>reader_type<sp/>=<sp/>Uint10Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">reader_type<sp/>=<sp/>Uint10Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
 <codeline lineno="325"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="326"><highlight class="normal"></highlight></codeline>
 <codeline lineno="327"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="328"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">UintReaderImplType&lt;N_ELEMENTS,<sp/>12,<sp/>CPOS&gt;<sp/>{</highlight></codeline>
-<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>reader_type<sp/>=<sp/>Uint12Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">reader_type<sp/>=<sp/>Uint12Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
 <codeline lineno="330"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="331"><highlight class="normal"></highlight></codeline>
 <codeline lineno="332"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
 <codeline lineno="333"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">UintReaderImplType&lt;N_ELEMENTS,<sp/>16,<sp/>CPOS&gt;<sp/>{</highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>reader_type<sp/>=<sp/>Uint16Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">reader_type<sp/>=<sp/>Uint16Reader&lt;N_ELEMENTS,<sp/>CPOS&gt;;</highlight></codeline>
 <codeline lineno="335"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="336"><highlight class="normal"></highlight></codeline>
 <codeline lineno="337"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="338"><highlight class="normal"></highlight></codeline>
 <codeline lineno="339"><highlight class="normal"></highlight><highlight class="comment">//<sp/>reduces<sp/>the<sp/>number<sp/>of<sp/>read<sp/>operations<sp/>from<sp/>RAM</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="340"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>DIM,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CODE_SIZE,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CODE_BITS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
-<codeline lineno="341"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>UintReader<sp/>=</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">UintReader<sp/>=</highlight></codeline>
 <codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>UintReaderImplType&lt;DIM<sp/>/<sp/>CODE_SIZE,<sp/>CODE_BITS,<sp/>CPOS&gt;::</highlight></codeline>
 <codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reader_type;</highlight></codeline>
 <codeline lineno="344"><highlight class="normal"></highlight></codeline>
 <codeline lineno="345"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>N_ELEMENTS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CODE_BITS,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>CPOS&gt;</highlight></codeline>
-<codeline lineno="346"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>UintReaderRaw<sp/>=</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">UintReaderRaw<sp/>=</highlight></codeline>
 <codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>UintReaderImplType&lt;N_ELEMENTS,<sp/>CODE_BITS,<sp/>CPOS&gt;::reader_type;</highlight></codeline>
 <codeline lineno="348"><highlight class="normal"></highlight></codeline>
 <codeline lineno="349"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>

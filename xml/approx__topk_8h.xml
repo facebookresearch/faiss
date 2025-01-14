@@ -1,11 +1,25 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="approx__topk_8h" kind="file" language="C++">
     <compoundname>approx_topk.h</compoundname>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="mode_8h" local="no">faiss/utils/approx_topk/mode.h</includes>
     <includes refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includes>
     <incdepgraph>
+      <node id="10">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
       <node id="11">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
@@ -18,9 +32,6 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>limits</label>
-      </node>
       <node id="2">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -28,61 +39,6 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="6">
-        <label>faiss/utils/approx_topk/generic.h</label>
-        <link refid="generic_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>stdint.h</label>
-      </node>
-      <node id="18">
-        <label>cmath</label>
-      </node>
-      <node id="21">
-        <label>cassert</label>
-      </node>
-      <node id="13">
-        <label>string</label>
-      </node>
-      <node id="1">
-        <label>faiss/utils/approx_topk/approx_topk.h</label>
-        <link refid="approx__topk_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>exception</label>
-      </node>
-      <node id="5">
-        <label>faiss/utils/approx_topk/mode.h</label>
-        <link refid="mode_8h_source"/>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
-      </node>
-      <node id="14">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>utility</label>
       </node>
       <node id="16">
         <label>faiss/utils/Heap.h</label>
@@ -106,6 +62,34 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss/utils/approx_topk/approx_topk.h</label>
+        <link refid="approx__topk_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/utils/approx_topk/generic.h</label>
+        <link refid="generic_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
+      </node>
       <node id="22">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
@@ -116,31 +100,47 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="15">
-        <label>cstdlib</label>
+      <node id="7">
+        <label>algorithm</label>
+      </node>
+      <node id="21">
+        <label>cassert</label>
       </node>
       <node id="17">
         <label>climits</label>
       </node>
-      <node id="7">
-        <label>algorithm</label>
+      <node id="18">
+        <label>cmath</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
+      </node>
+      <node id="15">
+        <label>cstdlib</label>
       </node>
       <node id="19">
         <label>cstring</label>
       </node>
-      <node id="10">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
+      <node id="12">
+        <label>exception</label>
+      </node>
+      <node id="8">
+        <label>limits</label>
+      </node>
+      <node id="20">
+        <label>stdint.h</label>
+      </node>
+      <node id="13">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>utility</label>
+      </node>
+      <node id="14">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <briefdescription>

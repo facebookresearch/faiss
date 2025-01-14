@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1RangeSearchResult" kind="struct" language="C++" prot="public">
     <compoundname>faiss::RangeSearchResult</compoundname>
     <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1a29269b98c33af874d379ca4f62408b90" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::RangeSearchResult::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
+        <qualifiedname>faiss::RangeSearchResult::nq</qualifiedname>
         <briefdescription>
 <para>nb of queries </para>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>size_t* faiss::RangeSearchResult::lims</definition>
         <argsstring></argsstring>
         <name>lims</name>
+        <qualifiedname>faiss::RangeSearchResult::lims</qualifiedname>
         <briefdescription>
 <para>size (nq + 1) </para>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>idx_t* faiss::RangeSearchResult::labels</definition>
         <argsstring></argsstring>
         <name>labels</name>
+        <qualifiedname>faiss::RangeSearchResult::labels</qualifiedname>
         <briefdescription>
 <para>result for query i is labels[lims[i]:lims[i+1]] </para>
         </briefdescription>
@@ -51,6 +54,7 @@
         <definition>float* faiss::RangeSearchResult::distances</definition>
         <argsstring></argsstring>
         <name>distances</name>
+        <qualifiedname>faiss::RangeSearchResult::distances</qualifiedname>
         <briefdescription>
 <para>corresponding distances (not sorted) </para>
         </briefdescription>
@@ -65,6 +69,7 @@
         <definition>size_t faiss::RangeSearchResult::buffer_size</definition>
         <argsstring></argsstring>
         <name>buffer_size</name>
+        <qualifiedname>faiss::RangeSearchResult::buffer_size</qualifiedname>
         <briefdescription>
 <para>size of the result buffers used </para>
         </briefdescription>
@@ -74,13 +79,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="37" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="37" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1ae3c7b49b3cdfdf6322a2c8620f032656" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::RangeSearchResult::RangeSearchResult</definition>
         <argsstring>(size_t nq, bool alloc_lims=true)</argsstring>
         <name>RangeSearchResult</name>
+        <qualifiedname>faiss::RangeSearchResult::RangeSearchResult</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nq</declname>
@@ -104,6 +110,7 @@
         <definition>virtual void faiss::RangeSearchResult::do_allocation</definition>
         <argsstring>()</argsstring>
         <name>do_allocation</name>
+        <qualifiedname>faiss::RangeSearchResult::do_allocation</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -118,6 +125,7 @@
         <definition>virtual faiss::RangeSearchResult::~RangeSearchResult</definition>
         <argsstring>()</argsstring>
         <name>~RangeSearchResult</name>
+        <qualifiedname>faiss::RangeSearchResult::~RangeSearchResult</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -126,7 +134,7 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="46" column="13"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

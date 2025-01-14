@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="PQ-neon-inl_8h" kind="file" language="C++">
     <compoundname>PQ-neon-inl.h</compoundname>
     <includes local="no">arm_neon.h</includes>
@@ -7,23 +7,6 @@
     <includes local="no">cstdint</includes>
     <includes refid="UintReader_8h" local="no">faiss/cppcontrib/detail/UintReader.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>arm_neon.h</label>
-      </node>
-      <node id="6">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>cstdint</label>
-      </node>
-      <node id="7">
-        <label>cstdio</label>
-      </node>
       <node id="5">
         <label>faiss/cppcontrib/detail/UintReader.h</label>
         <link refid="UintReader_8h_source"/>
@@ -31,9 +14,6 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>cstddef</label>
       </node>
       <node id="1">
         <label>faiss/cppcontrib/sa_decode/PQ-neon-inl.h</label>
@@ -46,6 +26,26 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>arm_neon.h</label>
+      </node>
+      <node id="3">
+        <label>cstddef</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>cstdio</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" prot="public">faiss::cppcontrib::IndexPQDecoder</innerclass>
@@ -225,14 +225,14 @@
 <codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QPOS_LEFT_GE_8,</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QPOS_LEFT_GE_4,</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;<sp/>{</highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>FINE_SIZE<sp/>=<sp/>4;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>FINE_SIZE<sp/>=<sp/>4;</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
 <codeline lineno="176"><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight></codeline>
 <codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>process<sp/>1<sp/>sample</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>store(</highlight></codeline>
@@ -670,12 +670,12 @@
 <codeline lineno="612"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,</highlight></codeline>
 <codeline lineno="613"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,</highlight></codeline>
 <codeline lineno="614"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;<sp/>{</highlight></codeline>
-<codeline lineno="615"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
-<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="615"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
 <codeline lineno="617"><highlight class="normal"></highlight></codeline>
-<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
+<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
 <codeline lineno="619"><highlight class="normal"></highlight></codeline>
-<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
+<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
 <codeline lineno="621"><highlight class="normal"></highlight></codeline>
 <codeline lineno="622"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>process<sp/>1<sp/>sample</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="623"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>store(</highlight></codeline>
@@ -998,12 +998,12 @@
 <codeline lineno="940"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,</highlight></codeline>
 <codeline lineno="941"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,</highlight></codeline>
 <codeline lineno="942"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;<sp/>{</highlight></codeline>
-<codeline lineno="943"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
-<codeline lineno="944"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="943"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidIdx<sp/>=<sp/>CPOS<sp/>/<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="944"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineCentroidOffset<sp/>=<sp/>CPOS<sp/>%<sp/>FINE_SIZE;</highlight></codeline>
 <codeline lineno="945"><highlight class="normal"></highlight></codeline>
-<codeline lineno="946"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
+<codeline lineno="946"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>QPOS_LEFT<sp/>=<sp/>FINE_SIZE<sp/>-<sp/>fineCentroidOffset;</highlight></codeline>
 <codeline lineno="947"><highlight class="normal"></highlight></codeline>
-<codeline lineno="948"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
+<codeline lineno="948"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>FINE_TABLE_BYTES<sp/>=<sp/>(1<sp/>&lt;&lt;<sp/>FINE_BITS);</highlight></codeline>
 <codeline lineno="949"><highlight class="normal"></highlight></codeline>
 <codeline lineno="950"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>process<sp/>1<sp/>sample</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="951"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>store(</highlight></codeline>
@@ -1390,14 +1390,14 @@
 <codeline lineno="1332"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Suitable<sp/>for<sp/>PQ[1]x16</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1333"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>DIM,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>FINE_SIZE,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">ptr_t<sp/>FINE_BITS<sp/>=<sp/>8&gt;</highlight></codeline>
 <codeline lineno="1334"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexPQDecoder<sp/>{</highlight></codeline>
-<codeline lineno="1335"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline lineno="1335"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
 <codeline lineno="1336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FINE_BITS<sp/>==<sp/>8<sp/>||<sp/>FINE_BITS<sp/>==<sp/>10<sp/>||<sp/>FINE_BITS<sp/>==<sp/>12<sp/>||</highlight></codeline>
 <codeline lineno="1337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FINE_BITS<sp/>==<sp/>16,</highlight></codeline>
 <codeline lineno="1338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Only<sp/>8,<sp/>10,<sp/>12<sp/>or<sp/>16<sp/>bits<sp/>are<sp/>currently<sp/>supported<sp/>for<sp/>FINE_BITS&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="1339"><highlight class="normal"></highlight></codeline>
-<codeline lineno="1340"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>dim<sp/>=<sp/>DIM;</highlight></codeline>
-<codeline lineno="1341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineSize<sp/>=<sp/>FINE_SIZE;</highlight></codeline>
-<codeline lineno="1342"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>fineBits<sp/>=<sp/>FINE_BITS;</highlight></codeline>
+<codeline lineno="1340"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>dim<sp/>=<sp/>DIM;</highlight></codeline>
+<codeline lineno="1341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineSize<sp/>=<sp/>FINE_SIZE;</highlight></codeline>
+<codeline lineno="1342"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>fineBits<sp/>=<sp/>FINE_BITS;</highlight></codeline>
 <codeline lineno="1343"><highlight class="normal"></highlight></codeline>
 <codeline lineno="1344"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Process<sp/>1<sp/>sample.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1345"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>store(</highlight></codeline>

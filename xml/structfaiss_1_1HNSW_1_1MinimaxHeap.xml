@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HNSW_1_1MinimaxHeap" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HNSW::MinimaxHeap</compoundname>
     <includes refid="HNSW_8h" local="no">HNSW.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1aa84f4b0590b40f2db7cd414f03e09163" prot="public" static="no">
         <type><ref refid="structfaiss_1_1CMax" kindref="compound">faiss::CMax</ref>&lt; float, <ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref> &gt;</type>
         <definition>typedef faiss::CMax&lt;float, storage_idx_t&gt; faiss::HNSW::MinimaxHeap::HC</definition>
         <argsstring></argsstring>
         <name>HC</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::HC</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="72" column="29" bodyfile="faiss/impl/HNSW.h" bodystart="72" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae3eac58ea390ae96a00f6fc6e8e04591" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::HNSW::MinimaxHeap::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>int faiss::HNSW::MinimaxHeap::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::k</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,6 +53,7 @@
         <definition>int faiss::HNSW::MinimaxHeap::nvalid</definition>
         <argsstring></argsstring>
         <name>nvalid</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::nvalid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +67,7 @@
         <definition>std::vector&lt;storage_idx_t&gt; faiss::HNSW::MinimaxHeap::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -76,6 +81,7 @@
         <definition>std::vector&lt;float&gt; faiss::HNSW::MinimaxHeap::dis</definition>
         <argsstring></argsstring>
         <name>dis</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::dis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -84,13 +90,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="71" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="71" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a139d799f393c94dd160922791f6d926c" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HNSW::MinimaxHeap::MinimaxHeap</definition>
         <argsstring>(int n)</argsstring>
         <name>MinimaxHeap</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::MinimaxHeap</qualifiedname>
         <param>
           <type>int</type>
           <declname>n</declname>
@@ -108,6 +115,7 @@
         <definition>void faiss::HNSW::MinimaxHeap::push</definition>
         <argsstring>(storage_idx_t i, float v)</argsstring>
         <name>push</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::push</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref></type>
           <declname>i</declname>
@@ -129,6 +137,7 @@
         <definition>float faiss::HNSW::MinimaxHeap::max</definition>
         <argsstring>() const</argsstring>
         <name>max</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::max</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -142,6 +151,7 @@
         <definition>int faiss::HNSW::MinimaxHeap::size</definition>
         <argsstring>() const</argsstring>
         <name>size</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -155,6 +165,7 @@
         <definition>void faiss::HNSW::MinimaxHeap::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -168,6 +179,7 @@
         <definition>int faiss::HNSW::MinimaxHeap::pop_min</definition>
         <argsstring>(float *vmin_out=nullptr)</argsstring>
         <name>pop_min</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::pop_min</qualifiedname>
         <param>
           <type>float *</type>
           <declname>vmin_out</declname>
@@ -186,6 +198,7 @@
         <definition>int faiss::HNSW::MinimaxHeap::count_below</definition>
         <argsstring>(float thresh)</argsstring>
         <name>count_below</name>
+        <qualifiedname>faiss::HNSW::MinimaxHeap::count_below</qualifiedname>
         <param>
           <type>float</type>
           <declname>thresh</declname>
@@ -198,7 +211,7 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="86" column="13"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

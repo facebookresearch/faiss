@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinaryMultiHash" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryMultiHash</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexBinary" prot="public" virt="non-virtual">faiss::IndexBinary</basecompoundref>
     <includes refid="IndexBinaryHash_8h" local="no">IndexBinaryHash.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinaryMultiHash_1a9ccbac815bb60a0d42c0aca1dba99ec6" prot="public" static="no">
         <type>std::unordered_map&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>, std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &gt;</type>
         <definition>using faiss::IndexBinaryMultiHash::Map =  std::unordered_map&lt;idx_t, std::vector&lt;idx_t&gt; &gt;</definition>
         <argsstring></argsstring>
         <name>Map</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::Map</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>using faiss::IndexBinary::component_t =  uint8_t</definition>
         <argsstring></argsstring>
         <name>component_t</name>
+        <qualifiedname>faiss::IndexBinary::component_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>using faiss::IndexBinary::distance_t =  int32_t</definition>
         <argsstring></argsstring>
         <name>distance_t</name>
+        <qualifiedname>faiss::IndexBinary::distance_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -44,13 +47,14 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="33" column="5" bodyfile="faiss/IndexBinary.h" bodystart="33" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryMultiHash_1aa5bd24bcee2eeb76de2de5c6ea892ddc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IndexBinaryFlat" kindref="compound">IndexBinaryFlat</ref> *</type>
         <definition>IndexBinaryFlat* faiss::IndexBinaryMultiHash::storage</definition>
         <argsstring></argsstring>
         <name>storage</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::storage</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -64,6 +68,7 @@
         <definition>bool faiss::IndexBinaryMultiHash::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::own_fields</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -77,6 +82,7 @@
         <definition>std::vector&lt;Map&gt; faiss::IndexBinaryMultiHash::maps</definition>
         <argsstring></argsstring>
         <name>maps</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::maps</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -90,6 +96,7 @@
         <definition>int faiss::IndexBinaryMultiHash::nhash</definition>
         <argsstring></argsstring>
         <name>nhash</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::nhash</qualifiedname>
         <briefdescription>
 <para>nb of hash maps </para>
         </briefdescription>
@@ -104,6 +111,7 @@
         <definition>int faiss::IndexBinaryMultiHash::b</definition>
         <argsstring></argsstring>
         <name>b</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::b</qualifiedname>
         <briefdescription>
 <para>nb bits per hash map </para>
         </briefdescription>
@@ -118,6 +126,7 @@
         <definition>int faiss::IndexBinaryMultiHash::nflip</definition>
         <argsstring></argsstring>
         <name>nflip</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::nflip</qualifiedname>
         <briefdescription>
 <para>nb bit flips to use at search time </para>
         </briefdescription>
@@ -132,6 +141,7 @@
         <definition>int faiss::IndexBinary::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::IndexBinary::d</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>vector dimension </para>
@@ -147,6 +157,7 @@
         <definition>int faiss::IndexBinary::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::IndexBinary::code_size</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>number of bytes per vector ( = d / 8 ) </para>
@@ -162,6 +173,7 @@
         <definition>idx_t faiss::IndexBinary::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::IndexBinary::ntotal</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>total nb of indexed vectors </para>
@@ -177,6 +189,7 @@
         <definition>bool faiss::IndexBinary::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::IndexBinary::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>verbosity level </para>
@@ -192,6 +205,7 @@
         <definition>bool faiss::IndexBinary::is_trained</definition>
         <argsstring></argsstring>
         <name>is_trained</name>
+        <qualifiedname>faiss::IndexBinary::is_trained</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
@@ -207,6 +221,7 @@
         <definition>MetricType faiss::IndexBinary::metric_type</definition>
         <argsstring></argsstring>
         <name>metric_type</name>
+        <qualifiedname>faiss::IndexBinary::metric_type</qualifiedname>
         <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
         <briefdescription>
 <para>type of metric this index uses for search </para>
@@ -217,13 +232,14 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="45" column="16" bodyfile="faiss/IndexBinary.h" bodystart="45" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryMultiHash_1a7fa50f739680538e1fdc17dab5baf94e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexBinaryMultiHash::IndexBinaryMultiHash</definition>
         <argsstring>(int d, int nhash, int b)</argsstring>
         <name>IndexBinaryMultiHash</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::IndexBinaryMultiHash</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -249,6 +265,7 @@
         <definition>faiss::IndexBinaryMultiHash::IndexBinaryMultiHash</definition>
         <argsstring>()</argsstring>
         <name>IndexBinaryMultiHash</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::IndexBinaryMultiHash</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -262,6 +279,7 @@
         <definition>faiss::IndexBinaryMultiHash::~IndexBinaryMultiHash</definition>
         <argsstring>()</argsstring>
         <name>~IndexBinaryMultiHash</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::~IndexBinaryMultiHash</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -275,6 +293,7 @@
         <definition>void faiss::IndexBinaryMultiHash::reset</definition>
         <argsstring>() override</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::reset</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexBinary_1a11bff8bcaa366c563076a3d18f3ae30c">reset</reimplements>
         <briefdescription>
 <para>Removes all elements from the database. </para>
@@ -290,6 +309,7 @@
         <definition>void faiss::IndexBinaryMultiHash::add</definition>
         <argsstring>(idx_t n, const uint8_t *x) override</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::add</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexBinary_1af04b1093cdebfea189e0e04da68794d7">add</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -323,6 +343,7 @@
         <definition>void faiss::IndexBinaryMultiHash::range_search</definition>
         <argsstring>(idx_t n, const uint8_t *x, int radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const override</argsstring>
         <name>range_search</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::range_search</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexBinary_1a7d8f56aff2b732ce74fbc0f09af45e63">range_search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -386,6 +407,7 @@
         <definition>void faiss::IndexBinaryMultiHash::search</definition>
         <argsstring>(idx_t n, const uint8_t *x, idx_t k, int32_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::search</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586">search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -453,6 +475,7 @@
         <definition>size_t faiss::IndexBinaryMultiHash::hashtable_size</definition>
         <argsstring>() const</argsstring>
         <name>hashtable_size</name>
+        <qualifiedname>faiss::IndexBinaryMultiHash::hashtable_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -466,6 +489,7 @@
         <definition>virtual void faiss::IndexBinary::train</definition>
         <argsstring>(idx_t n, const uint8_t *x)</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::IndexBinary::train</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a7de4bb8e82f0dae621c87b44cfb64404">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a4b4b1ba42e6af7c30ccbaf0fc0f38034">train</reimplementedby>
@@ -509,6 +533,7 @@
         <definition>virtual void faiss::IndexBinary::add_with_ids</definition>
         <argsstring>(idx_t n, const uint8_t *x, const idx_t *xids)</argsstring>
         <name>add_with_ids</name>
+        <qualifiedname>faiss::IndexBinary::add_with_ids</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a4c173c78924cc5ebe82c809cbc4882ba">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1ace01cca47e08dfe5c74c5b4f31977032">add_with_ids</reimplementedby>
         <param>
@@ -548,6 +573,7 @@
         <definition>void faiss::IndexBinary::assign</definition>
         <argsstring>(idx_t n, const uint8_t *x, idx_t *labels, idx_t k=1) const</argsstring>
         <name>assign</name>
+        <qualifiedname>faiss::IndexBinary::assign</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -597,6 +623,7 @@
         <definition>virtual size_t faiss::IndexBinary::remove_ids</definition>
         <argsstring>(const IDSelector &amp;sel)</argsstring>
         <name>remove_ids</name>
+        <qualifiedname>faiss::IndexBinary::remove_ids</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1ae5127fb557880bf5996531714f32b3d6">remove_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1ad05e4e6f3ce7bb54f88ece7fe645447b">remove_ids</reimplementedby>
         <param>
@@ -617,6 +644,7 @@
         <definition>virtual void faiss::IndexBinary::reconstruct</definition>
         <argsstring>(idx_t key, uint8_t *recons) const</argsstring>
         <name>reconstruct</name>
+        <qualifiedname>faiss::IndexBinary::reconstruct</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9d65d48c6bb7a65da2cf1489efa364cc">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866">reconstruct</reimplementedby>
@@ -661,6 +689,7 @@
         <definition>virtual void faiss::IndexBinary::reconstruct_n</definition>
         <argsstring>(idx_t i0, idx_t ni, uint8_t *recons) const</argsstring>
         <name>reconstruct_n</name>
+        <qualifiedname>faiss::IndexBinary::reconstruct_n</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a4a8cd9437b9adc21696aefe1fa440a22">reconstruct_n</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -698,6 +727,7 @@
         <definition>virtual void faiss::IndexBinary::search_and_reconstruct</definition>
         <argsstring>(idx_t n, const uint8_t *x, idx_t k, int32_t *distances, idx_t *labels, uint8_t *recons, const SearchParameters *params=nullptr) const</argsstring>
         <name>search_and_reconstruct</name>
+        <qualifiedname>faiss::IndexBinary::search_and_reconstruct</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a198ca7067fd9a08583f257f00b741b39">search_and_reconstruct</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -753,6 +783,7 @@
         <definition>void faiss::IndexBinary::display</definition>
         <argsstring>() const</argsstring>
         <name>display</name>
+        <qualifiedname>faiss::IndexBinary::display</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -767,6 +798,7 @@
         <definition>virtual void faiss::IndexBinary::merge_from</definition>
         <argsstring>(IndexBinary &amp;otherIndex, idx_t add_id=0)</argsstring>
         <name>merge_from</name>
+        <qualifiedname>faiss::IndexBinary::merge_from</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1ad80e8243ce1a800b7e22088b0fb2800d">merge_from</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &amp;</type>
@@ -791,6 +823,7 @@
         <definition>virtual void faiss::IndexBinary::check_compatible_for_merge</definition>
         <argsstring>(const IndexBinary &amp;otherIndex) const</argsstring>
         <name>check_compatible_for_merge</name>
+        <qualifiedname>faiss::IndexBinary::check_compatible_for_merge</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a6a65e485671efc395161c12ee6fe3fc5">check_compatible_for_merge</reimplementedby>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &amp;</type>
@@ -810,6 +843,7 @@
         <definition>virtual size_t faiss::IndexBinary::sa_code_size</definition>
         <argsstring>() const</argsstring>
         <name>sa_code_size</name>
+        <qualifiedname>faiss::IndexBinary::sa_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -824,6 +858,7 @@
         <definition>virtual void faiss::IndexBinary::add_sa_codes</definition>
         <argsstring>(idx_t n, const uint8_t *codes, const idx_t *xids)</argsstring>
         <name>add_sa_codes</name>
+        <qualifiedname>faiss::IndexBinary::add_sa_codes</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -845,25 +880,35 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="179" column="18"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>just uses the b first bits as a hash value </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IndexBinary</label>
+        <link refid="structfaiss_1_1IndexBinary"/>
+      </node>
       <node id="1">
         <label>faiss::IndexBinaryMultiHash</label>
         <link refid="structfaiss_1_1IndexBinaryMultiHash"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>faiss::IndexBinary</label>
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
+      <node id="3">
+        <label>faiss::IndexBinaryFlat</label>
+        <link refid="structfaiss_1_1IndexBinaryFlat"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::IndexBinaryMultiHash</label>
         <link refid="structfaiss_1_1IndexBinaryMultiHash"/>
@@ -872,16 +917,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>storage</edgelabel>
         </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::IndexBinaryFlat</label>
-        <link refid="structfaiss_1_1IndexBinaryFlat"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IndexBinary</label>
-        <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexBinaryHash.h" line="83" column="1" bodyfile="faiss/IndexBinaryHash.h" bodystart="83" bodyend="124"/>

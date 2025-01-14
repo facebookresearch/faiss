@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1lsq_1_1LSQTimer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::lsq::LSQTimer</compoundname>
     <includes refid="LocalSearchQuantizer_8h" local="no">LocalSearchQuantizer.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1lsq_1_1LSQTimer_1a6a2b77bdbac4ace2ceef5c93fa968868" prot="public" static="no" mutable="no">
         <type>std::unordered_map&lt; std::string, double &gt;</type>
         <definition>std::unordered_map&lt;std::string, double&gt; faiss::lsq::LSQTimer::t</definition>
         <argsstring></argsstring>
         <name>t</name>
+        <qualifiedname>faiss::lsq::LSQTimer::t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/impl/LocalSearchQuantizer.h" line="220" column="24" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="220" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1lsq_1_1LSQTimer_1aad61fada38201a6dcbeef214f86a1327" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::lsq::LSQTimer::LSQTimer</definition>
         <argsstring>()</argsstring>
         <name>LSQTimer</name>
+        <qualifiedname>faiss::lsq::LSQTimer::LSQTimer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>double faiss::lsq::LSQTimer::get</definition>
         <argsstring>(const std::string &amp;name)</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::lsq::LSQTimer::get</qualifiedname>
         <param>
           <type>const std::string &amp;</type>
           <declname>name</declname>
@@ -54,6 +57,7 @@
         <definition>void faiss::lsq::LSQTimer::add</definition>
         <argsstring>(const std::string &amp;name, double delta)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::lsq::LSQTimer::add</qualifiedname>
         <param>
           <type>const std::string &amp;</type>
           <declname>name</declname>
@@ -75,6 +79,7 @@
         <definition>void faiss::lsq::LSQTimer::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::lsq::LSQTimer::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -83,7 +88,7 @@
         </inbodydescription>
         <location file="faiss/impl/LocalSearchQuantizer.h" line="230" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

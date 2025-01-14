@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir">
     <compoundname>faiss/utils</compoundname>
     <innerdir refid="dir_c2dc665bb85977007db19edac984ae84">faiss/utils/approx_topk</innerdir>

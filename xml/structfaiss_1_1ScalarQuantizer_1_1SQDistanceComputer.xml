@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::ScalarQuantizer::SQDistanceComputer</compoundname>
     <basecompoundref refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public" virt="non-virtual">faiss::FlatCodesDistanceComputer</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ade7fed44ffa6f4ea257136108dadb472" prot="public" static="no" mutable="no">
         <type>const float *</type>
         <definition>const float* faiss::ScalarQuantizer::SQDistanceComputer::q</definition>
         <argsstring></argsstring>
         <name>q</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::q</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>const uint8_t* faiss::FlatCodesDistanceComputer::codes</definition>
         <argsstring></argsstring>
         <name>codes</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::codes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>size_t faiss::FlatCodesDistanceComputer::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::ScalarQuantizer::SQDistanceComputer::SQDistanceComputer</definition>
         <argsstring>()</argsstring>
         <name>SQDistanceComputer</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::SQDistanceComputer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +67,7 @@
         <definition>virtual float faiss::ScalarQuantizer::SQDistanceComputer::query_to_code</definition>
         <argsstring>(const uint8_t *code) const =0</argsstring>
         <name>query_to_code</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::query_to_code</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -80,6 +85,7 @@
         <definition>float faiss::ScalarQuantizer::SQDistanceComputer::distance_to_code</definition>
         <argsstring>(const uint8_t *code) final</argsstring>
         <name>distance_to_code</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::distance_to_code</qualifiedname>
         <reimplements refid="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11">distance_to_code</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -99,6 +105,7 @@
         <definition>float faiss::FlatCodesDistanceComputer::operator()</definition>
         <argsstring>(idx_t i) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1DistanceComputer_1a4d71be87bbd904043f6bc2fae03d037f">operator()</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -118,6 +125,7 @@
         <definition>virtual void faiss::DistanceComputer::set_query</definition>
         <argsstring>(const float *x)=0</argsstring>
         <name>set_query</name>
+        <qualifiedname>faiss::DistanceComputer::set_query</qualifiedname>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <param>
           <type>const float *</type>
@@ -137,6 +145,7 @@
         <definition>virtual void faiss::DistanceComputer::distances_batch_4</definition>
         <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3)</argsstring>
         <name>distances_batch_4</name>
+        <qualifiedname>faiss::DistanceComputer::distances_batch_4</qualifiedname>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c">distances_batch_4</reimplementedby>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -184,6 +193,7 @@
         <definition>virtual float faiss::DistanceComputer::symmetric_dis</definition>
         <argsstring>(idx_t i, idx_t j)=0</argsstring>
         <name>symmetric_dis</name>
+        <qualifiedname>faiss::DistanceComputer::symmetric_dis</qualifiedname>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df">symmetric_dis</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -202,17 +212,15 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="57" column="19"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
-        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
+      <node id="3">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
       <node id="2">
         <label>faiss::FlatCodesDistanceComputer</label>
@@ -220,17 +228,17 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::DistanceComputer</label>
-        <link refid="structfaiss_1_1DistanceComputer"/>
+      <node id="1">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
-        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
-        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
+      <node id="3">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
       <node id="2">
         <label>faiss::FlatCodesDistanceComputer</label>
@@ -238,9 +246,11 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::DistanceComputer</label>
-        <link refid="structfaiss_1_1DistanceComputer"/>
+      <node id="1">
+        <label>faiss::ScalarQuantizer::SQDistanceComputer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/ScalarQuantizer.h" line="100" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="100" bodyend="110"/>

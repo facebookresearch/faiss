@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" kind="struct" language="C++" prot="public">
     <compoundname>faiss::rq_encode_steps::RefineBeamMemoryPool</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool_1abe4edc133235749c6fa9242027614b92" prot="public" static="no" mutable="no">
         <type>std::vector&lt; int32_t &gt;</type>
         <definition>std::vector&lt;int32_t&gt; faiss::rq_encode_steps::RefineBeamMemoryPool::new_codes</definition>
         <argsstring></argsstring>
         <name>new_codes</name>
+        <qualifiedname>faiss::rq_encode_steps::RefineBeamMemoryPool::new_codes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::RefineBeamMemoryPool::new_residuals</definition>
         <argsstring></argsstring>
         <name>new_residuals</name>
+        <qualifiedname>faiss::rq_encode_steps::RefineBeamMemoryPool::new_residuals</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::RefineBeamMemoryPool::residuals</definition>
         <argsstring></argsstring>
         <name>residuals</name>
+        <qualifiedname>faiss::rq_encode_steps::RefineBeamMemoryPool::residuals</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>std::vector&lt;int32_t&gt; faiss::rq_encode_steps::RefineBeamMemoryPool::codes</definition>
         <argsstring></argsstring>
         <name>codes</name>
+        <qualifiedname>faiss::rq_encode_steps::RefineBeamMemoryPool::codes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>std::vector&lt;float&gt; faiss::rq_encode_steps::RefineBeamMemoryPool::distances</definition>
         <argsstring></argsstring>
         <name>distances</name>
+        <qualifiedname>faiss::rq_encode_steps::RefineBeamMemoryPool::distances</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,7 +73,7 @@
         </inbodydescription>
         <location file="faiss/impl/residual_quantizer_encode_steps.h" line="106" column="17" bodyfile="faiss/impl/residual_quantizer_encode_steps.h" bodystart="106" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

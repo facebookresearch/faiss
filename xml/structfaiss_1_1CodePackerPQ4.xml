@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CodePackerPQ4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CodePackerPQ4</compoundname>
     <basecompoundref refid="structfaiss_1_1CodePacker" prot="public" virt="non-virtual">faiss::CodePacker</basecompoundref>
     <includes refid="pq4__fast__scan_8h" local="no">pq4_fast_scan.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CodePackerPQ4_1a828350b663e01a7fa7010b6a73546622" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::CodePackerPQ4::nsq</definition>
         <argsstring></argsstring>
         <name>nsq</name>
+        <qualifiedname>faiss::CodePackerPQ4::nsq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>size_t faiss::CodePacker::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::CodePacker::code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>size_t faiss::CodePacker::nvec</definition>
         <argsstring></argsstring>
         <name>nvec</name>
+        <qualifiedname>faiss::CodePacker::nvec</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>size_t faiss::CodePacker::block_size</definition>
         <argsstring></argsstring>
         <name>block_size</name>
+        <qualifiedname>faiss::CodePacker::block_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,13 +61,14 @@
         </inbodydescription>
         <location file="faiss/impl/CodePacker.h" line="23" column="12" bodyfile="faiss/impl/CodePacker.h" bodystart="23" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1CodePackerPQ4_1a0076019cdf6fcde0e819fa8af799642a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::CodePackerPQ4::CodePackerPQ4</definition>
         <argsstring>(size_t nsq, size_t bbs)</argsstring>
         <name>CodePackerPQ4</name>
+        <qualifiedname>faiss::CodePackerPQ4::CodePackerPQ4</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nsq</declname>
@@ -85,6 +90,7 @@
         <definition>void faiss::CodePackerPQ4::pack_1</definition>
         <argsstring>(const uint8_t *flat_code, size_t offset, uint8_t *block) const final</argsstring>
         <name>pack_1</name>
+        <qualifiedname>faiss::CodePackerPQ4::pack_1</qualifiedname>
         <reimplements refid="structfaiss_1_1CodePacker_1a94a4b3147227cc8a115a3ce5bec3cdf1">pack_1</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -111,6 +117,7 @@
         <definition>void faiss::CodePackerPQ4::unpack_1</definition>
         <argsstring>(const uint8_t *block, size_t offset, uint8_t *flat_code) const final</argsstring>
         <name>unpack_1</name>
+        <qualifiedname>faiss::CodePackerPQ4::unpack_1</qualifiedname>
         <reimplements refid="structfaiss_1_1CodePacker_1a0b4468e9cb66b388e275412ced878f30">unpack_1</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -137,6 +144,7 @@
         <definition>virtual void faiss::CodePacker::pack_all</definition>
         <argsstring>(const uint8_t *flat_codes, uint8_t *block) const</argsstring>
         <name>pack_all</name>
+        <qualifiedname>faiss::CodePacker::pack_all</qualifiedname>
         <reimplementedby refid="structfaiss_1_1CodePackerFlat_1ae59ad6a701aae0f810f6aa3e9aa1acfa">pack_all</reimplementedby>
         <param>
           <type>const uint8_t *</type>
@@ -159,6 +167,7 @@
         <definition>virtual void faiss::CodePacker::unpack_all</definition>
         <argsstring>(const uint8_t *block, uint8_t *flat_codes) const</argsstring>
         <name>unpack_all</name>
+        <qualifiedname>faiss::CodePacker::unpack_all</qualifiedname>
         <reimplementedby refid="structfaiss_1_1CodePackerFlat_1ab2ef89a0154f83d8b7b2124e970b2895">unpack_all</reimplementedby>
         <param>
           <type>const uint8_t *</type>
@@ -176,7 +185,7 @@
         </inbodydescription>
         <location file="faiss/impl/CodePacker.h" line="49" column="18"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

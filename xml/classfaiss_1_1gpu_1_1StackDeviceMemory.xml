@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1StackDeviceMemory" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::StackDeviceMemory</compoundname>
     <includes refid="StackDeviceMemory_8h" local="no">StackDeviceMemory.h</includes>
     <innerclass refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" prot="protected">faiss::gpu::StackDeviceMemory::Range</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" prot="protected">faiss::gpu::StackDeviceMemory::Stack</innerclass>
-      <sectiondef kind="protected-attrib">
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" prot="protected" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::StackDeviceMemory::device_</definition>
         <argsstring></argsstring>
         <name>device_</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::device_</qualifiedname>
         <briefdescription>
 <para>Our device. </para>
         </briefdescription>
@@ -25,6 +26,7 @@
         <definition>Stack faiss::gpu::StackDeviceMemory::stack_</definition>
         <argsstring></argsstring>
         <name>stack_</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::stack_</qualifiedname>
         <briefdescription>
 <para>Memory stack. </para>
         </briefdescription>
@@ -34,13 +36,14 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StackDeviceMemory.h" line="108" column="11" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="108" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::StackDeviceMemory::StackDeviceMemory</definition>
         <argsstring>(GpuResources *res, int device, size_t allocPerDevice)</argsstring>
         <name>StackDeviceMemory</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::StackDeviceMemory</qualifiedname>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
           <declname>res</declname>
@@ -67,6 +70,7 @@
         <definition>faiss::gpu::StackDeviceMemory::StackDeviceMemory</definition>
         <argsstring>(int device, void *p, size_t size, bool isOwner)</argsstring>
         <name>StackDeviceMemory</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::StackDeviceMemory</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -97,6 +101,7 @@
         <definition>faiss::gpu::StackDeviceMemory::~StackDeviceMemory</definition>
         <argsstring>()</argsstring>
         <name>~StackDeviceMemory</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::~StackDeviceMemory</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -110,6 +115,7 @@
         <definition>int faiss::gpu::StackDeviceMemory::getDevice</definition>
         <argsstring>() const</argsstring>
         <name>getDevice</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::getDevice</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -118,11 +124,12 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StackDeviceMemory.h" line="33" column="9"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a03cad5735ac3725d2a13baacedb2d246" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void *</type>
-        <definition>void* faiss::gpu::StackDeviceMemory::allocMemory</definition>
+        <definition>void * faiss::gpu::StackDeviceMemory::allocMemory</definition>
         <argsstring>(cudaStream_t stream, size_t size)</argsstring>
         <name>allocMemory</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::allocMemory</qualifiedname>
         <param>
           <type>cudaStream_t</type>
           <declname>stream</declname>
@@ -145,6 +152,7 @@
         <definition>void faiss::gpu::StackDeviceMemory::deallocMemory</definition>
         <argsstring>(int device, cudaStream_t, size_t size, void *p)</argsstring>
         <name>deallocMemory</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::deallocMemory</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -173,6 +181,7 @@
         <definition>size_t faiss::gpu::StackDeviceMemory::getSizeAvailable</definition>
         <argsstring>() const</argsstring>
         <name>getSizeAvailable</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::getSizeAvailable</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -186,6 +195,7 @@
         <definition>std::string faiss::gpu::StackDeviceMemory::toString</definition>
         <argsstring>() const</argsstring>
         <name>toString</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::toString</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -194,7 +204,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StackDeviceMemory.h" line="40" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -205,13 +215,6 @@
         <label>faiss::gpu::GpuResources</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
-      <node id="2">
-        <label>faiss::gpu::StackDeviceMemory::Stack</label>
-        <link refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"/>
-        <childnode refid="3" relation="usage">
-          <edgelabel>res_</edgelabel>
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss::gpu::StackDeviceMemory</label>
         <link refid="classfaiss_1_1gpu_1_1StackDeviceMemory"/>
@@ -219,10 +222,17 @@
           <edgelabel>stack_</edgelabel>
         </childnode>
       </node>
+      <node id="2">
+        <label>faiss::gpu::StackDeviceMemory::Stack</label>
+        <link refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>res_</edgelabel>
+        </childnode>
+      </node>
     </collaborationgraph>
     <location file="faiss/gpu/utils/StackDeviceMemory.h" line="22" column="1" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="22" bodyend="109"/>
     <listofallmembers>
-      <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>allocMemory</name></member>
+      <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a03cad5735ac3725d2a13baacedb2d246" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>allocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>deallocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" prot="protected" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>device_</name></member>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab4d6a319417fb80e56cce4d28124ea89" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>getDevice</name></member>

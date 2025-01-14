@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexIVFInterface" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IndexIVFInterface</compoundname>
     <basecompoundref refid="structfaiss_1_1Level1Quantizer" prot="public" virt="non-virtual">faiss::Level1Quantizer</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVF" prot="public" virt="non-virtual">faiss::IndexIVF</derivedcompoundref>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVF</derivedcompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFInterface_1a04b49a4e8a7bce73757905062cf3e2d2" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IndexIVFInterface::nprobe</definition>
         <argsstring></argsstring>
         <name>nprobe</name>
+        <qualifiedname>faiss::IndexIVFInterface::nprobe</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
 <para>number of probes at query time </para>
@@ -26,6 +27,7 @@
         <definition>size_t faiss::IndexIVFInterface::max_codes</definition>
         <argsstring></argsstring>
         <name>max_codes</name>
+        <qualifiedname>faiss::IndexIVFInterface::max_codes</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>max nb of codes to visit to do a query </para>
@@ -41,6 +43,7 @@
         <definition>Index* faiss::Level1Quantizer::quantizer</definition>
         <argsstring></argsstring>
         <name>quantizer</name>
+        <qualifiedname>faiss::Level1Quantizer::quantizer</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>quantizer that maps vectors to inverted lists </para>
@@ -56,6 +59,7 @@
         <definition>size_t faiss::Level1Quantizer::nlist</definition>
         <argsstring></argsstring>
         <name>nlist</name>
+        <qualifiedname>faiss::Level1Quantizer::nlist</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>number of inverted lists </para>
@@ -71,6 +75,7 @@
         <definition>char faiss::Level1Quantizer::quantizer_trains_alone</definition>
         <argsstring></argsstring>
         <name>quantizer_trains_alone</name>
+        <qualifiedname>faiss::Level1Quantizer::quantizer_trains_alone</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -86,6 +91,7 @@
         <definition>bool faiss::Level1Quantizer::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <qualifiedname>faiss::Level1Quantizer::own_fields</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>whether object owns the quantizer </para>
@@ -101,6 +107,7 @@
         <definition>ClusteringParameters faiss::Level1Quantizer::cp</definition>
         <argsstring></argsstring>
         <name>cp</name>
+        <qualifiedname>faiss::Level1Quantizer::cp</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -115,6 +122,7 @@
         <definition>Index* faiss::Level1Quantizer::clustering_index</definition>
         <argsstring></argsstring>
         <name>clustering_index</name>
+        <qualifiedname>faiss::Level1Quantizer::clustering_index</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>to override index used during clustering </para>
@@ -125,13 +133,14 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="50" column="11" bodyfile="faiss/IndexIVF.h" bodystart="50" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1a480a32625aa7c6ae5fd49afaacfa7fd1" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIVFInterface::IndexIVFInterface</definition>
         <argsstring>(Index *quantizer=nullptr, size_t nlist=0)</argsstring>
         <name>IndexIVFInterface</name>
+        <qualifiedname>faiss::IndexIVFInterface::IndexIVFInterface</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>quantizer</declname>
@@ -155,6 +164,7 @@
         <definition>virtual void faiss::IndexIVFInterface::search_preassigned</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const =0</argsstring>
         <name>search_preassigned</name>
+        <qualifiedname>faiss::IndexIVFInterface::search_preassigned</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1">search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a9eea401290ff9f9181483c9062195f6f">search_preassigned</reimplementedby>
@@ -290,6 +300,7 @@
         <definition>virtual void faiss::IndexIVFInterface::range_search_preassigned</definition>
         <argsstring>(idx_t nx, const float *x, float radius, const idx_t *keys, const float *coarse_dis, RangeSearchResult *result, bool store_pairs=false, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const =0</argsstring>
         <name>range_search_preassigned</name>
+        <qualifiedname>faiss::IndexIVFInterface::range_search_preassigned</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6e2f09e05deee4195a49ed81333a97e2">range_search_preassigned</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a8c2ff8d112f7f381c8cdcc5229b004fe">range_search_preassigned</reimplementedby>
         <param>
@@ -411,6 +422,7 @@
         <definition>virtual faiss::IndexIVFInterface::~IndexIVFInterface</definition>
         <argsstring>()</argsstring>
         <name>~IndexIVFInterface</name>
+        <qualifiedname>faiss::IndexIVFInterface::~IndexIVFInterface</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -424,6 +436,7 @@
         <definition>void faiss::Level1Quantizer::train_q1</definition>
         <argsstring>(size_t n, const float *x, bool verbose, MetricType metric_type)</argsstring>
         <name>train_q1</name>
+        <qualifiedname>faiss::Level1Quantizer::train_q1</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -454,6 +467,7 @@
         <definition>size_t faiss::Level1Quantizer::coarse_code_size</definition>
         <argsstring>() const</argsstring>
         <name>coarse_code_size</name>
+        <qualifiedname>faiss::Level1Quantizer::coarse_code_size</qualifiedname>
         <briefdescription>
 <para>compute the number of bytes required to store list ids </para>
         </briefdescription>
@@ -468,6 +482,7 @@
         <definition>void faiss::Level1Quantizer::encode_listno</definition>
         <argsstring>(idx_t list_no, uint8_t *code) const</argsstring>
         <name>encode_listno</name>
+        <qualifiedname>faiss::Level1Quantizer::encode_listno</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>list_no</declname>
@@ -489,6 +504,7 @@
         <definition>idx_t faiss::Level1Quantizer::decode_listno</definition>
         <argsstring>(const uint8_t *code) const</argsstring>
         <name>decode_listno</name>
+        <qualifiedname>faiss::Level1Quantizer::decode_listno</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -501,34 +517,52 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="62" column="11"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="13">
-        <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
+      <node id="3">
+        <label>faiss::IndexIVF</label>
+        <link refid="structfaiss_1_1IndexIVF"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
-        <label>faiss::IndexIVFResidualQuantizer</label>
-        <link refid="structfaiss_1_1IndexIVFResidualQuantizer"/>
-        <childnode refid="4" relation="public-inheritance">
+      <node id="4">
+        <label>faiss::IndexIVFAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFAdditiveQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="23">
-        <label>faiss::gpu::GpuIndexIVFFlat</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat"/>
-        <childnode refid="22" relation="public-inheritance">
+      <node id="10">
+        <label>faiss::IndexIVFAdditiveQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan"/>
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="25">
-        <label>faiss::gpu::GpuIndexIVFScalarQuantizer</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer"/>
-        <childnode refid="22" relation="public-inheritance">
+      <node id="9">
+        <label>faiss::IndexIVFFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFFastScan"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss::IndexIVFFlat</label>
+        <link refid="structfaiss_1_1IndexIVFFlat"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss::IndexIVFFlatDedup</label>
+        <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::IndexIVFInterface</label>
+        <link refid="structfaiss_1_1IndexIVFInterface"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
@@ -537,9 +571,15 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="21">
-        <label>faiss::IndexIVFSpectralHash</label>
-        <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
+      <node id="11">
+        <label>faiss::IndexIVFLocalSearchQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>faiss::IndexIVFPQ</label>
+        <link refid="structfaiss_1_1IndexIVFPQ"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
@@ -549,80 +589,16 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::IndexIVFAdditiveQuantizer</label>
-        <link refid="structfaiss_1_1IndexIVFAdditiveQuantizer"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::Level1Quantizer</label>
-        <link refid="structfaiss_1_1Level1Quantizer"/>
-      </node>
-      <node id="20">
-        <label>faiss::IndexIVFScalarQuantizer</label>
-        <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
-        <childnode refid="3" relation="public-inheritance">
+      <node id="19">
+        <label>faiss::IndexIVFPQR</label>
+        <link refid="structfaiss_1_1IndexIVFPQR"/>
+        <childnode refid="18" relation="public-inheritance">
         </childnode>
       </node>
       <node id="6">
         <label>faiss::IndexIVFProductLocalSearchQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizer"/>
         <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::IndexIVF</label>
-        <link refid="structfaiss_1_1IndexIVF"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss::IndexIVFAdditiveQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan"/>
-        <childnode refid="9" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="24">
-        <label>faiss::gpu::GpuIndexIVFPQ</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
-        <childnode refid="22" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="14">
-        <label>faiss::IndexIVFResidualQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>faiss::IndexIVFFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFFastScan"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>faiss::gpu::GpuIndexIVF</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss::IndexIVFLocalSearchQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan"/>
-        <childnode refid="10" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss::IndexIVFFlat</label>
-        <link refid="structfaiss_1_1IndexIVFFlat"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>faiss::IndexIVFPQ</label>
-        <link refid="structfaiss_1_1IndexIVFPQ"/>
-        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="12">
@@ -637,42 +613,71 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="17">
-        <label>faiss::IndexIVFFlatDedup</label>
-        <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
-        <childnode refid="16" relation="public-inheritance">
+      <node id="13">
+        <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
+        <childnode refid="10" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="19">
-        <label>faiss::IndexIVFPQR</label>
-        <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="18" relation="public-inheritance">
+      <node id="8">
+        <label>faiss::IndexIVFResidualQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFResidualQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::IndexIVFInterface</label>
-        <link refid="structfaiss_1_1IndexIVFInterface"/>
-        <childnode refid="2" relation="public-inheritance">
+      <node id="14">
+        <label>faiss::IndexIVFResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss::IndexIVFScalarQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss::IndexIVFSpectralHash</label>
+        <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::Level1Quantizer</label>
+        <link refid="structfaiss_1_1Level1Quantizer"/>
+      </node>
+      <node id="22">
+        <label>faiss::gpu::GpuIndexIVF</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>faiss::gpu::GpuIndexIVFFlat</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>faiss::gpu::GpuIndexIVFPQ</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>faiss::gpu::GpuIndexIVFScalarQuantizer</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer"/>
+        <childnode refid="22" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::Level1Quantizer</label>
-        <link refid="structfaiss_1_1Level1Quantizer"/>
-        <childnode refid="3" relation="usage">
-          <edgelabel>cp</edgelabel>
-        </childnode>
-        <childnode refid="4" relation="usage">
-          <edgelabel>clustering_index</edgelabel>
-          <edgelabel>quantizer</edgelabel>
-        </childnode>
-      </node>
-      <node id="3">
+      <node id="4">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
-      <node id="4">
+      <node id="3">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
@@ -680,6 +685,17 @@
         <label>faiss::IndexIVFInterface</label>
         <link refid="structfaiss_1_1IndexIVFInterface"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::Level1Quantizer</label>
+        <link refid="structfaiss_1_1Level1Quantizer"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>clustering_index</edgelabel>
+          <edgelabel>quantizer</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>cp</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

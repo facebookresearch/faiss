@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="GpuClonerOptions_8h" kind="file" language="C++">
     <compoundname>GpuClonerOptions.h</compoundname>
     <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
@@ -17,15 +17,15 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/gpu/GpuClonerOptions.h</label>
         <link refid="GpuClonerOptions_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public">faiss::gpu::GpuClonerOptions</innerclass>

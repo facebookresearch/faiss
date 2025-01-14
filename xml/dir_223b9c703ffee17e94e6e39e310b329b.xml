@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_223b9c703ffee17e94e6e39e310b329b" kind="dir">
     <compoundname>faiss/cppcontrib/sa_decode</compoundname>
     <innerfile refid="Level2-avx2-inl_8h">Level2-avx2-inl.h</innerfile>

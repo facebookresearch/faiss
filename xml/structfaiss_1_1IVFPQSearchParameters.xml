@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IVFPQSearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IVFPQSearchParameters</compoundname>
     <basecompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IVFPQSearchParameters_1a5537033b0fe6cf3ef8334a16de7a47d5" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IVFPQSearchParameters::scan_table_threshold</definition>
         <argsstring></argsstring>
         <name>scan_table_threshold</name>
+        <qualifiedname>faiss::IVFPQSearchParameters::scan_table_threshold</qualifiedname>
         <briefdescription>
 <para>use table computation or on-the-fly? </para>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>int faiss::IVFPQSearchParameters::polysemous_ht</definition>
         <argsstring></argsstring>
         <name>polysemous_ht</name>
+        <qualifiedname>faiss::IVFPQSearchParameters::polysemous_ht</qualifiedname>
         <briefdescription>
 <para>Hamming thresh for polysemous filtering. </para>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>size_t faiss::SearchParametersIVF::nprobe</definition>
         <argsstring></argsstring>
         <name>nprobe</name>
+        <qualifiedname>faiss::SearchParametersIVF::nprobe</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
 <para>number of probes at query time </para>
@@ -52,6 +55,7 @@
         <definition>size_t faiss::SearchParametersIVF::max_codes</definition>
         <argsstring></argsstring>
         <name>max_codes</name>
+        <qualifiedname>faiss::SearchParametersIVF::max_codes</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>max nb of codes to visit to do a query </para>
@@ -67,6 +71,7 @@
         <definition>SearchParameters* faiss::SearchParametersIVF::quantizer_params</definition>
         <argsstring></argsstring>
         <name>quantizer_params</name>
+        <qualifiedname>faiss::SearchParametersIVF::quantizer_params</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -81,6 +86,7 @@
         <definition>void* faiss::SearchParametersIVF::inverted_list_context</definition>
         <argsstring></argsstring>
         <name>inverted_list_context</name>
+        <qualifiedname>faiss::SearchParametersIVF::inverted_list_context</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>context object to pass to <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> </para>
@@ -96,6 +102,7 @@
         <definition>IDSelector* faiss::SearchParameters::sel</definition>
         <argsstring></argsstring>
         <name>sel</name>
+        <qualifiedname>faiss::SearchParameters::sel</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>if non-null, only these IDs will be considered during search. </para>
@@ -106,13 +113,14 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IVFPQSearchParameters_1abb58e8a6e58752abee118760b48e7d7e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IVFPQSearchParameters::IVFPQSearchParameters</definition>
         <argsstring>()</argsstring>
         <name>IVFPQSearchParameters</name>
+        <qualifiedname>faiss::IVFPQSearchParameters::IVFPQSearchParameters</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -126,6 +134,7 @@
         <definition>faiss::IVFPQSearchParameters::~IVFPQSearchParameters</definition>
         <argsstring>()</argsstring>
         <name>~IVFPQSearchParameters</name>
+        <qualifiedname>faiss::IVFPQSearchParameters::~IVFPQSearchParameters</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -134,15 +143,17 @@
         </inbodydescription>
         <location file="faiss/IndexIVFPQ.h" line="26" column="5" bodyfile="faiss/IndexIVFPQ.h" bodystart="26" bodyend="26"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::SearchParameters</label>
-        <link refid="structfaiss_1_1SearchParameters"/>
+      <node id="2">
+        <label>IVFSearchParameters</label>
+        <link refid="structfaiss_1_1SearchParametersIVF"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss::IVFPQSearchParameters</label>
@@ -150,19 +161,19 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>IVFSearchParameters</label>
         <link refid="structfaiss_1_1SearchParametersIVF"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
-      <node id="3">
-        <label>faiss::SearchParameters</label>
-        <link refid="structfaiss_1_1SearchParameters"/>
-        <childnode refid="4" relation="usage">
-          <edgelabel>sel</edgelabel>
+        <childnode refid="3" relation="usage">
+          <edgelabel>quantizer_params</edgelabel>
         </childnode>
       </node>
       <node id="4">
@@ -175,13 +186,11 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>IVFSearchParameters</label>
-        <link refid="structfaiss_1_1SearchParametersIVF"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-        <childnode refid="3" relation="usage">
-          <edgelabel>quantizer_params</edgelabel>
+      <node id="3">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sel</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

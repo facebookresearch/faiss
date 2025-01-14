@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PQDecoder16" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PQDecoder16</compoundname>
-      <sectiondef kind="public-static-attrib">
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PQDecoder16_1a69eda3d6560cfbde9ddf9a2e55684582" prot="public" static="yes" mutable="no">
         <type>const int</type>
         <definition>const int faiss::PQDecoder16::nbits</definition>
         <argsstring></argsstring>
         <name>nbits</name>
+        <qualifiedname>faiss::PQDecoder16::nbits</qualifiedname>
         <initializer>= 16</initializer>
         <briefdescription>
         </briefdescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="239" column="22" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="239" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PQDecoder16_1ac8ad233a42295c64c326eda127628d69" prot="public" static="no" mutable="no">
         <type>const uint16_t *</type>
         <definition>const uint16_t* faiss::PQDecoder16::code</definition>
         <argsstring></argsstring>
         <name>code</name>
+        <qualifiedname>faiss::PQDecoder16::code</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -32,13 +34,14 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="240" column="20" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="240" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PQDecoder16_1a1daddf1ab1bff75ba923aa3a1396f2d9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::PQDecoder16::PQDecoder16</definition>
         <argsstring>(const uint8_t *code, int nbits)</argsstring>
         <name>PQDecoder16</name>
+        <qualifiedname>faiss::PQDecoder16::PQDecoder16</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -60,6 +63,7 @@
         <definition>uint64_t faiss::PQDecoder16::decode</definition>
         <argsstring>()</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::PQDecoder16::decode</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,7 +72,7 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="242" column="14" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="112" bodyend="114"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="LocalSearchQuantizer_8h" kind="file" language="C++">
     <compoundname>LocalSearchQuantizer.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -10,13 +10,32 @@
     <includes refid="AdditiveQuantizer_8h" local="no">faiss/impl/AdditiveQuantizer.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="utils_8h" local="no">faiss/utils/utils.h</includes>
-    <includedby refid="GpuIcmEncoder_8h" local="no">faiss/gpu/GpuIcmEncoder.h</includedby>
-    <includedby refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includedby>
     <includedby refid="IndexAdditiveQuantizer_8h" local="no">faiss/IndexAdditiveQuantizer.h</includedby>
     <includedby refid="IndexIVFAdditiveQuantizer_8h" local="no">faiss/IndexIVFAdditiveQuantizer.h</includedby>
+    <includedby refid="GpuIcmEncoder_8h" local="no">faiss/gpu/GpuIcmEncoder.h</includedby>
+    <includedby refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includedby>
     <incdepgraph>
-      <node id="26">
-        <label>limits</label>
+      <node id="10">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/IndexFlat.h</label>
+        <link refid="IndexFlat_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
       <node id="17">
         <label>faiss/IndexFlatCodes.h</label>
@@ -28,36 +47,33 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="16">
-        <label>faiss/IndexFlat.h</label>
-        <link refid="IndexFlat_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
+      <node id="11">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
+      <node id="7">
+        <label>faiss/impl/AdditiveQuantizer.h</label>
+        <link refid="AdditiveQuantizer_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="9">
-        <label>cstdint</label>
-      </node>
-      <node id="2">
-        <label>stdint.h</label>
-      </node>
-      <node id="8">
-        <label>cmath</label>
-      </node>
-      <node id="25">
-        <label>cassert</label>
-      </node>
-      <node id="4">
-        <label>string</label>
+      <node id="18">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
@@ -85,29 +101,13 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>random</label>
-      </node>
-      <node id="15">
-        <label>typeinfo</label>
-      </node>
-      <node id="13">
-        <label>cstdio</label>
-      </node>
-      <node id="18">
-        <label>faiss/impl/DistanceComputer.h</label>
-        <link refid="DistanceComputer_8h_source"/>
-        <childnode refid="10" relation="include">
+      <node id="12">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="6">
-        <label>vector</label>
-      </node>
-      <node id="27">
-        <label>utility</label>
-      </node>
-      <node id="14">
-        <label>sstream</label>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
       <node id="22">
         <label>faiss/utils/Heap.h</label>
@@ -141,54 +141,6 @@
         <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>unordered_map</label>
-      </node>
-      <node id="23">
-        <label>climits</label>
-      </node>
-      <node id="10">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss/impl/AdditiveQuantizer.h</label>
-        <link refid="AdditiveQuantizer_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>set</label>
-      </node>
-      <node id="24">
-        <label>cstring</label>
-      </node>
       <node id="20">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
@@ -205,55 +157,103 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
+      <node id="25">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>climits</label>
+      </node>
+      <node id="8">
+        <label>cmath</label>
+      </node>
+      <node id="9">
+        <label>cstdint</label>
+      </node>
+      <node id="13">
+        <label>cstdio</label>
+      </node>
+      <node id="24">
+        <label>cstring</label>
+      </node>
+      <node id="26">
+        <label>limits</label>
+      </node>
+      <node id="3">
+        <label>random</label>
+      </node>
+      <node id="21">
+        <label>set</label>
+      </node>
+      <node id="14">
+        <label>sstream</label>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="15">
+        <label>typeinfo</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="27">
+        <label>utility</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="4">
+      <node id="2">
         <label>faiss/IndexAdditiveQuantizer.h</label>
         <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="3">
-        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
-        <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/gpu/GpuIcmEncoder.h</label>
+        <link refid="GpuIcmEncoder_8h_source"/>
       </node>
       <node id="1">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
         <link refid="LocalSearchQuantizer_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-      </node>
-      <node id="6">
-        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
-        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-      <node id="2">
-        <label>faiss/gpu/GpuIcmEncoder.h</label>
-        <link refid="GpuIcmEncoder_8h_source"/>
-      </node>
       <node id="7">
-        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
+        <link refid="ProductAdditiveQuantizer_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1LocalSearchQuantizer" prot="public">faiss::LocalSearchQuantizer</innerclass>
@@ -342,7 +342,7 @@
 <codeline lineno="72"><highlight class="normal"></highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref>();</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">~LocalSearchQuantizer</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Train<sp/>the<sp/>local<sp/>search<sp/>quantizer</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="78" refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b" kindref="member">train</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
@@ -480,7 +480,7 @@
 <codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1lsq_1_1IcmEncoder" kindref="compound">IcmEncoder</ref>*<sp/>get(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref>*<sp/>lsq)<sp/>{</highlight></codeline>
 <codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1lsq_1_1IcmEncoder" kindref="compound">IcmEncoder</ref>(lsq);</highlight></codeline>
 <codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1lsq_1_1IcmEncoderFactory" kindref="compound">IcmEncoderFactory</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1lsq_1_1IcmEncoderFactory" kindref="compound">~IcmEncoderFactory</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="214"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="216"><highlight class="comment">/**<sp/>A<sp/>helper<sp/>struct<sp/>to<sp/>count<sp/>consuming<sp/>time<sp/>during<sp/>training.</highlight></codeline>
@@ -510,7 +510,7 @@
 <codeline lineno="240"><highlight class="normal"></highlight></codeline>
 <codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>finish();</highlight></codeline>
 <codeline lineno="242"><highlight class="normal"></highlight></codeline>
-<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1lsq_1_1LSQTimerScope" kindref="compound">LSQTimerScope</ref>();</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1lsq_1_1LSQTimerScope" kindref="compound">~LSQTimerScope</ref>();</highlight></codeline>
 <codeline lineno="244"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="245"><highlight class="normal"></highlight></codeline>
 <codeline lineno="246"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>lsq</highlight><highlight class="normal"></highlight></codeline>

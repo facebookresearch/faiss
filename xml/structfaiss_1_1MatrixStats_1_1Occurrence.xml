@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1MatrixStats_1_1Occurrence" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats::Occurrence</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1_1Occurrence_1a676322945bc00b01f75e5e979e87174c" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::MatrixStats::Occurrence::first</definition>
         <argsstring></argsstring>
         <name>first</name>
+        <qualifiedname>faiss::MatrixStats::Occurrence::first</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>size_t faiss::MatrixStats::Occurrence::count</definition>
         <argsstring></argsstring>
         <name>count</name>
+        <qualifiedname>faiss::MatrixStats::Occurrence::count</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,7 +31,7 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="62" column="16" bodyfile="faiss/MatrixStats.h" bodystart="62" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

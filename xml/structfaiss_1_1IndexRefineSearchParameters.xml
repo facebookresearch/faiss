@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexRefineSearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexRefineSearchParameters</compoundname>
     <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexRefineSearchParameters_1a546e8b6a6323db9f5450f55898a7ac28" prot="public" static="no" mutable="no">
         <type>float</type>
         <definition>float faiss::IndexRefineSearchParameters::k_factor</definition>
         <argsstring></argsstring>
         <name>k_factor</name>
+        <qualifiedname>faiss::IndexRefineSearchParameters::k_factor</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>SearchParameters* faiss::IndexRefineSearchParameters::base_index_params</definition>
         <argsstring></argsstring>
         <name>base_index_params</name>
+        <qualifiedname>faiss::IndexRefineSearchParameters::base_index_params</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>IDSelector* faiss::SearchParameters::sel</definition>
         <argsstring></argsstring>
         <name>sel</name>
+        <qualifiedname>faiss::SearchParameters::sel</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>if non-null, only these IDs will be considered during search. </para>
@@ -47,13 +50,14 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="66" column="16" bodyfile="faiss/Index.h" bodystart="66" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexRefineSearchParameters_1af0c3946ebcb6d92232fd703c51c4b540" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual faiss::IndexRefineSearchParameters::~IndexRefineSearchParameters</definition>
         <argsstring>()=default</argsstring>
         <name>~IndexRefineSearchParameters</name>
+        <qualifiedname>faiss::IndexRefineSearchParameters::~IndexRefineSearchParameters</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,7 +66,7 @@
         </inbodydescription>
         <location file="faiss/IndexRefine.h" line="18" column="13"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -80,6 +84,10 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::IndexRefineSearchParameters</label>
         <link refid="structfaiss_1_1IndexRefineSearchParameters"/>
@@ -95,10 +103,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>sel</edgelabel>
         </childnode>
-      </node>
-      <node id="3">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexRefine.h" line="14" column="1" bodyfile="faiss/IndexRefine.h" bodystart="14" bodyend="19"/>

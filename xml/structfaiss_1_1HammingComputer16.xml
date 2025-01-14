@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HammingComputer16" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputer16</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HammingComputer16_1ac4340a237b6cf38bad084fe520ce4f38" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
         <definition>uint64_t faiss::HammingComputer16::a0</definition>
         <argsstring></argsstring>
         <name>a0</name>
+        <qualifiedname>faiss::HammingComputer16::a0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>uint64_t faiss::HammingComputer16::a1</definition>
         <argsstring></argsstring>
         <name>a1</name>
+        <qualifiedname>faiss::HammingComputer16::a1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/avx2-inl.h" line="131" column="17" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="131" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1ab601ee8d7ca9e50cc882ebb18354a89e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -70,6 +74,7 @@
         <definition>void faiss::HammingComputer16::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer16::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -91,6 +96,7 @@
         <definition>int faiss::HammingComputer16::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer16::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -108,6 +114,7 @@
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -121,6 +128,7 @@
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -142,6 +150,7 @@
         <definition>void faiss::HammingComputer16::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer16::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -163,6 +172,7 @@
         <definition>int faiss::HammingComputer16::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer16::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -180,6 +190,7 @@
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -193,6 +204,7 @@
         <definition>faiss::HammingComputer16::HammingComputer16</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer16</name>
+        <qualifiedname>faiss::HammingComputer16::HammingComputer16</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -214,6 +226,7 @@
         <definition>void faiss::HammingComputer16::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer16::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -235,6 +248,7 @@
         <definition>int faiss::HammingComputer16::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer16::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -247,13 +261,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="144" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="144" bodyend="147"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HammingComputer16_1a33ece3f5c55052c67c674958d7847127" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>constexpr int</type>
         <definition>static constexpr int faiss::HammingComputer16::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer16::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -267,6 +282,7 @@
         <definition>static constexpr int faiss::HammingComputer16::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer16::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -280,6 +296,7 @@
         <definition>static constexpr int faiss::HammingComputer16::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer16::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -288,7 +305,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="149" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="149" bodyend="151"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

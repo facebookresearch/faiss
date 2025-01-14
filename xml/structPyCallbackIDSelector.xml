@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structPyCallbackIDSelector" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIDSelector</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
         <definition>PyObject* PyCallbackIDSelector::callback</definition>
         <argsstring></argsstring>
         <name>callback</name>
+        <qualifiedname>PyCallbackIDSelector::callback</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/python/python_callbacks.h" line="53" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="53" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structPyCallbackIDSelector_1a2e8bf7cfb11308fe714cbf79ca39de9f" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>PyCallbackIDSelector::PyCallbackIDSelector</definition>
         <argsstring>(PyObject *callback)</argsstring>
         <name>PyCallbackIDSelector</name>
+        <qualifiedname>PyCallbackIDSelector::PyCallbackIDSelector</qualifiedname>
         <param>
           <type>PyObject *</type>
           <declname>callback</declname>
@@ -41,6 +43,7 @@
         <definition>bool PyCallbackIDSelector::is_member</definition>
         <argsstring>(faiss::idx_t id) const override</argsstring>
         <name>is_member</name>
+        <qualifiedname>PyCallbackIDSelector::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref></type>
@@ -59,6 +62,7 @@
         <definition>PyCallbackIDSelector::~PyCallbackIDSelector</definition>
         <argsstring>() override</argsstring>
         <name>~PyCallbackIDSelector</name>
+        <qualifiedname>PyCallbackIDSelector::~PyCallbackIDSelector</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -67,7 +71,7 @@
         </inbodydescription>
         <location file="faiss/python/python_callbacks.h" line="59" column="5"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

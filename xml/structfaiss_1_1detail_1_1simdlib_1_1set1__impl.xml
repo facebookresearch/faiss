@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1detail_1_1simdlib_1_1set1__impl" kind="struct" language="C++" prot="public">
     <compoundname>faiss::detail::simdlib::set1_impl</compoundname>
     <templateparamlist>
@@ -10,12 +10,13 @@
         <type>typename T</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1af1a9398a5409c0cc3cfeaa1a4394db92" prot="public" static="no" mutable="no">
         <type>D &amp;</type>
         <definition>D&amp; faiss::detail::simdlib::set1_impl&lt; D, T &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::detail::simdlib::set1_impl::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>T faiss::detail::simdlib::set1_impl&lt; D, T &gt;::t</definition>
         <argsstring></argsstring>
         <name>t</name>
+        <qualifiedname>faiss::detail::simdlib::set1_impl::t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,8 +39,8 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="148" column="7" bodyfile="faiss/utils/simdlib_neon.h" bodystart="148" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1ab16f359e65e60c8419ce65507aa2f3e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -51,6 +53,7 @@
         <definition>void faiss::detail::simdlib::set1_impl&lt; D, T &gt;::call</definition>
         <argsstring>()</argsstring>
         <name>call</name>
+        <qualifiedname>faiss::detail::simdlib::set1_impl::call</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -59,7 +62,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="150" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="150" bodyend="154"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

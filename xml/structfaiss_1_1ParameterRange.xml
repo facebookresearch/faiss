@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ParameterRange" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ParameterRange</compoundname>
     <includes refid="AutoTune_8h" local="no">AutoTune.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ParameterRange_1a5db7cd6389a8303c7fb98d668b9a7625" prot="public" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string faiss::ParameterRange::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::ParameterRange::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::vector&lt;double&gt; faiss::ParameterRange::values</definition>
         <argsstring></argsstring>
         <name>values</name>
+        <qualifiedname>faiss::ParameterRange::values</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,7 +32,7 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="126" column="17" bodyfile="faiss/AutoTune.h" bodystart="126" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>possible values of a parameter, sorted from least to most expensive/accurate </para>
     </briefdescription>

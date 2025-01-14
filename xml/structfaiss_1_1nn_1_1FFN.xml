@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1nn_1_1FFN" kind="struct" language="C++" prot="public">
     <compoundname>faiss::nn::FFN</compoundname>
     <includes refid="NeuralNet_8h" local="no">NeuralNet.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1nn_1_1FFN_1ad5ba56bb01a18ea27b31ab40ab543e25" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1nn_1_1Linear" kindref="compound">Linear</ref></type>
         <definition>Linear faiss::nn::FFN::linear1</definition>
         <argsstring></argsstring>
         <name>linear1</name>
+        <qualifiedname>faiss::nn::FFN::linear1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>Linear faiss::nn::FFN::linear2</definition>
         <argsstring></argsstring>
         <name>linear2</name>
+        <qualifiedname>faiss::nn::FFN::linear2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="80" column="20" bodyfile="faiss/utils/NeuralNet.h" bodystart="80" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1nn_1_1FFN_1a63cb46c78923e2f13fff5b61536d276e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::nn::FFN::FFN</definition>
         <argsstring>(int d, int h)</argsstring>
         <name>FFN</name>
+        <qualifiedname>faiss::nn::FFN::FFN</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -58,6 +61,7 @@
         <definition>Tensor2D faiss::nn::FFN::operator()</definition>
         <argsstring>(const Tensor2D &amp;x) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::nn::FFN::operator()</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2D</ref> &amp;</type>
           <declname>x</declname>
@@ -70,7 +74,7 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="84" column="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

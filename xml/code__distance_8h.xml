@@ -1,23 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="code__distance_8h" kind="file" language="C++">
     <compoundname>code_distance.h</compoundname>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="code__distance-generic_8h" local="no">faiss/impl/code_distance/code_distance-generic.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
+      <node id="5">
+        <label>faiss/impl/code_distance/code_distance-generic.h</label>
+        <link refid="code__distance-generic_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
       </node>
       <node id="1">
         <label>faiss/impl/code_distance/code_distance.h</label>
@@ -27,16 +21,22 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
       <node id="6">
         <label>cstddef</label>
       </node>
-      <node id="5">
-        <label>faiss/impl/code_distance/code_distance-generic.h</label>
-        <link refid="code__distance-generic_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

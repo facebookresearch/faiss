@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</compoundname>
     <templateparamlist>
@@ -17,12 +17,13 @@
         <type>typename HammingComputerT</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-static-attrib">
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr uint32_t</type>
         <definition>constexpr uint32_t faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::NBUCKETS_8</definition>
         <argsstring></argsstring>
         <name>NBUCKETS_8</name>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::NBUCKETS_8</qualifiedname>
         <initializer>= NBUCKETS / 8</initializer>
         <briefdescription>
         </briefdescription>
@@ -32,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="32" column="31" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="32" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a55d7edca6fba66c8615d4b29f7cf24b4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</definition>
         <argsstring>(const uint32_t n, const HammingComputerT &amp;hc, const uint8_t *const __restrict binaryVectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids)</argsstring>
         <name>addn</name>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -76,6 +78,7 @@
         <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const HammingComputerT &amp;hc, const uint8_t *const __restrict binary_vectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids)</argsstring>
         <name>bs_addn</name>
+        <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -112,7 +115,7 @@
         </inbodydescription>
         <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="54" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="54" bodyend="179"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

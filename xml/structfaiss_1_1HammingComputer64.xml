@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HammingComputer64" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputer64</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HammingComputer64_1ac6407c0d486b180692f14b99974e6c34" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
         <definition>uint64_t faiss::HammingComputer64::a0</definition>
         <argsstring></argsstring>
         <name>a0</name>
+        <qualifiedname>faiss::HammingComputer64::a0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>uint64_t faiss::HammingComputer64::a1</definition>
         <argsstring></argsstring>
         <name>a1</name>
+        <qualifiedname>faiss::HammingComputer64::a1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>uint64_t faiss::HammingComputer64::a2</definition>
         <argsstring></argsstring>
         <name>a2</name>
+        <qualifiedname>faiss::HammingComputer64::a2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>uint64_t faiss::HammingComputer64::a3</definition>
         <argsstring></argsstring>
         <name>a3</name>
+        <qualifiedname>faiss::HammingComputer64::a3</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>uint64_t faiss::HammingComputer64::a4</definition>
         <argsstring></argsstring>
         <name>a4</name>
+        <qualifiedname>faiss::HammingComputer64::a4</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,6 +78,7 @@
         <definition>uint64_t faiss::HammingComputer64::a5</definition>
         <argsstring></argsstring>
         <name>a5</name>
+        <qualifiedname>faiss::HammingComputer64::a5</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -86,6 +92,7 @@
         <definition>uint64_t faiss::HammingComputer64::a6</definition>
         <argsstring></argsstring>
         <name>a6</name>
+        <qualifiedname>faiss::HammingComputer64::a6</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -99,6 +106,7 @@
         <definition>uint64_t faiss::HammingComputer64::a7</definition>
         <argsstring></argsstring>
         <name>a7</name>
+        <qualifiedname>faiss::HammingComputer64::a7</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -112,6 +120,7 @@
         <definition>const uint64_t* faiss::HammingComputer64::a</definition>
         <argsstring></argsstring>
         <name>a</name>
+        <qualifiedname>faiss::HammingComputer64::a</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -120,13 +129,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/avx512-inl.h" line="223" column="20" bodyfile="faiss/utils/hamming_distance/avx512-inl.h" bodystart="223" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HammingComputer64_1aa5eca842b60c85b575ebd8292a94d01b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -140,6 +150,7 @@
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -161,6 +172,7 @@
         <definition>void faiss::HammingComputer64::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer64::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -182,6 +194,7 @@
         <definition>int faiss::HammingComputer64::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer64::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -199,6 +212,7 @@
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -212,6 +226,7 @@
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -233,6 +248,7 @@
         <definition>void faiss::HammingComputer64::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer64::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -254,6 +270,7 @@
         <definition>int faiss::HammingComputer64::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer64::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -271,6 +288,7 @@
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>()</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -284,6 +302,7 @@
         <definition>faiss::HammingComputer64::HammingComputer64</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputer64</name>
+        <qualifiedname>faiss::HammingComputer64::HammingComputer64</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -305,6 +324,7 @@
         <definition>void faiss::HammingComputer64::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputer64::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -326,6 +346,7 @@
         <definition>int faiss::HammingComputer64::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputer64::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -338,13 +359,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="239" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="239" bodyend="245"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HammingComputer64_1a70628d1411ae9d96d23420842b029c91" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>constexpr int</type>
         <definition>static constexpr int faiss::HammingComputer64::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer64::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -358,6 +380,7 @@
         <definition>static constexpr int faiss::HammingComputer64::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer64::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -371,6 +394,7 @@
         <definition>static constexpr int faiss::HammingComputer64::get_code_size</definition>
         <argsstring>()</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputer64::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -379,7 +403,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="247" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="247" bodyend="249"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="VectorTransform_8h" kind="file" language="C++">
     <compoundname>VectorTransform.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -9,45 +9,6 @@
     <includedby refid="IndexLSH_8h" local="no">faiss/IndexLSH.h</includedby>
     <includedby refid="IndexPreTransform_8h" local="no">faiss/IndexPreTransform.h</includedby>
     <incdepgraph>
-      <node id="6">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss/VectorTransform.h</label>
-        <link refid="VectorTransform_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>cstdint</label>
-      </node>
-      <node id="2">
-        <label>stdint.h</label>
-      </node>
-      <node id="10">
-        <label>string</label>
-      </node>
-      <node id="11">
-        <label>typeinfo</label>
-      </node>
-      <node id="8">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>sstream</label>
-      </node>
       <node id="4">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
@@ -68,8 +29,63 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss/VectorTransform.h</label>
+        <link refid="VectorTransform_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cstdint</label>
+      </node>
+      <node id="8">
+        <label>cstdio</label>
+      </node>
+      <node id="9">
+        <label>sstream</label>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>typeinfo</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexIVFIndependentQuantizer.h</label>
+        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/IndexLSH.h</label>
+        <link refid="IndexLSH_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/IndexPreTransform.h</label>
+        <link refid="IndexPreTransform_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h"/>
@@ -80,25 +96,9 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss/IndexPreTransform.h</label>
-        <link refid="IndexPreTransform_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/IndexIVFIndependentQuantizer.h</label>
-        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
-      </node>
       <node id="4">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/IndexLSH.h</label>
-        <link refid="IndexLSH_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
@@ -165,7 +165,7 @@
 <codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/><sp/><sp/><sp/><sp/>x<sp/>input<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>d_in</highlight></codeline>
 <codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@return<sp/><sp/><sp/><sp/>output<sp/>vectors,<sp/>size<sp/>n<sp/>*<sp/>d_out</highlight></codeline>
 <codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49" refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kindref="member">apply</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49" refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" kindref="member">apply</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>apply<sp/>the<sp/>transformation<sp/>and<sp/>return<sp/>the<sp/>result<sp/>in<sp/>a<sp/>provided<sp/>matrix</highlight></codeline>
 <codeline lineno="52"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/><sp/><sp/><sp/><sp/>n<sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>transform</highlight></codeline>
@@ -181,7 +181,7 @@
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>that<sp/>the<sp/>two<sp/>transforms<sp/>are<sp/>identical<sp/>(to<sp/>merge<sp/>indexes)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_identical(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform" kindref="compound">~VectorTransform</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="66"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="68"><highlight class="comment">/**<sp/>Generic<sp/>linear<sp/>transformation,<sp/>with<sp/>bias<sp/>term<sp/>applied<sp/>on<sp/>output</highlight></codeline>
@@ -227,7 +227,7 @@
 <codeline lineno="108"><highlight class="normal"></highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_identical(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1LinearTransform" kindref="compound">LinearTransform</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LinearTransform" kindref="compound">~LinearTransform</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
 <codeline lineno="112"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="114"><highlight class="comment">///<sp/>Randomly<sp/>rotate<sp/>a<sp/>set<sp/>of<sp/>vectors</highlight></codeline>

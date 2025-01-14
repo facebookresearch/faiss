@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuClonerOptions" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuClonerOptions</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public" virt="non-virtual">faiss::gpu::GpuMultipleClonerOptions</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public" virt="non-virtual">faiss::gpu::ToGpuCloner</derivedcompoundref>
     <includes refid="GpuClonerOptions_8h" local="no">GpuClonerOptions.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" static="no" mutable="no">
         <type>IndicesOptions</type>
         <definition>IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::indicesOptions</qualifiedname>
         <initializer>= INDICES_64_BIT</initializer>
         <briefdescription>
         </briefdescription>
@@ -26,6 +27,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>useFloat16CoarseQuantizer</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>is the coarse quantizer in float16? </para>
@@ -41,6 +43,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16</definition>
         <argsstring></argsstring>
         <name>useFloat16</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::useFloat16</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -56,6 +59,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::usePrecomputed</definition>
         <argsstring></argsstring>
         <name>usePrecomputed</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::usePrecomputed</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>use precomputed tables? </para>
@@ -71,6 +75,7 @@
         <definition>long faiss::gpu::GpuClonerOptions::reserveVecs</definition>
         <argsstring></argsstring>
         <name>reserveVecs</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::reserveVecs</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>reserve vectors in the invfiles? </para>
@@ -86,6 +91,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::storeTransposed</definition>
         <argsstring></argsstring>
         <name>storeTransposed</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::storeTransposed</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>
@@ -101,6 +107,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Set verbose options on the index. </para>
@@ -116,6 +123,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>use the cuVS implementation </para>
@@ -131,6 +139,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>allowCpuCoarseQuantizer</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -141,33 +150,33 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuClonerOptions.h" line="51" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="51" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>set some options on how to copy to GPU </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="1">
+        <label>faiss::gpu::GpuClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      </node>
       <node id="2">
         <label>faiss::gpu::GpuMultipleClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::gpu::GpuClonerOptions</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      <node id="4">
+        <label>faiss::gpu::ToGpuCloner</label>
+        <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss::gpu::ToGpuClonerMultiple</label>
         <link refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple"/>
         <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::gpu::ToGpuCloner</label>
-        <link refid="structfaiss_1_1gpu_1_1ToGpuCloner"/>
-        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

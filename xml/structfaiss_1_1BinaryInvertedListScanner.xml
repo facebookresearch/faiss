@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BinaryInvertedListScanner" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::BinaryInvertedListScanner</compoundname>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1a22bf6ac0128e4e45768f91b4de58fdb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
         <definition>virtual void faiss::BinaryInvertedListScanner::set_query</definition>
         <argsstring>(const uint8_t *query_vector)=0</argsstring>
         <name>set_query</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::set_query</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>query_vector</declname>
@@ -26,6 +27,7 @@
         <definition>virtual void faiss::BinaryInvertedListScanner::set_list</definition>
         <argsstring>(idx_t list_no, uint8_t coarse_dis)=0</argsstring>
         <name>set_list</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::set_list</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>list_no</declname>
@@ -48,6 +50,7 @@
         <definition>virtual uint32_t faiss::BinaryInvertedListScanner::distance_to_code</definition>
         <argsstring>(const uint8_t *code) const =0</argsstring>
         <name>distance_to_code</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::distance_to_code</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -66,6 +69,7 @@
         <definition>virtual size_t faiss::BinaryInvertedListScanner::scan_codes</definition>
         <argsstring>(size_t n, const uint8_t *codes, const idx_t *ids, int32_t *distances, idx_t *labels, size_t k) const =0</argsstring>
         <name>scan_codes</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::scan_codes</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -154,6 +158,7 @@
         <definition>virtual void faiss::BinaryInvertedListScanner::scan_codes_range</definition>
         <argsstring>(size_t n, const uint8_t *codes, const idx_t *ids, int radius, RangeQueryResult &amp;result) const =0</argsstring>
         <name>scan_codes_range</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::scan_codes_range</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -187,6 +192,7 @@
         <definition>virtual faiss::BinaryInvertedListScanner::~BinaryInvertedListScanner</definition>
         <argsstring>()</argsstring>
         <name>~BinaryInvertedListScanner</name>
+        <qualifiedname>faiss::BinaryInvertedListScanner::~BinaryInvertedListScanner</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -195,7 +201,7 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryIVF.h" line="255" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="255" bodyend="255"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

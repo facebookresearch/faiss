@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ZnSphereCodecAlt" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ZnSphereCodecAlt</compoundname>
     <basecompoundref refid="structfaiss_1_1ZnSphereCodec" prot="public" virt="non-virtual">faiss::ZnSphereCodec</basecompoundref>
     <includes refid="lattice__Zn_8h" local="no">lattice_Zn.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecAlt_1a7efc212357d8ae337dc01743499d93e5" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::ZnSphereCodecAlt::use_rec</definition>
         <argsstring></argsstring>
         <name>use_rec</name>
+        <qualifiedname>faiss::ZnSphereCodecAlt::use_rec</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>ZnSphereCodecRec faiss::ZnSphereCodecAlt::znc_rec</definition>
         <argsstring></argsstring>
         <name>znc_rec</name>
+        <qualifiedname>faiss::ZnSphereCodecAlt::znc_rec</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>std::vector&lt;CodeSegment&gt; faiss::ZnSphereCodec::code_segments</definition>
         <argsstring></argsstring>
         <name>code_segments</name>
+        <qualifiedname>faiss::ZnSphereCodec::code_segments</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>uint64_t faiss::ZnSphereCodec::nv</definition>
         <argsstring></argsstring>
         <name>nv</name>
+        <qualifiedname>faiss::ZnSphereCodec::nv</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +66,7 @@
         <definition>size_t faiss::ZnSphereCodec::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::ZnSphereCodec::code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -75,6 +80,7 @@
         <definition>int faiss::ZnSphereSearch::dimS</definition>
         <argsstring></argsstring>
         <name>dimS</name>
+        <qualifiedname>faiss::ZnSphereSearch::dimS</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -88,6 +94,7 @@
         <definition>int faiss::ZnSphereSearch::r2</definition>
         <argsstring></argsstring>
         <name>r2</name>
+        <qualifiedname>faiss::ZnSphereSearch::r2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +108,7 @@
         <definition>int faiss::ZnSphereSearch::natom</definition>
         <argsstring></argsstring>
         <name>natom</name>
+        <qualifiedname>faiss::ZnSphereSearch::natom</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -114,6 +122,7 @@
         <definition>std::vector&lt;float&gt; faiss::ZnSphereSearch::voc</definition>
         <argsstring></argsstring>
         <name>voc</name>
+        <qualifiedname>faiss::ZnSphereSearch::voc</qualifiedname>
         <briefdescription>
 <para>size dim * ntatom </para>
         </briefdescription>
@@ -128,6 +137,7 @@
         <definition>int faiss::EnumeratedVectors::dim</definition>
         <argsstring></argsstring>
         <name>dim</name>
+        <qualifiedname>faiss::EnumeratedVectors::dim</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -136,13 +146,14 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="58" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="58" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecAlt_1a675180f91a8d7f67b36246591e9b9eff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZnSphereCodecAlt::ZnSphereCodecAlt</definition>
         <argsstring>(int dim, int r2)</argsstring>
         <name>ZnSphereCodecAlt</name>
+        <qualifiedname>faiss::ZnSphereCodecAlt::ZnSphereCodecAlt</qualifiedname>
         <param>
           <type>int</type>
           <declname>dim</declname>
@@ -164,6 +175,7 @@
         <definition>uint64_t faiss::ZnSphereCodecAlt::encode</definition>
         <argsstring>(const float *x) const override</argsstring>
         <name>encode</name>
+        <qualifiedname>faiss::ZnSphereCodecAlt::encode</qualifiedname>
         <reimplements refid="structfaiss_1_1ZnSphereCodec_1a323fcba5a65c35ea8dc7d2bda5d92f74">encode</reimplements>
         <param>
           <type>const float *</type>
@@ -183,6 +195,7 @@
         <definition>void faiss::ZnSphereCodecAlt::decode</definition>
         <argsstring>(uint64_t code, float *c) const override</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::ZnSphereCodecAlt::decode</qualifiedname>
         <reimplements refid="structfaiss_1_1ZnSphereCodec_1abba759b93931fb0a38eb5af37bb3fe05">decode</reimplements>
         <param>
           <type>uint64_t</type>
@@ -206,6 +219,7 @@
         <definition>uint64_t faiss::ZnSphereCodec::search_and_encode</definition>
         <argsstring>(const float *x) const</argsstring>
         <name>search_and_encode</name>
+        <qualifiedname>faiss::ZnSphereCodec::search_and_encode</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -223,6 +237,7 @@
         <definition>float faiss::ZnSphereSearch::search</definition>
         <argsstring>(const float *x, float *c) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::ZnSphereSearch::search</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -245,6 +260,7 @@
         <definition>float faiss::ZnSphereSearch::search</definition>
         <argsstring>(const float *x, float *c, float *tmp, int *tmp_int, int *ibest_out=nullptr) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::ZnSphereSearch::search</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -280,6 +296,7 @@
         <definition>void faiss::ZnSphereSearch::search_multi</definition>
         <argsstring>(int n, const float *x, float *c_out, float *dp_out)</argsstring>
         <name>search_multi</name>
+        <qualifiedname>faiss::ZnSphereSearch::search_multi</qualifiedname>
         <param>
           <type>int</type>
           <declname>n</declname>
@@ -309,6 +326,7 @@
         <definition>void faiss::EnumeratedVectors::encode_multi</definition>
         <argsstring>(size_t nc, const float *c, uint64_t *codes) const</argsstring>
         <name>encode_multi</name>
+        <qualifiedname>faiss::EnumeratedVectors::encode_multi</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nc</declname>
@@ -334,6 +352,7 @@
         <definition>void faiss::EnumeratedVectors::decode_multi</definition>
         <argsstring>(size_t nc, const uint64_t *codes, float *c) const</argsstring>
         <name>decode_multi</name>
+        <qualifiedname>faiss::EnumeratedVectors::decode_multi</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nc</declname>
@@ -359,6 +378,7 @@
         <definition>void faiss::EnumeratedVectors::find_nn</definition>
         <argsstring>(size_t n, const uint64_t *codes, size_t nq, const float *xq, int64_t *idx, float *dis)</argsstring>
         <name>find_nn</name>
+        <qualifiedname>faiss::EnumeratedVectors::find_nn</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -391,19 +411,13 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="76" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Codec that uses the recursive codec if dim is a power of 2 and the regular one otherwise </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::ZnSphereCodecAlt</label>
-        <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="4">
         <label>faiss::EnumeratedVectors</label>
         <link refid="structfaiss_1_1EnumeratedVectors"/>
@@ -416,12 +430,30 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss::ZnSphereCodecAlt</label>
+        <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::ZnSphereSearch</label>
         <link refid="structfaiss_1_1ZnSphereSearch"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="4">
+        <label>faiss::EnumeratedVectors</label>
+        <link refid="structfaiss_1_1EnumeratedVectors"/>
+      </node>
+      <node id="2">
+        <label>faiss::ZnSphereCodec</label>
+        <link refid="structfaiss_1_1ZnSphereCodec"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::ZnSphereCodecAlt</label>
         <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
@@ -434,18 +466,6 @@
       <node id="5">
         <label>faiss::ZnSphereCodecRec</label>
         <link refid="structfaiss_1_1ZnSphereCodecRec"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::EnumeratedVectors</label>
-        <link refid="structfaiss_1_1EnumeratedVectors"/>
-      </node>
-      <node id="2">
-        <label>faiss::ZnSphereCodec</label>
-        <link refid="structfaiss_1_1ZnSphereCodec"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+
+  <xsd:element name="doxyfile" type="DoxygenFileType"/>
+
+  <xsd:complexType name="DoxygenFileType">
+    <xsd:sequence>
+      <xsd:element name="option" type="OptionType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute ref="xml:lang" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="OptionType">
+    <xsd:sequence>
+      <xsd:element name="value" type="valueType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" use="required"/>
+    <xsd:attribute name="default" type="defaultType" use="required"/>
+    <xsd:attribute name="type" type="typeType" use="required"/>
+  </xsd:complexType>
+
+  <xsd:simpleType name="valueType">
+    <xsd:restriction base="xsd:string">
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="defaultType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="yes"/>
+      <xsd:enumeration value="no"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="typeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="int"/>
+      <xsd:enumeration value="bool"/>
+      <xsd:enumeration value="string"/>
+      <xsd:enumeration value="stringlist"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BufferedIOReader" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BufferedIOReader</compoundname>
     <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
     <includes refid="io_8h" local="no">io.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1BufferedIOReader_1aed9064cb6e5c8d09645beffa06796fcf" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
         <definition>IOReader* faiss::BufferedIOReader::reader</definition>
         <argsstring></argsstring>
         <name>reader</name>
+        <qualifiedname>faiss::BufferedIOReader::reader</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>size_t faiss::BufferedIOReader::bsz</definition>
         <argsstring></argsstring>
         <name>bsz</name>
+        <qualifiedname>faiss::BufferedIOReader::bsz</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>size_t faiss::BufferedIOReader::ofs</definition>
         <argsstring></argsstring>
         <name>ofs</name>
+        <qualifiedname>faiss::BufferedIOReader::ofs</qualifiedname>
         <briefdescription>
 <para>offset in input stream </para>
         </briefdescription>
@@ -50,6 +53,7 @@
         <definition>size_t faiss::BufferedIOReader::ofs2</definition>
         <argsstring></argsstring>
         <name>ofs2</name>
+        <qualifiedname>faiss::BufferedIOReader::ofs2</qualifiedname>
         <briefdescription>
 <para>number of bytes returned to caller </para>
         </briefdescription>
@@ -64,6 +68,7 @@
         <definition>size_t faiss::BufferedIOReader::b0</definition>
         <argsstring></argsstring>
         <name>b0</name>
+        <qualifiedname>faiss::BufferedIOReader::b0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -77,6 +82,7 @@
         <definition>size_t faiss::BufferedIOReader::b1</definition>
         <argsstring></argsstring>
         <name>b1</name>
+        <qualifiedname>faiss::BufferedIOReader::b1</qualifiedname>
         <briefdescription>
 <para>range of available bytes in the buffer </para>
         </briefdescription>
@@ -91,6 +97,7 @@
         <definition>std::vector&lt;char&gt; faiss::BufferedIOReader::buffer</definition>
         <argsstring></argsstring>
         <name>buffer</name>
+        <qualifiedname>faiss::BufferedIOReader::buffer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -104,6 +111,7 @@
         <definition>std::string faiss::IOReader::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -112,13 +120,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1BufferedIOReader_1a5e86e5c802653905f1543c9d86b5457c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::BufferedIOReader::BufferedIOReader</definition>
         <argsstring>(IOReader *reader, size_t bsz=1024 *1024)</argsstring>
         <name>BufferedIOReader</name>
+        <qualifiedname>faiss::BufferedIOReader::BufferedIOReader</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
           <declname>reader</declname>
@@ -151,6 +160,7 @@
         <definition>size_t faiss::BufferedIOReader::operator()</definition>
         <argsstring>(void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::BufferedIOReader::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a">operator()</reimplements>
         <param>
           <type>void *</type>
@@ -177,6 +187,7 @@
         <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOReader::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -186,7 +197,7 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="35" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,24 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="PolysemousTraining_8h" kind="file" language="C++">
     <compoundname>PolysemousTraining.h</compoundname>
     <includes refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includes>
     <includedby refid="IndexPQ_8h" local="no">faiss/IndexPQ.h</includedby>
     <incdepgraph>
-      <node id="20">
-        <label>limits</label>
-      </node>
-      <node id="8">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>cstdint</label>
-      </node>
       <node id="5">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
@@ -27,8 +13,25 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>stdint.h</label>
+      <node id="6">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/PolysemousTraining.h</label>
@@ -36,18 +39,27 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="17">
-        <label>cmath</label>
-      </node>
-      <node id="19">
-        <label>cassert</label>
-      </node>
-      <node id="12">
-        <label>string</label>
-      </node>
       <node id="23">
         <label>faiss/impl/ProductQuantizer-inl.h</label>
         <link refid="ProductQuantizer-inl_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/impl/ProductQuantizer.h</label>
+        <link refid="ProductQuantizer_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
       </node>
       <node id="14">
         <label>faiss/impl/Quantizer.h</label>
@@ -55,20 +67,13 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>typeinfo</label>
-      </node>
-      <node id="10">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
-      <node id="21">
-        <label>utility</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
+      <node id="8">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="15">
         <label>faiss/utils/Heap.h</label>
@@ -102,52 +107,57 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
+      <node id="19">
+        <label>cassert</label>
+      </node>
       <node id="16">
         <label>climits</label>
       </node>
-      <node id="6">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
+      <node id="17">
+        <label>cmath</label>
       </node>
-      <node id="7">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
+      <node id="9">
+        <label>cstdint</label>
       </node>
-      <node id="2">
-        <label>faiss/impl/ProductQuantizer.h</label>
-        <link refid="ProductQuantizer_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
+      <node id="10">
+        <label>cstdio</label>
       </node>
       <node id="18">
         <label>cstring</label>
       </node>
+      <node id="20">
+        <label>limits</label>
+      </node>
+      <node id="11">
+        <label>sstream</label>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="12">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>typeinfo</label>
+      </node>
+      <node id="21">
+        <label>utility</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="3">
+        <label>faiss/Index2Layer.h</label>
+        <link refid="Index2Layer_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/IndexHNSW.h</label>
+        <link refid="IndexHNSW_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
       <node id="6">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
@@ -155,6 +165,16 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
       </node>
       <node id="9">
         <label>faiss/IndexNSG.h</label>
@@ -174,41 +194,21 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss/impl/PolysemousTraining.h</label>
-        <link refid="PolysemousTraining_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss/IndexHNSW.h</label>
-        <link refid="IndexHNSW_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
       <node id="10">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>faiss/IndexIVFPQFastScan.h</label>
-        <link refid="IndexIVFPQFastScan_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/Index2Layer.h</label>
-        <link refid="Index2Layer_8h_source"/>
-      </node>
-      <node id="8">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
       <node id="5">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/PolysemousTraining.h</label>
+        <link refid="PolysemousTraining_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1SimulatedAnnealingParameters" prot="public">faiss::SimulatedAnnealingParameters</innerclass>
@@ -266,7 +266,7 @@
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>default<sp/>implementation<sp/>just<sp/>computes<sp/>both<sp/>and<sp/>computes<sp/>the<sp/>difference</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>cost_update(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>iw,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jw)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">~PermutationObjective</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="46"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48" refid="structfaiss_1_1ReproduceDistancesObjective" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref><sp/>:<sp/><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref><sp/>{</highlight></codeline>
@@ -307,7 +307,7 @@
 <codeline lineno="83"><highlight class="normal"></highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_affine_target_dis(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>source_dis_in);</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">~ReproduceDistancesObjective</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
 <codeline lineno="87"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">RandomGenerator;</highlight></codeline>
@@ -333,7 +333,7 @@
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>run<sp/>the<sp/>optimization<sp/>and<sp/>return<sp/>the<sp/>best<sp/>result<sp/>in<sp/>best_perm</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>run_optimization(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>best_perm);</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1SimulatedAnnealingOptimizer" kindref="compound">SimulatedAnnealingOptimizer</ref>();</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SimulatedAnnealingOptimizer" kindref="compound">~SimulatedAnnealingOptimizer</ref>();</highlight></codeline>
 <codeline lineno="113"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="115"><highlight class="comment">///<sp/>optimizes<sp/>the<sp/>order<sp/>of<sp/>indices<sp/>in<sp/>a<sp/>ProductQuantizer</highlight></codeline>

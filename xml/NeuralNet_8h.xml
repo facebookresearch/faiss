@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="NeuralNet_8h" kind="file" language="C++">
     <compoundname>NeuralNet.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -7,15 +7,6 @@
     <includes local="no">vector</includes>
     <includedby refid="IndexNeuralNetCodec_8h" local="no">faiss/IndexNeuralNetCodec.h</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
-      <node id="3">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
       <node id="1">
         <label>faiss/utils/NeuralNet.h</label>
         <link refid="NeuralNet_8h"/>
@@ -25,6 +16,15 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="3">
+        <label>cstdio</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -97,8 +97,8 @@
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="43"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Tensor2D<sp/>=<sp/>Tensor2DTemplate&lt;float&gt;;</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Int32Tensor2D<sp/>=<sp/>Tensor2DTemplate&lt;int32_t&gt;;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Tensor2D<sp/>=<sp/>Tensor2DTemplate&lt;float&gt;;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Int32Tensor2D<sp/>=<sp/>Tensor2DTemplate&lt;int32_t&gt;;</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="48"><highlight class="comment">///<sp/>minimal<sp/>translation<sp/>of<sp/>nn.Linear</highlight></codeline>
 <codeline lineno="49" refid="structfaiss_1_1nn_1_1Linear" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1nn_1_1Linear" kindref="compound">Linear</ref><sp/>{</highlight></codeline>
@@ -178,7 +178,7 @@
 <codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref><sp/>decode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref>&amp;<sp/>codes)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref><sp/>encode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref>&amp;<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"></highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1NeuralNetCodec" kindref="compound">NeuralNetCodec</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NeuralNetCodec" kindref="compound">~NeuralNetCodec</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="127"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"></highlight></codeline>
 <codeline lineno="129" refid="structfaiss_1_1QINCo" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1QINCo" kindref="compound">QINCo</ref><sp/>:<sp/><ref refid="structfaiss_1_1NeuralNetCodec" kindref="compound">NeuralNetCodec</ref><sp/>{</highlight></codeline>
@@ -196,7 +196,7 @@
 <codeline lineno="141"><highlight class="normal"></highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref><sp/>encode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref>&amp;<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"></highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1QINCo" kindref="compound">QINCo</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1QINCo" kindref="compound">~QINCo</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="145"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="146"><highlight class="normal"></highlight></codeline>
 <codeline lineno="147"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorOr" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorOr</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorOr_1a22cf01ad73c87c51c0118456a05d9792" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
         <definition>const IDSelector* faiss::IDSelectorOr::lhs</definition>
         <argsstring></argsstring>
         <name>lhs</name>
+        <qualifiedname>faiss::IDSelectorOr::lhs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>const IDSelector* faiss::IDSelectorOr::rhs</definition>
         <argsstring></argsstring>
         <name>rhs</name>
+        <qualifiedname>faiss::IDSelectorOr::rhs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -31,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="151" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="151" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorOr_1aaae6b2b1b0bcb747b828e39b7ee100ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorOr::IDSelectorOr</definition>
         <argsstring>(const IDSelector *lhs, const IDSelector *rhs)</argsstring>
         <name>IDSelectorOr</name>
+        <qualifiedname>faiss::IDSelectorOr::IDSelectorOr</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
           <declname>lhs</declname>
@@ -59,6 +62,7 @@
         <definition>bool faiss::IDSelectorOr::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorOr::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -77,6 +81,7 @@
         <definition>virtual faiss::IDSelectorOr::~IDSelectorOr</definition>
         <argsstring>()</argsstring>
         <name>~IDSelectorOr</name>
+        <qualifiedname>faiss::IDSelectorOr::~IDSelectorOr</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -85,25 +90,29 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="157" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="157" bodyend="157"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>does an OR operation on the the two given <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>&apos;s is_membership results. </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::IDSelectorOr</label>
         <link refid="structfaiss_1_1IDSelectorOr"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>faiss::IDSelector</label>
         <link refid="structfaiss_1_1IDSelector"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::IDSelectorOr</label>
         <link refid="structfaiss_1_1IDSelectorOr"/>
@@ -113,10 +122,6 @@
           <edgelabel>lhs</edgelabel>
           <edgelabel>rhs</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/IDSelector.h" line="149" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="149" bodyend="158"/>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VisitedTable" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VisitedTable</compoundname>
     <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VisitedTable_1ac2343f3d7f81c2cf046c3ee20ce2c5ec" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
         <definition>std::vector&lt;uint8_t&gt; faiss::VisitedTable::visited</definition>
         <argsstring></argsstring>
         <name>visited</name>
+        <qualifiedname>faiss::VisitedTable::visited</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>uint8_t faiss::VisitedTable::visno</definition>
         <argsstring></argsstring>
         <name>visno</name>
+        <qualifiedname>faiss::VisitedTable::visno</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="175" column="13" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="175" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1VisitedTable_1a0cc8846371feddc08cdc6294f3a0e79a" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::VisitedTable::VisitedTable</definition>
         <argsstring>(int size)</argsstring>
         <name>VisitedTable</name>
+        <qualifiedname>faiss::VisitedTable::VisitedTable</qualifiedname>
         <param>
           <type>int</type>
           <declname>size</declname>
@@ -54,6 +57,7 @@
         <definition>void faiss::VisitedTable::set</definition>
         <argsstring>(int no)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::VisitedTable::set</qualifiedname>
         <param>
           <type>int</type>
           <declname>no</declname>
@@ -72,6 +76,7 @@
         <definition>bool faiss::VisitedTable::get</definition>
         <argsstring>(int no) const</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::VisitedTable::get</qualifiedname>
         <param>
           <type>int</type>
           <declname>no</declname>
@@ -90,6 +95,7 @@
         <definition>void faiss::VisitedTable::advance</definition>
         <argsstring>()</argsstring>
         <name>advance</name>
+        <qualifiedname>faiss::VisitedTable::advance</qualifiedname>
         <briefdescription>
 <para>reset all flags to false </para>
         </briefdescription>
@@ -99,7 +105,7 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="190" column="10" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="190" bodyend="197"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>set implementation optimized for fast access. </para>
     </briefdescription>

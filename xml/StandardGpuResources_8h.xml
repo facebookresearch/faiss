@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="StandardGpuResources_8h" kind="file" language="C++">
     <compoundname>StandardGpuResources.h</compoundname>
     <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
@@ -11,17 +11,48 @@
     <includes local="no">vector</includes>
     <includedby refid="IndexWrapper_8h" local="no">faiss/gpu/perf/IndexWrapper.h</includedby>
     <incdepgraph>
-      <node id="18">
-        <label>list</label>
-      </node>
-      <node id="6">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="7" relation="include">
+      <node id="2">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/gpu/utils/DeviceUtils.h</label>
+        <link refid="DeviceUtils_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -42,99 +73,6 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="21">
-        <label>functional</label>
-      </node>
-      <node id="3">
-        <label>cublas_v2.h</label>
-      </node>
-      <node id="11">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>cstdint</label>
-      </node>
-      <node id="16">
-        <label>faiss/gpu/utils/DeviceUtils.h</label>
-        <link refid="DeviceUtils_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="22">
-        <label>map</label>
-      </node>
-      <node id="7">
-        <label>exception</label>
-      </node>
-      <node id="2">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="13">
-        <label>cstdio</label>
-      </node>
-      <node id="19">
-        <label>tuple</label>
-      </node>
-      <node id="10">
-        <label>vector</label>
-      </node>
-      <node id="9">
-        <label>utility</label>
-      </node>
-      <node id="14">
-        <label>cstdlib</label>
-      </node>
-      <node id="1">
-        <label>faiss/gpu/StandardGpuResources.h</label>
-        <link refid="StandardGpuResources_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>unordered_map</label>
-      </node>
       <node id="5">
         <label>faiss/impl/FaissAssert.h</label>
         <link refid="FaissAssert_8h_source"/>
@@ -149,20 +87,82 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="6">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>cstdint</label>
+      </node>
+      <node id="13">
+        <label>cstdio</label>
+      </node>
+      <node id="14">
+        <label>cstdlib</label>
+      </node>
+      <node id="3">
+        <label>cublas_v2.h</label>
+      </node>
+      <node id="4">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="7">
+        <label>exception</label>
+      </node>
+      <node id="21">
+        <label>functional</label>
+      </node>
+      <node id="18">
+        <label>list</label>
+      </node>
+      <node id="22">
+        <label>map</label>
+      </node>
       <node id="15">
         <label>memory</label>
       </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="19">
+        <label>tuple</label>
+      </node>
+      <node id="20">
+        <label>unordered_map</label>
+      </node>
+      <node id="9">
+        <label>utility</label>
+      </node>
+      <node id="10">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/gpu/perf/IndexWrapper.h</label>
-        <link refid="IndexWrapper_8h_source"/>
-      </node>
       <node id="1">
         <label>faiss/gpu/StandardGpuResources.h</label>
         <link refid="StandardGpuResources_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/gpu/perf/IndexWrapper.h</label>
+        <link refid="IndexWrapper_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
@@ -222,7 +222,7 @@
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref>();</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">StandardGpuResourcesImpl</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kindref="compound">~StandardGpuResourcesImpl</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Does<sp/>the<sp/>given<sp/>GPU<sp/>support<sp/>bfloat16?</highlight></codeline>
 <codeline lineno="52" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad2267943823c25e95b28733bf1177935" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad2267943823c25e95b28733bf1177935" kindref="member">supportsBFloat16</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
@@ -281,10 +281,10 @@
 <codeline lineno="105"><highlight class="normal"></highlight></codeline>
 <codeline lineno="106" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a7a2b9d0db8057ec24a4acbdad5acf984" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a7a2b9d0db8057ec24a4acbdad5acf984" kindref="member">getBlasHandle</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a098278ee17c5a58a385190da02ba8b08" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a098278ee17c5a58a385190da02ba8b08" kindref="member">getAlternateStreams</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="108" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af9a8e76274a5df7ee6ffb0c1e599e3c7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;cudaStream_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af9a8e76274a5df7ee6ffb0c1e599e3c7" kindref="member">getAlternateStreams</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Allocate<sp/>non-temporary<sp/>GPU<sp/>memory</highlight></codeline>
-<codeline lineno="111" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1abfebafa768ef83db56488906fe57ed6c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1abfebafa768ef83db56488906fe57ed6c" kindref="member">allocMemory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="111" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ae53b5744edf67d4f7cb5d5112aa400cc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ae53b5744edf67d4f7cb5d5112aa400cc" kindref="member">allocMemory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1AllocRequest" kindref="compound">AllocRequest</ref>&amp;<sp/>req)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>previous<sp/>allocation</highlight></codeline>
 <codeline lineno="114" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a00d69ab624340410818c700b9019475d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a00d69ab624340410818c700b9019475d" kindref="member">deallocMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>in)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
@@ -292,10 +292,10 @@
 <codeline lineno="116" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a633cfc45b53aa74156418ddc108c8167" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a633cfc45b53aa74156418ddc108c8167" kindref="member">getTempMemoryAvailable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="118"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Export<sp/>a<sp/>description<sp/>of<sp/>memory<sp/>used<sp/>for<sp/>Python</highlight></codeline>
-<codeline lineno="119" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af8760dfaf89fac90208e8c73b718437c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1af8760dfaf89fac90208e8c73b718437c" kindref="member">getMemoryInfo</ref>()</highlight></codeline>
+<codeline lineno="119" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a41c537ffcbf457313aef5323b922ec91" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a41c537ffcbf457313aef5323b922ec91" kindref="member">getMemoryInfo</ref>()</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="121"><highlight class="normal"></highlight></codeline>
-<codeline lineno="122" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a86dea0d55d2ab7226f173e2ec998c6b4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;void*,<sp/>size_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a86dea0d55d2ab7226f173e2ec998c6b4" kindref="member">getPinnedMemory</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad04a26c558a95a2af3191e316d92b68e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;void*,<sp/>size_t&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad04a26c558a95a2af3191e316d92b68e" kindref="member">getPinnedMemory</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="123"><highlight class="normal"></highlight></codeline>
 <codeline lineno="124" refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a28beb152642c2621724c7eedb088630c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a28beb152642c2621724c7eedb088630c" kindref="member">getAsyncCopyStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"></highlight></codeline>
@@ -374,9 +374,9 @@
 <codeline lineno="198" refid="classfaiss_1_1gpu_1_1StandardGpuResources" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
 <codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>();</highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">StandardGpuResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources" kindref="compound">~StandardGpuResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="202"><highlight class="normal"></highlight></codeline>
-<codeline lineno="203" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="203" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a33920623c7f932f83563c5a8cae04750" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a33920623c7f932f83563c5a8cae04750" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="204"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="205"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Whether<sp/>or<sp/>not<sp/>the<sp/>given<sp/>device<sp/>supports<sp/>native<sp/>bfloat16<sp/>arithmetic</highlight></codeline>
 <codeline lineno="206" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1acbb018d9baccc288a6d36f5509c83fb9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1acbb018d9baccc288a6d36f5509c83fb9" kindref="member">supportsBFloat16</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
@@ -415,7 +415,7 @@
 <codeline lineno="239" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a5374f336f1957c266d7a5c185eb962a1" kindref="member">setDefaultNullStreamAllDevices</ref>();</highlight></codeline>
 <codeline lineno="240"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="241"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Export<sp/>a<sp/>description<sp/>of<sp/>memory<sp/>used<sp/>for<sp/>Python</highlight></codeline>
-<codeline lineno="242" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" kindref="member">getMemoryInfo</ref>()</highlight></codeline>
+<codeline lineno="242" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a088bf80ed530425fe1c3cf9c34255df3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;int,<sp/>std::map&lt;std::string,<sp/>std::pair&lt;int,<sp/>size_t&gt;&gt;&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a088bf80ed530425fe1c3cf9c34255df3" kindref="member">getMemoryInfo</ref>()</highlight></codeline>
 <codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="244"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>current<sp/>default<sp/>stream</highlight></codeline>
 <codeline lineno="245" refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" kindref="member">getDefaultStream</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>

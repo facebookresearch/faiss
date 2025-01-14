@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1Quantizer" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::Quantizer</compoundname>
     <derivedcompoundref refid="structfaiss_1_1AdditiveQuantizer" prot="public" virt="non-virtual">faiss::AdditiveQuantizer</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ProductQuantizer" prot="public" virt="non-virtual">faiss::ProductQuantizer</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ScalarQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer</derivedcompoundref>
     <includes refid="Quantizer_8h" local="no">Quantizer.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::Quantizer::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::Quantizer::d</qualifiedname>
         <briefdescription>
 <para>size of the input vectors </para>
         </briefdescription>
@@ -26,6 +27,7 @@
         <definition>size_t faiss::Quantizer::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::Quantizer::code_size</qualifiedname>
         <briefdescription>
 <para>bytes per indexed vector </para>
         </briefdescription>
@@ -35,13 +37,14 @@
         </inbodydescription>
         <location file="faiss/impl/Quantizer.h" line="17" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="17" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::Quantizer::Quantizer</definition>
         <argsstring>(size_t d=0, size_t code_size=0)</argsstring>
         <name>Quantizer</name>
+        <qualifiedname>faiss::Quantizer::Quantizer</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -65,6 +68,7 @@
         <definition>virtual void faiss::Quantizer::train</definition>
         <argsstring>(size_t n, const float *x)=0</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::Quantizer::train</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a3d066376adf471dd936c251f9f5706c3">train</reimplementedby>
@@ -102,6 +106,7 @@
         <definition>virtual void faiss::Quantizer::compute_codes</definition>
         <argsstring>(const float *x, uint8_t *codes, size_t n) const =0</argsstring>
         <name>compute_codes</name>
+        <qualifiedname>faiss::Quantizer::compute_codes</qualifiedname>
         <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1aa75999838c16331a2a2b437cc6283291">compute_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a4cf7deeb4d4454e2b79876458ada36bc">compute_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1abfd07a93dca7826709b5d3ab7767f5da">compute_codes</reimplementedby>
@@ -149,6 +154,7 @@
         <definition>virtual void faiss::Quantizer::decode</definition>
         <argsstring>(const uint8_t *code, float *x, size_t n) const =0</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::Quantizer::decode</qualifiedname>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1ad8c4cd19b05301ef3afca0589d16a199">decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1af605deafd19bab5777d29e035ed5e510">decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1a851fda9f520d3a358abbf0bffe34135f">decode</reimplementedby>
@@ -197,6 +203,7 @@
         <definition>virtual faiss::Quantizer::~Quantizer</definition>
         <argsstring>()</argsstring>
         <name>~Quantizer</name>
+        <qualifiedname>faiss::Quantizer::~Quantizer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -205,34 +212,28 @@
         </inbodydescription>
         <location file="faiss/impl/Quantizer.h" line="43" column="13" bodyfile="faiss/impl/Quantizer.h" bodystart="43" bodyend="43"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>General interface for quantizer objects </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="7">
-        <label>faiss::ResidualQuantizer</label>
-        <link refid="structfaiss_1_1ResidualQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>faiss::ScalarQuantizer</label>
-        <link refid="structfaiss_1_1ScalarQuantizer"/>
+      <node id="2">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::ProductAdditiveQuantizer</label>
-        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
-        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">
         <label>faiss::LocalSearchQuantizer</label>
         <link refid="structfaiss_1_1LocalSearchQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::ProductAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -242,9 +243,9 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss::AdditiveQuantizer</label>
-        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+      <node id="8">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
@@ -258,9 +259,15 @@
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
-      <node id="8">
-        <label>faiss::ProductQuantizer</label>
-        <link refid="structfaiss_1_1ProductQuantizer"/>
+      <node id="7">
+        <label>faiss::ResidualQuantizer</label>
+        <link refid="structfaiss_1_1ResidualQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::ScalarQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1InvertedListsIterator" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::InvertedListsIterator</compoundname>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual faiss::InvertedListsIterator::~InvertedListsIterator</definition>
         <argsstring>()</argsstring>
         <name>~InvertedListsIterator</name>
+        <qualifiedname>faiss::InvertedListsIterator::~InvertedListsIterator</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>virtual bool faiss::InvertedListsIterator::is_available</definition>
         <argsstring>() const =0</argsstring>
         <name>is_available</name>
+        <qualifiedname>faiss::InvertedListsIterator::is_available</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>virtual void faiss::InvertedListsIterator::next</definition>
         <argsstring>()=0</argsstring>
         <name>next</name>
+        <qualifiedname>faiss::InvertedListsIterator::next</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,11 +45,12 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="26" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1a03a5ff7f48b942fa98124047e4e93947" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1a13ffcc2ddd20eaf8ae0fc4bca4e6dc5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::pair&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>, const uint8_t * &gt;</type>
-        <definition>virtual std::pair&lt;idx_t, const uint8_t*&gt; faiss::InvertedListsIterator::get_id_and_codes</definition>
+        <definition>virtual std::pair&lt; idx_t, const uint8_t * &gt; faiss::InvertedListsIterator::get_id_and_codes</definition>
         <argsstring>()=0</argsstring>
         <name>get_id_and_codes</name>
+        <qualifiedname>faiss::InvertedListsIterator::get_id_and_codes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -55,14 +59,14 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="27" column="23"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <location file="faiss/invlists/InvertedLists.h" line="23" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="23" bodyend="28"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1InvertedListsIterator_1a03a5ff7f48b942fa98124047e4e93947" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>get_id_and_codes</name></member>
+      <member refid="structfaiss_1_1InvertedListsIterator_1a13ffcc2ddd20eaf8ae0fc4bca4e6dc5d" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>get_id_and_codes</name></member>
       <member refid="structfaiss_1_1InvertedListsIterator_1afd70a0c999749b2192ab8b4cbdf3e829" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>is_available</name></member>
       <member refid="structfaiss_1_1InvertedListsIterator_1a9173654909e52fb7336f13820dab045e" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>next</name></member>
       <member refid="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" prot="public" virt="virtual"><scope>faiss::InvertedListsIterator</scope><name>~InvertedListsIterator</name></member>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PermutationObjective" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::PermutationObjective</compoundname>
     <derivedcompoundref refid="structfaiss_1_1ReproduceDistancesObjective" prot="public" virt="non-virtual">faiss::ReproduceDistancesObjective</derivedcompoundref>
     <includes refid="PolysemousTraining_8h" local="no">PolysemousTraining.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PermutationObjective_1a81657be192b4589b13a3f51fc0765c2f" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::PermutationObjective::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::PermutationObjective::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -18,13 +19,14 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="37" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="37" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PermutationObjective_1ad9bd7b5ba62c1492746ef9428c7269c8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>double</type>
         <definition>virtual double faiss::PermutationObjective::compute_cost</definition>
         <argsstring>(const int *perm) const =0</argsstring>
         <name>compute_cost</name>
+        <qualifiedname>faiss::PermutationObjective::compute_cost</qualifiedname>
         <reimplementedby refid="structfaiss_1_1ReproduceDistancesObjective_1a2d100606c9d4ede9fbb0e169ded94c48">compute_cost</reimplementedby>
         <param>
           <type>const int *</type>
@@ -43,6 +45,7 @@
         <definition>virtual double faiss::PermutationObjective::cost_update</definition>
         <argsstring>(const int *perm, int iw, int jw) const</argsstring>
         <name>cost_update</name>
+        <qualifiedname>faiss::PermutationObjective::cost_update</qualifiedname>
         <reimplementedby refid="structfaiss_1_1ReproduceDistancesObjective_1afc77e29c06e64613b49509b619f39562">cost_update</reimplementedby>
         <param>
           <type>const int *</type>
@@ -69,6 +72,7 @@
         <definition>virtual faiss::PermutationObjective::~PermutationObjective</definition>
         <argsstring>()</argsstring>
         <name>~PermutationObjective</name>
+        <qualifiedname>faiss::PermutationObjective::~PermutationObjective</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -77,22 +81,22 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="45" column="13" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="45" bodyend="45"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>abstract class for the loss function </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="1">
+        <label>faiss::PermutationObjective</label>
+        <link refid="structfaiss_1_1PermutationObjective"/>
+      </node>
       <node id="2">
         <label>faiss::ReproduceDistancesObjective</label>
         <link refid="structfaiss_1_1ReproduceDistancesObjective"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="1">
-        <label>faiss::PermutationObjective</label>
-        <link refid="structfaiss_1_1PermutationObjective"/>
       </node>
     </inheritancegraph>
     <location file="faiss/impl/PolysemousTraining.h" line="36" column="1" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="36" bodyend="46"/>

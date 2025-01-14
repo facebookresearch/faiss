@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1DirectMap" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DirectMap</compoundname>
     <includes refid="DirectMap_8h" local="no">DirectMap.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="enum" id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" static="no" strong="no">
         <type></type>
         <name>Type</name>
+        <qualifiedname>faiss::DirectMap::Type</qualifiedname>
         <enumvalue id="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595" prot="public">
           <name>NoMap</name>
           <initializer>= 0</initializer>
@@ -39,13 +40,14 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="39" column="5" bodyfile="faiss/invlists/DirectMap.h" bodystart="39" bodyend="43"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" prot="public" static="no" mutable="no">
         <type>Type</type>
         <definition>Type faiss::DirectMap::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <qualifiedname>faiss::DirectMap::type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -59,6 +61,7 @@
         <definition>std::vector&lt;idx_t&gt; faiss::DirectMap::array</definition>
         <argsstring></argsstring>
         <name>array</name>
+        <qualifiedname>faiss::DirectMap::array</qualifiedname>
         <briefdescription>
 <para>map for direct access to the elements. Map ids to LO-encoded entries. </para>
         </briefdescription>
@@ -73,6 +76,7 @@
         <definition>std::unordered_map&lt;idx_t, idx_t&gt; faiss::DirectMap::hashtable</definition>
         <argsstring></argsstring>
         <name>hashtable</name>
+        <qualifiedname>faiss::DirectMap::hashtable</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -81,13 +85,14 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="48" column="24" bodyfile="faiss/invlists/DirectMap.h" bodystart="48" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1adc5c8d5b6b22b1f94c6349f26e8eb0b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::DirectMap::DirectMap</definition>
         <argsstring>()</argsstring>
         <name>DirectMap</name>
+        <qualifiedname>faiss::DirectMap::DirectMap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +106,7 @@
         <definition>void faiss::DirectMap::set_type</definition>
         <argsstring>(Type new_type, const InvertedLists *invlists, size_t ntotal)</argsstring>
         <name>set_type</name>
+        <qualifiedname>faiss::DirectMap::set_type</qualifiedname>
         <param>
           <type>Type</type>
           <declname>new_type</declname>
@@ -127,6 +133,7 @@
         <definition>idx_t faiss::DirectMap::get</definition>
         <argsstring>(idx_t id) const</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::DirectMap::get</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
@@ -145,6 +152,7 @@
         <definition>bool faiss::DirectMap::no</definition>
         <argsstring>() const</argsstring>
         <name>no</name>
+        <qualifiedname>faiss::DirectMap::no</qualifiedname>
         <briefdescription>
 <para>for quick checks </para>
         </briefdescription>
@@ -159,6 +167,7 @@
         <definition>void faiss::DirectMap::check_can_add</definition>
         <argsstring>(const idx_t *ids)</argsstring>
         <name>check_can_add</name>
+        <qualifiedname>faiss::DirectMap::check_can_add</qualifiedname>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>ids</declname>
@@ -178,6 +187,7 @@
         <definition>void faiss::DirectMap::add_single_id</definition>
         <argsstring>(idx_t id, idx_t list_no, size_t offset)</argsstring>
         <name>add_single_id</name>
+        <qualifiedname>faiss::DirectMap::add_single_id</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
@@ -204,6 +214,7 @@
         <definition>void faiss::DirectMap::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::DirectMap::clear</qualifiedname>
         <briefdescription>
 <para>remove all entries </para>
         </briefdescription>
@@ -218,6 +229,7 @@
         <definition>size_t faiss::DirectMap::remove_ids</definition>
         <argsstring>(const IDSelector &amp;sel, InvertedLists *invlists)</argsstring>
         <name>remove_ids</name>
+        <qualifiedname>faiss::DirectMap::remove_ids</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
@@ -241,6 +253,7 @@
         <definition>void faiss::DirectMap::update_codes</definition>
         <argsstring>(InvertedLists *invlists, int n, const idx_t *ids, const idx_t *list_nos, const uint8_t *codes)</argsstring>
         <name>update_codes</name>
+        <qualifiedname>faiss::DirectMap::update_codes</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
           <declname>invlists</declname>
@@ -270,7 +283,7 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="84" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

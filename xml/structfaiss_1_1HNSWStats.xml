@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HNSWStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HNSWStats</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HNSWStats_1a28e67551d5cf31ab374fc8df2bab7cee" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::HNSWStats::n1</definition>
         <argsstring></argsstring>
         <name>n1</name>
+        <qualifiedname>faiss::HNSWStats::n1</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::HNSWStats::n2</definition>
         <argsstring></argsstring>
         <name>n2</name>
+        <qualifiedname>faiss::HNSWStats::n2</qualifiedname>
         <initializer>=
             0</initializer>
         <briefdescription>
@@ -38,6 +40,7 @@
         <definition>size_t faiss::HNSWStats::ndis</definition>
         <argsstring></argsstring>
         <name>ndis</name>
+        <qualifiedname>faiss::HNSWStats::ndis</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>number of queries for which the candidate list is exhausted </para>
@@ -53,6 +56,7 @@
         <definition>size_t faiss::HNSWStats::nhops</definition>
         <argsstring></argsstring>
         <name>nhops</name>
+        <qualifiedname>faiss::HNSWStats::nhops</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>number of distances computed </para>
@@ -63,13 +67,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="239" column="12" bodyfile="faiss/impl/HNSW.h" bodystart="239" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::HNSWStats::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::HNSWStats::reset</qualifiedname>
         <briefdescription>
 <para>number of hops aka number of edges traversed </para>
         </briefdescription>
@@ -84,6 +89,7 @@
         <definition>void faiss::HNSWStats::combine</definition>
         <argsstring>(const HNSWStats &amp;other)</argsstring>
         <name>combine</name>
+        <qualifiedname>faiss::HNSWStats::combine</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
           <declname>other</declname>
@@ -96,7 +102,7 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="247" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="247" bodyend="252"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

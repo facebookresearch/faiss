@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd_result_handlers::DummyResultHandler</compoundname>
     <basecompoundref refid="structfaiss_1_1SIMDResultHandler" prot="public" virt="non-virtual">faiss::SIMDResultHandler</basecompoundref>
     <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a9f8b05f7ba29eec7bd46a2d112339dfe" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::simd_result_handlers::DummyResultHandler::cs</definition>
         <argsstring></argsstring>
         <name>cs</name>
+        <qualifiedname>faiss::simd_result_handlers::DummyResultHandler::cs</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -24,6 +25,7 @@
         <definition>bool faiss::SIMDResultHandler::is_CMax</definition>
         <argsstring></argsstring>
         <name>is_CMax</name>
+        <qualifiedname>faiss::SIMDResultHandler::is_CMax</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -38,6 +40,7 @@
         <definition>uint8_t faiss::SIMDResultHandler::sizeof_ids</definition>
         <argsstring></argsstring>
         <name>sizeof_ids</name>
+        <qualifiedname>faiss::SIMDResultHandler::sizeof_ids</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -52,6 +55,7 @@
         <definition>bool faiss::SIMDResultHandler::with_fields</definition>
         <argsstring></argsstring>
         <name>with_fields</name>
+        <qualifiedname>faiss::SIMDResultHandler::with_fields</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -61,13 +65,14 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="33" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="33" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1adabe2dfd3f4c1aff7f35be2d567478f3" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::simd_result_handlers::DummyResultHandler::handle</definition>
         <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final</argsstring>
         <name>handle</name>
+        <qualifiedname>faiss::simd_result_handlers::DummyResultHandler::handle</qualifiedname>
         <reimplements refid="structfaiss_1_1SIMDResultHandler_1aa32e37a5068c5e4627b11bc3db6e95d8">handle</reimplements>
         <param>
           <type>size_t</type>
@@ -99,6 +104,7 @@
         <definition>void faiss::simd_result_handlers::DummyResultHandler::set_block_origin</definition>
         <argsstring>(size_t, size_t) final</argsstring>
         <name>set_block_origin</name>
+        <qualifiedname>faiss::simd_result_handlers::DummyResultHandler::set_block_origin</qualifiedname>
         <reimplements refid="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0">set_block_origin</reimplements>
         <param>
           <type>size_t</type>
@@ -122,6 +128,7 @@
         <definition>faiss::simd_result_handlers::DummyResultHandler::~DummyResultHandler</definition>
         <argsstring>()</argsstring>
         <name>~DummyResultHandler</name>
+        <qualifiedname>faiss::simd_result_handlers::DummyResultHandler::~DummyResultHandler</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -130,34 +137,34 @@
         </inbodydescription>
         <location file="faiss/impl/simd_result_handlers.h" line="90" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="90" bodyend="90"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Dummy structure that just computes a chqecksum on results (to avoid the computation to be optimized away) </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
       <node id="1">
         <label>faiss::simd_result_handlers::DummyResultHandler</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
       <node id="1">
         <label>faiss::simd_result_handlers::DummyResultHandler</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::SIMDResultHandler</label>
-        <link refid="structfaiss_1_1SIMDResultHandler"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/simd_result_handlers.h" line="81" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="81" bodyend="91"/>

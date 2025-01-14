@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="common_8h" kind="file" language="C++">
     <compoundname>common.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -14,12 +14,6 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
-      </node>
       <node id="1">
         <label>faiss/utils/hamming_distance/common.h</label>
         <link refid="common_8h"/>
@@ -28,14 +22,14 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
-        <link refid="hamdis-inl_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="3">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
@@ -46,9 +40,15 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
+        <link refid="hamdis-inl_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
-      <sectiondef kind="typedef">
+    <sectiondef kind="typedef">
       <memberdef kind="typedef" id="common_8h_1af54d4643f130c0bc719a8d181ca68a2b" prot="public" static="no">
         <type>int32_t</type>
         <definition>using hamdis_t =  int32_t</definition>
@@ -62,7 +62,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/common.h" line="16" column="1" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="16" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -83,7 +83,7 @@
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>The<sp/>Hamming<sp/>distance<sp/>type<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>hamdis_t<sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">hamdis_t<sp/>=<sp/>int32_t;</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
@@ -101,7 +101,7 @@
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>otherwise<sp/>it<sp/>was<sp/>causing<sp/>compilation<sp/>errors<sp/>while<sp/>trying<sp/>to</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compile<sp/>swig<sp/>modules<sp/>on<sp/>Windows.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo<sp/>for<sp/>C++17:<sp/>switch<sp/>to<sp/>&apos;inline<sp/>constexpr&apos;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>uint8_t<sp/>hamdis_tab_ham_bytes[256]<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>uint8_t<sp/>hamdis_tab_ham_bytes[256]<sp/>=<sp/>{</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0,<sp/>1,<sp/>1,<sp/>2,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2,<sp/>3,<sp/>3,<sp/>4,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>3,<sp/>4,<sp/>4,<sp/>5,<sp/>4,<sp/>5,<sp/>5,<sp/>6,<sp/>1,<sp/>2,<sp/>2,<sp/>3,<sp/>2,<sp/>3,<sp/>3,<sp/>4,</highlight></codeline>

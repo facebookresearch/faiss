@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="residual__quantizer__encode__steps_8h" kind="file" language="C++">
     <compoundname>residual_quantizer_encode_steps.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -7,48 +7,6 @@
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="mode_8h" local="no">faiss/utils/approx_topk/mode.h</includes>
     <incdepgraph>
-      <node id="6">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
-      <node id="1">
-        <label>faiss/impl/residual_quantizer_encode_steps.h</label>
-        <link refid="residual__quantizer__encode__steps_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>string</label>
-      </node>
-      <node id="11">
-        <label>faiss/utils/approx_topk/mode.h</label>
-        <link refid="mode_8h_source"/>
-      </node>
-      <node id="10">
-        <label>typeinfo</label>
-      </node>
-      <node id="7">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
-        <label>vector</label>
-      </node>
-      <node id="8">
-        <label>sstream</label>
-      </node>
       <node id="4">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
@@ -68,6 +26,48 @@
         <link refid="MetricType_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/residual_quantizer_encode_steps.h</label>
+        <link refid="residual__quantizer__encode__steps_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>cstdio</label>
+      </node>
+      <node id="8">
+        <label>sstream</label>
+      </node>
+      <node id="9">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>typeinfo</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1rq__encode__steps_1_1RefineBeamMemoryPool" prot="public">faiss::rq_encode_steps::RefineBeamMemoryPool</innerclass>

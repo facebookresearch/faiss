@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexFlatConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexConfig</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::gpu::GpuIndexFlatConfig::storeTransposed</definition>
         <argsstring></argsstring>
         <name>storeTransposed</name>
+        <qualifiedname>faiss::gpu::GpuIndexFlatConfig::storeTransposed</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -24,6 +25,7 @@
         <definition>int faiss::gpu::GpuIndexConfig::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::device</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>GPU device on which the index is resident. </para>
@@ -39,6 +41,7 @@
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::memorySpace</qualifiedname>
         <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
         </briefdescription>
@@ -54,6 +57,7 @@
         <definition>bool faiss::gpu::GpuIndexConfig::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Should the index dispatch down to cuVS? </para>
@@ -64,13 +68,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="45" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="45" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a1cca9ef7780ca94522dd9aa7221fa07d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool faiss::gpu::GpuIndexFlatConfig::ALIGNED</definition>
         <argsstring>(8) useFloat16</argsstring>
         <name>ALIGNED</name>
+        <qualifiedname>faiss::gpu::GpuIndexFlatConfig::ALIGNED</qualifiedname>
         <param>
           <type>8</type>
         </param>
@@ -83,7 +88,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexFlat.h" line="28" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1InvertedLists_1_1ScopedCodes" kind="struct" language="C++" prot="public">
     <compoundname>faiss::InvertedLists::ScopedCodes</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a4b1977ab80c851569d5ca37eabc528c0" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
         <definition>const InvertedLists* faiss::InvertedLists::ScopedCodes::il</definition>
         <argsstring></argsstring>
         <name>il</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::il</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>const uint8_t* faiss::InvertedLists::ScopedCodes::codes</definition>
         <argsstring></argsstring>
         <name>codes</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::codes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>size_t faiss::InvertedLists::ScopedCodes::list_no</definition>
         <argsstring></argsstring>
         <name>list_no</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::list_no</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,13 +45,14 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="222" column="16" bodyfile="faiss/invlists/InvertedLists.h" bodystart="222" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1af5b3c1198919eeabdae4819531d84ac5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::InvertedLists::ScopedCodes::ScopedCodes</definition>
         <argsstring>(const InvertedLists *il, size_t list_no)</argsstring>
         <name>ScopedCodes</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::ScopedCodes</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
           <declname>il</declname>
@@ -70,6 +74,7 @@
         <definition>faiss::InvertedLists::ScopedCodes::ScopedCodes</definition>
         <argsstring>(const InvertedLists *il, size_t list_no, size_t offset)</argsstring>
         <name>ScopedCodes</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::ScopedCodes</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
           <declname>il</declname>
@@ -90,11 +95,12 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="227" column="9" bodyfile="faiss/invlists/InvertedLists.h" bodystart="227" bodyend="230"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1aaf6478daf36366fa07f1eb65065d942d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedCodes_1ad010ace389949af15db643a62f8f5710" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>const uint8_t *</type>
-        <definition>const uint8_t* faiss::InvertedLists::ScopedCodes::get</definition>
+        <definition>const uint8_t * faiss::InvertedLists::ScopedCodes::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -108,6 +114,7 @@
         <definition>faiss::InvertedLists::ScopedCodes::~ScopedCodes</definition>
         <argsstring>()</argsstring>
         <name>~ScopedCodes</name>
+        <qualifiedname>faiss::InvertedLists::ScopedCodes::~ScopedCodes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -116,7 +123,7 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="236" column="9" bodyfile="faiss/invlists/InvertedLists.h" bodystart="236" bodyend="238"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -137,7 +144,7 @@
     <location file="faiss/invlists/InvertedLists.h" line="219" column="5" bodyfile="faiss/invlists/InvertedLists.h" bodystart="219" bodyend="239"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a926fbb54841811b8457ac7e2aa815735" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>codes</name></member>
-      <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1aaf6478daf36366fa07f1eb65065d942d" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>get</name></member>
+      <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1ad010ace389949af15db643a62f8f5710" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>get</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a4b1977ab80c851569d5ca37eabc528c0" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>il</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1a7f659101d92e5a7b02cdbc780aeb3fd8" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>list_no</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedCodes_1af5b3c1198919eeabdae4819531d84ac5" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedCodes</scope><name>ScopedCodes</name></member>

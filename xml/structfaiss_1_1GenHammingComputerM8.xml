@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1GenHammingComputerM8" kind="struct" language="C++" prot="public">
     <compoundname>faiss::GenHammingComputerM8</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1GenHammingComputerM8_1a62badfbabf1ad93fc25d4c6fc800ffcf" prot="public" static="no" mutable="no">
         <type>const uint64_t *</type>
         <definition>const uint64_t * faiss::GenHammingComputerM8::a</definition>
         <argsstring></argsstring>
         <name>a</name>
+        <qualifiedname>faiss::GenHammingComputerM8::a</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>int faiss::GenHammingComputerM8::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::GenHammingComputerM8::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/avx2-inl.h" line="428" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="428" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::GenHammingComputerM8::GenHammingComputerM8</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>GenHammingComputerM8</name>
+        <qualifiedname>faiss::GenHammingComputerM8::GenHammingComputerM8</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -57,6 +60,7 @@
         <definition>int faiss::GenHammingComputerM8::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::GenHammingComputerM8::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -74,6 +78,7 @@
         <definition>int faiss::GenHammingComputerM8::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::GenHammingComputerM8::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -87,6 +92,7 @@
         <definition>faiss::GenHammingComputerM8::GenHammingComputerM8</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>GenHammingComputerM8</name>
+        <qualifiedname>faiss::GenHammingComputerM8::GenHammingComputerM8</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -108,6 +114,7 @@
         <definition>int faiss::GenHammingComputerM8::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::GenHammingComputerM8::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -125,6 +132,7 @@
         <definition>int faiss::GenHammingComputerM8::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::GenHammingComputerM8::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -138,6 +146,7 @@
         <definition>faiss::GenHammingComputerM8::GenHammingComputerM8</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>GenHammingComputerM8</name>
+        <qualifiedname>faiss::GenHammingComputerM8::GenHammingComputerM8</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -159,6 +168,7 @@
         <definition>int faiss::GenHammingComputerM8::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::GenHammingComputerM8::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -176,6 +186,7 @@
         <definition>int faiss::GenHammingComputerM8::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::GenHammingComputerM8::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -184,7 +195,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="443" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="443" bodyend="445"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

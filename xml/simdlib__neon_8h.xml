@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simdlib__neon_8h" kind="file" language="C++">
     <compoundname>simdlib_neon.h</compoundname>
     <includes local="no">algorithm</includes>
@@ -11,6 +11,20 @@
     <includes local="no">arm_neon.h</includes>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <incdepgraph>
+      <node id="9">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
       <node id="10">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
@@ -23,9 +37,6 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>arm_neon.h</label>
-      </node>
       <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -33,15 +44,6 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-      </node>
-      <node id="4">
-        <label>cstdint</label>
-      </node>
-      <node id="6">
-        <label>string</label>
-      </node>
-      <node id="11">
-        <label>exception</label>
       </node>
       <node id="1">
         <label>faiss/utils/simdlib_neon.h</label>
@@ -63,43 +65,41 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="15">
-        <label>cstdio</label>
+      <node id="2">
+        <label>algorithm</label>
       </node>
-      <node id="13">
-        <label>vector</label>
-      </node>
-      <node id="12">
-        <label>utility</label>
-      </node>
-      <node id="16">
-        <label>cstdlib</label>
+      <node id="8">
+        <label>arm_neon.h</label>
       </node>
       <node id="3">
         <label>cstddef</label>
       </node>
-      <node id="7">
-        <label>type_traits</label>
+      <node id="4">
+        <label>cstdint</label>
       </node>
-      <node id="2">
-        <label>algorithm</label>
+      <node id="15">
+        <label>cstdio</label>
+      </node>
+      <node id="16">
+        <label>cstdlib</label>
       </node>
       <node id="5">
         <label>cstring</label>
       </node>
-      <node id="9">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
+      <node id="11">
+        <label>exception</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>type_traits</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="13">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" prot="public">faiss::detail::simdlib::is_simd256bit</innerclass>
@@ -229,8 +229,8 @@
 <codeline lineno="109"><highlight class="normal"></highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>U<sp/>=<sp/>decltype(reinterpret_u8(std::declval&lt;T&gt;().data))&gt;</highlight></codeline>
-<codeline lineno="113" refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">is_simd256bit</ref><sp/>:<sp/>std::is_same&lt;U,<sp/>uint8x16x2_t&gt;<sp/>{};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>U<sp/>=<sp/></highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(reinterpret_u8(std::declval&lt;T&gt;().data))&gt;</highlight></codeline>
+<codeline lineno="113" refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">is_simd256bit</ref><sp/>:<sp/>std::is_same&lt;U,<sp/>uint8x16x2_t&gt;<sp/>{};</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight></codeline>
 <codeline lineno="115"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>bin(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>(&amp;bytes)[32],<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>bits[257])<sp/>{</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>256;<sp/>++i)<sp/>{</highlight></codeline>
@@ -241,8 +241,8 @@
 <codeline lineno="121"><highlight class="normal"></highlight></codeline>
 <codeline lineno="122"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>N,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>S&gt;</highlight></codeline>
 <codeline lineno="123"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>bin(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>S&amp;<sp/>simd,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>bits[257])<sp/>{</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::is_same&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>(S::*)(T*)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">,<sp/>decltype(&amp;S::store)&gt;::value,</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::is_same&lt;void<sp/>(S::*)(T*)<sp/>const,<sp/>decltype(&amp;S::store)&gt;::value,</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;invalid<sp/>T&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>ds[N];</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>simd.store(ds);</highlight></codeline>
@@ -259,7 +259,7 @@
 <codeline lineno="139"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="140"><highlight class="normal"></highlight></codeline>
 <codeline lineno="141"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>remove_cv_ref_t<sp/>=</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">remove_cv_ref_t<sp/>=</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>std::remove_reference&lt;typename<sp/>std::remove_cv&lt;T&gt;::type&gt;::type;</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"></highlight></codeline>
 <codeline lineno="145"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>D,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
@@ -281,8 +281,8 @@
 <codeline lineno="161"><highlight class="normal"></highlight></codeline>
 <codeline lineno="162"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>N,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>S&gt;</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::string<sp/>elements_to_string(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>fmt,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>S&amp;<sp/>simd)<sp/>{</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::is_same&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>(S::*)(T*)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">,<sp/>decltype(&amp;S::store)&gt;::value,</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::is_same&lt;void<sp/>(S::*)(T*)<sp/>const,<sp/>decltype(&amp;S::store)&gt;::value,</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;invalid<sp/>T&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>bytes[N];</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>simd.store(bytes);</highlight></codeline>
@@ -301,8 +301,8 @@
 <codeline lineno="181"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>U&gt;</highlight></codeline>
 <codeline lineno="182" refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kindref="compound">unary_func_impl</ref><sp/>{</highlight></codeline>
 <codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>U&amp;<sp/>a;</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Telem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;T&gt;().val[0])&gt;;</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Uelem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;U&gt;().val[0])&gt;;</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Telem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;T&gt;().val[0])&gt;;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Uelem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;U&gt;().val[0])&gt;;</highlight></codeline>
 <codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;Telem<sp/>(*F)(Uelem)&gt;</highlight></codeline>
 <codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>T<sp/>call()<sp/>{</highlight></codeline>
 <codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>t;</highlight></codeline>
@@ -328,8 +328,8 @@
 <codeline lineno="208" refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kindref="compound">binary_func_impl</ref><sp/>{</highlight></codeline>
 <codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>U&amp;<sp/>a;</highlight></codeline>
 <codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>U&amp;<sp/>b;</highlight></codeline>
-<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Telem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;T&gt;().val[0])&gt;;</highlight></codeline>
-<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Uelem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;U&gt;().val[0])&gt;;</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Telem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;T&gt;().val[0])&gt;;</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Uelem<sp/>=<sp/>remove_cv_ref_t&lt;decltype(std::declval&lt;U&gt;().val[0])&gt;;</highlight></codeline>
 <codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;Telem<sp/>(*F)(Uelem,<sp/>Uelem)&gt;</highlight></codeline>
 <codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>T<sp/>call()<sp/>{</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>t;</highlight></codeline>
@@ -884,7 +884,7 @@
 <codeline lineno="764"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>_30,</highlight></codeline>
 <codeline lineno="765"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>_31&gt;</highlight></codeline>
 <codeline lineno="766"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>simd32uint8<sp/>create()<sp/>{</highlight></codeline>
-<codeline lineno="767"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>uint8_t<sp/>ds[32]<sp/>=<sp/>{_0,<sp/><sp/>_1,<sp/><sp/>_2,<sp/><sp/>_3,<sp/><sp/>_4,<sp/><sp/>_5,<sp/><sp/>_6,<sp/><sp/>_7,</highlight></codeline>
+<codeline lineno="767"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>uint8_t<sp/>ds[32]<sp/>=<sp/>{_0,<sp/><sp/>_1,<sp/><sp/>_2,<sp/><sp/>_3,<sp/><sp/>_4,<sp/><sp/>_5,<sp/><sp/>_6,<sp/><sp/>_7,</highlight></codeline>
 <codeline lineno="768"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_8,<sp/><sp/>_9,<sp/><sp/>_10,<sp/>_11,<sp/>_12,<sp/>_13,<sp/>_14,<sp/>_15,</highlight></codeline>
 <codeline lineno="769"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_16,<sp/>_17,<sp/>_18,<sp/>_19,<sp/>_20,<sp/>_21,<sp/>_22,<sp/>_23,</highlight></codeline>
 <codeline lineno="770"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_24,<sp/>_25,<sp/>_26,<sp/>_27,<sp/>_28,<sp/>_29,<sp/>_30,<sp/>_31};</highlight></codeline>
@@ -1009,7 +1009,7 @@
 <codeline lineno="889"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="890"><highlight class="comment">///<sp/>get<sp/>most<sp/>significant<sp/>bit<sp/>of<sp/>each<sp/>byte</highlight></codeline>
 <codeline lineno="891"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>uint32_t<sp/><ref refid="namespacefaiss_1a1a1ef7dc74c5b448482e503fb435400f" kindref="member">get_MSBs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd32uint8&amp;<sp/>a)<sp/>{</highlight></codeline>
-<codeline lineno="892"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>detail::simdlib::vmovmask_u8;</highlight></codeline>
+<codeline lineno="892"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">detail::simdlib::vmovmask_u8;</highlight></codeline>
 <codeline lineno="893"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vmovmask_u8(a.data.val[0])<sp/>|</highlight></codeline>
 <codeline lineno="894"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">uint32_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(vmovmask_u8(a.data.val[1]))<sp/>&lt;&lt;<sp/>16u;</highlight></codeline>
 <codeline lineno="895"><highlight class="normal">}</highlight></codeline>

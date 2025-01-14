@@ -1,38 +1,86 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="mode_8h" kind="file" language="C++">
     <compoundname>mode.h</compoundname>
-    <includedby refid="residual__quantizer__encode__steps_8h" local="no">faiss/impl/residual_quantizer_encode_steps.h</includedby>
-    <includedby refid="ResidualQuantizer_8h" local="no">faiss/impl/ResidualQuantizer.h</includedby>
     <includedby refid="IndexBinaryFlat_8h" local="no">faiss/IndexBinaryFlat.h</includedby>
+    <includedby refid="ResidualQuantizer_8h" local="no">faiss/impl/ResidualQuantizer.h</includedby>
+    <includedby refid="residual__quantizer__encode__steps_8h" local="no">faiss/impl/residual_quantizer_encode_steps.h</includedby>
     <includedby refid="approx__topk_8h" local="no">faiss/utils/approx_topk/approx_topk.h</includedby>
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <invincdepgraph>
-      <node id="5">
+      <node id="8">
         <label>faiss/IndexAdditiveQuantizer.h</label>
         <link refid="IndexAdditiveQuantizer_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/IndexBinaryFlat.h</label>
+        <link refid="IndexBinaryFlat_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss/IndexBinaryHNSW.h</label>
+        <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/IndexBinaryHash.h</label>
+        <link refid="IndexBinaryHash_8h_source"/>
+      </node>
+      <node id="10">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
       <node id="4">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
+        <link refid="GpuIndexBinaryFlat_8h_source"/>
+      </node>
+      <node id="12">
         <label>faiss/impl/ProductAdditiveQuantizer.h</label>
         <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/ResidualQuantizer.h</label>
+        <link refid="ResidualQuantizer_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
       <node id="13">
-        <label>faiss/IndexBinaryHNSW.h</label>
-        <link refid="IndexBinaryHNSW_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
@@ -40,74 +88,26 @@
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
-      <node id="15">
-        <label>faiss/utils/hamming.h</label>
-        <link refid="hamming_8h_source"/>
-      </node>
-      <node id="11">
-        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
-        <link refid="GpuIndexBinaryFlat_8h_source"/>
-      </node>
       <node id="1">
         <label>faiss/utils/approx_topk/mode.h</label>
         <link refid="mode_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>faiss/IndexBinaryHash.h</label>
-        <link refid="IndexBinaryHash_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/impl/ResidualQuantizer.h</label>
-        <link refid="ResidualQuantizer_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
-        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
-      </node>
-      <node id="6">
-        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-      <node id="9">
-        <label>faiss/IndexBinaryFlat.h</label>
-        <link refid="IndexBinaryFlat_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      <node id="15">
+        <label>faiss/utils/hamming.h</label>
+        <link refid="hamming_8h_source"/>
       </node>
     </invincdepgraph>
-      <sectiondef kind="enum">
+    <sectiondef kind="enum">
       <memberdef kind="enum" id="mode_8h_1a58cd97df40a8121322e0648c49186299" prot="public" static="no" strong="no">
         <type>int</type>
         <name>ApproxTopK_mode_t</name>
@@ -164,7 +164,7 @@
         </inbodydescription>
         <location file="faiss/utils/approx_topk/mode.h" line="28" column="1" bodyfile="faiss/utils/approx_topk/mode.h" bodystart="28" bodyend="34"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

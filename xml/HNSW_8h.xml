@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="HNSW_8h" kind="file" language="C++">
     <compoundname>HNSW.h</compoundname>
     <includes local="no">queue</includes>
@@ -14,6 +14,40 @@
     <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <incdepgraph>
+      <node id="6">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
       <node id="15">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
@@ -25,12 +59,6 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>queue</label>
-      </node>
-      <node id="25">
-        <label>limits</label>
       </node>
       <node id="1">
         <label>faiss/impl/HNSW.h</label>
@@ -54,14 +82,6 @@
         <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>faiss/utils/random.h</label>
-        <link refid="random_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-      </node>
       <node id="8">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -69,48 +89,6 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-      </node>
-      <node id="9">
-        <label>cstdint</label>
-      </node>
-      <node id="23">
-        <label>stdint.h</label>
-      </node>
-      <node id="21">
-        <label>cmath</label>
-      </node>
-      <node id="24">
-        <label>cassert</label>
-      </node>
-      <node id="12">
-        <label>string</label>
-      </node>
-      <node id="3">
-        <label>unordered_set</label>
-      </node>
-      <node id="5">
-        <label>omp.h</label>
-      </node>
-      <node id="16">
-        <label>exception</label>
-      </node>
-      <node id="28">
-        <label>random</label>
-      </node>
-      <node id="13">
-        <label>typeinfo</label>
-      </node>
-      <node id="10">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
-      <node id="17">
-        <label>utility</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
       </node>
       <node id="19">
         <label>faiss/utils/Heap.h</label>
@@ -144,59 +122,73 @@
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="18">
-        <label>cstdlib</label>
+      <node id="27">
+        <label>faiss/utils/random.h</label>
+        <link refid="random_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>cassert</label>
       </node>
       <node id="20">
         <label>climits</label>
       </node>
-      <node id="6">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
+      <node id="21">
+        <label>cmath</label>
       </node>
-      <node id="7">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
+      <node id="9">
+        <label>cstdint</label>
+      </node>
+      <node id="10">
+        <label>cstdio</label>
+      </node>
+      <node id="18">
+        <label>cstdlib</label>
       </node>
       <node id="22">
         <label>cstring</label>
       </node>
-      <node id="14">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
+      <node id="16">
+        <label>exception</label>
+      </node>
+      <node id="25">
+        <label>limits</label>
+      </node>
+      <node id="5">
+        <label>omp.h</label>
+      </node>
+      <node id="2">
+        <label>queue</label>
+      </node>
+      <node id="28">
+        <label>random</label>
+      </node>
+      <node id="11">
+        <label>sstream</label>
+      </node>
+      <node id="23">
+        <label>stdint.h</label>
+      </node>
+      <node id="12">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>typeinfo</label>
+      </node>
+      <node id="3">
+        <label>unordered_set</label>
+      </node>
+      <node id="17">
+        <label>utility</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1">
-        <label>faiss/impl/HNSW.h</label>
-        <link refid="HNSW_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
@@ -212,6 +204,14 @@
       <node id="3">
         <label>faiss/cppcontrib/factory_tools.h</label>
         <link refid="factory__tools_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/HNSW.h</label>
+        <link refid="HNSW_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1SearchParametersHNSW" prot="public">faiss::SearchParametersHNSW</innerclass>
@@ -276,15 +276,15 @@
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>check_relative_distance<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>bounded_queue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">~SearchParametersHNSW</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="52"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"></highlight></codeline>
 <codeline lineno="54" refid="structfaiss_1_1HNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="55"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>internal<sp/>storage<sp/>of<sp/>vectors<sp/>(32<sp/>bits:<sp/>this<sp/>is<sp/>expensive)</highlight></codeline>
-<codeline lineno="56" refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="56" refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>=<sp/>int32_t;</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>for<sp/>now<sp/>we<sp/>do<sp/>only<sp/>these<sp/>distances</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">C</ref><sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int64_t&gt;</ref>;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1CMax" kindref="compound">C</ref><sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int64_t&gt;</ref>;</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::pair&lt;float,<sp/>storage_idx_t&gt;<sp/>Node;</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>

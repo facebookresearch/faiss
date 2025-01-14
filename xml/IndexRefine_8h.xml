@@ -1,33 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="IndexRefine_8h" kind="file" language="C++">
     <compoundname>IndexRefine.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includedby refid="factory__tools_8h" local="no">faiss/cppcontrib/factory_tools.h</includedby>
     <incdepgraph>
-      <node id="4">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>cstdint</label>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="7">
-        <label>sstream</label>
-      </node>
       <node id="2">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
@@ -42,29 +19,52 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss/IndexRefine.h</label>
+        <link refid="IndexRefine_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss/IndexRefine.h</label>
-        <link refid="IndexRefine_8h"/>
-        <childnode refid="2" relation="include">
+      <node id="4">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>sstream</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>typeinfo</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
-      </node>
       <node id="1">
         <label>faiss/IndexRefine.h</label>
         <link refid="IndexRefine_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexRefineSearchParameters" prot="public">faiss::IndexRefineSearchParameters</innerclass>
@@ -93,7 +93,7 @@
 <codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>k_factor<sp/>=<sp/>1;</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>base_index_params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>non-owning</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1IndexRefineSearchParameters" kindref="compound">IndexRefineSearchParameters</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefineSearchParameters" kindref="compound">~IndexRefineSearchParameters</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="19"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="21"><highlight class="comment">/**<sp/>Index<sp/>that<sp/>queries<sp/>in<sp/>a<sp/>base_index<sp/>(a<sp/>fast<sp/>one)<sp/>and<sp/>refines<sp/>the</highlight></codeline>
@@ -152,7 +152,7 @@
 <codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>accurate</highlight></codeline>
 <codeline lineno="75" refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e" kindref="member">sa_decode</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>bytes,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1IndexRefine" kindref="compound">IndexRefine</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexRefine" kindref="compound">~IndexRefine</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="80"><highlight class="comment">/**<sp/>Version<sp/>where<sp/>the<sp/>refinement<sp/>index<sp/>is<sp/>an<sp/>IndexFlat.<sp/>It<sp/>has<sp/>one<sp/>additional</highlight></codeline>

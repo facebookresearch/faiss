@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IOWriter" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IOWriter</compoundname>
     <derivedcompoundref refid="structPyCallbackIOWriter" prot="public" virt="non-virtual">PyCallbackIOWriter</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1BufferedIOWriter" prot="public" virt="non-virtual">faiss::BufferedIOWriter</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1FileIOWriter" prot="public" virt="non-virtual">faiss::FileIOWriter</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1VectorIOWriter" prot="public" virt="non-virtual">faiss::VectorIOWriter</derivedcompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IOWriter_1a6157db36726d944663194dde4cd27d1f" prot="public" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string faiss::IOWriter::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOWriter::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -20,13 +21,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="42" column="17" bodyfile="faiss/impl/io.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
         <definition>virtual size_t faiss::IOWriter::operator()</definition>
         <argsstring>(const void *ptr, size_t size, size_t nitems)=0</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::IOWriter::operator()</qualifiedname>
         <reimplementedby refid="structfaiss_1_1VectorIOWriter_1a06e4b9c1f49f9df496751f8063d5c879">operator()</reimplementedby>
         <reimplementedby refid="structfaiss_1_1FileIOWriter_1a7a95b4427902bee7b903db9ea09b755c">operator()</reimplementedby>
         <reimplementedby refid="structfaiss_1_1BufferedIOWriter_1ad26e78fa5ba310cbf10765727f9432da">operator()</reimplementedby>
@@ -56,6 +58,7 @@
         <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOWriter::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -65,11 +68,12 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="48" column="17"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a0b7fbb3222d8d2668ace6249d7dcd6aa" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IOWriter_1a0b7fbb3222d8d2668ace6249d7dcd6aa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual faiss::IOWriter::~IOWriter</definition>
         <argsstring>() noexcept(false)</argsstring>
         <name>~IOWriter</name>
+        <qualifiedname>faiss::IOWriter::~IOWriter</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -78,27 +82,23 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="50" column="13" bodyfile="faiss/impl/io.h" bodystart="50" bodyend="50"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="5">
-        <label>faiss::VectorIOWriter</label>
-        <link refid="structfaiss_1_1VectorIOWriter"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
         <label>PyCallbackIOWriter</label>
         <link refid="structPyCallbackIOWriter"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
+      <node id="3">
+        <label>faiss::BufferedIOWriter</label>
+        <link refid="structfaiss_1_1BufferedIOWriter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="4">
         <label>faiss::FileIOWriter</label>
@@ -106,9 +106,13 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::BufferedIOWriter</label>
-        <link refid="structfaiss_1_1BufferedIOWriter"/>
+      <node id="1">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
+      </node>
+      <node id="5">
+        <label>faiss::VectorIOWriter</label>
+        <link refid="structfaiss_1_1VectorIOWriter"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

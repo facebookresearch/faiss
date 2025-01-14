@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1lsq_1_1IcmEncoderFactory" kind="struct" language="C++" prot="public">
     <compoundname>faiss::lsq::IcmEncoderFactory</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" prot="public" virt="non-virtual">faiss::gpu::GpuIcmEncoderFactory</derivedcompoundref>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ad2545f0c0f25da85519e613ac6de7b28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoderFactory_1a2a9953e848c087b9a0aa4dc6a807bba7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="structfaiss_1_1lsq_1_1IcmEncoder" kindref="compound">IcmEncoder</ref> *</type>
-        <definition>virtual IcmEncoder* faiss::lsq::IcmEncoderFactory::get</definition>
+        <definition>virtual IcmEncoder * faiss::lsq::IcmEncoderFactory::get</definition>
         <argsstring>(const LocalSearchQuantizer *lsq)</argsstring>
         <name>get</name>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a50b6ea9c5370c45eb93fa326ff8b6392">get</reimplementedby>
+        <qualifiedname>faiss::lsq::IcmEncoderFactory::get</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a25a1cf9a76e0fb7262a4d8ede0ae3530">get</reimplementedby>
         <param>
           <type>const <ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref> *</type>
           <declname>lsq</declname>
@@ -27,6 +28,7 @@
         <definition>virtual faiss::lsq::IcmEncoderFactory::~IcmEncoderFactory</definition>
         <argsstring>()</argsstring>
         <name>~IcmEncoderFactory</name>
+        <qualifiedname>faiss::lsq::IcmEncoderFactory::~IcmEncoderFactory</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,26 +37,26 @@
         </inbodydescription>
         <location file="faiss/impl/LocalSearchQuantizer.h" line="213" column="13" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="213" bodyend="213"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::lsq::IcmEncoderFactory</label>
-        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
-      </node>
       <node id="2">
         <label>faiss::gpu::GpuIcmEncoderFactory</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss::lsq::IcmEncoderFactory</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
+      </node>
     </inheritancegraph>
     <location file="faiss/impl/LocalSearchQuantizer.h" line="209" column="1" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="209" bodyend="214"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ad2545f0c0f25da85519e613ac6de7b28" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoderFactory</scope><name>get</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1a2a9953e848c087b9a0aa4dc6a807bba7" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoderFactory</scope><name>get</name></member>
       <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ab8351263070c0817f97dabf036fa98c3" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoderFactory</scope><name>~IcmEncoderFactory</name></member>
     </listofallmembers>
   </compounddef>

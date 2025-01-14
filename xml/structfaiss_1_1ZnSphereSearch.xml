@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ZnSphereSearch" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ZnSphereSearch</compoundname>
     <derivedcompoundref refid="structfaiss_1_1ZnSphereCodec" prot="public" virt="non-virtual">faiss::ZnSphereCodec</derivedcompoundref>
     <includes refid="lattice__Zn_8h" local="no">lattice_Zn.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ZnSphereSearch_1a33cd49702699f73c9874523100cdfb4b" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::ZnSphereSearch::dimS</definition>
         <argsstring></argsstring>
         <name>dimS</name>
+        <qualifiedname>faiss::ZnSphereSearch::dimS</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>int faiss::ZnSphereSearch::r2</definition>
         <argsstring></argsstring>
         <name>r2</name>
+        <qualifiedname>faiss::ZnSphereSearch::r2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>int faiss::ZnSphereSearch::natom</definition>
         <argsstring></argsstring>
         <name>natom</name>
+        <qualifiedname>faiss::ZnSphereSearch::natom</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>std::vector&lt;float&gt; faiss::ZnSphereSearch::voc</definition>
         <argsstring></argsstring>
         <name>voc</name>
+        <qualifiedname>faiss::ZnSphereSearch::voc</qualifiedname>
         <briefdescription>
 <para>size dim * ntatom </para>
         </briefdescription>
@@ -58,13 +62,14 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="30" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="30" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1ad5e5d02aa8ee21ab17f01f53e9d4f0cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZnSphereSearch::ZnSphereSearch</definition>
         <argsstring>(int dim, int r2)</argsstring>
         <name>ZnSphereSearch</name>
+        <qualifiedname>faiss::ZnSphereSearch::ZnSphereSearch</qualifiedname>
         <param>
           <type>int</type>
           <declname>dim</declname>
@@ -86,6 +91,7 @@
         <definition>float faiss::ZnSphereSearch::search</definition>
         <argsstring>(const float *x, float *c) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::ZnSphereSearch::search</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -108,6 +114,7 @@
         <definition>float faiss::ZnSphereSearch::search</definition>
         <argsstring>(const float *x, float *c, float *tmp, int *tmp_int, int *ibest_out=nullptr) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::ZnSphereSearch::search</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -143,6 +150,7 @@
         <definition>void faiss::ZnSphereSearch::search_multi</definition>
         <argsstring>(int n, const float *x, float *c_out, float *dp_out)</argsstring>
         <name>search_multi</name>
+        <qualifiedname>faiss::ZnSphereSearch::search_multi</qualifiedname>
         <param>
           <type>int</type>
           <declname>n</declname>
@@ -167,7 +175,7 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="46" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -175,16 +183,16 @@
 <para>Algorithm: all points are derived from a one atom vector up to a permutation and sign changes. The search function finds the most appropriate atom and transformation. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::ZnSphereCodecAlt</label>
-        <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss::ZnSphereCodec</label>
         <link refid="structfaiss_1_1ZnSphereCodec"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ZnSphereCodecAlt</label>
+        <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">

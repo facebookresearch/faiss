@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PQDecoderGeneric" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PQDecoderGeneric</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a2b481e4c69dc2950a41ed7e4afd249d8" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
         <definition>const uint8_t* faiss::PQDecoderGeneric::code</definition>
         <argsstring></argsstring>
         <name>code</name>
+        <qualifiedname>faiss::PQDecoderGeneric::code</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>uint8_t faiss::PQDecoderGeneric::offset</definition>
         <argsstring></argsstring>
         <name>offset</name>
+        <qualifiedname>faiss::PQDecoderGeneric::offset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>const int faiss::PQDecoderGeneric::nbits</definition>
         <argsstring></argsstring>
         <name>nbits</name>
+        <qualifiedname>faiss::PQDecoderGeneric::nbits</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>const uint64_t faiss::PQDecoderGeneric::mask</definition>
         <argsstring></argsstring>
         <name>mask</name>
+        <qualifiedname>faiss::PQDecoderGeneric::mask</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>uint8_t faiss::PQDecoderGeneric::reg</definition>
         <argsstring></argsstring>
         <name>reg</name>
+        <qualifiedname>faiss::PQDecoderGeneric::reg</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,13 +73,14 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="226" column="13" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="226" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PQDecoderGeneric_1a00b9756b944961e40fbaed51407b9efd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::PQDecoderGeneric::PQDecoderGeneric</definition>
         <argsstring>(const uint8_t *code, int nbits)</argsstring>
         <name>PQDecoderGeneric</name>
+        <qualifiedname>faiss::PQDecoderGeneric::PQDecoderGeneric</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -96,6 +102,7 @@
         <definition>uint64_t faiss::PQDecoderGeneric::decode</definition>
         <argsstring>()</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::PQDecoderGeneric::decode</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -104,7 +111,7 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="228" column="14" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="72" bodyend="97"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

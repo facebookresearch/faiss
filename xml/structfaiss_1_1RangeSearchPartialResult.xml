@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1RangeSearchPartialResult" kind="struct" language="C++" prot="public">
     <compoundname>faiss::RangeSearchPartialResult</compoundname>
     <basecompoundref refid="structfaiss_1_1BufferList" prot="public" virt="non-virtual">faiss::BufferList</basecompoundref>
     <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1RangeSearchPartialResult_1abb04ae29fc8721ebb0e49928f25158cc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
         <definition>RangeSearchResult* faiss::RangeSearchPartialResult::res</definition>
         <argsstring></argsstring>
         <name>res</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::res</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>std::vector&lt;RangeQueryResult&gt; faiss::RangeSearchPartialResult::queries</definition>
         <argsstring></argsstring>
         <name>queries</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::queries</qualifiedname>
         <briefdescription>
 <para>query ids + nb of results per query. </para>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>size_t faiss::BufferList::buffer_size</definition>
         <argsstring></argsstring>
         <name>buffer_size</name>
+        <qualifiedname>faiss::BufferList::buffer_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,6 +53,7 @@
         <definition>std::vector&lt;Buffer&gt; faiss::BufferList::buffers</definition>
         <argsstring></argsstring>
         <name>buffers</name>
+        <qualifiedname>faiss::BufferList::buffers</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +67,7 @@
         <definition>size_t faiss::BufferList::wp</definition>
         <argsstring></argsstring>
         <name>wp</name>
+        <qualifiedname>faiss::BufferList::wp</qualifiedname>
         <briefdescription>
 <para>write pointer in the last buffer. </para>
         </briefdescription>
@@ -72,13 +77,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="71" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="71" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::RangeSearchPartialResult::RangeSearchPartialResult</definition>
         <argsstring>(RangeSearchResult *res_in)</argsstring>
         <name>RangeSearchPartialResult</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::RangeSearchPartialResult</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>res_in</declname>
@@ -92,11 +98,12 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="105" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a0ba199c22ed09aebb0f7238229b516e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> &amp;</type>
-        <definition>RangeQueryResult&amp; faiss::RangeSearchPartialResult::new_result</definition>
+        <definition>RangeQueryResult &amp; faiss::RangeSearchPartialResult::new_result</definition>
         <argsstring>(idx_t qno)</argsstring>
         <name>new_result</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::new_result</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>qno</declname>
@@ -115,6 +122,7 @@
         <definition>void faiss::RangeSearchPartialResult::finalize</definition>
         <argsstring>()</argsstring>
         <name>finalize</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::finalize</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -128,6 +136,7 @@
         <definition>void faiss::RangeSearchPartialResult::set_lims</definition>
         <argsstring>()</argsstring>
         <name>set_lims</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::set_lims</qualifiedname>
         <briefdescription>
 <para>called by range_search before do_allocation </para>
         </briefdescription>
@@ -142,6 +151,7 @@
         <definition>void faiss::RangeSearchPartialResult::copy_result</definition>
         <argsstring>(bool incremental=false)</argsstring>
         <name>copy_result</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::copy_result</qualifiedname>
         <param>
           <type>bool</type>
           <declname>incremental</declname>
@@ -161,6 +171,7 @@
         <definition>void faiss::BufferList::append_buffer</definition>
         <argsstring>()</argsstring>
         <name>append_buffer</name>
+        <qualifiedname>faiss::BufferList::append_buffer</qualifiedname>
         <briefdescription>
 <para>create a new buffer </para>
         </briefdescription>
@@ -175,6 +186,7 @@
         <definition>void faiss::BufferList::add</definition>
         <argsstring>(idx_t id, float dis)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::BufferList::add</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
@@ -197,6 +209,7 @@
         <definition>void faiss::BufferList::copy_range</definition>
         <argsstring>(size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</argsstring>
         <name>copy_range</name>
+        <qualifiedname>faiss::BufferList::copy_range</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>ofs</declname>
@@ -222,13 +235,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="85" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::RangeSearchPartialResult::merge</definition>
         <argsstring>(std::vector&lt; RangeSearchPartialResult * &gt; &amp;partial_results, bool do_delete=true)</argsstring>
         <name>merge</name>
+        <qualifiedname>faiss::RangeSearchPartialResult::merge</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref> * &gt; &amp;</type>
           <declname>partial_results</declname>
@@ -247,7 +261,7 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="126" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>the entries in the buffers are split per query </para>
     </briefdescription>
@@ -266,10 +280,6 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="3">
-        <label>faiss::RangeSearchResult</label>
-        <link refid="structfaiss_1_1RangeSearchResult"/>
-      </node>
       <node id="2">
         <label>faiss::BufferList</label>
         <link refid="structfaiss_1_1BufferList"/>
@@ -283,6 +293,10 @@
           <edgelabel>res</edgelabel>
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss::RangeSearchResult</label>
+        <link refid="structfaiss_1_1RangeSearchResult"/>
+      </node>
     </collaborationgraph>
     <location file="faiss/impl/AuxIndexStructures.h" line="101" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="101" bodyend="129"/>
     <listofallmembers>
@@ -295,7 +309,7 @@
       <member refid="structfaiss_1_1RangeSearchPartialResult_1ad323d8ea8914d9071aecff83f69ee8e4" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>copy_result</name></member>
       <member refid="structfaiss_1_1RangeSearchPartialResult_1a3443ee23c08ca510afd64334d6656f50" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>finalize</name></member>
       <member refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>merge</name></member>
-      <member refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>new_result</name></member>
+      <member refid="structfaiss_1_1RangeSearchPartialResult_1a0ba199c22ed09aebb0f7238229b516e9" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>new_result</name></member>
       <member refid="structfaiss_1_1RangeSearchPartialResult_1abd6ae2a92bc18b6528aadf39370d041c" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>queries</name></member>
       <member refid="structfaiss_1_1RangeSearchPartialResult_1a41aaed4f59e7a6a99e2a643dfff483f5" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>RangeSearchPartialResult</name></member>
       <member refid="structfaiss_1_1RangeSearchPartialResult_1abb04ae29fc8721ebb0e49928f25158cc" prot="public" virt="non-virtual"><scope>faiss::RangeSearchPartialResult</scope><name>res</name></member>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1CpuTimer" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::CpuTimer</compoundname>
     <includes refid="Timer_8h" local="no">Timer.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" prot="private" static="no" mutable="no">
         <type>std::chrono::time_point&lt; std::chrono::steady_clock &gt;</type>
         <definition>std::chrono::time_point&lt;std::chrono::steady_clock&gt; faiss::gpu::CpuTimer::start_</definition>
         <argsstring></argsstring>
         <name>start_</name>
+        <qualifiedname>faiss::gpu::CpuTimer::start_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/Timer.h" line="49" column="29" bodyfile="faiss/gpu/utils/Timer.h" bodystart="49" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::CpuTimer::CpuTimer</definition>
         <argsstring>()</argsstring>
         <name>CpuTimer</name>
+        <qualifiedname>faiss::gpu::CpuTimer::CpuTimer</qualifiedname>
         <briefdescription>
 <para>Creates and starts a new timer. </para>
         </briefdescription>
@@ -38,6 +40,7 @@
         <definition>float faiss::gpu::CpuTimer::elapsedMilliseconds</definition>
         <argsstring>()</argsstring>
         <name>elapsedMilliseconds</name>
+        <qualifiedname>faiss::gpu::CpuTimer::elapsedMilliseconds</qualifiedname>
         <briefdescription>
 <para>Returns elapsed time in milliseconds. </para>
         </briefdescription>
@@ -47,7 +50,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/Timer.h" line="46" column="11"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>CPU wallclock elapsed timer. </para>
     </briefdescription>

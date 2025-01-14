@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CodeSet" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CodeSet</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::CodeSet::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::CodeSet::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>std::set&lt;std::vector&lt;uint8_t&gt; &gt; faiss::CodeSet::s</definition>
         <argsstring></argsstring>
         <name>s</name>
+        <qualifiedname>faiss::CodeSet::s</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="200" column="14" bodyfile="faiss/utils/utils.h" bodystart="200" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::CodeSet::CodeSet</definition>
         <argsstring>(size_t d)</argsstring>
         <name>CodeSet</name>
+        <qualifiedname>faiss::CodeSet::CodeSet</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -53,6 +56,7 @@
         <definition>void faiss::CodeSet::insert</definition>
         <argsstring>(size_t n, const uint8_t *codes, bool *inserted)</argsstring>
         <name>insert</name>
+        <qualifiedname>faiss::CodeSet::insert</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -73,7 +77,7 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="203" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

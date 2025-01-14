@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PartitionStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PartitionStats</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
         <definition>uint64_t faiss::PartitionStats::bissect_cycles</definition>
         <argsstring></argsstring>
         <name>bissect_cycles</name>
+        <qualifiedname>faiss::PartitionStats::bissect_cycles</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>uint64_t faiss::PartitionStats::compress_cycles</definition>
         <argsstring></argsstring>
         <name>compress_cycles</name>
+        <qualifiedname>faiss::PartitionStats::compress_cycles</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/utils/partitioning.h" line="63" column="14" bodyfile="faiss/utils/partitioning.h" bodystart="63" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PartitionStats_1aa9f9c8030b1ea6fd37df7f3cfff04d4f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::PartitionStats::PartitionStats</definition>
         <argsstring>()</argsstring>
         <name>PartitionStats</name>
+        <qualifiedname>faiss::PartitionStats::PartitionStats</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>void faiss::PartitionStats::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::PartitionStats::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,7 +61,7 @@
         </inbodydescription>
         <location file="faiss/utils/partitioning.h" line="68" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1TimeoutCallback" kind="struct" language="C++" prot="public">
     <compoundname>faiss::TimeoutCallback</compoundname>
     <basecompoundref refid="structfaiss_1_1InterruptCallback" prot="public" virt="non-virtual">faiss::InterruptCallback</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1TimeoutCallback_1aaa80c32084303235b34096c6bc576641" prot="public" static="no" mutable="no">
         <type>std::chrono::time_point&lt; std::chrono::steady_clock &gt;</type>
         <definition>std::chrono::time_point&lt;std::chrono::steady_clock&gt; faiss::TimeoutCallback::start</definition>
         <argsstring></argsstring>
         <name>start</name>
+        <qualifiedname>faiss::TimeoutCallback::start</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>double faiss::TimeoutCallback::timeout</definition>
         <argsstring></argsstring>
         <name>timeout</name>
+        <qualifiedname>faiss::TimeoutCallback::timeout</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="166" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="166" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1TimeoutCallback_1a23002f252121513f76d66c31a1ad6102" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>bool</type>
         <definition>bool faiss::TimeoutCallback::want_interrupt</definition>
         <argsstring>() override</argsstring>
         <name>want_interrupt</name>
+        <qualifiedname>faiss::TimeoutCallback::want_interrupt</qualifiedname>
         <reimplements refid="structfaiss_1_1InterruptCallback_1ae063094b9c16eeb0710246daf45e0061">want_interrupt</reimplements>
         <briefdescription>
         </briefdescription>
@@ -51,6 +54,7 @@
         <definition>void faiss::TimeoutCallback::set_timeout</definition>
         <argsstring>(double timeout_in_seconds)</argsstring>
         <name>set_timeout</name>
+        <qualifiedname>faiss::TimeoutCallback::set_timeout</qualifiedname>
         <param>
           <type>double</type>
           <declname>timeout_in_seconds</declname>
@@ -63,13 +67,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="168" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1TimeoutCallback_1a7a1dd0bdb62f30fae483f6f7da2b0cb0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::TimeoutCallback::reset</definition>
         <argsstring>(double timeout_in_seconds)</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::TimeoutCallback::reset</qualifiedname>
         <param>
           <type>double</type>
           <declname>timeout_in_seconds</declname>
@@ -87,6 +92,7 @@
         <definition>static void faiss::InterruptCallback::clear_instance</definition>
         <argsstring>()</argsstring>
         <name>clear_instance</name>
+        <qualifiedname>faiss::InterruptCallback::clear_instance</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -100,6 +106,7 @@
         <definition>static void faiss::InterruptCallback::check</definition>
         <argsstring>()</argsstring>
         <name>check</name>
+        <qualifiedname>faiss::InterruptCallback::check</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -118,6 +125,7 @@
         <definition>static bool faiss::InterruptCallback::is_interrupted</definition>
         <argsstring>()</argsstring>
         <name>is_interrupted</name>
+        <qualifiedname>faiss::InterruptCallback::is_interrupted</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -132,6 +140,7 @@
         <definition>static size_t faiss::InterruptCallback::get_period_hint</definition>
         <argsstring>(size_t flops)</argsstring>
         <name>get_period_hint</name>
+        <qualifiedname>faiss::InterruptCallback::get_period_hint</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>flops</declname>
@@ -145,13 +154,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="161" column="19"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-attrib">
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1InterruptCallback_1a2b7c49b103b71e89086cbb1a0a30a6eb" prot="public" static="yes" mutable="no">
         <type>std::mutex</type>
         <definition>std::mutex faiss::InterruptCallback::lock</definition>
         <argsstring></argsstring>
         <name>lock</name>
+        <qualifiedname>faiss::InterruptCallback::lock</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -165,6 +175,7 @@
         <definition>std::unique_ptr&lt;InterruptCallback&gt; faiss::InterruptCallback::instance</definition>
         <argsstring></argsstring>
         <name>instance</name>
+        <qualifiedname>faiss::InterruptCallback::instance</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -173,33 +184,33 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="142" column="28" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="142" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::InterruptCallback</label>
+        <link refid="structfaiss_1_1InterruptCallback"/>
+      </node>
       <node id="1">
         <label>faiss::TimeoutCallback</label>
         <link refid="structfaiss_1_1TimeoutCallback"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::InterruptCallback</label>
-        <link refid="structfaiss_1_1InterruptCallback"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::InterruptCallback</label>
+        <link refid="structfaiss_1_1InterruptCallback"/>
+      </node>
       <node id="1">
         <label>faiss::TimeoutCallback</label>
         <link refid="structfaiss_1_1TimeoutCallback"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::InterruptCallback</label>
-        <link refid="structfaiss_1_1InterruptCallback"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/AuxIndexStructures.h" line="164" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="164" bodyend="170"/>

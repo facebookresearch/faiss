@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexIDMap2Template" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIDMap2Template</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexIDMapTemplate" prot="public" virt="non-virtual">faiss::IndexIDMapTemplate&lt; IndexT &gt;</basecompoundref>
@@ -9,12 +9,13 @@
         <type>typename IndexT</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexIDMap2Template_1aee4b15cf1872fb69d8a6adf25da3c253" prot="public" static="no">
         <type>typename IndexT::component_t</type>
         <definition>using faiss::IndexIDMap2Template&lt; IndexT &gt;::component_t =  typename IndexT::component_t</definition>
         <argsstring></argsstring>
         <name>component_t</name>
+        <qualifiedname>faiss::IndexIDMap2Template::component_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -28,6 +29,7 @@
         <definition>using faiss::IndexIDMap2Template&lt; IndexT &gt;::distance_t =  typename IndexT::distance_t</definition>
         <argsstring></argsstring>
         <name>distance_t</name>
+        <qualifiedname>faiss::IndexIDMap2Template::distance_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,13 +38,14 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="81" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="81" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIDMap2Template_1ae11b9dae4245ace5eb2a28ad6a5fdff9" prot="public" static="no" mutable="no">
         <type>std::unordered_map&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>, <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
         <definition>std::unordered_map&lt;idx_t, idx_t&gt; faiss::IndexIDMap2Template&lt; IndexT &gt;::rev_map</definition>
         <argsstring></argsstring>
         <name>rev_map</name>
+        <qualifiedname>faiss::IndexIDMap2Template::rev_map</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -56,6 +59,7 @@
         <definition>IndexT* faiss::IndexIDMapTemplate&lt; IndexT &gt;::index</definition>
         <argsstring></argsstring>
         <name>index</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::index</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -70,6 +74,7 @@
         <definition>bool faiss::IndexIDMapTemplate&lt; IndexT &gt;::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::own_fields</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>! the sub-index </para>
@@ -85,6 +90,7 @@
         <definition>std::vector&lt;idx_t&gt; faiss::IndexIDMapTemplate&lt; IndexT &gt;::id_map</definition>
         <argsstring></argsstring>
         <name>id_map</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::id_map</qualifiedname>
         <briefdescription>
 <para>! whether pointers are deleted in destructo </para>
         </briefdescription>
@@ -94,13 +100,14 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="27" column="17" bodyfile="faiss/IndexIDMap.h" bodystart="27" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexIDMap2Template_1a329f106e2ca6b71377083d5709f1b281" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIDMap2Template&lt; IndexT &gt;::IndexIDMap2Template</definition>
         <argsstring>(IndexT *index)</argsstring>
         <name>IndexIDMap2Template</name>
+        <qualifiedname>faiss::IndexIDMap2Template::IndexIDMap2Template</qualifiedname>
         <param>
           <type>IndexT *</type>
           <declname>index</declname>
@@ -118,6 +125,7 @@
         <definition>void faiss::IndexIDMap2Template&lt; IndexT &gt;::construct_rev_map</definition>
         <argsstring>()</argsstring>
         <name>construct_rev_map</name>
+        <qualifiedname>faiss::IndexIDMap2Template::construct_rev_map</qualifiedname>
         <briefdescription>
 <para>make the rev_map from scratch </para>
         </briefdescription>
@@ -132,6 +140,7 @@
         <definition>void faiss::IndexIDMap2Template&lt; IndexT &gt;::add_with_ids</definition>
         <argsstring>(idx_t n, const component_t *x, const idx_t *xids) override</argsstring>
         <name>add_with_ids</name>
+        <qualifiedname>faiss::IndexIDMap2Template::add_with_ids</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -157,6 +166,7 @@
         <definition>size_t faiss::IndexIDMap2Template&lt; IndexT &gt;::remove_ids</definition>
         <argsstring>(const IDSelector &amp;sel) override</argsstring>
         <name>remove_ids</name>
+        <qualifiedname>faiss::IndexIDMap2Template::remove_ids</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
@@ -174,6 +184,7 @@
         <definition>void faiss::IndexIDMap2Template&lt; IndexT &gt;::reconstruct</definition>
         <argsstring>(idx_t key, component_t *recons) const override</argsstring>
         <name>reconstruct</name>
+        <qualifiedname>faiss::IndexIDMap2Template::reconstruct</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>key</declname>
@@ -195,6 +206,7 @@
         <definition>void faiss::IndexIDMap2Template&lt; IndexT &gt;::check_consistency</definition>
         <argsstring>() const</argsstring>
         <name>check_consistency</name>
+        <qualifiedname>faiss::IndexIDMap2Template::check_consistency</qualifiedname>
         <briefdescription>
 <para>check that the rev_map and the id_map are in sync </para>
         </briefdescription>
@@ -209,6 +221,7 @@
         <definition>void faiss::IndexIDMap2Template&lt; IndexT &gt;::merge_from</definition>
         <argsstring>(IndexT &amp;otherIndex, idx_t add_id=0) override</argsstring>
         <name>merge_from</name>
+        <qualifiedname>faiss::IndexIDMap2Template::merge_from</qualifiedname>
         <param>
           <type>IndexT &amp;</type>
           <declname>otherIndex</declname>
@@ -231,6 +244,7 @@
         <definition>faiss::IndexIDMap2Template&lt; IndexT &gt;::~IndexIDMap2Template</definition>
         <argsstring>() override</argsstring>
         <name>~IndexIDMap2Template</name>
+        <qualifiedname>faiss::IndexIDMap2Template::~IndexIDMap2Template</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -244,6 +258,7 @@
         <definition>faiss::IndexIDMap2Template&lt; IndexT &gt;::IndexIDMap2Template</definition>
         <argsstring>()</argsstring>
         <name>IndexIDMap2Template</name>
+        <qualifiedname>faiss::IndexIDMap2Template::IndexIDMap2Template</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -257,6 +272,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::add</definition>
         <argsstring>(idx_t n, const component_t *x) override</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::add</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -279,6 +295,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::search</definition>
         <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::search</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -317,6 +334,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::train</definition>
         <argsstring>(idx_t n, const component_t *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::train</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -338,6 +356,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::reset</definition>
         <argsstring>() override</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -351,6 +370,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::range_search</definition>
         <argsstring>(idx_t n, const component_t *x, distance_t radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const override</argsstring>
         <name>range_search</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::range_search</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -385,6 +405,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::check_compatible_for_merge</definition>
         <argsstring>(const IndexT &amp;otherIndex) const override</argsstring>
         <name>check_compatible_for_merge</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::check_compatible_for_merge</qualifiedname>
         <param>
           <type>const IndexT &amp;</type>
           <declname>otherIndex</declname>
@@ -402,6 +423,7 @@
         <definition>size_t faiss::IndexIDMapTemplate&lt; IndexT &gt;::sa_code_size</definition>
         <argsstring>() const override</argsstring>
         <name>sa_code_size</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::sa_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -415,6 +437,7 @@
         <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::add_sa_codes</definition>
         <argsstring>(idx_t n, const uint8_t *x, const idx_t *xids) override</argsstring>
         <name>add_sa_codes</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::add_sa_codes</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -435,19 +458,13 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="64" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>same as IndexIDMap but also provides an efficient reconstruction implementation via a 2-way index </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::IndexIDMapTemplate&lt; IndexT &gt;</label>
-        <link refid="structfaiss_1_1IndexIDMapTemplate"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="3">
         <label>IndexT</label>
       </node>
@@ -455,16 +472,16 @@
         <label>faiss::IndexIDMap2Template&lt; IndexT &gt;</label>
         <link refid="structfaiss_1_1IndexIDMap2Template"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IndexIDMapTemplate&lt; IndexT &gt;</label>
+        <link refid="structfaiss_1_1IndexIDMapTemplate"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::IndexIDMapTemplate&lt; IndexT &gt;</label>
-        <link refid="structfaiss_1_1IndexIDMapTemplate"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="3">
         <label>IndexT</label>
       </node>
@@ -472,6 +489,12 @@
         <label>faiss::IndexIDMap2Template&lt; IndexT &gt;</label>
         <link refid="structfaiss_1_1IndexIDMap2Template"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IndexIDMapTemplate&lt; IndexT &gt;</label>
+        <link refid="structfaiss_1_1IndexIDMapTemplate"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuProgressiveDimIndexFactory</compoundname>
     <basecompoundref refid="structfaiss_1_1ProgressiveDimIndexFactory" prot="public" virt="non-virtual">faiss::ProgressiveDimIndexFactory</basecompoundref>
     <includes refid="GpuCloner_8h" local="no">GpuCloner.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1aa003250bd9171229891f0b0bf43ef6fa" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref></type>
         <definition>GpuMultipleClonerOptions faiss::gpu::GpuProgressiveDimIndexFactory::options</definition>
         <argsstring></argsstring>
         <name>options</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::options</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>std::vector&lt;GpuResourcesProvider*&gt; faiss::gpu::GpuProgressiveDimIndexFactory::vres</definition>
         <argsstring></argsstring>
         <name>vres</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::vres</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>std::vector&lt;int&gt; faiss::gpu::GpuProgressiveDimIndexFactory::devices</definition>
         <argsstring></argsstring>
         <name>devices</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::devices</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>int faiss::gpu::GpuProgressiveDimIndexFactory::ncall</definition>
         <argsstring></argsstring>
         <name>ncall</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::ncall</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,13 +61,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="91" column="9" bodyfile="faiss/gpu/GpuCloner.h" bodystart="91" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a7dad261772a26571a1bb87dd90d1b709" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::GpuProgressiveDimIndexFactory::GpuProgressiveDimIndexFactory</definition>
         <argsstring>(int ngpu)</argsstring>
         <name>GpuProgressiveDimIndexFactory</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::GpuProgressiveDimIndexFactory</qualifiedname>
         <param>
           <type>int</type>
           <declname>ngpu</declname>
@@ -76,12 +81,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="93" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac346f9e6604c8d393e995b5d9c411c8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ab6588f346d7a2acb9b651b49e4ef9fb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::gpu::GpuProgressiveDimIndexFactory::operator()</definition>
+        <definition>Index * faiss::gpu::GpuProgressiveDimIndexFactory::operator()</definition>
         <argsstring>(int dim) override</argsstring>
         <name>operator()</name>
-        <reimplements refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff">operator()</reimplements>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1ProgressiveDimIndexFactory_1a9e063b5c17a5d4ff6ca27e2f3807c933">operator()</reimplements>
         <param>
           <type>int</type>
           <declname>dim</declname>
@@ -100,6 +106,7 @@
         <definition>virtual faiss::gpu::GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory</definition>
         <argsstring>() override</argsstring>
         <name>~GpuProgressiveDimIndexFactory</name>
+        <qualifiedname>faiss::gpu::GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -108,7 +115,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="97" column="13"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>index factory for the <ref refid="structfaiss_1_1ProgressiveDimClustering" kindref="compound">ProgressiveDimClustering</ref> object </para>
     </briefdescription>
@@ -127,15 +134,19 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::ProgressiveDimIndexFactory</label>
+        <link refid="structfaiss_1_1ProgressiveDimIndexFactory"/>
+      </node>
+      <node id="4">
+        <label>faiss::gpu::GpuClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      </node>
       <node id="3">
         <label>faiss::gpu::GpuMultipleClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::ProgressiveDimIndexFactory</label>
-        <link refid="structfaiss_1_1ProgressiveDimIndexFactory"/>
       </node>
       <node id="1">
         <label>faiss::gpu::GpuProgressiveDimIndexFactory</label>
@@ -146,17 +157,13 @@
           <edgelabel>options</edgelabel>
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::gpu::GpuClonerOptions</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
-      </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuCloner.h" line="87" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="87" bodyend="98"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ad88346e2195f1b0b9f55b267a889ef73" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>devices</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a7dad261772a26571a1bb87dd90d1b709" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>GpuProgressiveDimIndexFactory</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1af169086fe6ba5743149efb2389fb7a56" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>ncall</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac346f9e6604c8d393e995b5d9c411c8b" prot="public" virt="virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ab6588f346d7a2acb9b651b49e4ef9fb9" prot="public" virt="virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1aa003250bd9171229891f0b0bf43ef6fa" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>options</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac477c154125b04c6ac5bbffbeda39b47" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>vres</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a3daef564abba3be06c01d8b40bb93c91" prot="public" virt="virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>~GpuProgressiveDimIndexFactory</name></member>

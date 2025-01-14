@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VectorIOWriter</compoundname>
     <basecompoundref refid="structfaiss_1_1IOWriter" prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VectorIOWriter_1a2b3f128d0d030a34225041ba627fb815" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
         <definition>std::vector&lt;uint8_t&gt; faiss::VectorIOWriter::data</definition>
         <argsstring></argsstring>
         <name>data</name>
+        <qualifiedname>faiss::VectorIOWriter::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::string faiss::IOWriter::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOWriter::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="42" column="17" bodyfile="faiss/impl/io.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1VectorIOWriter_1a06e4b9c1f49f9df496751f8063d5c879" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
         <definition>size_t faiss::VectorIOWriter::operator()</definition>
         <argsstring>(const void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorIOWriter::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11">operator()</reimplements>
         <param>
           <type>const void *</type>
@@ -63,6 +66,7 @@
         <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOWriter::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -72,33 +76,33 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="48" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
+      </node>
       <node id="1">
         <label>faiss::VectorIOWriter</label>
         <link refid="structfaiss_1_1VectorIOWriter"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
+      </node>
       <node id="1">
         <label>faiss::VectorIOWriter</label>
         <link refid="structfaiss_1_1VectorIOWriter"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/io.h" line="59" column="1" bodyfile="faiss/impl/io.h" bodystart="59" bodyend="62"/>

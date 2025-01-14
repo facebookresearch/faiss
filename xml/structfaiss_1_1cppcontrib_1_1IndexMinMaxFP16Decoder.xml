@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" kind="struct" language="C++" prot="public">
     <compoundname>faiss::cppcontrib::IndexMinMaxFP16Decoder</compoundname>
     <templateparamlist>
@@ -7,12 +7,13 @@
         <type>typename SubIndexT</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-static-attrib">
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa9f873fea4bee08ed32664b003d81b09" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
         <definition>constexpr intptr_t faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::dim</definition>
         <argsstring></argsstring>
         <name>dim</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::dim</qualifiedname>
         <initializer>= SubIndexT::dim</initializer>
         <briefdescription>
         </briefdescription>
@@ -22,13 +23,14 @@
         </inbodydescription>
         <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="20" column="31" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="20" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1abeebc156b71fa108b31683f2c92a7123" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::store</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, float *const __restrict outputStore)</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::store</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids</declname>
@@ -58,6 +60,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::store</definition>
         <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, float *const __restrict outputStore)</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::store</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids</declname>
@@ -83,6 +86,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, const float weight, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids</declname>
@@ -120,6 +124,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, const float weight, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids</declname>
@@ -153,6 +158,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids0, const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqCoarseCentroids1, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids0</declname>
@@ -206,6 +212,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids</declname>
@@ -251,6 +258,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids0</declname>
@@ -296,6 +304,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids</declname>
@@ -337,6 +346,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids0, const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqCoarseCentroids1, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, const float *const __restrict pqCoarseCentroids2, const float *const __restrict pqFineCentroids2, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids0</declname>
@@ -406,6 +416,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqCoarseCentroids</declname>
@@ -459,6 +470,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, const float *const __restrict pqFineCentroids2, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids0</declname>
@@ -516,6 +528,7 @@
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
         <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
         <name>accum</name>
+        <qualifiedname>faiss::cppcontrib::IndexMinMaxFP16Decoder::accum</qualifiedname>
         <param>
           <type>const float *const __restrict</type>
           <declname>pqFineCentroids</declname>
@@ -560,7 +573,7 @@
         </inbodydescription>
         <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="432" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="432" bodyend="468"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

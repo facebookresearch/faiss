@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapBlockResultHandler::SingleResultHandler</compoundname>
     <basecompoundref refid="structfaiss_1_1ResultHandler" prot="public" virt="non-virtual">faiss::ResultHandler&lt; C &gt;</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler_1a0889e4cfd19b53792adad8a0c59d1c44" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1HeapBlockResultHandler" kindref="compound">HeapBlockResultHandler</ref> &amp;</type>
         <definition>HeapBlockResultHandler&amp; faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::hr</definition>
         <argsstring></argsstring>
         <name>hr</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::hr</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::k</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>T* faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::heap_dis</definition>
         <argsstring></argsstring>
         <name>heap_dis</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::heap_dis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>TI* faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::heap_ids</definition>
         <argsstring></argsstring>
         <name>heap_ids</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::heap_ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -61,6 +65,7 @@
         <definition>C::T faiss::ResultHandler&lt; C &gt;::threshold</definition>
         <argsstring></argsstring>
         <name>threshold</name>
+        <qualifiedname>faiss::ResultHandler::threshold</qualifiedname>
         <initializer>= C::neutral()</initializer>
         <briefdescription>
         </briefdescription>
@@ -70,13 +75,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="74" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="74" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler_1a1d20bed949dd8a80985fdfbf4fbf9e9c" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::SingleResultHandler</definition>
         <argsstring>(HeapBlockResultHandler &amp;hr)</argsstring>
         <name>SingleResultHandler</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::SingleResultHandler</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1HeapBlockResultHandler" kindref="compound">HeapBlockResultHandler</ref> &amp;</type>
           <declname>hr</declname>
@@ -94,6 +100,7 @@
         <definition>void faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::begin</definition>
         <argsstring>(size_t i)</argsstring>
         <name>begin</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::begin</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -112,6 +119,7 @@
         <definition>bool faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::add_result</definition>
         <argsstring>(T dis, TI idx) final</argsstring>
         <name>add_result</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::add_result</qualifiedname>
         <reimplements refid="structfaiss_1_1ResultHandler_1a3cf97e0bcb27feb310bebd35407fc47b">add_result</reimplements>
         <param>
           <type>T</type>
@@ -135,6 +143,7 @@
         <definition>void faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler::end</definition>
         <argsstring>()</argsstring>
         <name>end</name>
+        <qualifiedname>faiss::HeapBlockResultHandler::SingleResultHandler::end</qualifiedname>
         <briefdescription>
 <para>series of results for query i is done </para>
         </briefdescription>
@@ -144,31 +153,30 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="244" column="14" bodyfile="faiss/impl/ResultHandler.h" bodystart="244" bodyend="246"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::ResultHandler&lt; C &gt;</label>
-        <link refid="structfaiss_1_1ResultHandler"/>
-      </node>
       <node id="1">
         <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
         <link refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
-      <node id="4">
-        <label>faiss::BlockResultHandler&lt; C, false &gt;</label>
-        <link refid="structfaiss_1_1BlockResultHandler"/>
-      </node>
       <node id="2">
         <label>faiss::ResultHandler&lt; C &gt;</label>
         <link refid="structfaiss_1_1ResultHandler"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>faiss::BlockResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
       </node>
       <node id="3">
         <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;</label>
@@ -184,6 +192,14 @@
         <childnode refid="3" relation="usage">
           <edgelabel>hr</edgelabel>
         </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="2">
+        <label>faiss::ResultHandler&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandler"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/ResultHandler.h" line="214" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="214" bodyend="247"/>

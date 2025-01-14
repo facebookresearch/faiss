@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="SaDecodeKernels_8h" kind="file" language="C++">
     <compoundname>SaDecodeKernels.h</compoundname>
     <includes refid="MinMax-inl_8h" local="no">faiss/cppcontrib/sa_decode/MinMax-inl.h</includes>
@@ -19,11 +19,9 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>faiss/cppcontrib/sa_decode/PQ-inl.h</label>
-        <link refid="PQ-inl_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
+      <node id="12">
+        <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
+        <link refid="CoarseBitType_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
@@ -39,31 +37,10 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>faiss/utils/fp16.h</label>
-        <link refid="fp16_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>cstdint</label>
-      </node>
-      <node id="9">
-        <label>faiss/utils/fp16-inl.h</label>
-        <link refid="fp16-inl_8h_source"/>
-        <childnode refid="10" relation="include">
+      <node id="2">
+        <label>faiss/cppcontrib/sa_decode/MinMax-inl.h</label>
+        <link refid="MinMax-inl_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -78,28 +55,51 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
-        <link refid="CoarseBitType_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>cstdio</label>
-      </node>
-      <node id="2">
-        <label>faiss/cppcontrib/sa_decode/MinMax-inl.h</label>
-        <link refid="MinMax-inl_8h_source"/>
+      <node id="13">
+        <label>faiss/cppcontrib/sa_decode/PQ-inl.h</label>
+        <link refid="PQ-inl_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>cstddef</label>
+      <node id="7">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/utils/fp16-inl.h</label>
+        <link refid="fp16-inl_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/utils/fp16.h</label>
+        <link refid="fp16_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="10">
         <label>algorithm</label>
+      </node>
+      <node id="3">
+        <label>cstddef</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="8">
+        <label>cstdio</label>
       </node>
     </incdepgraph>
     <briefdescription>

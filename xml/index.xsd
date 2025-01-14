@@ -45,6 +45,8 @@
       <xsd:enumeration value="example"/>
       <xsd:enumeration value="dir"/>
       <xsd:enumeration value="type"/>
+      <xsd:enumeration value="concept"/>
+      <xsd:enumeration value="module"/>
     </xsd:restriction>
   </xsd:simpleType>
 

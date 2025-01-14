@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ZnSphereCodec::CodeSegment</compoundname>
     <basecompoundref refid="structfaiss_1_1Repeats" prot="public" virt="non-virtual">faiss::Repeats</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a98c8cbbed7f69604fb281e48937daf56" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
         <definition>uint64_t faiss::ZnSphereCodec::CodeSegment::c0</definition>
         <argsstring></argsstring>
         <name>c0</name>
+        <qualifiedname>faiss::ZnSphereCodec::CodeSegment::c0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>int faiss::ZnSphereCodec::CodeSegment::signbits</definition>
         <argsstring></argsstring>
         <name>signbits</name>
+        <qualifiedname>faiss::ZnSphereCodec::CodeSegment::signbits</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>int faiss::Repeats::dim</definition>
         <argsstring></argsstring>
         <name>dim</name>
+        <qualifiedname>faiss::Repeats::dim</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>std::vector&lt;Repeat&gt; faiss::Repeats::repeats</definition>
         <argsstring></argsstring>
         <name>repeats</name>
+        <qualifiedname>faiss::Repeats::repeats</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -56,13 +60,14 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="98" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="98" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1aa18b0015ec6a160634a610cdc99b3459" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::ZnSphereCodec::CodeSegment::CodeSegment</definition>
         <argsstring>(const Repeats &amp;r)</argsstring>
         <name>CodeSegment</name>
+        <qualifiedname>faiss::ZnSphereCodec::CodeSegment::CodeSegment</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1Repeats" kindref="compound">Repeats</ref> &amp;</type>
           <declname>r</declname>
@@ -80,6 +85,7 @@
         <definition>uint64_t faiss::Repeats::count</definition>
         <argsstring>() const</argsstring>
         <name>count</name>
+        <qualifiedname>faiss::Repeats::count</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -93,6 +99,7 @@
         <definition>uint64_t faiss::Repeats::encode</definition>
         <argsstring>(const float *c) const</argsstring>
         <name>encode</name>
+        <qualifiedname>faiss::Repeats::encode</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>c</declname>
@@ -110,6 +117,7 @@
         <definition>void faiss::Repeats::decode</definition>
         <argsstring>(uint64_t code, float *c) const</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::Repeats::decode</qualifiedname>
         <param>
           <type>uint64_t</type>
           <declname>code</declname>
@@ -126,33 +134,33 @@
         </inbodydescription>
         <location file="faiss/impl/lattice_Zn.h" line="108" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::Repeats</label>
+        <link refid="structfaiss_1_1Repeats"/>
+      </node>
       <node id="1">
         <label>faiss::ZnSphereCodec::CodeSegment</label>
         <link refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::Repeats</label>
-        <link refid="structfaiss_1_1Repeats"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::Repeats</label>
+        <link refid="structfaiss_1_1Repeats"/>
+      </node>
       <node id="1">
         <label>faiss::ZnSphereCodec::CodeSegment</label>
         <link refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::Repeats</label>
-        <link refid="structfaiss_1_1Repeats"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/lattice_Zn.h" line="117" column="5" bodyfile="faiss/impl/lattice_Zn.h" bodystart="117" bodyend="121"/>

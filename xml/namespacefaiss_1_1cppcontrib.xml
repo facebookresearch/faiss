@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1cppcontrib" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib</compoundname>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" prot="public">faiss::cppcontrib::Index2LevelDecoder</innerclass>
@@ -7,12 +7,13 @@
     <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" prot="public">faiss::cppcontrib::IndexMinMaxFP16Decoder</innerclass>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" prot="public">faiss::cppcontrib::IndexPQDecoder</innerclass>
     <innernamespace refid="namespacefaiss_1_1cppcontrib_1_1detail">faiss::cppcontrib::detail</innernamespace>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool faiss::cppcontrib::isBigEndian</definition>
         <argsstring>()</argsstring>
         <name>isBigEndian</name>
+        <qualifiedname>faiss::cppcontrib::isBigEndian</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,7 +22,7 @@
         </inbodydescription>
         <location file="faiss/cppcontrib/sa_decode/Level2-inl.h" line="20" column="6" bodyfile="faiss/cppcontrib/sa_decode/Level2-inl.h" bodystart="20" bodyend="26"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

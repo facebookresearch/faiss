@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1AllocInfo" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::AllocInfo</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public" virt="non-virtual">faiss::gpu::AllocRequest</derivedcompoundref>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" prot="public" static="no" mutable="no">
         <type>AllocType</type>
         <definition>AllocType faiss::gpu::AllocInfo::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <qualifiedname>faiss::gpu::AllocInfo::type</qualifiedname>
         <initializer>= AllocType::Other</initializer>
         <briefdescription>
 <para>The internal category of the allocation. </para>
@@ -25,6 +26,7 @@
         <definition>int faiss::gpu::AllocInfo::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::AllocInfo::device</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>The device on which the allocation is happening. </para>
@@ -40,6 +42,7 @@
         <definition>MemorySpace faiss::gpu::AllocInfo::space</definition>
         <argsstring></argsstring>
         <name>space</name>
+        <qualifiedname>faiss::gpu::AllocInfo::space</qualifiedname>
         <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
 <para>The memory space of the allocation. </para>
@@ -55,6 +58,7 @@
         <definition>cudaStream_t faiss::gpu::AllocInfo::stream</definition>
         <argsstring></argsstring>
         <name>stream</name>
+        <qualifiedname>faiss::gpu::AllocInfo::stream</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -66,13 +70,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="132" column="18" bodyfile="faiss/gpu/GpuResources.h" bodystart="132" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a9f0952aebd52122e8c9a304653a6c321" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::AllocInfo::AllocInfo</definition>
         <argsstring>()</argsstring>
         <name>AllocInfo</name>
+        <qualifiedname>faiss::gpu::AllocInfo::AllocInfo</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -86,6 +91,7 @@
         <definition>faiss::gpu::AllocInfo::AllocInfo</definition>
         <argsstring>(AllocType at, int dev, MemorySpace sp, cudaStream_t st)</argsstring>
         <name>AllocInfo</name>
+        <qualifiedname>faiss::gpu::AllocInfo::AllocInfo</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>at</declname>
@@ -115,6 +121,7 @@
         <definition>std::string faiss::gpu::AllocInfo::toString</definition>
         <argsstring>() const</argsstring>
         <name>toString</name>
+        <qualifiedname>faiss::gpu::AllocInfo::toString</qualifiedname>
         <briefdescription>
 <para>Returns a string representation of this info. </para>
         </briefdescription>
@@ -124,7 +131,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="113" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Information on what/where an allocation is. </para>
     </briefdescription>

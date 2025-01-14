@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinaryHash_1_1InvertedList" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryHash::InvertedList</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHash_1_1InvertedList_1a8e8d2f8553144c139cbd1eb4ff4b0981" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
         <definition>std::vector&lt;idx_t&gt; faiss::IndexBinaryHash::InvertedList::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::IndexBinaryHash::InvertedList::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>std::vector&lt;uint8_t&gt; faiss::IndexBinaryHash::InvertedList::vecs</definition>
         <argsstring></argsstring>
         <name>vecs</name>
+        <qualifiedname>faiss::IndexBinaryHash::InvertedList::vecs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryHash.h" line="29" column="21" bodyfile="faiss/IndexBinaryHash.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHash_1_1InvertedList_1a8a2d55c9c12b9a5f4af4ba20d819b39a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexBinaryHash::InvertedList::add</definition>
         <argsstring>(idx_t id, size_t code_size, const uint8_t *code)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexBinaryHash::InvertedList::add</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
@@ -56,7 +59,7 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryHash.h" line="31" column="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

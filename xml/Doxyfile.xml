@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxyfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="doxyfile.xsd" version="1.9.8" xml:lang="en-US">
+  <option  id='DOXYFILE_ENCODING' default='yes' type='string'><value><![CDATA[UTF-8]]></value></option>
+  <option  id='PROJECT_NAME' default='no' type='string'><value><![CDATA[Faiss]]></value></option>
+  <option  id='PROJECT_NUMBER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='PROJECT_BRIEF' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='PROJECT_LOGO' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='OUTPUT_DIRECTORY' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='CREATE_SUBDIRS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CREATE_SUBDIRS_LEVEL' default='yes' type='int'><value>8</value></option>
+  <option  id='ALLOW_UNICODE_NAMES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OUTPUT_LANGUAGE' default='yes' type='string'><value>English</value></option>
+  <option  id='BRIEF_MEMBER_DESC' default='yes' type='bool'><value>YES</value></option>
+  <option  id='REPEAT_BRIEF' default='yes' type='bool'><value>YES</value></option>
+  <option  id='ABBREVIATE_BRIEF' default='yes' type='stringlist'>
+    <value><![CDATA["The $name class"]]></value>
+    <value><![CDATA["The $name widget"]]></value>
+    <value><![CDATA["The $name file"]]></value>
+    <value><![CDATA[is]]></value>
+    <value><![CDATA[provides]]></value>
+    <value><![CDATA[specifies]]></value>
+    <value><![CDATA[contains]]></value>
+    <value><![CDATA[represents]]></value>
+    <value><![CDATA[a]]></value>
+    <value><![CDATA[an]]></value>
+    <value><![CDATA[the]]></value>
+  </option>
+  <option  id='ALWAYS_DETAILED_SEC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='INLINE_INHERITED_MEMB' default='no' type='bool'><value>YES</value></option>
+  <option  id='FULL_PATH_NAMES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='STRIP_FROM_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='STRIP_FROM_INC_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='SHORT_NAMES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='JAVADOC_AUTOBRIEF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='JAVADOC_BANNER' default='yes' type='bool'><value>NO</value></option>
+  <option  id='QT_AUTOBRIEF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='MULTILINE_CPP_IS_BRIEF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='PYTHON_DOCSTRING' default='yes' type='bool'><value>YES</value></option>
+  <option  id='INHERIT_DOCS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SEPARATE_MEMBER_PAGES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='TAB_SIZE' default='yes' type='int'><value>4</value></option>
+  <option  id='ALIASES' default='yes' type='stringlist'>
+  </option>
+  <option  id='OPTIMIZE_OUTPUT_FOR_C' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OPTIMIZE_OUTPUT_JAVA' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OPTIMIZE_FOR_FORTRAN' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OPTIMIZE_OUTPUT_VHDL' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OPTIMIZE_OUTPUT_SLICE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTENSION_MAPPING' default='yes' type='stringlist'>
+  </option>
+  <option  id='MARKDOWN_SUPPORT' default='yes' type='bool'><value>YES</value></option>
+  <option  id='TOC_INCLUDE_HEADINGS' default='yes' type='int'><value>5</value></option>
+  <option  id='MARKDOWN_ID_STYLE' default='yes' type='string'><value>DOXYGEN</value></option>
+  <option  id='AUTOLINK_SUPPORT' default='yes' type='bool'><value>YES</value></option>
+  <option  id='BUILTIN_STL_SUPPORT' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CPP_CLI_SUPPORT' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SIP_SUPPORT' default='yes' type='bool'><value>NO</value></option>
+  <option  id='IDL_PROPERTY_SUPPORT' default='yes' type='bool'><value>YES</value></option>
+  <option  id='DISTRIBUTE_GROUP_DOC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GROUP_NESTED_COMPOUNDS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SUBGROUPING' default='yes' type='bool'><value>YES</value></option>
+  <option  id='INLINE_GROUPED_CLASSES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='INLINE_SIMPLE_STRUCTS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='TYPEDEF_HIDES_STRUCT' default='yes' type='bool'><value>NO</value></option>
+  <option  id='LOOKUP_CACHE_SIZE' default='yes' type='int'><value>0</value></option>
+  <option  id='NUM_PROC_THREADS' default='yes' type='int'><value>1</value></option>
+  <option  id='TIMESTAMP' default='yes' type='string'><value>NO</value></option>
+  <option  id='EXTRACT_ALL' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_PRIVATE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_PRIV_VIRTUAL' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_PACKAGE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_STATIC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_LOCAL_CLASSES' default='no' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_LOCAL_METHODS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTRACT_ANON_NSPACES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='RESOLVE_UNNAMED_PARAMS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HIDE_UNDOC_MEMBERS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='HIDE_UNDOC_CLASSES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='HIDE_FRIEND_COMPOUNDS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='HIDE_IN_BODY_DOCS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='INTERNAL_DOCS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CASE_SENSE_NAMES' default='no' type='string'><value>YES</value></option>
+  <option  id='HIDE_SCOPE_NAMES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='HIDE_COMPOUND_REFERENCE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SHOW_HEADERFILE' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SHOW_INCLUDE_FILES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SHOW_GROUPED_MEMB_INC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='FORCE_LOCAL_INCLUDES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='INLINE_INFO' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SORT_MEMBER_DOCS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SORT_BRIEF_DOCS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SORT_MEMBERS_CTORS_1ST' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SORT_GROUP_NAMES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SORT_BY_SCOPE_NAME' default='yes' type='bool'><value>NO</value></option>
+  <option  id='STRICT_PROTO_MATCHING' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_TODOLIST' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GENERATE_TESTLIST' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GENERATE_BUGLIST' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GENERATE_DEPRECATEDLIST' default='yes' type='bool'><value>YES</value></option>
+  <option  id='ENABLED_SECTIONS' default='yes' type='stringlist'>
+  </option>
+  <option  id='MAX_INITIALIZER_LINES' default='yes' type='int'><value>30</value></option>
+  <option  id='SHOW_USED_FILES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SHOW_FILES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SHOW_NAMESPACES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='FILE_VERSION_FILTER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='LAYOUT_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='CITE_BIB_FILES' default='yes' type='stringlist'>
+  </option>
+  <option  id='QUIET' default='yes' type='bool'><value>NO</value></option>
+  <option  id='WARNINGS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='WARN_IF_UNDOCUMENTED' default='yes' type='bool'><value>YES</value></option>
+  <option  id='WARN_IF_DOC_ERROR' default='yes' type='bool'><value>YES</value></option>
+  <option  id='WARN_IF_INCOMPLETE_DOC' default='yes' type='bool'><value>YES</value></option>
+  <option  id='WARN_NO_PARAMDOC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='WARN_IF_UNDOC_ENUM_VAL' default='yes' type='bool'><value>NO</value></option>
+  <option  id='WARN_AS_ERROR' default='yes' type='string'><value>NO</value></option>
+  <option  id='WARN_FORMAT' default='yes' type='string'><value><![CDATA["$file:$line: $text"]]></value></option>
+  <option  id='WARN_LINE_FORMAT' default='yes' type='string'><value><![CDATA["at line $line of file $file"]]></value></option>
+  <option  id='WARN_LOGFILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='INPUT' default='no' type='stringlist'>
+    <value><![CDATA[./faiss]]></value>
+  </option>
+  <option  id='INPUT_ENCODING' default='yes' type='string'><value><![CDATA[UTF-8]]></value></option>
+  <option  id='INPUT_FILE_ENCODING' default='yes' type='stringlist'>
+  </option>
+  <option  id='FILE_PATTERNS' default='no' type='stringlist'>
+    <value><![CDATA[*.h]]></value>
+    <value><![CDATA[*.cuh]]></value>
+  </option>
+  <option  id='RECURSIVE' default='no' type='bool'><value>YES</value></option>
+  <option  id='EXCLUDE' default='no' type='stringlist'>
+    <value><![CDATA[gpu/test]]></value>
+  </option>
+  <option  id='EXCLUDE_SYMLINKS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXCLUDE_PATTERNS' default='yes' type='stringlist'>
+  </option>
+  <option  id='EXCLUDE_SYMBOLS' default='yes' type='stringlist'>
+  </option>
+  <option  id='EXAMPLE_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='EXAMPLE_PATTERNS' default='yes' type='stringlist'>
+    <value><![CDATA[*]]></value>
+  </option>
+  <option  id='EXAMPLE_RECURSIVE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='IMAGE_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='INPUT_FILTER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='FILTER_PATTERNS' default='yes' type='stringlist'>
+  </option>
+  <option  id='FILTER_SOURCE_FILES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='FILTER_SOURCE_PATTERNS' default='yes' type='stringlist'>
+  </option>
+  <option  id='USE_MDFILE_AS_MAINPAGE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='FORTRAN_COMMENT_AFTER' default='yes' type='int'><value>72</value></option>
+  <option  id='SOURCE_BROWSER' default='no' type='bool'><value>YES</value></option>
+  <option  id='INLINE_SOURCES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='STRIP_CODE_COMMENTS' default='no' type='bool'><value>NO</value></option>
+  <option  id='REFERENCED_BY_RELATION' default='yes' type='bool'><value>NO</value></option>
+  <option  id='REFERENCES_RELATION' default='yes' type='bool'><value>NO</value></option>
+  <option  id='REFERENCES_LINK_SOURCE' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SOURCE_TOOLTIPS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='USE_HTAGS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='VERBATIM_HEADERS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='CLANG_ASSISTED_PARSING' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CLANG_ADD_INC_PATHS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='CLANG_OPTIONS' default='yes' type='stringlist'>
+  </option>
+  <option  id='CLANG_DATABASE_PATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='ALPHABETICAL_INDEX' default='yes' type='bool'><value>YES</value></option>
+  <option  id='IGNORE_PREFIX' default='yes' type='stringlist'>
+  </option>
+  <option  id='GENERATE_HTML' default='no' type='bool'><value>NO</value></option>
+  <option  id='HTML_OUTPUT' default='yes' type='string'><value><![CDATA[html]]></value></option>
+  <option  id='HTML_FILE_EXTENSION' default='yes' type='string'><value><![CDATA[.html]]></value></option>
+  <option  id='HTML_HEADER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='HTML_FOOTER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='HTML_STYLESHEET' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='HTML_EXTRA_STYLESHEET' default='yes' type='stringlist'>
+  </option>
+  <option  id='HTML_EXTRA_FILES' default='yes' type='stringlist'>
+  </option>
+  <option  id='HTML_COLORSTYLE' default='yes' type='string'><value>AUTO_LIGHT</value></option>
+  <option  id='HTML_COLORSTYLE_HUE' default='yes' type='int'><value>220</value></option>
+  <option  id='HTML_COLORSTYLE_SAT' default='yes' type='int'><value>100</value></option>
+  <option  id='HTML_COLORSTYLE_GAMMA' default='yes' type='int'><value>80</value></option>
+  <option  id='HTML_DYNAMIC_MENUS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HTML_DYNAMIC_SECTIONS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='HTML_CODE_FOLDING' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HTML_INDEX_NUM_ENTRIES' default='yes' type='int'><value>100</value></option>
+  <option  id='GENERATE_DOCSET' default='yes' type='bool'><value>NO</value></option>
+  <option  id='DOCSET_FEEDNAME' default='yes' type='string'><value><![CDATA["Doxygen generated docs"]]></value></option>
+  <option  id='DOCSET_FEEDURL' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='DOCSET_BUNDLE_ID' default='yes' type='string'><value><![CDATA[org.doxygen.Project]]></value></option>
+  <option  id='DOCSET_PUBLISHER_ID' default='yes' type='string'><value><![CDATA[org.doxygen.Publisher]]></value></option>
+  <option  id='DOCSET_PUBLISHER_NAME' default='yes' type='string'><value><![CDATA[Publisher]]></value></option>
+  <option  id='GENERATE_HTMLHELP' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CHM_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='HHC_LOCATION' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='GENERATE_CHI' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CHM_INDEX_ENCODING' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='BINARY_TOC' default='yes' type='bool'><value>NO</value></option>
+  <option  id='TOC_EXPAND' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SITEMAP_URL' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='GENERATE_QHP' default='yes' type='bool'><value>NO</value></option>
+  <option  id='QCH_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='QHP_NAMESPACE' default='yes' type='string'><value><![CDATA[org.doxygen.Project]]></value></option>
+  <option  id='QHP_VIRTUAL_FOLDER' default='yes' type='string'><value><![CDATA[doc]]></value></option>
+  <option  id='QHP_CUST_FILTER_NAME' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='QHP_CUST_FILTER_ATTRS' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='QHP_SECT_FILTER_ATTRS' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='QHG_LOCATION' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='GENERATE_ECLIPSEHELP' default='yes' type='bool'><value>NO</value></option>
+  <option  id='ECLIPSE_DOC_ID' default='yes' type='string'><value><![CDATA[org.doxygen.Project]]></value></option>
+  <option  id='DISABLE_INDEX' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_TREEVIEW' default='yes' type='bool'><value>NO</value></option>
+  <option  id='FULL_SIDEBAR' default='yes' type='bool'><value>NO</value></option>
+  <option  id='ENUM_VALUES_PER_LINE' default='yes' type='int'><value>4</value></option>
+  <option  id='TREEVIEW_WIDTH' default='yes' type='int'><value>250</value></option>
+  <option  id='EXT_LINKS_IN_WINDOW' default='yes' type='bool'><value>NO</value></option>
+  <option  id='OBFUSCATE_EMAILS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HTML_FORMULA_FORMAT' default='yes' type='string'><value>png</value></option>
+  <option  id='FORMULA_FONTSIZE' default='yes' type='int'><value>10</value></option>
+  <option  id='FORMULA_MACROFILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='USE_MATHJAX' default='yes' type='bool'><value>NO</value></option>
+  <option  id='MATHJAX_VERSION' default='yes' type='string'><value>MathJax_2</value></option>
+  <option  id='MATHJAX_FORMAT' default='yes' type='string'><value>HTML-CSS</value></option>
+  <option  id='MATHJAX_RELPATH' default='no' type='string'><value><![CDATA[http://cdn.mathjax.org/mathjax/latest]]></value></option>
+  <option  id='MATHJAX_EXTENSIONS' default='yes' type='stringlist'>
+  </option>
+  <option  id='MATHJAX_CODEFILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='SEARCHENGINE' default='yes' type='bool'><value>YES</value></option>
+  <option  id='SERVER_BASED_SEARCH' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTERNAL_SEARCH' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SEARCHENGINE_URL' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='SEARCHDATA_FILE' default='yes' type='string'><value><![CDATA[searchdata.xml]]></value></option>
+  <option  id='EXTERNAL_SEARCH_ID' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='EXTRA_SEARCH_MAPPINGS' default='yes' type='stringlist'>
+  </option>
+  <option  id='GENERATE_LATEX' default='no' type='bool'><value>NO</value></option>
+  <option  id='LATEX_OUTPUT' default='yes' type='string'><value><![CDATA[latex]]></value></option>
+  <option  id='LATEX_CMD_NAME' default='no' type='string'><value><![CDATA[latex]]></value></option>
+  <option  id='MAKEINDEX_CMD_NAME' default='yes' type='string'><value><![CDATA[makeindex]]></value></option>
+  <option  id='LATEX_MAKEINDEX_CMD' default='yes' type='string'><value><![CDATA[makeindex]]></value></option>
+  <option  id='COMPACT_LATEX' default='yes' type='bool'><value>NO</value></option>
+  <option  id='PAPER_TYPE' default='yes' type='string'><value>a4</value></option>
+  <option  id='EXTRA_PACKAGES' default='yes' type='stringlist'>
+  </option>
+  <option  id='LATEX_HEADER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='LATEX_FOOTER' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='LATEX_EXTRA_STYLESHEET' default='yes' type='stringlist'>
+  </option>
+  <option  id='LATEX_EXTRA_FILES' default='yes' type='stringlist'>
+  </option>
+  <option  id='PDF_HYPERLINKS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='USE_PDFLATEX' default='yes' type='bool'><value>YES</value></option>
+  <option  id='LATEX_BATCHMODE' default='yes' type='string'><value>NO</value></option>
+  <option  id='LATEX_HIDE_INDICES' default='yes' type='bool'><value>NO</value></option>
+  <option  id='LATEX_BIB_STYLE' default='yes' type='string'><value><![CDATA[plain]]></value></option>
+  <option  id='LATEX_EMOJI_DIRECTORY' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='GENERATE_RTF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='RTF_OUTPUT' default='yes' type='string'><value><![CDATA[rtf]]></value></option>
+  <option  id='COMPACT_RTF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='RTF_HYPERLINKS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='RTF_STYLESHEET_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='RTF_EXTENSIONS_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='GENERATE_MAN' default='yes' type='bool'><value>NO</value></option>
+  <option  id='MAN_OUTPUT' default='yes' type='string'><value><![CDATA[man]]></value></option>
+  <option  id='MAN_EXTENSION' default='yes' type='string'><value><![CDATA[.3]]></value></option>
+  <option  id='MAN_SUBDIR' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='MAN_LINKS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_XML' default='no' type='bool'><value>YES</value></option>
+  <option  id='XML_OUTPUT' default='yes' type='string'><value><![CDATA[xml]]></value></option>
+  <option  id='XML_PROGRAMLISTING' default='yes' type='bool'><value>YES</value></option>
+  <option  id='XML_NS_MEMB_FILE_SCOPE' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_DOCBOOK' default='yes' type='bool'><value>NO</value></option>
+  <option  id='DOCBOOK_OUTPUT' default='yes' type='string'><value><![CDATA[docbook]]></value></option>
+  <option  id='GENERATE_AUTOGEN_DEF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_SQLITE3' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SQLITE3_OUTPUT' default='yes' type='string'><value><![CDATA[sqlite3]]></value></option>
+  <option  id='SQLITE3_RECREATE_DB' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GENERATE_PERLMOD' default='yes' type='bool'><value>NO</value></option>
+  <option  id='PERLMOD_LATEX' default='yes' type='bool'><value>NO</value></option>
+  <option  id='PERLMOD_PRETTY' default='yes' type='bool'><value>YES</value></option>
+  <option  id='PERLMOD_MAKEVAR_PREFIX' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='ENABLE_PREPROCESSING' default='yes' type='bool'><value>YES</value></option>
+  <option  id='MACRO_EXPANSION' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXPAND_ONLY_PREDEF' default='yes' type='bool'><value>NO</value></option>
+  <option  id='SEARCH_INCLUDES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='INCLUDE_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='INCLUDE_FILE_PATTERNS' default='yes' type='stringlist'>
+  </option>
+  <option  id='PREDEFINED' default='yes' type='stringlist'>
+  </option>
+  <option  id='EXPAND_AS_DEFINED' default='yes' type='stringlist'>
+  </option>
+  <option  id='SKIP_FUNCTION_MACROS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='TAGFILES' default='yes' type='stringlist'>
+  </option>
+  <option  id='GENERATE_TAGFILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='ALLEXTERNALS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='EXTERNAL_GROUPS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='EXTERNAL_PAGES' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HIDE_UNDOC_RELATIONS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='HAVE_DOT' default='no' type='bool'><value>NO</value></option>
+  <option  id='DOT_NUM_THREADS' default='yes' type='int'><value>0</value></option>
+  <option  id='DOT_COMMON_ATTR' default='yes' type='string'><value><![CDATA["fontname=Helvetica,fontsize=10"]]></value></option>
+  <option  id='DOT_EDGE_ATTR' default='yes' type='string'><value><![CDATA["labelfontname=Helvetica,labelfontsize=10"]]></value></option>
+  <option  id='DOT_NODE_ATTR' default='yes' type='string'><value><![CDATA["shape=box,height=0.2,width=0.4"]]></value></option>
+  <option  id='DOT_FONTPATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='CLASS_GRAPH' default='yes' type='string'><value>YES</value></option>
+  <option  id='COLLABORATION_GRAPH' default='yes' type='bool'><value>YES</value></option>
+  <option  id='GROUP_GRAPHS' default='yes' type='bool'><value>YES</value></option>
+  <option  id='UML_LOOK' default='yes' type='bool'><value>NO</value></option>
+  <option  id='UML_LIMIT_NUM_FIELDS' default='yes' type='int'><value>10</value></option>
+  <option  id='DOT_UML_DETAILS' default='yes' type='string'><value>NO</value></option>
+  <option  id='DOT_WRAP_THRESHOLD' default='yes' type='int'><value>17</value></option>
+  <option  id='TEMPLATE_RELATIONS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='INCLUDE_GRAPH' default='yes' type='bool'><value>YES</value></option>
+  <option  id='INCLUDED_BY_GRAPH' default='yes' type='bool'><value>YES</value></option>
+  <option  id='CALL_GRAPH' default='yes' type='bool'><value>NO</value></option>
+  <option  id='CALLER_GRAPH' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GRAPHICAL_HIERARCHY' default='yes' type='bool'><value>YES</value></option>
+  <option  id='DIRECTORY_GRAPH' default='yes' type='bool'><value>YES</value></option>
+  <option  id='DIR_GRAPH_MAX_DEPTH' default='yes' type='int'><value>1</value></option>
+  <option  id='DOT_IMAGE_FORMAT' default='yes' type='string'><value>png</value></option>
+  <option  id='INTERACTIVE_SVG' default='yes' type='bool'><value>NO</value></option>
+  <option  id='DOT_PATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='DOTFILE_DIRS' default='yes' type='stringlist'>
+  </option>
+  <option  id='DIA_PATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='DIAFILE_DIRS' default='yes' type='stringlist'>
+  </option>
+  <option  id='PLANTUML_JAR_PATH' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='PLANTUML_CFG_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='PLANTUML_INCLUDE_PATH' default='yes' type='stringlist'>
+  </option>
+  <option  id='DOT_GRAPH_MAX_NODES' default='yes' type='int'><value>50</value></option>
+  <option  id='MAX_DOT_GRAPH_DEPTH' default='yes' type='int'><value>0</value></option>
+  <option  id='DOT_MULTI_TARGETS' default='yes' type='bool'><value>NO</value></option>
+  <option  id='GENERATE_LEGEND' default='yes' type='bool'><value>YES</value></option>
+  <option  id='DOT_CLEANUP' default='yes' type='bool'><value>YES</value></option>
+  <option  id='MSCGEN_TOOL' default='yes' type='string'><value><![CDATA[]]></value></option>
+  <option  id='MSCFILE_DIRS' default='yes' type='stringlist'>
+  </option>
+</doxyfile>

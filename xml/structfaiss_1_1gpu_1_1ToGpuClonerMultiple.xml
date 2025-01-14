@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::ToGpuClonerMultiple</compoundname>
     <basecompoundref refid="structfaiss_1_1Cloner" prot="public" virt="non-virtual">faiss::Cloner</basecompoundref>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public" virt="non-virtual">faiss::gpu::GpuMultipleClonerOptions</basecompoundref>
     <includes refid="GpuCloner_8h" local="no">GpuCloner.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a3b5d36b13444e6ae297be3612c3b2979" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref> &gt;</type>
         <definition>std::vector&lt;ToGpuCloner&gt; faiss::gpu::ToGpuClonerMultiple::sub_cloners</definition>
         <argsstring></argsstring>
         <name>sub_cloners</name>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::sub_cloners</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -24,6 +25,7 @@
         <definition>bool faiss::gpu::GpuMultipleClonerOptions::shard</definition>
         <argsstring></argsstring>
         <name>shard</name>
+        <qualifiedname>faiss::gpu::GpuMultipleClonerOptions::shard</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -39,6 +41,7 @@
         <definition>int faiss::gpu::GpuMultipleClonerOptions::shard_type</definition>
         <argsstring></argsstring>
         <name>shard_type</name>
+        <qualifiedname>faiss::gpu::GpuMultipleClonerOptions::shard_type</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
 <para><ref refid="structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb" kindref="member">IndexIVF::copy_subset_to</ref> subset type. </para>
@@ -54,6 +57,7 @@
         <definition>bool faiss::gpu::GpuMultipleClonerOptions::common_ivf_quantizer</definition>
         <argsstring></argsstring>
         <name>common_ivf_quantizer</name>
+        <qualifiedname>faiss::gpu::GpuMultipleClonerOptions::common_ivf_quantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -69,6 +73,7 @@
         <definition>IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::indicesOptions</qualifiedname>
         <initializer>= INDICES_64_BIT</initializer>
         <briefdescription>
         </briefdescription>
@@ -84,6 +89,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>useFloat16CoarseQuantizer</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>is the coarse quantizer in float16? </para>
@@ -99,6 +105,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16</definition>
         <argsstring></argsstring>
         <name>useFloat16</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::useFloat16</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -114,6 +121,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::usePrecomputed</definition>
         <argsstring></argsstring>
         <name>usePrecomputed</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::usePrecomputed</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>use precomputed tables? </para>
@@ -129,6 +137,7 @@
         <definition>long faiss::gpu::GpuClonerOptions::reserveVecs</definition>
         <argsstring></argsstring>
         <name>reserveVecs</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::reserveVecs</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>reserve vectors in the invfiles? </para>
@@ -144,6 +153,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::storeTransposed</definition>
         <argsstring></argsstring>
         <name>storeTransposed</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::storeTransposed</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>
@@ -159,6 +169,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Set verbose options on the index. </para>
@@ -174,6 +185,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>use the cuVS implementation </para>
@@ -189,6 +201,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>allowCpuCoarseQuantizer</name>
+        <qualifiedname>faiss::gpu::GpuClonerOptions::allowCpuCoarseQuantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -199,13 +212,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuClonerOptions.h" line="51" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="51" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1ac99efd0c009e45cc2ae23951697e13b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::ToGpuClonerMultiple::ToGpuClonerMultiple</definition>
         <argsstring>(std::vector&lt; GpuResourcesProvider * &gt; &amp;provider, std::vector&lt; int &gt; &amp;devices, const GpuMultipleClonerOptions &amp;options)</argsstring>
         <name>ToGpuClonerMultiple</name>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::ToGpuClonerMultiple</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
           <declname>provider</declname>
@@ -231,6 +245,7 @@
         <definition>faiss::gpu::ToGpuClonerMultiple::ToGpuClonerMultiple</definition>
         <argsstring>(const std::vector&lt; ToGpuCloner &gt; &amp;sub_cloners, const GpuMultipleClonerOptions &amp;options)</argsstring>
         <name>ToGpuClonerMultiple</name>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::ToGpuClonerMultiple</qualifiedname>
         <param>
           <type>const std::vector&lt; <ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref> &gt; &amp;</type>
           <declname>sub_cloners</declname>
@@ -252,6 +267,7 @@
         <definition>void faiss::gpu::ToGpuClonerMultiple::copy_ivf_shard</definition>
         <argsstring>(const IndexIVF *index_ivf, IndexIVF *idx2, idx_t n, idx_t i)</argsstring>
         <name>copy_ivf_shard</name>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::copy_ivf_shard</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
           <declname>index_ivf</declname>
@@ -276,11 +292,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="57" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a71f1471f9d5e56bd73be48c575041a66" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a7f270ad5f7df132a69e7587d2c7675b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::gpu::ToGpuClonerMultiple::clone_Index_to_shards</definition>
+        <definition>Index * faiss::gpu::ToGpuClonerMultiple::clone_Index_to_shards</definition>
         <argsstring>(const Index *index)</argsstring>
         <name>clone_Index_to_shards</name>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::clone_Index_to_shards</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>index</declname>
@@ -293,12 +310,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="63" column="11"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a13c5cbc34e65171b9be19a26645a8b58" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::gpu::ToGpuClonerMultiple::clone_Index</definition>
+        <definition>Index * faiss::gpu::ToGpuClonerMultiple::clone_Index</definition>
         <argsstring>(const Index *index) override</argsstring>
         <name>clone_Index</name>
-        <reimplements refid="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9">clone_Index</reimplements>
+        <qualifiedname>faiss::gpu::ToGpuClonerMultiple::clone_Index</qualifiedname>
+        <reimplements refid="structfaiss_1_1Cloner_1a5f0fb5f41123b4cf2a444399eddfaa77">clone_Index</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
           <declname>index</declname>
@@ -312,11 +330,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuCloner.h" line="66" column="11"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Cloner_1a26f63f3d397316d90e87e263978002a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
-        <definition>virtual VectorTransform* faiss::Cloner::clone_VectorTransform</definition>
+        <definition>virtual VectorTransform * faiss::Cloner::clone_VectorTransform</definition>
         <argsstring>(const VectorTransform *)</argsstring>
         <name>clone_VectorTransform</name>
+        <qualifiedname>faiss::Cloner::clone_VectorTransform</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
         </param>
@@ -328,11 +347,12 @@
         </inbodydescription>
         <location file="faiss/clone_index.h" line="29" column="29"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Cloner_1aa412f66e7d83a740f85ff7d885aec492" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
-        <definition>virtual IndexIVF* faiss::Cloner::clone_IndexIVF</definition>
+        <definition>virtual IndexIVF * faiss::Cloner::clone_IndexIVF</definition>
         <argsstring>(const IndexIVF *)</argsstring>
         <name>clone_IndexIVF</name>
+        <qualifiedname>faiss::Cloner::clone_IndexIVF</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
         </param>
@@ -344,7 +364,7 @@
         </inbodydescription>
         <location file="faiss/clone_index.h" line="31" column="22"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para><ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref> specialized for CPU -&gt; multiple GPUs. </para>
     </briefdescription>
@@ -355,15 +375,15 @@
         <label>faiss::Cloner</label>
         <link refid="structfaiss_1_1Cloner"/>
       </node>
+      <node id="4">
+        <label>faiss::gpu::GpuClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      </node>
       <node id="3">
         <label>faiss::gpu::GpuMultipleClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::gpu::GpuClonerOptions</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
       <node id="1">
         <label>faiss::gpu::ToGpuClonerMultiple</label>
@@ -379,15 +399,15 @@
         <label>faiss::Cloner</label>
         <link refid="structfaiss_1_1Cloner"/>
       </node>
+      <node id="4">
+        <label>faiss::gpu::GpuClonerOptions</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
+      </node>
       <node id="3">
         <label>faiss::gpu::GpuMultipleClonerOptions</label>
         <link refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="4">
-        <label>faiss::gpu::GpuClonerOptions</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
       <node id="1">
         <label>faiss::gpu::ToGpuClonerMultiple</label>
@@ -401,10 +421,10 @@
     <location file="faiss/gpu/GpuCloner.h" line="45" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="45" bodyend="67"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1adbb22b3815faa8ac1e8a49cc5b372791" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>allowCpuCoarseQuantizer</name></member>
-      <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index</name></member>
-      <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a71f1471f9d5e56bd73be48c575041a66" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index_to_shards</name></member>
-      <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_IndexIVF</name></member>
-      <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_VectorTransform</name></member>
+      <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a13c5cbc34e65171b9be19a26645a8b58" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index</name></member>
+      <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a7f270ad5f7df132a69e7587d2c7675b4" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index_to_shards</name></member>
+      <member refid="structfaiss_1_1Cloner_1aa412f66e7d83a740f85ff7d885aec492" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_IndexIVF</name></member>
+      <member refid="structfaiss_1_1Cloner_1a26f63f3d397316d90e87e263978002a7" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_VectorTransform</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a402387f7f754c12fce1b7f553654e215" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>common_ivf_quantizer</name></member>
       <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1ae11bb3439c0cc4c09c406db839b01610" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>copy_ivf_shard</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>indicesOptions</name></member>

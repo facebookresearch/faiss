@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BitstringWriter" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BitstringWriter</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1BitstringWriter_1af185df9f141d8e45c8d092f551de68a6" prot="public" static="no" mutable="no">
         <type>uint8_t *</type>
         <definition>uint8_t* faiss::BitstringWriter::code</definition>
         <argsstring></argsstring>
         <name>code</name>
+        <qualifiedname>faiss::BitstringWriter::code</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>size_t faiss::BitstringWriter::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::BitstringWriter::code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>size_t faiss::BitstringWriter::i</definition>
         <argsstring></argsstring>
         <name>i</name>
+        <qualifiedname>faiss::BitstringWriter::i</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,13 +45,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="78" column="12" bodyfile="faiss/utils/hamming.h" bodystart="78" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1BitstringWriter_1a56261b182f76de9984d586477b5649c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::BitstringWriter::BitstringWriter</definition>
         <argsstring>(uint8_t *code, size_t code_size)</argsstring>
         <name>BitstringWriter</name>
+        <qualifiedname>faiss::BitstringWriter::BitstringWriter</qualifiedname>
         <param>
           <type>uint8_t *</type>
           <declname>code</declname>
@@ -70,6 +74,7 @@
         <definition>void faiss::BitstringWriter::write</definition>
         <argsstring>(uint64_t x, int nbit)</argsstring>
         <name>write</name>
+        <qualifiedname>faiss::BitstringWriter::write</qualifiedname>
         <param>
           <type>uint64_t</type>
           <declname>x</declname>
@@ -86,7 +91,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="84" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="16" bodyend="35"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

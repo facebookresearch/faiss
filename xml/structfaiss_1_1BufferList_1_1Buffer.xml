@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BufferList_1_1Buffer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BufferList::Buffer</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1_1Buffer_1a4420738a41a7821422398cfa214cc158" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
         <definition>idx_t* faiss::BufferList::Buffer::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::BufferList::Buffer::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>float* faiss::BufferList::Buffer::dis</definition>
         <argsstring></argsstring>
         <name>dis</name>
+        <qualifiedname>faiss::BufferList::Buffer::dis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,7 +31,7 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="67" column="15" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="67" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

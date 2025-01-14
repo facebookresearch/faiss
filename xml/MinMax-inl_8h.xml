@@ -1,14 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="MinMax-inl_8h" kind="file" language="C++">
     <compoundname>MinMax-inl.h</compoundname>
     <includes local="no">cstddef</includes>
     <includes local="no">cstdint</includes>
     <includedby refid="SaDecodeKernels_8h" local="no">faiss/cppcontrib/SaDecodeKernels.h</includedby>
     <incdepgraph>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/cppcontrib/sa_decode/MinMax-inl.h</label>
         <link refid="MinMax-inl_8h"/>
@@ -19,6 +16,9 @@
       </node>
       <node id="2">
         <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -58,7 +58,7 @@
 <codeline lineno="15"><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SubIndexT&gt;</highlight></codeline>
 <codeline lineno="17" refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder" kindref="compound">IndexMinMaxDecoder</ref><sp/>{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>dim<sp/>=<sp/>SubIndexT::dim;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>dim<sp/>=<sp/>SubIndexT::dim;</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Process<sp/>1<sp/>sample.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Performs<sp/>outputStore<sp/>=<sp/>scaler<sp/>*<sp/>decoded(code)<sp/>+<sp/>minv</highlight><highlight class="normal"></highlight></codeline>

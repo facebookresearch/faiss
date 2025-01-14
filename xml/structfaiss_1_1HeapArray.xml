@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HeapArray" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapArray</compoundname>
     <includes refid="Heap_8h" local="no">Heap.h</includes>
@@ -8,12 +8,13 @@
         <type>typename C</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1HeapArray_1a284762db4e64dd74d82984b6b457304a" prot="public" static="no">
         <type>C::TI</type>
         <definition>typedef C::TI faiss::HeapArray&lt; C &gt;::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
+        <qualifiedname>faiss::HeapArray::TI</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -27,6 +28,7 @@
         <definition>typedef C::T faiss::HeapArray&lt; C &gt;::T</definition>
         <argsstring></argsstring>
         <name>T</name>
+        <qualifiedname>faiss::HeapArray::T</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,13 +37,14 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="473" column="27" bodyfile="faiss/utils/Heap.h" bodystart="473" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1aad477a3907c3496159eaf4b375be4432" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::HeapArray&lt; C &gt;::nh</definition>
         <argsstring></argsstring>
         <name>nh</name>
+        <qualifiedname>faiss::HeapArray::nh</qualifiedname>
         <briefdescription>
 <para>number of heaps </para>
         </briefdescription>
@@ -56,6 +59,7 @@
         <definition>size_t faiss::HeapArray&lt; C &gt;::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::HeapArray::k</qualifiedname>
         <briefdescription>
 <para>allocated size per heap </para>
         </briefdescription>
@@ -70,6 +74,7 @@
         <definition>TI* faiss::HeapArray&lt; C &gt;::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::HeapArray::ids</qualifiedname>
         <briefdescription>
 <para>identifiers (size nh * k) </para>
         </briefdescription>
@@ -84,6 +89,7 @@
         <definition>T* faiss::HeapArray&lt; C &gt;::val</definition>
         <argsstring></argsstring>
         <name>val</name>
+        <qualifiedname>faiss::HeapArray::val</qualifiedname>
         <briefdescription>
 <para>values (distances or similarities), size nh * k </para>
         </briefdescription>
@@ -93,13 +99,14 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="478" column="7" bodyfile="faiss/utils/Heap.h" bodystart="478" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HeapArray_1a4fb98128a11901638aca7e07481410a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
-        <definition>T* faiss::HeapArray&lt; C &gt;::get_val</definition>
+        <definition>T * faiss::HeapArray&lt; C &gt;::get_val</definition>
         <argsstring>(size_t key)</argsstring>
         <name>get_val</name>
+        <qualifiedname>faiss::HeapArray::get_val</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>key</declname>
@@ -113,11 +120,12 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="481" column="7" bodyfile="faiss/utils/Heap.h" bodystart="481" bodyend="483"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapArray_1a492695267029cdd40776d87e749ab106" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>TI *</type>
-        <definition>TI* faiss::HeapArray&lt; C &gt;::get_ids</definition>
+        <definition>TI * faiss::HeapArray&lt; C &gt;::get_ids</definition>
         <argsstring>(size_t key)</argsstring>
         <name>get_ids</name>
+        <qualifiedname>faiss::HeapArray::get_ids</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>key</declname>
@@ -136,6 +144,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::heapify</definition>
         <argsstring>()</argsstring>
         <name>heapify</name>
+        <qualifiedname>faiss::HeapArray::heapify</qualifiedname>
         <briefdescription>
 <para>prepare all the heaps before adding </para>
         </briefdescription>
@@ -150,6 +159,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::addn</definition>
         <argsstring>(size_t nj, const T *vin, TI j0=0, size_t i0=0, int64_t ni=-1)</argsstring>
         <name>addn</name>
+        <qualifiedname>faiss::HeapArray::addn</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nj</declname>
@@ -229,6 +239,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::addn_with_ids</definition>
         <argsstring>(size_t nj, const T *vin, const TI *id_in=nullptr, int64_t id_stride=0, size_t i0=0, int64_t ni=-1)</argsstring>
         <name>addn_with_ids</name>
+        <qualifiedname>faiss::HeapArray::addn_with_ids</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nj</declname>
@@ -289,6 +300,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::addn_query_subset_with_ids</definition>
         <argsstring>(size_t nsubset, const TI *subset, size_t nj, const T *vin, const TI *id_in=nullptr, int64_t id_stride=0)</argsstring>
         <name>addn_query_subset_with_ids</name>
+        <qualifiedname>faiss::HeapArray::addn_query_subset_with_ids</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nsubset</declname>
@@ -347,6 +359,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::reorder</definition>
         <argsstring>()</argsstring>
         <name>reorder</name>
+        <qualifiedname>faiss::HeapArray::reorder</qualifiedname>
         <briefdescription>
 <para>reorder all the heaps </para>
         </briefdescription>
@@ -361,6 +374,7 @@
         <definition>void faiss::HeapArray&lt; C &gt;::per_line_extrema</definition>
         <argsstring>(T *vals_out, TI *idx_out) const</argsstring>
         <name>per_line_extrema</name>
+        <qualifiedname>faiss::HeapArray::per_line_extrema</qualifiedname>
         <param>
           <type>T *</type>
           <declname>vals_out</declname>
@@ -395,7 +409,7 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="542" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -406,8 +420,8 @@
       <member refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn</name></member>
       <member refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_query_subset_with_ids</name></member>
       <member refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_with_ids</name></member>
-      <member refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_ids</name></member>
-      <member refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_val</name></member>
+      <member refid="structfaiss_1_1HeapArray_1a492695267029cdd40776d87e749ab106" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_ids</name></member>
+      <member refid="structfaiss_1_1HeapArray_1a4fb98128a11901638aca7e07481410a8" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_val</name></member>
       <member refid="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>heapify</name></member>
       <member refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>ids</name></member>
       <member refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>k</name></member>

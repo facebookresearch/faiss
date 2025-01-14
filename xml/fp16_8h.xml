@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="fp16_8h" kind="file" language="C++">
     <compoundname>fp16.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -7,6 +7,22 @@
     <includes refid="fp16-inl_8h" local="no">faiss/utils/fp16-inl.h</includes>
     <includedby refid="MinMaxFP16-inl_8h" local="no">faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</includedby>
     <incdepgraph>
+      <node id="3">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/utils/fp16-inl.h</label>
+        <link refid="fp16-inl_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss/utils/fp16.h</label>
         <link refid="fp16_8h"/>
@@ -17,30 +33,14 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
+      <node id="6">
+        <label>algorithm</label>
       </node>
       <node id="2">
         <label>cstdint</label>
       </node>
-      <node id="5">
-        <label>faiss/utils/fp16-inl.h</label>
-        <link refid="fp16-inl_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="4">
         <label>cstdio</label>
-      </node>
-      <node id="6">
-        <label>algorithm</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -48,16 +48,16 @@
         <label>faiss/cppcontrib/SaDecodeKernels.h</label>
         <link refid="SaDecodeKernels_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/utils/fp16.h</label>
-        <link refid="fp16_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</label>
         <link refid="MinMaxFP16-inl_8h_source"/>
         <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/utils/fp16.h</label>
+        <link refid="fp16_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

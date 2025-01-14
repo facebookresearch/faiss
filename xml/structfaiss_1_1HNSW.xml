@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HNSW" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HNSW</compoundname>
     <innerclass refid="structfaiss_1_1HNSW_1_1MinimaxHeap" prot="public">faiss::HNSW::MinimaxHeap</innerclass>
     <innerclass refid="structfaiss_1_1HNSW_1_1NodeDistCloser" prot="public">faiss::HNSW::NodeDistCloser</innerclass>
     <innerclass refid="structfaiss_1_1HNSW_1_1NodeDistFarther" prot="public">faiss::HNSW::NodeDistFarther</innerclass>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" prot="public" static="no">
         <type>int32_t</type>
         <definition>using faiss::HNSW::storage_idx_t =  int32_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
+        <qualifiedname>faiss::HNSW::storage_idx_t</qualifiedname>
         <briefdescription>
 <para>internal storage of vectors (32 bits: this is expensive) </para>
         </briefdescription>
@@ -25,6 +26,7 @@
         <definition>using faiss::HNSW::C =  CMax&lt;float, int64_t&gt;</definition>
         <argsstring></argsstring>
         <name>C</name>
+        <qualifiedname>faiss::HNSW::C</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -38,6 +40,7 @@
         <definition>typedef std::pair&lt;float, storage_idx_t&gt; faiss::HNSW::Node</definition>
         <argsstring></argsstring>
         <name>Node</name>
+        <qualifiedname>faiss::HNSW::Node</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -46,13 +49,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="61" column="23" bodyfile="faiss/impl/HNSW.h" bodystart="61" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" prot="public" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
         <definition>std::vector&lt;double&gt; faiss::HNSW::assign_probas</definition>
         <argsstring></argsstring>
         <name>assign_probas</name>
+        <qualifiedname>faiss::HNSW::assign_probas</qualifiedname>
         <briefdescription>
 <para>assignment probability to each layer (sum=1) </para>
         </briefdescription>
@@ -67,6 +71,7 @@
         <definition>std::vector&lt;int&gt; faiss::HNSW::cum_nneighbor_per_level</definition>
         <argsstring></argsstring>
         <name>cum_nneighbor_per_level</name>
+        <qualifiedname>faiss::HNSW::cum_nneighbor_per_level</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -81,6 +86,7 @@
         <definition>std::vector&lt;int&gt; faiss::HNSW::levels</definition>
         <argsstring></argsstring>
         <name>levels</name>
+        <qualifiedname>faiss::HNSW::levels</qualifiedname>
         <briefdescription>
 <para>level of each vector (base level = 1), size = ntotal </para>
         </briefdescription>
@@ -95,6 +101,7 @@
         <definition>std::vector&lt;size_t&gt; faiss::HNSW::offsets</definition>
         <argsstring></argsstring>
         <name>offsets</name>
+        <qualifiedname>faiss::HNSW::offsets</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -109,6 +116,7 @@
         <definition>std::vector&lt;storage_idx_t&gt; faiss::HNSW::neighbors</definition>
         <argsstring></argsstring>
         <name>neighbors</name>
+        <qualifiedname>faiss::HNSW::neighbors</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -123,6 +131,7 @@
         <definition>storage_idx_t faiss::HNSW::entry_point</definition>
         <argsstring></argsstring>
         <name>entry_point</name>
+        <qualifiedname>faiss::HNSW::entry_point</qualifiedname>
         <initializer>= -1</initializer>
         <briefdescription>
         </briefdescription>
@@ -138,6 +147,7 @@
         <definition>faiss::RandomGenerator faiss::HNSW::rng</definition>
         <argsstring></argsstring>
         <name>rng</name>
+        <qualifiedname>faiss::HNSW::rng</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -151,6 +161,7 @@
         <definition>int faiss::HNSW::max_level</definition>
         <argsstring></argsstring>
         <name>max_level</name>
+        <qualifiedname>faiss::HNSW::max_level</qualifiedname>
         <initializer>= -1</initializer>
         <briefdescription>
 <para>maximum level </para>
@@ -166,6 +177,7 @@
         <definition>int faiss::HNSW::efConstruction</definition>
         <argsstring></argsstring>
         <name>efConstruction</name>
+        <qualifiedname>faiss::HNSW::efConstruction</qualifiedname>
         <initializer>= 40</initializer>
         <briefdescription>
 <para>expansion factor at construction time </para>
@@ -181,6 +193,7 @@
         <definition>int faiss::HNSW::efSearch</definition>
         <argsstring></argsstring>
         <name>efSearch</name>
+        <qualifiedname>faiss::HNSW::efSearch</qualifiedname>
         <initializer>= 16</initializer>
         <briefdescription>
 <para>expansion factor at search time </para>
@@ -196,6 +209,7 @@
         <definition>bool faiss::HNSW::check_relative_distance</definition>
         <argsstring></argsstring>
         <name>check_relative_distance</name>
+        <qualifiedname>faiss::HNSW::check_relative_distance</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
@@ -211,6 +225,7 @@
         <definition>bool faiss::HNSW::search_bounded_queue</definition>
         <argsstring></argsstring>
         <name>search_bounded_queue</name>
+        <qualifiedname>faiss::HNSW::search_bounded_queue</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
 <para>use bounded queue during exploration </para>
@@ -221,13 +236,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="146" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="146" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::HNSW::set_default_probas</definition>
         <argsstring>(int M, float levelMult)</argsstring>
         <name>set_default_probas</name>
+        <qualifiedname>faiss::HNSW::set_default_probas</qualifiedname>
         <param>
           <type>int</type>
           <declname>M</declname>
@@ -250,6 +266,7 @@
         <definition>void faiss::HNSW::set_nb_neighbors</definition>
         <argsstring>(int level_no, int n)</argsstring>
         <name>set_nb_neighbors</name>
+        <qualifiedname>faiss::HNSW::set_nb_neighbors</qualifiedname>
         <param>
           <type>int</type>
           <declname>level_no</declname>
@@ -272,6 +289,7 @@
         <definition>int faiss::HNSW::nb_neighbors</definition>
         <argsstring>(int layer_no) const</argsstring>
         <name>nb_neighbors</name>
+        <qualifiedname>faiss::HNSW::nb_neighbors</qualifiedname>
         <param>
           <type>int</type>
           <declname>layer_no</declname>
@@ -290,6 +308,7 @@
         <definition>int faiss::HNSW::cum_nb_neighbors</definition>
         <argsstring>(int layer_no) const</argsstring>
         <name>cum_nb_neighbors</name>
+        <qualifiedname>faiss::HNSW::cum_nb_neighbors</qualifiedname>
         <param>
           <type>int</type>
           <declname>layer_no</declname>
@@ -308,6 +327,7 @@
         <definition>void faiss::HNSW::neighbor_range</definition>
         <argsstring>(idx_t no, int layer_no, size_t *begin, size_t *end) const</argsstring>
         <name>neighbor_range</name>
+        <qualifiedname>faiss::HNSW::neighbor_range</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>no</declname>
@@ -338,6 +358,7 @@
         <definition>faiss::HNSW::HNSW</definition>
         <argsstring>(int M=32)</argsstring>
         <name>HNSW</name>
+        <qualifiedname>faiss::HNSW::HNSW</qualifiedname>
         <param>
           <type>int</type>
           <declname>M</declname>
@@ -357,6 +378,7 @@
         <definition>int faiss::HNSW::random_level</definition>
         <argsstring>()</argsstring>
         <name>random_level</name>
+        <qualifiedname>faiss::HNSW::random_level</qualifiedname>
         <briefdescription>
 <para>pick a random level for a new point </para>
         </briefdescription>
@@ -371,6 +393,7 @@
         <definition>void faiss::HNSW::fill_with_random_links</definition>
         <argsstring>(size_t n)</argsstring>
         <name>fill_with_random_links</name>
+        <qualifiedname>faiss::HNSW::fill_with_random_links</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -389,6 +412,7 @@
         <definition>void faiss::HNSW::add_links_starting_from</definition>
         <argsstring>(DistanceComputer &amp;ptdis, storage_idx_t pt_id, storage_idx_t nearest, float d_nearest, int level, omp_lock_t *locks, VisitedTable &amp;vt, bool keep_max_size_level0=false)</argsstring>
         <name>add_links_starting_from</name>
+        <qualifiedname>faiss::HNSW::add_links_starting_from</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>ptdis</declname>
@@ -435,6 +459,7 @@
         <definition>void faiss::HNSW::add_with_locks</definition>
         <argsstring>(DistanceComputer &amp;ptdis, int pt_level, int pt_id, std::vector&lt; omp_lock_t &gt; &amp;locks, VisitedTable &amp;vt, bool keep_max_size_level0=false)</argsstring>
         <name>add_with_locks</name>
+        <qualifiedname>faiss::HNSW::add_with_locks</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>ptdis</declname>
@@ -474,6 +499,7 @@
         <definition>HNSWStats faiss::HNSW::search</definition>
         <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, VisitedTable &amp;vt, const SearchParametersHNSW *params=nullptr) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::HNSW::search</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -505,6 +531,7 @@
         <definition>void faiss::HNSW::search_level_0</definition>
         <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, idx_t nprobe, const storage_idx_t *nearest_i, const float *nearest_d, int search_type, HNSWStats &amp;search_stats, VisitedTable &amp;vt, const SearchParametersHNSW *params=nullptr) const</argsstring>
         <name>search_level_0</name>
+        <qualifiedname>faiss::HNSW::search_level_0</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -556,6 +583,7 @@
         <definition>void faiss::HNSW::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::HNSW::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -569,6 +597,7 @@
         <definition>void faiss::HNSW::clear_neighbor_tables</definition>
         <argsstring>(int level)</argsstring>
         <name>clear_neighbor_tables</name>
+        <qualifiedname>faiss::HNSW::clear_neighbor_tables</qualifiedname>
         <param>
           <type>int</type>
           <declname>level</declname>
@@ -586,6 +615,7 @@
         <definition>void faiss::HNSW::print_neighbor_stats</definition>
         <argsstring>(int level) const</argsstring>
         <name>print_neighbor_stats</name>
+        <qualifiedname>faiss::HNSW::print_neighbor_stats</qualifiedname>
         <param>
           <type>int</type>
           <declname>level</declname>
@@ -603,6 +633,7 @@
         <definition>int faiss::HNSW::prepare_level_tab</definition>
         <argsstring>(size_t n, bool preset_levels=false)</argsstring>
         <name>prepare_level_tab</name>
+        <qualifiedname>faiss::HNSW::prepare_level_tab</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -625,6 +656,7 @@
         <definition>void faiss::HNSW::permute_entries</definition>
         <argsstring>(const idx_t *map)</argsstring>
         <name>permute_entries</name>
+        <qualifiedname>faiss::HNSW::permute_entries</qualifiedname>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>map</declname>
@@ -637,13 +669,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="231" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HNSW_1adad3792128bbe0e57c981de9f7aa25ea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HNSW::shrink_neighbor_list</definition>
         <argsstring>(DistanceComputer &amp;qdis, std::priority_queue&lt; NodeDistFarther &gt; &amp;input, std::vector&lt; NodeDistFarther &gt; &amp;output, int max_size, bool keep_max_size_level0=false)</argsstring>
         <name>shrink_neighbor_list</name>
+        <qualifiedname>faiss::HNSW::shrink_neighbor_list</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
           <declname>qdis</declname>
@@ -673,22 +706,22 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="224" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::RandomGenerator</label>
-        <link refid="structfaiss_1_1RandomGenerator"/>
-      </node>
       <node id="1">
         <label>faiss::HNSW</label>
         <link refid="structfaiss_1_1HNSW"/>
         <childnode refid="2" relation="usage">
           <edgelabel>rng</edgelabel>
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::RandomGenerator</label>
+        <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/HNSW.h" line="54" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="54" bodyend="232"/>

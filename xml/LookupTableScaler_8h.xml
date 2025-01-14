@@ -1,14 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="LookupTableScaler_8h" kind="file" language="C++">
     <compoundname>LookupTableScaler.h</compoundname>
     <includes local="no">cstdint</includes>
     <includes local="no">cstdlib</includes>
     <includes refid="simdlib_8h" local="no">faiss/utils/simdlib.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/impl/LookupTableScaler.h</label>
         <link refid="LookupTableScaler_8h"/>
@@ -19,11 +16,11 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="3">
-        <label>cstdlib</label>
+      <node id="4">
+        <label>faiss/utils/simdlib.h</label>
+        <link refid="simdlib_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="5">
         <label>faiss/utils/simdlib_emulated.h</label>
@@ -37,17 +34,20 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss/utils/simdlib.h</label>
-        <link refid="simdlib_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
       <node id="6">
         <label>algorithm</label>
       </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="3">
+        <label>cstdlib</label>
+      </node>
       <node id="7">
         <label>cstring</label>
+      </node>
+      <node id="8">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1DummyScaler" prot="public">faiss::DummyScaler</innerclass>
@@ -81,7 +81,7 @@
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="22"><highlight class="comment">///<sp/>no-op<sp/>handler</highlight></codeline>
 <codeline lineno="23" refid="structfaiss_1_1DummyScaler" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1DummyScaler" kindref="compound">DummyScaler</ref><sp/>{</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nscale<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nscale<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref><sp/>lookup(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref>&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref>&amp;)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_MSG(</highlight><highlight class="stringliteral">&quot;DummyScaler::lookup<sp/>should<sp/>not<sp/>be<sp/>called.&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -125,7 +125,7 @@
 <codeline lineno="65"><highlight class="comment">///<sp/>consumes<sp/>2x4<sp/>bits<sp/>to<sp/>encode<sp/>a<sp/>norm<sp/>as<sp/>a<sp/>scalar<sp/>additive<sp/>quantizer</highlight></codeline>
 <codeline lineno="66"><highlight class="comment">///<sp/>the<sp/>norm<sp/>is<sp/>scaled<sp/>because<sp/>its<sp/>range<sp/>if<sp/>larger<sp/>than<sp/>other<sp/>components</highlight></codeline>
 <codeline lineno="67" refid="structfaiss_1_1NormTableScaler" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref><sp/>{</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nscale<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nscale<sp/>=<sp/>2;</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>scale_int;</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>scale_simd;</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight></codeline>

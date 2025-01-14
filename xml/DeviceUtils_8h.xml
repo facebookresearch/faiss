@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="DeviceUtils_8h" kind="file" language="C++">
     <compoundname>DeviceUtils.h</compoundname>
     <includes local="no">cublas_v2.h</includes>
@@ -8,32 +8,6 @@
     <includes local="no">vector</includes>
     <includedby refid="StandardGpuResources_8h" local="no">faiss/gpu/StandardGpuResources.h</includedby>
     <incdepgraph>
-      <node id="5">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>cublas_v2.h</label>
-      </node>
-      <node id="10">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/gpu/utils/DeviceUtils.h</label>
         <link refid="DeviceUtils_8h"/>
@@ -45,27 +19,6 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="6">
-        <label>exception</label>
-      </node>
-      <node id="12">
-        <label>cstdio</label>
-      </node>
-      <node id="9">
-        <label>vector</label>
-      </node>
-      <node id="8">
-        <label>utility</label>
-      </node>
-      <node id="13">
-        <label>cstdlib</label>
       </node>
       <node id="4">
         <label>faiss/impl/FaissAssert.h</label>
@@ -81,22 +34,69 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>cstdio</label>
+      </node>
+      <node id="13">
+        <label>cstdlib</label>
+      </node>
+      <node id="2">
+        <label>cublas_v2.h</label>
+      </node>
+      <node id="3">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="6">
+        <label>exception</label>
+      </node>
+      <node id="7">
+        <label>string</label>
+      </node>
+      <node id="8">
+        <label>utility</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1">
-        <label>faiss/gpu/utils/DeviceUtils.h</label>
-        <link refid="DeviceUtils_8h"/>
-        <childnode refid="2" relation="include">
+      <node id="2">
+        <label>faiss/gpu/StandardGpuResources.h</label>
+        <link refid="StandardGpuResources_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="3">
         <label>faiss/gpu/perf/IndexWrapper.h</label>
         <link refid="IndexWrapper_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/gpu/StandardGpuResources.h</label>
-        <link refid="StandardGpuResources_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="1">
+        <label>faiss/gpu/utils/DeviceUtils.h</label>
+        <link refid="DeviceUtils_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -105,7 +105,7 @@
     <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
-      <sectiondef kind="define">
+    <sectiondef kind="define">
       <memberdef kind="define" id="DeviceUtils_8h_1a138cee0b36cbee13b75739fe4b96c790" prot="public" static="no">
         <name>CUDA_VERIFY</name>
         <param><defname>X</defname></param>
@@ -124,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="143" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="143" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="143" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="143" bodyend="151"/>
       </memberdef>
       <memberdef kind="define" id="DeviceUtils_8h_1a5c840d06d8e05735ee2902b93ab62512" prot="public" static="no">
         <name>CUDA_TEST_ERROR</name>
@@ -139,9 +139,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="162" column="10" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="162" column="10" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="162" bodyend="165"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -242,7 +242,7 @@
 <codeline lineno="93" refid="classfaiss_1_1gpu_1_1DeviceScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref><sp/>{</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">DeviceScope</ref>();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1DeviceScope" kindref="compound">~DeviceScope</ref>();</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"></highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>prevDevice_;</highlight></codeline>
@@ -252,7 +252,7 @@
 <codeline lineno="103" refid="classfaiss_1_1gpu_1_1CublasHandleScope" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref><sp/>{</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref>();</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">CublasHandleScope</ref>();</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CublasHandleScope" kindref="compound">~CublasHandleScope</ref>();</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>get()<sp/>{</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>blasHandle_;</highlight></codeline>
@@ -267,9 +267,9 @@
 <codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Creates<sp/>an<sp/>event<sp/>and<sp/>records<sp/>it<sp/>in<sp/>this<sp/>stream</highlight></codeline>
 <codeline lineno="120" refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" kindref="member">CudaEvent</ref>(cudaStream_t<sp/>stream,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>timer<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" kindref="member">CudaEvent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a" kindref="member">CudaEvent</ref>(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/>noexcept;</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>();</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">~CudaEvent</ref>();</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"></highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>cudaEvent_t<sp/>get()<sp/>{</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>event_;</highlight></codeline>
@@ -281,7 +281,7 @@
 <codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Have<sp/>the<sp/>CPU<sp/>wait<sp/>for<sp/>the<sp/>completion<sp/>of<sp/>this<sp/>event</highlight></codeline>
 <codeline lineno="133" refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57" kindref="member">cpuWaitOnEvent</ref>();</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/>noexcept;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;&amp;<sp/>event)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>operator=(<ref refid="classfaiss_1_1gpu_1_1CudaEvent" kindref="compound">CudaEvent</ref>&amp;<sp/>event)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"></highlight></codeline>
 <codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
@@ -294,10 +294,10 @@
 <codeline lineno="145"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>err__<sp/>=<sp/>(X);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="146"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="147"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err__<sp/>==<sp/>cudaSuccess,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;CUDA<sp/>error<sp/>%d<sp/>%s&quot;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)err__,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaGetErrorString(err__));<sp/>\</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight></codeline>
+<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;CUDA<sp/>error<sp/>%d<sp/>%s&quot;,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="149"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)err__,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaGetErrorString(err__));<sp/>\</highlight></codeline>
+<codeline lineno="151"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="153"><highlight class="comment">///<sp/>Wrapper<sp/>to<sp/>synchronously<sp/>probe<sp/>for<sp/>CUDA<sp/>errors</highlight></codeline>
 <codeline lineno="154"><highlight class="comment"></highlight><highlight class="comment">//<sp/>#define<sp/>FAISS_GPU_SYNC_ERROR<sp/>1</highlight><highlight class="normal"></highlight></codeline>

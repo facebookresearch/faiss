@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="IndexBinary_8h" kind="file" language="C++">
     <compoundname>IndexBinary.h</compoundname>
     <includes local="no">cstdio</includes>
@@ -8,9 +8,6 @@
     <includes local="no">typeinfo</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includedby refid="AutoTune_8h" local="no">faiss/AutoTune.h</includedby>
-    <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
-    <includedby refid="ThreadedIndex_8h" local="no">faiss/impl/ThreadedIndex.h</includedby>
-    <includedby refid="index__factory_8h" local="no">faiss/index_factory.h</includedby>
     <includedby refid="IndexBinaryFlat_8h" local="no">faiss/IndexBinaryFlat.h</includedby>
     <includedby refid="IndexBinaryFromFloat_8h" local="no">faiss/IndexBinaryFromFloat.h</includedby>
     <includedby refid="IndexBinaryHash_8h" local="no">faiss/IndexBinaryHash.h</includedby>
@@ -18,44 +15,10 @@
     <includedby refid="IndexIDMap_8h" local="no">faiss/IndexIDMap.h</includedby>
     <includedby refid="IndexReplicas_8h" local="no">faiss/IndexReplicas.h</includedby>
     <includedby refid="IndexShards_8h" local="no">faiss/IndexShards.h</includedby>
+    <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
+    <includedby refid="ThreadedIndex_8h" local="no">faiss/impl/ThreadedIndex.h</includedby>
+    <includedby refid="index__factory_8h" local="no">faiss/index_factory.h</includedby>
     <incdepgraph>
-      <node id="8">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>cstdint</label>
-      </node>
-      <node id="4">
-        <label>string</label>
-      </node>
-      <node id="5">
-        <label>typeinfo</label>
-      </node>
-      <node id="2">
-        <label>cstdio</label>
-      </node>
-      <node id="3">
-        <label>sstream</label>
-      </node>
-      <node id="1">
-        <label>faiss/IndexBinary.h</label>
-        <link refid="IndexBinary_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
       <node id="6">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
@@ -70,71 +33,56 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
       <node id="7">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
         <childnode refid="8" relation="include">
         </childnode>
       </node>
+      <node id="8">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>cstdint</label>
+      </node>
+      <node id="2">
+        <label>cstdio</label>
+      </node>
+      <node id="3">
+        <label>sstream</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>typeinfo</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="9">
-        <label>faiss/IndexShards.h</label>
-        <link refid="IndexShards_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss/IndexBinaryHNSW.h</label>
-        <link refid="IndexBinaryHNSW_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>faiss/IndexIDMap.h</label>
-        <link refid="IndexIDMap_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>faiss/MetaIndexes.h</label>
-        <link refid="MetaIndexes_8h_source"/>
-      </node>
-      <node id="7">
-        <label>faiss/gpu/perf/IndexWrapper.h</label>
-        <link refid="IndexWrapper_8h_source"/>
-      </node>
       <node id="2">
         <label>faiss/AutoTune.h</label>
         <link refid="AutoTune_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-      </node>
-      <node id="14">
-        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
-        <link refid="GpuIndexBinaryFlat_8h_source"/>
-      </node>
-      <node id="10">
-        <label>faiss/IndexShardsIVF.h</label>
-        <link refid="IndexShardsIVF_8h_source"/>
-      </node>
-      <node id="18">
-        <label>faiss/IndexBinaryIVF.h</label>
-        <link refid="IndexBinaryIVF_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>faiss/IndexBinaryFromFloat.h</label>
-        <link refid="IndexBinaryFromFloat_8h_source"/>
-      </node>
-      <node id="15">
-        <label>faiss/IndexBinaryHash.h</label>
-        <link refid="IndexBinaryHash_8h_source"/>
       </node>
       <node id="1">
         <label>faiss/IndexBinary.h</label>
@@ -143,66 +91,118 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="13">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="4">
-        <label>faiss/gpu/GpuCloner.h</label>
-        <link refid="GpuCloner_8h_source"/>
-      </node>
-      <node id="5">
-        <label>faiss/impl/ThreadedIndex.h</label>
-        <link refid="ThreadedIndex_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
         <label>faiss/IndexBinaryFlat.h</label>
         <link refid="IndexBinaryFlat_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss/IndexReplicas.h</label>
-        <link refid="IndexReplicas_8h_source"/>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/IndexBinaryFromFloat.h</label>
+        <link refid="IndexBinaryFromFloat_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/IndexBinaryHNSW.h</label>
+        <link refid="IndexBinaryHNSW_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/IndexBinaryHash.h</label>
+        <link refid="IndexBinaryHash_8h_source"/>
+      </node>
+      <node id="10">
+        <label>faiss/IndexBinaryIVF.h</label>
+        <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/IndexIDMap.h</label>
+        <link refid="IndexIDMap_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/IndexReplicas.h</label>
+        <link refid="IndexReplicas_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss/IndexShards.h</label>
+        <link refid="IndexShards_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/IndexShardsIVF.h</label>
+        <link refid="IndexShardsIVF_8h_source"/>
+      </node>
+      <node id="12">
+        <label>faiss/MetaIndexes.h</label>
+        <link refid="MetaIndexes_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/cppcontrib/factory_tools.h</label>
+        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="3">
         <label>faiss/gpu/GpuAutoTune.h</label>
         <link refid="GpuAutoTune_8h_source"/>
       </node>
-      <node id="11">
+      <node id="17">
+        <label>faiss/gpu/GpuCloner.h</label>
+        <link refid="GpuCloner_8h_source"/>
+      </node>
+      <node id="8">
+        <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
+        <link refid="GpuIndexBinaryFlat_8h_source"/>
+      </node>
+      <node id="14">
+        <label>faiss/gpu/perf/IndexWrapper.h</label>
+        <link refid="IndexWrapper_8h_source"/>
+      </node>
+      <node id="18">
+        <label>faiss/impl/ThreadedIndex.h</label>
+        <link refid="ThreadedIndex_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
       </node>
@@ -245,8 +245,8 @@
 <codeline lineno="29"><highlight class="comment"><sp/>*<sp/>vectors.</highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31" refid="structfaiss_1_1IndexBinary" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref><sp/>{</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>component_t<sp/>=<sp/>uint8_t;</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>distance_t<sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">component_t<sp/>=<sp/>uint8_t;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">distance_t<sp/>=<sp/>int32_t;</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
 <codeline lineno="35" refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kindref="member">d</ref><sp/>=<sp/>0;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>vector<sp/>dimension</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="36" refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kindref="member">code_size</ref><sp/>=<sp/>0;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>bytes<sp/>per<sp/>vector<sp/>(<sp/>=<sp/>d<sp/>/<sp/>8<sp/>)</highlight><highlight class="normal"></highlight></codeline>
@@ -262,7 +262,7 @@
 <codeline lineno="46"><highlight class="normal"></highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kindref="member">d</ref><sp/>=<sp/>0,<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>);</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref>();</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">~IndexBinary</ref>();</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="51"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Perform<sp/>training<sp/>on<sp/>a<sp/>representative<sp/>set<sp/>of<sp/>vectors.</highlight></codeline>
 <codeline lineno="52"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>

@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1nn" kind="namespace" language="C++">
     <compoundname>faiss::nn</compoundname>
-    <innerclass refid="structfaiss_1_1nn_1_1Tensor2DTemplate" prot="public">faiss::nn::Tensor2DTemplate</innerclass>
-    <innerclass refid="structfaiss_1_1nn_1_1Linear" prot="public">faiss::nn::Linear</innerclass>
     <innerclass refid="structfaiss_1_1nn_1_1Embedding" prot="public">faiss::nn::Embedding</innerclass>
     <innerclass refid="structfaiss_1_1nn_1_1FFN" prot="public">faiss::nn::FFN</innerclass>
-      <sectiondef kind="typedef">
+    <innerclass refid="structfaiss_1_1nn_1_1Linear" prot="public">faiss::nn::Linear</innerclass>
+    <innerclass refid="structfaiss_1_1nn_1_1Tensor2DTemplate" prot="public">faiss::nn::Tensor2DTemplate</innerclass>
+    <sectiondef kind="typedef">
       <memberdef kind="typedef" id="NeuralNet_8h_1aef3e097827c05b9249e0addd5c16f29e" prot="public" static="no">
         <type><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2DTemplate</ref>&lt; float &gt;</type>
         <definition>using faiss::nn::Tensor2D = typedef Tensor2DTemplate&lt;float&gt;</definition>
         <argsstring></argsstring>
         <name>Tensor2D</name>
+        <qualifiedname>faiss::nn::Tensor2D</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -25,6 +26,7 @@
         <definition>using faiss::nn::Int32Tensor2D = typedef Tensor2DTemplate&lt;int32_t&gt;</definition>
         <argsstring></argsstring>
         <name>Int32Tensor2D</name>
+        <qualifiedname>faiss::nn::Int32Tensor2D</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -33,7 +35,7 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="46" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="46" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

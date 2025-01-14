@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1Clustering" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Clustering</compoundname>
     <basecompoundref refid="structfaiss_1_1ClusteringParameters" prot="public" virt="non-virtual">faiss::ClusteringParameters</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1Clustering1D" prot="public" virt="non-virtual">faiss::Clustering1D</derivedcompoundref>
     <includes refid="Clustering_8h" local="no">Clustering.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1Clustering_1afbf6efacae54c58586b75ed790facd74" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::Clustering::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::Clustering::d</qualifiedname>
         <briefdescription>
 <para>dimension of the vectors </para>
         </briefdescription>
@@ -25,6 +26,7 @@
         <definition>size_t faiss::Clustering::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::Clustering::k</qualifiedname>
         <briefdescription>
 <para>nb of centroids </para>
         </briefdescription>
@@ -39,6 +41,7 @@
         <definition>std::vector&lt;float&gt; faiss::Clustering::centroids</definition>
         <argsstring></argsstring>
         <name>centroids</name>
+        <qualifiedname>faiss::Clustering::centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -53,6 +56,7 @@
         <definition>std::vector&lt;ClusteringIterationStats&gt; faiss::Clustering::iteration_stats</definition>
         <argsstring></argsstring>
         <name>iteration_stats</name>
+        <qualifiedname>faiss::Clustering::iteration_stats</qualifiedname>
         <briefdescription>
 <para>stats at every iteration of clustering </para>
         </briefdescription>
@@ -67,6 +71,7 @@
         <definition>int faiss::ClusteringParameters::niter</definition>
         <argsstring></argsstring>
         <name>niter</name>
+        <qualifiedname>faiss::ClusteringParameters::niter</qualifiedname>
         <initializer>= 25</initializer>
         <briefdescription>
 <para>number of clustering iterations </para>
@@ -82,6 +87,7 @@
         <definition>int faiss::ClusteringParameters::nredo</definition>
         <argsstring></argsstring>
         <name>nredo</name>
+        <qualifiedname>faiss::ClusteringParameters::nredo</qualifiedname>
         <initializer>= 1</initializer>
         <briefdescription>
         </briefdescription>
@@ -97,6 +103,7 @@
         <definition>bool faiss::ClusteringParameters::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::ClusteringParameters::verbose</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -111,6 +118,7 @@
         <definition>bool faiss::ClusteringParameters::spherical</definition>
         <argsstring></argsstring>
         <name>spherical</name>
+        <qualifiedname>faiss::ClusteringParameters::spherical</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -126,6 +134,7 @@
         <definition>bool faiss::ClusteringParameters::int_centroids</definition>
         <argsstring></argsstring>
         <name>int_centroids</name>
+        <qualifiedname>faiss::ClusteringParameters::int_centroids</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>round centroids coordinates to integer after each iteration? </para>
@@ -141,6 +150,7 @@
         <definition>bool faiss::ClusteringParameters::update_index</definition>
         <argsstring></argsstring>
         <name>update_index</name>
+        <qualifiedname>faiss::ClusteringParameters::update_index</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>re-train index after each iteration? </para>
@@ -156,6 +166,7 @@
         <definition>bool faiss::ClusteringParameters::frozen_centroids</definition>
         <argsstring></argsstring>
         <name>frozen_centroids</name>
+        <qualifiedname>faiss::ClusteringParameters::frozen_centroids</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -171,6 +182,7 @@
         <definition>int faiss::ClusteringParameters::min_points_per_centroid</definition>
         <argsstring></argsstring>
         <name>min_points_per_centroid</name>
+        <qualifiedname>faiss::ClusteringParameters::min_points_per_centroid</qualifiedname>
         <initializer>= 39</initializer>
         <briefdescription>
         </briefdescription>
@@ -186,6 +198,7 @@
         <definition>int faiss::ClusteringParameters::max_points_per_centroid</definition>
         <argsstring></argsstring>
         <name>max_points_per_centroid</name>
+        <qualifiedname>faiss::ClusteringParameters::max_points_per_centroid</qualifiedname>
         <initializer>= 256</initializer>
         <briefdescription>
 <para>to limit size of dataset, otherwise the training set is subsampled </para>
@@ -201,6 +214,7 @@
         <definition>int faiss::ClusteringParameters::seed</definition>
         <argsstring></argsstring>
         <name>seed</name>
+        <qualifiedname>faiss::ClusteringParameters::seed</qualifiedname>
         <initializer>= 1234</initializer>
         <briefdescription>
         </briefdescription>
@@ -216,6 +230,7 @@
         <definition>size_t faiss::ClusteringParameters::decode_block_size</definition>
         <argsstring></argsstring>
         <name>decode_block_size</name>
+        <qualifiedname>faiss::ClusteringParameters::decode_block_size</qualifiedname>
         <initializer>= 32768</initializer>
         <briefdescription>
 <para>when the training set is encoded, batch size of the codec decoder </para>
@@ -231,6 +246,7 @@
         <definition>bool faiss::ClusteringParameters::check_input_data_for_NaNs</definition>
         <argsstring></argsstring>
         <name>check_input_data_for_NaNs</name>
+        <qualifiedname>faiss::ClusteringParameters::check_input_data_for_NaNs</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
 <para>whether to check for NaNs in an input data </para>
@@ -246,6 +262,7 @@
         <definition>bool faiss::ClusteringParameters::use_faster_subsampling</definition>
         <argsstring></argsstring>
         <name>use_faster_subsampling</name>
+        <qualifiedname>faiss::ClusteringParameters::use_faster_subsampling</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -256,13 +273,14 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="59" column="10" bodyfile="faiss/Clustering.h" bodystart="59" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::Clustering::Clustering</definition>
         <argsstring>(int d, int k)</argsstring>
         <name>Clustering</name>
+        <qualifiedname>faiss::Clustering::Clustering</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -284,6 +302,7 @@
         <definition>faiss::Clustering::Clustering</definition>
         <argsstring>(int d, int k, const ClusteringParameters &amp;cp)</argsstring>
         <name>Clustering</name>
+        <qualifiedname>faiss::Clustering::Clustering</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -309,6 +328,7 @@
         <definition>virtual void faiss::Clustering::train</definition>
         <argsstring>(idx_t n, const float *x, faiss::Index &amp;index, const float *x_weights=nullptr)</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::Clustering::train</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -366,6 +386,7 @@
         <definition>void faiss::Clustering::train_encoded</definition>
         <argsstring>(idx_t nx, const uint8_t *x_in, const Index *codec, Index &amp;index, const float *weights=nullptr)</argsstring>
         <name>train_encoded</name>
+        <qualifiedname>faiss::Clustering::train_encoded</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>nx</declname>
@@ -412,6 +433,7 @@
         <definition>void faiss::Clustering::post_process_centroids</definition>
         <argsstring>()</argsstring>
         <name>post_process_centroids</name>
+        <qualifiedname>faiss::Clustering::post_process_centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -426,6 +448,7 @@
         <definition>virtual faiss::Clustering::~Clustering</definition>
         <argsstring>()</argsstring>
         <name>~Clustering</name>
+        <qualifiedname>faiss::Clustering::~Clustering</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -434,7 +457,7 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="129" column="13" bodyfile="faiss/Clustering.h" bodystart="129" bodyend="129"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -443,16 +466,16 @@
 <para>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::Clustering1D</label>
-        <link refid="structfaiss_1_1Clustering1D"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss::Clustering</label>
         <link refid="structfaiss_1_1Clustering"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::Clustering1D</label>
+        <link refid="structfaiss_1_1Clustering1D"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">

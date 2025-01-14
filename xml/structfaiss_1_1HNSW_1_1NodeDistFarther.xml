@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HNSW_1_1NodeDistFarther" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HNSW::NodeDistFarther</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1ab495bcf43675a11fa049560294b8ef94" prot="public" static="no" mutable="no">
         <type>float</type>
         <definition>float faiss::HNSW::NodeDistFarther::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::HNSW::NodeDistFarther::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>int faiss::HNSW::NodeDistFarther::id</definition>
         <argsstring></argsstring>
         <name>id</name>
+        <qualifiedname>faiss::HNSW::NodeDistFarther::id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,13 +31,14 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="101" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="101" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6eef6d01c2cbef7a3acce12ec3d021be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HNSW::NodeDistFarther::NodeDistFarther</definition>
         <argsstring>(float d, int id)</argsstring>
         <name>NodeDistFarther</name>
+        <qualifiedname>faiss::HNSW::NodeDistFarther::NodeDistFarther</qualifiedname>
         <param>
           <type>float</type>
           <declname>d</declname>
@@ -57,6 +60,7 @@
         <definition>bool faiss::HNSW::NodeDistFarther::operator&lt;</definition>
         <argsstring>(const NodeDistFarther &amp;obj1) const</argsstring>
         <name>operator&lt;</name>
+        <qualifiedname>faiss::HNSW::NodeDistFarther::operator&lt;</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref> &amp;</type>
           <declname>obj1</declname>
@@ -69,7 +73,7 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="103" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="103" bodyend="105"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

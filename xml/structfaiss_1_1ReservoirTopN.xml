@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ReservoirTopN" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ReservoirTopN</compoundname>
     <basecompoundref refid="structfaiss_1_1ResultHandler" prot="public" virt="non-virtual">faiss::ResultHandler&lt; C &gt;</basecompoundref>
@@ -10,12 +10,13 @@
         <type>class C</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1ReservoirTopN_1aa69a045c4e21d83e1105c3c6bfdf1e65" prot="public" static="no">
         <type>typename C::T</type>
         <definition>using faiss::ReservoirTopN&lt; C &gt;::T =  typename C::T</definition>
         <argsstring></argsstring>
         <name>T</name>
+        <qualifiedname>faiss::ReservoirTopN::T</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>using faiss::ReservoirTopN&lt; C &gt;::TI =  typename C::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
+        <qualifiedname>faiss::ReservoirTopN::TI</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,13 +39,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="302" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="302" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ReservoirTopN_1ada9e507ee559be6ff0280dabfd04c6d6" prot="public" static="no" mutable="no">
         <type>T *</type>
         <definition>T* faiss::ReservoirTopN&lt; C &gt;::vals</definition>
         <argsstring></argsstring>
         <name>vals</name>
+        <qualifiedname>faiss::ReservoirTopN::vals</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,6 +60,7 @@
         <definition>TI* faiss::ReservoirTopN&lt; C &gt;::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::ReservoirTopN::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -70,6 +74,7 @@
         <definition>size_t faiss::ReservoirTopN&lt; C &gt;::i</definition>
         <argsstring></argsstring>
         <name>i</name>
+        <qualifiedname>faiss::ReservoirTopN::i</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -83,6 +88,7 @@
         <definition>size_t faiss::ReservoirTopN&lt; C &gt;::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::ReservoirTopN::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -96,6 +102,7 @@
         <definition>size_t faiss::ReservoirTopN&lt; C &gt;::capacity</definition>
         <argsstring></argsstring>
         <name>capacity</name>
+        <qualifiedname>faiss::ReservoirTopN::capacity</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -109,6 +116,7 @@
         <definition>C::T faiss::ResultHandler&lt; C &gt;::threshold</definition>
         <argsstring></argsstring>
         <name>threshold</name>
+        <qualifiedname>faiss::ResultHandler::threshold</qualifiedname>
         <initializer>= C::neutral()</initializer>
         <briefdescription>
         </briefdescription>
@@ -118,13 +126,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="74" column="19" bodyfile="faiss/impl/ResultHandler.h" bodystart="74" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ReservoirTopN_1a0fd4d046638b028662d4af1a3324bf28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::ReservoirTopN&lt; C &gt;::ReservoirTopN</definition>
         <argsstring>()</argsstring>
         <name>ReservoirTopN</name>
+        <qualifiedname>faiss::ReservoirTopN::ReservoirTopN</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -138,6 +147,7 @@
         <definition>faiss::ReservoirTopN&lt; C &gt;::ReservoirTopN</definition>
         <argsstring>(size_t n, size_t capacity, T *vals, TI *ids)</argsstring>
         <name>ReservoirTopN</name>
+        <qualifiedname>faiss::ReservoirTopN::ReservoirTopN</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -167,6 +177,7 @@
         <definition>bool faiss::ReservoirTopN&lt; C &gt;::add_result</definition>
         <argsstring>(T val, TI id) final</argsstring>
         <name>add_result</name>
+        <qualifiedname>faiss::ReservoirTopN::add_result</qualifiedname>
         <reimplements refid="structfaiss_1_1ResultHandler_1a3cf97e0bcb27feb310bebd35407fc47b">add_result</reimplements>
         <param>
           <type>T</type>
@@ -189,6 +200,7 @@
         <definition>void faiss::ReservoirTopN&lt; C &gt;::add</definition>
         <argsstring>(T val, TI id)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::ReservoirTopN::add</qualifiedname>
         <param>
           <type>T</type>
           <declname>val</declname>
@@ -210,6 +222,7 @@
         <definition>void faiss::ReservoirTopN&lt; C &gt;::shrink_fuzzy</definition>
         <argsstring>()</argsstring>
         <name>shrink_fuzzy</name>
+        <qualifiedname>faiss::ReservoirTopN::shrink_fuzzy</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -223,6 +236,7 @@
         <definition>void faiss::ReservoirTopN&lt; C &gt;::shrink</definition>
         <argsstring>()</argsstring>
         <name>shrink</name>
+        <qualifiedname>faiss::ReservoirTopN::shrink</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -236,6 +250,7 @@
         <definition>void faiss::ReservoirTopN&lt; C &gt;::to_result</definition>
         <argsstring>(T *heap_dis, TI *heap_ids) const</argsstring>
         <name>to_result</name>
+        <qualifiedname>faiss::ReservoirTopN::to_result</qualifiedname>
         <param>
           <type>T *</type>
           <declname>heap_dis</declname>
@@ -252,7 +267,7 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="352" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="352" bodyend="366"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Reservoir for a single query. </para>
     </briefdescription>

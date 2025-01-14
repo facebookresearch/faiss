@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1gpu_1_1utils" kind="namespace" language="C++">
     <compoundname>faiss::gpu::utils</compoundname>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -16,6 +16,7 @@
         <definition>constexpr __host__ __device__ auto faiss::gpu::utils::divDown</definition>
         <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
         <name>divDown</name>
+        <qualifiedname>faiss::gpu::utils::divDown</qualifiedname>
         <param>
           <type>U</type>
           <declname>a</declname>
@@ -45,6 +46,7 @@
         <definition>constexpr __host__ __device__ auto faiss::gpu::utils::divUp</definition>
         <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
         <name>divUp</name>
+        <qualifiedname>faiss::gpu::utils::divUp</qualifiedname>
         <param>
           <type>U</type>
           <declname>a</declname>
@@ -74,6 +76,7 @@
         <definition>constexpr __host__ __device__ auto faiss::gpu::utils::roundDown</definition>
         <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
         <name>roundDown</name>
+        <qualifiedname>faiss::gpu::utils::roundDown</qualifiedname>
         <param>
           <type>U</type>
           <declname>a</declname>
@@ -103,6 +106,7 @@
         <definition>constexpr __host__ __device__ auto faiss::gpu::utils::roundUp</definition>
         <argsstring>(U a, V b) -&gt; decltype(a+b)</argsstring>
         <name>roundUp</name>
+        <qualifiedname>faiss::gpu::utils::roundUp</qualifiedname>
         <param>
           <type>U</type>
           <declname>a</declname>
@@ -129,6 +133,7 @@
         <definition>constexpr __host__ __device__ T faiss::gpu::utils::pow</definition>
         <argsstring>(T n, T power)</argsstring>
         <name>pow</name>
+        <qualifiedname>faiss::gpu::utils::pow</qualifiedname>
         <param>
           <type>T</type>
           <declname>n</declname>
@@ -155,6 +160,7 @@
         <definition>constexpr __host__ __device__ T faiss::gpu::utils::pow2</definition>
         <argsstring>(T n)</argsstring>
         <name>pow2</name>
+        <qualifiedname>faiss::gpu::utils::pow2</qualifiedname>
         <param>
           <type>T</type>
           <declname>n</declname>
@@ -177,6 +183,7 @@
         <definition>constexpr __host__ __device__ int faiss::gpu::utils::log2</definition>
         <argsstring>(T n, int p=0)</argsstring>
         <name>log2</name>
+        <qualifiedname>faiss::gpu::utils::log2</qualifiedname>
         <param>
           <type>T</type>
           <declname>n</declname>
@@ -204,6 +211,7 @@
         <definition>constexpr __host__ __device__ bool faiss::gpu::utils::isPowerOf2</definition>
         <argsstring>(T v)</argsstring>
         <name>isPowerOf2</name>
+        <qualifiedname>faiss::gpu::utils::isPowerOf2</qualifiedname>
         <param>
           <type>T</type>
           <declname>v</declname>
@@ -226,6 +234,7 @@
         <definition>constexpr __host__ __device__ T faiss::gpu::utils::nextHighestPowerOf2</definition>
         <argsstring>(T v)</argsstring>
         <name>nextHighestPowerOf2</name>
+        <qualifiedname>faiss::gpu::utils::nextHighestPowerOf2</qualifiedname>
         <param>
           <type>T</type>
           <declname>v</declname>
@@ -238,7 +247,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StaticUtils.h" line="72" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="72" bodyend="74"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

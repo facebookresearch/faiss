@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BufferList" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BufferList</compoundname>
     <derivedcompoundref refid="structfaiss_1_1RangeSearchPartialResult" prot="public" virt="non-virtual">faiss::RangeSearchPartialResult</derivedcompoundref>
     <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
     <innerclass refid="structfaiss_1_1BufferList_1_1Buffer" prot="public">faiss::BufferList::Buffer</innerclass>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1BufferList_1a5eb5086d4b0f3904a6e4ad7a3b93d96a" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::BufferList::buffer_size</definition>
         <argsstring></argsstring>
         <name>buffer_size</name>
+        <qualifiedname>faiss::BufferList::buffer_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -24,6 +25,7 @@
         <definition>std::vector&lt;Buffer&gt; faiss::BufferList::buffers</definition>
         <argsstring></argsstring>
         <name>buffers</name>
+        <qualifiedname>faiss::BufferList::buffers</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>size_t faiss::BufferList::wp</definition>
         <argsstring></argsstring>
         <name>wp</name>
+        <qualifiedname>faiss::BufferList::wp</qualifiedname>
         <briefdescription>
 <para>write pointer in the last buffer. </para>
         </briefdescription>
@@ -46,13 +49,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="71" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="71" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1BufferList_1a84f9e430297d10b693a7d0abbec20b9d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::BufferList::BufferList</definition>
         <argsstring>(size_t buffer_size)</argsstring>
         <name>BufferList</name>
+        <qualifiedname>faiss::BufferList::BufferList</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>buffer_size</declname>
@@ -70,6 +74,7 @@
         <definition>faiss::BufferList::~BufferList</definition>
         <argsstring>()</argsstring>
         <name>~BufferList</name>
+        <qualifiedname>faiss::BufferList::~BufferList</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -83,6 +88,7 @@
         <definition>void faiss::BufferList::append_buffer</definition>
         <argsstring>()</argsstring>
         <name>append_buffer</name>
+        <qualifiedname>faiss::BufferList::append_buffer</qualifiedname>
         <briefdescription>
 <para>create a new buffer </para>
         </briefdescription>
@@ -97,6 +103,7 @@
         <definition>void faiss::BufferList::add</definition>
         <argsstring>(idx_t id, float dis)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::BufferList::add</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
@@ -119,6 +126,7 @@
         <definition>void faiss::BufferList::copy_range</definition>
         <argsstring>(size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</argsstring>
         <name>copy_range</name>
+        <qualifiedname>faiss::BufferList::copy_range</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>ofs</declname>
@@ -144,7 +152,7 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="85" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

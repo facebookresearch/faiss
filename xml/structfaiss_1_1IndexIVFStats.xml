@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexIVFStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexIVFStats</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1acffe21a0ec902bc0b695f9615c053b91" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IndexIVFStats::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
+        <qualifiedname>faiss::IndexIVFStats::nq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>size_t faiss::IndexIVFStats::nlist</definition>
         <argsstring></argsstring>
         <name>nlist</name>
+        <qualifiedname>faiss::IndexIVFStats::nlist</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>size_t faiss::IndexIVFStats::ndis</definition>
         <argsstring></argsstring>
         <name>ndis</name>
+        <qualifiedname>faiss::IndexIVFStats::ndis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>size_t faiss::IndexIVFStats::nheap_updates</definition>
         <argsstring></argsstring>
         <name>nheap_updates</name>
+        <qualifiedname>faiss::IndexIVFStats::nheap_updates</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>double faiss::IndexIVFStats::quantization_time</definition>
         <argsstring></argsstring>
         <name>quantization_time</name>
+        <qualifiedname>faiss::IndexIVFStats::quantization_time</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,6 +78,7 @@
         <definition>double faiss::IndexIVFStats::search_time</definition>
         <argsstring></argsstring>
         <name>search_time</name>
+        <qualifiedname>faiss::IndexIVFStats::search_time</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -81,13 +87,14 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="540" column="12" bodyfile="faiss/IndexIVF.h" bodystart="540" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexIVFStats_1a05922812f1133c096bf2c8e1f3123d15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIVFStats::IndexIVFStats</definition>
         <argsstring>()</argsstring>
         <name>IndexIVFStats</name>
+        <qualifiedname>faiss::IndexIVFStats::IndexIVFStats</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +108,7 @@
         <definition>void faiss::IndexIVFStats::reset</definition>
         <argsstring>()</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::IndexIVFStats::reset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -114,6 +122,7 @@
         <definition>void faiss::IndexIVFStats::add</definition>
         <argsstring>(const IndexIVFStats &amp;other)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexIVFStats::add</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref> &amp;</type>
           <declname>other</declname>
@@ -126,7 +135,7 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="546" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

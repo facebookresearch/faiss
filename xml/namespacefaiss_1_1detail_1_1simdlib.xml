@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1detail_1_1simdlib" kind="namespace" language="C++">
     <compoundname>faiss::detail::simdlib</compoundname>
+    <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" prot="public">faiss::detail::simdlib::binary_func_impl</innerclass>
     <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" prot="public">faiss::detail::simdlib::is_simd256bit</innerclass>
     <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl" prot="public">faiss::detail::simdlib::set1_impl</innerclass>
     <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" prot="public">faiss::detail::simdlib::unary_func_impl</innerclass>
-    <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" prot="public">faiss::detail::simdlib::binary_func_impl</innerclass>
-      <sectiondef kind="typedef">
+    <sectiondef kind="typedef">
       <memberdef kind="typedef" id="simdlib__neon_8h_1afc331a48c5bd48bef46e092ea2fc317f" prot="public" static="no">
         <templateparamlist>
           <param>
@@ -17,6 +17,7 @@
         <definition>using faiss::detail::simdlib::remove_cv_ref_t = typedef typename std::remove_reference&lt;typename std::remove_cv&lt;T&gt;::type&gt;::type</definition>
         <argsstring></argsstring>
         <name>remove_cv_ref_t</name>
+        <qualifiedname>faiss::detail::simdlib::remove_cv_ref_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -25,13 +26,14 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="142" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="143" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="func">
+    </sectiondef>
+    <sectiondef kind="func">
       <memberdef kind="function" id="simdlib__neon_8h_1a21ac13492c3a23c090d5847c49e95094" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint8x16x2_t</type>
         <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
         <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
         <name>reinterpret_u8</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u8</qualifiedname>
         <param>
           <type>const uint8x16x2_t &amp;</type>
           <declname>v</declname>
@@ -49,6 +51,7 @@
         <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
         <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
         <name>reinterpret_u8</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u8</qualifiedname>
         <param>
           <type>const uint16x8x2_t &amp;</type>
           <declname>v</declname>
@@ -66,6 +69,7 @@
         <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
         <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u8</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u8</qualifiedname>
         <param>
           <type>const uint32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -83,6 +87,7 @@
         <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
         <argsstring>(const float32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u8</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u8</qualifiedname>
         <param>
           <type>const float32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -100,6 +105,7 @@
         <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
         <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
         <name>reinterpret_u16</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u16</qualifiedname>
         <param>
           <type>const uint8x16x2_t &amp;</type>
           <declname>v</declname>
@@ -117,6 +123,7 @@
         <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
         <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
         <name>reinterpret_u16</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u16</qualifiedname>
         <param>
           <type>const uint16x8x2_t &amp;</type>
           <declname>v</declname>
@@ -134,6 +141,7 @@
         <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
         <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u16</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u16</qualifiedname>
         <param>
           <type>const uint32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -151,6 +159,7 @@
         <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
         <argsstring>(const float32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u16</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u16</qualifiedname>
         <param>
           <type>const float32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -168,6 +177,7 @@
         <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
         <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
         <name>reinterpret_u32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u32</qualifiedname>
         <param>
           <type>const uint8x16x2_t &amp;</type>
           <declname>v</declname>
@@ -185,6 +195,7 @@
         <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
         <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
         <name>reinterpret_u32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u32</qualifiedname>
         <param>
           <type>const uint16x8x2_t &amp;</type>
           <declname>v</declname>
@@ -202,6 +213,7 @@
         <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
         <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u32</qualifiedname>
         <param>
           <type>const uint32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -219,6 +231,7 @@
         <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
         <argsstring>(const float32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_u32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_u32</qualifiedname>
         <param>
           <type>const float32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -236,6 +249,7 @@
         <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
         <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
         <name>reinterpret_f32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_f32</qualifiedname>
         <param>
           <type>const uint8x16x2_t &amp;</type>
           <declname>v</declname>
@@ -253,6 +267,7 @@
         <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
         <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
         <name>reinterpret_f32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_f32</qualifiedname>
         <param>
           <type>const uint16x8x2_t &amp;</type>
           <declname>v</declname>
@@ -270,6 +285,7 @@
         <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
         <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_f32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_f32</qualifiedname>
         <param>
           <type>const uint32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -287,6 +303,7 @@
         <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
         <argsstring>(const float32x4x2_t &amp;v)</argsstring>
         <name>reinterpret_f32</name>
+        <qualifiedname>faiss::detail::simdlib::reinterpret_f32</qualifiedname>
         <param>
           <type>const float32x4x2_t &amp;</type>
           <declname>v</declname>
@@ -304,6 +321,7 @@
         <definition>static inline ::uint16x8_t faiss::detail::simdlib::vdupq_n_u16</definition>
         <argsstring>(std::uint16_t v)</argsstring>
         <name>vdupq_n_u16</name>
+        <qualifiedname>faiss::detail::simdlib::vdupq_n_u16</qualifiedname>
         <param>
           <type>std::uint16_t</type>
           <declname>v</declname>
@@ -321,6 +339,7 @@
         <definition>static inline ::uint8x16_t faiss::detail::simdlib::vdupq_n_u8</definition>
         <argsstring>(std::uint8_t v)</argsstring>
         <name>vdupq_n_u8</name>
+        <qualifiedname>faiss::detail::simdlib::vdupq_n_u8</qualifiedname>
         <param>
           <type>std::uint8_t</type>
           <declname>v</declname>
@@ -338,6 +357,7 @@
         <definition>static void faiss::detail::simdlib::bin</definition>
         <argsstring>(const char(&amp;bytes)[32], char bits[257])</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::detail::simdlib::bin</qualifiedname>
         <param>
           <type>const char(&amp;)</type>
           <declname>bytes</declname>
@@ -374,6 +394,7 @@
         <definition>static void faiss::detail::simdlib::bin</definition>
         <argsstring>(const S &amp;simd, char bits[257])</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::detail::simdlib::bin</qualifiedname>
         <param>
           <type>const S &amp;</type>
           <declname>simd</declname>
@@ -401,6 +422,7 @@
         <definition>static std::string faiss::detail::simdlib::bin</definition>
         <argsstring>(const S &amp;simd)</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::detail::simdlib::bin</qualifiedname>
         <param>
           <type>const S &amp;</type>
           <declname>simd</declname>
@@ -413,7 +435,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="135" column="27" bodyfile="faiss/utils/simdlib_neon.h" bodystart="135" bodyend="139"/>
       </memberdef>
-      <memberdef kind="function" id="simdlib__neon_8h_1af2559e02e6a4a3f8a017ed58e7ab95f0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="simdlib__neon_8h_1aa5a913ff1d2259d50c69611b8c23d401" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename D</type>
@@ -423,9 +445,10 @@
           </param>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl" kindref="compound">set1_impl</ref>&lt; remove_cv_ref_t&lt; D &gt;, T &gt;</type>
-        <definition>static set1_impl&lt;remove_cv_ref_t&lt;D&gt;, T&gt; faiss::detail::simdlib::set1</definition>
+        <definition>static set1_impl&lt; remove_cv_ref_t&lt; D &gt;, T &gt; faiss::detail::simdlib::set1</definition>
         <argsstring>(D &amp;d, T t)</argsstring>
         <name>set1</name>
+        <qualifiedname>faiss::detail::simdlib::set1</qualifiedname>
         <param>
           <type>D &amp;</type>
           <declname>d</declname>
@@ -460,6 +483,7 @@
         <definition>static std::string faiss::detail::simdlib::elements_to_string</definition>
         <argsstring>(const char *fmt, const S &amp;simd)</argsstring>
         <name>elements_to_string</name>
+        <qualifiedname>faiss::detail::simdlib::elements_to_string</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fmt</declname>
@@ -476,16 +500,17 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="163" column="27" bodyfile="faiss/utils/simdlib_neon.h" bodystart="163" bodyend="179"/>
       </memberdef>
-      <memberdef kind="function" id="simdlib__neon_8h_1aa0be8b4e221edd1ff80fa4738d5443cb" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="simdlib__neon_8h_1aed6cc2ec403ef79acd3f4d23dc072cb2" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename T</type>
           </param>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kindref="compound">unary_func_impl</ref>&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; T &gt; &gt;</type>
-        <definition>static unary_func_impl&lt;remove_cv_ref_t&lt;T&gt;, remove_cv_ref_t&lt;T&gt; &gt; faiss::detail::simdlib::unary_func</definition>
+        <definition>static unary_func_impl&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; T &gt; &gt; faiss::detail::simdlib::unary_func</definition>
         <argsstring>(const T &amp;a)</argsstring>
         <name>unary_func</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func</qualifiedname>
         <param>
           <type>const T &amp;</type>
           <declname>a</declname>
@@ -498,7 +523,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="196" column="31" bodyfile="faiss/utils/simdlib_neon.h" bodystart="196" bodyend="199"/>
       </memberdef>
-      <memberdef kind="function" id="simdlib__neon_8h_1a2b152c681a0c65bcb625d116504c3d85" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="simdlib__neon_8h_1a039cc64fbb988e3d88dee4886eef7f01" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename T</type>
@@ -508,9 +533,10 @@
           </param>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kindref="compound">unary_func_impl</ref>&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; U &gt; &gt;</type>
-        <definition>static unary_func_impl&lt;remove_cv_ref_t&lt;T&gt;, remove_cv_ref_t&lt;U&gt; &gt; faiss::detail::simdlib::unary_func</definition>
+        <definition>static unary_func_impl&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; U &gt; &gt; faiss::detail::simdlib::unary_func</definition>
         <argsstring>(const U &amp;a)</argsstring>
         <name>unary_func</name>
+        <qualifiedname>faiss::detail::simdlib::unary_func</qualifiedname>
         <param>
           <type>const U &amp;</type>
           <declname>a</declname>
@@ -523,16 +549,17 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="202" column="31" bodyfile="faiss/utils/simdlib_neon.h" bodystart="202" bodyend="205"/>
       </memberdef>
-      <memberdef kind="function" id="simdlib__neon_8h_1a789d6dd375a36ce8364a8af7e14c574c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="simdlib__neon_8h_1ade8ec1371ba101cf4081d9e3004e3418" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename T</type>
           </param>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kindref="compound">binary_func_impl</ref>&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; T &gt; &gt;</type>
-        <definition>static binary_func_impl&lt;remove_cv_ref_t&lt;T&gt;, remove_cv_ref_t&lt;T&gt; &gt; faiss::detail::simdlib::binary_func</definition>
+        <definition>static binary_func_impl&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; T &gt; &gt; faiss::detail::simdlib::binary_func</definition>
         <argsstring>(const T &amp;a, const T &amp;b)</argsstring>
         <name>binary_func</name>
+        <qualifiedname>faiss::detail::simdlib::binary_func</qualifiedname>
         <param>
           <type>const T &amp;</type>
           <declname>a</declname>
@@ -549,7 +576,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="224" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="224" bodyend="226"/>
       </memberdef>
-      <memberdef kind="function" id="simdlib__neon_8h_1a4b198ddcd74e3ccbbef497f11583b507" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="simdlib__neon_8h_1a274057e9efdeaad01680cf3201c07d06" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename T</type>
@@ -559,9 +586,10 @@
           </param>
         </templateparamlist>
         <type><ref refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kindref="compound">binary_func_impl</ref>&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; U &gt; &gt;</type>
-        <definition>static binary_func_impl&lt;remove_cv_ref_t&lt;T&gt;, remove_cv_ref_t&lt;U&gt; &gt; faiss::detail::simdlib::binary_func</definition>
+        <definition>static binary_func_impl&lt; remove_cv_ref_t&lt; T &gt;, remove_cv_ref_t&lt; U &gt; &gt; faiss::detail::simdlib::binary_func</definition>
         <argsstring>(const U &amp;a, const U &amp;b)</argsstring>
         <name>binary_func</name>
+        <qualifiedname>faiss::detail::simdlib::binary_func</qualifiedname>
         <param>
           <type>const U &amp;</type>
           <declname>a</declname>
@@ -583,6 +611,7 @@
         <definition>static uint16_t faiss::detail::simdlib::vmovmask_u8</definition>
         <argsstring>(const uint8x16_t &amp;v)</argsstring>
         <name>vmovmask_u8</name>
+        <qualifiedname>faiss::detail::simdlib::vmovmask_u8</qualifiedname>
         <param>
           <type>const uint8x16_t &amp;</type>
           <declname>v</declname>
@@ -607,6 +636,7 @@
         <definition>static uint32_t faiss::detail::simdlib::cmp_xe32</definition>
         <argsstring>(const uint16x8x2_t &amp;d0, const uint16x8x2_t &amp;d1, const uint16x8x2_t &amp;thr)</argsstring>
         <name>cmp_xe32</name>
+        <qualifiedname>faiss::detail::simdlib::cmp_xe32</qualifiedname>
         <param>
           <type>const uint16x8x2_t &amp;</type>
           <declname>d0</declname>
@@ -639,6 +669,7 @@
         <definition>static uint16x8_t faiss::detail::simdlib::vshlq</definition>
         <argsstring>(uint16x8_t vec)</argsstring>
         <name>vshlq</name>
+        <qualifiedname>faiss::detail::simdlib::vshlq</qualifiedname>
         <param>
           <type>uint16x8_t</type>
           <declname>vec</declname>
@@ -663,6 +694,7 @@
         <definition>static uint16x8_t faiss::detail::simdlib::vshrq</definition>
         <argsstring>(uint16x8_t vec)</argsstring>
         <name>vshrq</name>
+        <qualifiedname>faiss::detail::simdlib::vshrq</qualifiedname>
         <param>
           <type>uint16x8_t</type>
           <declname>vec</declname>
@@ -675,7 +707,7 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="263" column="26" bodyfile="faiss/utils/simdlib_neon.h" bodystart="263" bodyend="265"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

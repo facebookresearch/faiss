@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1InvertedLists_1_1ScopedIds" kind="struct" language="C++" prot="public">
     <compoundname>faiss::InvertedLists::ScopedIds</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a070479c3744f3e7ce2733c51f57c3412" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
         <definition>const InvertedLists* faiss::InvertedLists::ScopedIds::il</definition>
         <argsstring></argsstring>
         <name>il</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::il</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>const idx_t* faiss::InvertedLists::ScopedIds::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>size_t faiss::InvertedLists::ScopedIds::list_no</definition>
         <argsstring></argsstring>
         <name>list_no</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::list_no</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,13 +45,14 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="201" column="16" bodyfile="faiss/invlists/InvertedLists.h" bodystart="201" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a44bec3fb64ac74c91f63bb60361915c9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::InvertedLists::ScopedIds::ScopedIds</definition>
         <argsstring>(const InvertedLists *il, size_t list_no)</argsstring>
         <name>ScopedIds</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::ScopedIds</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
           <declname>il</declname>
@@ -65,11 +69,12 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="203" column="9" bodyfile="faiss/invlists/InvertedLists.h" bodystart="203" bodyend="204"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1a8d364e731f2789a8856f5463f50e64e6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1InvertedLists_1_1ScopedIds_1aa8043aa84f4b54d74013add2ebd71950" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-        <definition>const idx_t* faiss::InvertedLists::ScopedIds::get</definition>
+        <definition>const idx_t * faiss::InvertedLists::ScopedIds::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -83,6 +88,7 @@
         <definition>idx_t faiss::InvertedLists::ScopedIds::operator[]</definition>
         <argsstring>(size_t i) const</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::operator[]</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -100,6 +106,7 @@
         <definition>faiss::InvertedLists::ScopedIds::~ScopedIds</definition>
         <argsstring>()</argsstring>
         <name>~ScopedIds</name>
+        <qualifiedname>faiss::InvertedLists::ScopedIds::~ScopedIds</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -108,7 +115,7 @@
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="214" column="9" bodyfile="faiss/invlists/InvertedLists.h" bodystart="214" bodyend="216"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -128,7 +135,7 @@
     </collaborationgraph>
     <location file="faiss/invlists/InvertedLists.h" line="198" column="5" bodyfile="faiss/invlists/InvertedLists.h" bodystart="198" bodyend="217"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1a8d364e731f2789a8856f5463f50e64e6" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedIds</scope><name>get</name></member>
+      <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1aa8043aa84f4b54d74013add2ebd71950" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedIds</scope><name>get</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1af6da06a0f3fa92945bce458853a82899" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedIds</scope><name>ids</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1a070479c3744f3e7ce2733c51f57c3412" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedIds</scope><name>il</name></member>
       <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1a66f75ce4c81aaa2fa38f8e3de647354e" prot="public" virt="non-virtual"><scope>faiss::InvertedLists::ScopedIds</scope><name>list_no</name></member>

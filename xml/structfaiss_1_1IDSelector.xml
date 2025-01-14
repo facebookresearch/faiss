@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelector" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IDSelector</compoundname>
     <derivedcompoundref refid="structPyCallbackIDSelector" prot="public" virt="non-virtual">PyCallbackIDSelector</derivedcompoundref>
@@ -14,12 +14,13 @@
     <derivedcompoundref refid="structfaiss_1_1IDSelectorTranslated" prot="public" virt="non-virtual">faiss::IDSelectorTranslated</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IDSelectorXOr" prot="public" virt="non-virtual">faiss::IDSelectorXOr</derivedcompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
         <definition>virtual bool faiss::IDSelector::is_member</definition>
         <argsstring>(idx_t id) const =0</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelector::is_member</qualifiedname>
         <reimplementedby refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74">is_member</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4">is_member</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IDSelectorArray_1afe3a7327bf5f0d11bf8f8bf1175caf24">is_member</reimplementedby>
@@ -48,6 +49,7 @@
         <definition>virtual faiss::IDSelector::~IDSelector</definition>
         <argsstring>()</argsstring>
         <name>~IDSelector</name>
+        <qualifiedname>faiss::IDSelector::~IDSelector</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -56,43 +58,13 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="23" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="23" bodyend="23"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Encapsulates a set of ids to handle. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="9">
-        <label>faiss::IDSelectorOr</label>
-        <link refid="structfaiss_1_1IDSelectorOr"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss::IDSelectorBatch</label>
-        <link refid="structfaiss_1_1IDSelectorBatch"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>faiss::IDSelectorTranslated</label>
-        <link refid="structfaiss_1_1IDSelectorTranslated"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss::IDSelectorXOr</label>
-        <link refid="structfaiss_1_1IDSelectorXOr"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>faiss::IDSelectorNot</label>
-        <link refid="structfaiss_1_1IDSelectorNot"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="2">
         <label>PyCallbackIDSelector</label>
         <link refid="structPyCallbackIDSelector"/>
@@ -102,18 +74,6 @@
       <node id="1">
         <label>faiss::IDSelector</label>
         <link refid="structfaiss_1_1IDSelector"/>
-      </node>
-      <node id="5">
-        <label>faiss::IDSelectorArray</label>
-        <link refid="structfaiss_1_1IDSelectorArray"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss::IDSelectorRange</label>
-        <link refid="structfaiss_1_1IDSelectorRange"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
       </node>
       <node id="3">
         <label>faiss::IDSelectorAll</label>
@@ -127,9 +87,51 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="5">
+        <label>faiss::IDSelectorArray</label>
+        <link refid="structfaiss_1_1IDSelectorArray"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::IDSelectorBatch</label>
+        <link refid="structfaiss_1_1IDSelectorBatch"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="7">
         <label>faiss::IDSelectorBitmap</label>
         <link refid="structfaiss_1_1IDSelectorBitmap"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss::IDSelectorNot</label>
+        <link refid="structfaiss_1_1IDSelectorNot"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::IDSelectorOr</label>
+        <link refid="structfaiss_1_1IDSelectorOr"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss::IDSelectorRange</label>
+        <link refid="structfaiss_1_1IDSelectorRange"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::IDSelectorTranslated</label>
+        <link refid="structfaiss_1_1IDSelectorTranslated"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss::IDSelectorXOr</label>
+        <link refid="structfaiss_1_1IDSelectorXOr"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

@@ -1,16 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="Timer_8h" kind="file" language="C++">
     <compoundname>Timer.h</compoundname>
     <includes local="no">cuda_runtime.h</includes>
     <includes local="no">chrono</includes>
     <incdepgraph>
-      <node id="2">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="3">
-        <label>chrono</label>
-      </node>
       <node id="1">
         <label>faiss/gpu/utils/Timer.h</label>
         <link refid="Timer_8h"/>
@@ -18,6 +12,12 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="3">
+        <label>chrono</label>
+      </node>
+      <node id="2">
+        <label>cuda_runtime.h</label>
       </node>
     </incdepgraph>
     <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>

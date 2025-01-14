@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorDistance" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VectorDistance</compoundname>
     <templateparamlist>
@@ -9,12 +9,13 @@
         <defname>mt</defname>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1VectorDistance_1a61c9d5400239ae177d94be5e119c3fe0" prot="public" static="no">
         <type>typename std::conditional&lt; <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt), <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt;, <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt;::type</type>
         <definition>using faiss::VectorDistance&lt; mt &gt;::C =  typename std::conditional&lt; is_similarity_metric(mt), CMin&lt;float, int64_t&gt;, CMax&lt;float, int64_t&gt; &gt;::type</definition>
         <argsstring></argsstring>
         <name>C</name>
+        <qualifiedname>faiss::VectorDistance::C</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,13 +24,14 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances-inl.h" line="28" column="5" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="31" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::VectorDistance&lt; mt &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::VectorDistance::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,6 +45,7 @@
         <definition>float faiss::VectorDistance&lt; mt &gt;::metric_arg</definition>
         <argsstring></argsstring>
         <name>metric_arg</name>
+        <qualifiedname>faiss::VectorDistance::metric_arg</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -51,13 +54,14 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances-inl.h" line="22" column="11" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="22" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-attrib">
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1ad9bd4b2e4a39ce28f9c3ba0f1308410e" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr bool</type>
         <definition>constexpr bool faiss::VectorDistance&lt; mt &gt;::is_similarity</definition>
         <argsstring></argsstring>
         <name>is_similarity</name>
+        <qualifiedname>faiss::VectorDistance::is_similarity</qualifiedname>
         <initializer>= <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt)</initializer>
         <briefdescription>
         </briefdescription>
@@ -67,13 +71,14 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances-inl.h" line="23" column="27" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="23" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1aaf62cc689beb7e6fb78a27ff2a8ed598" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::VectorDistance&lt; mt &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -95,6 +100,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_L2 &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -116,6 +122,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_INNER_PRODUCT &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -137,6 +144,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_L1 &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -158,6 +166,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_Linf &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -179,6 +188,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_Lp &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -200,6 +210,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_Canberra &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -221,6 +232,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_BrayCurtis &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -242,6 +254,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_JensenShannon &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -263,6 +276,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_Jaccard &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -284,6 +298,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_NaNEuclidean &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -305,6 +320,7 @@
         <definition>float faiss::VectorDistance&lt; METRIC_ABS_INNER_PRODUCT &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -321,7 +337,7 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances-inl.h" line="156" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="156" bodyend="164"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

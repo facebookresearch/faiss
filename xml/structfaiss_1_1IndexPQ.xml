@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexPQ" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexPQ</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexFlatCodes" prot="public" virt="non-virtual">faiss::IndexFlatCodes</basecompoundref>
     <includes refid="IndexPQ_8h" local="no">IndexPQ.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="enum" id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe" prot="public" static="no" strong="no">
         <type></type>
         <name>Search_type_t</name>
+        <qualifiedname>faiss::IndexPQ::Search_type_t</qualifiedname>
         <enumvalue id="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea00f77a4f8209c30c3ef37ccfd3d0c10a" prot="public">
           <name>ST_PQ</name>
           <briefdescription>
@@ -70,6 +71,7 @@
         <definition>using faiss::Index::component_t =  float</definition>
         <argsstring></argsstring>
         <name>component_t</name>
+        <qualifiedname>faiss::Index::component_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -83,6 +85,7 @@
         <definition>using faiss::Index::distance_t =  float</definition>
         <argsstring></argsstring>
         <name>distance_t</name>
+        <qualifiedname>faiss::Index::distance_t</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -91,13 +94,14 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="79" column="5" bodyfile="faiss/Index.h" bodystart="79" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1aa7b7cfe0c8dfd37c8a940fd93d12dc88" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref></type>
         <definition>ProductQuantizer faiss::IndexPQ::pq</definition>
         <argsstring></argsstring>
         <name>pq</name>
+        <qualifiedname>faiss::IndexPQ::pq</qualifiedname>
         <briefdescription>
 <para>The product quantizer used to encode the vectors. </para>
         </briefdescription>
@@ -112,6 +116,7 @@
         <definition>bool faiss::IndexPQ::do_polysemous_training</definition>
         <argsstring></argsstring>
         <name>do_polysemous_training</name>
+        <qualifiedname>faiss::IndexPQ::do_polysemous_training</qualifiedname>
         <briefdescription>
 <para>false = standard PQ </para>
         </briefdescription>
@@ -126,6 +131,7 @@
         <definition>PolysemousTraining faiss::IndexPQ::polysemous_training</definition>
         <argsstring></argsstring>
         <name>polysemous_training</name>
+        <qualifiedname>faiss::IndexPQ::polysemous_training</qualifiedname>
         <briefdescription>
 <para>parameters used for the polysemous training </para>
         </briefdescription>
@@ -140,6 +146,7 @@
         <definition>Search_type_t faiss::IndexPQ::search_type</definition>
         <argsstring></argsstring>
         <name>search_type</name>
+        <qualifiedname>faiss::IndexPQ::search_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -153,6 +160,7 @@
         <definition>bool faiss::IndexPQ::encode_signs</definition>
         <argsstring></argsstring>
         <name>encode_signs</name>
+        <qualifiedname>faiss::IndexPQ::encode_signs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -166,6 +174,7 @@
         <definition>int faiss::IndexPQ::polysemous_ht</definition>
         <argsstring></argsstring>
         <name>polysemous_ht</name>
+        <qualifiedname>faiss::IndexPQ::polysemous_ht</qualifiedname>
         <briefdescription>
 <para>Hamming threshold used for polysemy. </para>
         </briefdescription>
@@ -180,6 +189,7 @@
         <definition>size_t faiss::IndexFlatCodes::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::IndexFlatCodes::code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -193,6 +203,7 @@
         <definition>std::vector&lt;uint8_t&gt; faiss::IndexFlatCodes::codes</definition>
         <argsstring></argsstring>
         <name>codes</name>
+        <qualifiedname>faiss::IndexFlatCodes::codes</qualifiedname>
         <briefdescription>
 <para>encoded dataset, size ntotal * code_size </para>
         </briefdescription>
@@ -207,6 +218,7 @@
         <definition>int faiss::Index::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::Index::d</qualifiedname>
         <briefdescription>
 <para>vector dimension </para>
         </briefdescription>
@@ -221,6 +233,7 @@
         <definition>idx_t faiss::Index::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::Index::ntotal</qualifiedname>
         <briefdescription>
 <para>total nb of indexed vectors </para>
         </briefdescription>
@@ -235,6 +248,7 @@
         <definition>bool faiss::Index::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::Index::verbose</qualifiedname>
         <briefdescription>
 <para>verbosity level </para>
         </briefdescription>
@@ -249,6 +263,7 @@
         <definition>bool faiss::Index::is_trained</definition>
         <argsstring></argsstring>
         <name>is_trained</name>
+        <qualifiedname>faiss::Index::is_trained</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -263,6 +278,7 @@
         <definition>MetricType faiss::Index::metric_type</definition>
         <argsstring></argsstring>
         <name>metric_type</name>
+        <qualifiedname>faiss::Index::metric_type</qualifiedname>
         <briefdescription>
 <para>type of metric this index uses for search </para>
         </briefdescription>
@@ -277,6 +293,7 @@
         <definition>float faiss::Index::metric_arg</definition>
         <argsstring></argsstring>
         <name>metric_arg</name>
+        <qualifiedname>faiss::Index::metric_arg</qualifiedname>
         <briefdescription>
 <para>argument of the metric type </para>
         </briefdescription>
@@ -286,13 +303,14 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="91" column="11" bodyfile="faiss/Index.h" bodystart="91" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1ab8d0bbf8a0dab39b236e0d1633923746" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexPQ::IndexPQ</definition>
         <argsstring>(int d, size_t M, size_t nbits, MetricType metric=METRIC_L2)</argsstring>
         <name>IndexPQ</name>
+        <qualifiedname>faiss::IndexPQ::IndexPQ</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -350,6 +368,7 @@
         <definition>faiss::IndexPQ::IndexPQ</definition>
         <argsstring>()</argsstring>
         <name>IndexPQ</name>
+        <qualifiedname>faiss::IndexPQ::IndexPQ</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -363,6 +382,7 @@
         <definition>void faiss::IndexPQ::train</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::IndexPQ::train</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -404,6 +424,7 @@
         <definition>void faiss::IndexPQ::search</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::IndexPQ::search</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexFlatCodes_1a64a48454b8c0de2078bc9921dd083d07">search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -444,6 +465,7 @@
         <definition>void faiss::IndexPQ::sa_encode</definition>
         <argsstring>(idx_t n, const float *x, uint8_t *bytes) const override</argsstring>
         <name>sa_encode</name>
+        <qualifiedname>faiss::IndexPQ::sa_encode</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c">sa_encode</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -497,6 +519,7 @@
         <definition>void faiss::IndexPQ::sa_decode</definition>
         <argsstring>(idx_t n, const uint8_t *bytes, float *x) const override</argsstring>
         <name>sa_decode</name>
+        <qualifiedname>faiss::IndexPQ::sa_decode</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7">sa_decode</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -545,12 +568,13 @@
         </inbodydescription>
         <location file="faiss/IndexPQ.h" line="51" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a85e6888092abc5f631913d4d8402ae35" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
-        <definition>FlatCodesDistanceComputer* faiss::IndexPQ::get_FlatCodesDistanceComputer</definition>
+        <definition>FlatCodesDistanceComputer * faiss::IndexPQ::get_FlatCodesDistanceComputer</definition>
         <argsstring>() const override</argsstring>
         <name>get_FlatCodesDistanceComputer</name>
-        <reimplements refid="structfaiss_1_1IndexFlatCodes_1a4c2192dacfb37f496d98261c796e509f">get_FlatCodesDistanceComputer</reimplements>
+        <qualifiedname>faiss::IndexPQ::get_FlatCodesDistanceComputer</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexFlatCodes_1af8a139db2a9d17f67e9c9d94a82c470a">get_FlatCodesDistanceComputer</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -566,6 +590,7 @@
         <definition>void faiss::IndexPQ::search_core_polysemous</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, int polysemous_ht, bool generalized_hamming) const</argsstring>
         <name>search_core_polysemous</name>
+        <qualifiedname>faiss::IndexPQ::search_core_polysemous</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -607,6 +632,7 @@
         <definition>void faiss::IndexPQ::hamming_distance_histogram</definition>
         <argsstring>(idx_t n, const float *x, idx_t nb, const float *xb, int64_t *dist_histogram)</argsstring>
         <name>hamming_distance_histogram</name>
+        <qualifiedname>faiss::IndexPQ::hamming_distance_histogram</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -650,6 +676,7 @@
         <definition>void faiss::IndexPQ::hamming_distance_table</definition>
         <argsstring>(idx_t n, const float *x, int32_t *dis) const</argsstring>
         <name>hamming_distance_table</name>
+        <qualifiedname>faiss::IndexPQ::hamming_distance_table</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -702,6 +729,7 @@
         <definition>void faiss::IndexFlatCodes::add</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::IndexFlatCodes::add</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -725,6 +753,7 @@
         <definition>void faiss::IndexFlatCodes::reset</definition>
         <argsstring>() override</argsstring>
         <name>reset</name>
+        <qualifiedname>faiss::IndexFlatCodes::reset</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
         <briefdescription>
 <para>removes all elements from the database. </para>
@@ -740,6 +769,7 @@
         <definition>void faiss::IndexFlatCodes::reconstruct_n</definition>
         <argsstring>(idx_t i0, idx_t ni, float *recons) const override</argsstring>
         <name>reconstruct_n</name>
+        <qualifiedname>faiss::IndexFlatCodes::reconstruct_n</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f">reconstruct_n</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -793,6 +823,7 @@
         <definition>void faiss::IndexFlatCodes::reconstruct</definition>
         <argsstring>(idx_t key, float *recons) const override</argsstring>
         <name>reconstruct</name>
+        <qualifiedname>faiss::IndexFlatCodes::reconstruct</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c">reconstruct</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -834,6 +865,7 @@
         <definition>size_t faiss::IndexFlatCodes::sa_code_size</definition>
         <argsstring>() const override</argsstring>
         <name>sa_code_size</name>
+        <qualifiedname>faiss::IndexFlatCodes::sa_code_size</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415">sa_code_size</reimplements>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1ac7c27786912bed039ef8d05a82db0acb">sa_code_size</reimplementedby>
         <briefdescription>
@@ -850,6 +882,7 @@
         <definition>size_t faiss::IndexFlatCodes::remove_ids</definition>
         <argsstring>(const IDSelector &amp;sel) override</argsstring>
         <name>remove_ids</name>
+        <qualifiedname>faiss::IndexFlatCodes::remove_ids</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
@@ -864,12 +897,13 @@
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="44" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
-        <definition>DistanceComputer* faiss::IndexFlatCodes::get_distance_computer</definition>
+        <definition>DistanceComputer * faiss::IndexFlatCodes::get_distance_computer</definition>
         <argsstring>() const override</argsstring>
         <name>get_distance_computer</name>
-        <reimplements refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a">get_distance_computer</reimplements>
+        <qualifiedname>faiss::IndexFlatCodes::get_distance_computer</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc">get_distance_computer</reimplements>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -885,6 +919,7 @@
         <definition>void faiss::IndexFlatCodes::range_search</definition>
         <argsstring>(idx_t n, const float *x, float radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const override</argsstring>
         <name>range_search</name>
+        <qualifiedname>faiss::IndexFlatCodes::range_search</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba">range_search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -951,11 +986,12 @@
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="65" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
-        <definition>CodePacker* faiss::IndexFlatCodes::get_CodePacker</definition>
+        <definition>CodePacker * faiss::IndexFlatCodes::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
+        <qualifiedname>faiss::IndexFlatCodes::get_CodePacker</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -969,6 +1005,7 @@
         <definition>void faiss::IndexFlatCodes::check_compatible_for_merge</definition>
         <argsstring>(const Index &amp;otherIndex) const override</argsstring>
         <name>check_compatible_for_merge</name>
+        <qualifiedname>faiss::IndexFlatCodes::check_compatible_for_merge</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e">check_compatible_for_merge</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
@@ -988,6 +1025,7 @@
         <definition>virtual void faiss::IndexFlatCodes::merge_from</definition>
         <argsstring>(Index &amp;otherIndex, idx_t add_id=0) override</argsstring>
         <name>merge_from</name>
+        <qualifiedname>faiss::IndexFlatCodes::merge_from</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415">merge_from</reimplements>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
@@ -1012,6 +1050,7 @@
         <definition>virtual void faiss::IndexFlatCodes::add_sa_codes</definition>
         <argsstring>(idx_t n, const uint8_t *x, const idx_t *xids) override</argsstring>
         <name>add_sa_codes</name>
+        <qualifiedname>faiss::IndexFlatCodes::add_sa_codes</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b">add_sa_codes</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -1057,6 +1096,7 @@
         <definition>void faiss::IndexFlatCodes::permute_entries</definition>
         <argsstring>(const idx_t *perm)</argsstring>
         <name>permute_entries</name>
+        <qualifiedname>faiss::IndexFlatCodes::permute_entries</qualifiedname>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>perm</declname>
@@ -1074,6 +1114,7 @@
         <definition>virtual void faiss::Index::add_with_ids</definition>
         <argsstring>(idx_t n, const float *x, const idx_t *xids)</argsstring>
         <name>add_with_ids</name>
+        <qualifiedname>faiss::Index::add_with_ids</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a14e75169bddcd0251134821416b060a1">add_with_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a8699e7d828750f02bfc86014269e4a6c">add_with_ids</reimplementedby>
@@ -1133,6 +1174,7 @@
         <definition>virtual void faiss::Index::assign</definition>
         <argsstring>(idx_t n, const float *x, idx_t *labels, idx_t k=1) const</argsstring>
         <name>assign</name>
+        <qualifiedname>faiss::Index::assign</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1ab6382636bc3f651645ee66d8744f7c0f">assign</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -1199,6 +1241,7 @@
         <definition>virtual void faiss::Index::reconstruct_batch</definition>
         <argsstring>(idx_t n, const idx_t *keys, float *recons) const</argsstring>
         <name>reconstruct_batch</name>
+        <qualifiedname>faiss::Index::reconstruct_batch</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a66814ad5f94a9e7534d4fdf4951d9bee">reconstruct_batch</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -1252,6 +1295,7 @@
         <definition>virtual void faiss::Index::search_and_reconstruct</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, float *recons, const SearchParameters *params=nullptr) const</argsstring>
         <name>search_and_reconstruct</name>
+        <qualifiedname>faiss::Index::search_and_reconstruct</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0">search_and_reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1ae370aa40139ca15359b1cbdf88c9b3d8">search_and_reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a6082f6ca04afc943d5e1c729f24de283">search_and_reconstruct</reimplementedby>
@@ -1349,6 +1393,7 @@
         <definition>virtual void faiss::Index::compute_residual</definition>
         <argsstring>(const float *x, float *residual, idx_t key) const</argsstring>
         <name>compute_residual</name>
+        <qualifiedname>faiss::Index::compute_residual</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1ae076ddbcfde3e7a21879ac379ff991d9">compute_residual</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1af7f8f3b84c0894ffb072dbc32f9e6787">compute_residual</reimplementedby>
         <param>
@@ -1404,6 +1449,7 @@
         <definition>virtual void faiss::Index::compute_residual_n</definition>
         <argsstring>(idx_t n, const float *xs, float *residuals, const idx_t *keys) const</argsstring>
         <name>compute_residual_n</name>
+        <qualifiedname>faiss::Index::compute_residual_n</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a1a1ccf88e127b613c5ef65e52d7a6428">compute_residual_n</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a8dddfaa491c1c2cfe2e03fa06e9676b4">compute_residual_n</reimplementedby>
         <param>
@@ -1466,19 +1512,13 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="265" column="18"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> based on a product quantizer. Stored vectors are approximated by PQ codes. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::IndexPQ</label>
-        <link refid="structfaiss_1_1IndexPQ"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="3">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
@@ -1489,11 +1529,27 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss::IndexPQ</label>
+        <link refid="structfaiss_1_1IndexPQ"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="8">
+      <node id="6">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="3">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="2">
+        <label>faiss::IndexFlatCodes</label>
+        <link refid="structfaiss_1_1IndexFlatCodes"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss::IndexPQ</label>
@@ -1501,47 +1557,37 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
         <childnode refid="4" relation="usage">
-          <edgelabel>polysemous_training</edgelabel>
-        </childnode>
-        <childnode refid="6" relation="usage">
           <edgelabel>pq</edgelabel>
         </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::SimulatedAnnealingParameters</label>
-        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
-      </node>
-      <node id="3">
-        <label>faiss::Index</label>
-        <link refid="structfaiss_1_1Index"/>
-      </node>
-      <node id="4">
-        <label>faiss::PolysemousTraining</label>
-        <link refid="structfaiss_1_1PolysemousTraining"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="7" relation="usage">
+          <edgelabel>polysemous_training</edgelabel>
         </childnode>
       </node>
       <node id="7">
-        <label>faiss::Quantizer</label>
-        <link refid="structfaiss_1_1Quantizer"/>
-      </node>
-      <node id="2">
-        <label>faiss::IndexFlatCodes</label>
-        <link refid="structfaiss_1_1IndexFlatCodes"/>
-        <childnode refid="3" relation="public-inheritance">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="4">
         <label>faiss::ProductQuantizer</label>
         <link refid="structfaiss_1_1ProductQuantizer"/>
-        <childnode refid="7" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>cp</edgelabel>
         </childnode>
         <childnode refid="3" relation="usage">
           <edgelabel>assign_index</edgelabel>
         </childnode>
-        <childnode refid="8" relation="usage">
-          <edgelabel>cp</edgelabel>
-        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="8">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexPQ.h" line="24" column="1" bodyfile="faiss/IndexPQ.h" bodystart="24" bodyend="110"/>
@@ -1560,9 +1606,9 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1IndexPQ_1af616e1f3c7bff7f62c2607b8079da43f" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>do_polysemous_training</name></member>
       <member refid="structfaiss_1_1IndexPQ_1a553682b74c5b8ccb1ba0c44e1729db2d" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>encode_signs</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>get_CodePacker</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>get_FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>get_CodePacker</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1IndexPQ_1a85e6888092abc5f631913d4d8402ae35" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>get_FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>hamming_distance_histogram</name></member>
       <member refid="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>hamming_distance_table</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexPQ</scope><name>Index</name></member>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1DeviceScope" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::DeviceScope</compoundname>
     <includes refid="DeviceUtils_8h" local="no">DeviceUtils.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c" prot="private" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::DeviceScope::prevDevice_</definition>
         <argsstring></argsstring>
         <name>prevDevice_</name>
+        <qualifiedname>faiss::gpu::DeviceScope::prevDevice_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="99" column="9" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="99" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::DeviceScope::DeviceScope</definition>
         <argsstring>(int device)</argsstring>
         <name>DeviceScope</name>
+        <qualifiedname>faiss::gpu::DeviceScope::DeviceScope</qualifiedname>
         <param>
           <type>int</type>
           <declname>device</declname>
@@ -41,6 +43,7 @@
         <definition>faiss::gpu::DeviceScope::~DeviceScope</definition>
         <argsstring>()</argsstring>
         <name>~DeviceScope</name>
+        <qualifiedname>faiss::gpu::DeviceScope::~DeviceScope</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,7 +52,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="96" column="5"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

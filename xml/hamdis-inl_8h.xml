@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="hamdis-inl_8h" kind="file" language="C++">
     <compoundname>hamdis-inl.h</compoundname>
     <includes refid="common_8h" local="no">faiss/utils/hamming_distance/common.h</includes>
@@ -14,18 +14,12 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="7">
-        <label>cassert</label>
-      </node>
-      <node id="1">
-        <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
-        <link refid="hamdis-inl_8h"/>
-        <childnode refid="2" relation="include">
+      <node id="2">
+        <label>faiss/utils/hamming_distance/common.h</label>
+        <link refid="common_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -40,36 +34,42 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>cstdio</label>
+      <node id="1">
+        <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
+        <link refid="hamdis-inl_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cassert</label>
       </node>
       <node id="8">
         <label>cstddef</label>
       </node>
-      <node id="2">
-        <label>faiss/utils/hamming_distance/common.h</label>
-        <link refid="common_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>cstdio</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>faiss/utils/hamming.h</label>
+        <link refid="hamming_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/utils/hamming_distance/hamdis-inl.h</label>
         <link refid="hamdis-inl_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss/utils/hamming.h</label>
-        <link refid="hamming_8h_source"/>
-      </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
-      <sectiondef kind="define">
+    <sectiondef kind="define">
       <memberdef kind="define" id="hamdis-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" prot="public" static="no">
         <name>SPECIALIZED_HC</name>
         <param><defname>CODE_SIZE</defname></param>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="42" column="9" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="42" column="9" bodyfile="faiss/utils/hamming_distance/hamdis-inl.h" bodystart="42" bodyend="47"/>
       </memberdef>
       <memberdef kind="define" id="hamdis-inl_8h_1aed2bbccac7883ce7cdab514e99fca28f" prot="public" static="no">
         <name>DISPATCH_HC</name>
@@ -99,7 +99,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/hamdis-inl.h" line="70" column="9"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1nndescent_1_1Neighbor" kind="struct" language="C++" prot="public">
     <compoundname>faiss::nndescent::Neighbor</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Neighbor_1adce5680f1e46d4aab85d672fd8bb2d3c" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::nndescent::Neighbor::id</definition>
         <argsstring></argsstring>
         <name>id</name>
+        <qualifiedname>faiss::nndescent::Neighbor::id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>float faiss::nndescent::Neighbor::distance</definition>
         <argsstring></argsstring>
         <name>distance</name>
+        <qualifiedname>faiss::nndescent::Neighbor::distance</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>bool faiss::nndescent::Neighbor::flag</definition>
         <argsstring></argsstring>
         <name>flag</name>
+        <qualifiedname>faiss::nndescent::Neighbor::flag</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,13 +45,14 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="54" column="10" bodyfile="faiss/impl/NNDescent.h" bodystart="54" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Neighbor_1aa1069f2718f4448195722a75229ffe2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::nndescent::Neighbor::Neighbor</definition>
         <argsstring>()=default</argsstring>
         <name>Neighbor</name>
+        <qualifiedname>faiss::nndescent::Neighbor::Neighbor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +66,7 @@
         <definition>faiss::nndescent::Neighbor::Neighbor</definition>
         <argsstring>(int id, float distance, bool f)</argsstring>
         <name>Neighbor</name>
+        <qualifiedname>faiss::nndescent::Neighbor::Neighbor</qualifiedname>
         <param>
           <type>int</type>
           <declname>id</declname>
@@ -87,6 +92,7 @@
         <definition>bool faiss::nndescent::Neighbor::operator&lt;</definition>
         <argsstring>(const Neighbor &amp;other) const</argsstring>
         <name>operator&lt;</name>
+        <qualifiedname>faiss::nndescent::Neighbor::operator&lt;</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1nndescent_1_1Neighbor" kindref="compound">Neighbor</ref> &amp;</type>
           <declname>other</declname>
@@ -99,7 +105,7 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="60" column="12" bodyfile="faiss/impl/NNDescent.h" bodystart="60" bodyend="62"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

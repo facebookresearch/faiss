@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</compoundname>
     <templateparamlist>
@@ -14,12 +14,13 @@
         <defname>N</defname>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-static-attrib">
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab65ce3d760f39a27e39532abd3db93f0" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr uint32_t</type>
         <definition>constexpr uint32_t faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::NBUCKETS_8</definition>
         <argsstring></argsstring>
         <name>NBUCKETS_8</name>
+        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::NBUCKETS_8</qualifiedname>
         <initializer>= NBUCKETS / 8</initializer>
         <briefdescription>
         </briefdescription>
@@ -29,13 +30,14 @@
         </inbodydescription>
         <location file="faiss/utils/approx_topk/avx2-inl.h" line="26" column="31" bodyfile="faiss/utils/approx_topk/avx2-inl.h" bodystart="26" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</definition>
         <argsstring>(const uint32_t n, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>addn</name>
+        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -69,6 +71,7 @@
         <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>bs_addn</name>
+        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -106,6 +109,7 @@
         <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</definition>
         <argsstring>(const uint32_t n, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>addn</name>
+        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -139,6 +143,7 @@
         <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>bs_addn</name>
+        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -171,7 +176,7 @@
         </inbodydescription>
         <location file="faiss/utils/approx_topk/generic.h" line="44" column="17" bodyfile="faiss/utils/approx_topk/generic.h" bodystart="44" bodyend="135"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

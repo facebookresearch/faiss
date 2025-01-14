@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1nn_1_1Embedding" kind="struct" language="C++" prot="public">
     <compoundname>faiss::nn::Embedding</compoundname>
     <includes refid="NeuralNet_8h" local="no">NeuralNet.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1nn_1_1Embedding_1ae5235f1074d366e1947a4668ad43d069" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::nn::Embedding::num_embeddings</definition>
         <argsstring></argsstring>
         <name>num_embeddings</name>
+        <qualifiedname>faiss::nn::Embedding::num_embeddings</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::nn::Embedding::embedding_dim</definition>
         <argsstring></argsstring>
         <name>embedding_dim</name>
+        <qualifiedname>faiss::nn::Embedding::embedding_dim</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::vector&lt;float&gt; faiss::nn::Embedding::weight</definition>
         <argsstring></argsstring>
         <name>weight</name>
+        <qualifiedname>faiss::nn::Embedding::weight</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="62" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="62" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1nn_1_1Embedding_1a8d98663bfa8f5c452283aabe64ecb3f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::nn::Embedding::Embedding</definition>
         <argsstring>(size_t num_embeddings, size_t embedding_dim)</argsstring>
         <name>Embedding</name>
+        <qualifiedname>faiss::nn::Embedding::Embedding</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>num_embeddings</declname>
@@ -71,6 +75,7 @@
         <definition>Tensor2D faiss::nn::Embedding::operator()</definition>
         <argsstring>(const Int32Tensor2D &amp;) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::nn::Embedding::operator()</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Int32Tensor2D</ref> &amp;</type>
         </param>
@@ -82,11 +87,12 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="66" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1nn_1_1Embedding_1a1b07de983f55108afab49910111d5905" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Embedding_1a982c1a8bc47d6e2a45dc2a9c19fbb729" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float *</type>
-        <definition>float* faiss::nn::Embedding::data</definition>
+        <definition>float * faiss::nn::Embedding::data</definition>
         <argsstring>()</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::nn::Embedding::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -95,11 +101,12 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="68" column="11" bodyfile="faiss/utils/NeuralNet.h" bodystart="68" bodyend="70"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1nn_1_1Embedding_1ab689fba1eaa84c39e3ea62caa463588c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1nn_1_1Embedding_1a197b1ba7942fd8084ae8a7750d39337a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const float *</type>
-        <definition>const float* faiss::nn::Embedding::data</definition>
+        <definition>const float * faiss::nn::Embedding::data</definition>
         <argsstring>() const</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::nn::Embedding::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -108,7 +115,7 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="72" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="72" bodyend="74"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>minimal translation of <ref refid="structfaiss_1_1nn_1_1Embedding" kindref="compound">nn.Embedding</ref> </para>
     </briefdescription>
@@ -116,8 +123,8 @@
     </detaileddescription>
     <location file="faiss/utils/NeuralNet.h" line="60" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="60" bodyend="75"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1nn_1_1Embedding_1a1b07de983f55108afab49910111d5905" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>data</name></member>
-      <member refid="structfaiss_1_1nn_1_1Embedding_1ab689fba1eaa84c39e3ea62caa463588c" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>data</name></member>
+      <member refid="structfaiss_1_1nn_1_1Embedding_1a982c1a8bc47d6e2a45dc2a9c19fbb729" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>data</name></member>
+      <member refid="structfaiss_1_1nn_1_1Embedding_1a197b1ba7942fd8084ae8a7750d39337a" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>data</name></member>
       <member refid="structfaiss_1_1nn_1_1Embedding_1a8d98663bfa8f5c452283aabe64ecb3f8" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>Embedding</name></member>
       <member refid="structfaiss_1_1nn_1_1Embedding_1a227ca3484ff7304a34734290f42bb59a" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>embedding_dim</name></member>
       <member refid="structfaiss_1_1nn_1_1Embedding_1ae5235f1074d366e1947a4668ad43d069" prot="public" virt="non-virtual"><scope>faiss::nn::Embedding</scope><name>num_embeddings</name></member>

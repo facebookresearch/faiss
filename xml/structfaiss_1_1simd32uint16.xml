@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd32uint16" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd32uint16</compoundname>
     <basecompoundref refid="structfaiss_1_1simd512bit" prot="public" virt="non-virtual">faiss::simd512bit</basecompoundref>
     <includes refid="simdlib__avx512_8h" local="no">simdlib_avx512.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1simd32uint16_1a6dba093fa31b041175032ad46ee44b36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>()</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(__m512i i)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type>__m512i</type>
           <declname>i</declname>
@@ -40,6 +42,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(int x)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type>int</type>
           <declname>x</declname>
@@ -57,6 +60,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(uint16_t x)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type>uint16_t</type>
           <declname>x</declname>
@@ -74,6 +78,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(simd512bit x)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref></type>
           <declname>x</declname>
@@ -91,6 +96,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(const uint16_t *x)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type>const uint16_t *</type>
           <declname>x</declname>
@@ -108,6 +114,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(simd256bit lo)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
           <declname>lo</declname>
@@ -125,6 +132,7 @@
         <definition>faiss::simd32uint16::simd32uint16</definition>
         <argsstring>(simd256bit lo, simd256bit hi)</argsstring>
         <name>simd32uint16</name>
+        <qualifiedname>faiss::simd32uint16::simd32uint16</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
           <declname>lo</declname>
@@ -146,6 +154,7 @@
         <definition>std::string faiss::simd32uint16::elements_to_string</definition>
         <argsstring>(const char *fmt) const</argsstring>
         <name>elements_to_string</name>
+        <qualifiedname>faiss::simd32uint16::elements_to_string</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fmt</declname>
@@ -163,6 +172,7 @@
         <definition>std::string faiss::simd32uint16::hex</definition>
         <argsstring>() const</argsstring>
         <name>hex</name>
+        <qualifiedname>faiss::simd32uint16::hex</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -176,6 +186,7 @@
         <definition>std::string faiss::simd32uint16::dec</definition>
         <argsstring>() const</argsstring>
         <name>dec</name>
+        <qualifiedname>faiss::simd32uint16::dec</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -189,6 +200,7 @@
         <definition>void faiss::simd32uint16::set1</definition>
         <argsstring>(uint16_t x)</argsstring>
         <name>set1</name>
+        <qualifiedname>faiss::simd32uint16::set1</qualifiedname>
         <param>
           <type>uint16_t</type>
           <declname>x</declname>
@@ -206,6 +218,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator*</definition>
         <argsstring>(const simd32uint16 &amp;other) const</argsstring>
         <name>operator*</name>
+        <qualifiedname>faiss::simd32uint16::operator*</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref> &amp;</type>
           <declname>other</declname>
@@ -223,6 +236,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator&gt;&gt;</definition>
         <argsstring>(const int shift) const</argsstring>
         <name>operator&gt;&gt;</name>
+        <qualifiedname>faiss::simd32uint16::operator&gt;&gt;</qualifiedname>
         <param>
           <type>const int</type>
           <declname>shift</declname>
@@ -240,6 +254,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator&lt;&lt;</definition>
         <argsstring>(const int shift) const</argsstring>
         <name>operator&lt;&lt;</name>
+        <qualifiedname>faiss::simd32uint16::operator&lt;&lt;</qualifiedname>
         <param>
           <type>const int</type>
           <declname>shift</declname>
@@ -257,6 +272,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator+=</definition>
         <argsstring>(simd32uint16 other)</argsstring>
         <name>operator+=</name>
+        <qualifiedname>faiss::simd32uint16::operator+=</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>other</declname>
@@ -274,6 +290,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator-=</definition>
         <argsstring>(simd32uint16 other)</argsstring>
         <name>operator-=</name>
+        <qualifiedname>faiss::simd32uint16::operator-=</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>other</declname>
@@ -291,6 +308,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator+</definition>
         <argsstring>(simd32uint16 other) const</argsstring>
         <name>operator+</name>
+        <qualifiedname>faiss::simd32uint16::operator+</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>other</declname>
@@ -308,6 +326,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator-</definition>
         <argsstring>(simd32uint16 other) const</argsstring>
         <name>operator-</name>
+        <qualifiedname>faiss::simd32uint16::operator-</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>other</declname>
@@ -325,6 +344,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator&amp;</definition>
         <argsstring>(simd512bit other) const</argsstring>
         <name>operator&amp;</name>
+        <qualifiedname>faiss::simd32uint16::operator&amp;</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref></type>
           <declname>other</declname>
@@ -342,6 +362,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator|</definition>
         <argsstring>(simd512bit other) const</argsstring>
         <name>operator|</name>
+        <qualifiedname>faiss::simd32uint16::operator|</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref></type>
           <declname>other</declname>
@@ -359,6 +380,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator^</definition>
         <argsstring>(simd512bit other) const</argsstring>
         <name>operator^</name>
+        <qualifiedname>faiss::simd32uint16::operator^</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref></type>
           <declname>other</declname>
@@ -376,6 +398,7 @@
         <definition>simd32uint16 faiss::simd32uint16::operator~</definition>
         <argsstring>() const</argsstring>
         <name>operator~</name>
+        <qualifiedname>faiss::simd32uint16::operator~</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -389,6 +412,7 @@
         <definition>simd16uint16 faiss::simd32uint16::low</definition>
         <argsstring>() const</argsstring>
         <name>low</name>
+        <qualifiedname>faiss::simd32uint16::low</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -402,6 +426,7 @@
         <definition>simd16uint16 faiss::simd32uint16::high</definition>
         <argsstring>() const</argsstring>
         <name>high</name>
+        <qualifiedname>faiss::simd32uint16::high</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -415,6 +440,7 @@
         <definition>uint16_t faiss::simd32uint16::operator[]</definition>
         <argsstring>(int i) const</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::simd32uint16::operator[]</qualifiedname>
         <param>
           <type>int</type>
           <declname>i</declname>
@@ -432,6 +458,7 @@
         <definition>void faiss::simd32uint16::accu_min</definition>
         <argsstring>(simd32uint16 incoming)</argsstring>
         <name>accu_min</name>
+        <qualifiedname>faiss::simd32uint16::accu_min</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>incoming</declname>
@@ -449,6 +476,7 @@
         <definition>void faiss::simd32uint16::accu_max</definition>
         <argsstring>(simd32uint16 incoming)</argsstring>
         <name>accu_max</name>
+        <qualifiedname>faiss::simd32uint16::accu_max</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1simd32uint16" kindref="compound">simd32uint16</ref></type>
           <declname>incoming</declname>
@@ -466,6 +494,7 @@
         <definition>void faiss::simd512bit::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::simd512bit::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -479,6 +508,7 @@
         <definition>void faiss::simd512bit::storeu</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>storeu</name>
+        <qualifiedname>faiss::simd512bit::storeu</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -496,6 +526,7 @@
         <definition>void faiss::simd512bit::loadu</definition>
         <argsstring>(const void *ptr)</argsstring>
         <name>loadu</name>
+        <qualifiedname>faiss::simd512bit::loadu</qualifiedname>
         <param>
           <type>const void *</type>
           <declname>ptr</declname>
@@ -513,6 +544,7 @@
         <definition>void faiss::simd512bit::store</definition>
         <argsstring>(void *ptr) const</argsstring>
         <name>store</name>
+        <qualifiedname>faiss::simd512bit::store</qualifiedname>
         <param>
           <type>void *</type>
           <declname>ptr</declname>
@@ -530,6 +562,7 @@
         <definition>void faiss::simd512bit::bin</definition>
         <argsstring>(char bits[513]) const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd512bit::bin</qualifiedname>
         <param>
           <type>char</type>
           <declname>bits</declname>
@@ -548,6 +581,7 @@
         <definition>std::string faiss::simd512bit::bin</definition>
         <argsstring>() const</argsstring>
         <name>bin</name>
+        <qualifiedname>faiss::simd512bit::bin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -556,13 +590,14 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx512.h" line="84" column="17" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="84" bodyend="88"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd512bit_1a92d96b0b13c4c38a93b2d7296c1d6d4e" prot="public" static="no" mutable="no">
         <type>__m512i</type>
         <definition>__m512i faiss::simd512bit::i</definition>
         <argsstring></argsstring>
         <name>i</name>
+        <qualifiedname>faiss::simd512bit::i</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -576,6 +611,7 @@
         <definition>__m512 faiss::simd512bit::f</definition>
         <argsstring></argsstring>
         <name>f</name>
+        <qualifiedname>faiss::simd512bit::f</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -585,10 +621,11 @@
         <location file="faiss/utils/simdlib_avx512.h" line="33" column="16" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd512bit_1a4ab71d7c6d05157cc12127003dc9648e" prot="public" static="no" mutable="no">
-        <type>union faiss::simd512bit::@2</type>
-        <definition>union faiss::simd512bit::@2 faiss::simd512bit::@3</definition>
+        <type>union <ref refid="structfaiss_1_1simd512bit" kindref="compound">faiss::simd512bit</ref></type>
+        <definition>union faiss::simd512bit faiss::simd512bit</definition>
         <argsstring></argsstring>
-        <name>@3</name>
+        <name></name>
+        <qualifiedname>faiss::simd512bit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -597,34 +634,34 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx512.h" line="34" column="5"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>vector of 32 elements in uint16 </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::simd512bit</label>
-        <link refid="structfaiss_1_1simd512bit"/>
-      </node>
       <node id="1">
         <label>faiss::simd32uint16</label>
         <link refid="structfaiss_1_1simd32uint16"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd512bit</label>
+        <link refid="structfaiss_1_1simd512bit"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::simd512bit</label>
-        <link refid="structfaiss_1_1simd512bit"/>
-      </node>
       <node id="1">
         <label>faiss::simd32uint16</label>
         <link refid="structfaiss_1_1simd32uint16"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd512bit</label>
+        <link refid="structfaiss_1_1simd512bit"/>
       </node>
     </collaborationgraph>
     <location file="faiss/utils/simdlib_avx512.h" line="92" column="1" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="92" bodyend="206"/>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="MinMaxFP16-inl_8h" kind="file" language="C++">
     <compoundname>MinMaxFP16-inl.h</compoundname>
     <includes local="no">cstddef</includes>
@@ -7,35 +7,6 @@
     <includes refid="fp16_8h" local="no">faiss/utils/fp16.h</includes>
     <includedby refid="SaDecodeKernels_8h" local="no">faiss/cppcontrib/SaDecodeKernels.h</includedby>
     <incdepgraph>
-      <node id="4">
-        <label>faiss/utils/fp16.h</label>
-        <link refid="fp16_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="7">
-        <label>faiss/utils/fp16-inl.h</label>
-        <link refid="fp16-inl_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</label>
         <link refid="MinMaxFP16-inl_8h"/>
@@ -46,14 +17,43 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>cstdio</label>
+      <node id="5">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/utils/fp16-inl.h</label>
+        <link refid="fp16-inl_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/utils/fp16.h</label>
+        <link refid="fp16_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>algorithm</label>
       </node>
       <node id="2">
         <label>cstddef</label>
       </node>
-      <node id="8">
-        <label>algorithm</label>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -95,7 +95,7 @@
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SubIndexT&gt;</highlight></codeline>
 <codeline lineno="19" refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" kindref="compound">IndexMinMaxFP16Decoder</ref><sp/>{</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>intptr_t<sp/>dim<sp/>=<sp/>SubIndexT::dim;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>intptr_t<sp/>dim<sp/>=<sp/>SubIndexT::dim;</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Process<sp/>1<sp/>sample.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Performs<sp/>outputStore<sp/>=<sp/>scaler<sp/>*<sp/>decoded(code)<sp/>+<sp/>minv</highlight><highlight class="normal"></highlight></codeline>

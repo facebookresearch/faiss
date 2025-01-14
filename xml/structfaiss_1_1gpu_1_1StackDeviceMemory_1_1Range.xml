@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kind="struct" language="C++" prot="protected">
     <compoundname>faiss::gpu::StackDeviceMemory::Range</compoundname>
     <includes refid="StackDeviceMemory_8h" local="no">StackDeviceMemory.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a421e4893035861050a391d0088df815a" prot="public" static="no" mutable="no">
         <type>char *</type>
         <definition>char* faiss::gpu::StackDeviceMemory::Range::start_</definition>
         <argsstring></argsstring>
         <name>start_</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::Range::start_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>char* faiss::gpu::StackDeviceMemory::Range::end_</definition>
         <argsstring></argsstring>
         <name>end_</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::Range::end_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>cudaStream_t faiss::gpu::StackDeviceMemory::Range::stream_</definition>
         <argsstring></argsstring>
         <name>stream_</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::Range::stream_</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StackDeviceMemory.h" line="52" column="22" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="52" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::StackDeviceMemory::Range::Range</definition>
         <argsstring>(char *s, char *e, cudaStream_t str)</argsstring>
         <name>Range</name>
+        <qualifiedname>faiss::gpu::StackDeviceMemory::Range::Range</qualifiedname>
         <param>
           <type>char *</type>
           <declname>s</declname>
@@ -70,7 +74,7 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/StackDeviceMemory.h" line="46" column="16" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="46" bodyend="47"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

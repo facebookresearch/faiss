@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorIOReader" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VectorIOReader</compoundname>
     <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1VectorIOReader_1a0bc2d0055617f0da626a8377f6d76b42" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
         <definition>std::vector&lt;uint8_t&gt; faiss::VectorIOReader::data</definition>
         <argsstring></argsstring>
         <name>data</name>
+        <qualifiedname>faiss::VectorIOReader::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::VectorIOReader::rp</definition>
         <argsstring></argsstring>
         <name>rp</name>
+        <qualifiedname>faiss::VectorIOReader::rp</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -36,6 +38,7 @@
         <definition>std::string faiss::IOReader::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -44,13 +47,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1VectorIOReader_1a7eb8ab296df82e601420c5073f19fa43" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
         <definition>size_t faiss::VectorIOReader::operator()</definition>
         <argsstring>(void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::VectorIOReader::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a">operator()</reimplements>
         <param>
           <type>void *</type>
@@ -77,6 +81,7 @@
         <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOReader::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -86,33 +91,33 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="35" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
       <node id="1">
         <label>faiss::VectorIOReader</label>
         <link refid="structfaiss_1_1VectorIOReader"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IOReader</label>
-        <link refid="structfaiss_1_1IOReader"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
       <node id="1">
         <label>faiss::VectorIOReader</label>
         <link refid="structfaiss_1_1VectorIOReader"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IOReader</label>
-        <link refid="structfaiss_1_1IOReader"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/io.h" line="53" column="1" bodyfile="faiss/impl/io.h" bodystart="53" bodyend="57"/>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIcmEncoderFactory</compoundname>
     <basecompoundref refid="structfaiss_1_1lsq_1_1IcmEncoderFactory" prot="public" virt="non-virtual">faiss::lsq::IcmEncoderFactory</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a5b138503016f8ada5c83718607837467" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt;</type>
         <definition>std::vector&lt;GpuResourcesProvider*&gt; faiss::gpu::GpuIcmEncoderFactory::provs</definition>
         <argsstring></argsstring>
         <name>provs</name>
+        <qualifiedname>faiss::gpu::GpuIcmEncoderFactory::provs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::vector&lt;int&gt; faiss::gpu::GpuIcmEncoderFactory::devices</definition>
         <argsstring></argsstring>
         <name>devices</name>
+        <qualifiedname>faiss::gpu::GpuIcmEncoderFactory::devices</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIcmEncoder.h" line="56" column="17" bodyfile="faiss/gpu/GpuIcmEncoder.h" bodystart="56" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a75eac4d480b766505d901a72ec3ae82a" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::GpuIcmEncoderFactory::GpuIcmEncoderFactory</definition>
         <argsstring>(int ngpus=1)</argsstring>
         <name>GpuIcmEncoderFactory</name>
+        <qualifiedname>faiss::gpu::GpuIcmEncoderFactory::GpuIcmEncoderFactory</qualifiedname>
         <param>
           <type>int</type>
           <declname>ngpus</declname>
@@ -50,12 +53,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIcmEncoder.h" line="51" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a50b6ea9c5370c45eb93fa326ff8b6392" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a25a1cf9a76e0fb7262a4d8ede0ae3530" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1lsq_1_1IcmEncoder" kindref="compound">lsq::IcmEncoder</ref> *</type>
-        <definition>lsq::IcmEncoder* faiss::gpu::GpuIcmEncoderFactory::get</definition>
+        <definition>lsq::IcmEncoder * faiss::gpu::GpuIcmEncoderFactory::get</definition>
         <argsstring>(const LocalSearchQuantizer *lsq) override</argsstring>
         <name>get</name>
-        <reimplements refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ad2545f0c0f25da85519e613ac6de7b28">get</reimplements>
+        <qualifiedname>faiss::gpu::GpuIcmEncoderFactory::get</qualifiedname>
+        <reimplements refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1a2a9953e848c087b9a0aa4dc6a807bba7">get</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref> *</type>
           <declname>lsq</declname>
@@ -68,39 +72,39 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIcmEncoder.h" line="53" column="21"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::lsq::IcmEncoderFactory</label>
-        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuIcmEncoderFactory</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::lsq::IcmEncoderFactory</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::lsq::IcmEncoderFactory</label>
-        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuIcmEncoderFactory</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::lsq::IcmEncoderFactory</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
       </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuIcmEncoder.h" line="50" column="1" bodyfile="faiss/gpu/GpuIcmEncoder.h" bodystart="50" bodyend="57"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1aa6d5e1267aad7c9461f5baf01af971e3" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>devices</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a50b6ea9c5370c45eb93fa326ff8b6392" prot="public" virt="virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>get</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a25a1cf9a76e0fb7262a4d8ede0ae3530" prot="public" virt="virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>get</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a75eac4d480b766505d901a72ec3ae82a" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>GpuIcmEncoderFactory</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a5b138503016f8ada5c83718607837467" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>provs</name></member>
       <member refid="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ab8351263070c0817f97dabf036fa98c3" prot="public" virt="virtual"><scope>faiss::gpu::GpuIcmEncoderFactory</scope><name>~IcmEncoderFactory</name></member>

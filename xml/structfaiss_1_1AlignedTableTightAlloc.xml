@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1AlignedTableTightAlloc" kind="struct" language="C++" prot="public">
     <compoundname>faiss::AlignedTableTightAlloc</compoundname>
     <templateparamlist>
@@ -13,12 +13,13 @@
         <defval>32</defval>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1AlignedTableTightAlloc_1ac4f62c2e7939319e940dff1dc8592a32" prot="public" static="no" mutable="no">
         <type>T *</type>
         <definition>T* faiss::AlignedTableTightAlloc&lt; T, A &gt;::ptr</definition>
         <argsstring></argsstring>
         <name>ptr</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::ptr</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -32,6 +33,7 @@
         <definition>size_t faiss::AlignedTableTightAlloc&lt; T, A &gt;::numel</definition>
         <argsstring></argsstring>
         <name>numel</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::numel</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -40,13 +42,14 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="32" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="32" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1adfa5bdd33fd82107cabdd6c20f65c119" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::AlignedTableTightAlloc&lt; T, A &gt;::AlignedTableTightAlloc</definition>
         <argsstring>()</argsstring>
         <name>AlignedTableTightAlloc</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::AlignedTableTightAlloc</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +63,7 @@
         <definition>faiss::AlignedTableTightAlloc&lt; T, A &gt;::AlignedTableTightAlloc</definition>
         <argsstring>(size_t n)</argsstring>
         <name>AlignedTableTightAlloc</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::AlignedTableTightAlloc</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -77,6 +81,7 @@
         <definition>size_t faiss::AlignedTableTightAlloc&lt; T, A &gt;::itemsize</definition>
         <argsstring>() const</argsstring>
         <name>itemsize</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::itemsize</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -90,6 +95,7 @@
         <definition>void faiss::AlignedTableTightAlloc&lt; T, A &gt;::resize</definition>
         <argsstring>(size_t n)</argsstring>
         <name>resize</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::resize</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -107,6 +113,7 @@
         <definition>void faiss::AlignedTableTightAlloc&lt; T, A &gt;::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -120,6 +127,7 @@
         <definition>size_t faiss::AlignedTableTightAlloc&lt; T, A &gt;::size</definition>
         <argsstring>() const</argsstring>
         <name>size</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -133,6 +141,7 @@
         <definition>size_t faiss::AlignedTableTightAlloc&lt; T, A &gt;::nbytes</definition>
         <argsstring>() const</argsstring>
         <name>nbytes</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::nbytes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -141,11 +150,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="73" column="12" bodyfile="faiss/utils/AlignedTable.h" bodystart="73" bodyend="75"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a310c97ac4599ed101b72ad5fa9e9d286" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1ab168b3830c695dcf7e2645b35b75cc4f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
-        <definition>T* faiss::AlignedTableTightAlloc&lt; T, A &gt;::get</definition>
+        <definition>T * faiss::AlignedTableTightAlloc&lt; T, A &gt;::get</definition>
         <argsstring>()</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -154,11 +164,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="77" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="77" bodyend="79"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a288edd0b015fd0bc68c8a2156a0392aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1ae48a792423c9c7ec0fe6efb610422207" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
-        <definition>const T* faiss::AlignedTableTightAlloc&lt; T, A &gt;::get</definition>
+        <definition>const T * faiss::AlignedTableTightAlloc&lt; T, A &gt;::get</definition>
         <argsstring>() const</argsstring>
         <name>get</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::get</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -167,11 +178,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="80" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="80" bodyend="82"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a68591460932924a4b86200092450b1ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a9dcbf62e29a3d605916964e32817e460" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T *</type>
-        <definition>T* faiss::AlignedTableTightAlloc&lt; T, A &gt;::data</definition>
+        <definition>T * faiss::AlignedTableTightAlloc&lt; T, A &gt;::data</definition>
         <argsstring>()</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -180,11 +192,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="83" column="7" bodyfile="faiss/utils/AlignedTable.h" bodystart="83" bodyend="85"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a98a8c3286c2404b8d60a15dadbcac389" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1aa675ca8b0db0f77e9a33521f47fcd1a0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const T *</type>
-        <definition>const T* faiss::AlignedTableTightAlloc&lt; T, A &gt;::data</definition>
+        <definition>const T * faiss::AlignedTableTightAlloc&lt; T, A &gt;::data</definition>
         <argsstring>() const</argsstring>
         <name>data</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -193,11 +206,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="86" column="13" bodyfile="faiss/utils/AlignedTable.h" bodystart="86" bodyend="88"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1aa65719800d8856a89ece5f1aae7621ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1acf0dcd7b869b2dc8af5e873e25b77bb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>T &amp;</type>
-        <definition>T&amp; faiss::AlignedTableTightAlloc&lt; T, A &gt;::operator[]</definition>
+        <definition>T &amp; faiss::AlignedTableTightAlloc&lt; T, A &gt;::operator[]</definition>
         <argsstring>(size_t i)</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::operator[]</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -215,6 +229,7 @@
         <definition>T faiss::AlignedTableTightAlloc&lt; T, A &gt;::operator[]</definition>
         <argsstring>(size_t i) const</argsstring>
         <name>operator[]</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::operator[]</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -232,6 +247,7 @@
         <definition>faiss::AlignedTableTightAlloc&lt; T, A &gt;::~AlignedTableTightAlloc</definition>
         <argsstring>()</argsstring>
         <name>~AlignedTableTightAlloc</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::~AlignedTableTightAlloc</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -240,11 +256,12 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="96" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="96" bodyend="98"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a2dc8b4db4ad7e1a3abf96989737ab86e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1AlignedTableTightAlloc_1a8eac76889a3c401a89d0074eb9dba103" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref>&lt; T, A &gt; &amp;</type>
-        <definition>AlignedTableTightAlloc&lt;T, A&gt;&amp; faiss::AlignedTableTightAlloc&lt; T, A &gt;::operator=</definition>
+        <definition>AlignedTableTightAlloc&lt; T, A &gt; &amp; faiss::AlignedTableTightAlloc&lt; T, A &gt;::operator=</definition>
         <argsstring>(const AlignedTableTightAlloc&lt; T, A &gt; &amp;other)</argsstring>
         <name>operator=</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::operator=</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref>&lt; T, A &gt; &amp;</type>
           <declname>other</declname>
@@ -262,6 +279,7 @@
         <definition>faiss::AlignedTableTightAlloc&lt; T, A &gt;::AlignedTableTightAlloc</definition>
         <argsstring>(const AlignedTableTightAlloc&lt; T, A &gt; &amp;other)</argsstring>
         <name>AlignedTableTightAlloc</name>
+        <qualifiedname>faiss::AlignedTableTightAlloc::AlignedTableTightAlloc</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref>&lt; T, A &gt; &amp;</type>
           <declname>other</declname>
@@ -274,7 +292,7 @@
         </inbodydescription>
         <location file="faiss/utils/AlignedTable.h" line="109" column="5" bodyfile="faiss/utils/AlignedTable.h" bodystart="109" bodyend="112"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -285,15 +303,15 @@
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a33196314d0a8c11ab2bb0c010d9f1324" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a7b654f8c2f7031624090f130c063bdba" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a044fdeaa69523206075551cc4649694f" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>clear</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a68591460932924a4b86200092450b1ab" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>data</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a98a8c3286c2404b8d60a15dadbcac389" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>data</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a310c97ac4599ed101b72ad5fa9e9d286" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>get</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a288edd0b015fd0bc68c8a2156a0392aa" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>get</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a9dcbf62e29a3d605916964e32817e460" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>data</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1aa675ca8b0db0f77e9a33521f47fcd1a0" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>data</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1ab168b3830c695dcf7e2645b35b75cc4f" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>get</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1ae48a792423c9c7ec0fe6efb610422207" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>get</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a51fbebdf28f6d9bbe34a144185167756" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>itemsize</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a160913c89b3962c7e7083501021eea60" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>nbytes</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a69dd91385661256152c9195538b416e0" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>numel</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a2dc8b4db4ad7e1a3abf96989737ab86e" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>operator=</name></member>
-      <member refid="structfaiss_1_1AlignedTableTightAlloc_1aa65719800d8856a89ece5f1aae7621ee" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>operator[]</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1a8eac76889a3c401a89d0074eb9dba103" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1AlignedTableTightAlloc_1acf0dcd7b869b2dc8af5e873e25b77bb7" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>operator[]</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1acd6fcef13ac75c51b0e4d6a6daf86a9e" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>operator[]</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1ac4f62c2e7939319e940dff1dc8592a32" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>ptr</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1acaabed90abaa00244605f0f05f687ede" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>resize</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="ResultHandler_8h" kind="file" language="C++">
     <compoundname>ResultHandler.h</compoundname>
     <includes refid="AuxIndexStructures_8h" local="no">faiss/impl/AuxIndexStructures.h</includes>
@@ -14,34 +14,11 @@
     <includedby refid="distances__fused_8h" local="no">faiss/utils/distances_fused/distances_fused.h</includedby>
     <includedby refid="simdlib__based_8h" local="no">faiss/utils/distances_fused/simdlib_based.h</includedby>
     <incdepgraph>
-      <node id="12">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="13" relation="include">
+      <node id="8">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>limits</label>
-      </node>
-      <node id="9">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>cstdint</label>
-      </node>
-      <node id="3">
-        <label>stdint.h</label>
       </node>
       <node id="2">
         <label>faiss/impl/AuxIndexStructures.h</label>
@@ -61,20 +38,17 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="20">
-        <label>cmath</label>
-      </node>
-      <node id="21">
-        <label>cassert</label>
-      </node>
-      <node id="14">
-        <label>string</label>
-      </node>
-      <node id="17">
-        <label>unordered_set</label>
-      </node>
-      <node id="13">
-        <label>exception</label>
+      <node id="12">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="16">
         <label>faiss/impl/IDSelector.h</label>
@@ -86,24 +60,31 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="24">
-        <label>faiss/utils/partitioning.h</label>
-        <link refid="partitioning_8h_source"/>
-        <childnode refid="3" relation="include">
+      <node id="1">
+        <label>faiss/impl/ResultHandler.h</label>
+        <link refid="ResultHandler_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>cstdio</label>
-      </node>
-      <node id="7">
-        <label>vector</label>
-      </node>
-      <node id="15">
-        <label>utility</label>
+      <node id="9">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="18">
         <label>faiss/utils/Heap.h</label>
@@ -137,69 +118,72 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>iostream</label>
-      </node>
-      <node id="19">
-        <label>climits</label>
-      </node>
-      <node id="6">
-        <label>mutex</label>
-      </node>
-      <node id="8">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
+      <node id="24">
+        <label>faiss/utils/partitioning.h</label>
+        <link refid="partitioning_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="26">
         <label>algorithm</label>
       </node>
-      <node id="25">
-        <label>stdio.h</label>
+      <node id="21">
+        <label>cassert</label>
       </node>
-      <node id="1">
-        <label>faiss/impl/ResultHandler.h</label>
-        <link refid="ResultHandler_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
+      <node id="19">
+        <label>climits</label>
+      </node>
+      <node id="20">
+        <label>cmath</label>
+      </node>
+      <node id="10">
+        <label>cstdint</label>
+      </node>
+      <node id="11">
+        <label>cstdio</label>
       </node>
       <node id="4">
         <label>cstring</label>
       </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
+      <node id="27">
+        <label>iostream</label>
+      </node>
+      <node id="22">
+        <label>limits</label>
+      </node>
       <node id="5">
         <label>memory</label>
       </node>
+      <node id="6">
+        <label>mutex</label>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="25">
+        <label>stdio.h</label>
+      </node>
+      <node id="14">
+        <label>string</label>
+      </node>
+      <node id="17">
+        <label>unordered_set</label>
+      </node>
+      <node id="15">
+        <label>utility</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
-        <label>faiss/utils/distances_fused/avx512.h</label>
-        <link refid="avx512_8h_source"/>
-      </node>
-      <node id="2">
-        <label>faiss/impl/simd_result_handlers.h</label>
-        <link refid="simd__result__handlers_8h_source"/>
-      </node>
-      <node id="5">
-        <label>faiss/utils/distances_fused/simdlib_based.h</label>
-        <link refid="simdlib__based_8h_source"/>
-      </node>
-      <node id="4">
-        <label>faiss/utils/distances_fused/distances_fused.h</label>
-        <link refid="distances__fused_8h_source"/>
-      </node>
       <node id="1">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h"/>
@@ -211,6 +195,22 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/utils/distances_fused/avx512.h</label>
+        <link refid="avx512_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/utils/distances_fused/distances_fused.h</label>
+        <link refid="distances__fused_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/utils/distances_fused/simdlib_based.h</label>
+        <link refid="simdlib__based_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1BlockResultHandler" prot="public">faiss::BlockResultHandler</innerclass>
@@ -225,7 +225,7 @@
     <innerclass refid="structfaiss_1_1RangeSearchBlockResultHandler" prot="public">faiss::RangeSearchBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" prot="public">faiss::RangeSearchBlockResultHandler::SingleResultHandler</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
-      <sectiondef kind="define">
+    <sectiondef kind="define">
       <memberdef kind="define" id="ResultHandler_8h_1a0475b8ba7e75e4302115f7bf7346db71" prot="public" static="no">
         <name>DISPATCH_C_SEL</name>
         <param><defname>C</defname></param>
@@ -262,7 +262,7 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="665" column="9"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -330,7 +330,7 @@
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>series<sp/>of<sp/>results<sp/>for<sp/>queries<sp/>i0..i1<sp/>is<sp/>done</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>end_multiple()<sp/>{}</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">~BlockResultHandler</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_in_selection(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!use_sel<sp/>||<sp/>sel-&gt;is_member(i);</highlight></codeline>
@@ -346,7 +346,7 @@
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>return<sp/>whether<sp/>threshold<sp/>was<sp/>updated</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>add_result(</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>dis,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>idx)<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">~ResultHandler</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="80"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment">/*****************************************************************</highlight></codeline>
@@ -357,10 +357,10 @@
 <codeline lineno="87"><highlight class="normal"></highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_sel<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="89" refid="structfaiss_1_1Top1BlockResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;<sp/>{</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i0</ref>;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i1</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i0;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i1;</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>contains<sp/>exactly<sp/>nq<sp/>elements</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>dis_tab;</highlight></codeline>
@@ -378,7 +378,7 @@
 <codeline lineno="108"><highlight class="normal"></highlight></codeline>
 <codeline lineno="109" refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler" kindref="compound">SingleResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;<sp/>{</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref>&amp;<sp/>hr;</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;::threshold</ref>;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;::threshold;</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TI<sp/>min_idx;</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>current_idx<sp/>=<sp/>0;</highlight></codeline>
@@ -455,10 +455,10 @@
 <codeline lineno="185"><highlight class="normal"></highlight></codeline>
 <codeline lineno="186"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_sel<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="187" refid="structfaiss_1_1HeapBlockResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HeapBlockResultHandler" kindref="compound">HeapBlockResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;<sp/>{</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i0</ref>;</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i1</ref>;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i0;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i1;</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"></highlight></codeline>
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>heap_dis_tab;</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/>TI*<sp/>heap_ids_tab;</highlight></codeline>
@@ -483,7 +483,7 @@
 <codeline lineno="213"><highlight class="normal"></highlight></codeline>
 <codeline lineno="214" refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HeapBlockResultHandler_1_1SingleResultHandler" kindref="compound">SingleResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;<sp/>{</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapBlockResultHandler" kindref="compound">HeapBlockResultHandler</ref>&amp;<sp/>hr;</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;::threshold</ref>;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;::threshold;</highlight></codeline>
 <codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k;</highlight></codeline>
 <codeline lineno="218"><highlight class="normal"></highlight></codeline>
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>heap_dis;</highlight></codeline>
@@ -568,9 +568,9 @@
 <codeline lineno="298"><highlight class="comment">///<sp/>Reservoir<sp/>for<sp/>a<sp/>single<sp/>query</highlight></codeline>
 <codeline lineno="299"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
 <codeline lineno="300" refid="structfaiss_1_1ReservoirTopN" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ReservoirTopN" kindref="compound">ReservoirTopN</ref><sp/>:<sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;<sp/>{</highlight></codeline>
-<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;::threshold</ref>;</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;::threshold;</highlight></codeline>
 <codeline lineno="304"><highlight class="normal"></highlight></codeline>
 <codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>vals;</highlight></codeline>
 <codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>TI*<sp/>ids;</highlight></codeline>
@@ -638,10 +638,10 @@
 <codeline lineno="368"><highlight class="normal"></highlight></codeline>
 <codeline lineno="369"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_sel<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="370" refid="structfaiss_1_1ReservoirBlockResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ReservoirBlockResultHandler" kindref="compound">ReservoirBlockResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;<sp/>{</highlight></codeline>
-<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i0</ref>;</highlight></codeline>
-<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i1</ref>;</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i0;</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i1;</highlight></codeline>
 <codeline lineno="375"><highlight class="normal"></highlight></codeline>
 <codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>heap_dis_tab;</highlight></codeline>
 <codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/>TI*<sp/>heap_ids_tab;</highlight></codeline>
@@ -752,10 +752,10 @@
 <codeline lineno="482"><highlight class="normal"></highlight></codeline>
 <codeline lineno="483"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_sel<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="484" refid="structfaiss_1_1RangeSearchBlockResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchBlockResultHandler" kindref="compound">RangeSearchBlockResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;<sp/>{</highlight></codeline>
-<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i0</ref>;</highlight></codeline>
-<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler&lt;C, use_sel&gt;::i1</ref>;</highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i0;</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1BlockResultHandler" kindref="compound">BlockResultHandler</ref>&lt;C,<sp/>use_sel&gt;::i1;</highlight></codeline>
 <codeline lineno="489"><highlight class="normal"></highlight></codeline>
 <codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>res;</highlight></codeline>
 <codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>radius;</highlight></codeline>
@@ -775,7 +775,7 @@
 <codeline lineno="505"><highlight class="normal"></highlight></codeline>
 <codeline lineno="506" refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" kindref="compound">SingleResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;<sp/>{</highlight></codeline>
 <codeline lineno="507"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>almost<sp/>the<sp/>same<sp/>interface<sp/>as<sp/>RangeSearchResultHandler</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;::threshold</ref>;</highlight></codeline>
+<codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt;C&gt;::threshold;</highlight></codeline>
 <codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref><sp/>pres;</highlight></codeline>
 <codeline lineno="510"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>*<sp/>qr<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="511"><highlight class="normal"></highlight></codeline>
@@ -786,7 +786,7 @@
 <codeline lineno="516"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="517"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>begin<sp/>results<sp/>for<sp/>query<sp/>#<sp/>i</highlight></codeline>
 <codeline lineno="518" refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1ade457f88f0fbdf12018d41af19627d4e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1ade457f88f0fbdf12018d41af19627d4e" kindref="member">begin</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/>{</highlight></codeline>
-<codeline lineno="519"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qr<sp/>=<sp/>&amp;pres.<ref refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" kindref="member">new_result</ref>(i);</highlight></codeline>
+<codeline lineno="519"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qr<sp/>=<sp/>&amp;pres.<ref refid="structfaiss_1_1RangeSearchPartialResult_1a0ba199c22ed09aebb0f7238229b516e9" kindref="member">new_result</ref>(i);</highlight></codeline>
 <codeline lineno="520"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="521"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="522"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>add<sp/>one<sp/>result<sp/>for<sp/>query<sp/>i</highlight></codeline>
@@ -800,14 +800,14 @@
 <codeline lineno="530"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>series<sp/>of<sp/>results<sp/>for<sp/>query<sp/>i<sp/>is<sp/>done</highlight></codeline>
 <codeline lineno="531" refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a9468f2bbed6ec9140b150feb2f4d8628" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler_1a9468f2bbed6ec9140b150feb2f4d8628" kindref="member">end</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="532"><highlight class="normal"></highlight></codeline>
-<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" kindref="compound">SingleResultHandler</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" kindref="compound">~SingleResultHandler</ref>()<sp/>{</highlight></codeline>
 <codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>finalize<sp/>the<sp/>partial<sp/>result</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pres.finalize();</highlight></codeline>
 <codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1FaissException" kindref="compound">faiss::FaissException</ref>&amp;<sp/>e)<sp/>{</highlight></codeline>
 <codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Do<sp/>nothing<sp/>if<sp/>allocation<sp/>fails<sp/>in<sp/>finalizing<sp/>partial<sp/>results.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="539"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="540"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/>e.<ref refid="classfaiss_1_1FaissException_1a1993286a39f14787d8441f2f2344612a" kindref="member">what</ref>()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/>e.<ref refid="classfaiss_1_1FaissException_1a0c064d1ead874f10cd0c2c2dcb5bce7f" kindref="member">what</ref>()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
 <codeline lineno="541"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="542"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="543"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -852,7 +852,7 @@
 <codeline lineno="582"><highlight class="normal"></highlight></codeline>
 <codeline lineno="583"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>i0;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i++)<sp/>{</highlight></codeline>
 <codeline lineno="584"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>ip_line<sp/>=<sp/>dis_tab<sp/>+<sp/>(i<sp/>-<sp/>i0)<sp/>*<sp/>(j1<sp/>-<sp/>j0);</highlight></codeline>
-<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/>qres<sp/>=<sp/>pres-&gt;<ref refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" kindref="member">new_result</ref>(i);</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/>qres<sp/>=<sp/>pres-&gt;<ref refid="structfaiss_1_1RangeSearchPartialResult_1a0ba199c22ed09aebb0f7238229b516e9" kindref="member">new_result</ref>(i);</highlight></codeline>
 <codeline lineno="586"><highlight class="normal"></highlight></codeline>
 <codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>j0;<sp/>j<sp/>&lt;<sp/>j1;<sp/>j++)<sp/>{</highlight></codeline>
 <codeline lineno="588"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dis<sp/>=<sp/>*ip_line++;</highlight></codeline>
@@ -863,7 +863,7 @@
 <codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="594"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="595"><highlight class="normal"></highlight></codeline>
-<codeline lineno="596"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1RangeSearchBlockResultHandler" kindref="compound">RangeSearchBlockResultHandler</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="596"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchBlockResultHandler" kindref="compound">~RangeSearchBlockResultHandler</ref>()<sp/>{</highlight></codeline>
 <codeline lineno="597"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="598"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(partial_results.size()<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
 <codeline lineno="599"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult_1a6037fe1e0dac57c4713d560b043b237d" kindref="member">RangeSearchPartialResult::merge</ref>(partial_results);</highlight></codeline>
@@ -871,7 +871,7 @@
 <codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1FaissException" kindref="compound">faiss::FaissException</ref>&amp;<sp/>e)<sp/>{</highlight></codeline>
 <codeline lineno="602"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Do<sp/>nothing<sp/>if<sp/>allocation<sp/>fails<sp/>in<sp/>merge.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="603"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/>e.<ref refid="classfaiss_1_1FaissException_1a1993286a39f14787d8441f2f2344612a" kindref="member">what</ref>()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/>e.<ref refid="classfaiss_1_1FaissException_1a0c064d1ead874f10cd0c2c2dcb5bce7f" kindref="member">what</ref>()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
 <codeline lineno="605"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="606"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="607"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -907,14 +907,14 @@
 <codeline lineno="637"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="638"><highlight class="normal"></highlight></codeline>
 <codeline lineno="639"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(metric))<sp/>{</highlight></codeline>
-<codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>CMin&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
+<codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">C<sp/>=<sp/>CMin&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
 <codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sel)<sp/>{</highlight></codeline>
 <codeline lineno="642"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="644"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="645"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="646"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="647"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>CMax&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
+<codeline lineno="647"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">C<sp/>=<sp/>CMax&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
 <codeline lineno="648"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sel)<sp/>{</highlight></codeline>
 <codeline lineno="649"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
@@ -937,14 +937,14 @@
 <codeline lineno="667"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>return<sp/>consumer.template<sp/>f&lt;&gt;(resb,<sp/>args...);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="668"><highlight class="normal"></highlight></codeline>
 <codeline lineno="669"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(metric))<sp/>{</highlight></codeline>
-<codeline lineno="670"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>CMin&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
+<codeline lineno="670"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">C<sp/>=<sp/>CMin&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
 <codeline lineno="671"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sel)<sp/>{</highlight></codeline>
 <codeline lineno="672"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="673"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="674"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="675"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="676"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>C<sp/>=<sp/>CMax&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
+<codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">C<sp/>=<sp/>CMax&lt;float,<sp/>int64_t&gt;;</highlight></codeline>
 <codeline lineno="678"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sel)<sp/>{</highlight></codeline>
 <codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_C_SEL(C,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="680"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>

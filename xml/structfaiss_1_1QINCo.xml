@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1QINCo" kind="struct" language="C++" prot="public">
     <compoundname>faiss::QINCo</compoundname>
     <basecompoundref refid="structfaiss_1_1NeuralNetCodec" prot="public" virt="non-virtual">faiss::NeuralNetCodec</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::QINCo::K</definition>
         <argsstring></argsstring>
         <name>K</name>
+        <qualifiedname>faiss::QINCo::K</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>int faiss::QINCo::L</definition>
         <argsstring></argsstring>
         <name>L</name>
+        <qualifiedname>faiss::QINCo::L</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>int faiss::QINCo::h</definition>
         <argsstring></argsstring>
         <name>h</name>
+        <qualifiedname>faiss::QINCo::h</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>nn::Embedding faiss::QINCo::codebook0</definition>
         <argsstring></argsstring>
         <name>codebook0</name>
+        <qualifiedname>faiss::QINCo::codebook0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -61,6 +65,7 @@
         <definition>std::vector&lt;QINCoStep&gt; faiss::QINCo::steps</definition>
         <argsstring></argsstring>
         <name>steps</name>
+        <qualifiedname>faiss::QINCo::steps</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -74,6 +79,7 @@
         <definition>int faiss::NeuralNetCodec::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::NeuralNetCodec::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -87,6 +93,7 @@
         <definition>int faiss::NeuralNetCodec::M</definition>
         <argsstring></argsstring>
         <name>M</name>
+        <qualifiedname>faiss::NeuralNetCodec::M</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -95,13 +102,14 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="119" column="11" bodyfile="faiss/utils/NeuralNet.h" bodystart="119" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1QINCo_1a4542c765bad0b90648edde4767d72580" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::QINCo::QINCo</definition>
         <argsstring>(int d, int K, int L, int M, int h)</argsstring>
         <name>QINCo</name>
+        <qualifiedname>faiss::QINCo::QINCo</qualifiedname>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -130,11 +138,12 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="134" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1QINCo_1ac05f3622421687c90e028134870fa348" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1a4465ca5adeae3fde2f9d0733fca323d2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1QINCoStep" kindref="compound">QINCoStep</ref> &amp;</type>
-        <definition>QINCoStep&amp; faiss::QINCo::get_step</definition>
+        <definition>QINCoStep &amp; faiss::QINCo::get_step</definition>
         <argsstring>(int i)</argsstring>
         <name>get_step</name>
+        <qualifiedname>faiss::QINCo::get_step</qualifiedname>
         <param>
           <type>int</type>
           <declname>i</declname>
@@ -152,6 +161,7 @@
         <definition>nn::Tensor2D faiss::QINCo::decode</definition>
         <argsstring>(const nn::Int32Tensor2D &amp;codes) const override</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::QINCo::decode</qualifiedname>
         <reimplements refid="structfaiss_1_1NeuralNetCodec_1ae0be71b6ac01d05c8fbe866ee70b1db9">decode</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref> &amp;</type>
@@ -170,6 +180,7 @@
         <definition>nn::Int32Tensor2D faiss::QINCo::encode</definition>
         <argsstring>(const nn::Tensor2D &amp;x) const override</argsstring>
         <name>encode</name>
+        <qualifiedname>faiss::QINCo::encode</qualifiedname>
         <reimplements refid="structfaiss_1_1NeuralNetCodec_1aa88836faaca529db2783938ce16e3208">encode</reimplements>
         <param>
           <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref> &amp;</type>
@@ -188,6 +199,7 @@
         <definition>virtual faiss::QINCo::~QINCo</definition>
         <argsstring>()</argsstring>
         <name>~QINCo</name>
+        <qualifiedname>faiss::QINCo::~QINCo</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -196,24 +208,28 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="144" column="13" bodyfile="faiss/utils/NeuralNet.h" bodystart="144" bodyend="144"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::NeuralNetCodec</label>
+        <link refid="structfaiss_1_1NeuralNetCodec"/>
+      </node>
       <node id="1">
         <label>faiss::QINCo</label>
         <link refid="structfaiss_1_1QINCo"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>faiss::NeuralNetCodec</label>
         <link refid="structfaiss_1_1NeuralNetCodec"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::QINCo</label>
         <link refid="structfaiss_1_1QINCo"/>
@@ -227,10 +243,6 @@
         <label>faiss::nn::Embedding</label>
         <link refid="structfaiss_1_1nn_1_1Embedding"/>
       </node>
-      <node id="2">
-        <label>faiss::NeuralNetCodec</label>
-        <link refid="structfaiss_1_1NeuralNetCodec"/>
-      </node>
     </collaborationgraph>
     <location file="faiss/utils/NeuralNet.h" line="129" column="1" bodyfile="faiss/utils/NeuralNet.h" bodystart="129" bodyend="145"/>
     <listofallmembers>
@@ -238,7 +250,7 @@
       <member refid="structfaiss_1_1NeuralNetCodec_1afee6748e6adca5e03949b947e3bf75b4" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>d</name></member>
       <member refid="structfaiss_1_1QINCo_1ab414b534e68ed382680065fe5eaf05bb" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>decode</name></member>
       <member refid="structfaiss_1_1QINCo_1aeb42b4ded979a726a15fad6ef8725042" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>encode</name></member>
-      <member refid="structfaiss_1_1QINCo_1ac05f3622421687c90e028134870fa348" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>get_step</name></member>
+      <member refid="structfaiss_1_1QINCo_1a4465ca5adeae3fde2f9d0733fca323d2" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>get_step</name></member>
       <member refid="structfaiss_1_1QINCo_1ae9bedf580e3089d5e91100ee4fe0fbcc" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>h</name></member>
       <member refid="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>K</name></member>
       <member refid="structfaiss_1_1QINCo_1a2432eb6c40747240ea37778cf4d38c7c" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>L</name></member>

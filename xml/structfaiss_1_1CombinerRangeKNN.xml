@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CombinerRangeKNN" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CombinerRangeKNN</compoundname>
     <includes refid="utils_8h" local="no">utils.h</includes>
@@ -8,12 +8,13 @@
         <type>typename T</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a431b53f8def97be262a6854c33853d21" prot="public" static="no" mutable="no">
         <type>int64_t</type>
         <definition>int64_t faiss::CombinerRangeKNN&lt; T &gt;::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
+        <qualifiedname>faiss::CombinerRangeKNN::nq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -27,6 +28,7 @@
         <definition>size_t faiss::CombinerRangeKNN&lt; T &gt;::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::CombinerRangeKNN::k</qualifiedname>
         <briefdescription>
 <para>nb of queries </para>
         </briefdescription>
@@ -41,6 +43,7 @@
         <definition>T faiss::CombinerRangeKNN&lt; T &gt;::r2</definition>
         <argsstring></argsstring>
         <name>r2</name>
+        <qualifiedname>faiss::CombinerRangeKNN::r2</qualifiedname>
         <briefdescription>
 <para>number of neighbors for the knn search part </para>
         </briefdescription>
@@ -55,6 +58,7 @@
         <definition>bool faiss::CombinerRangeKNN&lt; T &gt;::keep_max</definition>
         <argsstring></argsstring>
         <name>keep_max</name>
+        <qualifiedname>faiss::CombinerRangeKNN::keep_max</qualifiedname>
         <briefdescription>
 <para>range search radius </para>
         </briefdescription>
@@ -69,6 +73,7 @@
         <definition>const int64_t* faiss::CombinerRangeKNN&lt; T &gt;::I</definition>
         <argsstring></argsstring>
         <name>I</name>
+        <qualifiedname>faiss::CombinerRangeKNN::I</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>Knn search results. </para>
@@ -84,6 +89,7 @@
         <definition>const T* faiss::CombinerRangeKNN&lt; T &gt;::D</definition>
         <argsstring></argsstring>
         <name>D</name>
+        <qualifiedname>faiss::CombinerRangeKNN::D</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>size nq * k </para>
@@ -99,6 +105,7 @@
         <definition>const bool* faiss::CombinerRangeKNN&lt; T &gt;::mask</definition>
         <argsstring></argsstring>
         <name>mask</name>
+        <qualifiedname>faiss::CombinerRangeKNN::mask</qualifiedname>
         <initializer>=
             nullptr</initializer>
         <briefdescription>
@@ -116,6 +123,7 @@
         <definition>const int64_t* faiss::CombinerRangeKNN&lt; T &gt;::lim_remain</definition>
         <argsstring></argsstring>
         <name>lim_remain</name>
+        <qualifiedname>faiss::CombinerRangeKNN::lim_remain</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>mask for where knn results are valid, size nq </para>
@@ -131,6 +139,7 @@
         <definition>const T* faiss::CombinerRangeKNN&lt; T &gt;::D_remain</definition>
         <argsstring></argsstring>
         <name>D_remain</name>
+        <qualifiedname>faiss::CombinerRangeKNN::D_remain</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>size nrange + 1 </para>
@@ -146,6 +155,7 @@
         <definition>const int64_t* faiss::CombinerRangeKNN&lt; T &gt;::I_remain</definition>
         <argsstring></argsstring>
         <name>I_remain</name>
+        <qualifiedname>faiss::CombinerRangeKNN::I_remain</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>size lim_remain[nrange] </para>
@@ -161,6 +171,7 @@
         <definition>const int64_t* faiss::CombinerRangeKNN&lt; T &gt;::L_res</definition>
         <argsstring></argsstring>
         <name>L_res</name>
+        <qualifiedname>faiss::CombinerRangeKNN::L_res</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
 <para>size lim_remain[nrange] </para>
@@ -171,13 +182,14 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="189" column="19" bodyfile="faiss/utils/utils.h" bodystart="189" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1a74330b6afb5296263e2a53482178c35d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::CombinerRangeKNN&lt; T &gt;::CombinerRangeKNN</definition>
         <argsstring>(int64_t nq, size_t k, T r2, bool keep_max)</argsstring>
         <name>CombinerRangeKNN</name>
+        <qualifiedname>faiss::CombinerRangeKNN::CombinerRangeKNN</qualifiedname>
         <param>
           <type>int64_t</type>
           <declname>nq</declname>
@@ -208,6 +220,7 @@
         <definition>void faiss::CombinerRangeKNN&lt; T &gt;::compute_sizes</definition>
         <argsstring>(int64_t *L_res)</argsstring>
         <name>compute_sizes</name>
+        <qualifiedname>faiss::CombinerRangeKNN::compute_sizes</qualifiedname>
         <param>
           <type>int64_t *</type>
           <declname>L_res</declname>
@@ -226,6 +239,7 @@
         <definition>void faiss::CombinerRangeKNN&lt; T &gt;::write_result</definition>
         <argsstring>(T *D_res, int64_t *I_res)</argsstring>
         <name>write_result</name>
+        <qualifiedname>faiss::CombinerRangeKNN::write_result</qualifiedname>
         <param>
           <type>T *</type>
           <declname>D_res</declname>
@@ -243,7 +257,7 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="195" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1GpuResourcesProvider" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::gpu::GpuResourcesProvider</compoundname>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public" virt="non-virtual">faiss::gpu::GpuResourcesProviderFromInstance</derivedcompoundref>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public" virt="non-virtual">faiss::gpu::StandardGpuResources</derivedcompoundref>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a9de5bf47e6a9754f19e43b30dd61bfca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual faiss::gpu::GpuResourcesProvider::~GpuResourcesProvider</definition>
         <argsstring>()</argsstring>
         <name>~GpuResourcesProvider</name>
+        <qualifiedname>faiss::gpu::GpuResourcesProvider::~GpuResourcesProvider</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -19,13 +20,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="292" column="13"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a49fc8628fff1885a1867eef581e914f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
-        <definition>virtual std::shared_ptr&lt;GpuResources&gt; faiss::gpu::GpuResourcesProvider::getResources</definition>
+        <definition>virtual std::shared_ptr&lt; GpuResources &gt; faiss::gpu::GpuResourcesProvider::getResources</definition>
         <argsstring>()=0</argsstring>
         <name>getResources</name>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c">getResources</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4">getResources</reimplementedby>
+        <qualifiedname>faiss::gpu::GpuResourcesProvider::getResources</qualifiedname>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a22b7e0134d3b0f7f3c6f7eae0d5ccd26">getResources</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a33920623c7f932f83563c5a8cae04750">getResources</reimplementedby>
         <briefdescription>
 <para>Returns the shared resources object. </para>
         </briefdescription>
@@ -35,19 +37,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="295" column="29"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Interface for a provider of a shared resources object. This is to avoid interfacing std::shared_ptr to Python </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::gpu::StandardGpuResources</label>
-        <link refid="classfaiss_1_1gpu_1_1StandardGpuResources"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuResourcesProvider</label>
         <link refid="classfaiss_1_1gpu_1_1GpuResourcesProvider"/>
@@ -58,10 +54,16 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss::gpu::StandardGpuResources</label>
+        <link refid="classfaiss_1_1gpu_1_1StandardGpuResources"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
     </inheritancegraph>
     <location file="faiss/gpu/GpuResources.h" line="290" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="290" bodyend="296"/>
     <listofallmembers>
-      <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>getResources</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a49fc8628fff1885a1867eef581e914f0" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a9de5bf47e6a9754f19e43b30dd61bfca" prot="public" virt="virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>~GpuResourcesProvider</name></member>
     </listofallmembers>
   </compounddef>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexBinaryFlatConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexConfig</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::GpuIndexConfig::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::device</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>GPU device on which the index is resident. </para>
@@ -24,6 +25,7 @@
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::memorySpace</qualifiedname>
         <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
         </briefdescription>
@@ -39,6 +41,7 @@
         <definition>bool faiss::gpu::GpuIndexConfig::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Should the index dispatch down to cuVS? </para>
@@ -49,33 +52,33 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="45" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="45" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::gpu::GpuIndexConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuIndexBinaryFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::gpu::GpuIndexConfig</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::gpu::GpuIndexConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
-      </node>
       <node id="1">
         <label>faiss::gpu::GpuIndexBinaryFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::gpu::GpuIndexConfig</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuIndexBinaryFlat.h" line="20" column="1" bodyfile="faiss/gpu/GpuIndexBinaryFlat.h" bodystart="20" bodyend="20"/>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structPyCallbackIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOWriter</compoundname>
     <basecompoundref refid="structfaiss_1_1IOWriter" prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
         <definition>PyObject* PyCallbackIOWriter::callback</definition>
         <argsstring></argsstring>
         <name>callback</name>
+        <qualifiedname>PyCallbackIOWriter::callback</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t PyCallbackIOWriter::bs</definition>
         <argsstring></argsstring>
         <name>bs</name>
+        <qualifiedname>PyCallbackIOWriter::bs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::string faiss::IOWriter::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOWriter::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="42" column="17" bodyfile="faiss/impl/io.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structPyCallbackIOWriter_1ae185179b04cb71f49ee05d46505b124f" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>PyCallbackIOWriter::PyCallbackIOWriter</definition>
         <argsstring>(PyObject *callback, size_t bs=1024 *1024)</argsstring>
         <name>PyCallbackIOWriter</name>
+        <qualifiedname>PyCallbackIOWriter::PyCallbackIOWriter</qualifiedname>
         <param>
           <type>PyObject *</type>
           <declname>callback</declname>
@@ -73,6 +77,7 @@
         <definition>size_t PyCallbackIOWriter::operator()</definition>
         <argsstring>(const void *ptrv, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>PyCallbackIOWriter::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11">operator()</reimplements>
         <param>
           <type>const void *</type>
@@ -99,6 +104,7 @@
         <definition>PyCallbackIOWriter::~PyCallbackIOWriter</definition>
         <argsstring>() override</argsstring>
         <name>~PyCallbackIOWriter</name>
+        <qualifiedname>PyCallbackIOWriter::~PyCallbackIOWriter</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -112,6 +118,7 @@
         <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOWriter::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -121,7 +128,7 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="48" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PolysemousTraining" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PolysemousTraining</compoundname>
     <basecompoundref refid="structfaiss_1_1SimulatedAnnealingParameters" prot="public" virt="non-virtual">faiss::SimulatedAnnealingParameters</basecompoundref>
     <includes refid="PolysemousTraining_8h" local="no">PolysemousTraining.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="enum" id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" prot="public" static="no" strong="no">
         <type></type>
         <name>Optimization_type_t</name>
+        <qualifiedname>faiss::PolysemousTraining::Optimization_type_t</qualifiedname>
         <enumvalue id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa1a5ea7330bd57a7dfeb3fa2308eb9ef1" prot="public">
           <name>OT_None</name>
           <briefdescription>
@@ -39,13 +40,14 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="117" column="5" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="117" bodyend="122"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1a46f871a4914a2ac992aa4a4895de79e5" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" kindref="member">Optimization_type_t</ref></type>
         <definition>Optimization_type_t faiss::PolysemousTraining::optimization_type</definition>
         <argsstring></argsstring>
         <name>optimization_type</name>
+        <qualifiedname>faiss::PolysemousTraining::optimization_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -59,6 +61,7 @@
         <definition>int faiss::PolysemousTraining::ntrain_permutation</definition>
         <argsstring></argsstring>
         <name>ntrain_permutation</name>
+        <qualifiedname>faiss::PolysemousTraining::ntrain_permutation</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,6 +76,7 @@
         <definition>double faiss::PolysemousTraining::dis_weight_factor</definition>
         <argsstring></argsstring>
         <name>dis_weight_factor</name>
+        <qualifiedname>faiss::PolysemousTraining::dis_weight_factor</qualifiedname>
         <briefdescription>
 <para>decay of exp that weights distance loss </para>
         </briefdescription>
@@ -87,6 +91,7 @@
         <definition>size_t faiss::PolysemousTraining::max_memory</definition>
         <argsstring></argsstring>
         <name>max_memory</name>
+        <qualifiedname>faiss::PolysemousTraining::max_memory</qualifiedname>
         <briefdescription>
 <para>refuse to train if it would require more than that amount of RAM </para>
         </briefdescription>
@@ -101,6 +106,7 @@
         <definition>std::string faiss::PolysemousTraining::log_pattern</definition>
         <argsstring></argsstring>
         <name>log_pattern</name>
+        <qualifiedname>faiss::PolysemousTraining::log_pattern</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -114,6 +120,7 @@
         <definition>double faiss::SimulatedAnnealingParameters::init_temperature</definition>
         <argsstring></argsstring>
         <name>init_temperature</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::init_temperature</qualifiedname>
         <initializer>= 0.7</initializer>
         <briefdescription>
         </briefdescription>
@@ -128,6 +135,7 @@
         <definition>double faiss::SimulatedAnnealingParameters::temperature_decay</definition>
         <argsstring></argsstring>
         <name>temperature_decay</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::temperature_decay</qualifiedname>
         <initializer>= 0.9997893011688015</initializer>
         <briefdescription>
         </briefdescription>
@@ -142,6 +150,7 @@
         <definition>int faiss::SimulatedAnnealingParameters::n_iter</definition>
         <argsstring></argsstring>
         <name>n_iter</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::n_iter</qualifiedname>
         <initializer>= 500000</initializer>
         <briefdescription>
         </briefdescription>
@@ -156,6 +165,7 @@
         <definition>int faiss::SimulatedAnnealingParameters::n_redo</definition>
         <argsstring></argsstring>
         <name>n_redo</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::n_redo</qualifiedname>
         <initializer>= 2</initializer>
         <briefdescription>
         </briefdescription>
@@ -170,6 +180,7 @@
         <definition>int faiss::SimulatedAnnealingParameters::seed</definition>
         <argsstring></argsstring>
         <name>seed</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::seed</qualifiedname>
         <initializer>= 123</initializer>
         <briefdescription>
         </briefdescription>
@@ -184,6 +195,7 @@
         <definition>int faiss::SimulatedAnnealingParameters::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::verbose</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -198,6 +210,7 @@
         <definition>bool faiss::SimulatedAnnealingParameters::only_bit_flips</definition>
         <argsstring></argsstring>
         <name>only_bit_flips</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::only_bit_flips</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -212,6 +225,7 @@
         <definition>bool faiss::SimulatedAnnealingParameters::init_random</definition>
         <argsstring></argsstring>
         <name>init_random</name>
+        <qualifiedname>faiss::SimulatedAnnealingParameters::init_random</qualifiedname>
         <initializer>=
             false</initializer>
         <briefdescription>
@@ -222,13 +236,14 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="28" column="10" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="28" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1a7804711697c63e225d64ac07ce6a8869" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::PolysemousTraining::PolysemousTraining</definition>
         <argsstring>()</argsstring>
         <name>PolysemousTraining</name>
+        <qualifiedname>faiss::PolysemousTraining::PolysemousTraining</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -242,6 +257,7 @@
         <definition>void faiss::PolysemousTraining::optimize_pq_for_hamming</definition>
         <argsstring>(ProductQuantizer &amp;pq, size_t n, const float *x) const</argsstring>
         <name>optimize_pq_for_hamming</name>
+        <qualifiedname>faiss::PolysemousTraining::optimize_pq_for_hamming</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
           <declname>pq</declname>
@@ -268,6 +284,7 @@
         <definition>void faiss::PolysemousTraining::optimize_ranking</definition>
         <argsstring>(ProductQuantizer &amp;pq, size_t n, const float *x) const</argsstring>
         <name>optimize_ranking</name>
+        <qualifiedname>faiss::PolysemousTraining::optimize_ranking</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
           <declname>pq</declname>
@@ -294,6 +311,7 @@
         <definition>void faiss::PolysemousTraining::optimize_reproduce_distances</definition>
         <argsstring>(ProductQuantizer &amp;pq) const</argsstring>
         <name>optimize_reproduce_distances</name>
+        <qualifiedname>faiss::PolysemousTraining::optimize_reproduce_distances</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
           <declname>pq</declname>
@@ -312,6 +330,7 @@
         <definition>size_t faiss::PolysemousTraining::memory_usage_per_thread</definition>
         <argsstring>(const ProductQuantizer &amp;pq) const</argsstring>
         <name>memory_usage_per_thread</name>
+        <qualifiedname>faiss::PolysemousTraining::memory_usage_per_thread</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
           <declname>pq</declname>
@@ -325,34 +344,34 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="151" column="12"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>optimizes the order of indices in a <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::SimulatedAnnealingParameters</label>
-        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
-      </node>
       <node id="1">
         <label>faiss::PolysemousTraining</label>
         <link refid="structfaiss_1_1PolysemousTraining"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::SimulatedAnnealingParameters</label>
-        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
-      </node>
       <node id="1">
         <label>faiss::PolysemousTraining</label>
         <link refid="structfaiss_1_1PolysemousTraining"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/PolysemousTraining.h" line="116" column="1" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="116" bodyend="152"/>

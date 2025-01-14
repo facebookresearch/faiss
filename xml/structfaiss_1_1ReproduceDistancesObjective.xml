@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ReproduceDistancesObjective" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ReproduceDistancesObjective</compoundname>
     <basecompoundref refid="structfaiss_1_1PermutationObjective" prot="public" virt="non-virtual">faiss::PermutationObjective</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ReproduceDistancesObjective_1a96a76020f14210f5f161565bacda84ab" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double faiss::ReproduceDistancesObjective::dis_weight_factor</definition>
         <argsstring></argsstring>
         <name>dis_weight_factor</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::dis_weight_factor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::vector&lt;double&gt; faiss::ReproduceDistancesObjective::source_dis</definition>
         <argsstring></argsstring>
         <name>source_dis</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::source_dis</qualifiedname>
         <briefdescription>
 <para>&quot;real&quot; corrected distances (size n^2) </para>
         </briefdescription>
@@ -36,6 +38,7 @@
         <definition>const double* faiss::ReproduceDistancesObjective::target_dis</definition>
         <argsstring></argsstring>
         <name>target_dis</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::target_dis</qualifiedname>
         <briefdescription>
 <para>wanted distances (size n^2) </para>
         </briefdescription>
@@ -50,6 +53,7 @@
         <definition>std::vector&lt;double&gt; faiss::ReproduceDistancesObjective::weights</definition>
         <argsstring></argsstring>
         <name>weights</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::weights</qualifiedname>
         <briefdescription>
 <para>weights for each distance (size n^2) </para>
         </briefdescription>
@@ -64,6 +68,7 @@
         <definition>int faiss::PermutationObjective::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::PermutationObjective::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -72,13 +77,14 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="37" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="37" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1ReproduceDistancesObjective_1a487163847843e09da40939bd0044ab41" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
         <definition>static double faiss::ReproduceDistancesObjective::sqr</definition>
         <argsstring>(double x)</argsstring>
         <name>sqr</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::sqr</qualifiedname>
         <param>
           <type>double</type>
           <declname>x</declname>
@@ -96,6 +102,7 @@
         <definition>static void faiss::ReproduceDistancesObjective::compute_mean_stdev</definition>
         <argsstring>(const double *tab, size_t n2, double *mean_out, double *stddev_out)</argsstring>
         <name>compute_mean_stdev</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::compute_mean_stdev</qualifiedname>
         <param>
           <type>const double *</type>
           <declname>tab</declname>
@@ -120,13 +127,14 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="78" column="17"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ReproduceDistancesObjective_1ae31993568c15b403dd08896974053985" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::ReproduceDistancesObjective::dis_weight</definition>
         <argsstring>(double x) const</argsstring>
         <name>dis_weight</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::dis_weight</qualifiedname>
         <param>
           <type>double</type>
           <declname>x</declname>
@@ -144,6 +152,7 @@
         <definition>double faiss::ReproduceDistancesObjective::get_source_dis</definition>
         <argsstring>(int i, int j) const</argsstring>
         <name>get_source_dis</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::get_source_dis</qualifiedname>
         <param>
           <type>int</type>
           <declname>i</declname>
@@ -165,6 +174,7 @@
         <definition>double faiss::ReproduceDistancesObjective::compute_cost</definition>
         <argsstring>(const int *perm) const override</argsstring>
         <name>compute_cost</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::compute_cost</qualifiedname>
         <reimplements refid="structfaiss_1_1PermutationObjective_1ad9bd7b5ba62c1492746ef9428c7269c8">compute_cost</reimplements>
         <param>
           <type>const int *</type>
@@ -183,6 +193,7 @@
         <definition>double faiss::ReproduceDistancesObjective::cost_update</definition>
         <argsstring>(const int *perm, int iw, int jw) const override</argsstring>
         <name>cost_update</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::cost_update</qualifiedname>
         <reimplements refid="structfaiss_1_1PermutationObjective_1a3655dd4f926c7f9fbab5ed78fff4b2a5">cost_update</reimplements>
         <param>
           <type>const int *</type>
@@ -209,6 +220,7 @@
         <definition>faiss::ReproduceDistancesObjective::ReproduceDistancesObjective</definition>
         <argsstring>(int n, const double *source_dis_in, const double *target_dis_in, double dis_weight_factor)</argsstring>
         <name>ReproduceDistancesObjective</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::ReproduceDistancesObjective</qualifiedname>
         <param>
           <type>int</type>
           <declname>n</declname>
@@ -238,6 +250,7 @@
         <definition>void faiss::ReproduceDistancesObjective::set_affine_target_dis</definition>
         <argsstring>(const double *source_dis_in)</argsstring>
         <name>set_affine_target_dis</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::set_affine_target_dis</qualifiedname>
         <param>
           <type>const double *</type>
           <declname>source_dis_in</declname>
@@ -255,6 +268,7 @@
         <definition>faiss::ReproduceDistancesObjective::~ReproduceDistancesObjective</definition>
         <argsstring>() override</argsstring>
         <name>~ReproduceDistancesObjective</name>
+        <qualifiedname>faiss::ReproduceDistancesObjective::~ReproduceDistancesObjective</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -263,33 +277,33 @@
         </inbodydescription>
         <location file="faiss/impl/PolysemousTraining.h" line="86" column="5" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="86" bodyend="86"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::PermutationObjective</label>
+        <link refid="structfaiss_1_1PermutationObjective"/>
+      </node>
       <node id="1">
         <label>faiss::ReproduceDistancesObjective</label>
         <link refid="structfaiss_1_1ReproduceDistancesObjective"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::PermutationObjective</label>
-        <link refid="structfaiss_1_1PermutationObjective"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::PermutationObjective</label>
+        <link refid="structfaiss_1_1PermutationObjective"/>
+      </node>
       <node id="1">
         <label>faiss::ReproduceDistancesObjective</label>
         <link refid="structfaiss_1_1ReproduceDistancesObjective"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::PermutationObjective</label>
-        <link refid="structfaiss_1_1PermutationObjective"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/PolysemousTraining.h" line="48" column="1" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="48" bodyend="87"/>

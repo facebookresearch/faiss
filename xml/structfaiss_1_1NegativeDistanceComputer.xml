@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1NegativeDistanceComputer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::NegativeDistanceComputer</compoundname>
     <basecompoundref refid="structfaiss_1_1DistanceComputer" prot="public" virt="non-virtual">faiss::DistanceComputer</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1NegativeDistanceComputer_1a43391d16b8fc618a6ca30010acfe3a8c" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>DistanceComputer* faiss::NegativeDistanceComputer::basedis</definition>
         <argsstring></argsstring>
         <name>basedis</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::basedis</qualifiedname>
         <briefdescription>
 <para>owned by this </para>
         </briefdescription>
@@ -18,13 +19,14 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="67" column="22" bodyfile="faiss/impl/DistanceComputer.h" bodystart="67" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::NegativeDistanceComputer::NegativeDistanceComputer</definition>
         <argsstring>(DistanceComputer *basedis)</argsstring>
         <name>NegativeDistanceComputer</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::NegativeDistanceComputer</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
           <declname>basedis</declname>
@@ -42,6 +44,7 @@
         <definition>void faiss::NegativeDistanceComputer::set_query</definition>
         <argsstring>(const float *x) override</argsstring>
         <name>set_query</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::set_query</qualifiedname>
         <reimplements refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec">set_query</reimplements>
         <param>
           <type>const float *</type>
@@ -61,6 +64,7 @@
         <definition>float faiss::NegativeDistanceComputer::operator()</definition>
         <argsstring>(idx_t i) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1DistanceComputer_1a4d71be87bbd904043f6bc2fae03d037f">operator()</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -80,6 +84,7 @@
         <definition>void faiss::NegativeDistanceComputer::distances_batch_4</definition>
         <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3) override</argsstring>
         <name>distances_batch_4</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::distances_batch_4</qualifiedname>
         <reimplements refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff">distances_batch_4</reimplements>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -127,6 +132,7 @@
         <definition>float faiss::NegativeDistanceComputer::symmetric_dis</definition>
         <argsstring>(idx_t i, idx_t j) override</argsstring>
         <name>symmetric_dis</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::symmetric_dis</qualifiedname>
         <reimplements refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7">symmetric_dis</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -150,6 +156,7 @@
         <definition>virtual faiss::NegativeDistanceComputer::~NegativeDistanceComputer</definition>
         <argsstring>()</argsstring>
         <name>~NegativeDistanceComputer</name>
+        <qualifiedname>faiss::NegativeDistanceComputer::~NegativeDistanceComputer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -158,24 +165,28 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="103" column="13" bodyfile="faiss/impl/DistanceComputer.h" bodystart="103" bodyend="105"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
       <node id="1">
         <label>faiss::NegativeDistanceComputer</label>
         <link refid="structfaiss_1_1NegativeDistanceComputer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>faiss::DistanceComputer</label>
         <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::NegativeDistanceComputer</label>
         <link refid="structfaiss_1_1NegativeDistanceComputer"/>
@@ -184,10 +195,6 @@
         <childnode refid="2" relation="usage">
           <edgelabel>basedis</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::DistanceComputer</label>
-        <link refid="structfaiss_1_1DistanceComputer"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/DistanceComputer.h" line="65" column="1" bodyfile="faiss/impl/DistanceComputer.h" bodystart="65" bodyend="106"/>

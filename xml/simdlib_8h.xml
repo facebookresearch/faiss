@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simdlib_8h" kind="file" language="C++">
     <compoundname>simdlib.h</compoundname>
     <includes refid="simdlib__emulated_8h" local="no">faiss/utils/simdlib_emulated.h</includes>
@@ -7,11 +7,11 @@
     <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="approx__topk__hamming_8h" local="no">faiss/utils/approx_topk_hamming/approx_topk_hamming.h</includedby>
     <incdepgraph>
-      <node id="4">
-        <label>cstdint</label>
-      </node>
-      <node id="6">
-        <label>string</label>
+      <node id="1">
+        <label>faiss/utils/simdlib.h</label>
+        <link refid="simdlib_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/utils/simdlib_emulated.h</label>
@@ -25,17 +25,17 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss/utils/simdlib.h</label>
-        <link refid="simdlib_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="3">
         <label>algorithm</label>
       </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
       <node id="5">
         <label>cstring</label>
+      </node>
+      <node id="6">
+        <label>string</label>
       </node>
     </incdepgraph>
     <invincdepgraph>

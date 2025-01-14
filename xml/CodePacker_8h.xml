@@ -1,10 +1,22 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="CodePacker_8h" kind="file" language="C++">
     <compoundname>CodePacker.h</compoundname>
     <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
     <includedby refid="pq4__fast__scan_8h" local="no">faiss/impl/pq4_fast_scan.h</includedby>
     <incdepgraph>
+      <node id="2">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/CodePacker.h</label>
+        <link refid="CodePacker_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -16,20 +28,8 @@
       <node id="4">
         <label>cstdint</label>
       </node>
-      <node id="1">
-        <label>faiss/impl/CodePacker.h</label>
-        <link refid="CodePacker_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="5">
         <label>cstdio</label>
-      </node>
-      <node id="2">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -106,7 +106,7 @@
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>*<sp/>code_size)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CodePacker" kindref="compound">~CodePacker</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="56"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="58"><highlight class="comment">/**<sp/>Trivial<sp/>code<sp/>packer<sp/>where<sp/>codes<sp/>are<sp/>stored<sp/>one<sp/>by<sp/>one<sp/>*/</highlight><highlight class="normal"></highlight></codeline>

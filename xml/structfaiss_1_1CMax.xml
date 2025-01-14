@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CMax" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CMax</compoundname>
     <templateparamlist>
@@ -10,12 +10,13 @@
         <type>typename TI_</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00" prot="public" static="no">
         <type>T_</type>
         <definition>typedef T_ faiss::CMax&lt; T_, TI_ &gt;::T</definition>
         <argsstring></argsstring>
         <name>T</name>
+        <qualifiedname>faiss::CMax::T</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -29,6 +30,7 @@
         <definition>typedef TI_ faiss::CMax&lt; T_, TI_ &gt;::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
+        <qualifiedname>faiss::CMax::TI</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,6 +44,7 @@
         <definition>typedef CMin&lt;T_, TI_&gt; faiss::CMax&lt; T_, TI_ &gt;::Crev</definition>
         <argsstring></argsstring>
         <name>Crev</name>
+        <qualifiedname>faiss::CMax::Crev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,13 +53,14 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="68" column="18" bodyfile="faiss/utils/ordered_key_value.h" bodystart="68" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-attrib">
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
       <memberdef kind="variable" id="structfaiss_1_1CMax_1aa9bb565770641c21b5975cfc06f16ab8" prot="public" static="yes" mutable="no">
         <type>const bool</type>
         <definition>const bool faiss::CMax&lt; T_, TI_ &gt;::is_max</definition>
         <argsstring></argsstring>
         <name>is_max</name>
+        <qualifiedname>faiss::CMax::is_max</qualifiedname>
         <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
@@ -66,13 +70,14 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="80" column="23" bodyfile="faiss/utils/ordered_key_value.h" bodystart="80" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-static-func">
+    </sectiondef>
+    <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1CMax_1aaf234ed1f1829f1f7c4a4f7b03baa63e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
         <definition>static bool faiss::CMax&lt; T_, TI_ &gt;::cmp</definition>
         <argsstring>(T a, T b)</argsstring>
         <name>cmp</name>
+        <qualifiedname>faiss::CMax::cmp</qualifiedname>
         <param>
           <type>T</type>
           <declname>a</declname>
@@ -94,6 +99,7 @@
         <definition>static bool faiss::CMax&lt; T_, TI_ &gt;::cmp2</definition>
         <argsstring>(T a1, T b1, TI a2, TI b2)</argsstring>
         <name>cmp2</name>
+        <qualifiedname>faiss::CMax::cmp2</qualifiedname>
         <param>
           <type>T</type>
           <declname>a1</declname>
@@ -123,6 +129,7 @@
         <definition>static T faiss::CMax&lt; T_, TI_ &gt;::neutral</definition>
         <argsstring>()</argsstring>
         <name>neutral</name>
+        <qualifiedname>faiss::CMax::neutral</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -136,6 +143,7 @@
         <definition>static T faiss::CMax&lt; T_, TI_ &gt;::nextafter</definition>
         <argsstring>(T x)</argsstring>
         <name>nextafter</name>
+        <qualifiedname>faiss::CMax::nextafter</qualifiedname>
         <param>
           <type>T</type>
           <declname>x</declname>
@@ -148,7 +156,7 @@
         </inbodydescription>
         <location file="faiss/utils/ordered_key_value.h" line="81" column="21" bodyfile="faiss/utils/ordered_key_value.h" bodystart="81" bodyend="83"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

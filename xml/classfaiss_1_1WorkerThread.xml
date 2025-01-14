@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classfaiss_1_1WorkerThread" kind="class" language="C++" prot="public">
     <compoundname>faiss::WorkerThread</compoundname>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classfaiss_1_1WorkerThread_1a82689a11d49bb1a4d98850543b462087" prot="private" static="no" mutable="no">
         <type>std::thread</type>
         <definition>std::thread faiss::WorkerThread::thread_</definition>
         <argsstring></argsstring>
         <name>thread_</name>
+        <qualifiedname>faiss::WorkerThread::thread_</qualifiedname>
         <briefdescription>
 <para>Thread that all queued lambdas are run on. </para>
         </briefdescription>
@@ -22,6 +23,7 @@
         <definition>std::mutex faiss::WorkerThread::mutex_</definition>
         <argsstring></argsstring>
         <name>mutex_</name>
+        <qualifiedname>faiss::WorkerThread::mutex_</qualifiedname>
         <briefdescription>
 <para>Mutex for the queue and exit status. </para>
         </briefdescription>
@@ -36,6 +38,7 @@
         <definition>std::condition_variable faiss::WorkerThread::monitor_</definition>
         <argsstring></argsstring>
         <name>monitor_</name>
+        <qualifiedname>faiss::WorkerThread::monitor_</qualifiedname>
         <briefdescription>
 <para>Monitor for the exit status and the queue. </para>
         </briefdescription>
@@ -50,6 +53,7 @@
         <definition>bool faiss::WorkerThread::wantStop_</definition>
         <argsstring></argsstring>
         <name>wantStop_</name>
+        <qualifiedname>faiss::WorkerThread::wantStop_</qualifiedname>
         <briefdescription>
 <para>Whether or not we want the thread to exit. </para>
         </briefdescription>
@@ -64,6 +68,7 @@
         <definition>std::deque&lt;std::pair&lt;std::function&lt;void()&gt;, std::promise&lt;bool&gt; &gt; &gt; faiss::WorkerThread::queue_</definition>
         <argsstring></argsstring>
         <name>queue_</name>
+        <qualifiedname>faiss::WorkerThread::queue_</qualifiedname>
         <briefdescription>
 <para>Queue of pending lambdas to call. </para>
         </briefdescription>
@@ -73,13 +78,14 @@
         </inbodydescription>
         <location file="faiss/utils/WorkerThread.h" line="58" column="16" bodyfile="faiss/utils/WorkerThread.h" bodystart="58" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1aa9b8104ac86a2221e836db4457fea2a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::WorkerThread::WorkerThread</definition>
         <argsstring>()</argsstring>
         <name>WorkerThread</name>
+        <qualifiedname>faiss::WorkerThread::WorkerThread</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -93,6 +99,7 @@
         <definition>faiss::WorkerThread::~WorkerThread</definition>
         <argsstring>()</argsstring>
         <name>~WorkerThread</name>
+        <qualifiedname>faiss::WorkerThread::~WorkerThread</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -107,6 +114,7 @@
         <definition>void faiss::WorkerThread::stop</definition>
         <argsstring>()</argsstring>
         <name>stop</name>
+        <qualifiedname>faiss::WorkerThread::stop</qualifiedname>
         <briefdescription>
 <para>Request that the worker thread stop itself. </para>
         </briefdescription>
@@ -121,6 +129,7 @@
         <definition>void faiss::WorkerThread::waitForThreadExit</definition>
         <argsstring>()</argsstring>
         <name>waitForThreadExit</name>
+        <qualifiedname>faiss::WorkerThread::waitForThreadExit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -130,11 +139,12 @@
         </inbodydescription>
         <location file="faiss/utils/WorkerThread.h" line="31" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1WorkerThread_1a484b472c878bb35e4fed5f5ec6733d79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::future&lt; bool &gt;</type>
-        <definition>std::future&lt;bool&gt; faiss::WorkerThread::add</definition>
+        <definition>std::future&lt; bool &gt; faiss::WorkerThread::add</definition>
         <argsstring>(std::function&lt; void()&gt; f)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::WorkerThread::add</qualifiedname>
         <param>
           <type>std::function&lt; void()&gt;</type>
           <declname>f</declname>
@@ -148,13 +158,14 @@
         </inbodydescription>
         <location file="faiss/utils/WorkerThread.h" line="38" column="17"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classfaiss_1_1WorkerThread_1ac572863d6d90142a28176ab8508a5c0c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::WorkerThread::startThread</definition>
         <argsstring>()</argsstring>
         <name>startThread</name>
+        <qualifiedname>faiss::WorkerThread::startThread</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -168,6 +179,7 @@
         <definition>void faiss::WorkerThread::threadMain</definition>
         <argsstring>()</argsstring>
         <name>threadMain</name>
+        <qualifiedname>faiss::WorkerThread::threadMain</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -181,6 +193,7 @@
         <definition>void faiss::WorkerThread::threadLoop</definition>
         <argsstring>()</argsstring>
         <name>threadLoop</name>
+        <qualifiedname>faiss::WorkerThread::threadLoop</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -189,14 +202,14 @@
         </inbodydescription>
         <location file="faiss/utils/WorkerThread.h" line="43" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <location file="faiss/utils/WorkerThread.h" line="18" column="1" bodyfile="faiss/utils/WorkerThread.h" bodystart="18" bodyend="59"/>
     <listofallmembers>
-      <member refid="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" prot="public" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>add</name></member>
+      <member refid="classfaiss_1_1WorkerThread_1a484b472c878bb35e4fed5f5ec6733d79" prot="public" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>add</name></member>
       <member refid="classfaiss_1_1WorkerThread_1a1ac0f05c57f14389d12ec34d3cd7cd65" prot="private" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>monitor_</name></member>
       <member refid="classfaiss_1_1WorkerThread_1ada0210696e69a082e226305052928f30" prot="private" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>mutex_</name></member>
       <member refid="classfaiss_1_1WorkerThread_1ac334da22a126dcd565b835c93ea8193f" prot="private" virt="non-virtual"><scope>faiss::WorkerThread</scope><name>queue_</name></member>

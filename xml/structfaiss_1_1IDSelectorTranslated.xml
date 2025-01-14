@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorTranslated" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorTranslated</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorTranslated_1ab1ecd99ec40c20f014758b3d8b9e5bc8" prot="public" static="no" mutable="no">
         <type>const std::vector&lt; int64_t &gt; &amp;</type>
         <definition>const std::vector&lt;int64_t&gt;&amp; faiss::IDSelectorTranslated::id_map</definition>
         <argsstring></argsstring>
         <name>id_map</name>
+        <qualifiedname>faiss::IDSelectorTranslated::id_map</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>const IDSelector* faiss::IDSelectorTranslated::sel</definition>
         <argsstring></argsstring>
         <name>sel</name>
+        <qualifiedname>faiss::IDSelectorTranslated::sel</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="112" column="22" bodyfile="faiss/IndexIDMap.h" bodystart="112" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorTranslated_1a1712a842f521227b38a176e0c835fb7b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorTranslated::IDSelectorTranslated</definition>
         <argsstring>(const std::vector&lt; int64_t &gt; &amp;id_map, const IDSelector *sel)</argsstring>
         <name>IDSelectorTranslated</name>
+        <qualifiedname>faiss::IDSelectorTranslated::IDSelectorTranslated</qualifiedname>
         <param>
           <type>const std::vector&lt; int64_t &gt; &amp;</type>
           <declname>id_map</declname>
@@ -58,6 +61,7 @@
         <definition>faiss::IDSelectorTranslated::IDSelectorTranslated</definition>
         <argsstring>(IndexBinaryIDMap &amp;index_idmap, const IDSelector *sel)</argsstring>
         <name>IDSelectorTranslated</name>
+        <qualifiedname>faiss::IDSelectorTranslated::IDSelectorTranslated</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexBinaryIDMap</ref> &amp;</type>
           <declname>index_idmap</declname>
@@ -79,6 +83,7 @@
         <definition>faiss::IDSelectorTranslated::IDSelectorTranslated</definition>
         <argsstring>(IndexIDMap &amp;index_idmap, const IDSelector *sel)</argsstring>
         <name>IDSelectorTranslated</name>
+        <qualifiedname>faiss::IDSelectorTranslated::IDSelectorTranslated</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMap</ref> &amp;</type>
           <declname>index_idmap</declname>
@@ -100,6 +105,7 @@
         <definition>bool faiss::IDSelectorTranslated::is_member</definition>
         <argsstring>(idx_t id) const override</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorTranslated::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -113,24 +119,28 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="125" column="10" bodyfile="faiss/IndexIDMap.h" bodystart="125" bodyend="127"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::IDSelectorTranslated</label>
         <link refid="structfaiss_1_1IDSelectorTranslated"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>faiss::IDSelector</label>
         <link refid="structfaiss_1_1IDSelector"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::IDSelectorTranslated</label>
         <link refid="structfaiss_1_1IDSelectorTranslated"/>
@@ -139,10 +149,6 @@
         <childnode refid="2" relation="usage">
           <edgelabel>sel</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </collaborationgraph>
     <location file="faiss/IndexIDMap.h" line="110" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="110" bodyend="128"/>

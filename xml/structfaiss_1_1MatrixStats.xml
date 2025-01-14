@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1MatrixStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats</compoundname>
     <includes refid="MatrixStats_8h" local="no">MatrixStats.h</includes>
     <innerclass refid="structfaiss_1_1MatrixStats_1_1Occurrence" prot="public">faiss::MatrixStats::Occurrence</innerclass>
     <innerclass refid="structfaiss_1_1MatrixStats_1_1PerDimStats" prot="public">faiss::MatrixStats::PerDimStats</innerclass>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1MatrixStats_1a4c8fa1b0c904e48d18ddc3a0a3c40dea" prot="public" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string faiss::MatrixStats::comments</definition>
         <argsstring></argsstring>
         <name>comments</name>
+        <qualifiedname>faiss::MatrixStats::comments</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -24,6 +25,7 @@
         <definition>size_t faiss::MatrixStats::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::MatrixStats::n</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -38,6 +40,7 @@
         <definition>size_t faiss::MatrixStats::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::MatrixStats::d</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -52,6 +55,7 @@
         <definition>size_t faiss::MatrixStats::n_collision</definition>
         <argsstring></argsstring>
         <name>n_collision</name>
+        <qualifiedname>faiss::MatrixStats::n_collision</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -66,6 +70,7 @@
         <definition>size_t faiss::MatrixStats::n_valid</definition>
         <argsstring></argsstring>
         <name>n_valid</name>
+        <qualifiedname>faiss::MatrixStats::n_valid</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -80,6 +85,7 @@
         <definition>size_t faiss::MatrixStats::n0</definition>
         <argsstring></argsstring>
         <name>n0</name>
+        <qualifiedname>faiss::MatrixStats::n0</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -94,6 +100,7 @@
         <definition>double faiss::MatrixStats::min_norm2</definition>
         <argsstring></argsstring>
         <name>min_norm2</name>
+        <qualifiedname>faiss::MatrixStats::min_norm2</qualifiedname>
         <initializer>= HUGE_VALF</initializer>
         <briefdescription>
         </briefdescription>
@@ -108,6 +115,7 @@
         <definition>double faiss::MatrixStats::max_norm2</definition>
         <argsstring></argsstring>
         <name>max_norm2</name>
+        <qualifiedname>faiss::MatrixStats::max_norm2</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -122,6 +130,7 @@
         <definition>uint64_t faiss::MatrixStats::hash_value</definition>
         <argsstring></argsstring>
         <name>hash_value</name>
+        <qualifiedname>faiss::MatrixStats::hash_value</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
@@ -136,6 +145,7 @@
         <definition>std::vector&lt;PerDimStats&gt; faiss::MatrixStats::per_dim_stats</definition>
         <argsstring></argsstring>
         <name>per_dim_stats</name>
+        <qualifiedname>faiss::MatrixStats::per_dim_stats</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -149,6 +159,7 @@
         <definition>std::unordered_map&lt;uint64_t, Occurrence&gt; faiss::MatrixStats::occurrences</definition>
         <argsstring></argsstring>
         <name>occurrences</name>
+        <qualifiedname>faiss::MatrixStats::occurrences</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -162,6 +173,7 @@
         <definition>char* faiss::MatrixStats::buf</definition>
         <argsstring></argsstring>
         <name>buf</name>
+        <qualifiedname>faiss::MatrixStats::buf</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -175,6 +187,7 @@
         <definition>size_t faiss::MatrixStats::nbuf</definition>
         <argsstring></argsstring>
         <name>nbuf</name>
+        <qualifiedname>faiss::MatrixStats::nbuf</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -183,13 +196,14 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="67" column="12" bodyfile="faiss/MatrixStats.h" bodystart="67" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1MatrixStats_1add5a53b274bce4decd3de1a91eeb1036" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::MatrixStats::MatrixStats</definition>
         <argsstring>(size_t n, size_t d, const float *x)</argsstring>
         <name>MatrixStats</name>
+        <qualifiedname>faiss::MatrixStats::MatrixStats</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -215,6 +229,7 @@
         <definition>void faiss::MatrixStats::do_comment</definition>
         <argsstring>(const char *fmt,...)</argsstring>
         <name>do_comment</name>
+        <qualifiedname>faiss::MatrixStats::do_comment</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fmt</declname>
@@ -230,7 +245,7 @@
         </inbodydescription>
         <location file="faiss/MatrixStats.h" line="68" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

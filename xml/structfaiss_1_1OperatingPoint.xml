@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1OperatingPoint" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OperatingPoint</compoundname>
     <includes refid="AutoTune_8h" local="no">AutoTune.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1OperatingPoint_1ad218d1641b6e32d043a215542485a457" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double faiss::OperatingPoint::perf</definition>
         <argsstring></argsstring>
         <name>perf</name>
+        <qualifiedname>faiss::OperatingPoint::perf</qualifiedname>
         <briefdescription>
 <para>performance measure (output of a Criterion) </para>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>double faiss::OperatingPoint::t</definition>
         <argsstring></argsstring>
         <name>t</name>
+        <qualifiedname>faiss::OperatingPoint::t</qualifiedname>
         <briefdescription>
 <para>corresponding execution time (ms) </para>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>std::string faiss::OperatingPoint::key</definition>
         <argsstring></argsstring>
         <name>key</name>
+        <qualifiedname>faiss::OperatingPoint::key</qualifiedname>
         <briefdescription>
 <para>key that identifies this op pt </para>
         </briefdescription>
@@ -51,6 +54,7 @@
         <definition>int64_t faiss::OperatingPoint::cno</definition>
         <argsstring></argsstring>
         <name>cno</name>
+        <qualifiedname>faiss::OperatingPoint::cno</qualifiedname>
         <briefdescription>
 <para>integer identifier </para>
         </briefdescription>
@@ -60,7 +64,7 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="89" column="13" bodyfile="faiss/AutoTune.h" bodystart="89" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

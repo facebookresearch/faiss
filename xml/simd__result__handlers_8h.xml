@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simd__result__handlers_8h" kind="file" language="C++">
     <compoundname>simd_result_handlers.h</compoundname>
     <includes local="no">algorithm</includes>
@@ -14,50 +14,11 @@
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <includes refid="partitioning_8h" local="no">faiss/utils/partitioning.h</includes>
     <incdepgraph>
-      <node id="20">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="34">
-        <label>faiss/utils/AlignedTable.h</label>
-        <link refid="AlignedTable_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
+      <node id="26">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
         <childnode refid="22" relation="include">
         </childnode>
-      </node>
-      <node id="12">
-        <label>limits</label>
-      </node>
-      <node id="22">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>cstdint</label>
-      </node>
-      <node id="9">
-        <label>stdint.h</label>
       </node>
       <node id="28">
         <label>faiss/impl/AuxIndexStructures.h</label>
@@ -77,14 +38,67 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>cmath</label>
+      <node id="19">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
       </node>
-      <node id="10">
-        <label>cassert</label>
+      <node id="20">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
-      <node id="18">
-        <label>string</label>
+      <node id="24">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>faiss/impl/ResultHandler.h</label>
+        <link refid="ResultHandler_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/simd_result_handlers.h</label>
@@ -112,40 +126,21 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="25">
-        <label>unordered_set</label>
-      </node>
-      <node id="21">
-        <label>exception</label>
-      </node>
-      <node id="24">
-        <label>faiss/impl/IDSelector.h</label>
-        <link refid="IDSelector_8h_source"/>
-        <childnode refid="25" relation="include">
+      <node id="34">
+        <label>faiss/utils/AlignedTable.h</label>
+        <link refid="AlignedTable_8h_source"/>
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-      </node>
-      <node id="31">
-        <label>faiss/utils/partitioning.h</label>
-        <link refid="partitioning_8h_source"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-      </node>
-      <node id="11">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
-      <node id="13">
-        <label>utility</label>
       </node>
       <node id="5">
         <label>faiss/utils/Heap.h</label>
@@ -179,11 +174,21 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="23">
-        <label>cstdlib</label>
+      <node id="31">
+        <label>faiss/utils/partitioning.h</label>
+        <link refid="partitioning_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
-      <node id="33">
-        <label>iostream</label>
+      <node id="15">
+        <label>faiss/utils/simdlib.h</label>
+        <link refid="simdlib_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
       <node id="16">
         <label>faiss/utils/simdlib_emulated.h</label>
@@ -197,70 +202,65 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>climits</label>
-      </node>
-      <node id="30">
-        <label>mutex</label>
-      </node>
-      <node id="26">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/utils/simdlib.h</label>
-        <link refid="simdlib_8h_source"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>type_traits</label>
-      </node>
       <node id="2">
         <label>algorithm</label>
       </node>
-      <node id="32">
-        <label>stdio.h</label>
+      <node id="10">
+        <label>cassert</label>
       </node>
-      <node id="27">
-        <label>faiss/impl/ResultHandler.h</label>
-        <link refid="ResultHandler_8h_source"/>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
+      <node id="6">
+        <label>climits</label>
+      </node>
+      <node id="7">
+        <label>cmath</label>
+      </node>
+      <node id="17">
+        <label>cstdint</label>
+      </node>
+      <node id="11">
+        <label>cstdio</label>
+      </node>
+      <node id="23">
+        <label>cstdlib</label>
       </node>
       <node id="8">
         <label>cstring</label>
       </node>
-      <node id="19">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
+      <node id="21">
+        <label>exception</label>
+      </node>
+      <node id="33">
+        <label>iostream</label>
+      </node>
+      <node id="12">
+        <label>limits</label>
       </node>
       <node id="29">
         <label>memory</label>
+      </node>
+      <node id="30">
+        <label>mutex</label>
+      </node>
+      <node id="9">
+        <label>stdint.h</label>
+      </node>
+      <node id="32">
+        <label>stdio.h</label>
+      </node>
+      <node id="18">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>type_traits</label>
+      </node>
+      <node id="25">
+        <label>unordered_set</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1SIMDResultHandler" prot="public">faiss::SIMDResultHandler</innerclass>
@@ -327,7 +327,7 @@
 <codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>the<sp/>sub-matrix<sp/>that<sp/>is<sp/>being<sp/>computed</highlight></codeline>
 <codeline lineno="44" refid="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0" kindref="member">set_block_origin</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j0)<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">~SIMDResultHandler</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="47"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Result<sp/>handler<sp/>that<sp/>will<sp/>return<sp/>float<sp/>resutls<sp/>eventually<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -371,7 +371,7 @@
 <codeline lineno="87"><highlight class="normal"></highlight></codeline>
 <codeline lineno="88" refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a911a9882d91074ff0318a592d60f328d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a911a9882d91074ff0318a592d60f328d" kindref="member">set_block_origin</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"><sp/>{}</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" kindref="compound">DummyResultHandler</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" kindref="compound">~DummyResultHandler</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="91"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="93"><highlight class="comment">/**<sp/>memorize<sp/>results<sp/>in<sp/>a<sp/>nq-by-nb<sp/>matrix.</highlight></codeline>
@@ -429,7 +429,7 @@
 <codeline lineno="145"><highlight class="comment">/**<sp/>Result<sp/>handler<sp/>that<sp/>compares<sp/>distances<sp/>to<sp/>check<sp/>if<sp/>they<sp/>need<sp/>to<sp/>be<sp/>kept<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="146"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map&gt;</highlight></codeline>
 <codeline lineno="147" refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref><sp/>:<sp/><ref refid="structfaiss_1_1SIMDResultHandlerToFloat" kindref="compound">SIMDResultHandlerToFloat</ref><sp/>{</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
 <codeline lineno="149"><highlight class="normal"></highlight></codeline>
 <codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>disable<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="151"><highlight class="normal"></highlight></codeline>
@@ -484,7 +484,7 @@
 <codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref><sp/>thr16(thr);</highlight></codeline>
 <codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint32_t<sp/>lt_mask;</highlight></codeline>
 <codeline lineno="202"><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_min<sp/>=<sp/>C::is_max;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_min<sp/>=<sp/>C::is_max;</highlight></codeline>
 <codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(keep_min)<sp/>{</highlight></codeline>
 <codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lt_mask<sp/>=<sp/>~cmp_ge32(d0,<sp/>d1,<sp/>thr16);</highlight></codeline>
 <codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
@@ -505,16 +505,16 @@
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lt_mask;</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="223"><highlight class="normal"></highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">~ResultHandlerCompare</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="225"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="226"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="227"><highlight class="comment">/**<sp/>Special<sp/>version<sp/>for<sp/>k=1<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="228"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="229" refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" kindref="compound">SingleResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>&lt;C,<sp/>with_id_map&gt;<sp/>{</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
-<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::normalizers;</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::normalizers;</highlight></codeline>
 <codeline lineno="234"><highlight class="normal"></highlight></codeline>
 <codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int16_t&gt;<sp/>idis;</highlight></codeline>
 <codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis;</highlight></codeline>
@@ -593,10 +593,10 @@
 <codeline lineno="309"><highlight class="comment">/**<sp/>Structure<sp/>that<sp/>collects<sp/>results<sp/>in<sp/>a<sp/>min-<sp/>or<sp/>max-heap<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="310"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="311" refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler" kindref="compound">HeapHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>&lt;C,<sp/>with_id_map&gt;<sp/>{</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
-<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::normalizers;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::normalizers;</highlight></codeline>
 <codeline lineno="316"><highlight class="normal"></highlight></codeline>
 <codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint16_t&gt;<sp/>idis;</highlight></codeline>
 <codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;TI&gt;<sp/>iids;</highlight></codeline>
@@ -702,10 +702,10 @@
 <codeline lineno="418"><highlight class="comment">/**<sp/>Handler<sp/>built<sp/>from<sp/>several<sp/>ReservoirTopN<sp/>(one<sp/>per<sp/>query)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="419"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="420" refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler" kindref="compound">ReservoirHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>&lt;C,<sp/>with_id_map&gt;<sp/>{</highlight></codeline>
-<codeline lineno="421"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="422"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
-<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::normalizers;</highlight></codeline>
+<codeline lineno="421"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
+<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::normalizers;</highlight></codeline>
 <codeline lineno="425"><highlight class="normal"></highlight></codeline>
 <codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>capacity;<sp/></highlight><highlight class="comment">//<sp/>rounded<sp/>up<sp/>to<sp/>multiple<sp/>of<sp/>16</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="427"><highlight class="normal"></highlight></codeline>
@@ -780,7 +780,7 @@
 <codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="497"><highlight class="normal"></highlight></codeline>
 <codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>end()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Cf<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>std::conditional&lt;</highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Cf<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>std::conditional&lt;</highlight></codeline>
 <codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>C::is_max,</highlight></codeline>
 <codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int64_t&gt;</ref>,</highlight></codeline>
 <codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1CMin" kindref="compound">CMin&lt;float, int64_t&gt;</ref>&gt;::type;</highlight></codeline>
@@ -825,11 +825,11 @@
 <codeline lineno="541"><highlight class="normal"></highlight></codeline>
 <codeline lineno="542"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="543" refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RangeHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare</ref>&lt;C,<sp/>with_id_map&gt;<sp/>{</highlight></codeline>
-<codeline lineno="544"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="545"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="546"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
-<codeline lineno="547"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::normalizers;</highlight></codeline>
-<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::nq;</highlight></codeline>
+<codeline lineno="544"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="545"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="546"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">ResultHandlerCompare&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
+<codeline lineno="547"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::normalizers;</highlight></codeline>
+<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::nq;</highlight></codeline>
 <codeline lineno="549"><highlight class="normal"></highlight></codeline>
 <codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>&amp;<sp/>rres;</highlight></codeline>
 <codeline lineno="551"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius;</highlight></codeline>
@@ -931,11 +931,11 @@
 <codeline lineno="647"><highlight class="normal"></highlight><highlight class="comment">//<sp/>handler<sp/>for<sp/>a<sp/>subset<sp/>of<sp/>queries</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="648"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">_map<sp/>=<sp/>false&gt;</highlight></codeline>
 <codeline lineno="649" refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler" kindref="compound">PartialRangeHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RangeHandler</ref>&lt;C,<sp/>with_id_map&gt;<sp/>{</highlight></codeline>
-<codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
-<codeline lineno="651"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
-<codeline lineno="652"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RangeHandler&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
-<codeline lineno="653"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::normalizers;</highlight></codeline>
-<codeline lineno="654"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>RHC::nq,<sp/>RHC::q0,<sp/>RHC::triplets,<sp/>RHC::n_per_query;</highlight></codeline>
+<codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T;</highlight></codeline>
+<codeline lineno="651"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">TI<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI;</highlight></codeline>
+<codeline lineno="652"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RHC</ref><sp/>=<sp/><ref refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" kindref="compound">RangeHandler&lt;C, with_id_map&gt;</ref>;</highlight></codeline>
+<codeline lineno="653"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::normalizers;</highlight></codeline>
+<codeline lineno="654"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">RHC::nq,<sp/>RHC::q0,<sp/>RHC::triplets,<sp/>RHC::n_per_query;</highlight></codeline>
 <codeline lineno="655"><highlight class="normal"></highlight></codeline>
 <codeline lineno="656"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref>&amp;<sp/>pres;</highlight></codeline>
 <codeline lineno="657"><highlight class="normal"></highlight></codeline>
@@ -978,7 +978,7 @@
 <codeline lineno="694"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>q<sp/>=<sp/>0;<sp/>q<sp/>&lt;<sp/>nq;<sp/>q++)<sp/>{</highlight></codeline>
 <codeline lineno="695"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>one_a<sp/>=<sp/>1<sp/>/<sp/>normalizers[2<sp/>*<sp/>q];</highlight></codeline>
 <codeline lineno="696"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b<sp/>=<sp/>normalizers[2<sp/>*<sp/>q<sp/>+<sp/>1];</highlight></codeline>
-<codeline lineno="697"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/>qres<sp/>=<sp/>pres.<ref refid="structfaiss_1_1RangeSearchPartialResult_1a71b060b247e70c633896f8fdc2999c9c" kindref="member">new_result</ref>(q<sp/>+<sp/>q0);</highlight></codeline>
+<codeline lineno="697"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref>&amp;<sp/>qres<sp/>=<sp/>pres.<ref refid="structfaiss_1_1RangeSearchPartialResult_1a0ba199c22ed09aebb0f7238229b516e9" kindref="member">new_result</ref>(q<sp/>+<sp/>q0);</highlight></codeline>
 <codeline lineno="698"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>lims[q];<sp/>i<sp/>&lt;<sp/>lims[q<sp/>+<sp/>1];<sp/>i++)<sp/>{</highlight></codeline>
 <codeline lineno="699"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>qres.<ref refid="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" kindref="member">add</ref>(</highlight></codeline>
 <codeline lineno="700"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sorted_triplets[i].dis<sp/>*<sp/>one_a<sp/>+<sp/>b,</highlight></codeline>

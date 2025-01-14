@@ -1,16 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ProgressiveDimIndexFactory" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ProgressiveDimIndexFactory</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public" virt="non-virtual">faiss::gpu::GpuProgressiveDimIndexFactory</derivedcompoundref>
     <includes refid="Clustering_8h" local="no">Clustering.h</includes>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ProgressiveDimIndexFactory_1a9e063b5c17a5d4ff6ca27e2f3807c933" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>virtual Index* faiss::ProgressiveDimIndexFactory::operator()</definition>
+        <definition>virtual Index * faiss::ProgressiveDimIndexFactory::operator()</definition>
         <argsstring>(int dim)</argsstring>
         <name>operator()</name>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac346f9e6604c8d393e995b5d9c411c8b">operator()</reimplementedby>
+        <qualifiedname>faiss::ProgressiveDimIndexFactory::operator()</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ab6588f346d7a2acb9b651b49e4ef9fb9">operator()</reimplementedby>
         <param>
           <type>int</type>
           <declname>dim</declname>
@@ -29,6 +30,7 @@
         <definition>virtual faiss::ProgressiveDimIndexFactory::~ProgressiveDimIndexFactory</definition>
         <argsstring>()</argsstring>
         <name>~ProgressiveDimIndexFactory</name>
+        <qualifiedname>faiss::ProgressiveDimIndexFactory::~ProgressiveDimIndexFactory</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,7 +39,7 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="158" column="13" bodyfile="faiss/Clustering.h" bodystart="158" bodyend="158"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -57,7 +59,7 @@
     </inheritancegraph>
     <location file="faiss/Clustering.h" line="154" column="1" bodyfile="faiss/Clustering.h" bodystart="154" bodyend="159"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" prot="public" virt="virtual"><scope>faiss::ProgressiveDimIndexFactory</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a9e063b5c17a5d4ff6ca27e2f3807c933" prot="public" virt="virtual"><scope>faiss::ProgressiveDimIndexFactory</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a5be0d2fc467c0792f1980658e10f2945" prot="public" virt="virtual"><scope>faiss::ProgressiveDimIndexFactory</scope><name>~ProgressiveDimIndexFactory</name></member>
     </listofallmembers>
   </compounddef>

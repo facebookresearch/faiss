@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="lattice__Zn_8h" kind="file" language="C++">
     <compoundname>lattice_Zn.h</compoundname>
     <includes local="no">stddef.h</includes>
@@ -7,15 +7,6 @@
     <includes local="no">vector</includes>
     <includedby refid="IndexLattice_8h" local="no">faiss/IndexLattice.h</includedby>
     <incdepgraph>
-      <node id="3">
-        <label>stdint.h</label>
-      </node>
-      <node id="2">
-        <label>stddef.h</label>
-      </node>
-      <node id="4">
-        <label>vector</label>
-      </node>
       <node id="1">
         <label>faiss/impl/lattice_Zn.h</label>
         <link refid="lattice__Zn_8h"/>
@@ -25,6 +16,15 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>stddef.h</label>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -136,7 +136,7 @@
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>idx,</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis);</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1EnumeratedVectors" kindref="compound">EnumeratedVectors</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1EnumeratedVectors" kindref="compound">~EnumeratedVectors</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="85"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
 <codeline lineno="87" refid="structfaiss_1_1Repeat" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1Repeat" kindref="compound">Repeat</ref><sp/>{</highlight></codeline>

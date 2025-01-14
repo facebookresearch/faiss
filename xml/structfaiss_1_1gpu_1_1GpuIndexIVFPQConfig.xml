@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexIVFPQConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexIVFConfig</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1a9dbbec78d77d90b7b150f543e477cc49" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::gpu::GpuIndexIVFPQConfig::useFloat16LookupTables</definition>
         <argsstring></argsstring>
         <name>useFloat16LookupTables</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFPQConfig::useFloat16LookupTables</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -24,6 +25,7 @@
         <definition>bool faiss::gpu::GpuIndexIVFPQConfig::usePrecomputedTables</definition>
         <argsstring></argsstring>
         <name>usePrecomputedTables</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFPQConfig::usePrecomputedTables</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -39,6 +41,7 @@
         <definition>bool faiss::gpu::GpuIndexIVFPQConfig::interleavedLayout</definition>
         <argsstring></argsstring>
         <name>interleavedLayout</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFPQConfig::interleavedLayout</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -54,6 +57,7 @@
         <definition>bool faiss::gpu::GpuIndexIVFPQConfig::useMMCodeDistance</definition>
         <argsstring></argsstring>
         <name>useMMCodeDistance</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFPQConfig::useMMCodeDistance</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -70,6 +74,7 @@
         <definition>IndicesOptions faiss::gpu::GpuIndexIVFConfig::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFConfig::indicesOptions</qualifiedname>
         <initializer>= INDICES_64_BIT</initializer>
         <briefdescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>
@@ -85,6 +90,7 @@
         <definition>GpuIndexFlatConfig faiss::gpu::GpuIndexIVFConfig::flatConfig</definition>
         <argsstring></argsstring>
         <name>flatConfig</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFConfig::flatConfig</qualifiedname>
         <briefdescription>
 <para>Configuration for the coarse quantizer object. </para>
         </briefdescription>
@@ -99,6 +105,7 @@
         <definition>bool faiss::gpu::GpuIndexIVFConfig::allowCpuCoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>allowCpuCoarseQuantizer</name>
+        <qualifiedname>faiss::gpu::GpuIndexIVFConfig::allowCpuCoarseQuantizer</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -114,6 +121,7 @@
         <definition>int faiss::gpu::GpuIndexConfig::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::device</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>GPU device on which the index is resident. </para>
@@ -129,6 +137,7 @@
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::memorySpace</qualifiedname>
         <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
         </briefdescription>
@@ -144,6 +153,7 @@
         <definition>bool faiss::gpu::GpuIndexConfig::use_cuvs</definition>
         <argsstring></argsstring>
         <name>use_cuvs</name>
+        <qualifiedname>faiss::gpu::GpuIndexConfig::use_cuvs</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
 <para>Should the index dispatch down to cuVS? </para>
@@ -154,18 +164,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="45" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="45" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::gpu::GpuIndexIVFPQConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="3">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
@@ -176,17 +180,23 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>faiss::gpu::GpuIndexIVFPQConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="3">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
+      </node>
+      <node id="4">
+        <label>faiss::gpu::GpuIndexFlatConfig</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
@@ -197,10 +207,10 @@
           <edgelabel>flatConfig</edgelabel>
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::gpu::GpuIndexFlatConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
-        <childnode refid="3" relation="public-inheritance">
+      <node id="1">
+        <label>faiss::gpu::GpuIndexIVFPQConfig</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

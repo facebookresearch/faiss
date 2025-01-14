@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir">
     <compoundname>faiss/impl</compoundname>
     <innerdir refid="dir_df06d869ac375e073b830f0b1d0f2164">faiss/impl/code_distance</innerdir>

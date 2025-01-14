@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorBatch" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorBatch</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorBatch_1ac97cdc436506d9b7c95c5be7c81911c6" prot="public" static="no" mutable="no">
         <type>std::unordered_set&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
         <definition>std::unordered_set&lt;idx_t&gt; faiss::IDSelectorBatch::set</definition>
         <argsstring></argsstring>
         <name>set</name>
+        <qualifiedname>faiss::IDSelectorBatch::set</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>std::vector&lt;uint8_t&gt; faiss::IDSelectorBatch::bloom</definition>
         <argsstring></argsstring>
         <name>bloom</name>
+        <qualifiedname>faiss::IDSelectorBatch::bloom</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>int faiss::IDSelectorBatch::nbits</definition>
         <argsstring></argsstring>
         <name>nbits</name>
+        <qualifiedname>faiss::IDSelectorBatch::nbits</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>idx_t faiss::IDSelectorBatch::mask</definition>
         <argsstring></argsstring>
         <name>mask</name>
+        <qualifiedname>faiss::IDSelectorBatch::mask</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,13 +61,14 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="86" column="11" bodyfile="faiss/impl/IDSelector.h" bodystart="86" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorBatch_1a005473681349f3353e7ce815644c1bc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorBatch::IDSelectorBatch</definition>
         <argsstring>(size_t n, const idx_t *indices)</argsstring>
         <name>IDSelectorBatch</name>
+        <qualifiedname>faiss::IDSelectorBatch::IDSelectorBatch</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -104,6 +109,7 @@
         <definition>bool faiss::IDSelectorBatch::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorBatch::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -122,6 +128,7 @@
         <definition>faiss::IDSelectorBatch::~IDSelectorBatch</definition>
         <argsstring>() override</argsstring>
         <name>~IDSelectorBatch</name>
+        <qualifiedname>faiss::IDSelectorBatch::~IDSelectorBatch</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -130,7 +137,7 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="96" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="96" bodyend="96"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -139,27 +146,27 @@
 <para>The hash function used for the bloom filter and GCC&apos;s implementation of unordered_set are just the least significant bits of the id. This works fine for random ids or ids in sequences but will produce many hash collisions if lsb&apos;s are always the same </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::IDSelectorBatch</label>
         <link refid="structfaiss_1_1IDSelectorBatch"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::IDSelectorBatch</label>
         <link refid="structfaiss_1_1IDSelectorBatch"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::IDSelector</label>
-        <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/IDSelector.h" line="79" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="79" bodyend="97"/>

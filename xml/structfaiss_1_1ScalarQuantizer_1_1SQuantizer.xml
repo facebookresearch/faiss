@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::ScalarQuantizer::SQuantizer</compoundname>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
         <definition>virtual void faiss::ScalarQuantizer::SQuantizer::encode_vector</definition>
         <argsstring>(const float *x, uint8_t *code) const =0</argsstring>
         <name>encode_vector</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQuantizer::encode_vector</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -29,6 +30,7 @@
         <definition>virtual void faiss::ScalarQuantizer::SQuantizer::decode_vector</definition>
         <argsstring>(const uint8_t *code, float *x) const =0</argsstring>
         <name>decode_vector</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQuantizer::decode_vector</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -50,6 +52,7 @@
         <definition>virtual faiss::ScalarQuantizer::SQuantizer::~SQuantizer</definition>
         <argsstring>()</argsstring>
         <name>~SQuantizer</name>
+        <qualifiedname>faiss::ScalarQuantizer::SQuantizer::~SQuantizer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -58,7 +61,7 @@
         </inbodydescription>
         <location file="faiss/impl/ScalarQuantizer.h" line="95" column="17" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="95" bodyend="95"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

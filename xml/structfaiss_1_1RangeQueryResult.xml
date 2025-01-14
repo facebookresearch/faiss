@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1RangeQueryResult" kind="struct" language="C++" prot="public">
     <compoundname>faiss::RangeQueryResult</compoundname>
     <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1RangeQueryResult_1a8484aad57f5421a12c16099349e535a2" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
         <definition>idx_t faiss::RangeQueryResult::qno</definition>
         <argsstring></argsstring>
         <name>qno</name>
+        <qualifiedname>faiss::RangeQueryResult::qno</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::RangeQueryResult::nres</definition>
         <argsstring></argsstring>
         <name>nres</name>
+        <qualifiedname>faiss::RangeQueryResult::nres</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>RangeSearchPartialResult* faiss::RangeQueryResult::pres</definition>
         <argsstring></argsstring>
         <name>pres</name>
+        <qualifiedname>faiss::RangeQueryResult::pres</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="94" column="30" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="94" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1RangeQueryResult_1aed669959bc918d9a554f236d40789084" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::RangeQueryResult::add</definition>
         <argsstring>(float dis, idx_t id)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::RangeQueryResult::add</qualifiedname>
         <param>
           <type>float</type>
           <declname>dis</declname>
@@ -67,17 +71,13 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="97" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>result structure for a single query </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
-      <node id="4">
-        <label>faiss::RangeSearchResult</label>
-        <link refid="structfaiss_1_1RangeSearchResult"/>
-      </node>
       <node id="3">
         <label>faiss::BufferList</label>
         <link refid="structfaiss_1_1BufferList"/>
@@ -97,6 +97,10 @@
         <childnode refid="4" relation="usage">
           <edgelabel>res</edgelabel>
         </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::RangeSearchResult</label>
+        <link refid="structfaiss_1_1RangeSearchResult"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/AuxIndexStructures.h" line="91" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="91" bodyend="98"/>

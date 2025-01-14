@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1AllocRequest" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::AllocRequest</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public" virt="non-virtual">faiss::gpu::AllocInfo</basecompoundref>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocRequest_1a93563f81de28e3628f4b657536c95ceb" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::gpu::AllocRequest::size</definition>
         <argsstring></argsstring>
         <name>size</name>
+        <qualifiedname>faiss::gpu::AllocRequest::size</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>The size in bytes of the allocation. </para>
@@ -25,6 +26,7 @@
         <definition>AllocType faiss::gpu::AllocInfo::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <qualifiedname>faiss::gpu::AllocInfo::type</qualifiedname>
         <initializer>= AllocType::Other</initializer>
         <briefdescription>
 <para>The internal category of the allocation. </para>
@@ -40,6 +42,7 @@
         <definition>int faiss::gpu::AllocInfo::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <qualifiedname>faiss::gpu::AllocInfo::device</qualifiedname>
         <initializer>= 0</initializer>
         <briefdescription>
 <para>The device on which the allocation is happening. </para>
@@ -55,6 +58,7 @@
         <definition>MemorySpace faiss::gpu::AllocInfo::space</definition>
         <argsstring></argsstring>
         <name>space</name>
+        <qualifiedname>faiss::gpu::AllocInfo::space</qualifiedname>
         <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
 <para>The memory space of the allocation. </para>
@@ -70,6 +74,7 @@
         <definition>cudaStream_t faiss::gpu::AllocInfo::stream</definition>
         <argsstring></argsstring>
         <name>stream</name>
+        <qualifiedname>faiss::gpu::AllocInfo::stream</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -81,13 +86,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="132" column="18" bodyfile="faiss/gpu/GpuResources.h" bodystart="132" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocRequest_1a0ecb0120bf0c4bcbcc79a916e82e6a0f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::gpu::AllocRequest::AllocRequest</definition>
         <argsstring>()</argsstring>
         <name>AllocRequest</name>
+        <qualifiedname>faiss::gpu::AllocRequest::AllocRequest</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +107,7 @@
         <definition>faiss::gpu::AllocRequest::AllocRequest</definition>
         <argsstring>(const AllocInfo &amp;info, size_t sz)</argsstring>
         <name>AllocRequest</name>
+        <qualifiedname>faiss::gpu::AllocRequest::AllocRequest</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref> &amp;</type>
           <declname>info</declname>
@@ -122,6 +129,7 @@
         <definition>faiss::gpu::AllocRequest::AllocRequest</definition>
         <argsstring>(AllocType at, int dev, MemorySpace sp, cudaStream_t st, size_t sz)</argsstring>
         <name>AllocRequest</name>
+        <qualifiedname>faiss::gpu::AllocRequest::AllocRequest</qualifiedname>
         <param>
           <type>AllocType</type>
           <declname>at</declname>
@@ -155,6 +163,7 @@
         <definition>std::string faiss::gpu::AllocRequest::toString</definition>
         <argsstring>() const</argsstring>
         <name>toString</name>
+        <qualifiedname>faiss::gpu::AllocRequest::toString</qualifiedname>
         <briefdescription>
 <para>Returns a string representation of this request. </para>
         </briefdescription>
@@ -164,7 +173,7 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="160" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Information on what/where an allocation is, along with how big it should be. </para>
     </briefdescription>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1TransformedVectors" kind="struct" language="C++" prot="public">
     <compoundname>faiss::TransformedVectors</compoundname>
     <includes refid="FaissException_8h" local="no">FaissException.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1TransformedVectors_1ab05ac89f6d03cbff6493253d91bb9038" prot="public" static="no" mutable="no">
         <type>const float *</type>
         <definition>const float* faiss::TransformedVectors::x</definition>
         <argsstring></argsstring>
         <name>x</name>
+        <qualifiedname>faiss::TransformedVectors::x</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>bool faiss::TransformedVectors::own_x</definition>
         <argsstring></argsstring>
         <name>own_x</name>
+        <qualifiedname>faiss::TransformedVectors::own_x</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +32,14 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="48" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="48" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1TransformedVectors_1ae9dfe9f6ff89c627513f7e31635c515e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::TransformedVectors::TransformedVectors</definition>
         <argsstring>(const float *x_orig, const float *x)</argsstring>
         <name>TransformedVectors</name>
+        <qualifiedname>faiss::TransformedVectors::TransformedVectors</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x_orig</declname>
@@ -58,6 +61,7 @@
         <definition>faiss::TransformedVectors::~TransformedVectors</definition>
         <argsstring>()</argsstring>
         <name>~TransformedVectors</name>
+        <qualifiedname>faiss::TransformedVectors::~TransformedVectors</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -66,7 +70,7 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="53" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="53" bodyend="57"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ProductQuantizer" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ProductQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1Quantizer" prot="public" virt="non-virtual">faiss::Quantizer</basecompoundref>
     <includes refid="ProductQuantizer_8h" local="no">ProductQuantizer.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="enum" id="structfaiss_1_1ProductQuantizer_1a3a41c6286095e731be744548d9535a35" prot="public" static="no" strong="no">
         <type></type>
         <name>train_type_t</name>
+        <qualifiedname>faiss::ProductQuantizer::train_type_t</qualifiedname>
         <enumvalue id="structfaiss_1_1ProductQuantizer_1a3a41c6286095e731be744548d9535a35a432f9ec2bcb0c1148a088e2c4fbb1145" prot="public">
           <name>Train_default</name>
           <briefdescription>
@@ -56,13 +57,14 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="39" column="5" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="39" bodyend="45"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ProductQuantizer_1a83600e328893ce5f41fe459f5a3acf41" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::ProductQuantizer::M</definition>
         <argsstring></argsstring>
         <name>M</name>
+        <qualifiedname>faiss::ProductQuantizer::M</qualifiedname>
         <briefdescription>
 <para>number of subquantizers </para>
         </briefdescription>
@@ -77,6 +79,7 @@
         <definition>size_t faiss::ProductQuantizer::nbits</definition>
         <argsstring></argsstring>
         <name>nbits</name>
+        <qualifiedname>faiss::ProductQuantizer::nbits</qualifiedname>
         <briefdescription>
 <para>number of bits per quantization index </para>
         </briefdescription>
@@ -91,6 +94,7 @@
         <definition>size_t faiss::ProductQuantizer::dsub</definition>
         <argsstring></argsstring>
         <name>dsub</name>
+        <qualifiedname>faiss::ProductQuantizer::dsub</qualifiedname>
         <briefdescription>
 <para>dimensionality of each subvector </para>
         </briefdescription>
@@ -105,6 +109,7 @@
         <definition>size_t faiss::ProductQuantizer::ksub</definition>
         <argsstring></argsstring>
         <name>ksub</name>
+        <qualifiedname>faiss::ProductQuantizer::ksub</qualifiedname>
         <briefdescription>
 <para>number of centroids for each subquantizer </para>
         </briefdescription>
@@ -119,6 +124,7 @@
         <definition>bool faiss::ProductQuantizer::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <qualifiedname>faiss::ProductQuantizer::verbose</qualifiedname>
         <briefdescription>
 <para>verbose during training? </para>
         </briefdescription>
@@ -133,6 +139,7 @@
         <definition>train_type_t faiss::ProductQuantizer::train_type</definition>
         <argsstring></argsstring>
         <name>train_type</name>
+        <qualifiedname>faiss::ProductQuantizer::train_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -146,6 +153,7 @@
         <definition>ClusteringParameters faiss::ProductQuantizer::cp</definition>
         <argsstring></argsstring>
         <name>cp</name>
+        <qualifiedname>faiss::ProductQuantizer::cp</qualifiedname>
         <briefdescription>
 <para>parameters used during clustering </para>
         </briefdescription>
@@ -160,6 +168,7 @@
         <definition>Index* faiss::ProductQuantizer::assign_index</definition>
         <argsstring></argsstring>
         <name>assign_index</name>
+        <qualifiedname>faiss::ProductQuantizer::assign_index</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -174,6 +183,7 @@
         <definition>std::vector&lt;float&gt; faiss::ProductQuantizer::centroids</definition>
         <argsstring></argsstring>
         <name>centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -188,6 +198,7 @@
         <definition>std::vector&lt;float&gt; faiss::ProductQuantizer::transposed_centroids</definition>
         <argsstring></argsstring>
         <name>transposed_centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::transposed_centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -202,6 +213,7 @@
         <definition>std::vector&lt;float&gt; faiss::ProductQuantizer::centroids_sq_lengths</definition>
         <argsstring></argsstring>
         <name>centroids_sq_lengths</name>
+        <qualifiedname>faiss::ProductQuantizer::centroids_sq_lengths</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -216,6 +228,7 @@
         <definition>std::vector&lt;float&gt; faiss::ProductQuantizer::sdc_table</definition>
         <argsstring></argsstring>
         <name>sdc_table</name>
+        <qualifiedname>faiss::ProductQuantizer::sdc_table</qualifiedname>
         <briefdescription>
 <para>Symmetric Distance Table. </para>
         </briefdescription>
@@ -230,6 +243,7 @@
         <definition>size_t faiss::Quantizer::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>faiss::Quantizer::d</qualifiedname>
         <briefdescription>
 <para>size of the input vectors </para>
         </briefdescription>
@@ -244,6 +258,7 @@
         <definition>size_t faiss::Quantizer::code_size</definition>
         <argsstring></argsstring>
         <name>code_size</name>
+        <qualifiedname>faiss::Quantizer::code_size</qualifiedname>
         <briefdescription>
 <para>bytes per indexed vector </para>
         </briefdescription>
@@ -253,13 +268,14 @@
         </inbodydescription>
         <location file="faiss/impl/Quantizer.h" line="17" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="17" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ProductQuantizer_1a4f0f33c011dffe633a1748a48a082c22" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ProductQuantizer_1ae9124e52d1c7b69ec88e1096af00ac2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float *</type>
-        <definition>float* faiss::ProductQuantizer::get_centroids</definition>
+        <definition>float * faiss::ProductQuantizer::get_centroids</definition>
         <argsstring>(size_t m, size_t i)</argsstring>
         <name>get_centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::get_centroids</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>m</declname>
@@ -277,11 +293,12 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="67" column="11" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="67" bodyend="69"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ProductQuantizer_1a12992f5e54bd77128267411c1b1c14a3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ProductQuantizer_1abbad6c9b36e70aa724b05867323a0719" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const float *</type>
-        <definition>const float* faiss::ProductQuantizer::get_centroids</definition>
+        <definition>const float * faiss::ProductQuantizer::get_centroids</definition>
         <argsstring>(size_t m, size_t i) const</argsstring>
         <name>get_centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::get_centroids</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>m</declname>
@@ -303,6 +320,7 @@
         <definition>void faiss::ProductQuantizer::train</definition>
         <argsstring>(size_t n, const float *x) override</argsstring>
         <name>train</name>
+        <qualifiedname>faiss::ProductQuantizer::train</qualifiedname>
         <reimplements refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9">train</reimplements>
         <param>
           <type>size_t</type>
@@ -336,6 +354,7 @@
         <definition>faiss::ProductQuantizer::ProductQuantizer</definition>
         <argsstring>(size_t d, size_t M, size_t nbits)</argsstring>
         <name>ProductQuantizer</name>
+        <qualifiedname>faiss::ProductQuantizer::ProductQuantizer</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -361,6 +380,7 @@
         <definition>faiss::ProductQuantizer::ProductQuantizer</definition>
         <argsstring>()</argsstring>
         <name>ProductQuantizer</name>
+        <qualifiedname>faiss::ProductQuantizer::ProductQuantizer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -374,6 +394,7 @@
         <definition>void faiss::ProductQuantizer::set_derived_values</definition>
         <argsstring>()</argsstring>
         <name>set_derived_values</name>
+        <qualifiedname>faiss::ProductQuantizer::set_derived_values</qualifiedname>
         <briefdescription>
 <para>compute derived values when d, M and nbits have been set </para>
         </briefdescription>
@@ -388,6 +409,7 @@
         <definition>void faiss::ProductQuantizer::set_params</definition>
         <argsstring>(const float *centroids, int m)</argsstring>
         <name>set_params</name>
+        <qualifiedname>faiss::ProductQuantizer::set_params</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>centroids</declname>
@@ -410,6 +432,7 @@
         <definition>void faiss::ProductQuantizer::compute_code</definition>
         <argsstring>(const float *x, uint8_t *code) const</argsstring>
         <name>compute_code</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_code</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -432,6 +455,7 @@
         <definition>void faiss::ProductQuantizer::compute_codes</definition>
         <argsstring>(const float *x, uint8_t *codes, size_t n) const override</argsstring>
         <name>compute_codes</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_codes</qualifiedname>
         <reimplements refid="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205">compute_codes</reimplements>
         <param>
           <type>const float *</type>
@@ -459,6 +483,7 @@
         <definition>void faiss::ProductQuantizer::compute_codes_with_assign_index</definition>
         <argsstring>(const float *x, uint8_t *codes, size_t n)</argsstring>
         <name>compute_codes_with_assign_index</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_codes_with_assign_index</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -485,6 +510,7 @@
         <definition>void faiss::ProductQuantizer::decode</definition>
         <argsstring>(const uint8_t *code, float *x) const</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::ProductQuantizer::decode</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -507,6 +533,7 @@
         <definition>void faiss::ProductQuantizer::decode</definition>
         <argsstring>(const uint8_t *code, float *x, size_t n) const override</argsstring>
         <name>decode</name>
+        <qualifiedname>faiss::ProductQuantizer::decode</qualifiedname>
         <reimplements refid="structfaiss_1_1Quantizer_1a71b20a9a5f98f9e8889bb22cfb7f9fac">decode</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -552,6 +579,7 @@
         <definition>void faiss::ProductQuantizer::compute_code_from_distance_table</definition>
         <argsstring>(const float *tab, uint8_t *code) const</argsstring>
         <name>compute_code_from_distance_table</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_code_from_distance_table</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>tab</declname>
@@ -574,6 +602,7 @@
         <definition>void faiss::ProductQuantizer::compute_distance_table</definition>
         <argsstring>(const float *x, float *dis_table) const</argsstring>
         <name>compute_distance_table</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_distance_table</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -617,6 +646,7 @@
         <definition>void faiss::ProductQuantizer::compute_inner_prod_table</definition>
         <argsstring>(const float *x, float *dis_table) const</argsstring>
         <name>compute_inner_prod_table</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_inner_prod_table</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -638,6 +668,7 @@
         <definition>void faiss::ProductQuantizer::compute_distance_tables</definition>
         <argsstring>(size_t nx, const float *x, float *dis_tables) const</argsstring>
         <name>compute_distance_tables</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_distance_tables</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nx</declname>
@@ -689,6 +720,7 @@
         <definition>void faiss::ProductQuantizer::compute_inner_prod_tables</definition>
         <argsstring>(size_t nx, const float *x, float *dis_tables) const</argsstring>
         <name>compute_inner_prod_tables</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_inner_prod_tables</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nx</declname>
@@ -714,6 +746,7 @@
         <definition>void faiss::ProductQuantizer::search</definition>
         <argsstring>(const float *x, size_t nx, const uint8_t *codes, const size_t ncodes, float_maxheap_array_t *res, bool init_finalize_heap=true) const</argsstring>
         <name>search</name>
+        <qualifiedname>faiss::ProductQuantizer::search</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -802,6 +835,7 @@
         <definition>void faiss::ProductQuantizer::search_ip</definition>
         <argsstring>(const float *x, size_t nx, const uint8_t *codes, const size_t ncodes, float_minheap_array_t *res, bool init_finalize_heap=true) const</argsstring>
         <name>search_ip</name>
+        <qualifiedname>faiss::ProductQuantizer::search_ip</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -841,6 +875,7 @@
         <definition>void faiss::ProductQuantizer::compute_sdc_table</definition>
         <argsstring>()</argsstring>
         <name>compute_sdc_table</name>
+        <qualifiedname>faiss::ProductQuantizer::compute_sdc_table</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -854,6 +889,7 @@
         <definition>void faiss::ProductQuantizer::search_sdc</definition>
         <argsstring>(const uint8_t *qcodes, size_t nq, const uint8_t *bcodes, const size_t ncodes, float_maxheap_array_t *res, bool init_finalize_heap=true) const</argsstring>
         <name>search_sdc</name>
+        <qualifiedname>faiss::ProductQuantizer::search_sdc</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>qcodes</declname>
@@ -892,6 +928,7 @@
         <definition>void faiss::ProductQuantizer::sync_transposed_centroids</definition>
         <argsstring>()</argsstring>
         <name>sync_transposed_centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::sync_transposed_centroids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -906,6 +943,7 @@
         <definition>void faiss::ProductQuantizer::clear_transposed_centroids</definition>
         <argsstring>()</argsstring>
         <name>clear_transposed_centroids</name>
+        <qualifiedname>faiss::ProductQuantizer::clear_transposed_centroids</qualifiedname>
         <briefdescription>
 <para>Clear transposed centroids table so ones are no longer used. </para>
         </briefdescription>
@@ -915,36 +953,32 @@
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="185" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
 <para>Product <ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>. PQ is trained using k-means, minimizing the L2 distance to centroids. PQ supports L2 and Inner Product search, however the quantization error is biased towards L2 distance. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::Quantizer</label>
-        <link refid="structfaiss_1_1Quantizer"/>
-      </node>
       <node id="1">
         <label>faiss::ProductQuantizer</label>
         <link refid="structfaiss_1_1ProductQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
-      <node id="4">
-        <label>faiss::ClusteringParameters</label>
-        <link refid="structfaiss_1_1ClusteringParameters"/>
-      </node>
-      <node id="3">
-        <label>faiss::Index</label>
-        <link refid="structfaiss_1_1Index"/>
-      </node>
       <node id="2">
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="4">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
       </node>
       <node id="1">
         <label>faiss::ProductQuantizer</label>
@@ -952,11 +986,15 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
         <childnode refid="3" relation="usage">
-          <edgelabel>assign_index</edgelabel>
-        </childnode>
-        <childnode refid="4" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/ProductQuantizer.h" line="29" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="29" bodyend="186"/>
@@ -980,8 +1018,8 @@
       <member refid="structfaiss_1_1ProductQuantizer_1a933a195a8e8deabb40ed1a31661a53c1" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>decode</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1ad8c4cd19b05301ef3afca0589d16a199" prot="public" virt="virtual"><scope>faiss::ProductQuantizer</scope><name>decode</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a467b451ca203544e42c250e4be65b983" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>dsub</name></member>
-      <member refid="structfaiss_1_1ProductQuantizer_1a4f0f33c011dffe633a1748a48a082c22" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>get_centroids</name></member>
-      <member refid="structfaiss_1_1ProductQuantizer_1a12992f5e54bd77128267411c1b1c14a3" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>get_centroids</name></member>
+      <member refid="structfaiss_1_1ProductQuantizer_1ae9124e52d1c7b69ec88e1096af00ac2c" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>get_centroids</name></member>
+      <member refid="structfaiss_1_1ProductQuantizer_1abbad6c9b36e70aa724b05867323a0719" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>get_centroids</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a0feee45e4151547b7a0444c14bad398f" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>ksub</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a83600e328893ce5f41fe459f5a3acf41" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>M</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1ac920fea11f02e8407d12cc99a09f5ea5" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>nbits</name></member>

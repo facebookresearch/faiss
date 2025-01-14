@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1FileIOReader" kind="struct" language="C++" prot="public">
     <compoundname>faiss::FileIOReader</compoundname>
     <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1FileIOReader_1a39ec5a14f8490c870543aae2674af69b" prot="public" static="no" mutable="no">
         <type>FILE *</type>
         <definition>FILE* faiss::FileIOReader::f</definition>
         <argsstring></argsstring>
         <name>f</name>
+        <qualifiedname>faiss::FileIOReader::f</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>bool faiss::FileIOReader::need_close</definition>
         <argsstring></argsstring>
         <name>need_close</name>
+        <qualifiedname>faiss::FileIOReader::need_close</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>std::string faiss::IOReader::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -45,13 +48,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1FileIOReader_1afe31b806e5d08f8306bcaeccea8d1533" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOReader::FileIOReader</definition>
         <argsstring>(FILE *rf)</argsstring>
         <name>FileIOReader</name>
+        <qualifiedname>faiss::FileIOReader::FileIOReader</qualifiedname>
         <param>
           <type>FILE *</type>
           <declname>rf</declname>
@@ -69,6 +73,7 @@
         <definition>faiss::FileIOReader::FileIOReader</definition>
         <argsstring>(const char *fname)</argsstring>
         <name>FileIOReader</name>
+        <qualifiedname>faiss::FileIOReader::FileIOReader</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fname</declname>
@@ -86,6 +91,7 @@
         <definition>faiss::FileIOReader::~FileIOReader</definition>
         <argsstring>() override</argsstring>
         <name>~FileIOReader</name>
+        <qualifiedname>faiss::FileIOReader::~FileIOReader</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -99,6 +105,7 @@
         <definition>size_t faiss::FileIOReader::operator()</definition>
         <argsstring>(void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::FileIOReader::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a">operator()</reimplements>
         <param>
           <type>void *</type>
@@ -125,6 +132,7 @@
         <definition>int faiss::FileIOReader::filedescriptor</definition>
         <argsstring>() override</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::FileIOReader::filedescriptor</qualifiedname>
         <reimplements refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6">filedescriptor</reimplements>
         <briefdescription>
         </briefdescription>
@@ -134,7 +142,7 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="76" column="9"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

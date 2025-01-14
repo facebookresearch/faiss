@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simdlib__emulated_8h" kind="file" language="C++">
     <compoundname>simdlib_emulated.h</compoundname>
     <includes local="no">algorithm</includes>
@@ -8,12 +8,6 @@
     <includes local="no">string</includes>
     <includedby refid="simdlib_8h" local="no">faiss/utils/simdlib.h</includedby>
     <incdepgraph>
-      <node id="3">
-        <label>cstdint</label>
-      </node>
-      <node id="5">
-        <label>string</label>
-      </node>
       <node id="1">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h"/>
@@ -29,8 +23,14 @@
       <node id="2">
         <label>algorithm</label>
       </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
       <node id="4">
         <label>cstring</label>
+      </node>
+      <node id="5">
+        <label>string</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -46,12 +46,6 @@
         <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
         <link refid="approx__topk__hamming_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/utils/simdlib_emulated.h</label>
-        <link refid="simdlib__emulated_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="2">
         <label>faiss/utils/simdlib.h</label>
         <link refid="simdlib_8h_source"/>
@@ -60,6 +54,12 @@
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/utils/simdlib_emulated.h</label>
+        <link refid="simdlib__emulated_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

@@ -1,32 +1,23 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="index__factory_8h" kind="file" language="C++">
     <compoundname>index_factory.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
     <incdepgraph>
-      <node id="4">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="5" relation="include">
+      <node id="2">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-      </node>
-      <node id="5">
-        <label>cstdint</label>
-      </node>
-      <node id="8">
-        <label>string</label>
-      </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
-      </node>
-      <node id="7">
-        <label>sstream</label>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="10">
         <label>faiss/IndexBinary.h</label>
@@ -42,24 +33,18 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss/Index.h</label>
-        <link refid="Index_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
       <node id="3">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
         <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -69,6 +54,21 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>sstream</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>typeinfo</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
@@ -93,7 +93,7 @@
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="15"><highlight class="comment">/**<sp/>Build<sp/>and<sp/>index<sp/>with<sp/>the<sp/>sequence<sp/>of<sp/>processing<sp/>steps<sp/>described<sp/>in</highlight></codeline>
 <codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/>the<sp/>string.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" refkind="member"><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" kindref="member">index_factory</ref>(</highlight></codeline>
+<codeline lineno="17" refid="namespacefaiss_1a7920e25266303e1a760a091027143dec" refkind="member"><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="namespacefaiss_1a7920e25266303e1a760a091027143dec" kindref="member">index_factory</ref>(</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>description,</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>);</highlight></codeline>

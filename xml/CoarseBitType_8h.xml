@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="CoarseBitType_8h" kind="file" language="C++">
     <compoundname>CoarseBitType.h</compoundname>
     <includes local="no">cstdint</includes>
     <includedby refid="Level2-inl_8h" local="no">faiss/cppcontrib/sa_decode/Level2-inl.h</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
       <node id="1">
         <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
         <link refid="CoarseBitType_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -20,16 +20,16 @@
         <label>faiss/cppcontrib/SaDecodeKernels.h</label>
         <link refid="SaDecodeKernels_8h_source"/>
       </node>
-      <node id="2">
-        <label>faiss/cppcontrib/sa_decode/Level2-inl.h</label>
-        <link refid="Level2-inl_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
         <link refid="CoarseBitType_8h"/>
         <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/cppcontrib/sa_decode/Level2-inl.h</label>
+        <link refid="Level2-inl_8h_source"/>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -64,12 +64,12 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
 <codeline lineno="20" refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" kindref="compound">CoarseBitType</ref>&lt;8&gt;<sp/>{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>bit_type<sp/>=<sp/>uint8_t;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">bit_type<sp/>=<sp/>uint8_t;</highlight></codeline>
 <codeline lineno="22"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;&gt;</highlight></codeline>
 <codeline lineno="25" refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" kindref="compound">CoarseBitType</ref>&lt;16&gt;<sp/>{</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>bit_type<sp/>=<sp/>uint16_t;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">bit_type<sp/>=<sp/>uint16_t;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>

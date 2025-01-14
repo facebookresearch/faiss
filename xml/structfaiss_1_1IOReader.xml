@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IOReader" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IOReader</compoundname>
     <derivedcompoundref refid="structPyCallbackIOReader" prot="public" virt="non-virtual">PyCallbackIOReader</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1BufferedIOReader" prot="public" virt="non-virtual">faiss::BufferedIOReader</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1FileIOReader" prot="public" virt="non-virtual">faiss::FileIOReader</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1VectorIOReader" prot="public" virt="non-virtual">faiss::VectorIOReader</derivedcompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string faiss::IOReader::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -20,13 +21,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
         <definition>virtual size_t faiss::IOReader::operator()</definition>
         <argsstring>(void *ptr, size_t size, size_t nitems)=0</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::IOReader::operator()</qualifiedname>
         <reimplementedby refid="structfaiss_1_1VectorIOReader_1a7eb8ab296df82e601420c5073f19fa43">operator()</reimplementedby>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1a7b255677a3b90783243ca666d2613a06">operator()</reimplementedby>
         <reimplementedby refid="structfaiss_1_1BufferedIOReader_1aaa0d9fcd666e0b6f8f4b9751f78228da">operator()</reimplementedby>
@@ -56,6 +58,7 @@
         <definition>virtual int faiss::IOReader::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOReader::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -70,6 +73,7 @@
         <definition>virtual faiss::IOReader::~IOReader</definition>
         <argsstring>()</argsstring>
         <name>~IOReader</name>
+        <qualifiedname>faiss::IOReader::~IOReader</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -78,15 +82,15 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="37" column="13" bodyfile="faiss/impl/io.h" bodystart="37" bodyend="37"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="4">
-        <label>faiss::FileIOReader</label>
-        <link refid="structfaiss_1_1FileIOReader"/>
+      <node id="2">
+        <label>PyCallbackIOReader</label>
+        <link refid="structPyCallbackIOReader"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
@@ -96,21 +100,21 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss::VectorIOReader</label>
-        <link refid="structfaiss_1_1VectorIOReader"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>PyCallbackIOReader</label>
-        <link refid="structPyCallbackIOReader"/>
+      <node id="4">
+        <label>faiss::FileIOReader</label>
+        <link refid="structfaiss_1_1FileIOReader"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
         <label>faiss::IOReader</label>
         <link refid="structfaiss_1_1IOReader"/>
+      </node>
+      <node id="5">
+        <label>faiss::VectorIOReader</label>
+        <link refid="structfaiss_1_1VectorIOReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <location file="faiss/impl/io.h" line="27" column="1" bodyfile="faiss/impl/io.h" bodystart="27" bodyend="38"/>

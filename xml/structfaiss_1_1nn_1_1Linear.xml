@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1nn_1_1Linear" kind="struct" language="C++" prot="public">
     <compoundname>faiss::nn::Linear</compoundname>
     <includes refid="NeuralNet_8h" local="no">NeuralNet.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1nn_1_1Linear_1a1b89904f1cacf3a90f7827df74525c93" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::nn::Linear::in_features</definition>
         <argsstring></argsstring>
         <name>in_features</name>
+        <qualifiedname>faiss::nn::Linear::in_features</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::nn::Linear::out_features</definition>
         <argsstring></argsstring>
         <name>out_features</name>
+        <qualifiedname>faiss::nn::Linear::out_features</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::vector&lt;float&gt; faiss::nn::Linear::weight</definition>
         <argsstring></argsstring>
         <name>weight</name>
+        <qualifiedname>faiss::nn::Linear::weight</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>std::vector&lt;float&gt; faiss::nn::Linear::bias</definition>
         <argsstring></argsstring>
         <name>bias</name>
+        <qualifiedname>faiss::nn::Linear::bias</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -56,13 +60,14 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="52" column="17" bodyfile="faiss/utils/NeuralNet.h" bodystart="52" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1nn_1_1Linear_1a3b477a50edce990c0a567b629e6d0770" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::nn::Linear::Linear</definition>
         <argsstring>(size_t in_features, size_t out_features, bool bias=true)</argsstring>
         <name>Linear</name>
+        <qualifiedname>faiss::nn::Linear::Linear</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>in_features</declname>
@@ -89,6 +94,7 @@
         <definition>Tensor2D faiss::nn::Linear::operator()</definition>
         <argsstring>(const Tensor2D &amp;x) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::nn::Linear::operator()</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">Tensor2D</ref> &amp;</type>
           <declname>x</declname>
@@ -101,7 +107,7 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="56" column="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>minimal translation of <ref refid="structfaiss_1_1nn_1_1Linear" kindref="compound">nn.Linear</ref> </para>
     </briefdescription>

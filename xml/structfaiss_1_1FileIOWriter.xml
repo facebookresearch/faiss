@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1FileIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>faiss::FileIOWriter</compoundname>
     <basecompoundref refid="structfaiss_1_1IOWriter" prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1FileIOWriter_1acf255930d7040567e3981886eb653468" prot="public" static="no" mutable="no">
         <type>FILE *</type>
         <definition>FILE* faiss::FileIOWriter::f</definition>
         <argsstring></argsstring>
         <name>f</name>
+        <qualifiedname>faiss::FileIOWriter::f</qualifiedname>
         <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
@@ -23,6 +24,7 @@
         <definition>bool faiss::FileIOWriter::need_close</definition>
         <argsstring></argsstring>
         <name>need_close</name>
+        <qualifiedname>faiss::FileIOWriter::need_close</qualifiedname>
         <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
@@ -37,6 +39,7 @@
         <definition>std::string faiss::IOWriter::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOWriter::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -45,13 +48,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="42" column="17" bodyfile="faiss/impl/io.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1a04edda07f635072eb02f5ade60a826cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOWriter::FileIOWriter</definition>
         <argsstring>(FILE *wf)</argsstring>
         <name>FileIOWriter</name>
+        <qualifiedname>faiss::FileIOWriter::FileIOWriter</qualifiedname>
         <param>
           <type>FILE *</type>
           <declname>wf</declname>
@@ -69,6 +73,7 @@
         <definition>faiss::FileIOWriter::FileIOWriter</definition>
         <argsstring>(const char *fname)</argsstring>
         <name>FileIOWriter</name>
+        <qualifiedname>faiss::FileIOWriter::FileIOWriter</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fname</declname>
@@ -86,6 +91,7 @@
         <definition>faiss::FileIOWriter::~FileIOWriter</definition>
         <argsstring>() override</argsstring>
         <name>~FileIOWriter</name>
+        <qualifiedname>faiss::FileIOWriter::~FileIOWriter</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -99,6 +105,7 @@
         <definition>size_t faiss::FileIOWriter::operator()</definition>
         <argsstring>(const void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::FileIOWriter::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11">operator()</reimplements>
         <param>
           <type>const void *</type>
@@ -125,6 +132,7 @@
         <definition>int faiss::FileIOWriter::filedescriptor</definition>
         <argsstring>() override</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::FileIOWriter::filedescriptor</qualifiedname>
         <reimplements refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0">filedescriptor</reimplements>
         <briefdescription>
         </briefdescription>
@@ -134,33 +142,33 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="91" column="9"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
-      </node>
       <node id="1">
         <label>faiss::FileIOWriter</label>
         <link refid="structfaiss_1_1FileIOWriter"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="2">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
-      </node>
       <node id="1">
         <label>faiss::FileIOWriter</label>
         <link refid="structfaiss_1_1FileIOWriter"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/io.h" line="79" column="1" bodyfile="faiss/impl/io.h" bodystart="79" bodyend="92"/>

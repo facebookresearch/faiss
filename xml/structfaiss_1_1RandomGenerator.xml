@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1RandomGenerator" kind="struct" language="C++" prot="public">
     <compoundname>faiss::RandomGenerator</compoundname>
     <includes refid="random_8h" local="no">random.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8" prot="public" static="no" mutable="no">
         <type>std::mt19937</type>
         <definition>std::mt19937 faiss::RandomGenerator::mt</definition>
         <argsstring></argsstring>
         <name>mt</name>
+        <qualifiedname>faiss::RandomGenerator::mt</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/utils/random.h" line="27" column="18" bodyfile="faiss/utils/random.h" bodystart="27" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::RandomGenerator::rand_int</definition>
         <argsstring>()</argsstring>
         <name>rand_int</name>
+        <qualifiedname>faiss::RandomGenerator::rand_int</qualifiedname>
         <briefdescription>
 <para>random positive integer </para>
         </briefdescription>
@@ -38,6 +40,7 @@
         <definition>int64_t faiss::RandomGenerator::rand_int64</definition>
         <argsstring>()</argsstring>
         <name>rand_int64</name>
+        <qualifiedname>faiss::RandomGenerator::rand_int64</qualifiedname>
         <briefdescription>
 <para>random int64_t </para>
         </briefdescription>
@@ -52,6 +55,7 @@
         <definition>int faiss::RandomGenerator::rand_int</definition>
         <argsstring>(int max)</argsstring>
         <name>rand_int</name>
+        <qualifiedname>faiss::RandomGenerator::rand_int</qualifiedname>
         <param>
           <type>int</type>
           <declname>max</declname>
@@ -70,6 +74,7 @@
         <definition>float faiss::RandomGenerator::rand_float</definition>
         <argsstring>()</argsstring>
         <name>rand_float</name>
+        <qualifiedname>faiss::RandomGenerator::rand_float</qualifiedname>
         <briefdescription>
 <para>between 0 and 1 </para>
         </briefdescription>
@@ -84,6 +89,7 @@
         <definition>double faiss::RandomGenerator::rand_double</definition>
         <argsstring>()</argsstring>
         <name>rand_double</name>
+        <qualifiedname>faiss::RandomGenerator::rand_double</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -97,6 +103,7 @@
         <definition>faiss::RandomGenerator::RandomGenerator</definition>
         <argsstring>(int64_t seed=1234)</argsstring>
         <name>RandomGenerator</name>
+        <qualifiedname>faiss::RandomGenerator::RandomGenerator</qualifiedname>
         <param>
           <type>int64_t</type>
           <declname>seed</declname>
@@ -110,7 +117,7 @@
         </inbodydescription>
         <location file="faiss/utils/random.h" line="43" column="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>random generator that can be used in multithreaded contexts </para>
     </briefdescription>

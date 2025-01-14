@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1quantize__lut" kind="namespace" language="C++">
     <compoundname>faiss::quantize_lut</compoundname>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::quantize_lut::round_uint8_per_column</definition>
         <argsstring>(float *tab, size_t n, size_t d, float *a_out=nullptr, float *b_out=nullptr)</argsstring>
         <name>round_uint8_per_column</name>
+        <qualifiedname>faiss::quantize_lut::round_uint8_per_column</qualifiedname>
         <param>
           <type>float *</type>
           <declname>tab</declname>
@@ -43,6 +44,7 @@
         <definition>void faiss::quantize_lut::round_uint8_per_column_multi</definition>
         <argsstring>(float *tab, size_t m, size_t n, size_t d, float *a_out=nullptr, float *b_out=nullptr)</argsstring>
         <name>round_uint8_per_column_multi</name>
+        <qualifiedname>faiss::quantize_lut::round_uint8_per_column_multi</qualifiedname>
         <param>
           <type>float *</type>
           <declname>tab</declname>
@@ -82,6 +84,7 @@
         <definition>void faiss::quantize_lut::quantize_LUT_and_bias</definition>
         <argsstring>(size_t nprobe, size_t M, size_t ksub, bool lut_is_3d, const float *LUT, const float *bias, uint8_t *LUTq, size_t M2, uint16_t *biasq, float *a_out=nullptr, float *b_out=nullptr)</argsstring>
         <name>quantize_LUT_and_bias</name>
+        <qualifiedname>faiss::quantize_lut::quantize_LUT_and_bias</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nprobe</declname>
@@ -153,6 +156,7 @@
         <definition>void faiss::quantize_lut::aq_quantize_LUT_and_bias</definition>
         <argsstring>(size_t nprobe, size_t M, size_t ksub, const float *LUT, const float *bias, size_t M_norm, int norm_scale, uint8_t *LUTq, size_t M2, uint16_t *biasq, float *a_out, float *b_out)</argsstring>
         <name>aq_quantize_LUT_and_bias</name>
+        <qualifiedname>faiss::quantize_lut::aq_quantize_LUT_and_bias</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nprobe</declname>
@@ -214,6 +218,7 @@
         <definition>float faiss::quantize_lut::aq_estimate_norm_scale</definition>
         <argsstring>(size_t M, size_t ksub, size_t M_norm, const float *LUT)</argsstring>
         <name>aq_estimate_norm_scale</name>
+        <qualifiedname>faiss::quantize_lut::aq_estimate_norm_scale</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>M</declname>
@@ -238,7 +243,7 @@
         </inbodydescription>
         <location file="faiss/utils/quantize_lut.h" line="94" column="7" declfile="faiss/utils/quantize_lut.h" declline="94" declcolumn="7"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

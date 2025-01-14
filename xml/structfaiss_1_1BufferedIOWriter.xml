@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BufferedIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BufferedIOWriter</compoundname>
     <basecompoundref refid="structfaiss_1_1IOWriter" prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1BufferedIOWriter_1ad26128c341f7dbf42299930905854442" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IOWriter" kindref="compound">IOWriter</ref> *</type>
         <definition>IOWriter* faiss::BufferedIOWriter::writer</definition>
         <argsstring></argsstring>
         <name>writer</name>
+        <qualifiedname>faiss::BufferedIOWriter::writer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>size_t faiss::BufferedIOWriter::bsz</definition>
         <argsstring></argsstring>
         <name>bsz</name>
+        <qualifiedname>faiss::BufferedIOWriter::bsz</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>size_t faiss::BufferedIOWriter::ofs</definition>
         <argsstring></argsstring>
         <name>ofs</name>
+        <qualifiedname>faiss::BufferedIOWriter::ofs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>size_t faiss::BufferedIOWriter::ofs2</definition>
         <argsstring></argsstring>
         <name>ofs2</name>
+        <qualifiedname>faiss::BufferedIOWriter::ofs2</qualifiedname>
         <briefdescription>
 <para>number of bytes received from caller </para>
         </briefdescription>
@@ -62,6 +66,7 @@
         <definition>size_t faiss::BufferedIOWriter::b0</definition>
         <argsstring></argsstring>
         <name>b0</name>
+        <qualifiedname>faiss::BufferedIOWriter::b0</qualifiedname>
         <briefdescription>
 <para>amount of data in buffer </para>
         </briefdescription>
@@ -76,6 +81,7 @@
         <definition>std::vector&lt;char&gt; faiss::BufferedIOWriter::buffer</definition>
         <argsstring></argsstring>
         <name>buffer</name>
+        <qualifiedname>faiss::BufferedIOWriter::buffer</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -89,6 +95,7 @@
         <definition>std::string faiss::IOWriter::name</definition>
         <argsstring></argsstring>
         <name>name</name>
+        <qualifiedname>faiss::IOWriter::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -97,13 +104,14 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="42" column="17" bodyfile="faiss/impl/io.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1BufferedIOWriter_1a4ce1175f2ea6a94fd7e4fb3c57539de1" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::BufferedIOWriter::BufferedIOWriter</definition>
         <argsstring>(IOWriter *writer, size_t bsz=1024 *1024)</argsstring>
         <name>BufferedIOWriter</name>
+        <qualifiedname>faiss::BufferedIOWriter::BufferedIOWriter</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1IOWriter" kindref="compound">IOWriter</ref> *</type>
           <declname>writer</declname>
@@ -126,6 +134,7 @@
         <definition>size_t faiss::BufferedIOWriter::operator()</definition>
         <argsstring>(const void *ptr, size_t size, size_t nitems) override</argsstring>
         <name>operator()</name>
+        <qualifiedname>faiss::BufferedIOWriter::operator()</qualifiedname>
         <reimplements refid="structfaiss_1_1IOWriter_1aa73c701a23e18f4c746f96ac15f52f11">operator()</reimplements>
         <param>
           <type>const void *</type>
@@ -152,6 +161,7 @@
         <definition>faiss::BufferedIOWriter::~BufferedIOWriter</definition>
         <argsstring>() override</argsstring>
         <name>~BufferedIOWriter</name>
+        <qualifiedname>faiss::BufferedIOWriter::~BufferedIOWriter</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -165,6 +175,7 @@
         <definition>virtual int faiss::IOWriter::filedescriptor</definition>
         <argsstring>()</argsstring>
         <name>filedescriptor</name>
+        <qualifiedname>faiss::IOWriter::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOWriter_1af2af08b67cbe1dc170869a0d25438e06">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -174,28 +185,24 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="48" column="17"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="2">
-        <label>faiss::IOWriter</label>
-        <link refid="structfaiss_1_1IOWriter"/>
-      </node>
       <node id="1">
         <label>faiss::BufferedIOWriter</label>
         <link refid="structfaiss_1_1BufferedIOWriter"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="2">
         <label>faiss::IOWriter</label>
         <link refid="structfaiss_1_1IOWriter"/>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="1">
         <label>faiss::BufferedIOWriter</label>
         <link refid="structfaiss_1_1BufferedIOWriter"/>
@@ -204,6 +211,10 @@
         <childnode refid="2" relation="usage">
           <edgelabel>writer</edgelabel>
         </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IOWriter</label>
+        <link refid="structfaiss_1_1IOWriter"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/io.h" line="120" column="1" bodyfile="faiss/impl/io.h" bodystart="120" bodyend="134"/>

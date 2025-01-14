@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1OperatingPoints" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OperatingPoints</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1OperatingPoints_1a48f457047b0511ecc531f250ef8b19c3" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1OperatingPoint" kindref="compound">OperatingPoint</ref> &gt;</type>
         <definition>std::vector&lt;OperatingPoint&gt; faiss::OperatingPoints::all_pts</definition>
         <argsstring></argsstring>
         <name>all_pts</name>
+        <qualifiedname>faiss::OperatingPoints::all_pts</qualifiedname>
         <briefdescription>
 <para>all operating points </para>
         </briefdescription>
@@ -22,6 +23,7 @@
         <definition>std::vector&lt;OperatingPoint&gt; faiss::OperatingPoints::optimal_pts</definition>
         <argsstring></argsstring>
         <name>optimal_pts</name>
+        <qualifiedname>faiss::OperatingPoints::optimal_pts</qualifiedname>
         <briefdescription>
 <para>optimal operating points, sorted by perf </para>
         </briefdescription>
@@ -31,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="97" column="17" bodyfile="faiss/AutoTune.h" bodystart="97" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1OperatingPoints_1a65530fa64d46bcaca21719cf0b1126f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::OperatingPoints::OperatingPoints</definition>
         <argsstring>()</argsstring>
         <name>OperatingPoints</name>
+        <qualifiedname>faiss::OperatingPoints::OperatingPoints</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -51,6 +54,7 @@
         <definition>int faiss::OperatingPoints::merge_with</definition>
         <argsstring>(const OperatingPoints &amp;other, const std::string &amp;prefix=&quot;&quot;)</argsstring>
         <name>merge_with</name>
+        <qualifiedname>faiss::OperatingPoints::merge_with</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1OperatingPoints" kindref="compound">OperatingPoints</ref> &amp;</type>
           <declname>other</declname>
@@ -74,6 +78,7 @@
         <definition>void faiss::OperatingPoints::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>faiss::OperatingPoints::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -87,6 +92,7 @@
         <definition>bool faiss::OperatingPoints::add</definition>
         <argsstring>(double perf, double t, const std::string &amp;key, size_t cno=0)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::OperatingPoints::add</qualifiedname>
         <param>
           <type>double</type>
           <declname>perf</declname>
@@ -118,6 +124,7 @@
         <definition>double faiss::OperatingPoints::t_for_perf</definition>
         <argsstring>(double perf) const</argsstring>
         <name>t_for_perf</name>
+        <qualifiedname>faiss::OperatingPoints::t_for_perf</qualifiedname>
         <param>
           <type>double</type>
           <declname>perf</declname>
@@ -136,6 +143,7 @@
         <definition>void faiss::OperatingPoints::display</definition>
         <argsstring>(bool only_optimal=true) const</argsstring>
         <name>display</name>
+        <qualifiedname>faiss::OperatingPoints::display</qualifiedname>
         <param>
           <type>bool</type>
           <declname>only_optimal</declname>
@@ -155,6 +163,7 @@
         <definition>void faiss::OperatingPoints::all_to_gnuplot</definition>
         <argsstring>(const char *fname) const</argsstring>
         <name>all_to_gnuplot</name>
+        <qualifiedname>faiss::OperatingPoints::all_to_gnuplot</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fname</declname>
@@ -173,6 +182,7 @@
         <definition>void faiss::OperatingPoints::optimal_to_gnuplot</definition>
         <argsstring>(const char *fname) const</argsstring>
         <name>optimal_to_gnuplot</name>
+        <qualifiedname>faiss::OperatingPoints::optimal_to_gnuplot</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>fname</declname>
@@ -185,7 +195,7 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="120" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ReservoirBlockResultHandler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ReservoirBlockResultHandler</compoundname>
     <basecompoundref refid="structfaiss_1_1BlockResultHandler" prot="public" virt="non-virtual">faiss::BlockResultHandler&lt; C, false &gt;</basecompoundref>
@@ -15,12 +15,13 @@
         <defval>false</defval>
       </param>
     </templateparamlist>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1ReservoirBlockResultHandler_1a78cd7df64e2a8da5500174964520ad74" prot="public" static="no">
         <type>typename C::T</type>
         <definition>using faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::T =  typename C::T</definition>
         <argsstring></argsstring>
         <name>T</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::T</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +35,7 @@
         <definition>using faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::TI =  typename C::TI</definition>
         <argsstring></argsstring>
         <name>TI</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::TI</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -42,13 +44,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="372" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="372" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ReservoirBlockResultHandler_1a5a83b53cdd4a2d3b6b4ee255472e88c9" prot="public" static="no" mutable="no">
         <type>T *</type>
         <definition>T* faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::heap_dis_tab</definition>
         <argsstring></argsstring>
         <name>heap_dis_tab</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::heap_dis_tab</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +65,7 @@
         <definition>TI* faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::heap_ids_tab</definition>
         <argsstring></argsstring>
         <name>heap_ids_tab</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::heap_ids_tab</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -75,6 +79,7 @@
         <definition>int64_t faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::k</definition>
         <argsstring></argsstring>
         <name>k</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::k</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -88,6 +93,7 @@
         <definition>size_t faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::capacity</definition>
         <argsstring></argsstring>
         <name>capacity</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::capacity</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +107,7 @@
         <definition>std::vector&lt;T&gt; faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::reservoir_dis</definition>
         <argsstring></argsstring>
         <name>reservoir_dis</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::reservoir_dis</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -114,6 +121,7 @@
         <definition>std::vector&lt;TI&gt; faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::reservoir_ids</definition>
         <argsstring></argsstring>
         <name>reservoir_ids</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::reservoir_ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -127,6 +135,7 @@
         <definition>std::vector&lt;ReservoirTopN&lt;C&gt; &gt; faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::reservoirs</definition>
         <argsstring></argsstring>
         <name>reservoirs</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::reservoirs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -140,6 +149,7 @@
         <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::nq</definition>
         <argsstring></argsstring>
         <name>nq</name>
+        <qualifiedname>faiss::BlockResultHandler::nq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -153,6 +163,7 @@
         <definition>const IDSelector* faiss::BlockResultHandler&lt; C, use_sel &gt;::sel</definition>
         <argsstring></argsstring>
         <name>sel</name>
+        <qualifiedname>faiss::BlockResultHandler::sel</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -166,6 +177,8 @@
         <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::i0</definition>
         <argsstring></argsstring>
         <name>i0</name>
+        <qualifiedname>faiss::BlockResultHandler::i0</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -179,6 +192,8 @@
         <definition>size_t faiss::BlockResultHandler&lt; C, use_sel &gt;::i1</definition>
         <argsstring></argsstring>
         <name>i1</name>
+        <qualifiedname>faiss::BlockResultHandler::i1</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -187,13 +202,14 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="49" column="16" bodyfile="faiss/impl/ResultHandler.h" bodystart="49" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ReservoirBlockResultHandler_1a854054693619aa5697322075c6d40e83" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::ReservoirBlockResultHandler</definition>
         <argsstring>(size_t nq, T *heap_dis_tab, TI *heap_ids_tab, size_t k, const IDSelector *sel=nullptr)</argsstring>
         <name>ReservoirBlockResultHandler</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::ReservoirBlockResultHandler</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nq</declname>
@@ -228,6 +244,7 @@
         <definition>void faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::begin_multiple</definition>
         <argsstring>(size_t i0_2, size_t i1_2)</argsstring>
         <name>begin_multiple</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::begin_multiple</qualifiedname>
         <reimplements refid="structfaiss_1_1BlockResultHandler_1a6fdfd97929109943fec48be75f50f61b">begin_multiple</reimplements>
         <param>
           <type>size_t</type>
@@ -251,6 +268,7 @@
         <definition>void faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::add_results</definition>
         <argsstring>(size_t j0, size_t j1, const T *dis_tab)</argsstring>
         <name>add_results</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::add_results</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>j0</declname>
@@ -277,6 +295,7 @@
         <definition>void faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;::end_multiple</definition>
         <argsstring>() final</argsstring>
         <name>end_multiple</name>
+        <qualifiedname>faiss::ReservoirBlockResultHandler::end_multiple</qualifiedname>
         <reimplements refid="structfaiss_1_1BlockResultHandler_1a6839e4eb6d26a994dac3d248918f9f97">end_multiple</reimplements>
         <briefdescription>
 <para>series of results for queries i0..i1 is done </para>
@@ -292,6 +311,7 @@
         <definition>virtual void faiss::BlockResultHandler&lt; C, use_sel &gt;::add_results</definition>
         <argsstring>(size_t, size_t, const typename C::T *)</argsstring>
         <name>add_results</name>
+        <qualifiedname>faiss::BlockResultHandler::add_results</qualifiedname>
         <param>
           <type>size_t</type>
         </param>
@@ -314,6 +334,7 @@
         <definition>bool faiss::BlockResultHandler&lt; C, use_sel &gt;::is_in_selection</definition>
         <argsstring>(idx_t i) const</argsstring>
         <name>is_in_selection</name>
+        <qualifiedname>faiss::BlockResultHandler::is_in_selection</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>i</declname>
@@ -326,39 +347,46 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="65" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="65" bodyend="67"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+      </node>
       <node id="1">
         <label>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1ReservoirBlockResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::BlockResultHandler&lt; C, false &gt;</label>
-        <link refid="structfaiss_1_1BlockResultHandler"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::BlockResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1BlockResultHandler"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
       <node id="1">
         <label>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1ReservoirBlockResultHandler"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::BlockResultHandler&lt; C, false &gt;</label>
-        <link refid="structfaiss_1_1BlockResultHandler"/>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/ResultHandler.h" line="370" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="370" bodyend="477"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a3999c61c59d095883e32b49dc1b396ca" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler</scope><name>add_results</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" virt="virtual" ambiguityscope="BlockResultHandler&lt; C, false &gt;::"><scope>faiss::ReservoirBlockResultHandler</scope><name>add_results</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" virt="virtual" ambiguityscope="faiss::BlockResultHandler::"><scope>faiss::ReservoirBlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a5c1ecb241b622441dba447dac3d0010f" prot="public" virt="virtual"><scope>faiss::ReservoirBlockResultHandler</scope><name>begin_multiple</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a3c3be3087bc96f44dc6297771e24d18c" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler</scope><name>BlockResultHandler</name></member>
       <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a0e77c75526e9b13131c31e0988bb9bca" prot="public" virt="non-virtual"><scope>faiss::ReservoirBlockResultHandler</scope><name>capacity</name></member>

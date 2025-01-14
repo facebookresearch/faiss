@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorBitmap" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorBitmap</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorBitmap_1a4b76f73cc4d49d76d91e79076121f748" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IDSelectorBitmap::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::IDSelectorBitmap::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>const uint8_t* faiss::IDSelectorBitmap::bitmap</definition>
         <argsstring></argsstring>
         <name>bitmap</name>
+        <qualifiedname>faiss::IDSelectorBitmap::bitmap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -31,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="103" column="19" bodyfile="faiss/impl/IDSelector.h" bodystart="103" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorBitmap_1ac18b21efb8b1b39bface352b8772d73c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorBitmap::IDSelectorBitmap</definition>
         <argsstring>(size_t n, const uint8_t *bitmap)</argsstring>
         <name>IDSelectorBitmap</name>
+        <qualifiedname>faiss::IDSelectorBitmap::IDSelectorBitmap</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -78,6 +81,7 @@
         <definition>bool faiss::IDSelectorBitmap::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorBitmap::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -96,6 +100,7 @@
         <definition>faiss::IDSelectorBitmap::~IDSelectorBitmap</definition>
         <argsstring>() override</argsstring>
         <name>~IDSelectorBitmap</name>
+        <qualifiedname>faiss::IDSelectorBitmap::~IDSelectorBitmap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -104,7 +109,7 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="113" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="113" bodyend="113"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

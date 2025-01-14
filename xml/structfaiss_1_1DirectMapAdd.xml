@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1DirectMapAdd" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DirectMapAdd</compoundname>
     <includes refid="DirectMap_8h" local="no">DirectMap.h</includes>
-      <sectiondef kind="public-type">
+    <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1DirectMapAdd_1a0fdaf0f84ca296c744f91d14d4dc0061" prot="public" static="no">
         <type>DirectMap::Type</type>
         <definition>using faiss::DirectMapAdd::Type =  DirectMap::Type</definition>
         <argsstring></argsstring>
         <name>Type</name>
+        <qualifiedname>faiss::DirectMapAdd::Type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="94" column="5" bodyfile="faiss/invlists/DirectMap.h" bodystart="94" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-attrib">
+    </sectiondef>
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1a49d9d117f75dbca38ce5cc021d070a3e" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref> &amp;</type>
         <definition>DirectMap&amp; faiss::DirectMapAdd::direct_map</definition>
         <argsstring></argsstring>
         <name>direct_map</name>
+        <qualifiedname>faiss::DirectMapAdd::direct_map</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>DirectMap::Type faiss::DirectMapAdd::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <qualifiedname>faiss::DirectMapAdd::type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -50,6 +53,7 @@
         <definition>size_t faiss::DirectMapAdd::ntotal</definition>
         <argsstring></argsstring>
         <name>ntotal</name>
+        <qualifiedname>faiss::DirectMapAdd::ntotal</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +67,7 @@
         <definition>size_t faiss::DirectMapAdd::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::DirectMapAdd::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -76,6 +81,7 @@
         <definition>const idx_t* faiss::DirectMapAdd::xids</definition>
         <argsstring></argsstring>
         <name>xids</name>
+        <qualifiedname>faiss::DirectMapAdd::xids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -89,6 +95,7 @@
         <definition>std::vector&lt;idx_t&gt; faiss::DirectMapAdd::all_ofs</definition>
         <argsstring></argsstring>
         <name>all_ofs</name>
+        <qualifiedname>faiss::DirectMapAdd::all_ofs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -97,13 +104,14 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="102" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="102" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1DirectMapAdd_1acf027302b2e6239431def2101879768f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::DirectMapAdd::DirectMapAdd</definition>
         <argsstring>(DirectMap &amp;direct_map, size_t n, const idx_t *xids)</argsstring>
         <name>DirectMapAdd</name>
+        <qualifiedname>faiss::DirectMapAdd::DirectMapAdd</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DirectMap" kindref="compound">DirectMap</ref> &amp;</type>
           <declname>direct_map</declname>
@@ -129,6 +137,7 @@
         <definition>void faiss::DirectMapAdd::add</definition>
         <argsstring>(size_t i, idx_t list_no, size_t offset)</argsstring>
         <name>add</name>
+        <qualifiedname>faiss::DirectMapAdd::add</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>i</declname>
@@ -155,6 +164,7 @@
         <definition>faiss::DirectMapAdd::~DirectMapAdd</definition>
         <argsstring>()</argsstring>
         <name>~DirectMapAdd</name>
+        <qualifiedname>faiss::DirectMapAdd::~DirectMapAdd</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -163,7 +173,7 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="109" column="5"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Thread-safe way of updating the direct_map. </para>
     </briefdescription>

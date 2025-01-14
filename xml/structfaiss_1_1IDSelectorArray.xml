@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IDSelectorArray" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IDSelectorArray</compoundname>
     <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
     <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorArray_1a108a883417f17e357aa40e568968eb0e" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::IDSelectorArray::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>faiss::IDSelectorArray::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>const idx_t* faiss::IDSelectorArray::ids</definition>
         <argsstring></argsstring>
         <name>ids</name>
+        <qualifiedname>faiss::IDSelectorArray::ids</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -31,13 +33,14 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="56" column="17" bodyfile="faiss/impl/IDSelector.h" bodystart="56" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IDSelectorArray_1a838962b72791aeb8a5c53756b5e68038" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorArray::IDSelectorArray</definition>
         <argsstring>(size_t n, const idx_t *ids)</argsstring>
         <name>IDSelectorArray</name>
+        <qualifiedname>faiss::IDSelectorArray::IDSelectorArray</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -78,6 +81,7 @@
         <definition>bool faiss::IDSelectorArray::is_member</definition>
         <argsstring>(idx_t id) const final</argsstring>
         <name>is_member</name>
+        <qualifiedname>faiss::IDSelectorArray::is_member</qualifiedname>
         <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -96,6 +100,7 @@
         <definition>faiss::IDSelectorArray::~IDSelectorArray</definition>
         <argsstring>() override</argsstring>
         <name>~IDSelectorArray</name>
+        <qualifiedname>faiss::IDSelectorArray::~IDSelectorArray</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -104,7 +109,7 @@
         </inbodydescription>
         <location file="faiss/impl/IDSelector.h" line="66" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="66" bodyend="66"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

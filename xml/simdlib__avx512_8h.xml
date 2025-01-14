@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="simdlib__avx512_8h" kind="file" language="C++">
     <compoundname>simdlib_avx512.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -16,15 +16,6 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>cstdint</label>
-      </node>
-      <node id="4">
-        <label>immintrin.h</label>
-      </node>
-      <node id="3">
-        <label>string</label>
-      </node>
       <node id="7">
         <label>faiss/utils/simdlib_avx2.h</label>
         <link refid="simdlib__avx2_8h_source"/>
@@ -36,9 +27,6 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-      </node>
-      <node id="6">
-        <label>cstdio</label>
       </node>
       <node id="1">
         <label>faiss/utils/simdlib_avx512.h</label>
@@ -53,6 +41,18 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="4">
+        <label>immintrin.h</label>
+      </node>
+      <node id="3">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1simd512bit" prot="public">faiss::simd512bit</innerclass>

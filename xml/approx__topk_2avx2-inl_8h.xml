@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="approx__topk_2avx2-inl_8h" kind="file" language="C++">
     <compoundname>avx2-inl.h</compoundname>
     <includes local="no">immintrin.h</includes>
@@ -7,6 +7,20 @@
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <incdepgraph>
+      <node id="4">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
       <node id="5">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
@@ -19,9 +33,6 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>limits</label>
-      </node>
       <node id="10">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
@@ -29,36 +40,6 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-      </node>
-      <node id="11">
-        <label>cstdint</label>
-      </node>
-      <node id="18">
-        <label>stdint.h</label>
-      </node>
-      <node id="2">
-        <label>immintrin.h</label>
-      </node>
-      <node id="16">
-        <label>cmath</label>
-      </node>
-      <node id="19">
-        <label>cassert</label>
-      </node>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="6">
-        <label>exception</label>
-      </node>
-      <node id="12">
-        <label>cstdio</label>
-      </node>
-      <node id="9">
-        <label>vector</label>
-      </node>
-      <node id="8">
-        <label>utility</label>
       </node>
       <node id="14">
         <label>faiss/utils/Heap.h</label>
@@ -82,16 +63,6 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="20">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
         <link refid="approx__topk_2avx2-inl_8h"/>
@@ -104,28 +75,57 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>cstdlib</label>
+      <node id="20">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>cassert</label>
       </node>
       <node id="15">
         <label>climits</label>
       </node>
+      <node id="16">
+        <label>cmath</label>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>cstdio</label>
+      </node>
+      <node id="13">
+        <label>cstdlib</label>
+      </node>
       <node id="17">
         <label>cstring</label>
       </node>
-      <node id="4">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
+      <node id="6">
+        <label>exception</label>
+      </node>
+      <node id="2">
+        <label>immintrin.h</label>
+      </node>
+      <node id="3">
+        <label>limits</label>
+      </node>
+      <node id="18">
+        <label>stdint.h</label>
+      </node>
+      <node id="7">
+        <label>string</label>
+      </node>
+      <node id="8">
+        <label>utility</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1HeapWithBuckets" prot="public">faiss::HeapWithBuckets</innerclass>
@@ -161,8 +161,8 @@
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;u</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">32_t<sp/>NBUCKETS,<sp/>u</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">32_t<sp/>N&gt;</highlight></codeline>
 <codeline lineno="25" refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HeapWithBuckets" kindref="compound">HeapWithBuckets</ref>&lt;<ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt;float,<sp/>int&gt;,<sp/>NBUCKETS,<sp/>N&gt;<sp/>{</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>constexpr<sp/>uint32_t<sp/>NBUCKETS_8<sp/>=<sp/>NBUCKETS<sp/>/<sp/>8;</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>uint32_t<sp/>NBUCKETS_8<sp/>=<sp/>NBUCKETS<sp/>/<sp/>8;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(NBUCKETS)<sp/>&gt;<sp/>0<sp/>&amp;&amp;<sp/>((NBUCKETS<sp/>%<sp/>8)<sp/>==<sp/>0),</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Number<sp/>of<sp/>buckets<sp/>needs<sp/>to<sp/>be<sp/>8,<sp/>16,<sp/>24,<sp/>...&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
@@ -207,7 +207,7 @@
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k,</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>beam_size<sp/>*<sp/>NBUCKETS<sp/>*<sp/>N);</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>C<sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int&gt;</ref>;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">C<sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int&gt;</ref>;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>main<sp/>loop</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint32_t<sp/>beam_index<sp/>=<sp/>0;<sp/>beam_index<sp/>&lt;<sp/>beam_size;<sp/>beam_index++)<sp/>{</highlight></codeline>

@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HammingComputerDefault" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputerDefault</compoundname>
     <derivedcompoundref refid="structfaiss_1_1HammingComputer" prot="public" virt="non-virtual">faiss::HammingComputer&lt; CODE_SIZE &gt;</derivedcompoundref>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2" prot="public" static="no" mutable="no">
         <type>const uint8_t *</type>
         <definition>const uint8_t * faiss::HammingComputerDefault::a8</definition>
         <argsstring></argsstring>
         <name>a8</name>
+        <qualifiedname>faiss::HammingComputerDefault::a8</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>int faiss::HammingComputerDefault::quotient8</definition>
         <argsstring></argsstring>
         <name>quotient8</name>
+        <qualifiedname>faiss::HammingComputerDefault::quotient8</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>int faiss::HammingComputerDefault::remainder8</definition>
         <argsstring></argsstring>
         <name>remainder8</name>
+        <qualifiedname>faiss::HammingComputerDefault::remainder8</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/avx2-inl.h" line="254" column="9" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="254" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>()</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -63,6 +67,7 @@
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -84,6 +89,7 @@
         <definition>void faiss::HammingComputerDefault::set</definition>
         <argsstring>(const uint8_t *a8_2, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputerDefault::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8_2</declname>
@@ -105,6 +111,7 @@
         <definition>int faiss::HammingComputerDefault::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputerDefault::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -122,6 +129,7 @@
         <definition>int faiss::HammingComputerDefault::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputerDefault::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -135,6 +143,7 @@
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>()</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -148,6 +157,7 @@
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -169,6 +179,7 @@
         <definition>void faiss::HammingComputerDefault::set</definition>
         <argsstring>(const uint8_t *a8_2, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputerDefault::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8_2</declname>
@@ -190,6 +201,7 @@
         <definition>int faiss::HammingComputerDefault::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputerDefault::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -207,6 +219,7 @@
         <definition>int faiss::HammingComputerDefault::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputerDefault::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -220,6 +233,7 @@
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>()</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -233,6 +247,7 @@
         <definition>faiss::HammingComputerDefault::HammingComputerDefault</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>HammingComputerDefault</name>
+        <qualifiedname>faiss::HammingComputerDefault::HammingComputerDefault</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -254,6 +269,7 @@
         <definition>void faiss::HammingComputerDefault::set</definition>
         <argsstring>(const uint8_t *a8, int code_size)</argsstring>
         <name>set</name>
+        <qualifiedname>faiss::HammingComputerDefault::set</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>a8</declname>
@@ -275,6 +291,7 @@
         <definition>int faiss::HammingComputerDefault::hamming</definition>
         <argsstring>(const uint8_t *b8) const</argsstring>
         <name>hamming</name>
+        <qualifiedname>faiss::HammingComputerDefault::hamming</qualifiedname>
         <param>
           <type>const uint8_t *</type>
           <declname>b8</declname>
@@ -292,6 +309,7 @@
         <definition>int faiss::HammingComputerDefault::get_code_size</definition>
         <argsstring>() const</argsstring>
         <name>get_code_size</name>
+        <qualifiedname>faiss::HammingComputerDefault::get_code_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -300,21 +318,21 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="345" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="345" bodyend="347"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>faiss::HammingComputerDefault</label>
-        <link refid="structfaiss_1_1HammingComputerDefault"/>
-      </node>
       <node id="2">
         <label>faiss::HammingComputer&lt; CODE_SIZE &gt;</label>
         <link refid="structfaiss_1_1HammingComputer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::HammingComputerDefault</label>
+        <link refid="structfaiss_1_1HammingComputerDefault"/>
       </node>
     </inheritancegraph>
     <location file="faiss/utils/hamming_distance/avx2-inl.h" line="251" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="251" bodyend="346"/>
