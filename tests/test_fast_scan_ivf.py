@@ -543,6 +543,101 @@ class TestTraining(unittest.TestCase):
         self.do_test(by_residual=True, d=30)
 
 
+class TestReconstruct(unittest.TestCase):
+    """ test reconstruct and sa_encode / sa_decode 
+    (also for a few additive quantizer variants) """
+
+    def do_test(self, by_residual=False):
+        d = 32
+        metric = faiss.METRIC_L2
+
+        ds = datasets.SyntheticDataset(d, 250, 200, 10)
+
+        index = faiss.IndexIVFPQFastScan(
+            faiss.IndexFlatL2(d), d, 50, d // 2, 4, metric)
+        index.by_residual = by_residual
+        index.make_direct_map(True)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Test reconstruction
+        v123 = index.reconstruct(123)  # single id
+        v120_10 = index.reconstruct_n(120, 10)
+        np.testing.assert_array_equal(v120_10[3], v123)
+        v120_10 = index.reconstruct_batch(np.arange(120, 130))
+        np.testing.assert_array_equal(v120_10[3], v123)
+
+        # Test original list reconstruction
+        index.orig_invlists = faiss.ArrayInvertedLists(
+            index.nlist, index.code_size)
+        index.reconstruct_orig_invlists()
+        assert index.orig_invlists.compute_ntotal() == index.ntotal
+
+        # compare with non fast-scan index 
+        index2 = faiss.IndexIVFPQ(
+            index.quantizer, d, 50, d // 2, 4, metric)
+        index2.by_residual = by_residual
+        index2.pq = index.pq
+        index2.is_trained = True
+        index2.replace_invlists(index.orig_invlists, False)
+        index2.ntotal = index.ntotal
+        index2.make_direct_map(True)
+        assert np.all(index.reconstruct(123) == index2.reconstruct(123))
+
+    def test_no_residual(self):
+        self.do_test(by_residual=False)
+
+    def test_by_residual(self):
+        self.do_test(by_residual=True)
+
+    def do_test_generic(self, factory_string, 
+                        by_residual=False, metric=faiss.METRIC_L2): 
+        d = 32
+        ds = datasets.SyntheticDataset(d, 250, 200, 10)
+        index = faiss.index_factory(ds.d, factory_string, metric) 
+        if "IVF" in factory_string:
+            index.by_residual = by_residual
+            index.make_direct_map(True)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Test reconstruction
+        v123 = index.reconstruct(123) # single id
+        v120_10 = index.reconstruct_n(120, 10)
+        np.testing.assert_array_equal(v120_10[3], v123)
+        v120_10 = index.reconstruct_batch(np.arange(120, 130))
+        np.testing.assert_array_equal(v120_10[3], v123)
+        codes = index.sa_encode(ds.get_database()[120:130])
+        np.testing.assert_array_equal(index.sa_decode(codes), v120_10)
+
+        # make sure pointers are correct after serialization
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        codes2 = index2.sa_encode(ds.get_database()[120:130])
+        np.testing.assert_array_equal(codes, codes2)
+        
+
+    def test_ivfpq_residual(self):
+        self.do_test_generic("IVF20,PQ16x4fs", by_residual=True)
+
+    def test_ivfpq_no_residual(self):
+        self.do_test_generic("IVF20,PQ16x4fs", by_residual=False)
+
+    def test_pq(self):
+        self.do_test_generic("PQ16x4fs")
+
+    def test_rq(self):
+        self.do_test_generic("RQ4x4fs", metric=faiss.METRIC_INNER_PRODUCT)
+
+    def test_ivfprq(self):
+        self.do_test_generic("IVF20,PRQ8x2x4fs", by_residual=True, metric=faiss.METRIC_INNER_PRODUCT)
+
+    def test_ivfprq_no_residual(self):
+        self.do_test_generic("IVF20,PRQ8x2x4fs", by_residual=False, metric=faiss.METRIC_INNER_PRODUCT)
+
+    def test_prq(self):
+        self.do_test_generic("PRQ8x2x4fs", metric=faiss.METRIC_INNER_PRODUCT)
+
+
 class TestIsTrained(unittest.TestCase):
 
     def test_issue_2019(self):

@@ -45,13 +45,6 @@
         READANDCHECK((vec).data(), size);                            \
     }
 
-#define READSTRING(s)                     \
-    {                                     \
-        size_t size = (s).size();         \
-        WRITEANDCHECK(&size, 1);          \
-        WRITEANDCHECK((s).c_str(), size); \
-    }
-
 #define WRITEANDCHECK(ptr, n)                         \
     {                                                 \
         size_t ret = (*f)(ptr, sizeof(*(ptr)), n);    \

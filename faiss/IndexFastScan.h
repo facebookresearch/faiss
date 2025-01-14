@@ -133,6 +133,15 @@ struct IndexFastScan : Index {
 
     void merge_from(Index& otherIndex, idx_t add_id = 0) override;
     void check_compatible_for_merge(const Index& otherIndex) const override;
+
+    /// standalone codes interface (but the codes are flattened)
+    size_t sa_code_size() const override {
+        return code_size;
+    }
+
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override {
+        compute_codes(bytes, n, x);
+    }
 };
 
 struct FastScanStats {
