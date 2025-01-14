@@ -30,6 +30,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 #include <faiss/utils/utils.h>
