@@ -11,7 +11,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, ngpu=-1):
+def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, shard=False, ngpu=-1):
     """Computes the exact KNN search results for a dataset that possibly
     does not fit in RAM but for which we have an iterator that
     returns it block by block.
@@ -28,7 +28,9 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2, ngpu=-1):
 
     if ngpu:
         LOG.info('running on %d GPUs' % ngpu)
-        index = faiss.index_cpu_to_all_gpus(index)
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = shard
+        index = faiss.index_cpu_to_all_gpus(index, co=co, ngpu=ngpu)
 
     # compute ground-truth by blocks, and add to heaps
     i0 = 0
