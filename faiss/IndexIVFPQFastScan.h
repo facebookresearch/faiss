@@ -80,8 +80,6 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
             AlignedTable<float>& biases) const override;
-
-    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
 
 } // namespace faiss

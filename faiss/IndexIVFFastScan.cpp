@@ -55,6 +55,7 @@ IndexIVFFastScan::IndexIVFFastScan() {
 }
 
 void IndexIVFFastScan::init_fastscan(
+        Quantizer* fine_quantizer,
         size_t M,
         size_t nbits_init,
         size_t nlist,
@@ -62,13 +63,16 @@ void IndexIVFFastScan::init_fastscan(
         int bbs_2) {
     FAISS_THROW_IF_NOT(bbs_2 % 32 == 0);
     FAISS_THROW_IF_NOT(nbits_init == 4);
+    FAISS_THROW_IF_NOT(fine_quantizer->d == d);
 
+    this->fine_quantizer = fine_quantizer;
     this->M = M;
     this->nbits = nbits_init;
     this->bbs = bbs_2;
     ksub = (1 << nbits_init);
     M2 = roundup(M, 2);
     code_size = M2 / 2;
+    FAISS_THROW_IF_NOT(code_size == fine_quantizer->code_size);
 
     is_trained = false;
     replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
@@ -1373,7 +1377,7 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
 #pragma omp parallel for if (nlist > 100)
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
+    for (idx_t list_no = 0; list_no < nlist; list_no++) {
         InvertedLists::ScopedCodes codes(invlists, list_no);
         InvertedLists::ScopedIds ids(invlists, list_no);
         size_t list_size = invlists->list_size(list_no);
@@ -1392,6 +1396,30 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
             idx_t id = ids.get()[offset];
 
             orig_invlists->add_entry(list_no, id, code.data());
+        }
+    }
+}
+
+void IndexIVFFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
+        const {
+    size_t coarse_size = coarse_code_size();
+
+#pragma omp parallel if (n > 1)
+    {
+        std::vector<float> residual(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * (code_size + coarse_size);
+            int64_t list_no = decode_listno(code);
+            float* xi = x + i * d;
+            fine_quantizer->decode(code + coarse_size, xi, 1);
+            if (by_residual) {
+                quantizer->reconstruct(list_no, residual.data());
+                for (size_t j = 0; j < d; j++) {
+                    xi[j] += residual[j];
+                }
+            }
         }
     }
 }
