@@ -76,6 +76,7 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs)
                precomputed_table.nbytes());
     }
 
+#pragma omp parallel for if (nlist > 100)
     for (size_t i = 0; i < nlist; i++) {
         size_t nb = orig.invlists->list_size(i);
         size_t nb2 = roundup(nb, bbs);

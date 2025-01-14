@@ -1353,34 +1353,30 @@ void IndexIVFFastScan::reconstruct_from_offset(
         int64_t offset,
         float* recons) const {
     // unpack codes
+    size_t coarse_size = coarse_code_size();
+    std::vector<uint8_t> code(coarse_size + code_size, 0);
+    encode_listno(list_no, code.data());
     InvertedLists::ScopedCodes list_codes(invlists, list_no);
-    std::vector<uint8_t> code(code_size, 0);
-    BitstringWriter bsw(code.data(), code_size);
+    BitstringWriter bsw(code.data() + coarse_size, code_size);
+
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
                 pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m);
         bsw.write(c, nbits);
     }
-    sa_decode(1, code.data(), recons);
 
-    // add centroid to it
-    if (by_residual) {
-        std::vector<float> centroid(d);
-        quantizer->reconstruct(list_no, centroid.data());
-        for (int i = 0; i < d; ++i) {
-            recons[i] += centroid[i];
-        }
-    }
+    sa_decode(1, code.data(), recons);
 }
 
 void IndexIVFFastScan::reconstruct_orig_invlists() {
     FAISS_THROW_IF_NOT(orig_invlists != nullptr);
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
+#pragma omp parallel for if (nlist > 100)
     for (size_t list_no = 0; list_no < nlist; list_no++) {
         InvertedLists::ScopedCodes codes(invlists, list_no);
         InvertedLists::ScopedIds ids(invlists, list_no);
-        size_t list_size = orig_invlists->list_size(list_no);
+        size_t list_size = invlists->list_size(list_no);
         std::vector<uint8_t> code(code_size, 0);
 
         for (size_t offset = 0; offset < list_size; offset++) {
