@@ -21,6 +21,7 @@ shutil.copyfile("class_wrappers.py", "faiss/class_wrappers.py")
 shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
+shutil.copyfile("cpuinfo.py", "faiss/cpuinfo.py")
 
 ext = ".pyd" if platform.system() == "Windows" else ".so"
 prefix = "Release/" * (platform.system() == "Windows")

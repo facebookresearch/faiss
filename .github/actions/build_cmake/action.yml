@@ -23,21 +23,45 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        miniconda-version: latest
+        miniforge-version: latest # ensures conda-forge channel is used.
+        channels: conda-forge
+        conda-remove-defaults: 'true'
+        # Set to aarch64 if we're on arm64 because there's no miniforge ARM64 package, just aarch64.
+        # They are the same thing, just named differently.
+        architecture: ${{ runner.arch  == 'ARM64' && 'aarch64' || runner.arch }}
+    # - name: Fix CI failure
+    #   shell: bash
+    #   run: |
+    #     # TODO: do we need to remove everything not installed from conda-forge?
+    #     conda remove -c conda-forge anaconda-anon-usage conda-anaconda-telemetry
     - name: Configure build environment
       shell: bash
       run: |
         # initialize Conda
         conda config --set solver libmamba
+        conda list --show-channel-urls
+        echo "*****1*****"
+        conda config --show channels
+        echo "*****2*****"
+        conda config --show-sources
+        echo "*****2.5*****"
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
+        echo "*****3*****"
+        conda config --show channels
+
+        echo "*****4.1*****"
 
         conda install -y -q python=3.11 cmake=3.26 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
 
+        echo "*****5*****"
+        conda config --show channels
+        echo "*****6*****"
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
           conda install -y -q -c conda-forge openblas=0.3 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
+        echo "*****6.1*****"
 
         # install base packages for X86_64
         if [ "${{ runner.arch }}" = "X64" ]; then
@@ -45,6 +69,7 @@ runs:
           conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
           conda install -y -q mkl=2023 mkl-devel=2023
         fi
+        echo "*****6.2*****"
 
         # no CUDA needed for ROCm so skip this
         if [ "${{ inputs.rocm }}" = "ON" ]; then
@@ -56,15 +81,18 @@ runs:
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs=24.12 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge
         fi
+        echo "*****6.3*****"
         # install test packages
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c "nvidia/label/cuda-12.4.1"
         else
           conda install -y -q "pytorch<2.5" -c pytorch
         fi
+        echo "*****7*****"
+        conda config --show channels
     - name: ROCm - Install dependencies
       if: inputs.rocm == 'ON'
       shell: bash

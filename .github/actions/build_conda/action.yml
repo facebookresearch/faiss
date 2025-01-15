@@ -26,20 +26,43 @@ runs:
         else
           echo "shell=pwsh" >> "$GITHUB_OUTPUT"
         fi
+        echo "*****0*****"
+        echo "${{ runner.arch }}"
+        echo "*****0.1*****"
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        miniconda-version:  latest
+        miniforge-version: latest # ensures conda-forge channel is used.
+        channels: conda-forge
+        conda-remove-defaults: 'true'
+        # Set to aarch64 if we're on arm64 because there's no miniforge ARM64 package, just aarch64.
+        # They are the same thing, just named differently.
+        architecture: ${{ runner.arch  == 'ARM64' && 'aarch64' || runner.arch }}
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
+        echo "*****1*****"
+        conda list --show-channel-urls
+
+
+        # if [ "${{ runner.arch }}" == "ARM64" ]; then
+        #   conda install -y -q _openmp_mutex=4.5=1_gnu
+        # elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
+        #   conda install -y -q _openmp_mutex=4.5=1_gnu
+        # fi
+
+        echo "*****2.4*****"
+        # Lower zlib version to allow intel-openmp=2023 installation  (was "zlib<1.3.0", try without this)
         conda install -y -q "conda!=24.11.0"
+        echo "*****2.5*****"
         conda install -y -q "conda-build!=24.11.0"
-    - name: Fix CI failure
-      shell: ${{ steps.choose_shell.outputs.shell }}
-      if: runner.os != 'Windows'
-      run: conda remove conda-anaconda-telemetry
+        echo "*****2.6*****"
+        conda install -y -q _openmp_mutex=4.5=1_gnu
+    # - name: Fix CI failure
+    #   shell: ${{ steps.choose_shell.outputs.shell }}
+    #   if: runner.os != 'Windows'
+    #   run: conda remove conda-anaconda-telemetry
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -53,7 +76,12 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        # TODO remove
+        echo "*****3.1*****"
+        conda list --show-channel-urls
+        echo "*****3.2*****"
         conda build faiss --python 3.11 -c pytorch
+        echo "*****3.3*****"
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}

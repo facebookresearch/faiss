@@ -313,6 +313,7 @@ configure_file(class_wrappers.py class_wrappers.py COPYONLY)
 configure_file(gpu_wrappers.py gpu_wrappers.py COPYONLY)
 configure_file(extra_wrappers.py extra_wrappers.py COPYONLY)
 configure_file(array_conversions.py array_conversions.py COPYONLY)
+configure_file(cpuinfo.py cpuinfo.py COPYONLY)
 
 # file(GLOB files "${PROJECT_SOURCE_DIR}/../../contrib/*.py")
 file(COPY ${PROJECT_SOURCE_DIR}/../../contrib  DESTINATION .)
