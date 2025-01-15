@@ -20,6 +20,7 @@ from .loader import *
 from faiss import class_wrappers
 from faiss.gpu_wrappers import *
 from faiss.array_conversions import *
+from faiss.cpuinfo import *
 from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
     lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
     ResultHeap, knn, Kmeans, checksum, matrix_bucket_sort_inplace, bucket_sort, \

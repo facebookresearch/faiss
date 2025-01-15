@@ -28,7 +28,7 @@ def supported_instruction_sets():
     """
 
     # Old numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
-    # so let's read Features in numpy.distutils.cpuinfo and search 'sve' entry
+    # so let's read Features in faiss.cpuinfo and search 'sve' entry
     def is_sve_supported():
         if platform.machine() != "aarch64":
             return False
@@ -39,9 +39,9 @@ def supported_instruction_sets():
         import numpy
         if Version(numpy.__version__) >= Version("2.0"):
             return False
-        # platform-dependent legacy fallback using numpy.distutils.cpuinfo
-        import numpy.distutils.cpuinfo
-        return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
+        # platform-dependent legacy fallback using faiss.cpuinfo
+        import faiss.cpuinfo
+        return "sve" in faiss.cpuinfo.cpu.info[0].get('Features', "").split()
 
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
@@ -61,13 +61,13 @@ def supported_instruction_sets():
         if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
             return {"AVX2"}
     elif platform.system() == "Linux":
-        import numpy.distutils.cpuinfo
+        import faiss.cpuinfo
         result = set()
-        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx2" in faiss.cpuinfo.cpu.info[0].get('flags', ""):
             result.add("AVX2")
-        if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512" in faiss.cpuinfo.cpu.info[0].get('flags', ""):
             result.add("AVX512")
-        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512_fp16" in faiss.cpuinfo.cpu.info[0].get('flags', ""):
             # avx512_fp16 is supported starting SPR
             result.add("AVX512_SPR")
         if is_sve_supported():
