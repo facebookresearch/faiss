@@ -166,6 +166,45 @@ void IndexRefine::search(
     }
 }
 
+void IndexRefine::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params_in) const {
+    const IndexRefineSearchParameters* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IndexRefineSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(
+                params, "IndexRefine params have incorrect type");
+    }
+
+    SearchParameters* base_index_params =
+            (params != nullptr) ? params->base_index_params : nullptr;
+
+    base_index->range_search(n, x, radius, result, base_index_params);
+
+#pragma omp parallel if (n > 1)
+    {
+        std::unique_ptr<DistanceComputer> dc(
+                refine_index->get_distance_computer());
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            dc->set_query(x + i * d);
+
+            // reevaluate distances
+            const size_t idx_start = result->lims[i];
+            const size_t idx_end = result->lims[i + 1];
+
+            for (size_t j = idx_start; j < idx_end; j++) {
+                const auto label = result->labels[j];
+                result->distances[j] = (*dc)(label);
+            }
+        }
+    }
+}
+
 void IndexRefine::reconstruct(idx_t key, float* recons) const {
     refine_index->reconstruct(key, recons);
 }
