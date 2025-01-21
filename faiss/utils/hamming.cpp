@@ -173,7 +173,7 @@ void hammings_knn_hc(
         bool order = true,
         bool init_heap = true,
         ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK,
-        const IDSelector* sel = nullptr) {
+        const faiss::IDSelector* sel = nullptr) {
     size_t k = ha->k;
     if (init_heap)
         ha->heapify();
@@ -244,7 +244,7 @@ void hammings_knn_mc(
         size_t k,
         int32_t* __restrict distances,
         int64_t* __restrict labels,
-        const IDSelector* sel) {
+        const faiss::IDSelector* sel) {
     const int nBuckets = bytes_per_code * 8 + 1;
     std::vector<int> all_counters(na * nBuckets, 0);
     std::unique_ptr<int64_t[]> all_ids_per_dis(new int64_t[na * nBuckets * k]);
@@ -300,7 +300,7 @@ void hamming_range_search(
         int radius,
         size_t code_size,
         RangeSearchResult* res,
-        const IDSelector* sel) {
+        const faiss::IDSelector* sel) {
 #pragma omp parallel
     {
         RangeSearchPartialResult pres(res);
@@ -501,7 +501,7 @@ void hammings_knn_hc(
         size_t ncodes,
         int order,
         ApproxTopK_mode_t approx_topk_mode,
-        const IDSelector* sel) {
+        const faiss::IDSelector* sel) {
     Run_hammings_knn_hc r;
     dispatch_HammingComputer(
             ncodes,
@@ -526,7 +526,7 @@ void hammings_knn_mc(
         size_t ncodes,
         int32_t* __restrict distances,
         int64_t* __restrict labels,
-        const IDSelector* sel) {
+        const faiss::IDSelector* sel) {
     Run_hammings_knn_mc r;
     dispatch_HammingComputer(
             ncodes, r, ncodes, a, b, na, nb, k, distances, labels, sel);
@@ -540,7 +540,7 @@ void hamming_range_search(
         int radius,
         size_t code_size,
         RangeSearchResult* result,
-        const IDSelector* sel) {
+        const faiss::IDSelector* sel) {
     Run_hamming_range_search r;
     dispatch_HammingComputer(
             code_size, r, a, b, na, nb, radius, code_size, result, sel);
