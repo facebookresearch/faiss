@@ -50,7 +50,7 @@ class TestComputeGT(unittest.TestCase):
                 yield xb[i0:i0 + bs]
 
         Dnew, Inew = knn_ground_truth(
-            xq, matrix_iterator(xb, 1000), 10, metric)
+            xq, matrix_iterator(xb, 1000), 10, metric, ngpu=0)
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
