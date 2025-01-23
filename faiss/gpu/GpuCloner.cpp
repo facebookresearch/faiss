@@ -506,6 +506,7 @@ GpuProgressiveDimIndexFactory::GpuProgressiveDimIndexFactory(int ngpu) {
 }
 
 GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory() {
+    fprintf(stderr, "GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory\n");
     for (int i = 0; i < vres.size(); i++) {
         delete vres[i];
     }
@@ -514,7 +515,7 @@ GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory() {
 Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
     IndexFlatL2 index(dim);
     ncall++;
-    printf("Incremented ncall: %d\n", ncall);
+    fprintf(stderr, "Incremented ncall: %d\n", ncall);
     return index_cpu_to_gpu_multiple(vres, devices, &index, &options);
 }
 
