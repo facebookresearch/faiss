@@ -72,9 +72,6 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
                   config),
           ivfFlatConfig_(config),
           reserveMemoryVecs_(0) {
-    FAISS_THROW_IF_NOT_MSG(
-            !should_use_cuvs(config),
-            "GpuIndexIVFFlat: cuVS does not support separate coarseQuantizer");
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
     if (this->is_trained) {

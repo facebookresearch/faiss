@@ -109,6 +109,8 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 ### Building with NVIDIA cuVS
 
+[cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building FAISS with cuVS enabled allows a user to choose between regular GPU implementations in FAISS and cuVS implementations for specific algorithms.
+
 The libcuvs dependency should be installed via conda:
 1. With CUDA 12.0 - 12.5:
 ```
