@@ -95,6 +95,8 @@ struct GpuProgressiveDimIndexFactory : ProgressiveDimIndexFactory {
     Index* operator()(int dim) override;
 
     virtual ~GpuProgressiveDimIndexFactory() override;
+
+    void say();
 };
 
 /*********************************************

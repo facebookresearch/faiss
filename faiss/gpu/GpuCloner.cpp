@@ -519,6 +519,12 @@ Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
     return index_cpu_to_gpu_multiple(vres, devices, &index, &options);
 }
 
+void GpuProgressiveDimIndexFactory::say() {
+    fprintf(stderr, "this=%p\n", this); 
+    fprintf(stderr, "ncall=%ld\n", long(ncall)); 
+    fprintf(stderr, "size=%ld\n", devices.size()); 
+}
+
 /*********************************************
  * Cloning binary indexes
  *********************************************/
