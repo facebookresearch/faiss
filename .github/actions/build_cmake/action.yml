@@ -122,7 +122,7 @@ runs:
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
-              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_BUILD_TYPE=Debug \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
