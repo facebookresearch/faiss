@@ -442,13 +442,13 @@ class TestResidualQuantizer(unittest.TestCase):
         rq1 = faiss.ResidualQuantizer(d, 4, 6)
         fac = faiss.GpuProgressiveDimIndexFactory(1)
         rq1.assign_index_factory = fac
-        fac.this.acquire()
+        # fac.this.acquire()  # we want to repro!
         rq1.train(xt)
         print(f"fac.ncall (1) ={fac.ncall}")
         self.assertGreater(fac.ncall, 0)
         print(f"fac.ncall (2) ={fac.ncall}")
         ncall_train = fac.ncall
-        print(f"fac.ncall (3) ={fac.ncall} *** ncall_train={ncall_train}")
+        print(f"fac.ncall (3) ={fac.ncall}   *** ncall_train={ncall_train}")
         err_rq1 = eval_codec(rq1, xb)
         print(f"fac.ncall (4) ={fac.ncall} *** ncall_train={ncall_train}")
         # codes1 = rq1.compute_codes(xb)
