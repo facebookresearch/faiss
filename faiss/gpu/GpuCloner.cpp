@@ -514,6 +514,7 @@ GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory() {
 Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
     IndexFlatL2 index(dim);
     ncall++;
+    printf("Incremented ncall: %d\n", ncall);
     return index_cpu_to_gpu_multiple(vres, devices, &index, &options);
 }
 

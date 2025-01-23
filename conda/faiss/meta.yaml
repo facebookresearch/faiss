@@ -6,10 +6,12 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
+{% set pyver = PY_VER %}
 
 package:
   name: faiss-pkg
   version: {{ version }}
+  mypyver: {{ pyver }}
 
 build:
   number: {{ number }}
@@ -31,22 +33,29 @@ outputs:
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
     requirements:
       build:
+        - python {{ python }}
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - llvm-openmp  # [osx]
+        - llvm-openmp  # [osx or linux64]
         - cmake >=3.24.0
-        - make =4.2 # [not win]
-        - mkl-devel =2023  # [x86_64]
+        - make =4.2 # [not win and not (osx and arm64)]
+        - make =4.4 # [osx and arm64]
+        - mkl-devel =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
       host:
-        - mkl =2023  # [x86_64]
+        - python {{ python }}
+        - mkl =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
         - openblas =0.3 # [not x86_64]
       run:
-        - mkl =2023  # [x86_64]
+        - python {{ python }}
+        - mkl =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
         - openblas =0.3 # [not x86_64]
     test:
       requires:
@@ -66,25 +75,33 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
     requirements:
       build:
+        - python {{ python }}
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig =4.0
         - cmake >=3.24.0
-        - make =4.2 # [not win]
+        - make =4.2 # [not win and not (osx and arm64)]
+        - make =4.4 # [osx and arm64]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        - mkl =2023.0  # [x86_64]
       host:
         - python {{ python }}
         - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        - mkl =2023.0  # [x86_64]
       run:
         - python {{ python }}
         - numpy >=1.19,<2
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - mkl =2023.0  # [x86_64]
     test:
       requires:
         - numpy >=1.19,<2
         - scipy
         - pytorch <2.5
+        - mkl =2023.0  # [x86_64]
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
