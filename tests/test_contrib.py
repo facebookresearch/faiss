@@ -35,7 +35,7 @@ from faiss.contrib.ondisk import merge_ondisk
 
 class TestComputeGT(unittest.TestCase):
 
-    def do_test_compute_GT(self, metric=faiss.METRIC_L2):
+    def do_test_compute_GT(self, metric=faiss.METRIC_L2, ngpu=0):
         d = 64
         xt, xb, xq = get_dataset_2(d, 0, 10000, 100)
 
@@ -50,7 +50,7 @@ class TestComputeGT(unittest.TestCase):
                 yield xb[i0:i0 + bs]
 
         Dnew, Inew = knn_ground_truth(
-            xq, matrix_iterator(xb, 1000), 10, metric)
+            xq, matrix_iterator(xb, 1000), 10, metric, ngpu=ngpu)
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
@@ -61,6 +61,12 @@ class TestComputeGT(unittest.TestCase):
 
     def test_compute_GT_ip(self):
         self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT)
+
+    def test_compute_GT_gpu(self):
+        self.do_test_compute_GT(ngpu=-1)
+
+    def test_compute_GT_ip_gpu(self):
+        self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT, ngpu=-1)
 
 
 class TestDatasets(unittest.TestCase):
