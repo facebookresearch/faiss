@@ -520,6 +520,7 @@ Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
 }
 
 void GpuProgressiveDimIndexFactory::say() {
+    fprintf(stderr, "sizeof(GpuProgressiveDimIndexFactory)=%ld\n", sizeof(GpuProgressiveDimIndexFactory));
     fprintf(stderr, "this=%p\n", this); 
     fprintf(stderr, "ncall=%ld\n", long(ncall)); 
     fprintf(stderr, "size=%ld\n", devices.size()); 

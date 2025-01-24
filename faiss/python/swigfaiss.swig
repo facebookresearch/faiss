@@ -679,6 +679,16 @@ struct faiss::simd16uint16 {};
 
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
+
+%extend faiss::gpu::GpuProgressiveDimIndexFactory {
+    void say_python() {
+        fprintf(stderr, "sizeof(GpuProgressiveDimIndexFactory)=%ld\n", sizeof(faiss::gpu::GpuProgressiveDimIndexFactory));
+        fprintf(stderr, "this=%p\n", $self); 
+        fprintf(stderr, "ncall=%ld\n", long($self->ncall)); 
+        fprintf(stderr, "size=%ld\n", $self->devices.size()); 
+    }
+}
+
 %include  <faiss/gpu/GpuIndex.h>
 #ifdef FAISS_ENABLE_CUVS
 %include  <faiss/gpu/GpuIndexCagra.h>
