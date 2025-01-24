@@ -90,7 +90,8 @@ size_t merge_result_table_with(
         bool keep_min = true,
         int64_t translation = 0);
 
-/// a balanced assignment has a IF of 1
+/// a balanced assignment has a IF of 1, a completely unbalanced assignment has
+/// an IF = k.
 double imbalance_factor(int n, int k, const int64_t* assign);
 
 /// same, takes a histogram as input
