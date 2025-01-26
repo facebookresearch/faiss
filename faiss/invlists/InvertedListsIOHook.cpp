@@ -13,9 +13,9 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <faiss/invlists/OnDiskInvertedLists.h>
-#endif // !_MSC_VER
+#endif // !_WIN32
 
 namespace faiss {
 
@@ -33,7 +33,7 @@ namespace {
 /// std::vector that deletes its contents
 struct IOHookTable : std::vector<InvertedListsIOHook*> {
     IOHookTable() {
-#ifndef _MSC_VER
+#ifndef _WIN32
         push_back(new OnDiskInvertedListsIOHook());
 #endif
         push_back(new BlockInvertedListsIOHook());
