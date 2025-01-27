@@ -31,22 +31,53 @@ outputs:
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
     requirements:
       build:
+        - python {{ python }}
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - llvm-openmp  # [osx]
+        - llvm-openmp  # [osx or linux64]
         - cmake >=3.24.0
-        - make =4.2 # [not win]
-        - mkl-devel =2023  # [x86_64]
+        - make =4.2 # [not win and not (osx and arm64)]
+        - make =4.4 # [osx and arm64]
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl-devel =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl-devel >=2023.2.0  # [x86_64 and not win]
+        - mkl-devel =2023.1.0  # [x86_64 and win]
+        - liblief =0.15.1  # [not win]
+        - python_abi =3.12
+        {% endif %}
       host:
-        - mkl =2023  # [x86_64]
+        - python {{ python }}
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - liblief =0.15.1  # [not win]
+        - python_abi =3.12
+        {% endif %}
         - openblas =0.3 # [not x86_64]
       run:
-        - mkl =2023  # [x86_64]
+        - python {{ python }}
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - liblief =0.12.3  # [not win]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - liblief =0.15.1  # [not win]
+        - python_abi =3.12
+        {% endif %}
         - openblas =0.3 # [not x86_64]
     test:
       requires:
@@ -66,25 +97,61 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
     requirements:
       build:
+        - python {{ python }}
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
         - swig =4.0
         - cmake >=3.24.0
-        - make =4.2 # [not win]
+        - make =4.2 # [not win and not (osx and arm64)]
+        - make =4.4 # [osx and arm64]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - python_abi =3.12
+        {% endif %}
       host:
         - python {{ python }}
         - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - python_abi =3.12
+        {% endif %}
       run:
         - python {{ python }}
         - numpy >=1.19,<2
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - python_abi =3.12
+        {% endif %}
     test:
       requires:
         - numpy >=1.19,<2
         - scipy
         - pytorch <2.5
+        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2023.0  # [x86_64]
+        - python_abi <3.12
+        {% elif PY_VER == '3.12' %}
+        - mkl >=2023.2.0  # [x86_64 and not win]
+        - mkl =2023.1.0  # [x86_64 and win]
+        - python_abi =3.12
+        {% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

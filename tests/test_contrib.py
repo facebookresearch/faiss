@@ -12,6 +12,7 @@ from contextlib import contextmanager
 
 import faiss
 import numpy as np
+import sys
 
 from common_faiss_tests import get_dataset_2
 
@@ -392,6 +393,12 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
+    @unittest.skipIf(
+        platform.system() == 'Windows'
+        and sys.version_info[0] == 3
+        and sys.version_info[1] == 12,
+        'test_binary hangs for Windows on Python 3.12.'
+    )
     def test_binary(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
 
