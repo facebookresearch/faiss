@@ -477,6 +477,16 @@ void IndexIVF::search_preassigned(
             }
         };
 
+        auto init_result_n = [&](float* simi, idx_t* idxi, size_t n) {
+            if (!do_heap_init)
+                return;
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                heap_heapify<HeapForIP>(k * n, simi, idxi);
+            } else {
+                heap_heapify<HeapForL2>(k * n, simi, idxi);
+            }
+        };
+
         auto add_local_results = [&](const float* local_dis,
                                      const idx_t* local_idx,
                                      float* simi,
@@ -712,11 +722,7 @@ void IndexIVF::search_preassigned(
                         keys_by_list[keys[il * nprobe + ikey]].emplace_back(il);
                     }
                 }
-                if (metric_type == METRIC_INNER_PRODUCT) {
-                    heap_heapify<HeapForIP>(k * n, distances, labels);
-                } else {
-                    heap_heapify<HeapForL2>(k * n, distances, labels);
-                }
+                init_result_n(distances, labels, n);
             }
 #pragma omp for schedule(dynamic)
             for (idx_t il = 0; il < invlists->nlist; il++) {
@@ -725,6 +731,8 @@ void IndexIVF::search_preassigned(
                 if (num_of_x > 0) {
                     std::vector<idx_t> local_idx(k * num_of_x);
                     std::vector<float> local_dis(k * num_of_x);
+                    init_result_n(local_dis.data(), local_idx.data(), num_of_x);
+                    
                     scanner->set_query_batched(x, my_list);
                     ndis += scan_one_list(
                             il, 0, local_dis.data(), local_idx.data(), unlimited_list_size);
