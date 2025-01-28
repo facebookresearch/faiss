@@ -432,6 +432,7 @@ void IndexIVF::search_preassigned(
     bool interrupt = false;
     std::mutex exception_mutex;
     std::string exception_string;
+    std::vector<std::vector<idx_t>> keys_by_list;
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
@@ -565,8 +566,13 @@ void IndexIVF::search_preassigned(
                         ids += jmin;
                     }
 
-                    nheap += scanner->scan_codes(
-                            list_size, codes, ids, simi, idxi, k);
+                    if (pmode == 4) {
+                        nheap += scanner->scan_codes_batched(
+                                list_size, scodes.get(), ids, simi, idxi, k);
+                    } else {
+                        nheap += scanner->scan_codes(
+                                list_size, scodes.get(), ids, simi, idxi, k);
+                    }
 
                     return list_size;
                 }
