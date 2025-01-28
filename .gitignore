@@ -20,3 +20,4 @@
 faiss/python/swigfaiss_avx2.swig
 faiss/python/swigfaiss_avx512.swig
 faiss/python/swigfaiss_sve.swig
+faiss_env
