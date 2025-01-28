@@ -273,7 +273,7 @@ if(FAISS_ENABLE_CUVS)
   target_compile_definitions(faiss_avx512_spr PUBLIC USE_NVIDIA_CUVS=1)
 
   # Mark all functions as hidden so that we don't generate
-  # global 'public' functions that also exist in libraft.so
+  # global 'public' functions that also exist in libcuvs.so
   #
   # This ensures that faiss functions will call the local version
   # inside libfaiss.so . This is needed to ensure that things
@@ -285,8 +285,13 @@ if(FAISS_ENABLE_CUVS)
   # respective classes/types in the headers are explicitly marked
   # as 'public' so they can be used by consumers
   set_source_files_properties(
+    GpuIndexCagra.cu
     GpuDistance.cu
+    GpuIndexIVFFlat.cu
+    GpuIndexIVFPQ.cu
+    GpuIndexFlat.cu
     StandardGpuResources.cpp
+    impl/CuvsCagra.cu
     impl/CuvsFlatIndex.cu
     impl/CuvsIVFFlat.cu
     impl/CuvsIVFPQ.cu
