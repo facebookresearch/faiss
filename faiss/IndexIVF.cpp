@@ -1280,6 +1280,12 @@ IndexIVFStats indexIVF_stats;
  * InvertedListScanner
  *************************************************************************/
 
+ void InvertedListScanner::set_query_batched(
+    const float* query_base,
+    std::vector<idx_t>& queries) {
+FAISS_THROW_MSG("set_query_batched not implemented");
+}
+
 size_t InvertedListScanner::scan_codes(
         size_t list_size,
         const uint8_t* codes,
@@ -1344,6 +1350,17 @@ size_t InvertedListScanner::iterate_codes(
         }
     }
     return nup;
+}
+
+size_t InvertedListScanner::scan_codes_batched(
+    size_t n,
+    const uint8_t* codes,
+    const idx_t* ids,
+    float* distances,
+    idx_t* labels,
+    size_t k) const {
+FAISS_THROW_MSG("scan_codes_batched not implemented");
+return 0;
 }
 
 void InvertedListScanner::scan_codes_range(
