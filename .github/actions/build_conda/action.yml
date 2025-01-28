@@ -30,16 +30,22 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        miniconda-version:  latest
+        miniforge-version: latest # ensures conda-forge channel is used.
+        channels: conda-forge
+        conda-remove-defaults: 'true'
+        # Set to runner.arch=aarch64 if we're on arm64 because
+        # there's no miniforge ARM64 package, just aarch64.
+        # They are the same thing, just named differently.
+        # However there is an ARM64 for macOS, so exclude that.
+        architecture: ${{ (runner.arch == 'ARM64' && runner.os != 'macOS') && 'aarch64' || runner.arch }}
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
+        # Ensure starting packages are from conda-forge.
+        conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0"
         conda install -y -q "conda-build!=24.11.0"
-    - name: Fix CI failure
-      shell: ${{ steps.choose_shell.outputs.shell }}
-      if: runner.os != 'Windows'
-      run: conda remove conda-anaconda-telemetry
+        conda list --show-channel-urls
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -94,3 +100,8 @@ runs:
       run: |
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+    - name: Check installed packages channel
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      run: |
+        # Shows that all installed packages are from conda-forge.
+        conda list --show-channel-urls
