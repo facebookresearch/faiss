@@ -8,7 +8,7 @@ import numpy as np
 import unittest
 import faiss
 
-from faiss.contrib import datasets
+from faiss.contrib import datasets, evaluation
 
 
 class TestDistanceComputer(unittest.TestCase):
@@ -119,3 +119,53 @@ class TestIndexRefineSearchParams(unittest.TestCase):
     def test_refine_sq8(self):
         # this case uses the IndexRefine class
         self.do_test("IVF8,PQ2x4np,Refine(SQ8)")
+
+
+class TestIndexRefineRangeSearch(unittest.TestCase):
+
+    def do_test(self, factory_string):
+        d = 32
+        radius = 8
+
+        ds = datasets.SyntheticDataset(d, 1024, 512, 256)
+
+        index = faiss.index_factory(d, factory_string)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        xq = ds.get_queries()
+        xb = ds.get_database()
+
+        # perform a range_search
+        lims_1, D1, I1 = index.range_search(xq, radius)
+
+        # create a baseline (FlatL2)
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.train(ds.get_train())
+        index_flat.add(ds.get_database())
+
+        lims_ref, Dref, Iref = index_flat.range_search(xq, radius)
+
+        # add a refine index on top of the index
+        index_r = faiss.IndexRefine(index, index_flat)
+        lims_2, D2, I2 = index_r.range_search(xq, radius)
+
+        # validate: refined range_search() keeps indices untouched
+        precision_1, recall_1 = evaluation.range_PR(lims_ref, Iref, lims_1, I1)
+
+        precision_2, recall_2 = evaluation.range_PR(lims_ref, Iref, lims_2, I2)
+
+        self.assertAlmostEqual(recall_1, recall_2)
+
+        # validate: refined range_search() updates distances, and new distances are correct L2 distances
+        for iq in range(0, ds.nq):
+            start_lim = lims_2[iq]
+            end_lim = lims_2[iq + 1]
+            for i_lim in range(start_lim, end_lim):
+                idx = I2[i_lim]
+                l2_dis = np.sum(np.square(xq[iq : iq + 1,] - xb[idx : idx + 1,]))
+
+                self.assertAlmostEqual(l2_dis, D2[i_lim], places=4)
+
+
+    def test_refine_1(self):
+        self.do_test("SQ4")

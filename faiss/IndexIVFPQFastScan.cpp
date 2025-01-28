@@ -42,7 +42,7 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(
         : IndexIVFFastScan(quantizer, d, nlist, 0, metric), pq(d, M, nbits) {
     by_residual = false; // set to false by default because it's faster
 
-    init_fastscan(M, nbits, nlist, metric, bbs);
+    init_fastscan(&pq, M, nbits, nlist, metric, bbs);
 }
 
 IndexIVFPQFastScan::IndexIVFPQFastScan() {
@@ -61,7 +61,8 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs)
           pq(orig.pq) {
     FAISS_THROW_IF_NOT(orig.pq.nbits == 4);
 
-    init_fastscan(orig.pq.M, orig.pq.nbits, orig.nlist, orig.metric_type, bbs);
+    init_fastscan(
+            &pq, orig.pq.M, orig.pq.nbits, orig.nlist, orig.metric_type, bbs);
 
     by_residual = orig.by_residual;
     ntotal = orig.ntotal;
@@ -76,7 +77,8 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs)
                precomputed_table.nbytes());
     }
 
-    for (size_t i = 0; i < nlist; i++) {
+#pragma omp parallel for if (nlist > 100)
+    for (idx_t i = 0; i < nlist; i++) {
         size_t nb = orig.invlists->list_size(i);
         size_t nb2 = roundup(nb, bbs);
         AlignedTable<uint8_t> tmp(nb2 * M2 / 2);
@@ -278,30 +280,6 @@ void IndexIVFPQFastScan::compute_LUT(
             pq.compute_inner_prod_tables(n, x, dis_tables.get());
         } else {
             FAISS_THROW_FMT("metric %d not supported", metric_type);
-        }
-    }
-}
-
-void IndexIVFPQFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
-        const {
-    size_t coarse_size = coarse_code_size();
-
-#pragma omp parallel if (n > 1)
-    {
-        std::vector<float> residual(d);
-
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            const uint8_t* code = codes + i * (code_size + coarse_size);
-            int64_t list_no = decode_listno(code);
-            float* xi = x + i * d;
-            pq.decode(code + coarse_size, xi);
-            if (by_residual) {
-                quantizer->reconstruct(list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
-                    xi[j] += residual[j];
-                }
-            }
         }
     }
 }

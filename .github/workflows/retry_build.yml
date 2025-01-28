@@ -15,11 +15,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_DEBUG: api
         run: |
-          gh run watch ${{ inputs.run_id }} > /dev/null 2>&1
+          while gh run view ${{ inputs.run_id }} --json status | grep -q in_progress
+          do
+            echo Workflow in progress - sleeping for 10 minutes then checking again
+            sleep 10m
+          done
 
           # Only retry if there are failed jobs
           if gh run view ${{ inputs.run_id }} --exit-status; then
             echo Workflow succeeded - no retry necessary.
           else
+            echo Workflow failed - initiating retry.
             gh run rerun ${{ inputs.run_id }} --failed
           fi
