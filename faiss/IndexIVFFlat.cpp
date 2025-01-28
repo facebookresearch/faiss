@@ -125,6 +125,14 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 }
 
 namespace {
+    
+template <class T>
+void update_res_ids(T* t, const size_t n, const idx_t* ids) {
+    idx_t* start = t->get_ids(0);
+    for (size_t i = 0; i < n; i++) {
+        start[i] = ids[start[i]];
+    }
+}
 
 template <MetricType metric, class C, bool use_sel>
 struct IVFFlatScanner : InvertedListScanner {
