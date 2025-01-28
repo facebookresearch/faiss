@@ -54,6 +54,12 @@ outputs:
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
+        - cuda-cudart =12.6.77
+        - cuda-cudart-dev =12.6.77
+        - cuda-cudart-static =12.6.77
+        - cuda-cudart_linux-64 =12.6.77  # [linux64]
+        - cuda-cudart-dev_linux-64 =12.6.77  # [linux64]
+        - cuda-cudart-static_linux-64 =12.6.77  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
