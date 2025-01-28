@@ -137,6 +137,8 @@ void update_res_ids(T* t, const size_t n, const idx_t* ids) {
 template <MetricType metric, class C, bool use_sel>
 struct IVFFlatScanner : InvertedListScanner {
     size_t d;
+    size_t nx;
+    bool store_new_xi = false;
 
     IVFFlatScanner(size_t d, bool store_pairs, const IDSelector* sel)
             : InvertedListScanner(store_pairs, sel), d(d) {
@@ -146,6 +148,23 @@ struct IVFFlatScanner : InvertedListScanner {
     const float* xi;
     void set_query(const float* query) override {
         this->xi = query;
+    }
+
+
+    void set_query_batched(const float* query_base, std::vector<idx_t>& queries)
+            override {
+        if (!queries.empty()) {
+            float* new_xi = new float[queries.size() * d];
+            size_t float_size = sizeof(new_xi[0]);
+            for (idx_t i = 0; i < queries.size(); i++) {
+                memcpy(new_xi + i * d,
+                       query_base + queries[i] * d,
+                       d * float_size);
+            }
+            this->xi = new_xi;
+            nx = queries.size();
+            store_new_xi = true;
+        }
     }
 
     void set_list(idx_t list_no, float /* coarse_dis */) override {
@@ -186,6 +205,26 @@ struct IVFFlatScanner : InvertedListScanner {
         return nup;
     }
 
+    size_t scan_codes_batched(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            size_t k) const override {
+        const float* list_vecs = (const float*)codes;
+        if (metric == METRIC_INNER_PRODUCT) {
+            float_minheap_array_t res = {nx, size_t(k), idxi, simi};
+            knn_inner_product(xi, list_vecs, d, nx, list_size, &res);
+            update_res_ids<float_minheap_array_t>(&res, nx * k, ids);
+        } else {
+            float_maxheap_array_t res = {nx, size_t(k), idxi, simi};
+            knn_L2sqr(xi, list_vecs, d, nx, list_size, &res);
+            update_res_ids<float_maxheap_array_t>(&res, nx * k, ids);
+        }
+        return 0;
+    }
+
     void scan_codes_range(
             size_t list_size,
             const uint8_t* codes,
@@ -205,6 +244,12 @@ struct IVFFlatScanner : InvertedListScanner {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 res.add(dis, id);
             }
+        }
+    }
+
+    ~IVFFlatScanner() override {
+        if (store_new_xi) {
+            delete[] xi;
         }
     }
 };
