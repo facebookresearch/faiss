@@ -9,9 +9,11 @@
 {% if cudatoolkit == '11.8.0' %}
 {% set cuda_constraints=">=11.4,<12" %}
 {% set libcublas_constraints=">=11.6,<12" %}
+{% set cudart_constraints="=12.6.77" %}
 {% elif cudatoolkit == '12.4.0' %}
 {% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
+{% set cudart_constraints=">=12.4,<12.5" %}
 {% endif %}
 
 package:
@@ -54,12 +56,12 @@ outputs:
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
-        - cuda-cudart =12.6.77
-        - cuda-cudart-dev =12.6.77
-        - cuda-cudart-static =12.6.77
-        - cuda-cudart_linux-64 =12.6.77  # [linux64]
-        - cuda-cudart-dev_linux-64 =12.6.77  # [linux64]
-        - cuda-cudart-static_linux-64 =12.6.77  # [linux64]
+        - cuda-cudart {{ cudart_constraints }}
+        - cuda-cudart-dev {{ cudart_constraints }}
+        - cuda-cudart-static {{ cudart_constraints }}
+        - cuda-cudart_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-dev_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
