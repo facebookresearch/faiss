@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <random>
 
-#include <omp.h>
 #include <unistd.h>
 
 #include <pthread.h>

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2023-2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 #pragma once
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
 #endif
@@ -47,6 +47,9 @@ class StandardGpuResourcesImpl : public GpuResources {
     StandardGpuResourcesImpl();
 
     ~StandardGpuResourcesImpl() override;
+
+    /// Does the given GPU support bfloat16?
+    bool supportsBFloat16(int device) override;
 
     /// Disable allocation of temporary memory; all temporary memory
     /// requests will call cudaMalloc / cudaFree at the point of use
@@ -80,7 +83,7 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// this stream upon exit from an index or other Faiss GPU call.
     cudaStream_t getDefaultStream(int device) override;
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
     raft::device_resources& getRaftHandle(int device) override;
@@ -152,7 +155,7 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// cuBLAS handle for each device
     std::unordered_map<int, cublasHandle_t> blasHandles_;
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
     /// raft handle for each device
     std::unordered_map<int, raft::device_resources> raftHandles_;
 
@@ -199,6 +202,12 @@ class StandardGpuResources : public GpuResourcesProvider {
 
     std::shared_ptr<GpuResources> getResources() override;
 
+    /// Whether or not the given device supports native bfloat16 arithmetic
+    bool supportsBFloat16(int device);
+
+    /// Whether or not the current device supports native bfloat16 arithmetic
+    bool supportsBFloat16CurrentDevice();
+
     /// Disable allocation of temporary memory; all temporary memory
     /// requests will call cudaMalloc / cudaFree at the point of use
     void noTempMemory();
@@ -235,7 +244,7 @@ class StandardGpuResources : public GpuResourcesProvider {
     /// Returns the current default stream
     cudaStream_t getDefaultStream(int device);
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
     raft::device_resources& getRaftHandle(int device);

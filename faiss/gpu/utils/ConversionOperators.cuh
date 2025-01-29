@@ -22,29 +22,13 @@ namespace gpu {
 // Conversion utilities
 //
 
-template <typename From, typename To>
-struct Convert {
-    inline __device__ To operator()(From v) const {
-        return (To)v;
-    }
-};
-
-template <>
-struct Convert<float, half> {
-    inline __device__ half operator()(float v) const {
-        return __float2half(v);
-    }
-};
-
-template <>
-struct Convert<half, float> {
-    inline __device__ float operator()(half v) const {
-        return __half2float(v);
-    }
-};
-
 template <typename T>
-struct ConvertTo {};
+struct ConvertTo {
+    template <typename U>
+    static inline __device__ T to(U v) {
+        return T(v);
+    }
+};
 
 template <>
 struct ConvertTo<float> {
@@ -53,6 +37,9 @@ struct ConvertTo<float> {
     }
     static inline __device__ float to(half v) {
         return __half2float(v);
+    }
+    static inline __device__ float to(__nv_bfloat16 v) {
+        return __bfloat162float(v);
     }
 };
 
@@ -103,6 +90,26 @@ struct ConvertTo<Half4> {
     }
     static inline __device__ Half4 to(Half4 v) {
         return v;
+    }
+};
+
+template <>
+struct ConvertTo<__nv_bfloat16> {
+    static inline __device__ __nv_bfloat16 to(float v) {
+        return __float2bfloat16(v);
+    }
+    static inline __device__ __nv_bfloat16 to(half v) {
+        return __float2bfloat16(__half2float(v));
+    }
+    static inline __device__ __nv_bfloat16 to(__nv_bfloat16 v) {
+        return v;
+    }
+};
+
+template <typename From, typename To>
+struct Convert {
+    inline __device__ To operator()(From v) const {
+        return ConvertTo<To>::to(v);
     }
 };
 

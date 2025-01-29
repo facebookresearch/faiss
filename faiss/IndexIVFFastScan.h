@@ -16,6 +16,7 @@ namespace faiss {
 
 struct NormTableScaler;
 struct SIMDResultHandlerToFloat;
+struct Quantizer;
 
 /** Fast scan version of IVFPQ and IVFAQ. Works for 4-bit PQ/AQ for now.
  *
@@ -59,6 +60,9 @@ struct IndexIVFFastScan : IndexIVF {
     int qbs = 0;
     size_t qbs2 = 0;
 
+    // quantizer used to pack the codes
+    Quantizer* fine_quantizer = nullptr;
+
     IndexIVFFastScan(
             Index* quantizer,
             size_t d,
@@ -68,7 +72,9 @@ struct IndexIVFFastScan : IndexIVF {
 
     IndexIVFFastScan();
 
+    /// called by implementations
     void init_fastscan(
+            Quantizer* fine_quantizer,
             size_t M,
             size_t nbits,
             size_t nlist,
@@ -225,6 +231,17 @@ struct IndexIVFFastScan : IndexIVF {
 
     // reconstruct orig invlists (for debugging)
     void reconstruct_orig_invlists();
+
+    /** Decode a set of vectors.
+     *
+     *  NOTE: The codes in the IndexFastScan object are non-contiguous.
+     *        But this method requires a contiguous representation.
+     *
+     * @param n       number of vectors
+     * @param bytes   input encoded vectors, size n * code_size
+     * @param x       output vectors, size n * d
+     */
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
 
 struct IVFFastScanStats {

@@ -19,10 +19,7 @@
 #include <memory>
 #include <queue>
 #include <random>
-#include <unordered_set>
 
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <cstdint>
 
 #include <faiss/Index2Layer.h>
@@ -31,7 +28,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
@@ -355,6 +351,17 @@ void IndexHNSW::reconstruct(idx_t key, float* recons) const {
     storage->reconstruct(key, recons);
 }
 
+/**************************************************************
+ * This section of functions were used during the development of HNSW support.
+ * They may be useful in the future but are dormant for now, and thus are not
+ * unit tested at the moment.
+ * shrink_level_0_neighbors
+ * search_level_0
+ * init_level_0_from_knngraph
+ * init_level_0_from_entry_points
+ * reorder_links
+ * link_singletons
+ **************************************************************/
 void IndexHNSW::shrink_level_0_neighbors(int new_size) {
 #pragma omp parallel
     {

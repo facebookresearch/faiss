@@ -19,6 +19,7 @@ class GpuResourcesProvider;
 enum class DistanceDataType {
     F32 = 1,
     F16,
+    BF16,
 };
 
 // Scalar type of the indices data
@@ -106,14 +107,17 @@ struct GpuDistanceParams {
     /// execution
     int device = -1;
 
-    /// Should the index dispatch down to RAFT?
-    /// TODO: change default to true if RAFT is enabled
-    bool use_raft = false;
+    /// Should the index dispatch down to cuVS?
+#if defined USE_NVIDIA_CUVS
+    bool use_cuvs = true;
+#else
+    bool use_cuvs = false;
+#endif
 };
 
-/// A function that determines whether RAFT should be used based on various
+/// A function that determines whether cuVS should be used based on various
 /// conditions (such as unsupported architecture)
-bool should_use_raft(GpuDistanceParams args);
+bool should_use_cuvs(GpuDistanceParams args);
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest
 /// neighbor searches on an externally-provided region of memory (e.g., from a

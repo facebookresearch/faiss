@@ -15,11 +15,10 @@
 #include <faiss/gpu/impl/IVFPQ.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
-#include <faiss/gpu/impl/RaftIVFPQ.cuh>
-#include <raft/neighbors/ivf_pq.cuh>
-#include <raft/neighbors/ivf_pq_helpers.cuh>
+#if defined USE_NVIDIA_CUVS
+#include <cuvs/neighbors/ivf_pq.hpp>
+#include <faiss/gpu/utils/CuvsUtils.h>
+#include <faiss/gpu/impl/CuvsIVFPQ.cuh>
 #endif
 
 #include <limits>
@@ -95,8 +94,8 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
     this->is_trained = false;
 
     FAISS_THROW_IF_NOT_MSG(
-            !config.use_raft,
-            "GpuIndexIVFPQ: RAFT does not support separate coarseQuantizer");
+            !config.use_cuvs,
+            "GpuIndexIVFPQ: cuVS does not support separate coarseQuantizer");
 
     verifyPQSettings_();
 }
@@ -112,8 +111,8 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     // Clear out our old data
     index_.reset();
 
-    // skip base class allocations if RAFT is enabled
-    if (!should_use_raft(config_)) {
+    // skip base class allocations if cuVS is enabled
+    if (!should_use_cuvs(config_)) {
         baseIndex_.reset();
     }
 
@@ -323,7 +322,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
         try {
             GpuIndexFlatConfig config;
             config.device = ivfpqConfig_.device;
-            config.use_raft = false;
+            config.use_cuvs = false;
             GpuIndexFlatL2 pqIndex(resources_, pq.dsub, config);
 
             pq.assign_index = &pqIndex;
@@ -349,12 +348,12 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     if (this->is_trained) {
         FAISS_ASSERT(index_);
-        if (should_use_raft(config_)) {
-            // if RAFT is enabled, copy the IVF centroids to the RAFT index in
-            // case it has been reset. This is because reset clears the RAFT
+        if (should_use_cuvs(config_)) {
+            // if cuVS is enabled, copy the IVF centroids to the cuVS index in
+            // case it has been reset. This is because reset clears the cuVS
             // index and its centroids.
             // TODO: change this once the coarse quantizer is separated from
-            // RAFT index
+            // cuVS index
             updateQuantizer();
         };
         return;
@@ -362,13 +361,13 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // RAFT does not support using an external index for assignment. Fall back
+    // cuVS does not support using an external index for assignment. Fall back
     // to the classical GPU impl
-    if (should_use_raft(config_)) {
-#if defined USE_NVIDIA_RAFT
+    if (should_use_cuvs(config_)) {
+#if defined USE_NVIDIA_CUVS
         if (pq.assign_index) {
             fprintf(stderr,
-                    "WARN: The Product Quantizer's assign_index will be ignored with RAFT enabled.\n");
+                    "WARN: The Product Quantizer's assign_index will be ignored with cuVS enabled.\n");
         }
         // first initialize the index. The PQ centroids will be updated
         // retroactively.
@@ -390,44 +389,54 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
-        raft::neighbors::ivf_pq::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = metricFaissToRaft(metric_type, false);
-        raft_idx_params.kmeans_trainset_fraction =
+        cuvs::neighbors::ivf_pq::index_params cuvs_index_params;
+        cuvs_index_params.n_lists = nlist;
+        cuvs_index_params.metric = metricFaissToCuvs(metric_type, false);
+        cuvs_index_params.kmeans_trainset_fraction =
                 static_cast<double>(cp.max_points_per_centroid * nlist) /
                 static_cast<double>(n);
-        raft_idx_params.kmeans_n_iters = cp.niter;
-        raft_idx_params.pq_bits = bitsPerCode_;
-        raft_idx_params.pq_dim = subQuantizers_;
-        raft_idx_params.conservative_memory_allocation = false;
-        raft_idx_params.add_data_on_build = false;
+        cuvs_index_params.kmeans_n_iters = cp.niter;
+        cuvs_index_params.pq_bits = bitsPerCode_;
+        cuvs_index_params.pq_dim = subQuantizers_;
+        cuvs_index_params.conservative_memory_allocation = false;
+        cuvs_index_params.add_data_on_build = false;
 
-        auto raftIndex_ = std::static_pointer_cast<RaftIVFPQ, IVFPQ>(index_);
+        auto cuvsIndex_ = std::static_pointer_cast<CuvsIVFPQ, IVFPQ>(index_);
 
-        raft::neighbors::ivf_pq::index<idx_t> raft_ivfpq_index =
-                raft::neighbors::ivf_pq::build<float, idx_t>(
-                        raft_handle, raft_idx_params, x, n, (idx_t)d);
+        std::optional<cuvs::neighbors::ivf_pq::index<idx_t>> cuvs_ivfpq_index;
 
-        auto raft_centers = raft::make_device_matrix<float>(
+        if (getDeviceForAddress(x) >= 0) {
+            auto dataset_d =
+                    raft::make_device_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfpq_index = cuvs::neighbors::ivf_pq::build(
+                    raft_handle, cuvs_index_params, dataset_d);
+        } else {
+            auto dataset_h =
+                    raft::make_host_matrix_view<const float, idx_t>(x, n, d);
+            cuvs_ivfpq_index = cuvs::neighbors::ivf_pq::build(
+                    raft_handle, cuvs_index_params, dataset_h);
+        }
+
+        auto cluster_centers = raft::make_device_matrix<float>(
                 raft_handle,
-                raft_ivfpq_index.n_lists(),
-                raft_ivfpq_index.dim());
-        raft::neighbors::ivf_pq::helpers::extract_centers(
-                raft_handle, raft_ivfpq_index, raft_centers.view());
+                cuvs_ivfpq_index.value().n_lists(),
+                cuvs_ivfpq_index.value().dim());
+        cuvs::neighbors::ivf_pq::helpers::extract_centers(
+                raft_handle, cuvs_ivfpq_index.value(), cluster_centers.view());
 
-        quantizer->train(nlist, raft_centers.data_handle());
-        quantizer->add(nlist, raft_centers.data_handle());
+        quantizer->train(nlist, cluster_centers.data_handle());
+        quantizer->add(nlist, cluster_centers.data_handle());
 
         raft::copy(
                 pq.get_centroids(0, 0),
-                raft_ivfpq_index.pq_centers().data_handle(),
-                raft_ivfpq_index.pq_centers().size(),
+                cuvs_ivfpq_index.value().pq_centers().data_handle(),
+                cuvs_ivfpq_index.value().pq_centers().size(),
                 raft_handle.get_stream());
         raft_handle.sync_stream();
-        raftIndex_->setRaftIndex(std::move(raft_ivfpq_index));
+        cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfpq_index));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         // FIXME: GPUize more of this
@@ -484,9 +493,9 @@ void GpuIndexIVFPQ::setIndex_(
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (should_use_raft(config_)) {
-#if defined USE_NVIDIA_RAFT
-        index_.reset(new RaftIVFPQ(
+    if (should_use_cuvs(config_)) {
+#if defined USE_NVIDIA_CUVS
+        index_.reset(new CuvsIVFPQ(
                 resources,
                 dim,
                 nlist,
@@ -502,7 +511,7 @@ void GpuIndexIVFPQ::setIndex_(
                 space));
 #else
         FAISS_THROW_MSG(
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
     } else {
         index_.reset(new IVFPQ(
@@ -529,10 +538,10 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
     FAISS_THROW_IF_NOT_MSG(nlist > 0, "nlist must be >0");
 
     // up to a single byte per code
-    if (should_use_raft(config_)) {
+    if (should_use_cuvs(config_)) {
         if (!ivfpqConfig_.interleavedLayout) {
             fprintf(stderr,
-                    "WARN: interleavedLayout is set to False with RAFT enabled. This will be ignored.\n");
+                    "WARN: interleavedLayout is set to False with cuVS enabled. This will be ignored.\n");
         }
         FAISS_THROW_IF_NOT_FMT(
                 bitsPerCode_ >= 4 && bitsPerCode_ <= 8,
@@ -567,7 +576,7 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
             "is not supported",
             subQuantizers_);
 
-    if (!should_use_raft(config_)) {
+    if (!should_use_cuvs(config_)) {
         // Sub-quantizers must evenly divide dimensions available
         FAISS_THROW_IF_NOT_FMT(
                 this->d % subQuantizers_ == 0,

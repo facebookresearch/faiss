@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <cuda_fp16.h>
+#include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss {
@@ -22,6 +22,13 @@ void runL2Norm(
 
 void runL2Norm(
         Tensor<half, 2, true>& input,
+        bool inputRowMajor,
+        Tensor<float, 1, true>& output,
+        bool normSquared,
+        cudaStream_t stream);
+
+void runL2Norm(
+        Tensor<__nv_bfloat16, 2, true>& input,
         bool inputRowMajor,
         Tensor<float, 1, true>& output,
         bool normSquared,

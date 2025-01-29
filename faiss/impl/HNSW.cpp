@@ -351,6 +351,8 @@ void add_link(
     }
 }
 
+} // namespace
+
 /// search neighbors on a single level, starting from an entry point
 void search_neighbors_to_add(
         HNSW& hnsw,
@@ -359,10 +361,8 @@ void search_neighbors_to_add(
         int entry_point,
         float d_entry_point,
         int level,
-        VisitedTable& vt) {
-    // selects a version
-    const bool reference_version = false;
-
+        VisitedTable& vt,
+        bool reference_version) {
     // top is nearest candidate
     std::priority_queue<NodeDistFarther> candidates;
 
@@ -385,7 +385,14 @@ void search_neighbors_to_add(
         size_t begin, end;
         hnsw.neighbor_range(currNode, level, &begin, &end);
 
-        // select a version, based on a flag
+        // The reference version is not used, but kept here because:
+        // 1. It is easier to switch back if the optimized version has a problem
+        // 2. It serves as a starting point for new optimizations
+        // 3. It helps understand the code
+        // 4. It ensures the reference version is still compilable if the
+        // optimized version changes
+        // The reference and the optimized versions' results are compared in
+        // test_hnsw.cpp
         if (reference_version) {
             // a reference version
             for (size_t i = begin; i < end; i++) {
@@ -470,8 +477,6 @@ void search_neighbors_to_add(
     vt.advance();
 }
 
-} // namespace
-
 /// Finds neighbors and builds links with them, starting from an entry
 /// point. The own neighbor list is assumed to be locked.
 void HNSW::add_links_starting_from(
@@ -493,17 +498,17 @@ void HNSW::add_links_starting_from(
 
     ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
 
-    std::vector<storage_idx_t> neighbors_2;
-    neighbors_2.reserve(link_targets.size());
+    std::vector<storage_idx_t> neighbors_to_add;
+    neighbors_to_add.reserve(link_targets.size());
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
         add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
-        neighbors_2.push_back(other_id);
+        neighbors_to_add.push_back(other_id);
         link_targets.pop();
     }
 
     omp_unset_lock(&locks[pt_id]);
-    for (storage_idx_t other_id : neighbors_2) {
+    for (storage_idx_t other_id : neighbors_to_add) {
         omp_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         omp_unset_lock(&locks[other_id]);
