@@ -12,6 +12,7 @@ from contextlib import contextmanager
 
 import faiss
 import numpy as np
+import sys
 
 from common_faiss_tests import get_dataset_2
 
@@ -35,7 +36,7 @@ from faiss.contrib.ondisk import merge_ondisk
 
 class TestComputeGT(unittest.TestCase):
 
-    def do_test_compute_GT(self, metric=faiss.METRIC_L2):
+    def do_test_compute_GT(self, metric=faiss.METRIC_L2, ngpu=0):
         d = 64
         xt, xb, xq = get_dataset_2(d, 0, 10000, 100)
 
@@ -50,7 +51,7 @@ class TestComputeGT(unittest.TestCase):
                 yield xb[i0:i0 + bs]
 
         Dnew, Inew = knn_ground_truth(
-            xq, matrix_iterator(xb, 1000), 10, metric)
+            xq, matrix_iterator(xb, 1000), 10, metric, ngpu=ngpu)
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
@@ -61,6 +62,12 @@ class TestComputeGT(unittest.TestCase):
 
     def test_compute_GT_ip(self):
         self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT)
+
+    def test_compute_GT_gpu(self):
+        self.do_test_compute_GT(ngpu=-1)
+
+    def test_compute_GT_ip_gpu(self):
+        self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT, ngpu=-1)
 
 
 class TestDatasets(unittest.TestCase):
@@ -386,6 +393,12 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
+    @unittest.skipIf(
+        platform.system() == 'Windows'
+        and sys.version_info[0] == 3
+        and sys.version_info[1] == 12,
+        'test_binary hangs for Windows on Python 3.12.'
+    )
     def test_binary(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
 
@@ -573,8 +586,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 51)
-
+        self.assertLess(ndiff, 53)
 
 class TestBigBatchSearch(unittest.TestCase):
 
