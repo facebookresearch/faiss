@@ -339,7 +339,7 @@ search...
 
 # Additional benchmarks
 
-This directory also contains certain additional benchmarks (and serve as an additional source of examples of how to use the FAISS code).
+This directory also contains certain additional benchmarks (and serve as an additional source of examples of how to use the Faiss code).
 Certain tests / benchmarks might be outdated.
 
 * bench_6bit_codec.cpp - tests vector codecs for SQ6 quantization on a synthetic dataset

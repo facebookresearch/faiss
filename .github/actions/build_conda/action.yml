@@ -1,5 +1,5 @@
 name: Conda build
-description: Builds FAISS inside a Conda environment and uploads to repository when label is provided.
+description: Builds Faiss inside a Conda environment and uploads to repository when label is provided.
 inputs:
   label:
     description: "The label to be used for uploads to Conda."
