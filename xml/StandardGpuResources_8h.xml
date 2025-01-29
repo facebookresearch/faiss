@@ -338,7 +338,7 @@
 <codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/>/**</highlight></codeline>
 <codeline lineno="163"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>FIXME:<sp/>Integrating<sp/>these<sp/>in<sp/>a<sp/>separate<sp/>code<sp/>path<sp/>for<sp/>now.<sp/>Ultimately,</highlight></codeline>
 <codeline lineno="164"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>it<sp/>would<sp/>be<sp/>nice<sp/>if<sp/>we<sp/>use<sp/>a<sp/>simple<sp/>memory<sp/>resource<sp/>abstraction</highlight></codeline>
-<codeline lineno="165"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>in<sp/>FAISS<sp/>so<sp/>we<sp/>could<sp/>plug<sp/>in<sp/>whether<sp/>to<sp/>use<sp/>RMM&apos;s<sp/>memory<sp/>resources</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>in<sp/>Faiss<sp/>so<sp/>we<sp/>could<sp/>plug<sp/>in<sp/>whether<sp/>to<sp/>use<sp/>RMM&apos;s<sp/>memory<sp/>resources</highlight></codeline>
 <codeline lineno="166"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>or<sp/>the<sp/>default.</highlight></codeline>
 <codeline lineno="167"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="168"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>There&apos;s<sp/>enough<sp/>duplicated<sp/>logic<sp/>that<sp/>it<sp/>doesn&apos;t<sp/>*seem*<sp/>to<sp/>make<sp/>sense</highlight></codeline>

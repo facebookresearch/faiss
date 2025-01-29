@@ -244,7 +244,7 @@
 <codeline lineno="37"><highlight class="comment"><sp/>*<sp/>Get<sp/>some<sp/>stats<sp/>about<sp/>the<sp/>system</highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/>**************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Expose<sp/>FAISS<sp/>version<sp/>as<sp/>a<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Expose<sp/>Faiss<sp/>version<sp/>as<sp/>a<sp/>string</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal">std::string<sp/>get_version();</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="43"><highlight class="comment">///<sp/>ms<sp/>elapsed<sp/>since<sp/>some<sp/>arbitrary<sp/>epoch</highlight></codeline>

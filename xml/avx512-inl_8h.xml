@@ -76,7 +76,7 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>AVX512<sp/>version</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>_mm512_popcnt_epi64<sp/>intrinsic<sp/>is<sp/>used<sp/>to<sp/>accelerate<sp/>Hamming<sp/>distance</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>calculations<sp/>in<sp/>HammingComputerDefault<sp/>and<sp/>HammingComputer64.<sp/>This<sp/>intrinsic</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>is<sp/>not<sp/>available<sp/>in<sp/>the<sp/>default<sp/>FAISS<sp/>avx512<sp/>build<sp/>mode<sp/>but<sp/>is<sp/>only</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>is<sp/>not<sp/>available<sp/>in<sp/>the<sp/>default<sp/>Faiss<sp/>avx512<sp/>build<sp/>mode<sp/>but<sp/>is<sp/>only</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>available<sp/>in<sp/>the<sp/>avx512_spr<sp/>build<sp/>mode,<sp/>which<sp/>targets<sp/>Intel(R)<sp/>Sapphire</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Rapids.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
