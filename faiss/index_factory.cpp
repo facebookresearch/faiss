@@ -195,10 +195,16 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     auto match = [&sm, description](std::string pattern) {
         return re_match(description, pattern, sm);
     };
-    if (match("PCA(W?)(R?)([0-9]+)")) {
+    if (match("PCA(W?)(R?)([0-9]+)(_[0-9]+)?")) {
         bool white = sm[1].length() > 0;
         bool rot = sm[2].length() > 0;
-        return new PCAMatrix(d, std::stoi(sm[3].str()), white ? -0.5 : 0, rot);
+        auto pca_matrix =
+                new PCAMatrix(d, std::stoi(sm[3].str()), white ? -0.5 : 0, rot);
+        int balanced_bins = mres_to_int(sm[4], 0, 1);
+        if (balanced_bins > 0) {
+            pca_matrix->balanced_bins = balanced_bins;
+        }
+        return pca_matrix;
     }
     if (match("L2[nN]orm")) {
         return new NormalizationTransform(d, 2.0);

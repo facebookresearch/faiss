@@ -62,6 +62,15 @@ class TestFactory(unittest.TestCase):
         assert index.sa_code_size() == 64 * 4
         assert index.chain.at(0).d_out == 64
 
+    def test_pca_balanced_bins(self):
+        index = faiss.index_factory(128, "PCA32_4,Flat")
+        pca = faiss.downcast_VectorTransform(index.chain.at(0))
+        self.assertEqual(pca.balanced_bins, 4)
+        # no balanced bins
+        index = faiss.index_factory(128, "PCA32,Flat")
+        pca = faiss.downcast_VectorTransform(index.chain.at(0))
+        self.assertEqual(pca.balanced_bins, 0)
+
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")
         assert index.storage.sa_code_size() == 12 * 4
