@@ -44,7 +44,12 @@ found_faiss_example_external_module_lib = os.path.exists(
 )
 
 assert (
-    found_swigfaiss_generic or found_swigfaiss_avx2 or found_swigfaiss_avx512 or found_swigfaiss_avx512_spr or found_swigfaiss_sve or found_faiss_example_external_module_lib
+    found_swigfaiss_generic
+    or found_swigfaiss_avx2
+    or found_swigfaiss_avx512
+    or found_swigfaiss_avx512_spr
+    or found_swigfaiss_sve
+    or found_faiss_example_external_module_lib
 ), (
     f"Could not find {swigfaiss_generic_lib} or "
     f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
@@ -100,12 +105,12 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name="faiss",
-    version="1.9.0",
+    version="1.10.0",
     description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
     url="https://github.com/facebookresearch/faiss",
     author="Matthijs Douze, Jeff Johnson, Herve Jegou, Lucas Hosseini",
-    author_email="matthijs@meta.com",
+    author_email="faiss@meta.com",
     license="MIT",
     keywords="search nearest neighbors",
     install_requires=["numpy", "packaging"],
