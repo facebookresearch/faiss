@@ -19,6 +19,7 @@ using faiss::DistanceComputer;
 using faiss::IDSelector;
 using faiss::IDSelectorAnd;
 using faiss::IDSelectorBatch;
+using faiss::IDSelectorBitmap;
 using faiss::IDSelectorNot;
 using faiss::IDSelectorOr;
 using faiss::IDSelectorRange;
@@ -114,6 +115,23 @@ int faiss_IDSelectorBatch_new(
     try {
         *p_sel = reinterpret_cast<FaissIDSelectorBatch*>(
                 new IDSelectorBatch(n, indices));
+        return 0;
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_DESTRUCTOR(IDSelectorBitmap)
+
+DEFINE_GETTER(IDSelectorBitmap, size_t, n)
+DEFINE_GETTER(IDSelectorBitmap, const uint8_t*, bitmap)
+
+int faiss_IDSelectorBitmap_new(
+        FaissIDSelectorBitmap** p_sel,
+        size_t n,
+        const uint8_t* bitmap) {
+    try {
+        *p_sel = reinterpret_cast<FaissIDSelectorBitmap*>(
+                new IDSelectorBitmap(n, bitmap));
         return 0;
     }
     CATCH_AND_HANDLE
