@@ -23,8 +23,8 @@ DEFINE_uint32(iterations, 20, "iterations");
 static void bench_distance(
         benchmark::State& state,
         ScalarQuantizer::QuantizerType type,
-        int n,
-        int d) {
+        int d,
+        int n) {
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
