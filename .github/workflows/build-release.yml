@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      ANACONDA_API_TOKEN:
+        required: true
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
