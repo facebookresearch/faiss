@@ -127,8 +127,11 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>int<sp/>dim_;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Controls<sp/>the<sp/>underlying<sp/>cuVS<sp/>index<sp/>if<sp/>it<sp/>should<sp/>store<sp/>the<sp/>dataset<sp/>in</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>device<sp/>memory</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>store_dataset_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>device<sp/>memory.<sp/>Default<sp/>set<sp/>to<sp/>true<sp/>for<sp/>enabling<sp/>search<sp/>capabilities<sp/>on</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>index.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>NB:<sp/>This<sp/>is<sp/>also<sp/>required<sp/>to<sp/>be<sp/>set<sp/>to<sp/>true<sp/>for<sp/>deserializing</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>an<sp/>IndexHNSWCagra<sp/>object.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>store_dataset_<sp/>=<sp/>true;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Metric<sp/>type<sp/>of<sp/>the<sp/>index</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>faiss::MetricType<sp/>metric_;</highlight></codeline>
