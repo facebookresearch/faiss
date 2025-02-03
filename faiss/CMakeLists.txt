@@ -341,6 +341,10 @@ if(WIN32)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
 endif()
 
+if(WIN32)
+  set_target_properties(faiss PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols")
+endif()
+
 string(FIND "${CMAKE_CXX_FLAGS}" "FINTEGER" finteger_idx)
 if (${finteger_idx} EQUAL -1)
   target_compile_definitions(faiss PRIVATE FINTEGER=int)
