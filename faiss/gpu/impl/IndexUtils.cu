@@ -38,5 +38,8 @@ void validateNProbe(size_t nprobe) {
             nprobe);
 }
 
+int struct_packing_test_cuda (int q) STRUCT_PACKING_FUNCTION_BODY
+
+
 } // namespace gpu
 } // namespace faiss

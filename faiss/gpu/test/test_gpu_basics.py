@@ -466,3 +466,18 @@ class TestGpuFlags(unittest.TestCase):
 
     def test_gpu_flag(self):
         assert "GPU" in faiss.get_compile_options().split()
+
+
+class TestStructPacking(unittest.TestCase): 
+
+    def test_swig(self): 
+        for q in range(50): 
+            self.assertEqual(
+                faiss.struct_packing_test_cpp(q),
+                faiss.struct_packing_test_swig(q)
+            )
+        for q in range(50): 
+            self.assertEqual(
+                faiss.struct_packing_test_cpp(q),
+                faiss.struct_packing_test_cuda(q)
+            )

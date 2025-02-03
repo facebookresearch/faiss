@@ -1255,6 +1255,16 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 #endif
 
+namespace faiss {
+int struct_packing_test_swig (int q);
+}
+
+%{
+namespace faiss {
+int struct_packing_test_swig (int q) STRUCT_PACKING_FUNCTION_BODY
+}
+%}
+
 
 
 /*******************************************************************

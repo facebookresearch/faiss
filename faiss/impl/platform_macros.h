@@ -197,3 +197,60 @@ inline int __builtin_clzll(uint64_t x) {
 #define Swap4Bytes(val)                                           \
     ((((val) >> 24) & 0x000000FF) | (((val) >> 8) & 0x0000FF00) | \
      (((val) << 8) & 0x00FF0000) | (((val) << 24) & 0xFF000000))
+
+/*******************************************************
+ * Fake structure to detect structure packing/alignment 
+ * issues.
+ *******************************************************/
+
+#include <vector> 
+
+namespace faiss {
+
+struct StructPackingTestD {
+    int a; 
+    bool b, c, d; 
+    long e; 
+    bool f, g, h, i, j; 
+};
+
+struct StructPackingTestC : StructPackingTestD {
+    bool k; 
+    int l; 
+    bool m;
+};
+
+struct StructPackingTestA {
+    virtual void* operator()(int) {return nullptr;}
+
+    virtual ~StructPackingTestA() {}
+};
+
+struct StructPackingTestB : StructPackingTestA {
+    StructPackingTestC options;
+    std::vector<void*> vres;
+    std::vector<int> devices;
+    int ncall;
+
+    void* operator()(int) override { return nullptr;}
+    virtual ~StructPackingTestB() {}
+
+};
+
+
+// body of function should be 
+// int function_name (int q) STRUCT_PACKING_FUNCTION_BODY
+#define STRUCT_PACKING_FUNCTION_BODY {  \
+    StructPackingTestB sb; \
+    switch(q) {  \
+    case 0:   \
+        return sizeof(StructPackingTestB);  \
+    case 1:  \
+        return (char*)&sb.ncall - (char*)&sb;  \
+    default: \
+        return -1; \
+    } \
+}
+
+
+} 
