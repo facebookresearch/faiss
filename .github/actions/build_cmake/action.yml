@@ -23,12 +23,19 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        miniconda-version: latest
+        miniforge-version: latest # ensures conda-forge channel is used.
+        channels: conda-forge
+        conda-remove-defaults: 'true'
+        # Set to aarch64 if we're on arm64 because there's no miniforge ARM64 package, just aarch64.
+        # They are the same thing, just named differently.
+        architecture: ${{ runner.arch  == 'ARM64' && 'aarch64' || runner.arch }}
     - name: Configure build environment
       shell: bash
       run: |
         # initialize Conda
         conda config --set solver libmamba
+        # Ensure starting packages are from conda-forge.
+        conda list --show-channel-urls
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
@@ -43,7 +50,7 @@ runs:
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
           conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
-          conda install -y -q mkl=2023 mkl-devel=2023
+          conda install -y -q mkl=2022.2.1 mkl-devel=2022.2.1
         fi
 
         # no CUDA needed for ROCm so skip this
@@ -56,6 +63,7 @@ runs:
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs=24.12 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge
         fi
+
         # install test packages
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
@@ -174,3 +182,8 @@ runs:
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
         path: test-results
+    - name: Check installed packages channel
+      shell: bash
+      run: |
+        # Shows that all installed packages are from conda-forge.
+        conda list --show-channel-urls

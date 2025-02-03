@@ -162,7 +162,7 @@ class StandardGpuResourcesImpl : public GpuResources {
     /**
      * FIXME: Integrating these in a separate code path for now. Ultimately,
      * it would be nice if we use a simple memory resource abstraction
-     * in FAISS so we could plug in whether to use RMM's memory resources
+     * in Faiss so we could plug in whether to use RMM's memory resources
      * or the default.
      *
      * There's enough duplicated logic that it doesn't *seem* to make sense

@@ -141,7 +141,6 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
         # construct a GPU index using the same trained coarse quantizer
         # from the CPU index
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_cuvs = False
         idx_gpu = faiss.GpuIndexIVFFlat(res, q, d, nlist, faiss.METRIC_L2, config)
         assert(idx_gpu.is_trained)
         idx_gpu.add(xb)
@@ -155,6 +154,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
         d_c, i_c = idx_cpu.search(xq, k)
         self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
         self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+
 
     def test_ivfsq_pu_coarse(self):
         res = faiss.StandardGpuResources()
