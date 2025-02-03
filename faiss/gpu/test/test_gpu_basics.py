@@ -490,3 +490,6 @@ class TestStructPacking(unittest.TestCase):
                 faiss.struct_packing_test_cpp(q),
                 faiss.struct_packing_test_cuda(q)
             )
+
+    def test_failure(self): 
+        1 / 0 
