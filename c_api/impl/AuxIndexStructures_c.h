@@ -81,6 +81,17 @@ int faiss_IDSelectorBatch_new(
         size_t n,
         const idx_t* indices);
 
+FAISS_DECLARE_CLASS(IDSelectorBitmap)
+FAISS_DECLARE_DESTRUCTOR(IDSelectorBitmap)
+
+FAISS_DECLARE_GETTER(IDSelectorBitmap, size_t, n)
+FAISS_DECLARE_GETTER(IDSelectorBitmap, const uint8_t*, bitmap)
+
+int faiss_IDSelectorBitmap_new(
+        FaissIDSelectorBitmap** p_sel,
+        size_t n,
+        const uint8_t* bitmap);
+
 FAISS_DECLARE_CLASS(IDSelectorNot)
 int faiss_IDSelectorNot_new(
         FaissIDSelectorNot** p_sel,
