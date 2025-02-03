@@ -12,4 +12,6 @@ jobs:
     uses: ./.github/workflows/build-pull-request.yml
   build-release:
     uses: ./.github/workflows/build-release.yml
+    secrets:
+      ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
