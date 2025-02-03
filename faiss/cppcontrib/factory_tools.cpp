@@ -8,7 +8,21 @@
 // -*- c++ -*-
 
 #include <faiss/cppcontrib/factory_tools.h>
+
 #include <map>
+
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexLSH.h>
+#include <faiss/IndexNSG.h>
+#include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRefine.h>
 
 namespace faiss {
 
@@ -122,6 +136,11 @@ std::string reverse_index_factory(const faiss::Index* index) {
             const faiss::IndexHNSW* hnsw_index =
                     dynamic_cast<const faiss::IndexHNSW*>(index)) {
         return "HNSW" + std::to_string(get_hnsw_M(hnsw_index));
+    } else if (
+            const faiss::IndexNSG* nsg_index =
+                    dynamic_cast<const faiss::IndexNSG*>(index)) {
+        return "NSG" + std::to_string(nsg_index->nsg.R) + "," +
+                reverse_index_factory(nsg_index->storage);
     } else if (
             const faiss::IndexRefine* refine_index =
                     dynamic_cast<const faiss::IndexRefine*>(index)) {
