@@ -641,4 +641,7 @@ void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
     }
 }
 
+
+int struct_packing_test_cpp (int q) STRUCT_PACKING_FUNCTION_BODY;
+
 } // namespace faiss

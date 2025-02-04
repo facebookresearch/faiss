@@ -26,6 +26,7 @@ runs:
         else
           echo "shell=pwsh" >> "$GITHUB_OUTPUT"
         fi
+        echo "${{ runner.arch }}"
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:

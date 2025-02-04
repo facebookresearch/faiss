@@ -562,3 +562,14 @@ class TestMapInt64ToInt64(unittest.TestCase):
     def xx_test_large(self):
         # don't run by default because it's slow
         self.do_test(2 ** 21, 10 ** 6)
+
+
+class TestStructPacking(unittest.TestCase): 
+
+    def test_swig(self): 
+        for q in range(50): 
+            self.assertEqual(
+                faiss.struct_packing_test_cpp(q),
+                faiss.struct_packing_test_swig(q)
+            )
+

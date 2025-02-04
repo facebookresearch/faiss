@@ -12,7 +12,7 @@ cmake -B _build_python_${PY_VER} \
       -Dfaiss_ROOT=_libfaiss_stage/ \
       -DFAISS_OPT_LEVEL=avx512 \
       -DFAISS_ENABLE_GPU=OFF \
-      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_BUILD_TYPE=Debug \
       -DPython_EXECUTABLE=$PYTHON \
       faiss/python
 
