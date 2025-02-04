@@ -167,6 +167,42 @@ void ivf_residual_add_from_flat_codes(
         const uint8_t* codes,
         int64_t code_size = -1);
 
+struct FilenameTemplateGenerator {
+    virtual std::string operator()() = 0;
+    virtual ~FilenameTemplateGenerator() {}
+};
+struct DefaultFilenameTemplateGenerator : FilenameTemplateGenerator {
+    std::string operator()() override;
+};
+
+struct ShardingFunction {
+    virtual int64_t operator()(int64_t i, int64_t shard_count) = 0;
+    virtual ~ShardingFunction() {}
+};
+struct DefaultShardingFunction : ShardingFunction {
+    int64_t operator()(int64_t i, int64_t shard_count) override;
+};
+
+/**
+ * Shards an IVF index centroids by the given sharding function, and writes
+ * the index to the path given by filename_generator. The centroids must already
+ * be added to the index quantizer.
+ *
+ * @param index                       The IVF index containing centroids to
+ *                                    shard.
+ * @param shard_count                 Number of shards.
+ * @param filename_template_generator Function that generates a filename
+ *                                    template of the output indexes.
+ * @param sharding_function           The function to shard by. The default is
+ *                                    ith vector mod shard_count.
+ * @return                            The list of output filenames.
+ */
+std::vector<std::string> shard_ivf_index_centroids(
+        IndexIVF* index,
+        int64_t shard_count = 20,
+        FilenameTemplateGenerator* filename_template_generator = nullptr,
+        ShardingFunction* sharding_function = nullptr);
+
 } // namespace ivflib
 } // namespace faiss
 

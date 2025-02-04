@@ -97,6 +97,7 @@ vector_name_map = {
     'UInt16': 'uint16',
     'UInt32': 'uint32',
     'UInt64': 'uint64',
+    'String': 'str',
     **{k: v.lower() for k, v in deprecated_name_map.items()}
 }
 
@@ -107,10 +108,19 @@ def vector_to_array(v):
     if classname.startswith('AlignedTable'):
         return AlignedTable_to_array(v)
     assert classname.endswith('Vector')
-    dtype = np.dtype(vector_name_map[classname[:-6]])
-    a = np.empty(v.size(), dtype=dtype)
-    if v.size() > 0:
-        memcpy(swig_ptr(a), v.data(), a.nbytes)
+    vector_name = vector_name_map[classname[:-6]]
+    # TODO: Remove this hack with 'object' after upgrading to
+    # Numpy 2, which can support variable length strings.
+    if vector_name == 'str':
+        values = []
+        for i in range (0, v.size()):
+            values.append(v.at(i))
+        a = np.array(values, dtype='object')
+    else:
+        dtype = np.dtype(vector_name)
+        a = np.empty(v.size(), dtype=dtype)
+        if v.size() > 0:
+            memcpy(swig_ptr(a), v.data(), a.nbytes)
     return a
 
 

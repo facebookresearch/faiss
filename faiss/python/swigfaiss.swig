@@ -270,6 +270,8 @@ namespace std {
 %template(UInt32Vector) std::vector<uint32_t>;
 %template(UInt64Vector) std::vector<uint64_t>;
 
+%template(StringVector) std::vector<std::string>;
+
 %template(Float32VectorVector) std::vector<std::vector<float> >;
 %template(UInt8VectorVector) std::vector<std::vector<uint8_t> >;
 %template(Int32VectorVector) std::vector<std::vector<int32_t> >;
@@ -1162,6 +1164,9 @@ PyObject *swig_ptr (PyObject *a)
     }
     if(PyArray_TYPE(ao) == NPY_INT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_OBJECT) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_char, 0);
     }
     if(PyArray_TYPE(ao) == NPY_BOOL) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_bool, 0);

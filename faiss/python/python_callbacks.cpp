@@ -134,3 +134,54 @@ PyCallbackIDSelector::~PyCallbackIDSelector() {
     PyThreadLock gil;
     Py_DECREF(callback);
 }
+
+/***********************************************************
+ * Callbacks for IVF index sharding
+ ***********************************************************/
+
+PyCallbackFilenameTemplateGenerator::PyCallbackFilenameTemplateGenerator(
+        PyObject* callback)
+        : callback(callback) {
+    PyThreadLock gil;
+    Py_INCREF(callback);
+}
+
+std::string PyCallbackFilenameTemplateGenerator::operator()() {
+    PyThreadLock gil;
+    PyObject* template_filename = PyObject_CallFunction(callback, nullptr);
+    if (template_filename == nullptr) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    const char* cstr = PyUnicode_AsUTF8(template_filename);
+    if (cstr == nullptr) {
+        // handle error or return empty string
+        return "";
+    }
+    std::string result(cstr);
+    return result;
+}
+
+PyCallbackFilenameTemplateGenerator::~PyCallbackFilenameTemplateGenerator() {
+    PyThreadLock gil;
+    Py_DECREF(callback);
+}
+
+PyCallbackShardingFunction::PyCallbackShardingFunction(PyObject* callback)
+        : callback(callback) {
+    PyThreadLock gil;
+    Py_INCREF(callback);
+}
+
+int64_t PyCallbackShardingFunction::operator()(int64_t i, int64_t shard_count) {
+    PyThreadLock gil;
+    PyObject* shard_id = PyObject_CallFunction(callback, "LL", i, shard_count);
+    if (shard_id == nullptr) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    return PyLong_AsLongLong(shard_id);
+}
+
+PyCallbackShardingFunction::~PyCallbackShardingFunction() {
+    PyThreadLock gil;
+    Py_DECREF(callback);
+}
