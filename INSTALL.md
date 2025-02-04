@@ -12,13 +12,13 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.9.0
+$ conda install -c pytorch faiss-cpu=1.10.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.9.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.10.0
 
 # GPU(+CPU) version with NVIDIA RAFT
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.10.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,7 +34,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.10.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
 conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
@@ -109,7 +109,7 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 ### Building with NVIDIA cuVS
 
-[cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building FAISS with cuVS enabled allows a user to choose between regular GPU implementations in FAISS and cuVS implementations for specific algorithms.
+[cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building Faiss with cuVS enabled allows a user to choose between regular GPU implementations in Faiss and cuVS implementations for specific algorithms.
 
 The libcuvs dependency should be installed via conda:
 1. With CUDA 12.0 - 12.5:
