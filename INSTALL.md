@@ -6,7 +6,7 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-raft [^1] package containing GPU indices provided by [NVIDIA RAFT](https://github.com/rapidsai/raft/) version 24.06, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4. 
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 24.12, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4. 
 
 To install the latest stable release:
 
@@ -17,15 +17,15 @@ $ conda install -c pytorch faiss-cpu=1.10.0
 # GPU(+CPU) version
 $ conda install -c pytorch -c nvidia faiss-gpu=1.10.0
 
-# GPU(+CPU) version with NVIDIA RAFT
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.10.0
+# GPU(+CPU) version with NVIDIA cuVS
+$ conda install -c pytorch -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs=1.10.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
 
 For faiss-gpu, the nvidia channel is required for CUDA, which is not published in the main anaconda channel.
 
-For faiss-gpu-raft, the rapidsai, conda-forge and nvidia channels are required.
+For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -37,10 +37,10 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.10.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
-conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
+conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 11.8)
-conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
+conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -321,5 +321,3 @@ and you can run
 $ python demos/demo_auto_tune.py
 ```
 to test the GPU code.
-
-[^1]: The vector search and clustering algorithms in NVIDIA RAFT have been formally migrated to [NVIDIA cuVS](https://github.com/rapidsai/cuvs). This package is being renamed to `faiss-gpu-cuvs` in the next stable release, which will use these GPU implementations from the pre-compiled `libcuvs=24.12` binary.
