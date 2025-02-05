@@ -16,7 +16,9 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/MetaIndexes.h>
+#include <faiss/clone_index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/index_io.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -517,6 +519,73 @@ void ivf_residual_add_from_flat_codes(
         }
     }
     index->ntotal += nb;
+}
+
+std::string DefaultFilenameTemplateGenerator::operator()() {
+    return "shard_%d.faissindex";
+}
+
+int64_t DefaultShardingFunction::operator()(int64_t i, int64_t shard_count) {
+    return i % shard_count;
+}
+
+std::vector<std::string> shard_ivf_index_centroids(
+        IndexIVF* index,
+        int64_t shard_count,
+        FilenameTemplateGenerator* filename_template_generator,
+        ShardingFunction* sharding_function) {
+    if (index->quantizer->ntotal == 0) {
+        return std::vector<std::string>();
+    }
+
+    DefaultFilenameTemplateGenerator default_generator;
+    DefaultShardingFunction default_sharding_function;
+    if (filename_template_generator == nullptr) {
+        filename_template_generator = &default_generator;
+    }
+    if (sharding_function == nullptr) {
+        sharding_function = &default_sharding_function;
+    }
+
+    std::vector<IndexIVF*> sharded_indexes(shard_count);
+    for (int i = 0; i < shard_count; i++) {
+        sharded_indexes[i] = static_cast<IndexIVF*>(faiss::clone_index(index));
+        sharded_indexes[i]->quantizer->reset();
+    }
+
+    // assign centroids to each sharded Index based on sharding_function, and
+    // add them to the quantizer of each sharded index
+    std::vector<std::vector<float>> sharded_centroids(shard_count);
+    for (int i = 0; i < index->quantizer->ntotal; i++) {
+        int shard_id = (*sharding_function)(i, shard_count);
+        float* reconstructed = new float[index->quantizer->d];
+        index->quantizer->reconstruct(i, reconstructed);
+        sharded_centroids[shard_id].insert(
+                sharded_centroids[shard_id].end(),
+                &reconstructed[0],
+                &reconstructed[index->quantizer->d]);
+        delete[] reconstructed;
+    }
+    for (int i = 0; i < shard_count; i++) {
+        sharded_indexes[i]->quantizer->add(
+                sharded_centroids[i].size() / index->quantizer->d,
+                sharded_centroids[i].data());
+    }
+
+    std::vector<std::string> result;
+    for (int i = 0; i < shard_count; i++) {
+        char fname[256];
+        std::string template_filename = (*filename_template_generator)();
+        snprintf(fname, 256, template_filename.c_str(), i);
+        result.emplace_back(fname);
+        faiss::write_index(sharded_indexes[i], fname);
+    }
+
+    for (int i = 0; i < shard_count; i++) {
+        delete sharded_indexes[i];
+    }
+
+    return result;
 }
 
 } // namespace ivflib

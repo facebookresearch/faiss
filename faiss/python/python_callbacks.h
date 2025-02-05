@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/IVFlib.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/io.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -57,4 +58,29 @@ struct PyCallbackIDSelector : faiss::IDSelector {
     bool is_member(faiss::idx_t id) const override;
 
     ~PyCallbackIDSelector() override;
+};
+
+/***********************************************************
+ * Callbacks for IVF index sharding
+ ***********************************************************/
+
+struct PyCallbackFilenameTemplateGenerator
+        : faiss::ivflib::FilenameTemplateGenerator {
+    PyObject* callback;
+
+    explicit PyCallbackFilenameTemplateGenerator(PyObject* callback);
+
+    std::string operator()() override;
+
+    ~PyCallbackFilenameTemplateGenerator() override;
+};
+
+struct PyCallbackShardingFunction : faiss::ivflib::ShardingFunction {
+    PyObject* callback;
+
+    explicit PyCallbackShardingFunction(PyObject* callback);
+
+    int64_t operator()(int64_t i, int64_t shard_count) override;
+
+    ~PyCallbackShardingFunction() override;
 };
