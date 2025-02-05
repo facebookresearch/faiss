@@ -422,7 +422,7 @@ if(FAISS_OPT_LEVEL STREQUAL "avx512")
   )
 endif()
 if(FAISS_OPT_LEVEL STREQUAL "avx512_spr")
-  install(TARGETS faiss_avx2 faiss_avx512 faiss_avx512_spr
+  install(TARGETS faiss_avx2 faiss_avx512_spr
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
