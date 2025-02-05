@@ -242,23 +242,23 @@ enum IndicesOptionsB {
     /// The user indices are only stored on the CPU; the GPU returns
     /// (inverted list, offset) to the CPU which is then translated to
     /// the real user index.
-    INDICES_CPU = 0,
+    INDICES_CPU_B = 0,
     /// The indices are not stored at all, on either the CPU or
     /// GPU. Only (inverted list, offset) is returned to the user as the
     /// index.
-    INDICES_IVF = 1,
+    INDICES_IVF_B = 1,
     /// Indices are stored as 32 bit integers on the GPU, but returned
     /// as 64 bit integers
-    INDICES_32_BIT = 2,
+    INDICES_32_BIT_B = 2,
     /// Indices are stored as 64 bit integers on the GPU
-    INDICES_64_BIT = 3,
+    INDICES_64_BIT_B = 3,
 };
 
 /// set some options on how to copy to GPU
 struct GpuClonerOptionsB {
     /// how should indices be stored on index types that support indices
     /// (anything but GpuIndexFlat*)?
-    IndicesOptionsB indicesOptions = INDICES_64_BIT;
+    IndicesOptionsB indicesOptions = INDICES_64_BIT_B;
 
     /// is the coarse quantizer in float16?
     bool useFloat16CoarseQuantizer = false;
@@ -340,7 +340,7 @@ struct GpuProgressiveDimIndexFactoryB : ProgressiveDimIndexFactoryB {
     case 1:  \
         return (char*)&sb.ncall - (char*)&sb;  \
     case 2:  \
-        return sizeof(gpu::GpuProgressiveDimIndexFactoryB);  \
+        return sizeof(GpuProgressiveDimIndexFactoryB);  \
     default: \
         return -1; \
     } \
