@@ -480,16 +480,19 @@ class TestGpuFlags(unittest.TestCase):
 class TestStructPacking(unittest.TestCase): 
 
     def test_swig(self): 
-        for q in range(50): 
-            self.assertEqual(
-                faiss.struct_packing_test_cpp(q),
-                faiss.struct_packing_test_swig(q)
-            )
-        for q in range(50): 
-            self.assertEqual(
-                faiss.struct_packing_test_cpp(q),
-                faiss.struct_packing_test_cuda(q)
-            )
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_swig(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])
 
-    def test_failure(self): 
-        1 / 0 
+    def test_cuda(self): 
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_cuda(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])

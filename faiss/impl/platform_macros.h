@@ -339,6 +339,22 @@ struct GpuProgressiveDimIndexFactoryB : ProgressiveDimIndexFactoryB {
     case 1:  \
         return (char*)&sb.ncall - (char*)&sb;  \
     case 2:  \
+        return sizeof(StructPackingTestD);  \
+    case 3:  \
+        return sizeof(StructPackingTestC);  \
+    case 4:  \
+        return sizeof(StructPackingTestB);  \
+    case 5:  \
+        return sizeof(StructPackingTestA);  \
+    case 6:  \
+        return sizeof(IndicesOptionsB);  \
+    case 7:  \
+        return sizeof(GpuMultipleClonerOptionsB);  \
+    case 8:  \
+        return sizeof(GpuClonerOptionsB);  \
+    case 9:  \
+        return sizeof(ProgressiveDimIndexFactoryB);  \
+    case 10:  \
         return sizeof(GpuProgressiveDimIndexFactoryB);  \
     default: \
         return -1; \
