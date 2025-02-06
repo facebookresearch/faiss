@@ -258,12 +258,12 @@ if(FAISS_ENABLE_CUVS)
           utils/CuvsUtils.cu)
 endif()
 
-add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
-set_target_properties(faiss_gpu PROPERTIES
+add_library(faiss_gpu_objs OBJECT ${FAISS_GPU_SRC})
+set_target_properties(faiss_gpu_objs PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
-target_include_directories(faiss_gpu PUBLIC
+target_include_directories(faiss_gpu_objs PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
 if(FAISS_ENABLE_CUVS)
@@ -298,7 +298,7 @@ if(FAISS_ENABLE_CUVS)
     utils/CuvsUtils.cu
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
-  target_compile_definitions(faiss_gpu PUBLIC USE_NVIDIA_CUVS=1)
+  target_compile_definitions(faiss_gpu_objs PUBLIC USE_NVIDIA_CUVS=1)
 endif()
 
 if (FAISS_ENABLE_ROCM)
@@ -308,11 +308,13 @@ endif()
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx512_spr PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_sve PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+target_link_libraries(faiss PRIVATE  faiss_gpu_objs)
+target_link_libraries(faiss_avx2 PRIVATE faiss_gpu_objs)
+target_link_libraries(faiss_avx512 PRIVATE faiss_gpu_objs)
+target_link_libraries(faiss_avx512_spr PRIVATE faiss_gpu_objs)
+target_link_libraries(faiss_sve PRIVATE faiss_gpu_objs)
+
+install(TARGETS faiss_gpu_objs EXPORT faiss-targets)
 
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
@@ -322,8 +324,8 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 if (FAISS_ENABLE_ROCM)
-  target_link_libraries(faiss_gpu PRIVATE hip::host roc::hipblas)
-  target_compile_options(faiss_gpu PRIVATE)
+  target_link_libraries(faiss_gpu_objs PRIVATE hip::host roc::hipblas)
+  target_compile_options(faiss_gpu_objs PRIVATE)
 else()
   # Prepares a host linker script and enables host linker to support
   # very large device object files.
@@ -338,12 +340,12 @@ else()
   }
   ]=]
   )
-  target_link_options(faiss_gpu PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
+  target_link_options(faiss_gpu_objs PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fatbin.ld")
 
 
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
-  target_compile_options(faiss_gpu PRIVATE
+  target_link_libraries(faiss_gpu_objs PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  target_compile_options(faiss_gpu_objs PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all
     --expt-extended-lambda --expt-relaxed-constexpr
     $<$<BOOL:${FAISS_ENABLE_CUVS}>:-Xcompiler=${OpenMP_CXX_FLAGS}>>)
