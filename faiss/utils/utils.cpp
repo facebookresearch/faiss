@@ -9,6 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/struct_packing_test.h>
 
 #include <cassert>
 #include <cmath>

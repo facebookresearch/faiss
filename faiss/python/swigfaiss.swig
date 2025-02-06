@@ -1260,9 +1260,13 @@ int struct_packing_test_swig (int q);
 }
 
 %{
+
+#include <faiss/utils/struct_packing_test.h>
+
 namespace faiss {
 int struct_packing_test_swig (int q) STRUCT_PACKING_FUNCTION_BODY
 }
+
 %}
 
 
