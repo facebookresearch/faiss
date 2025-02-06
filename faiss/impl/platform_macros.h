@@ -309,7 +309,7 @@ struct GpuMultipleClonerOptionsB : public GpuClonerOptionsB {
 
 struct ProgressiveDimIndexFactoryB {
     /// ownership transferred to caller
-    virtual void* operator()(int dim);
+    virtual void* operator()(int dim) {return nullptr; }
 
     virtual ~ProgressiveDimIndexFactoryB() {}
 };
@@ -320,13 +320,12 @@ struct GpuProgressiveDimIndexFactoryB : ProgressiveDimIndexFactoryB {
     std::vector<int> devices;
     int ncall;
 
-    explicit GpuProgressiveDimIndexFactoryB(int ngpu);
+    explicit GpuProgressiveDimIndexFactoryB(int ngpu) {}
 
     void* operator()(int dim) override {return nullptr; }
 
     virtual ~GpuProgressiveDimIndexFactoryB() override {}
 
-    void say();
 };
 
 
