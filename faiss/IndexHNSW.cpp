@@ -237,19 +237,19 @@ void hnsw_search(
         idx_t n,
         const float* x,
         BlockResultHandler& bres,
-        const SearchParameters* params_in) {
+        const SearchParameters* params) {
     FAISS_THROW_IF_NOT_MSG(
             index->storage,
             "No storage index, please use IndexHNSWFlat (or variants) "
             "instead of IndexHNSW directly");
-    const SearchParametersHNSW* params = nullptr;
     const HNSW& hnsw = index->hnsw;
 
     int efSearch = hnsw.efSearch;
-    if (params_in) {
-        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
-        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
-        efSearch = params->efSearch;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            efSearch = hnsw_params->efSearch;
+        }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
 
@@ -294,13 +294,13 @@ void IndexHNSW::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters* params_in) const {
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
     using RH = HeapBlockResultHandler<HNSW::C>;
     RH bres(n, distances, labels, k);
 
-    hnsw_search(this, n, x, bres, params_in);
+    hnsw_search(this, n, x, bres, params);
 
     if (is_similarity_metric(this->metric_type)) {
         // we need to revert the negated distances
@@ -408,16 +408,9 @@ void IndexHNSW::search_level_0(
         idx_t* labels,
         int nprobe,
         int search_type,
-        const SearchParameters* params_in) const {
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
-
-    const SearchParametersHNSW* params = nullptr;
-
-    if (params_in) {
-        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
-        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
-    }
 
     storage_idx_t ntotal = hnsw.levels.size();
 
