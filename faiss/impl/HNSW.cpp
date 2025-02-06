@@ -599,11 +599,12 @@ int search_from_candidates(
     int efSearch = hnsw.efSearch;
     const IDSelector* sel = nullptr;
     if (params) {
-      if (const SearchParametersHNSW* hnsw_params = dynamic_cast<const SearchParametersHNSW*>(params)) {
-        do_dis_check = hnsw_params->check_relative_distance;
-        efSearch = hnsw_params->efSearch;
-      }
-      sel = params->sel;
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            do_dis_check = hnsw_params->check_relative_distance;
+            efSearch = hnsw_params->efSearch;
+        }
+        sel = params->sel;
     }
 
     C::T threshold = res.threshold;
@@ -936,10 +937,11 @@ HNSWStats HNSW::search(
     bool bounded_queue = this->search_bounded_queue;
     int efSearch = this->efSearch;
     if (params) {
-      if (const SearchParametersHNSW* hnsw_params = dynamic_cast<const SearchParametersHNSW*>(params)) {
-        bounded_queue = hnsw_params->bounded_queue;
-        efSearch = hnsw_params->efSearch;
-      }
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            bounded_queue = hnsw_params->bounded_queue;
+            efSearch = hnsw_params->efSearch;
+        }
     }
 
     //  greedy search on upper levels
@@ -997,9 +999,10 @@ void HNSW::search_level_0(
 
     auto efSearch = hnsw.efSearch;
     if (params) {
-      if (const SearchParametersHNSW* hnsw_params = dynamic_cast<const SearchParametersHNSW*>(params)) {
-        efSearch = hnsw_params->efSearch;
-      }
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            efSearch = hnsw_params->efSearch;
+        }
     }
 
     int k = extract_k_from_ResultHandler(res);

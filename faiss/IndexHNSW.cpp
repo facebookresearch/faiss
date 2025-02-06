@@ -246,8 +246,9 @@ void hnsw_search(
 
     int efSearch = hnsw.efSearch;
     if (params) {
-        if (const SearchParametersHNSW* hnsw_params = dynamic_cast<const SearchParametersHNSW*>(params)) {
-          efSearch = hnsw_params->efSearch;
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            efSearch = hnsw_params->efSearch;
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
