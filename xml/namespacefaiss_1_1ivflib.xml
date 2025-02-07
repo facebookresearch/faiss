@@ -2,6 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1ivflib" kind="namespace" language="C++">
     <compoundname>faiss::ivflib</compoundname>
+    <innerclass refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" prot="public">faiss::ivflib::DefaultShardingFunction</innerclass>
+    <innerclass refid="structfaiss_1_1ivflib_1_1ShardingFunction" prot="public">faiss::ivflib::ShardingFunction</innerclass>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>
     <sectiondef kind="func">
       <memberdef kind="function" id="IVFlib_8h_1aeb9efc826d09730a24d5f3b179222033" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -25,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="30" column="6" declfile="faiss/IVFlib.h" declline="30" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="31" column="6" declfile="faiss/IVFlib.h" declline="31" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a73c11c3c801b554a6fe55545b5a68aff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -45,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="37" column="16" declfile="faiss/IVFlib.h" declline="37" declcolumn="16"/>
+        <location file="faiss/IVFlib.h" line="38" column="16" declfile="faiss/IVFlib.h" declline="38" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ac7a58bb019c8164221457029cd69bed0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -63,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="38" column="10" declfile="faiss/IVFlib.h" declline="38" declcolumn="10"/>
+        <location file="faiss/IVFlib.h" line="39" column="10" declfile="faiss/IVFlib.h" declline="39" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1adc6fd964bb0944b737b79875a74788e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -82,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="41" column="16" declfile="faiss/IVFlib.h" declline="41" declcolumn="16"/>
+        <location file="faiss/IVFlib.h" line="42" column="16" declfile="faiss/IVFlib.h" declline="42" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ac7ceabdf2f0c1f41039c42c032691473" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -100,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="42" column="10" declfile="faiss/IVFlib.h" declline="42" declcolumn="10"/>
+        <location file="faiss/IVFlib.h" line="43" column="10" declfile="faiss/IVFlib.h" declline="43" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a342382b7b7a6c4e769a9b6bbfe8becaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -137,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="49" column="6" declfile="faiss/IVFlib.h" declline="49" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="50" column="6" declfile="faiss/IVFlib.h" declline="50" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ad23c0309490017e0a4f7bf50eb873ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -167,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="60" column="6" declfile="faiss/IVFlib.h" declline="60" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="61" column="6" declfile="faiss/IVFlib.h" declline="61" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a739f3822af902e9b9fb8104415dc0ef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -213,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="72" column="6" declfile="faiss/IVFlib.h" declline="72" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="73" column="6" declfile="faiss/IVFlib.h" declline="73" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a28aac05f31a5d8301f24dd599c5c204b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -240,7 +242,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="112" column="20" declfile="faiss/IVFlib.h" declline="112" declcolumn="20"/>
+        <location file="faiss/IVFlib.h" line="113" column="20" declfile="faiss/IVFlib.h" declline="113" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a01332806047c09400a8c73f1fd400699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -271,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="115" column="6" declfile="faiss/IVFlib.h" declline="115" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="116" column="6" declfile="faiss/IVFlib.h" declline="116" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a113970d7b83b793fe22b2cf2bb73a78b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -329,7 +331,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="127" column="6" declfile="faiss/IVFlib.h" declline="127" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="128" column="6" declfile="faiss/IVFlib.h" declline="128" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -378,7 +380,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="139" column="6" declfile="faiss/IVFlib.h" declline="139" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="140" column="6" declfile="faiss/IVFlib.h" declline="140" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ad4e104b5a77c21bda47ea76cb1896ecd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref> *</type>
@@ -400,7 +402,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="152" column="27" declfile="faiss/IVFlib.h" declline="152" declcolumn="27"/>
+        <location file="faiss/IVFlib.h" line="153" column="27" declfile="faiss/IVFlib.h" declline="153" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -458,13 +460,116 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="164" column="6" declfile="faiss/IVFlib.h" declline="164" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="165" column="6" declfile="faiss/IVFlib.h" declline="165" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="IVFlib_8h_1a26e2f5a54a26db03087c82a3ae4f6234" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ivflib::shard_ivf_index_centroids</definition>
+        <argsstring>(IndexIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr)</argsstring>
+        <name>shard_ivf_index_centroids</name>
+        <qualifiedname>faiss::ivflib::shard_ivf_index_centroids</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>shard_count</declname>
+          <defval>20</defval>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filename_template</declname>
+          <defval>&quot;shard.%d.index&quot;</defval>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref> *</type>
+          <declname>sharding_function</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Shards an IVF index centroids by the given sharding function, and writes the index to the path given by filename_generator. The centroids must already be added to the index quantizer.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The IVF index containing centroids to shard. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>shard_count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of shards. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename_template</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Template for shard filenames. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sharding_function</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The function to shard by. The default is ith vector mod shard_count. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of shards written. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IVFlib.h" line="196" column="6" declfile="faiss/IVFlib.h" declline="196" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="IVFlib_8h_1a0d9603741f010914750a111e1969b579" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ivflib::shard_binary_ivf_index_centroids</definition>
+        <argsstring>(faiss::IndexBinaryIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr)</argsstring>
+        <name>shard_binary_ivf_index_centroids</name>
+        <qualifiedname>faiss::ivflib::shard_binary_ivf_index_centroids</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexBinaryIVF" kindref="compound">faiss::IndexBinaryIVF</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>shard_count</declname>
+          <defval>20</defval>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filename_template</declname>
+          <defval>&quot;shard.%d.index&quot;</defval>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref> *</type>
+          <declname>sharding_function</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IVFlib.h" line="202" column="6" declfile="faiss/IVFlib.h" declline="202" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IVFlib.h" line="26" column="1"/>
+    <location file="faiss/IVFlib.h" line="27" column="1"/>
   </compounddef>
 </doxygen>

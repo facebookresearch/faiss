@@ -1,0 +1,4 @@
+Struct PyCallbackShardingFunction
+=================================
+
+.. doxygenstruct:: PyCallbackShardingFunction

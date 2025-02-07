@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structPyCallbackShardingFunction" kind="struct" language="C++" prot="public">
+    <compoundname>PyCallbackShardingFunction</compoundname>
+    <basecompoundref refid="structfaiss_1_1ivflib_1_1ShardingFunction" prot="public" virt="non-virtual">faiss::ivflib::ShardingFunction</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structPyCallbackShardingFunction_1ad01fb54a296dec3704da1e12259c1a76" prot="public" static="no" mutable="no">
+        <type>PyObject *</type>
+        <definition>PyObject* PyCallbackShardingFunction::callback</definition>
+        <argsstring></argsstring>
+        <name>callback</name>
+        <qualifiedname>PyCallbackShardingFunction::callback</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="68" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1ad9f1a725d84cc56692fa34696586715b" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackShardingFunction::PyCallbackShardingFunction</definition>
+        <argsstring>(PyObject *callback)</argsstring>
+        <name>PyCallbackShardingFunction</name>
+        <qualifiedname>PyCallbackShardingFunction::PyCallbackShardingFunction</qualifiedname>
+        <param>
+          <type>PyObject *</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="70" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1a8bcca258af9ea666043871e6ba07cf88" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t PyCallbackShardingFunction::operator()</definition>
+        <argsstring>(int64_t i, int64_t shard_count) override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>PyCallbackShardingFunction::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a007d9b16d3206e1f5064165756a73c17">operator()</reimplements>
+        <param>
+          <type>int64_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>shard_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="72" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1adef3a27e3032df25885d36a4fa379c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackShardingFunction::~PyCallbackShardingFunction</definition>
+        <argsstring>() override</argsstring>
+        <name>~PyCallbackShardingFunction</name>
+        <qualifiedname>PyCallbackShardingFunction::~PyCallbackShardingFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="74" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1aa56ac0d626cdc60c0e140ebdc26d85ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackShardingFunction::PyCallbackShardingFunction</definition>
+        <argsstring>(const PyCallbackShardingFunction &amp;)=delete</argsstring>
+        <name>PyCallbackShardingFunction</name>
+        <qualifiedname>PyCallbackShardingFunction::PyCallbackShardingFunction</qualifiedname>
+        <param>
+          <type>const <ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="76" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1a3386016b765e6bb9476b7f6de06f60cc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackShardingFunction::PyCallbackShardingFunction</definition>
+        <argsstring>(PyCallbackShardingFunction &amp;&amp;) noexcept=default</argsstring>
+        <name>PyCallbackShardingFunction</name>
+        <qualifiedname>PyCallbackShardingFunction::PyCallbackShardingFunction</qualifiedname>
+        <param>
+          <type><ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="77" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1a30c1bef92f330e9217ccd654d6a2dc3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;</type>
+        <definition>PyCallbackShardingFunction &amp; PyCallbackShardingFunction::operator=</definition>
+        <argsstring>(const PyCallbackShardingFunction &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>PyCallbackShardingFunction::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="78" column="32"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackShardingFunction_1a54232a1f1164836e881d1188e3bb45e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;</type>
+        <definition>PyCallbackShardingFunction &amp; PyCallbackShardingFunction::operator=</definition>
+        <argsstring>(PyCallbackShardingFunction &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>PyCallbackShardingFunction::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structPyCallbackShardingFunction" kindref="compound">PyCallbackShardingFunction</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="80" column="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>PyCallbackShardingFunction</label>
+        <link refid="structPyCallbackShardingFunction"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ivflib::ShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>PyCallbackShardingFunction</label>
+        <link refid="structPyCallbackShardingFunction"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ivflib::ShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/python/python_callbacks.h" line="67" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="67" bodyend="82"/>
+    <listofallmembers>
+      <member refid="structPyCallbackShardingFunction_1ad01fb54a296dec3704da1e12259c1a76" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>callback</name></member>
+      <member refid="structPyCallbackShardingFunction_1a8bcca258af9ea666043871e6ba07cf88" prot="public" virt="virtual"><scope>PyCallbackShardingFunction</scope><name>operator()</name></member>
+      <member refid="structPyCallbackShardingFunction_1a30c1bef92f330e9217ccd654d6a2dc3b" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>operator=</name></member>
+      <member refid="structPyCallbackShardingFunction_1a54232a1f1164836e881d1188e3bb45e0" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" prot="public" virt="non-virtual" ambiguityscope="faiss::ivflib::ShardingFunction::"><scope>PyCallbackShardingFunction</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a7b7240ba0a89dde1a872fd38190da8dc" prot="public" virt="non-virtual" ambiguityscope="faiss::ivflib::ShardingFunction::"><scope>PyCallbackShardingFunction</scope><name>operator=</name></member>
+      <member refid="structPyCallbackShardingFunction_1ad9f1a725d84cc56692fa34696586715b" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>PyCallbackShardingFunction</name></member>
+      <member refid="structPyCallbackShardingFunction_1aa56ac0d626cdc60c0e140ebdc26d85ce" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>PyCallbackShardingFunction</name></member>
+      <member refid="structPyCallbackShardingFunction_1a3386016b765e6bb9476b7f6de06f60cc" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>PyCallbackShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a72c513808b83e41d7a7e36168a17cacb" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ae68d94d9775e1b97bfbf50b0a2b6691e" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ac09daac4341167a8db9b4bacd40686ed" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structPyCallbackShardingFunction_1adef3a27e3032df25885d36a4fa379c2d" prot="public" virt="non-virtual"><scope>PyCallbackShardingFunction</scope><name>~PyCallbackShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a90d4d7516557fc19b14923596ef69d2a" prot="public" virt="virtual"><scope>PyCallbackShardingFunction</scope><name>~ShardingFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

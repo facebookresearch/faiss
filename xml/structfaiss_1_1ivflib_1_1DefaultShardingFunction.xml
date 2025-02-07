@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ivflib_1_1DefaultShardingFunction" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ivflib::DefaultShardingFunction</compoundname>
+    <basecompoundref refid="structfaiss_1_1ivflib_1_1ShardingFunction" prot="public" virt="non-virtual">faiss::ivflib::ShardingFunction</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ivflib_1_1DefaultShardingFunction_1afe6a5d5ec404438da92e1360f33bf7d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t faiss::ivflib::DefaultShardingFunction::operator()</definition>
+        <argsstring>(int64_t i, int64_t shard_count) override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::ivflib::DefaultShardingFunction::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a007d9b16d3206e1f5064165756a73c17">operator()</reimplements>
+        <param>
+          <type>int64_t</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>shard_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IVFlib.h" line="181" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::ivflib::DefaultShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ivflib::ShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::ivflib::DefaultShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ivflib::ShardingFunction</label>
+        <link refid="structfaiss_1_1ivflib_1_1ShardingFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IVFlib.h" line="180" column="1" bodyfile="faiss/IVFlib.h" bodystart="180" bodyend="182"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction_1afe6a5d5ec404438da92e1360f33bf7d4" prot="public" virt="virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a7b7240ba0a89dde1a872fd38190da8dc" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a72c513808b83e41d7a7e36168a17cacb" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ae68d94d9775e1b97bfbf50b0a2b6691e" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ac09daac4341167a8db9b4bacd40686ed" prot="public" virt="non-virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>ShardingFunction</name></member>
+      <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a90d4d7516557fc19b14923596ef69d2a" prot="public" virt="virtual"><scope>faiss::ivflib::DefaultShardingFunction</scope><name>~ShardingFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

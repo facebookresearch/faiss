@@ -494,10 +494,10 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="190" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HNSW_1ac665a11b9c1df3809629b8ce0b3d26f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1a0bb51c7a1ef62db14209a83452ef6233" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
         <definition>HNSWStats faiss::HNSW::search</definition>
-        <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, VisitedTable &amp;vt, const SearchParametersHNSW *params=nullptr) const</argsstring>
+        <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, VisitedTable &amp;vt, const SearchParameters *params=nullptr) const</argsstring>
         <name>search</name>
         <qualifiedname>faiss::HNSW::search</qualifiedname>
         <param>
@@ -513,7 +513,7 @@
           <declname>vt</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref> *</type>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
           <declname>params</declname>
           <defval>nullptr</defval>
         </param>
@@ -526,10 +526,10 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="199" column="15"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HNSW_1a58e54e8e3ed0cc52e362f7d3dbd82332" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::HNSW::search_level_0</definition>
-        <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, idx_t nprobe, const storage_idx_t *nearest_i, const float *nearest_d, int search_type, HNSWStats &amp;search_stats, VisitedTable &amp;vt, const SearchParametersHNSW *params=nullptr) const</argsstring>
+        <argsstring>(DistanceComputer &amp;qdis, ResultHandler&lt; C &gt; &amp;res, idx_t nprobe, const storage_idx_t *nearest_i, const float *nearest_d, int search_type, HNSWStats &amp;search_stats, VisitedTable &amp;vt, const SearchParameters *params=nullptr) const</argsstring>
         <name>search_level_0</name>
         <qualifiedname>faiss::HNSW::search_level_0</qualifiedname>
         <param>
@@ -565,7 +565,7 @@
           <declname>vt</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref> *</type>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
           <declname>params</declname>
           <defval>nullptr</defval>
         </param>
@@ -752,9 +752,9 @@
       <member refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>random_level</name></member>
       <member refid="structfaiss_1_1HNSW_1a73b4779053c5281298e1e916bb04d42f" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>reset</name></member>
       <member refid="structfaiss_1_1HNSW_1ae551102a7eda0b853ad85793987e46a2" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>rng</name></member>
-      <member refid="structfaiss_1_1HNSW_1ac665a11b9c1df3809629b8ce0b3d26f9" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search</name></member>
+      <member refid="structfaiss_1_1HNSW_1a0bb51c7a1ef62db14209a83452ef6233" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search</name></member>
       <member refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search_bounded_queue</name></member>
-      <member refid="structfaiss_1_1HNSW_1a58e54e8e3ed0cc52e362f7d3dbd82332" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search_level_0</name></member>
+      <member refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search_level_0</name></member>
       <member refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>set_default_probas</name></member>
       <member refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>set_nb_neighbors</name></member>
       <member refid="structfaiss_1_1HNSW_1adad3792128bbe0e57c981de9f7aa25ea" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>shrink_neighbor_list</name></member>

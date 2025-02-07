@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="53" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="54" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="54" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -36,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="55" column="14"/>
+        <location file="faiss/python/python_callbacks.h" line="56" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>bool</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="57" column="10"/>
+        <location file="faiss/python/python_callbacks.h" line="58" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="59" column="5"/>
+        <location file="faiss/python/python_callbacks.h" line="60" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -100,7 +100,7 @@
         <link refid="structfaiss_1_1IDSelector"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/python/python_callbacks.h" line="52" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="52" bodyend="60"/>
+    <location file="faiss/python/python_callbacks.h" line="53" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="53" bodyend="61"/>
     <listofallmembers>
       <member refid="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>callback</name></member>
       <member refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" virt="virtual"><scope>PyCallbackIDSelector</scope><name>is_member</name></member>

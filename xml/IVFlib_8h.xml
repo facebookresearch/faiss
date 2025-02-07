@@ -2,15 +2,17 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="IVFlib_8h" kind="file" language="C++">
     <compoundname>IVFlib.h</compoundname>
+    <includes refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes local="no">vector</includes>
+    <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
     <incdepgraph>
-      <node id="7">
+      <node id="4">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -18,171 +20,215 @@
         <link refid="IVFlib_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="5">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexBinaryIVF.h</label>
+        <link refid="IndexBinaryIVF_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="14">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-      </node>
-      <node id="9">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss/impl/IDSelector.h</label>
-        <link refid="IDSelector_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
         <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+      </node>
+      <node id="6">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+      </node>
+      <node id="7">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-      </node>
-      <node id="24">
+      <node id="26">
         <label>cassert</label>
       </node>
-      <node id="21">
+      <node id="23">
         <label>climits</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>cmath</label>
       </node>
-      <node id="11">
+      <node id="8">
         <label>cstdint</label>
       </node>
-      <node id="12">
+      <node id="9">
         <label>cstdio</label>
       </node>
-      <node id="23">
+      <node id="25">
         <label>cstring</label>
       </node>
-      <node id="25">
+      <node id="27">
         <label>limits</label>
       </node>
-      <node id="4">
+      <node id="16">
         <label>memory</label>
       </node>
-      <node id="13">
+      <node id="10">
         <label>sstream</label>
       </node>
-      <node id="3">
+      <node id="15">
         <label>stdint.h</label>
       </node>
-      <node id="14">
+      <node id="11">
         <label>string</label>
       </node>
-      <node id="15">
+      <node id="12">
         <label>typeinfo</label>
       </node>
-      <node id="5">
+      <node id="17">
         <label>unordered_map</label>
       </node>
-      <node id="17">
+      <node id="19">
         <label>unordered_set</label>
       </node>
-      <node id="26">
+      <node id="28">
         <label>utility</label>
       </node>
-      <node id="6">
+      <node id="3">
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IVFlib.h</label>
+        <link refid="IVFlib_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/python/python_callbacks.h</label>
+        <link refid="python__callbacks_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>
+    <innerclass refid="structfaiss_1_1ivflib_1_1ShardingFunction" prot="public">faiss::ivflib::ShardingFunction</innerclass>
+    <innerclass refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" prot="public">faiss::ivflib::DefaultShardingFunction</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1ivflib">faiss::ivflib</innernamespace>
     <briefdescription>
@@ -206,163 +252,201 @@
 <codeline lineno="14"><highlight class="comment"><sp/>*<sp/>IndexIVFs<sp/>embedded<sp/>within<sp/>an<sp/>IndexPreTransform.</highlight></codeline>
 <codeline lineno="15"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVF.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexIVFResidualQuantizer;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexResidualQuantizer;</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ResidualQuantizer;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">ivflib<sp/>{</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="28"><highlight class="comment">/**<sp/>check<sp/>if<sp/>two<sp/>indexes<sp/>have<sp/>the<sp/>same<sp/>parameters<sp/>and<sp/>are<sp/>trained<sp/>in</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>the<sp/>same<sp/>way,<sp/>otherwise<sp/>throw.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_compatible_for_merge(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index2);</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="32"><highlight class="comment">/**<sp/>get<sp/>an<sp/>IndexIVF<sp/>from<sp/>an<sp/>index.<sp/>The<sp/>index<sp/>may<sp/>be<sp/>an<sp/>IndexIVF<sp/>or</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>some<sp/>wrapper<sp/>class<sp/>that<sp/>encloses<sp/>an<sp/>IndexIVF</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>throws<sp/>an<sp/>exception<sp/>if<sp/>this<sp/>is<sp/>not<sp/>the<sp/>case.</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexIVF*<sp/>extract_index_ivf(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index);</highlight></codeline>
-<codeline lineno="38"><highlight class="normal">IndexIVF*<sp/>extract_index_ivf(Index*<sp/>index);</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="40"><highlight class="comment">///<sp/>same<sp/>as<sp/>above<sp/>but<sp/>returns<sp/>nullptr<sp/>instead<sp/>of<sp/>throwing<sp/>on<sp/>failure</highlight></codeline>
-<codeline lineno="41"><highlight class="comment"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexIVF*<sp/>try_extract_index_ivf(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index);</highlight></codeline>
-<codeline lineno="42"><highlight class="normal">IndexIVF*<sp/>try_extract_index_ivf(Index*<sp/>index);</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="44"><highlight class="comment">/**<sp/>Merge<sp/>index1<sp/>into<sp/>index0.<sp/>Works<sp/>on<sp/>IndexIVF&apos;s<sp/>and<sp/>IndexIVF&apos;s</highlight></codeline>
-<codeline lineno="45"><highlight class="comment"><sp/>*<sp/><sp/>embedded<sp/>in<sp/>a<sp/>IndexPreTransform.<sp/>On<sp/>output,<sp/>the<sp/>index1<sp/>is<sp/>empty.</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="47"><highlight class="comment"><sp/>*<sp/>@param<sp/>shift_ids:<sp/>translate<sp/>the<sp/>ids<sp/>from<sp/>index1<sp/>to<sp/>index0-&gt;prev_ntotal</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>merge_into(Index*<sp/>index0,<sp/>Index*<sp/>index1,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>shift_ids);</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Returns<sp/>the<sp/>cluster<sp/>the<sp/>embeddings<sp/>belong<sp/>to.</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/>Index,<sp/>which<sp/>should<sp/>be<sp/>an<sp/>IVF<sp/>index</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(otherwise<sp/>there<sp/>are<sp/>no<sp/>clusters)</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>@param<sp/>embeddings<sp/>object<sp/>descriptors<sp/>for<sp/>which<sp/>the<sp/>centroids<sp/>should<sp/>be<sp/>found,</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size<sp/>num_objects<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid_ids</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cluster<sp/>id<sp/>each<sp/>object<sp/>belongs<sp/>to,<sp/>size<sp/>num_objects</highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_centroid(Index*<sp/>index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>centroid_ids);</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Returns<sp/>the<sp/>cluster<sp/>the<sp/>embeddings<sp/>belong<sp/>to.</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/>Index,<sp/>which<sp/>should<sp/>be<sp/>an<sp/>IVF<sp/>index</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(otherwise<sp/>there<sp/>are<sp/>no<sp/>clusters)</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>@param<sp/>query_centroid_ids</highlight></codeline>
-<codeline lineno="67"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centroid<sp/>ids<sp/>corresponding<sp/>to<sp/>the<sp/>query<sp/>vectors<sp/>(size<sp/>n)</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/>*<sp/>@param<sp/>result_centroid_ids</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centroid<sp/>ids<sp/>corresponding<sp/>to<sp/>the<sp/>results<sp/>(size<sp/>n<sp/>*<sp/>k)</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/>*<sp/>other<sp/>arguments<sp/>are<sp/>the<sp/>same<sp/>as<sp/>the<sp/>standard<sp/>search<sp/>function</highlight></codeline>
-<codeline lineno="71"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_and_return_centroids(</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Index*<sp/>index,</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xin,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>query_centroid_ids,</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>result_centroid_ids);</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="82"><highlight class="comment">/**<sp/>A<sp/>set<sp/>of<sp/>IndexIVFs<sp/>concatenated<sp/>together<sp/>in<sp/>a<sp/>FIFO<sp/>fashion.</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/>*<sp/>at<sp/>each<sp/>&quot;step&quot;,<sp/>the<sp/>oldest<sp/>index<sp/>slice<sp/>is<sp/>removed<sp/>and<sp/>a<sp/>new<sp/>index<sp/>is<sp/>added.</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="85" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" kindref="compound">SlidingIndexWindow</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="86"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>common<sp/>index<sp/>that<sp/>contains<sp/>the<sp/>sliding<sp/>window</highlight></codeline>
-<codeline lineno="87" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>InvertedLists<sp/>of<sp/>index</highlight></codeline>
-<codeline lineno="90" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" kindref="member">ils</ref>;</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>slices<sp/>currently<sp/>in<sp/>index</highlight></codeline>
-<codeline lineno="93" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" kindref="member">n_slice</ref>;</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>index-&gt;nlist</highlight></codeline>
-<codeline lineno="96" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" kindref="member">nlist</ref>;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="98"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cumulative<sp/>list<sp/>sizes<sp/>at<sp/>each<sp/>slice</highlight></codeline>
-<codeline lineno="99" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;size_t&gt;&gt;<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" kindref="member">sizes</ref>;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="101"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>index<sp/>should<sp/>be<sp/>initially<sp/>empty<sp/>and<sp/>trained</highlight></codeline>
-<codeline lineno="102" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" kindref="member">SlidingIndexWindow</ref>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>);</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="104"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Add<sp/>one<sp/>index<sp/>to<sp/>the<sp/>current<sp/>index<sp/>and<sp/>remove<sp/>the<sp/>oldest<sp/>one.</highlight></codeline>
-<codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>sub_index<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>slice<sp/>to<sp/>swap<sp/>in<sp/>(can<sp/>be<sp/>NULL)</highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>remove_oldest<sp/><sp/><sp/><sp/>if<sp/>true,<sp/>remove<sp/>the<sp/>oldest<sp/>slices<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="108" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" kindref="member">step</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>sub_index,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>remove_oldest);</highlight></codeline>
-<codeline lineno="109"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="111"><highlight class="comment">///<sp/>Get<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists<sp/>[i0,<sp/>i1)</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/>get_invlist_range(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1);</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="114"><highlight class="comment">///<sp/>Set<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_invlist_range(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1,<sp/><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/>src);</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="117"><highlight class="comment">/**<sp/>search<sp/>an<sp/>IndexIVF,<sp/>possibly<sp/>embedded<sp/>in<sp/>an<sp/>IndexPreTransform<sp/>with</highlight></codeline>
-<codeline lineno="118"><highlight class="comment"><sp/>*<sp/>given<sp/>parameters.<sp/>This<sp/>is<sp/>a<sp/>way<sp/>to<sp/>set<sp/>the<sp/>nprobe<sp/>and<sp/>get</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>statdistics<sp/>in<sp/>a<sp/>thread-safe<sp/>way.</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="121"><highlight class="comment"><sp/>*<sp/>Optionally<sp/>returns<sp/>(if<sp/>non-nullptr):</highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/>*<sp/>-<sp/>nb_dis:<sp/>number<sp/>of<sp/>distances<sp/>computed</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>-<sp/>ms_per_stage:<sp/>[0]:<sp/>preprocessing<sp/>time</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[1]:<sp/>coarse<sp/>quantization,</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[2]:<sp/>list<sp/>scanning</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="127"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_with_parameters(</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params,</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>nb_dis<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>ms_per_stage<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="138"><highlight class="comment">/**<sp/>same<sp/>as<sp/>search_with_parameters<sp/>but<sp/>for<sp/>range<sp/>search<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>range_search_with_parameters(</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
-<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params,</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>nb_dis<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>ms_per_stage<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="149"><highlight class="comment">/**<sp/>Build<sp/>an<sp/>IndexIVFResidualQuantizer<sp/>from<sp/>an<sp/>ResidualQuantizer,<sp/>using<sp/>the</highlight></codeline>
-<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>nlevel<sp/>first<sp/>components<sp/>as<sp/>coarse<sp/>quantizer<sp/>and<sp/>the<sp/>rest<sp/>as<sp/>codes<sp/>in<sp/>invlists</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref>*<sp/>ivf_residual_from_quantizer(</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref>&amp;,</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlevel);</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="156"><highlight class="comment">/**<sp/>add<sp/>from<sp/>codes.<sp/>NB<sp/>that<sp/>the<sp/>norm<sp/>component<sp/>is<sp/>not<sp/>used,<sp/>so<sp/>the<sp/>code_size<sp/>can</highlight></codeline>
-<codeline lineno="157"><highlight class="comment"><sp/>*<sp/>be<sp/>provided.</highlight></codeline>
-<codeline lineno="158"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="159"><highlight class="comment"><sp/>*<sp/>@param<sp/>ivfrq<sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>to<sp/>populate<sp/>with<sp/>the<sp/>codes</highlight></codeline>
-<codeline lineno="160"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/><sp/><sp/><sp/>codes<sp/>to<sp/>add,<sp/>size<sp/>(ncode,<sp/>code_size)</highlight></codeline>
-<codeline lineno="161"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_size<sp/><sp/>override<sp/>the<sp/>ivfrq&apos;s<sp/>code_size,<sp/>useful<sp/>if<sp/>the<sp/>norm<sp/>encoding</highlight></codeline>
-<codeline lineno="162"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>is<sp/>different</highlight></codeline>
-<codeline lineno="163"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ivf_residual_add_from_flat_codes(</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref>*<sp/>ivfrq,</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncode,</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>code_size<sp/>=<sp/>-1);</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ivflib</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="171"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"></highlight></codeline>
-<codeline lineno="173"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexBinaryIVF.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexIVF.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexIVFResidualQuantizer;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexResidualQuantizer;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ResidualQuantizer;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">ivflib<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment">/**<sp/>check<sp/>if<sp/>two<sp/>indexes<sp/>have<sp/>the<sp/>same<sp/>parameters<sp/>and<sp/>are<sp/>trained<sp/>in</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/>the<sp/>same<sp/>way,<sp/>otherwise<sp/>throw.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_compatible_for_merge(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index2);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="33"><highlight class="comment">/**<sp/>get<sp/>an<sp/>IndexIVF<sp/>from<sp/>an<sp/>index.<sp/>The<sp/>index<sp/>may<sp/>be<sp/>an<sp/>IndexIVF<sp/>or</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>some<sp/>wrapper<sp/>class<sp/>that<sp/>encloses<sp/>an<sp/>IndexIVF</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*<sp/>throws<sp/>an<sp/>exception<sp/>if<sp/>this<sp/>is<sp/>not<sp/>the<sp/>case.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexIVF*<sp/>extract_index_ivf(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">IndexIVF*<sp/>extract_index_ivf(Index*<sp/>index);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment">///<sp/>same<sp/>as<sp/>above<sp/>but<sp/>returns<sp/>nullptr<sp/>instead<sp/>of<sp/>throwing<sp/>on<sp/>failure</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexIVF*<sp/>try_extract_index_ivf(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index*<sp/>index);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">IndexIVF*<sp/>try_extract_index_ivf(Index*<sp/>index);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="45"><highlight class="comment">/**<sp/>Merge<sp/>index1<sp/>into<sp/>index0.<sp/>Works<sp/>on<sp/>IndexIVF&apos;s<sp/>and<sp/>IndexIVF&apos;s</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*<sp/><sp/>embedded<sp/>in<sp/>a<sp/>IndexPreTransform.<sp/>On<sp/>output,<sp/>the<sp/>index1<sp/>is<sp/>empty.</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/>*<sp/>@param<sp/>shift_ids:<sp/>translate<sp/>the<sp/>ids<sp/>from<sp/>index1<sp/>to<sp/>index0-&gt;prev_ntotal</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>merge_into(Index*<sp/>index0,<sp/>Index*<sp/>index1,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>shift_ids);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Returns<sp/>the<sp/>cluster<sp/>the<sp/>embeddings<sp/>belong<sp/>to.</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/>Index,<sp/>which<sp/>should<sp/>be<sp/>an<sp/>IVF<sp/>index</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(otherwise<sp/>there<sp/>are<sp/>no<sp/>clusters)</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>@param<sp/>embeddings<sp/>object<sp/>descriptors<sp/>for<sp/>which<sp/>the<sp/>centroids<sp/>should<sp/>be<sp/>found,</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size<sp/>num_objects<sp/>*<sp/>d</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid_ids</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cluster<sp/>id<sp/>each<sp/>object<sp/>belongs<sp/>to,<sp/>size<sp/>num_objects</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_centroid(Index*<sp/>index,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>centroid_ids);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Returns<sp/>the<sp/>cluster<sp/>the<sp/>embeddings<sp/>belong<sp/>to.</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/>Index,<sp/>which<sp/>should<sp/>be<sp/>an<sp/>IVF<sp/>index</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(otherwise<sp/>there<sp/>are<sp/>no<sp/>clusters)</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>@param<sp/>query_centroid_ids</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centroid<sp/>ids<sp/>corresponding<sp/>to<sp/>the<sp/>query<sp/>vectors<sp/>(size<sp/>n)</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>@param<sp/>result_centroid_ids</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centroid<sp/>ids<sp/>corresponding<sp/>to<sp/>the<sp/>results<sp/>(size<sp/>n<sp/>*<sp/>k)</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/>*<sp/>other<sp/>arguments<sp/>are<sp/>the<sp/>same<sp/>as<sp/>the<sp/>standard<sp/>search<sp/>function</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_and_return_centroids(</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Index*<sp/>index,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>xin,</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>query_centroid_ids,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>result_centroid_ids);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="comment">/**<sp/>A<sp/>set<sp/>of<sp/>IndexIVFs<sp/>concatenated<sp/>together<sp/>in<sp/>a<sp/>FIFO<sp/>fashion.</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>at<sp/>each<sp/>&quot;step&quot;,<sp/>the<sp/>oldest<sp/>index<sp/>slice<sp/>is<sp/>removed<sp/>and<sp/>a<sp/>new<sp/>index<sp/>is<sp/>added.</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" kindref="compound">SlidingIndexWindow</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>common<sp/>index<sp/>that<sp/>contains<sp/>the<sp/>sliding<sp/>window</highlight></codeline>
+<codeline lineno="88" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>InvertedLists<sp/>of<sp/>index</highlight></codeline>
+<codeline lineno="91" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" kindref="member">ils</ref>;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>slices<sp/>currently<sp/>in<sp/>index</highlight></codeline>
+<codeline lineno="94" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" kindref="member">n_slice</ref>;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>same<sp/>as<sp/>index-&gt;nlist</highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" kindref="member">nlist</ref>;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cumulative<sp/>list<sp/>sizes<sp/>at<sp/>each<sp/>slice</highlight></codeline>
+<codeline lineno="100" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;size_t&gt;&gt;<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" kindref="member">sizes</ref>;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="102"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>index<sp/>should<sp/>be<sp/>initially<sp/>empty<sp/>and<sp/>trained</highlight></codeline>
+<codeline lineno="103" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" kindref="member">SlidingIndexWindow</ref>(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" kindref="member">index</ref>);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Add<sp/>one<sp/>index<sp/>to<sp/>the<sp/>current<sp/>index<sp/>and<sp/>remove<sp/>the<sp/>oldest<sp/>one.</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>sub_index<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>slice<sp/>to<sp/>swap<sp/>in<sp/>(can<sp/>be<sp/>NULL)</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>remove_oldest<sp/><sp/><sp/><sp/>if<sp/>true,<sp/>remove<sp/>the<sp/>oldest<sp/>slices<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109" refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" kindref="member">step</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>sub_index,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>remove_oldest);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="112"><highlight class="comment">///<sp/>Get<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists<sp/>[i0,<sp/>i1)</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/>get_invlist_range(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="115"><highlight class="comment">///<sp/>Set<sp/>a<sp/>subset<sp/>of<sp/>inverted<sp/>lists</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_invlist_range(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i1,<sp/><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref>*<sp/>src);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="118"><highlight class="comment">/**<sp/>search<sp/>an<sp/>IndexIVF,<sp/>possibly<sp/>embedded<sp/>in<sp/>an<sp/>IndexPreTransform<sp/>with</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>given<sp/>parameters.<sp/>This<sp/>is<sp/>a<sp/>way<sp/>to<sp/>set<sp/>the<sp/>nprobe<sp/>and<sp/>get</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*<sp/>statdistics<sp/>in<sp/>a<sp/>thread-safe<sp/>way.</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/>*<sp/>Optionally<sp/>returns<sp/>(if<sp/>non-nullptr):</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>-<sp/>nb_dis:<sp/>number<sp/>of<sp/>distances<sp/>computed</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>-<sp/>ms_per_stage:<sp/>[0]:<sp/>preprocessing<sp/>time</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[1]:<sp/>coarse<sp/>quantization,</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[2]:<sp/>list<sp/>scanning</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_with_parameters(</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>nb_dis<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>ms_per_stage<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="139"><highlight class="comment">/**<sp/>same<sp/>as<sp/>search_with_parameters<sp/>but<sp/>for<sp/>range<sp/>search<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>range_search_with_parameters(</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params,</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>nb_dis<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>ms_per_stage<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="150"><highlight class="comment">/**<sp/>Build<sp/>an<sp/>IndexIVFResidualQuantizer<sp/>from<sp/>an<sp/>ResidualQuantizer,<sp/>using<sp/>the</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/>*<sp/>nlevel<sp/>first<sp/>components<sp/>as<sp/>coarse<sp/>quantizer<sp/>and<sp/>the<sp/>rest<sp/>as<sp/>codes<sp/>in<sp/>invlists</highlight></codeline>
+<codeline lineno="152"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref>*<sp/>ivf_residual_from_quantizer(</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref>&amp;,</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlevel);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="157"><highlight class="comment">/**<sp/>add<sp/>from<sp/>codes.<sp/>NB<sp/>that<sp/>the<sp/>norm<sp/>component<sp/>is<sp/>not<sp/>used,<sp/>so<sp/>the<sp/>code_size<sp/>can</highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/>*<sp/>be<sp/>provided.</highlight></codeline>
+<codeline lineno="159"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="160"><highlight class="comment"><sp/>*<sp/>@param<sp/>ivfrq<sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>to<sp/>populate<sp/>with<sp/>the<sp/>codes</highlight></codeline>
+<codeline lineno="161"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/><sp/><sp/><sp/>codes<sp/>to<sp/>add,<sp/>size<sp/>(ncode,<sp/>code_size)</highlight></codeline>
+<codeline lineno="162"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_size<sp/><sp/>override<sp/>the<sp/>ivfrq&apos;s<sp/>code_size,<sp/>useful<sp/>if<sp/>the<sp/>norm<sp/>encoding</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>is<sp/>different</highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ivf_residual_add_from_flat_codes(</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref>*<sp/>ivfrq,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncode,</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>code_size<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171" refid="structfaiss_1_1ivflib_1_1ShardingFunction" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref><sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>int64_t<sp/>operator()(int64_t<sp/>i,<sp/>int64_t<sp/>shard_count)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">~ShardingFunction</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>(<ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;&amp;)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;<sp/>operator=(<ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>&amp;&amp;)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="180" refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" kindref="compound">DefaultShardingFunction</ref><sp/>:<sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref><sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>operator()(int64_t<sp/>i,<sp/>int64_t<sp/>shard_count)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="184"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="185"><highlight class="comment"><sp/>*<sp/>Shards<sp/>an<sp/>IVF<sp/>index<sp/>centroids<sp/>by<sp/>the<sp/>given<sp/>sharding<sp/>function,<sp/>and<sp/>writes</highlight></codeline>
+<codeline lineno="186"><highlight class="comment"><sp/>*<sp/>the<sp/>index<sp/>to<sp/>the<sp/>path<sp/>given<sp/>by<sp/>filename_generator.<sp/>The<sp/>centroids<sp/>must<sp/>already</highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/>*<sp/>be<sp/>added<sp/>to<sp/>the<sp/>index<sp/>quantizer.</highlight></codeline>
+<codeline lineno="188"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="189"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>The<sp/>IVF<sp/>index<sp/>containing<sp/>centroids<sp/>to<sp/>shard.</highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/>*<sp/>@param<sp/>shard_count<sp/><sp/><sp/><sp/><sp/><sp/><sp/>Number<sp/>of<sp/>shards.</highlight></codeline>
+<codeline lineno="191"><highlight class="comment"><sp/>*<sp/>@param<sp/>filename_template<sp/>Template<sp/>for<sp/>shard<sp/>filenames.</highlight></codeline>
+<codeline lineno="192"><highlight class="comment"><sp/>*<sp/>@param<sp/>sharding_function<sp/>The<sp/>function<sp/>to<sp/>shard<sp/>by.<sp/>The<sp/>default<sp/>is<sp/>ith<sp/>vector</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mod<sp/>shard_count.</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>The<sp/>number<sp/>of<sp/>shards<sp/>written.</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>shard_ivf_index_centroids(</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>shard_count<sp/>=<sp/>20,</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>filename_template<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;shard.%d.index&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>*<sp/>sharding_function<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>shard_binary_ivf_index_centroids(</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryIVF" kindref="compound">faiss::IndexBinaryIVF</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>shard_count<sp/>=<sp/>20,</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>filename_template<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;shard.%d.index&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref>*<sp/>sharding_function<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ivflib</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/IVFlib.h"/>
   </compounddef>

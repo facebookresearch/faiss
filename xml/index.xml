@@ -556,6 +556,9 @@
     <member refid="classfaiss_1_1gpu_1_1CudaEvent_1abd1fe2e8b9152442bc154f66f5a227e3" kind="function"><name>operator=</name></member>
     <member refid="classfaiss_1_1gpu_1_1CudaEvent_1a73bd505515cad0145c25f037a76902fb" kind="function"><name>operator=</name></member>
   </compound>
+  <compound refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" kind="struct"><name>faiss::ivflib::DefaultShardingFunction</name>
+    <member refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction_1afe6a5d5ec404438da92e1360f33bf7d4" kind="function"><name>operator()</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1DeviceScope" kind="class"><name>faiss::gpu::DeviceScope</name>
     <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c" kind="variable"><name>prevDevice_</name></member>
     <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9" kind="function"><name>DeviceScope</name></member>
@@ -1885,8 +1888,8 @@
     <member refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" kind="function"><name>fill_with_random_links</name></member>
     <member refid="structfaiss_1_1HNSW_1ad5daee8b3291db7301a7e0356106516c" kind="function"><name>add_links_starting_from</name></member>
     <member refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" kind="function"><name>add_with_locks</name></member>
-    <member refid="structfaiss_1_1HNSW_1ac665a11b9c1df3809629b8ce0b3d26f9" kind="function"><name>search</name></member>
-    <member refid="structfaiss_1_1HNSW_1a58e54e8e3ed0cc52e362f7d3dbd82332" kind="function"><name>search_level_0</name></member>
+    <member refid="structfaiss_1_1HNSW_1a0bb51c7a1ef62db14209a83452ef6233" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" kind="function"><name>search_level_0</name></member>
     <member refid="structfaiss_1_1HNSW_1a73b4779053c5281298e1e916bb04d42f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1HNSW_1ab0455aedd431a165dea13bac2548066f" kind="function"><name>clear_neighbor_tables</name></member>
     <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" kind="function"><name>print_neighbor_stats</name></member>
@@ -7447,6 +7450,16 @@
     <member refid="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259" kind="function"><name>~PyCallbackIOWriter</name></member>
     <member refid="structfaiss_1_1IOWriter_1a5df4dc0988a10e2a8e914e789b12f5b0" kind="function"><name>filedescriptor</name></member>
   </compound>
+  <compound refid="structPyCallbackShardingFunction" kind="struct"><name>PyCallbackShardingFunction</name>
+    <member refid="structPyCallbackShardingFunction_1ad01fb54a296dec3704da1e12259c1a76" kind="variable"><name>callback</name></member>
+    <member refid="structPyCallbackShardingFunction_1ad9f1a725d84cc56692fa34696586715b" kind="function"><name>PyCallbackShardingFunction</name></member>
+    <member refid="structPyCallbackShardingFunction_1a8bcca258af9ea666043871e6ba07cf88" kind="function"><name>operator()</name></member>
+    <member refid="structPyCallbackShardingFunction_1adef3a27e3032df25885d36a4fa379c2d" kind="function"><name>~PyCallbackShardingFunction</name></member>
+    <member refid="structPyCallbackShardingFunction_1aa56ac0d626cdc60c0e140ebdc26d85ce" kind="function"><name>PyCallbackShardingFunction</name></member>
+    <member refid="structPyCallbackShardingFunction_1a3386016b765e6bb9476b7f6de06f60cc" kind="function"><name>PyCallbackShardingFunction</name></member>
+    <member refid="structPyCallbackShardingFunction_1a30c1bef92f330e9217ccd654d6a2dc3b" kind="function"><name>operator=</name></member>
+    <member refid="structPyCallbackShardingFunction_1a54232a1f1164836e881d1188e3bb45e0" kind="function"><name>operator=</name></member>
+  </compound>
   <compound refid="structfaiss_1_1QINCo" kind="struct"><name>faiss::QINCo</name>
     <member refid="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" kind="variable"><name>K</name></member>
     <member refid="structfaiss_1_1QINCo_1a2432eb6c40747240ea37778cf4d38c7c" kind="variable"><name>L</name></member>
@@ -8008,6 +8021,15 @@
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1af1a9398a5409c0cc3cfeaa1a4394db92" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1a1714576893bd9af3ef80b24f15c7057c" kind="variable"><name>t</name></member>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1ab16f359e65e60c8419ce65507aa2f3e2" kind="function"><name>call</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ivflib_1_1ShardingFunction" kind="struct"><name>faiss::ivflib::ShardingFunction</name>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a007d9b16d3206e1f5064165756a73c17" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a90d4d7516557fc19b14923596ef69d2a" kind="function"><name>~ShardingFunction</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a72c513808b83e41d7a7e36168a17cacb" kind="function"><name>ShardingFunction</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ae68d94d9775e1b97bfbf50b0a2b6691e" kind="function"><name>ShardingFunction</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1ac09daac4341167a8db9b4bacd40686ed" kind="function"><name>ShardingFunction</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" kind="function"><name>operator=</name></member>
+    <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a7b7240ba0a89dde1a872fd38190da8dc" kind="function"><name>operator=</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd16uint16" kind="struct"><name>faiss::simd16uint16</name>
     <member refid="structfaiss_1_1simd16uint16_1ab55c9dbcc50e95d98bdde9ca6820570b" kind="variable"><name>data</name></member>
@@ -9260,7 +9282,7 @@
     <member refid="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" kind="function"><name>distance_four_codes</name></member>
     <member refid="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" kind="function"><name>handleExceptions</name></member>
     <member refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kind="function"><name>demangle_cpp_symbol</name></member>
-    <member refid="namespacefaiss_1a6f2f483b00cb60d4860f1d3ff7107b8a" kind="function"><name>search_from_candidates</name></member>
+    <member refid="namespacefaiss_1a0d5c378cec0f199ee147ee8c6acf5d27" kind="function"><name>search_from_candidates</name></member>
     <member refid="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" kind="function"><name>greedy_update_nearest</name></member>
     <member refid="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" kind="function"><name>search_from_candidate_unbounded</name></member>
     <member refid="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" kind="function"><name>search_neighbors_to_add</name></member>
@@ -9713,6 +9735,8 @@
     <member refid="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" kind="function"><name>range_search_with_parameters</name></member>
     <member refid="IVFlib_8h_1ad4e104b5a77c21bda47ea76cb1896ecd" kind="function"><name>ivf_residual_from_quantizer</name></member>
     <member refid="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" kind="function"><name>ivf_residual_add_from_flat_codes</name></member>
+    <member refid="IVFlib_8h_1a26e2f5a54a26db03087c82a3ae4f6234" kind="function"><name>shard_ivf_index_centroids</name></member>
+    <member refid="IVFlib_8h_1a0d9603741f010914750a111e1969b579" kind="function"><name>shard_binary_ivf_index_centroids</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1lsq" kind="namespace"><name>faiss::lsq</name>
   </compound>
