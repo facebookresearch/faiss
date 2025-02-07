@@ -833,6 +833,14 @@ struct simd8float32 : simd256bit {
         ptr[-1] = 0;
         return std::string(res);
     }
+
+    float accumulate() const {
+        float res = 0;
+        for (int i = 0; i < 8; i++) {
+            res += f32[i];
+        }
+        return res;
+    }
 };
 
 // hadd does not cross lanes
@@ -893,6 +901,13 @@ inline simd8float32 fmadd(
     return res;
 }
 
+inline simd8float32 load8(const uint8_t* code, int i) {
+    simd8float32 res;
+    for (int j = 0; j < 8; j++) {
+        res.f32[i] = *(code + i + j);
+    }
+    return res;
+}
 namespace {
 
 // get even float32's of a and b, interleaved
