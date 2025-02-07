@@ -106,17 +106,17 @@ outputs:
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - scipy
         - pytorch <2.5
         - pytorch-cuda {{ cuda_constraints }}

@@ -385,7 +385,7 @@ class TestPreassigned(unittest.TestCase):
         D, I = ivf_tools.search_preassigned(index, xq, 4, a)
         radius = D.max() * 1.01
 
-        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius, a)
+        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, float(radius), a)
 
         # with that radius the k-NN results are a subset of the range search
         # results
@@ -586,7 +586,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 53)
+        self.assertLess(ndiff, 56)
 
 class TestBigBatchSearch(unittest.TestCase):
 

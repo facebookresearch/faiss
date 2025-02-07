@@ -91,17 +91,17 @@ outputs:
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=1.19
         - scipy
         - pytorch <2.5
         - pytorch-cuda {{ cuda_constraints }}

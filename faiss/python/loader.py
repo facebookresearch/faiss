@@ -45,11 +45,15 @@ def supported_instruction_sets():
 
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
-        # use private API as next-best thing until numpy/numpy#18058 is solved
-        from numpy.core._multiarray_umath import __cpu_features__
-        # __cpu_features__ is a dictionary with CPU features
-        # as keys, and True / False as values
-        supported = {k for k, v in __cpu_features__.items() if v}
+        supported = {}
+        if hasattr(numpy, 'show_config'):
+            supported = set(numpy.show_config('dicts')['SIMD Extensions']['found'])
+        else:
+            # use private API as next-best thing until numpy/numpy#18058 is solved
+            from numpy.core._multiarray_umath import __cpu_features__
+            # __cpu_features__ is a dictionary with CPU features
+            # as keys, and True / False as values
+            supported = {k for k, v in __cpu_features__.items() if v}
         if is_sve_supported():
             supported.add("SVE")
         for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):

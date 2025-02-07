@@ -30,6 +30,7 @@ class TestPCA(unittest.TestCase):
 
         prev = 1e50
         for o in column_norm2:
+            o = float(o)
             self.assertGreater(prev, o)
             prev = o
 
