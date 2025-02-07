@@ -128,6 +128,22 @@ int FileIOWriter::filedescriptor() {
 #endif
 }
 
+CustomIOReader::CustomIOReader(
+        size_t (*func_in)(void* ptr, size_t size, size_t nitems))
+        : func(func_in) {}
+
+size_t CustomIOReader::operator()(void* ptr, size_t size, size_t nitems) {
+    return func(ptr, size, nitems);
+}
+
+CustomIOWriter::CustomIOWriter(
+        size_t (*func_in)(const void* ptr, size_t size, size_t nitems))
+        : func(func_in) {}
+
+size_t CustomIOWriter::operator()(const void* ptr, size_t size, size_t nitems) {
+    return func(ptr, size, nitems);
+}
+
 /***********************************************************************
  * IO buffer
  ***********************************************************************/
