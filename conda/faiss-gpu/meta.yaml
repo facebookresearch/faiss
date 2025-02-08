@@ -6,12 +6,14 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% if cudatoolkit == '11.4.4' %}
+{% if (cudatoolkit == '11.4.4') or (cudatoolkit == '11.8.0') %}
 {% set cuda_constraints=">=11.4,<12" %}
 {% set libcublas_constraints=">=11.6,<12" %}
+{% set cudart_constraints="=12.6.77" %}
 {% elif cudatoolkit == '12.1.1' %}
 {% set cuda_constraints=">=12.1,<13" %}
 {% set libcublas_constraints=">=12.1,<13" %}
+{% set cudart_constraints=">=12.4,<12.5" %}
 {% endif %}
 
 package:
@@ -54,6 +56,9 @@ outputs:
         - make =4.4 # [osx and arm64]
         - mkl-devel =2023.0  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
+        # - cuda-cudart {{ cudart_constraints }}
+        # - cuda-cudart-dev {{ cudart_constraints }}
+        # - cuda-cudart-static {{ cudart_constraints }}
         - gcc_linux-64 =11.2  # [cudatoolkit == '11.4.4']
       host:
         - mkl =2023.0  # [x86_64]
@@ -63,6 +68,7 @@ outputs:
         - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
+        - cuda-cudart {{ cuda_constraints }}
     test:
       requires:
         - conda-build
