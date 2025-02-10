@@ -14,6 +14,7 @@
  * IndexIVFs embedded within an IndexPreTransform.
  */
 
+#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
 #include <vector>
 
@@ -166,6 +167,43 @@ void ivf_residual_add_from_flat_codes(
         size_t ncode,
         const uint8_t* codes,
         int64_t code_size = -1);
+
+struct ShardingFunction {
+    virtual int64_t operator()(int64_t i, int64_t shard_count) = 0;
+    virtual ~ShardingFunction() = default;
+    ShardingFunction() {}
+    ShardingFunction(const ShardingFunction&) = default;
+    ShardingFunction(ShardingFunction&&) = default;
+    ShardingFunction& operator=(const ShardingFunction&) = default;
+    ShardingFunction& operator=(ShardingFunction&&) = default;
+};
+struct DefaultShardingFunction : ShardingFunction {
+    int64_t operator()(int64_t i, int64_t shard_count) override;
+};
+
+/**
+ * Shards an IVF index centroids by the given sharding function, and writes
+ * the index to the path given by filename_generator. The centroids must already
+ * be added to the index quantizer.
+ *
+ * @param index             The IVF index containing centroids to shard.
+ * @param shard_count       Number of shards.
+ * @param filename_template Template for shard filenames.
+ * @param sharding_function The function to shard by. The default is ith vector
+ *                          mod shard_count.
+ * @return                  The number of shards written.
+ */
+void shard_ivf_index_centroids(
+        IndexIVF* index,
+        int64_t shard_count = 20,
+        const std::string& filename_template = "shard.%d.index",
+        ShardingFunction* sharding_function = nullptr);
+
+void shard_binary_ivf_index_centroids(
+        faiss::IndexBinaryIVF* index,
+        int64_t shard_count = 20,
+        const std::string& filename_template = "shard.%d.index",
+        ShardingFunction* sharding_function = nullptr);
 
 } // namespace ivflib
 } // namespace faiss

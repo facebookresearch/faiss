@@ -76,6 +76,7 @@ outputs:
         - libcublas {{ libcublas_constraints }}
         - libcuvs =25.02
         - cuda-version {{ cuda_constraints }}
+        - libnvjitlink
     test:
       requires:
         - conda-build

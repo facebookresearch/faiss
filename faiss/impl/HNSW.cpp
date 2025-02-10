@@ -590,15 +590,22 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in,
-        const SearchParametersHNSW* params) {
+        const SearchParameters* params) {
     int nres = nres_in;
     int ndis = 0;
 
     // can be overridden by search params
-    bool do_dis_check = params ? params->check_relative_distance
-                               : hnsw.check_relative_distance;
-    int efSearch = params ? params->efSearch : hnsw.efSearch;
-    const IDSelector* sel = params ? params->sel : nullptr;
+    bool do_dis_check = hnsw.check_relative_distance;
+    int efSearch = hnsw.efSearch;
+    const IDSelector* sel = nullptr;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            do_dis_check = hnsw_params->check_relative_distance;
+            efSearch = hnsw_params->efSearch;
+        }
+        sel = params->sel;
+    }
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -920,15 +927,22 @@ HNSWStats HNSW::search(
         DistanceComputer& qdis,
         ResultHandler<C>& res,
         VisitedTable& vt,
-        const SearchParametersHNSW* params) const {
+        const SearchParameters* params) const {
     HNSWStats stats;
     if (entry_point == -1) {
         return stats;
     }
     int k = extract_k_from_ResultHandler(res);
 
-    bool bounded_queue =
-            params ? params->bounded_queue : this->search_bounded_queue;
+    bool bounded_queue = this->search_bounded_queue;
+    int efSearch = this->efSearch;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            bounded_queue = hnsw_params->bounded_queue;
+            efSearch = hnsw_params->efSearch;
+        }
+    }
 
     //  greedy search on upper levels
     storage_idx_t nearest = entry_point;
@@ -940,7 +954,7 @@ HNSWStats HNSW::search(
         stats.combine(local_stats);
     }
 
-    int ef = std::max(params ? params->efSearch : efSearch, k);
+    int ef = std::max(efSearch, k);
     if (bounded_queue) { // this is the most common branch
         MinimaxHeap candidates(ef);
 
@@ -980,9 +994,17 @@ void HNSW::search_level_0(
         int search_type,
         HNSWStats& search_stats,
         VisitedTable& vt,
-        const SearchParametersHNSW* params) const {
+        const SearchParameters* params) const {
     const HNSW& hnsw = *this;
-    auto efSearch = params ? params->efSearch : hnsw.efSearch;
+
+    auto efSearch = hnsw.efSearch;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            efSearch = hnsw_params->efSearch;
+        }
+    }
+
     int k = extract_k_from_ResultHandler(res);
 
     if (search_type == 1) {
