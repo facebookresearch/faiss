@@ -53,6 +53,7 @@ class_wrappers.handle_Embedding(Embedding)
 class_wrappers.handle_Linear(Linear)
 class_wrappers.handle_QINCo(QINCo)
 class_wrappers.handle_QINCoStep(QINCoStep)
+shard_ivf_index_centroids = class_wrappers.handle_shard_ivf_index_centroids(shard_ivf_index_centroids)
 
 
 this_module = sys.modules[__name__]
@@ -170,7 +171,7 @@ try:
     add_ref_in_constructor(GpuIndexIVFPQ, 1)
     add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 1)
 except NameError as e:
-    logger.info("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes." % e.args[0])
+    logger.info("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss." % e.args[0])
 
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
