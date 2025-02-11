@@ -18,7 +18,7 @@ $ conda install -c pytorch faiss-cpu=1.10.0
 $ conda install -c pytorch -c nvidia faiss-gpu=1.10.0
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c rapidsai -c conda-forge -c nvidia faiss-gpu-cuvs=1.10.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.10.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```

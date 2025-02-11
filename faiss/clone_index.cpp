@@ -19,6 +19,8 @@
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
@@ -107,6 +109,11 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     return nullptr;
 }
 
+IndexBinaryIVF* clone_IndexBinaryIVF(const IndexBinaryIVF* ivf) {
+    TRYCLONE(IndexBinaryIVF, ivf)
+    return nullptr;
+}
+
 IndexRefine* clone_IndexRefine(const IndexRefine* ir) {
     TRYCLONE(IndexRefineFlat, ir)
     TRYCLONE(IndexRefine, ir) {
@@ -129,6 +136,11 @@ IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW, ihnsw) {
         FAISS_THROW_MSG("clone not supported for this type of IndexHNSW");
     }
+}
+
+IndexBinaryHNSW* clone_IndexBinaryHNSW(const IndexBinaryHNSW* ihnsw) {
+    TRYCLONE(IndexBinaryHNSW, ihnsw)
+    return nullptr;
 }
 
 IndexNNDescent* clone_IndexNNDescent(const IndexNNDescent* innd) {
@@ -385,6 +397,28 @@ Quantizer* clone_Quantizer(const Quantizer* quant) {
 IndexBinary* clone_binary_index(const IndexBinary* index) {
     if (auto ii = dynamic_cast<const IndexBinaryFlat*>(index)) {
         return new IndexBinaryFlat(*ii);
+    } else if (
+            const IndexBinaryIVF* ivf =
+                    dynamic_cast<const IndexBinaryIVF*>(index)) {
+        IndexBinaryIVF* res = clone_IndexBinaryIVF(ivf);
+        if (ivf->invlists == nullptr) {
+            res->invlists = nullptr;
+        } else {
+            res->invlists = clone_InvertedLists(ivf->invlists);
+            res->own_invlists = true;
+        }
+
+        res->own_fields = true;
+        res->quantizer = clone_binary_index(ivf->quantizer);
+
+        return res;
+    } else if (
+            const IndexBinaryHNSW* ihnsw =
+                    dynamic_cast<const IndexBinaryHNSW*>(index)) {
+        IndexBinaryHNSW* res = clone_IndexBinaryHNSW(ihnsw);
+        res->own_fields = true;
+        res->storage = clone_binary_index(ihnsw->storage);
+        return res;
     } else {
         FAISS_THROW_MSG("cannot clone this type of index");
     }

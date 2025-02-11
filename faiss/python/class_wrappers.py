@@ -1395,3 +1395,12 @@ def handle_QINCo(the_class):
 
     the_class.__init__ = replacement_init
     the_class.from_torch = from_torch
+
+
+def handle_shard_ivf_index_centroids(func):
+    def wrapper(*args, **kwargs):
+        args = list(args)
+        if len(args) > 3 and args[3] is not None:
+            args[3] = faiss.PyCallbackShardingFunction(args[3])
+        return func(*args, **kwargs)
+    return wrapper
