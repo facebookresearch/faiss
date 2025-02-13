@@ -137,7 +137,7 @@ void hammings_knn_hc(
         size_t ncodes,
         int ordered,
         ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK,
-        const IDSelector* sel = nullptr);
+        const faiss::IDSelector* sel = nullptr);
 
 /* Legacy alias to hammings_knn_hc. */
 void hammings_knn(
@@ -169,7 +169,7 @@ void hammings_knn_mc(
         size_t ncodes,
         int32_t* distances,
         int64_t* labels,
-        const IDSelector* sel = nullptr);
+        const faiss::IDSelector* sel = nullptr);
 
 /** same as hammings_knn except we are doing a range search with radius */
 void hamming_range_search(
@@ -180,7 +180,7 @@ void hamming_range_search(
         int radius,
         size_t ncodes,
         RangeSearchResult* result,
-        const IDSelector* sel = nullptr);
+        const faiss::IDSelector* sel = nullptr);
 
 /* Counting the number of matches or of cross-matches (without returning them)
    For use with function that assume pre-allocated memory */
