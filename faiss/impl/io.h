@@ -92,30 +92,6 @@ struct FileIOWriter : IOWriter {
 };
 
 /*******************************************************
- * Custom reader + writer
- *
- * Reader and writer which wraps a function pointer,
- * primarily for FFI use.
- *******************************************************/
-
-struct CustomIOReader : IOReader {
-    size_t (*func)(void* ptr, size_t size, size_t nitems) = nullptr;
-
-    CustomIOReader(size_t (*func_in)(void* ptr, size_t size, size_t nitems));
-
-    size_t operator()(void* ptr, size_t size, size_t nitems) override;
-};
-
-struct CustomIOWriter : IOWriter {
-    size_t (*func)(const void* ptr, size_t size, size_t nitems) = nullptr;
-
-    CustomIOWriter(
-            size_t (*func_in)(const void* ptr, size_t size, size_t nitems));
-
-    size_t operator()(const void* ptr, size_t size, size_t nitems) override;
-};
-
-/*******************************************************
  * Buffered reader + writer
  *
  * They attempt to read and write only buffers of size bsz to the

@@ -13,6 +13,33 @@
 #include <faiss/impl/io.h>
 #include "../faiss_c.h"
 
+using faiss::IOReader;
+using faiss::IOWriter;
+
+/*******************************************************
+ * Custom reader + writer
+ *
+ * Reader and writer which wraps a function pointer,
+ * primarily for FFI use.
+ *******************************************************/
+
+struct CustomIOReader : IOReader {
+    size_t (*func)(void* ptr, size_t size, size_t nitems) = nullptr;
+
+    CustomIOReader(size_t (*func_in)(void* ptr, size_t size, size_t nitems));
+
+    size_t operator()(void* ptr, size_t size, size_t nitems) override;
+};
+
+struct CustomIOWriter : IOWriter {
+    size_t (*func)(const void* ptr, size_t size, size_t nitems) = nullptr;
+
+    CustomIOWriter(
+            size_t (*func_in)(const void* ptr, size_t size, size_t nitems));
+
+    size_t operator()(const void* ptr, size_t size, size_t nitems) override;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
