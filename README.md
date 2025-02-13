@@ -80,7 +80,7 @@ For the GPU version of Faiss, please cite:
 
 ## Join the Faiss community
 
-For public discussion of Faiss or for questions, there is a Facebook group at https://www.facebook.com/groups/faissusers/
+For public discussion of Faiss or for questions, visit https://github.com/facebookresearch/faiss/discussions.
 
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.

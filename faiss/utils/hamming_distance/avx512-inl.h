@@ -11,7 +11,7 @@
 // AVX512 version
 // The _mm512_popcnt_epi64 intrinsic is used to accelerate Hamming distance
 // calculations in HammingComputerDefault and HammingComputer64. This intrinsic
-// is not available in the default FAISS avx512 build mode but is only
+// is not available in the default Faiss avx512 build mode but is only
 // available in the avx512_spr build mode, which targets Intel(R) Sapphire
 // Rapids.
 

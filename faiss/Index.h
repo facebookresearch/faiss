@@ -17,7 +17,7 @@
 #include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 9
+#define FAISS_VERSION_MINOR 10
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string

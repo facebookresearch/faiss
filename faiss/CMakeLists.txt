@@ -341,6 +341,10 @@ if(WIN32)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
 endif()
 
+if(WIN32)
+  set_target_properties(faiss PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols")
+endif()
+
 string(FIND "${CMAKE_CXX_FLAGS}" "FINTEGER" finteger_idx)
 if (${finteger_idx} EQUAL -1)
   target_compile_definitions(faiss PRIVATE FINTEGER=int)
@@ -372,7 +376,9 @@ target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
 
-find_package(MKL)
+if(FAISS_ENABLE_MKL)
+  find_package(MKL)
+endif()
 if(MKL_FOUND)
   target_link_libraries(faiss PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${MKL_LIBRARIES})
@@ -416,7 +422,7 @@ if(FAISS_OPT_LEVEL STREQUAL "avx512")
   )
 endif()
 if(FAISS_OPT_LEVEL STREQUAL "avx512_spr")
-  install(TARGETS faiss_avx2 faiss_avx512 faiss_avx512_spr
+  install(TARGETS faiss_avx2 faiss_avx512_spr
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
