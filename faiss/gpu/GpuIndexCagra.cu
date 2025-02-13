@@ -103,6 +103,13 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
     this->ntotal = n;
 }
 
+/*
+Adding add function to support add_with_ids functionality from IndexIDMap index type.
+*/
+void GpuIndexCagra::add(idx_t n, const float* x) {
+    train(n, x);
+}
+
 bool GpuIndexCagra::addImplRequiresIDs_() const {
     return false;
 };
