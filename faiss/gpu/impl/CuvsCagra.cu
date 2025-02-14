@@ -69,6 +69,7 @@ CuvsCagra::CuvsCagra(
 
     index_params_.intermediate_graph_degree = intermediate_graph_degree;
     index_params_.graph_degree = graph_degree;
+    index_params_.attach_dataset_on_build = store_dataset;
 
     if (!ivf_pq_search_params_) {
         ivf_pq_search_params_ =
@@ -243,6 +244,7 @@ void CuvsCagra::search(
                     storage_, n_, dim_);
             cuvs_index->update_dataset(raft_handle, dataset);
         }
+        store_dataset_ = true;
     }
 
     auto queries_view = raft::make_device_matrix_view<const float, int64_t>(
