@@ -245,6 +245,8 @@ struct GpuIndexCagra : public GpuIndex {
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexCagraConfig config = GpuIndexCagraConfig());
 
+    void add(idx_t n, const float* x) override;
+
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
     /// the base dataset and is currently the only function to add the full set
