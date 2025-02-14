@@ -14,6 +14,7 @@ cmake -B _build ^
       -A x64 ^
       -G "Visual Studio 16 2019" ^
       -DBUILD_SHARED_LIBS=ON ^
+      -DFAISS_ENABLE_C_API=ON ^
       -DBUILD_TESTING=OFF ^
       -DFAISS_ENABLE_GPU=OFF ^
       -DFAISS_ENABLE_PYTHON=OFF ^
