@@ -53,8 +53,8 @@ outputs:
         - cmake >=3.26.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - mkl-devel =2023  # [x86_64]
+        - mkl =2024.2.2  # [x86_64]
+        - mkl-devel =2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
         - cuda-cudart {{ cudart_constraints }}
         - cuda-cudart-dev {{ cudart_constraints }}
@@ -64,13 +64,13 @@ outputs:
         - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
+        - mkl =2024.2.2  # [x86_64]
         - openblas =0.3 # [not x86_64]
         - libcuvs =24.12
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
+        - mkl =2024.2.2  # [x86_64]
         - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
@@ -101,7 +101,7 @@ outputs:
         - cmake >=3.26.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
+        - mkl =2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
