@@ -52,14 +52,14 @@ outputs:
         - cmake >=3.24.0
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
-        - mkl-devel =2023.0  # [x86_64]
+        - mkl-devel =2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
         - gcc_linux-64 =11.2  # [cudatoolkit == '11.4.4']
       host:
-        - mkl =2023.0  # [x86_64]
+        - mkl =2024.2.2  # [x86_64]
         - openblas =0.3 # [not x86_64]
       run:
-        - mkl =2023.0  # [x86_64]
+        - mkl =2024.2.2 # [x86_64]
         - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
