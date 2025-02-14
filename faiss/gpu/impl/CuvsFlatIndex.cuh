@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ class GpuResources;
 /// the vectors in float32.
 /// If float16, we store the vectors in both float16 and float32, where float32
 /// data is possibly needed for certain residual operations
-class RaftFlatIndex : public FlatIndex {
+class CuvsFlatIndex : public FlatIndex {
    public:
-    RaftFlatIndex(
+    CuvsFlatIndex(
             GpuResources* res,
             int dim,
             bool useFloat16,

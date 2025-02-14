@@ -17,7 +17,7 @@
 #include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 9
+#define FAISS_VERSION_MINOR 10
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
@@ -307,6 +307,13 @@ struct Index {
      * trained in the same way and have the same
      * parameters). Otherwise throw. */
     virtual void check_compatible_for_merge(const Index& otherIndex) const;
+
+    /** Add vectors that are computed with the standalone codec
+     *
+     * @param codes  codes to add size n * sa_code_size()
+     * @param xids   corresponding ids, size n
+     */
+    virtual void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
 };
 
 } // namespace faiss

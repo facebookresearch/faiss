@@ -200,7 +200,7 @@ struct HNSW {
             DistanceComputer& qdis,
             ResultHandler<C>& res,
             VisitedTable& vt,
-            const SearchParametersHNSW* params = nullptr) const;
+            const SearchParameters* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
@@ -212,7 +212,7 @@ struct HNSW {
             int search_type,
             HNSWStats& search_stats,
             VisitedTable& vt,
-            const SearchParametersHNSW* params = nullptr) const;
+            const SearchParameters* params = nullptr) const;
 
     void reset();
 
@@ -264,7 +264,7 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in = 0,
-        const SearchParametersHNSW* params = nullptr);
+        const SearchParameters* params = nullptr);
 
 HNSWStats greedy_update_nearest(
         const HNSW& hnsw,
@@ -280,5 +280,15 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         int ef,
         VisitedTable* vt,
         HNSWStats& stats);
+
+void search_neighbors_to_add(
+        HNSW& hnsw,
+        DistanceComputer& qdis,
+        std::priority_queue<HNSW::NodeDistCloser>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        VisitedTable& vt,
+        bool reference_version = false);
 
 } // namespace faiss

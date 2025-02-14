@@ -38,8 +38,8 @@ jobs:
         with:
           label: nightly
           cuda: "11.4.4"
-  linux-x86_64-GPU-RAFT-CUDA11-8-0-nightly:
-    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 11.8.0)
+  linux-x86_64-GPU-CUVS-CUDA11-8-0-nightly:
+    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 11.8.0)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -54,7 +54,7 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-          raft: "ON"
+          cuvs: "ON"
           cuda: "11.8.0"
   linux-x86_64-GPU-CUDA-12-1-1-nightly:
     name: Linux x86_64 GPU nightlies (CUDA 12.1.1)
@@ -73,8 +73,8 @@ jobs:
         with:
           label: nightly
           cuda: "12.1.1"
-  linux-x86_64-GPU-RAFT-CUDA12-1-1-nightly:
-    name: Linux x86_64 GPU w/ RAFT nightlies (CUDA 12.1.1)
+  linux-x86_64-GPU-CUVS-CUDA12-4-0-nightly:
+    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 12.4.0)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -89,8 +89,8 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-          raft: "ON"
-          cuda: "12.1.1"
+          cuvs: "ON"
+          cuda: "12.4.0"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
     runs-on: windows-2019

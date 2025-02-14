@@ -12,7 +12,6 @@
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
-#include <limits>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
@@ -80,6 +79,23 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
     index->add(n, x);
     for (idx_t i = 0; i < n; i++)
         id_map.push_back(xids[i]);
+    this->ntotal = index->ntotal;
+}
+
+template <typename IndexT>
+size_t IndexIDMapTemplate<IndexT>::sa_code_size() const {
+    return index->sa_code_size();
+}
+
+template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* xids) {
+    index->add_sa_codes(n, codes, xids);
+    for (idx_t i = 0; i < n; i++) {
+        id_map.push_back(xids[i]);
+    }
     this->ntotal = index->ntotal;
 }
 

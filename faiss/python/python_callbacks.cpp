@@ -134,3 +134,27 @@ PyCallbackIDSelector::~PyCallbackIDSelector() {
     PyThreadLock gil;
     Py_DECREF(callback);
 }
+
+/***********************************************************
+ * Callbacks for IVF index sharding
+ ***********************************************************/
+
+PyCallbackShardingFunction::PyCallbackShardingFunction(PyObject* callback)
+        : callback(callback) {
+    PyThreadLock gil;
+    Py_INCREF(callback);
+}
+
+int64_t PyCallbackShardingFunction::operator()(int64_t i, int64_t shard_count) {
+    PyThreadLock gil;
+    PyObject* shard_id = PyObject_CallFunction(callback, "LL", i, shard_count);
+    if (shard_id == nullptr) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    return PyLong_AsLongLong(shard_id);
+}
+
+PyCallbackShardingFunction::~PyCallbackShardingFunction() {
+    PyThreadLock gil;
+    Py_DECREF(callback);
+}

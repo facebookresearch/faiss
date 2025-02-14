@@ -7,11 +7,13 @@
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 {% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.8,<12" %}
-{% set libcublas_constraints=">=11.11,<12" %}
-{% elif cudatoolkit == '12.1.1' %}
-{% set cuda_constraints=">=12.1,<13" %}
+{% set cuda_constraints=">=11.4,<12" %}
+{% set libcublas_constraints=">=11.6,<12" %}
+{% set cudart_constraints="=12.6.77" %}
+{% elif cudatoolkit == '12.4.0' %}
+{% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
+{% set cudart_constraints=">=12.4,<12.5" %}
 {% endif %}
 
 package:
@@ -38,36 +40,43 @@ outputs:
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_raft{{ suffix }}"
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_cuvs{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }}
-        - sysroot_linux-64  # [linux64]
+        - {{ compiler('cxx') }} =12.4
+        - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
-        - cmake >=3.24.0
-        - make  # [not win]
+        - cmake >=3.26.4
+        - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - mkl-devel =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
+        - cuda-cudart {{ cudart_constraints }}
+        - cuda-cudart-dev {{ cudart_constraints }}
+        - cuda-cudart-static {{ cudart_constraints }}
+        - cuda-cudart_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-dev_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas  # [not x86_64]
-        - libraft =24.06
+        - openblas =0.3 # [not x86_64]
+        - libcuvs =24.12
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas  # [not x86_64]
+        - openblas =0.3 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libraft =24.06
+        - libcuvs =24.12
         - cuda-version {{ cuda_constraints }}
+        - libnvjitlink
     test:
       requires:
         - conda-build
@@ -77,7 +86,7 @@ outputs:
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
-  - name: faiss-gpu-raft
+  - name: faiss-gpu-cuvs
     script: build-pkg.sh  # [x86_64 and not win and not osx]
     script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
@@ -86,11 +95,11 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }}
+        - {{ compiler('cxx') }} =12.4
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig
-        - cmake >=3.24.0
-        - make  # [not win]
+        - swig =4.0
+        - cmake >=3.26.4
+        - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
@@ -107,9 +116,9 @@ outputs:
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy
+        - numpy >=1.19,<2
         - scipy
-        - pytorch
+        - pytorch <2.5
         - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"

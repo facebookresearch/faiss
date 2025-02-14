@@ -35,6 +35,7 @@ set(FAISS_TEST_SRC
   test_common_ivf_empty_index.cpp
   test_callback.cpp
   test_utils.cpp
+  test_hamming.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -81,7 +82,6 @@ find_package(GTest CONFIG REQUIRED)
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   GTest::gtest_main
-  $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 

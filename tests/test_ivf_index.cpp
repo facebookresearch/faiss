@@ -8,9 +8,6 @@
 #include <omp.h>
 #include <algorithm>
 #include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <map>
 #include <random>
 #include <set>
@@ -20,7 +17,6 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/index_io.h>
 
 namespace {
 
@@ -207,6 +203,20 @@ TEST(IVF, list_context) {
                 << "should have correct number of codes";
         EXPECT_EQ(nb, context.list_nos.size())
                 << "should have correct number of list numbers";
+    }
+    {
+        constexpr size_t num_vecs = 5; // number of vectors
+        std::vector<float> vecs(num_vecs * d);
+        for (size_t i = 0; i < num_vecs * d; i++) {
+            vecs[i] = distrib(rng);
+        }
+        const size_t codeSize = index.sa_code_size();
+        std::vector<uint8_t> encodedData(num_vecs * codeSize);
+        index.sa_encode(num_vecs, vecs.data(), encodedData.data());
+        std::vector<float> decodedVecs(num_vecs * d);
+        index.sa_decode(num_vecs, encodedData.data(), decodedVecs.data());
+        EXPECT_EQ(vecs, decodedVecs)
+                << "decoded vectors should be the same as the original vectors that were encoded";
     }
     {
         constexpr faiss::idx_t k = 100;

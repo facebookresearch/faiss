@@ -1,5 +1,5 @@
 name: Conda build
-description: Builds FAISS inside a Conda environment and uploads to repository when label is provided.
+description: Builds Faiss inside a Conda environment and uploads to repository when label is provided.
 inputs:
   label:
     description: "The label to be used for uploads to Conda."
@@ -9,8 +9,8 @@ inputs:
     description: "CUDA toolkit version to use."
     default: ""
     required: false
-  raft:
-    description: "Enable RAFT support."
+  cuvs:
+    description: "Enable cuVS support."
     default: ""
     required: false
 runs:
@@ -30,12 +30,22 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
-        miniconda-version:  latest
+        miniforge-version: latest # ensures conda-forge channel is used.
+        channels: conda-forge
+        conda-remove-defaults: 'true'
+        # Set to runner.arch=aarch64 if we're on arm64 because
+        # there's no miniforge ARM64 package, just aarch64.
+        # They are the same thing, just named differently.
+        # However there is an ARM64 for macOS, so exclude that.
+        architecture: ${{ (runner.arch == 'ARM64' && runner.os != 'macOS') && 'aarch64' || runner.arch }}
     - name: Install conda build tools
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: |
-        conda update -y -q conda
-        conda install -y -q conda-build
+        # Ensure starting packages are from conda-forge.
+        conda list --show-channel-urls
+        conda install -y -q "conda!=24.11.0"
+        conda install -y -q "conda-build!=24.11.0"
+        conda list --show-channel-urls
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -59,14 +69,14 @@ runs:
       run: |
         conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
     - name: Conda build (GPU)
-      if: inputs.label == '' && inputs.cuda != '' && inputs.raft == ''
+      if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU) w/ anaconda upload
-      if: inputs.label != '' && inputs.cuda != '' && inputs.raft == ''
+      if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
@@ -74,19 +84,24 @@ runs:
       run: |
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
-    - name: Conda build (GPU w/ RAFT)
-      if: inputs.label == '' && inputs.cuda != '' && inputs.raft != ''
+    - name: Conda build (GPU w/ cuVS)
+      if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
-        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
-    - name: Conda build (GPU w/ RAFT) w/ anaconda upload
-      if: inputs.label != '' && inputs.cuda != '' && inputs.raft != ''
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+            -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+    - name: Conda build (GPU w/ cuVS) w/ anaconda upload
+      if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
-        conda build faiss-gpu-raft --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
-            --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia -c rapidsai -c rapidsai-nightly -c conda-forge
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+            --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
+    - name: Check installed packages channel
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      run: |
+        # Shows that all installed packages are from conda-forge.
+        conda list --show-channel-urls

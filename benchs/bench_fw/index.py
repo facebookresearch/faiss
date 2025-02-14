@@ -677,6 +677,13 @@ class Index(IndexBase):
                 lambda: add_preassigned(index_ivf, xbt, QI.ravel()),
                 once=True,
             )
+        elif isinstance(index, faiss.IndexIDMap):
+            _, t, _ = timer(
+                "add_with_ids",
+                lambda: index.add_with_ids(
+                    xb, np.arange(len(xb), dtype='int32')),
+                once=True,
+            )
         else:
             _, t, _ = timer(
                 "add",

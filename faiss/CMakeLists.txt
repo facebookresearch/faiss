@@ -125,6 +125,7 @@ set(FAISS_HEADERS
   IndexIVFPQR.h
   IndexIVFSpectralHash.h
   IndexLSH.h
+  IndexNeuralNetCodec.h
   IndexLattice.h
   IndexNNDescent.h
   IndexNSG.h
@@ -168,6 +169,7 @@ set(FAISS_HEADERS
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
+  impl/index_read_utils.h
   impl/io.h
   impl/io_macros.h
   impl/kmeans1d.h
@@ -179,13 +181,17 @@ set(FAISS_HEADERS
   impl/code_distance/code_distance.h
   impl/code_distance/code_distance-generic.h
   impl/code_distance/code_distance-avx2.h
+  impl/code_distance/code_distance-avx512.h
+  impl/code_distance/code_distance-sve.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
   invlists/InvertedListsIOHook.h
+  invlists/OnDiskInvertedLists.h
   utils/AlignedTable.h
   utils/bf16.h
   utils/Heap.h
+  utils/NeuralNet.h
   utils/WorkerThread.h
   utils/distances.h
   utils/extra_distances-inl.h
@@ -204,8 +210,10 @@ set(FAISS_HEADERS
   utils/sorting.h
   utils/simdlib.h
   utils/simdlib_avx2.h
+  utils/simdlib_avx512.h
   utils/simdlib_emulated.h
   utils/simdlib_neon.h
+  utils/simdlib_ppc64.h
   utils/utils.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
@@ -216,11 +224,13 @@ set(FAISS_HEADERS
   utils/approx_topk/mode.h
   utils/approx_topk_hamming/approx_topk_hamming.h
   utils/transpose/transpose-avx2-inl.h
+  utils/transpose/transpose-avx512-inl.h
   utils/hamming_distance/common.h
   utils/hamming_distance/generic-inl.h
   utils/hamming_distance/hamdis-inl.h
   utils/hamming_distance/neon-inl.h
   utils/hamming_distance/avx2-inl.h
+  utils/hamming_distance/avx512-inl.h
 )
 
 if(NOT WIN32)
@@ -244,7 +254,7 @@ set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
@@ -269,6 +279,20 @@ if(NOT WIN32)
   target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
 else()
   target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
+  # we need bigobj for the swig wrapper
+  add_compile_options(/bigobj)
+endif()
+
+add_library(faiss_avx512_spr ${FAISS_SRC})
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
+  set_target_properties(faiss_avx512_spr PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
+if(NOT WIN32)
+  # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
+  # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+else()
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
@@ -308,10 +332,13 @@ target_include_directories(faiss_avx2 PUBLIC
 target_include_directories(faiss_avx512 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 # Handle `#include <faiss/foo.h>`.
+target_include_directories(faiss_avx512_spr PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+# Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_sve PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
-set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_sve PROPERTIES
+set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
@@ -320,7 +347,12 @@ if(WIN32)
   target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx2 PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
+endif()
+
+if(WIN32)
+  set_target_properties(faiss PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols")
 endif()
 
 string(FIND "${CMAKE_CXX_FLAGS}" "FINTEGER" finteger_idx)
@@ -329,6 +361,7 @@ if (${finteger_idx} EQUAL -1)
 endif()
 target_compile_definitions(faiss_avx2 PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_avx512 PRIVATE FINTEGER=int)
+target_compile_definitions(faiss_avx512_spr PRIVATE FINTEGER=int)
 target_compile_definitions(faiss_sve PRIVATE FINTEGER=int)
 
 if(FAISS_USE_LTO)
@@ -340,6 +373,7 @@ if(FAISS_USE_LTO)
     set_property(TARGET faiss PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     set_property(TARGET faiss_avx2 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     set_property(TARGET faiss_avx512 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET faiss_avx512_spr PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
   else()
     message(STATUS "LTO not supported: <${ipo_error}>")
   endif()
@@ -357,24 +391,30 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
 
-find_package(MKL)
+if(FAISS_ENABLE_MKL)
+  find_package(MKL)
+endif()
 if(MKL_FOUND)
   target_link_libraries(faiss PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${MKL_LIBRARIES})
+  target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
 else()
   find_package(BLAS REQUIRED)
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
+  target_link_libraries(faiss_avx512_spr PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${BLAS_LIBRARIES})
 
   find_package(LAPACK REQUIRED)
   target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
+  target_link_libraries(faiss_avx512_spr PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
 endif()
 
@@ -394,6 +434,13 @@ if(FAISS_OPT_LEVEL STREQUAL "avx2")
 endif()
 if(FAISS_OPT_LEVEL STREQUAL "avx512")
   install(TARGETS faiss_avx2 faiss_avx512
+    EXPORT faiss-targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+endif()
+if(FAISS_OPT_LEVEL STREQUAL "avx512_spr")
+  install(TARGETS faiss_avx2 faiss_avx512_spr
     EXPORT faiss-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

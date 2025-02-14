@@ -589,9 +589,9 @@ int64_t count_gt(int64_t n, const T* row, T threshold) {
 } // namespace
 
 template <typename T>
-void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
-    this->L_res = L_res_2;
-    L_res_2[0] = 0;
+void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_init) {
+    this->L_res = L_res_init;
+    L_res_init[0] = 0;
     int64_t j = 0;
     for (int64_t i = 0; i < nq; i++) {
         int64_t n_in;
@@ -602,11 +602,11 @@ void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
             n_in = lim_remain[j + 1] - lim_remain[j];
             j++;
         }
-        L_res_2[i + 1] = n_in; // L_res_2[i] + n_in;
+        L_res_init[i + 1] = n_in; // L_res_init[i] + n_in;
     }
     // cumsum
     for (int64_t i = 0; i < nq; i++) {
-        L_res_2[i + 1] += L_res_2[i];
+        L_res_init[i + 1] += L_res_init[i];
     }
 }
 

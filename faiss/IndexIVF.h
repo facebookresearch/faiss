@@ -258,7 +258,8 @@ struct IndexIVF : Index, IndexIVFInterface {
      * @param codes  codes to add size n * sa_code_size()
      * @param xids   corresponding ids, size n
      */
-    void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
+    void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids)
+            override;
 
     /** Train the encoder for the vectors.
      *
@@ -435,7 +436,7 @@ struct IndexIVF : Index, IndexIVFInterface {
     size_t sa_code_size() const override;
 
     /** encode a set of vectors
-     * sa_encode will call encode_vector with include_listno=true
+     * sa_encode will call encode_vectors with include_listno=true
      * @param n      nb of vectors to encode
      * @param x      the vectors to encode
      * @param bytes  output array for the codes

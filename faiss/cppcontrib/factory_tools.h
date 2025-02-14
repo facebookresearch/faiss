@@ -9,7 +9,11 @@
 
 #pragma once
 
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexLSH.h>
@@ -20,5 +24,6 @@
 namespace faiss {
 
 std::string reverse_index_factory(const faiss::Index* index);
+std::string reverse_index_factory(const faiss::IndexBinary* index);
 
 } // namespace faiss

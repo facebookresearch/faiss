@@ -11,7 +11,6 @@
 #include <faiss/gpu/impl/L2Norm.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
-#include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/MathOperators.cuh>
 #include <faiss/gpu/utils/PtxUtils.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
@@ -274,6 +273,16 @@ void runL2Norm(
         bool normSquared,
         cudaStream_t stream) {
     runL2Norm<half, half2>(input, inputRowMajor, output, normSquared, stream);
+}
+
+void runL2Norm(
+        Tensor<__nv_bfloat16, 2, true>& input,
+        bool inputRowMajor,
+        Tensor<float, 1, true>& output,
+        bool normSquared,
+        cudaStream_t stream) {
+    runL2Norm<__nv_bfloat16, __nv_bfloat162>(
+            input, inputRowMajor, output, normSquared, stream);
 }
 
 } // namespace gpu

@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 
 # =============================================================================
-# Copyright (c) 2023, NVIDIA CORPORATION.
+# Copyright (c) 2023-2024, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
 # in compliance with the License. You may obtain a copy of the License at
@@ -33,7 +33,7 @@ if(FAISS_ENABLE_GPU)
   endif()
 endif()
 
-if(FAISS_ENABLE_RAFT)
+if(FAISS_ENABLE_CUVS)
 include(cmake/thirdparty/fetch_rapids.cmake)
 include(rapids-cmake)
 include(rapids-cpm)
@@ -47,7 +47,7 @@ rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.9.0
+  VERSION 1.10.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
@@ -57,14 +57,16 @@ set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Valid values are "generic", "avx2", "avx512", "sve".
+# Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_DNNL "Enable support for onednn to accelerate indexflat search." OFF)
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
-option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
 option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
+option(FAISS_ENABLE_MKL "Enable MKL." ON)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
+option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
 
 if(FAISS_ENABLE_GPU)
@@ -82,9 +84,9 @@ if(FAISS_ENABLE_GPU)
   endif()
 endif()
 
-if(FAISS_ENABLE_RAFT AND NOT TARGET raft::raft)
-  find_package(raft COMPONENTS compiled distributed)
-endif()
+if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
+   find_package(cuvs)
+ endif()
 
 add_subdirectory(faiss)
 
@@ -104,11 +106,11 @@ if(FAISS_ENABLE_C_API)
   add_subdirectory(c_api)
 endif()
 
-
-add_subdirectory(demos)
-add_subdirectory(benchs)
-add_subdirectory(tutorial/cpp)
-
+if(FAISS_ENABLE_EXTRAS)
+  add_subdirectory(demos)
+  add_subdirectory(benchs)
+  add_subdirectory(tutorial/cpp)
+endif()
 
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)

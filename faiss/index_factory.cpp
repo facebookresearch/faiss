@@ -20,7 +20,6 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>

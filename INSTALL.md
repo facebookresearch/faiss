@@ -6,27 +6,26 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-raft containing both CPU and GPU indices provided by NVIDIA RAFT, is available on Linux (x86-64 only) for CUDA 11.8 and 12.1.
+- faiss-gpu-cuvs [^1] package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 24.12, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.9.0
+$ conda install -c pytorch faiss-cpu=1.10.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.9.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.10.0
 
-# GPU(+CPU) version with NVIDIA RAFT
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0
+# GPU(+CPU) version with NVIDIA cuVS
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.10.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
 
-For faiss-gpu, the nvidia channel is required for CUDA, which is not
-published in the main anaconda channel.
+For faiss-gpu, the nvidia channel is required for CUDA, which is not published in the main anaconda channel.
 
-For faiss-gpu-raft, the nvidia, rapidsai and conda-forge channels are required.
+For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
 
 Nightly pre-release packages can be installed as follows:
 
@@ -35,10 +34,13 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.9.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.10.0
 
-# GPU(+CPU) version with NVIDIA RAFT
-conda install -c pytorch -c nvidia -c rapidsai -c conda-forge faiss-gpu-raft=1.9.0 pytorch pytorch-cuda numpy
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
+
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 11.8)
+conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -68,7 +70,7 @@ $ conda install -c conda-forge faiss-cpu
 # GPU version
 $ conda install -c conda-forge faiss-gpu
 
-# AMD ROCm version not yet available
+# NVIDIA cuVS and AMD ROCm version not yet available
 ```
 
 You can tell which channel your conda packages come from by using `conda list`.
@@ -98,6 +100,8 @@ The optional requirements are:
   - 4th+ Gen Intel® Xeon® Scalable processor.
 - for AMD GPUs:
   - AMD ROCm,
+- for using NVIDIA cuVS implementations:
+  - libcuvs=24.12
 - for the python bindings:
   - python 3,
   - numpy,
@@ -105,6 +109,21 @@ The optional requirements are:
 
 Indications for specific configurations are available in the [troubleshooting
 section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshooting).
+
+### Building with NVIDIA cuVS
+
+[cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building Faiss with cuVS enabled allows a user to choose between regular GPU implementations in Faiss and cuVS implementations for specific algorithms.
+
+The libcuvs dependency should be installed via conda:
+1. With CUDA 12.0 - 12.5:
+```
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=12.0,<=12.5'
+```
+2. With CUDA 11.4 - 11.8
+```
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=11.4,<=11.8'
+```
+For more ways to install cuVS 24.12, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ## Step 1: invoking CMake
 
@@ -123,9 +142,9 @@ Several options can be passed to CMake, among which:
   values are `ON` and `OFF`, before invoking CMake and setting this option to `ON`, you can refer to this [link](https://oneapi-src.github.io/oneDNN/dev_guide_build.html) for installing oneDNN),
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
-  - `-DFAISS_ENABLE_RAFT=ON` in order to enable building the RAFT implementations
-    of the IVF-Flat and IVF-PQ GPU-accelerated indices (default is `OFF`, possible
-    values are `ON` and `OFF`)
+  - `-DFAISS_ENABLE_CUVS=ON` in order to use the NVIDIA cuVS implementations
+    of the IVF-Flat, IVF-PQ and [CAGRA](https://arxiv.org/pdf/2308.15136) GPU-accelerated indices (default is `OFF`, possible, values are `ON` and `OFF`).
+    Note: `-DFAISS_ENABLE_GPU` must be set to `ON` when enabling this option.
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
@@ -136,7 +155,7 @@ Several options can be passed to CMake, among which:
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
   generate code using optimized SIMD/Vector instructions. Possible values are below:
-    - On x86-64, `generic`, `avx2` and `avx512`, by increasing order of optimization,
+    - On x86-64, `generic`, `avx2`, 'avx512', and `avx512_spr` (for avx512 features available since Intel(R) Sapphire Rapids), by increasing order of optimization,
     - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:
@@ -183,6 +202,12 @@ For AVX512:
 
 ``` shell
 $ make -C build -j faiss_avx512
+```
+
+For AVX512 features available since Intel(R) Sapphire Rapids.
+
+``` shell
+$ make -C build -j faiss_avx512_spr
 ```
 
 This will ensure the creation of neccesary files when building and installing the python package.
@@ -301,3 +326,5 @@ and you can run
 $ python demos/demo_auto_tune.py
 ```
 to test the GPU code.
+
+[^1]: The vector search and clustering algorithms in NVIDIA RAFT have been formally migrated to [NVIDIA cuVS](https://github.com/rapidsai/cuvs). This package is being renamed to `faiss-gpu-cuvs` in the next stable release, which will use these GPU implementations from the pre-compiled `libcuvs=24.12` binary.
