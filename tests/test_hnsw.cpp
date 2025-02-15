@@ -582,6 +582,16 @@ TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
     }
 }
 
+TEST_F(HNSWTest, TEST_nb_neighbors_bound) {
+    omp_set_num_threads(1);
+    EXPECT_EQ(index->hnsw.nb_neighbors(0), 8);
+    EXPECT_EQ(index->hnsw.nb_neighbors(1), 4);
+    EXPECT_EQ(index->hnsw.nb_neighbors(2), 4);
+    EXPECT_EQ(index->hnsw.nb_neighbors(3), 4);
+    // picking a large number to trigger an exception based on checking bounds
+    EXPECT_THROW(index->hnsw.nb_neighbors(100), faiss::FaissException);
+}
+
 TEST_F(HNSWTest, TEST_search_level_0) {
     omp_set_num_threads(1);
     std::vector<faiss::idx_t> I(k * nq);
