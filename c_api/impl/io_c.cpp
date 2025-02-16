@@ -10,6 +10,17 @@
 #include "io_c.h"
 #include "../macros_impl.h"
 
+using faiss::IOReader;
+using faiss::IOWriter;
+
+struct CustomIOReader : IOReader {
+    size_t (*func)(void* ptr, size_t size, size_t nitems) = nullptr;
+
+    CustomIOReader(size_t (*func_in)(void* ptr, size_t size, size_t nitems));
+
+    size_t operator()(void* ptr, size_t size, size_t nitems) override;
+};
+
 CustomIOReader::CustomIOReader(
         size_t (*func_in)(void* ptr, size_t size, size_t nitems))
         : func(func_in) {}
@@ -31,6 +42,15 @@ int faiss_CustomIOReader_new(
 void faiss_CustomIOReader_free(FaissCustomIOReader* obj) {
     delete reinterpret_cast<CustomIOReader*>(obj);
 }
+
+struct CustomIOWriter : IOWriter {
+    size_t (*func)(const void* ptr, size_t size, size_t nitems) = nullptr;
+
+    CustomIOWriter(
+            size_t (*func_in)(const void* ptr, size_t size, size_t nitems));
+
+    size_t operator()(const void* ptr, size_t size, size_t nitems) override;
+};
 
 CustomIOWriter::CustomIOWriter(
         size_t (*func_in)(const void* ptr, size_t size, size_t nitems))
