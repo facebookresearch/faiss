@@ -451,12 +451,18 @@ class TestResidualQuantizer(unittest.TestCase):
         rq1 = faiss.ResidualQuantizer(d, 4, 6)
         fac = faiss.GpuProgressiveDimIndexFactory(1)
         rq1.assign_index_factory = fac
+        # fac.this.acquire()  # we want to repro!
         rq1.train(xt)
+        print(f"fac.ncall (1) ={fac.ncall}")
         self.assertGreater(fac.ncall, 0)
+        print(f"fac.ncall (2) ={fac.ncall}")
         ncall_train = fac.ncall
+        print(f"fac.ncall (3) ={fac.ncall}   *** ncall_train={ncall_train}")
         err_rq1 = eval_codec(rq1, xb)
+        print(f"fac.ncall (4) ={fac.ncall} *** ncall_train={ncall_train}")
         # codes1 = rq1.compute_codes(xb)
         self.assertGreater(fac.ncall, ncall_train)
+        print(f"fac.ncall (5) ={fac.ncall} *** ncall_train={ncall_train}")
 
         print(err_rq0, err_rq1)
 
@@ -469,3 +475,24 @@ class TestGpuFlags(unittest.TestCase):
 
     def test_gpu_flag(self):
         assert "GPU" in faiss.get_compile_options().split()
+
+
+class TestStructPacking(unittest.TestCase): 
+
+    def test_swig(self): 
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_swig(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])
+
+    def test_cuda(self): 
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_cuda(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])

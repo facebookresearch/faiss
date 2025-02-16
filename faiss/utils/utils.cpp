@@ -9,6 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/struct_packing_test.h>
 
 #include <cassert>
 #include <cmath>
@@ -640,5 +641,8 @@ void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
         inserted[i] = res.second;
     }
 }
+
+
+int struct_packing_test_cpp (int q) STRUCT_PACKING_FUNCTION_BODY;
 
 } // namespace faiss
