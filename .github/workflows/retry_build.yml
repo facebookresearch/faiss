@@ -15,7 +15,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_DEBUG: api
         run: |
-          while gh run view ${{ inputs.run_id }} --json status | grep -q in_progress
+          # status can be one of "queued", "in_progress", "completed", "waiting", "requested", "pending"
+          # https://docs.github.com/en/rest/checks/runs
+          # while not completed, sleep for 10 minutes
+          while gh run view ${{ inputs.run_id }} --json status | grep -v completed
           do
             echo Workflow in progress - sleeping for 10 minutes then checking again
             sleep 10m
