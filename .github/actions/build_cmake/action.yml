@@ -50,7 +50,7 @@ runs:
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
           conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
-          conda install -y -q mkl=2022.2.1 mkl-devel=2022.2.1
+          conda install -y -q mkl=2023 mkl-devel=2023
         fi
 
         # no CUDA needed for ROCm so skip this
