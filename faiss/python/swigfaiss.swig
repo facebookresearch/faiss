@@ -81,6 +81,11 @@ typedef uint64_t size_t;
 
 #endif
 
+#include <faiss/impl/io.h>
+
+#include <faiss/impl/maybe_owned_vector.h>
+#include <faiss/impl/mapped_io.h>
+#include <faiss/impl/zerocopy_io.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -183,9 +188,6 @@ typedef uint64_t size_t;
 #include <faiss/IndexLattice.h>
 
 #include <faiss/IndexNeuralNetCodec.h>
-
-#include <faiss/impl/mapped_io.h>
-#include <faiss/impl/zerocopy_io.h>
 
 %}
 
@@ -509,6 +511,14 @@ void gpu_sync_all_devices()
 
 %include <faiss/impl/DistanceComputer.h>
 
+%include <faiss/impl/io.h>
+
+%ignore faiss::MmappedFileMappingOwner::p_impl;
+
+%include <faiss/impl/maybe_owned_vector.h>
+%include <faiss/impl/mapped_io.h>
+%include <faiss/impl/zerocopy_io.h>
+
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
 %include  <faiss/IndexFlat.h>
@@ -636,8 +646,6 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/IndexNeuralNetCodec.h>
 
-%include <faiss/impl/mapped_io.h>
-%include <faiss/impl/zerocopy_io.h>
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;

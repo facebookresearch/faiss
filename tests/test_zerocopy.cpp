@@ -17,6 +17,8 @@
 #include <faiss/impl/zerocopy_io.h>
 #include <faiss/index_io.h>
 
+namespace {
+
 std::vector<float> make_data(const size_t n, const size_t d, size_t seed) {
     std::vector<float> database(n * d);
     std::mt19937 rng(seed);
@@ -26,6 +28,8 @@ std::vector<float> make_data(const size_t n, const size_t d, size_t seed) {
         database[i] = distrib(rng);
     }
     return database;
+}
+
 }
 
 TEST(TestZeroCopy, zerocopy_flatcodes) {
