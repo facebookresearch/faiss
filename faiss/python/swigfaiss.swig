@@ -184,6 +184,9 @@ typedef uint64_t size_t;
 
 #include <faiss/IndexNeuralNetCodec.h>
 
+#include <faiss/impl/mapped_io.h>
+#include <faiss/impl/zerocopy_io.h>
+
 %}
 
 /********************************************************
@@ -633,6 +636,8 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/IndexNeuralNetCodec.h>
 
+%include <faiss/impl/mapped_io.h>
+%include <faiss/impl/zerocopy_io.h>
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
