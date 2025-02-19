@@ -20,8 +20,6 @@
 #include <string>
 #include <vector>
 
-#include <faiss/Index.h>
-
 namespace faiss {
 
 struct IOReader {
