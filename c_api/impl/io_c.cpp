@@ -8,6 +8,7 @@
 // -*- c++ -*-
 
 #include "io_c.h"
+#include <faiss/impl/io.h>
 #include "../macros_impl.h"
 
 using faiss::IOReader;

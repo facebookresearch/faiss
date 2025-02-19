@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
+// -*- c -*-
 
 #ifndef FAISS_IO_C_H
 #define FAISS_IO_C_H
 
-#include <faiss/impl/io.h>
+#include <stddef.h>
 #include "../faiss_c.h"
 
 #ifdef __cplusplus
