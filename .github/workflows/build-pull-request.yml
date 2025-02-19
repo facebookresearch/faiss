@@ -30,9 +30,9 @@ jobs:
               git --no-pager diff --color
               exit 1
             fi
-  linux-x86_64-cmake:
-    name: Linux x86_64 (cmake)
-    runs-on: ubuntu-latest
+  linux-x86_64-nightly:
+    name: Linux x86_64 nightlies
+    runs-on: 4-core-ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -201,16 +201,3 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-  auto-retry:
-    name: Auto retry on failure
-    if: fromJSON(github.run_attempt) < 2
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start rerun workflow
-        env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          GH_DEBUG: api
-        run: |
-          gh workflow run retry_build.yml \
-            -F run_id=${{ github.run_id }}
