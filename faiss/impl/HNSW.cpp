@@ -32,6 +32,7 @@ namespace faiss {
  **************************************************************/
 
 int HNSW::nb_neighbors(int layer_no) const {
+    FAISS_THROW_IF_NOT(layer_no + 1 < cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no + 1] -
             cum_nneighbor_per_level[layer_no];
 }
