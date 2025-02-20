@@ -104,11 +104,13 @@ outputs:
         - mkl =2023  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
+        - mkl =2023  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
+        - mkl =2023  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
