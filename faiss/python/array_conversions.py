@@ -129,6 +129,17 @@ def copy_array_to_vector(a, v):
     """ copy a numpy array to a vector """
     n, = a.shape
     classname = v.__class__.__name__
+    if classname.startswith('MaybeOwnedVector'):
+        assert v.is_owned, 'cannot copy to an non-owned MaybeOwnedVector'
+        dtype = np.dtype(vector_name_map[classname[16:]])
+        assert dtype == a.dtype, (
+            'cannot copy a %s array to a %s (should be %s)' % (
+                a.dtype, classname, dtype))
+        v.resize(n)
+        if n > 0:
+            memcpy(v.data(), swig_ptr(a), a.nbytes)
+        return
+
     assert classname.endswith('Vector')
     dtype = np.dtype(vector_name_map[classname[:-6]])
     assert dtype == a.dtype, (
