@@ -132,14 +132,14 @@ runs:
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
-              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
+              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"--verbose -gencode arch=compute_75,code=sm_75"' || '--verbose' }} \
               .
-        make -k -C build -j$(nproc)
+        make VERBOSE=1 -k -C build -j$(nproc)
     - name: C++ tests
       shell: bash
       run: |
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-        make -C build test
+        make VERBOSE=1 -C build test
     - name: C++ perf benchmarks
       shell: bash
       if: inputs.rocm == 'OFF'
