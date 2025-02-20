@@ -106,6 +106,13 @@ def vector_to_array(v):
     classname = v.__class__.__name__
     if classname.startswith('AlignedTable'):
         return AlignedTable_to_array(v)
+    if classname.startswith('MaybeOwnedVector'):
+        dtype = np.dtype(vector_name_map[classname[16:]])
+        a = np.empty(v.size(), dtype=dtype)
+        if v.size() > 0:
+            memcpy(swig_ptr(a), v.data(), a.nbytes)
+        return a
+
     assert classname.endswith('Vector')
     dtype = np.dtype(vector_name_map[classname[:-6]])
     a = np.empty(v.size(), dtype=dtype)

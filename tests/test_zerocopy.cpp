@@ -30,7 +30,7 @@ std::vector<float> make_data(const size_t n, const size_t d, size_t seed) {
     return database;
 }
 
-}
+} // namespace
 
 TEST(TestZeroCopy, zerocopy_flatcodes) {
     // the logic is the following:

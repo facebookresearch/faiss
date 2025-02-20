@@ -1005,6 +1005,10 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 %template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
 %template(AlignedTableFloat32) faiss::AlignedTable<float>;
 
+%template(MaybeOwnedVectorUInt8) faiss::MaybeOwnedVector<uint8_t>;
+%template(MaybeOwnedVectorInt32) faiss::MaybeOwnedVector<int32_t>;
+%template(MaybeOwnedVectorFloat32) faiss::MaybeOwnedVector<float>;
+
 
 // SWIG seems to have some trouble resolving function template types here, so
 // declare explicitly
