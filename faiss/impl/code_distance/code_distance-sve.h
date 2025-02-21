@@ -217,8 +217,6 @@ static void distance_four_codes_sve_for_small_m(
 
     const auto offsets_0 = svindex_u32(0, static_cast<uint32_t>(ksub));
 
-    const auto quad_lanes = svcntw();
-
     // loop
     const auto pg = svwhilelt_b32_u64(0, M);
 
