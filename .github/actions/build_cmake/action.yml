@@ -132,7 +132,7 @@ runs:
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
-              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
+              -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"--verbose  -ccbin x86_64-conda-linux-gnu-c++ -gencode arch=compute_75,code=sm_75"' || '--verbose -ccbin x86_64-conda-linux-gnu-c++' }} \
               .
         make -k -C build -j$(nproc)
     - name: C++ tests
