@@ -94,6 +94,7 @@ struct MmappedFileMappingOwner::PImpl {
 struct MmappedFileMappingOwner::PImpl {
     void* ptr = nullptr;
     size_t ptr_size = 0;
+    HANDLE mapping_handle = INVALID_HANDLE_VALUE;
 
     PImpl(const std::string& filename) {
         HANDLE file_handle = CreateFile(
@@ -123,7 +124,7 @@ struct MmappedFileMappingOwner::PImpl {
         }
 
         // create a mapping
-        HANDLE mapping_handle = CreateFileMapping(
+        mapping_handle = CreateFileMapping(
                 file_handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
         if (mapping_handle == 0) {
             const auto error = GetLastError();
@@ -169,7 +170,7 @@ struct MmappedFileMappingOwner::PImpl {
         }
 
         // create a mapping
-        HANDLE mapping_handle = CreateFileMapping(
+        mapping_handle = CreateFileMapping(
                 file_handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
         if (mapping_handle == 0) {
             const auto error = GetLastError();
@@ -190,10 +191,11 @@ struct MmappedFileMappingOwner::PImpl {
     }
 
     ~PImpl() {
-        if (ptr != nullptr) {
+        if (mapping_handle != INVALID_HANDLE_VALUE) {
             UnmapViewOfFile(ptr);
-            CloseHandle(ptr);
+            CloseHandle(mapping_handle);
 
+            mapping_handle = INVALID_HANDLE_VALUE;
             ptr = nullptr;
         }
     }
