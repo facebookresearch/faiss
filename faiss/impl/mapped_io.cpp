@@ -238,6 +238,10 @@ MappedFileIOReader::MappedFileIOReader(
 
 // this operation performs a copy
 size_t MappedFileIOReader::operator()(void* ptr, size_t size, size_t nitems) {
+    if (size * nitems == 0) {
+        return 0;
+    }
+
     char* ptr_c = nullptr;
 
     const size_t actual_nitems = this->mmap((void**)&ptr_c, size, nitems);

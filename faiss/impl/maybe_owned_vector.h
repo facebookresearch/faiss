@@ -50,6 +50,13 @@ struct MaybeOwnedVector {
         c_size = owned_data.size();
     }
 
+    MaybeOwnedVector(const std::vector<T>& vec)
+            : MaybeOwnedVector<T>(vec.size()) {
+        if (!vec.empty()) {
+            memcpy(owned_data.data(), vec.data(), vec.size() * sizeof(T));
+        }
+    }
+
     MaybeOwnedVector(const MaybeOwnedVector& other) {
         is_owned = other.is_owned;
         owned_data = other.owned_data;

@@ -37,6 +37,10 @@ void ZeroCopyIOReader::reset() {
 }
 
 size_t ZeroCopyIOReader::operator()(void* ptr, size_t size, size_t nitems) {
+    if (size * nitems == 0) {
+        return 0;
+    }
+
     if (rp_ >= total_) {
         return 0;
     }
