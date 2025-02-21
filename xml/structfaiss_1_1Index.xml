@@ -259,6 +259,7 @@
         <argsstring>(idx_t n, const float *x)=0</argsstring>
         <name>add</name>
         <qualifiedname>faiss::Index::add</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ad8ef055ad09f4bce9ce52f396540e6fb">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457">add</reimplementedby>
