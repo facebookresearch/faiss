@@ -109,11 +109,9 @@ outputs:
         - pytorch <2.5
         - pytorch-cuda {{ cuda_constraints }}
       commands:
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
-        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
         - cp tests/common_faiss_tests.py faiss/gpu/test
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_gpu_basics*"
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
-        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]

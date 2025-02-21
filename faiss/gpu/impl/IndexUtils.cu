@@ -8,6 +8,7 @@
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/utils/struct_packing_test.h>
 #include <limits>
 
 namespace faiss {
@@ -37,6 +38,9 @@ void validateNProbe(size_t nprobe) {
             getMaxKSelection(),
             nprobe);
 }
+
+int struct_packing_test_cuda (int q) STRUCT_PACKING_FUNCTION_BODY
+
 
 } // namespace gpu
 } // namespace faiss
