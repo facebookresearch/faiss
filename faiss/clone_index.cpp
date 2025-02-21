@@ -335,9 +335,10 @@ Index* Cloner::clone_Index(const Index* index) {
         IndexNSG* res = clone_IndexNSG(insg);
 
         // copy the dynamic allocated graph
-        auto& new_graph = res->nsg.final_graph;
-        auto& old_graph = insg->nsg.final_graph;
-        new_graph = std::make_shared<nsg::Graph<int>>(*old_graph);
+        if (auto& old_graph = insg->nsg.final_graph) {
+            auto& new_graph = res->nsg.final_graph;
+            new_graph = std::make_shared<nsg::Graph<int>>(*old_graph);
+        }
 
         res->own_fields = true;
         res->storage = clone_Index(insg->storage);
