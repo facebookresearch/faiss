@@ -494,6 +494,8 @@ class TestIOFlatMMap(unittest.TestCase):
 
         fd, fname = tempfile.mkstemp()
         os.close(fd)
+
+        index2 = None
         try:
             faiss.write_index(index, fname)
             index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
@@ -501,8 +503,16 @@ class TestIOFlatMMap(unittest.TestCase):
             np.testing.assert_array_equal(Iref, Inew)
             np.testing.assert_array_equal(Dref, Dnew)
         finally:
+            del index2
+
             if os.path.exists(fname):
-                os.unlink(fname)
+                # skip the error. On Windows, index2 holds the handle file, 
+                #   so it cannot be ensured that the file can be deleted
+                #   unless index2 is collected by a GC
+                try:
+                    os.unlink(fname)
+                except:
+                    pass
 
     def test_zerocopy(self): 
         xt, xb, xq = get_dataset_2(32, 0, 100, 50)
