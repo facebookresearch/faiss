@@ -57,10 +57,10 @@ outputs:
         - gcc_linux-64 =11.2  # [cudatoolkit == '11.4.4']
       host:
         - mkl =2023.0  # [x86_64]
-        - openblas =0.3 # [not x86_64]
+        - openblas =0.3.29 # [not x86_64]
       run:
         - mkl =2023.0  # [x86_64]
-        - openblas =0.3 # [not x86_64]
+        - openblas =0.3.29 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
     test:
@@ -89,12 +89,15 @@ outputs:
         - make =4.4 # [osx and arm64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - cuda-toolkit {{ cudatoolkit }}
+        - mkl-devel =2023.0  # [x86_64]
       host:
+        - mkl =2023.0  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
+        - mkl =2023.0  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
         - packaging

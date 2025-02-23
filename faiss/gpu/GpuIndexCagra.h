@@ -245,6 +245,12 @@ struct GpuIndexCagra : public GpuIndex {
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexCagraConfig config = GpuIndexCagraConfig());
 
+    /// Trains CAGRA based on the given vector data and add them along with ids.
+    /// NB: The use of the add function here is to build the CAGRA graph on
+    /// the base dataset. Use this function when you want to add vectors with
+    /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
+    void add(idx_t n, const float* x) override;
+
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
     /// the base dataset and is currently the only function to add the full set

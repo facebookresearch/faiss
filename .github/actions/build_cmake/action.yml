@@ -43,7 +43,7 @@ runs:
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas=0.3 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
+          conda install -y -q -c conda-forge openblas=0.3.29 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
 
         # install base packages for X86_64
