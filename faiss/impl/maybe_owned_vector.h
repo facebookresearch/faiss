@@ -22,8 +22,6 @@ struct MaybeOwnedVector {
     using self_type = MaybeOwnedVector<T>;
     using iterator = typename std::vector<T>::iterator;
     using const_iterator = typename std::vector<T>::const_iterator;
-    using reference = typename std::vector<T>::reference;
-    using const_reference = typename std::vector<T>::const_reference;
     using size_type = typename std::vector<T>::size_type;
 
     bool is_owned = true;
@@ -166,7 +164,7 @@ struct MaybeOwnedVector {
         return c_ptr[idx];
     }
 
-    iterator at(size_type pos) {
+    T& at(size_type pos) {
         FAISS_ASSERT_MSG(
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
@@ -174,7 +172,7 @@ struct MaybeOwnedVector {
         return owned_data.at(pos);
     }
 
-    const_iterator at(size_type pos) const {
+    const T& at(size_type pos) const {
         FAISS_ASSERT_MSG(
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
