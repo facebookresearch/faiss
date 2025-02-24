@@ -12,6 +12,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <optional>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
@@ -65,11 +66,68 @@ namespace faiss {
  * Mmap-ing and viewing facilities
  **************************************************************/
 
+// This is a baseline functionality for reading mmapped and zerocopied vector.
+// * if `beforeknown_size` is defined, then a size of the vector won't be read.
+// * if `size_multiplier` is defined, then a size will be multiplied by it.
+// * returns true is the case was handled; ownerwise, false
 template <typename VectorT>
-void read_vector_with_size(VectorT& target, IOReader* f, size_t size) {
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
+bool read_vector_base(
+        VectorT& target,
+        IOReader* f,
+        const std::optional<size_t> beforeknown_size,
+        const std::optional<size_t> size_multiplier) {
+    // check if the use case is right
+    if constexpr (is_maybe_owned_vector_v<VectorT>) {
+        // is it a mmap-enabled reader?
+        MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
+        if (mf != nullptr) {
+            // read the size or use a known one
+            size_t size = 0;
+            if (beforeknown_size.has_value()) {
+                size = beforeknown_size.value();
+            } else {
+                READANDCHECK(&size, 1);
+            }
+
+            // perform the size multiplication
+            size *= size_multiplier.value_or(1);
+
+            // ok, mmap and check
+            char* address = nullptr;
+            const size_t nread = mf->mmap(
+                    (void**)&address,
+                    sizeof(typename VectorT::value_type),
+                    size);
+
+            FAISS_THROW_IF_NOT_FMT(
+                    nread == (size),
+                    "read error in %s: %zd != %zd (%s)",
+                    f->name.c_str(),
+                    nread,
+                    size,
+                    strerror(errno));
+
+            VectorT mmapped_view =
+                    VectorT::create_view(address, nread, mf->mmap_owner);
+            target = std::move(mmapped_view);
+
+            return true;
+        }
+
+        // is it a zero-copy reader?
+        ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
+        if (zr != nullptr) {
+            // read the size or use a known one
+            size_t size = 0;
+            if (beforeknown_size.has_value()) {
+                size = beforeknown_size.value();
+            } else {
+                READANDCHECK(&size, 1);
+            }
+
+            // perform the size multiplication
+            size *= size_multiplier.value_or(1);
+
             // create a view
             char* address = nullptr;
             size_t nread = zr->get_data_view(
@@ -85,129 +143,46 @@ void read_vector_with_size(VectorT& target, IOReader* f, size_t size) {
                     size_t(size),
                     strerror(errno));
 
-            VectorT view = VectorT::create_view(address, nread);
-            target = std::move(view);
-
-            return;
-        }
-    }
-
-    target.resize(size);
-    READANDCHECK(target.data(), size);
-}
-
-template <typename VectorT>
-void read_vector(VectorT& target, IOReader* f) {
-    // is it a mmap-enabled reader?
-    MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
-    if (mf != nullptr) {
-        // check if the use case is right
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size
-            size_t size = 0;
-            READANDCHECK(&size, 1);
-            // ok, mmap and check
-            char* address = nullptr;
-            const size_t nread = mf->mmap(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-
-            FAISS_THROW_IF_NOT_FMT(
-                    nread == (size),
-                    "read error in %s: %zd != %zd (%s)",
-                    f->name.c_str(),
-                    nread,
-                    size,
-                    strerror(errno));
-
-            VectorT mmapped_view =
-                    VectorT::create_view(address, nread, mf->mmap_owner);
-            target = std::move(mmapped_view);
-
-            return;
-        }
-    }
-
-    // is it a zero-copy reader?
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size first
-            size_t size = target.size();
-            READANDCHECK(&size, 1);
-
-            // create a view
-            char* address = nullptr;
-            size_t nread = zr->get_data_view(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
             VectorT view = VectorT::create_view(address, nread, nullptr);
             target = std::move(view);
 
-            return;
+            return true;
         }
+    }
+
+    return false;
+}
+
+// a replacement for READANDCHECK for reading data into std::vector
+template <typename VectorT>
+void read_vector_with_known_size(VectorT& target, IOReader* f, size_t size) {
+    // size is known beforehand, no size multiplication
+    if (read_vector_base<VectorT>(target, f, size, std::nullopt)) {
+        return;
+    }
+
+    // the default case
+    READANDCHECK(target.data(), size);
+}
+
+// a replacement for READVECTOR
+template <typename VectorT>
+void read_vector(VectorT& target, IOReader* f) {
+    // size is not known beforehand, no size multiplication
+    if (read_vector_base<VectorT>(target, f, std::nullopt, std::nullopt)) {
+        return;
     }
 
     // the default case
     READVECTOR(target);
 }
 
+// a replacement for READXBVECTOR
 template <typename VectorT>
 void read_xb_vector(VectorT& target, IOReader* f) {
-    // is it a mmap-enabled reader?
-    MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
-    if (mf != nullptr) {
-        // check if the use case is right
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size
-            size_t size = 0;
-            READANDCHECK(&size, 1);
-
-            size *= 4;
-
-            // ok, mmap and check
-            char* address = nullptr;
-            const size_t nread = mf->mmap(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-
-            FAISS_THROW_IF_NOT_FMT(
-                    nread == (size),
-                    "read error in %s: %zd != %zd (%s)",
-                    f->name.c_str(),
-                    nread,
-                    size,
-                    strerror(errno));
-
-            VectorT mmapped_view =
-                    VectorT::create_view(address, nread, mf->mmap_owner);
-            target = std::move(mmapped_view);
-
-            return;
-        }
-    }
-
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (std::is_same_v<VectorT, MaybeOwnedVector<uint8_t>>) {
-            // read the size first
-            size_t size = target.size();
-            READANDCHECK(&size, 1);
-
-            size *= 4;
-
-            char* address = nullptr;
-            size_t nread = zr->get_data_view(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-            VectorT view = VectorT::create_view(address, nread, nullptr);
-            target = std::move(view);
-            return;
-        }
+    // size is not known beforehand, nultiply the size 4x
+    if (read_vector_base<VectorT>(target, f, std::nullopt, 4)) {
+        return;
     }
 
     // the default case
@@ -364,8 +339,9 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();
             if (n > 0) {
-                READANDCHECK(ails->codes[i].data(), n * ails->code_size);
-                READANDCHECK(ails->ids[i].data(), n);
+                read_vector_with_known_size(
+                        ails->codes[i], f, n * ails->code_size);
+                read_vector_with_known_size(ails->ids[i], f, n);
             }
         }
         return ails;
@@ -637,7 +613,12 @@ ArrayInvertedLists* set_array_invlist(
         std::vector<std::vector<idx_t>>& ids) {
     ArrayInvertedLists* ail =
             new ArrayInvertedLists(ivf->nlist, ivf->code_size);
-    std::swap(ail->ids, ids);
+
+    ail->ids.resize(ids.size());
+    for (size_t i = 0; i < ids.size(); i++) {
+        ail->ids[i] = MaybeOwnedVector<idx_t>(std::move(ids[i]));
+    }
+
     ivf->invlists = ail;
     ivf->own_invlists = true;
     return ail;

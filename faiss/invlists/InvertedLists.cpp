@@ -330,8 +330,8 @@ void ArrayInvertedLists::update_entries(
 }
 
 void ArrayInvertedLists::permute_invlists(const idx_t* map) {
-    std::vector<std::vector<uint8_t>> new_codes(nlist);
-    std::vector<std::vector<idx_t>> new_ids(nlist);
+    std::vector<MaybeOwnedVector<uint8_t>> new_codes(nlist);
+    std::vector<MaybeOwnedVector<idx_t>> new_ids(nlist);
 
     for (size_t i = 0; i < nlist; i++) {
         size_t o = map[i];
