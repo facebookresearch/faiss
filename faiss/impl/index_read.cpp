@@ -1335,7 +1335,7 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
     if (h == fourcc("IBxF")) {
         IndexBinaryFlat* idxf = new IndexBinaryFlat();
         read_index_binary_header(idxf, f);
-        READVECTOR(idxf->xb);
+        read_vector(idxf->xb, f);
         FAISS_THROW_IF_NOT(idxf->xb.size() == idxf->ntotal * idxf->code_size);
         // leak!
         idx = idxf;
@@ -1403,14 +1403,28 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
 }
 
 IndexBinary* read_index_binary(FILE* f, int io_flags) {
-    FileIOReader reader(f);
-    return read_index_binary(&reader, io_flags);
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(f);
+        MappedFileIOReader reader(owner);
+        return read_index_binary(&reader, io_flags);
+    } else {
+        FileIOReader reader(f);
+        return read_index_binary(&reader, io_flags);
+    }
 }
 
 IndexBinary* read_index_binary(const char* fname, int io_flags) {
-    FileIOReader reader(fname);
-    IndexBinary* idx = read_index_binary(&reader, io_flags);
-    return idx;
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
+        MappedFileIOReader reader(owner);
+        return read_index_binary(&reader, io_flags);
+    } else {
+        FileIOReader reader(fname);
+        IndexBinary* idx = read_index_binary(&reader, io_flags);
+        return idx;
+    }
 }
 
 } // namespace faiss

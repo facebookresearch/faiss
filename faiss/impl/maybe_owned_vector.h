@@ -20,7 +20,11 @@ template <typename T>
 struct MaybeOwnedVector {
     using value_type = T;
     using self_type = MaybeOwnedVector<T>;
-    using vec_iterator = typename std::vector<T>::const_iterator;
+    using iterator = typename std::vector<T>::iterator;
+    using const_iterator = typename std::vector<T>::const_iterator;
+    using reference = typename std::vector<T>::reference;
+    using const_reference = typename std::vector<T>::const_reference;
+    using size_type = typename std::vector<T>::size_type;
 
     bool is_owned = true;
 
@@ -162,7 +166,23 @@ struct MaybeOwnedVector {
         return c_ptr[idx];
     }
 
-    vec_iterator begin() const {
+    iterator at(size_type pos) {
+        FAISS_ASSERT_MSG(
+                is_owned,
+                "This operation cannot be performed on a viewed vector");
+
+        return owned_data.at(pos);
+    }
+
+    const_iterator at(size_type pos) const {
+        FAISS_ASSERT_MSG(
+                is_owned,
+                "This operation cannot be performed on a viewed vector");
+
+        return owned_data.at(pos);
+    }
+
+    iterator begin() {
         FAISS_ASSERT_MSG(
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
@@ -170,7 +190,15 @@ struct MaybeOwnedVector {
         return owned_data.begin();
     }
 
-    vec_iterator end() const {
+    const_iterator begin() const {
+        FAISS_ASSERT_MSG(
+                is_owned,
+                "This operation cannot be performed on a viewed vector");
+
+        return owned_data.begin();
+    }
+
+    iterator end() {
         FAISS_ASSERT_MSG(
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
@@ -178,12 +206,33 @@ struct MaybeOwnedVector {
         return owned_data.end();
     }
 
-    vec_iterator erase(vec_iterator begin, vec_iterator end) {
+    const_iterator end() const {
+        FAISS_ASSERT_MSG(
+                is_owned,
+                "This operation cannot be performed on a viewed vector");
+
+        return owned_data.end();
+    }
+
+    iterator erase(const_iterator begin, const_iterator end) {
         FAISS_ASSERT_MSG(
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
 
         auto result = owned_data.erase(begin, end);
+        c_ptr = owned_data.data();
+        c_size = owned_data.size();
+
+        return result;
+    }
+
+    template <class InputIt>
+    iterator insert(const_iterator pos, InputIt first, InputIt last) {
+        FAISS_ASSERT_MSG(
+                is_owned,
+                "This operation cannot be performed on a viewed vector");
+
+        auto result = owned_data.insert(pos, first, last);
         c_ptr = owned_data.data();
         c_size = owned_data.size();
 
