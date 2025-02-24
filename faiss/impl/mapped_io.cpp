@@ -117,6 +117,9 @@ struct MmappedFileMappingOwner::PImpl {
         LARGE_INTEGER len_li;
         if (GetFileSizeEx(file_handle, &len_li) == 0) {
             const auto error = GetLastError();
+
+            CloseHandle(file_handle);
+
             FAISS_THROW_FMT(
                     "could not get the file size, %s (error %d)",
                     filename.c_str(),
@@ -128,6 +131,9 @@ struct MmappedFileMappingOwner::PImpl {
                 file_handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
         if (mapping_handle == 0) {
             const auto error = GetLastError();
+
+            CloseHandle(file_handle);
+
             FAISS_THROW_FMT(
                     "could not create a file mapping, %s (error %d)",
                     filename.c_str(),
@@ -139,6 +145,10 @@ struct MmappedFileMappingOwner::PImpl {
                 (char*)MapViewOfFile(mapping_handle, FILE_MAP_READ, 0, 0, 0);
         if (data == nullptr) {
             const auto error = GetLastError();
+
+            CloseHandle(mapping_handle);
+            mapping_handle = INVALID_HANDLE_VALUE;
+
             FAISS_THROW_FMT(
                     "could not get map the file, %s (error %d)",
                     filename.c_str(),
@@ -177,12 +187,18 @@ struct MmappedFileMappingOwner::PImpl {
             FAISS_THROW_FMT(
                     "could not create a file mapping, (error %d)", error);
         }
-        CloseHandle(file_handle);
+
+        // the handle is provided externally, so this is not our business
+        //   to close file_handle.
 
         char* data =
                 (char*)MapViewOfFile(mapping_handle, FILE_MAP_READ, 0, 0, 0);
         if (data == nullptr) {
             const auto error = GetLastError();
+
+            CloseHandle(mapping_handle);
+            mapping_handle = INVALID_HANDLE_VALUE;
+
             FAISS_THROW_FMT("could not get map the file, (error %d)", error);
         }
 
