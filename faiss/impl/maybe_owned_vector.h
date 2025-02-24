@@ -183,7 +183,11 @@ struct MaybeOwnedVector {
                 is_owned,
                 "This operation cannot be performed on a viewed vector");
 
-        return owned_data.erase(begin, end);
+        auto result = owned_data.erase(begin, end);
+        c_ptr = owned_data.data();
+        c_size = owned_data.size();
+
+        return result;
     }
 
     void clear() {
