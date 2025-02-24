@@ -50,7 +50,7 @@ outputs:
         {% elif PY_VER == '3.12' %}
         - mkl-devel >=2023.2.0  # [x86_64 and not win]
         - mkl-devel =2023.1.0  # [x86_64 and win]
-        - liblief =0.15.1  # [not win]
+        - liblief =0.14.1  # [not win]
         - python_abi =3.12
         {% endif %}
       host:
@@ -62,7 +62,7 @@ outputs:
         {% elif PY_VER == '3.12' %}
         - mkl >=2023.2.0  # [x86_64 and not win]
         - mkl =2023.1.0  # [x86_64 and win]
-        - liblief =0.15.1  # [not win]
+        - liblief =0.14.1  # [not win]
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.29 # [not x86_64]
