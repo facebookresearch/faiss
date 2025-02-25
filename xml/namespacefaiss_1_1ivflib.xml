@@ -462,10 +462,10 @@
         </inbodydescription>
         <location file="faiss/IVFlib.h" line="165" column="6" declfile="faiss/IVFlib.h" declline="165" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="IVFlib_8h_1a26e2f5a54a26db03087c82a3ae4f6234" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="IVFlib_8h_1a75fc271debbf354dbf739b8cffc8a725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ivflib::shard_ivf_index_centroids</definition>
-        <argsstring>(IndexIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr)</argsstring>
+        <argsstring>(IndexIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr, bool generate_ids=false)</argsstring>
         <name>shard_ivf_index_centroids</name>
         <qualifiedname>faiss::ivflib::shard_ivf_index_centroids</qualifiedname>
         <param>
@@ -486,6 +486,11 @@
           <type><ref refid="structfaiss_1_1ivflib_1_1ShardingFunction" kindref="compound">ShardingFunction</ref> *</type>
           <declname>sharding_function</declname>
           <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>generate_ids</declname>
+          <defval>false</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -523,6 +528,14 @@
 <para>The function to shard by. The default is ith vector mod shard_count. </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>generate_ids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Generates ids using IndexIDMap2. If true, ids will match the default ids in the unsharded index. </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 <simplesect kind="return"><para>The number of shards written. </para>
 </simplesect>
@@ -530,12 +543,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="196" column="6" declfile="faiss/IVFlib.h" declline="196" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="198" column="6" declfile="faiss/IVFlib.h" declline="198" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="IVFlib_8h_1a0d9603741f010914750a111e1969b579" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="IVFlib_8h_1a7386ca19b896152c0af3d9ae4edf45c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::ivflib::shard_binary_ivf_index_centroids</definition>
-        <argsstring>(faiss::IndexBinaryIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr)</argsstring>
+        <argsstring>(faiss::IndexBinaryIVF *index, int64_t shard_count=20, const std::string &amp;filename_template=&quot;shard.%d.index&quot;, ShardingFunction *sharding_function=nullptr, bool generate_ids=false)</argsstring>
         <name>shard_binary_ivf_index_centroids</name>
         <qualifiedname>faiss::ivflib::shard_binary_ivf_index_centroids</qualifiedname>
         <param>
@@ -557,13 +570,18 @@
           <declname>sharding_function</declname>
           <defval>nullptr</defval>
         </param>
+        <param>
+          <type>bool</type>
+          <declname>generate_ids</declname>
+          <defval>false</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="202" column="6" declfile="faiss/IVFlib.h" declline="202" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="205" column="6" declfile="faiss/IVFlib.h" declline="205" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

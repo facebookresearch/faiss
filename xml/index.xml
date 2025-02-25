@@ -9735,8 +9735,8 @@
     <member refid="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" kind="function"><name>range_search_with_parameters</name></member>
     <member refid="IVFlib_8h_1ad4e104b5a77c21bda47ea76cb1896ecd" kind="function"><name>ivf_residual_from_quantizer</name></member>
     <member refid="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" kind="function"><name>ivf_residual_add_from_flat_codes</name></member>
-    <member refid="IVFlib_8h_1a26e2f5a54a26db03087c82a3ae4f6234" kind="function"><name>shard_ivf_index_centroids</name></member>
-    <member refid="IVFlib_8h_1a0d9603741f010914750a111e1969b579" kind="function"><name>shard_binary_ivf_index_centroids</name></member>
+    <member refid="IVFlib_8h_1a75fc271debbf354dbf739b8cffc8a725" kind="function"><name>shard_ivf_index_centroids</name></member>
+    <member refid="IVFlib_8h_1a7386ca19b896152c0af3d9ae4edf45c3" kind="function"><name>shard_binary_ivf_index_centroids</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1lsq" kind="namespace"><name>faiss::lsq</name>
   </compound>
