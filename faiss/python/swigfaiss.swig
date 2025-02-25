@@ -32,6 +32,7 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 #pragma SWIG nowarn=362
+#pragma SWIG nowarn=509
 
 // we need explict control of these typedefs...
 // %include <stdint.i>
