@@ -641,7 +641,7 @@ void PCAMatrix::prepare_Ab() {
             std::swap(A, Ain);
             A.resize(d_out * d_in);
 
-            std::vector<float> accu(balanced_bins);
+            std::vector<float> accu(balanced_bins, 1.0);
             std::vector<int> counter(balanced_bins);
 
             // greedy assignment
@@ -656,7 +656,7 @@ void PCAMatrix::prepare_Ab() {
                     }
                 }
                 int row_dst = best_j * dsub + counter[best_j];
-                accu[best_j] += eigenvalues[i];
+                accu[best_j] *= eigenvalues[i];
                 counter[best_j]++;
                 memcpy(&A[row_dst * d_in], &Ain[i * d_in], d_in * sizeof(A[0]));
             }
