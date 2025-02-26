@@ -38,8 +38,11 @@ std::stringstream get_correct_hamming_example(
         std::shared_ptr<std::vector<uint8_t>> a,
         std::shared_ptr<std::vector<uint8_t>> b,
         std::shared_ptr<std::vector<long>> true_ids,
-        std::shared_ptr<std::vector<int>> true_distances) {
-    assert(nb > k);
+        // regular Hamming (bit-level distances)
+        std::shared_ptr<std::vector<int>> true_bit_distances,
+        // generalized Hamming (byte-level distances)
+        std::shared_ptr<std::vector<int>> true_byte_distances) {
+    assert(nb >= k);
 
     // Initialization
     std::default_random_engine rng(123);
@@ -51,11 +54,12 @@ std::stringstream get_correct_hamming_example(
     a->resize(na * code_size, 1); // query vectors are all 1
     b->clear();
     b->resize(nb * code_size, 2); // database vectors are all 2
-
     true_ids->clear();
     true_ids->reserve(nresults);
-    true_distances->clear();
-    true_distances->reserve(nresults);
+    true_bit_distances->clear();
+    true_bit_distances->reserve(nresults);
+    true_byte_distances->clear();
+    true_byte_distances->reserve(nresults);
 
     // define correct ids (must be unique)
     std::set<long> correct_ids;
@@ -72,21 +76,32 @@ std::stringstream get_correct_hamming_example(
 
         // assemble true id and distance at locations
         true_ids->push_back(id);
-        true_distances->push_back(code_size - nmatches); // hamming dist
+        true_bit_distances->push_back(
+                (code_size > nmatches ? code_size - nmatches : 0) *
+                /* per-code distance between 1 and 2 (0b01 and 0b10) */
+                2);
+        true_byte_distances->push_back(
+                (code_size > nmatches ? code_size - nmatches : 0));
         for (size_t i = 0; i < nmatches; ++i) {
-            b->begin()[id * code_size + i] = 1;
+            b->begin()[id * code_size + i] = 1; // query byte value
         }
     }
 
-    // true_ids and true_distances only contain results for the first query
-    // each query is identical, so copy the first query na-1 times
+    // true_ids, true_bit_distances, true_byte_distances only contain results
+    // for the first query.
+    // Query vectors are identical (all 1s), so copy the first sets of k
+    // distances na-1 times.
     for (size_t i = 1; i < na; ++i) {
         true_ids->insert(
                 true_ids->end(), true_ids->begin(), true_ids->begin() + k);
-        true_distances->insert(
-                true_distances->end(),
-                true_distances->begin(),
-                true_distances->begin() + k);
+        true_bit_distances->insert(
+                true_bit_distances->end(),
+                true_bit_distances->begin(),
+                true_bit_distances->begin() + k);
+        true_byte_distances->insert(
+                true_byte_distances->end(),
+                true_byte_distances->begin(),
+                true_byte_distances->begin() + k);
     }
 
     // assemble string for debugging
@@ -98,7 +113,10 @@ std::stringstream get_correct_hamming_example(
         << "a: " << print_data(a, code_size) << std::endl
         << "b: " << print_data(b, code_size) << std::endl
         << "true_ids: " << print_data(true_ids, k) << std::endl
-        << "true_distances: " << print_data(true_distances, k) << std::endl;
+        << "true_bit_distances: " << print_data(true_bit_distances, k)
+        << std::endl
+        << "true_byte_distances: " << print_data(true_byte_distances, k)
+        << std::endl;
     return ret;
 }
 
@@ -261,14 +279,23 @@ TEST(TestHamming, test_hamming_knn) {
     auto a = std::make_shared<std::vector<uint8_t>>();
     auto b = std::make_shared<std::vector<uint8_t>>();
     auto true_ids = std::make_shared<std::vector<long>>();
-    auto true_distances = std::make_shared<std::vector<int>>();
+    auto true_bit_distances = std::make_shared<std::vector<int>>();
+    auto true_byte_distances = std::make_shared<std::vector<int>>();
 
     // 8, 16, 32 are cases - 24 will hit default case
     // all should be multiples of 8
     for (auto code_size : {8, 16, 24, 32}) {
         // get example
         std::stringstream assert_str = get_correct_hamming_example(
-                na, nb, k, code_size, a, b, true_ids, true_distances);
+                na,
+                nb,
+                k,
+                code_size,
+                a,
+                b,
+                true_ids,
+                true_bit_distances,
+                true_byte_distances);
 
         // run test on generalized_hammings_knn_hc
         std::vector<long> ids_gen(na * k);
@@ -278,7 +305,7 @@ TEST(TestHamming, test_hamming_knn) {
         faiss::generalized_hammings_knn_hc(
                 &res, a->data(), b->data(), nb, code_size, true);
         ASSERT_EQ(ids_gen, *true_ids) << assert_str.str();
-        ASSERT_EQ(dist_gen, *true_distances) << assert_str.str();
+        ASSERT_EQ(dist_gen, *true_byte_distances) << assert_str.str();
 
         // run test on hammings_knn
         std::vector<long> ids_ham_knn(na * k, 0);
@@ -286,10 +313,23 @@ TEST(TestHamming, test_hamming_knn) {
         res = {na, k, ids_ham_knn.data(), dist_ham_knn.data()};
         faiss::hammings_knn(&res, a->data(), b->data(), nb, code_size, true);
         ASSERT_EQ(ids_ham_knn, *true_ids) << assert_str.str();
-        // hammings_knn results in twice the distance for some reason :/
-        for (int i = 0; i < dist_ham_knn.size(); ++i) {
-            dist_ham_knn[i] /= 2;
-        }
-        ASSERT_EQ(dist_ham_knn, *true_distances) << assert_str.str();
+        ASSERT_EQ(dist_ham_knn, *true_bit_distances) << assert_str.str();
+    }
+
+    for (auto code_size : {8, 16, 24, 32}) {
+        std::stringstream assert_str = get_correct_hamming_example(
+                na,
+                nb,
+                /* k */ nb, // faiss::hammings computes all distances
+                code_size,
+                a,
+                b,
+                true_ids,
+                true_bit_distances,
+                true_byte_distances);
+        std::vector<hamdis_t> dist_gen(na * nb);
+        faiss::hammings(
+                a->data(), b->data(), na, nb, code_size, dist_gen.data());
+        EXPECT_EQ(dist_gen, *true_bit_distances) << assert_str.str();
     }
 }
