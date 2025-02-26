@@ -1,0 +1,32 @@
+  name: Continuous Build (once a day)
+on:
+  schedule:
+    - cron:  '10 6 * * *'
+env:
+  OMP_NUM_THREADS: '10'
+  MKL_THREADING_LAYER: GNU
+jobs:
+  linux-arm64-SVE-cont-build:
+    name: Linux arm64 SVE Contbuild
+    needs: linux-x86_64-nightly
+    runs-on: faiss-aws-r8g.large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          opt_level: sve
+  auto-retry:
+    name: Auto retry on failure
+    if: fromJSON(github.run_attempt) < 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start rerun workflow
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: |
+          gh workflow run retry_build.yml \
+            -F run_id=${{ github.run_id }}
