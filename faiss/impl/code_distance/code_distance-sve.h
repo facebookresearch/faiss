@@ -196,7 +196,7 @@ distance_four_codes_sve(
             result3);
 }
 
-static void distance_four_codes_sve_for_small_m(
+static inline void distance_four_codes_sve_for_small_m(
         // the product quantizer
         const size_t M,
         // precomputed distances, layout (M, ksub)
