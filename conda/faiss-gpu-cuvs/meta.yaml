@@ -65,13 +65,13 @@ outputs:
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas =0.3 # [not x86_64]
+        - openblas =0.3.29 # [not x86_64]
         - libcuvs =24.12
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
-        - openblas =0.3 # [not x86_64]
+        - openblas =0.3.29 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
         - libcuvs =24.12
@@ -101,14 +101,16 @@ outputs:
         - cmake >=3.26.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
+        - mkl =2023.0  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
+        - mkl =2023.0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
+        - mkl =2023.0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
         - numpy >=1.19,<2
