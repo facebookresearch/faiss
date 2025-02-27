@@ -45,24 +45,24 @@ outputs:
         - make =4.4 # [osx and arm64]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl-devel =2023.0  # [x86_64]
-        - liblief =0.12.3  # [not win]
+        # - liblief =0.12.3  # [not win]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
         - mkl-devel >=2023.2.0  # [x86_64 and not win]
         - mkl-devel =2023.1.0  # [x86_64 and win]
-        - liblief =0.14.1  # [not win]
+        # - liblief =0.15.1  # [not win]
         - python_abi =3.12
         {% endif %}
       host:
         - python {{ python }}
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
-        - liblief =0.12.3  # [not win]
+        # - liblief =0.12.3  # [not win]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
         - mkl >=2023.2.0  # [x86_64 and not win]
         - mkl =2023.1.0  # [x86_64 and win]
-        - liblief =0.14.1  # [not win]
+        # - liblief =0.15.1  # [not win]
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.29 # [not x86_64]
@@ -70,18 +70,42 @@ outputs:
         - python {{ python }}
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
-        - liblief =0.12.3  # [not win]
+        # - liblief =0.12.3  # [not win]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
         - mkl >=2023.2.0  # [x86_64 and not win]
         - mkl =2023.1.0  # [x86_64 and win]
-        - liblief =0.15.1  # [not win]
+        # - liblief =0.15.1  # [not win]
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.29 # [not x86_64]
     test:
       requires:
-        - conda-build
+        {% if PY_VER == '3.9' %}
+        - conda-build =25.1.2-py39hf3d152e_0  # [linux64 and x86_64]
+        - conda-build =25.1.2-py39h6e9494a_0  # [osx and x86_64]
+        - conda-build =25.1.2-py39hcbf5309_0  # [win]
+        - conda-build =25.1.2-py39h4420490_0  # [linux64 and arm64]
+        - conda-build =25.1.2-py39h2804cbe_0  # [osx and arm64]
+        {% elif PY_VER == '3.10' %}
+        - conda-build =25.1.2-py310hff52083_0  # [linux64 and x86_64]
+        - conda-build =25.1.2-py310h2ec42d9_0  # [osx and x86_64]
+        - conda-build =25.1.2-py310h5588dad_0  # [win]
+        - conda-build =25.1.2-py310h4c7bcd0_0  # [linux64 and arm64]
+        - conda-build =25.1.2-py310hbe9552e_0  # [osx and arm64]
+        {% elif PY_VER == '3.11' %}
+        - conda-build =25.1.2-py311h38be061_0  # [linux64 and x86_64]
+        - conda-build =25.1.2-py311h6eed73b_0  # [osx and x86_64]
+        - conda-build =25.1.2-py311h1ea47a8_0  # [win]
+        - conda-build =25.1.2-py311hec3470c_0  # [linux64 and arm64]
+        - conda-build =25.1.2-py311h267d04e_0  # [osx and arm64]
+        {% elif PY_VER == '3.12' %}
+        - conda-build =25.1.2-py312h7900ff3_0  # [linux64 and x86_64]
+        - conda-build =25.1.2-py312hb401068_0  # [osx and x86_64]
+        - conda-build =25.1.2-py312h2e8e312_0  # [win]
+        - conda-build =25.1.2-py312h996f985_0  # [linux64 and arm64]
+        - conda-build =25.1.2-py312h81bd7bf_0  # [osx and arm64]
+        {% endif %}
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
