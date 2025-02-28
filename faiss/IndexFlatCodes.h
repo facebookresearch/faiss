@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <vector>
+
 #include <faiss/Index.h>
 #include <faiss/impl/DistanceComputer.h>
-#include <vector>
+#include <faiss/impl/maybe_owned_vector.h>
 
 namespace faiss {
 
@@ -21,7 +23,7 @@ struct IndexFlatCodes : Index {
     size_t code_size;
 
     /// encoded dataset, size ntotal * code_size
-    std::vector<uint8_t> codes;
+    MaybeOwnedVector<uint8_t> codes;
 
     IndexFlatCodes();
 
