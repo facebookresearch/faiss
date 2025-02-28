@@ -14,6 +14,7 @@
 
 #include <faiss/IndexBinary.h>
 
+#include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/utils/approx_topk/mode.h>
 
 namespace faiss {
@@ -21,7 +22,7 @@ namespace faiss {
 /** Index that stores the full vectors and performs exhaustive search. */
 struct IndexBinaryFlat : IndexBinary {
     /// database vectors, size ntotal * d / 8
-    std::vector<uint8_t> xb;
+    MaybeOwnedVector<uint8_t> xb;
 
     /** Select between using a heap or counting to select the k smallest values
      * when scanning inverted lists.

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <faiss/impl/maybe_owned_vector.h>
+
 /*************************************************************
  * I/O macros
  *
