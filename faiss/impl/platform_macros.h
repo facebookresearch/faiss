@@ -76,6 +76,7 @@ inline int __builtin_clzll(uint64_t x) {
 
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
+#define __builtin_popcountll __popcnt64
 
 #ifndef __clang__
 #define __m128i_u __m128i

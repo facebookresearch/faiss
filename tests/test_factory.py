@@ -62,6 +62,14 @@ class TestFactory(unittest.TestCase):
         assert index.sa_code_size() == 64 * 4
         assert index.chain.at(0).d_out == 64
 
+    def test_factory_6(self):
+        index = faiss.index_factory(128, "RaBitQ")
+        assert index.d == 128
+        assert index.metric_type == faiss.METRIC_L2
+        index = faiss.index_factory(128, "IVF256,RaBitQ")
+        assert index.d == 128
+        assert index.metric_type == faiss.METRIC_L2
+
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")
         assert index.storage.sa_code_size() == 12 * 4

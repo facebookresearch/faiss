@@ -28,6 +28,7 @@ set(FAISS_SRC
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
+  IndexIVFRaBitQ.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexNNDescent.cpp
@@ -39,6 +40,7 @@ set(FAISS_SRC
   IndexIVFIndependentQuantizer.cpp
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
+  IndexRaBitQ.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
   IndexRowwiseMinMax.cpp
@@ -60,6 +62,7 @@ set(FAISS_SRC
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/AdditiveQuantizer.cpp
+  impl/RaBitQuantizer.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
@@ -123,6 +126,7 @@ set(FAISS_HEADERS
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
+  IndexIVFRaBitQ.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexNeuralNetCodec.h
@@ -136,6 +140,7 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
+  IndexRaBitQ.h
   IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
@@ -164,6 +169,7 @@ set(FAISS_HEADERS
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
+  impl/RaBitQuantizer.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
