@@ -8,7 +8,6 @@
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includedby refid="IVFlib_8h" local="no">faiss/IVFlib.h</includedby>
-    <includedby refid="factory__tools_8h" local="no">faiss/cppcontrib/factory_tools.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/Clustering.h</label>
@@ -219,12 +218,6 @@
         <link refid="IndexBinaryIVF_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
       </node>
       <node id="3">
         <label>faiss/python/python_callbacks.h</label>

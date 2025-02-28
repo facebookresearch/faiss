@@ -3,7 +3,6 @@
   <compounddef id="IndexRefine_8h" kind="file" language="C++">
     <compoundname>IndexRefine.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
-    <includedby refid="factory__tools_8h" local="no">faiss/cppcontrib/factory_tools.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/Index.h</label>
@@ -55,18 +54,6 @@
         <label>typeinfo</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="1">
-        <label>faiss/IndexRefine.h</label>
-        <link refid="IndexRefine_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
-      </node>
-    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexRefineSearchParameters" prot="public">faiss::IndexRefineSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>

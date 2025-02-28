@@ -1217,7 +1217,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/factory_tools.h" line="26" column="13" declfile="faiss/cppcontrib/factory_tools.h" declline="26" declcolumn="13"/>
+        <location file="faiss/cppcontrib/factory_tools.h" line="19" column="13" declfile="faiss/cppcontrib/factory_tools.h" declline="19" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab296cc828e119931af0b6bb2daf3ebfa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -1235,7 +1235,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/factory_tools.h" line="27" column="13" declfile="faiss/cppcontrib/factory_tools.h" declline="27" declcolumn="13"/>
+        <location file="faiss/cppcontrib/factory_tools.h" line="20" column="13" declfile="faiss/cppcontrib/factory_tools.h" declline="20" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

@@ -4,7 +4,6 @@
     <compoundname>IndexPreTransform.h</compoundname>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="VectorTransform_8h" local="no">faiss/VectorTransform.h</includes>
-    <includedby refid="factory__tools_8h" local="no">faiss/cppcontrib/factory_tools.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/Index.h</label>
@@ -74,18 +73,6 @@
         <label>vector</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="1">
-        <label>faiss/IndexPreTransform.h</label>
-        <link refid="IndexPreTransform_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/cppcontrib/factory_tools.h</label>
-        <link refid="factory__tools_8h_source"/>
-      </node>
-    </invincdepgraph>
     <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
     <innerclass refid="structfaiss_1_1IndexPreTransform" prot="public">faiss::IndexPreTransform</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
