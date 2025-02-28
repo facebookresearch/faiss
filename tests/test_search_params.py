@@ -159,11 +159,13 @@ class TestSelector(unittest.TestCase):
             
             # Check that all returned IDs are valid
             valid_ids = np.ones_like(Inew, dtype=bool)
-            for i in range(Inew.shape[0]):
-                for j in range(Inew.shape[1]):
-                    if Inew[i, j] == -1:
-                        continue
-                    valid_ids[i, j] = Inew[i, j] in subset
+            # Create a mask of valid IDs (those in subset)
+            subset_set = set(subset)  # Convert to set for O(1) lookups
+            # Handle -1 values separately (they're always valid)
+            valid_ids = np.logical_or(
+                Inew == -1,
+                np.isin(Inew, list(subset_set))
+            )
             
             self.assertTrue(np.all(valid_ids), "Some returned IDs are not in the subset")
             
@@ -182,8 +184,9 @@ class TestSelector(unittest.TestCase):
             if is_binary:
                 # For binary indexes, check that all returned IDs are valid
                 valid_ids = np.ones(len(RInew), dtype=bool)
-                for i, id in enumerate(RInew):
-                    valid_ids[i] = id in subset
+                # Use vectorized operation instead of loop
+                subset_set = set(subset)  # Convert to set for O(1) lookups
+                valid_ids = np.isin(RInew, list(subset_set))
                 
                 self.assertTrue(np.all(valid_ids), "Some range search IDs are not in the subset")
                 
