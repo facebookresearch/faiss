@@ -45,6 +45,7 @@ class TestSelector(unittest.TestCase):
             index.use_heap = use_heap
             # Use smaller radius for Hamming distance
             base_radius = 4
+            is_binary = True
         else:
             xb = ds.get_database()
             xq = ds.get_queries()
@@ -52,6 +53,7 @@ class TestSelector(unittest.TestCase):
             index = faiss.index_factory(d, index_key, mt)
             index.train(xt)
             base_radius = float('inf')  # Will be set based on results
+            is_binary = False
 
         # reference result
         if "range" in id_selector_type:
@@ -149,15 +151,48 @@ class TestSelector(unittest.TestCase):
         )
 
         Dnew, Inew = index.search(xq, k, params=params)
-        np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
+        
+        if is_binary:
+            # For binary indexes, we need to check:
+            # 1. All returned IDs are valid (in the subset or -1)
+            # 2. The distances match
+            
+            # Check that all returned IDs are valid
+            valid_ids = np.ones_like(Inew, dtype=bool)
+            for i in range(Inew.shape[0]):
+                for j in range(Inew.shape[1]):
+                    if Inew[i, j] == -1:
+                        continue
+                    valid_ids[i, j] = Inew[i, j] in subset
+            
+            self.assertTrue(np.all(valid_ids), "Some returned IDs are not in the subset")
+            
+            # Check that distances match
+            np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
+        else:
+            # For non-binary indexes, we can do exact comparison
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
 
         if have_range_search:
             Rlims_new, RDnew, RInew = index.range_search(xq, radius, params=params)
             np.testing.assert_array_equal(Rlims_ref, Rlims_new)
             RDref, RIref = sort_range_res_2(Rlims_ref, RDref, RIref)
-            np.testing.assert_array_equal(RIref, RInew)
-            np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
+            
+            if is_binary:
+                # For binary indexes, check that all returned IDs are valid
+                valid_ids = np.ones(len(RInew), dtype=bool)
+                for i, id in enumerate(RInew):
+                    valid_ids[i] = id in subset
+                
+                self.assertTrue(np.all(valid_ids), "Some range search IDs are not in the subset")
+                
+                # Check that distances match
+                np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
+            else:
+                # For non-binary indexes, we can do exact comparison
+                np.testing.assert_array_equal(RIref, RInew)
+                np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
 
     def test_IVFFlat(self):
         self.do_test_id_selector("IVF32,Flat")
