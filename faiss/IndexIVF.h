@@ -313,10 +313,24 @@ struct IndexIVF : Index, IndexIVFInterface {
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
      * The default search implementation uses this to compute the distances
+     * through a call to get_InvertedListScanner_2().
      */
     virtual InvertedListScanner* get_InvertedListScanner(
             bool store_pairs = false,
             const IDSelector* sel = nullptr) const;
+
+    /** Get a scanner for this index (store_pairs means ignore labels).
+     * This extended version allows passing custom parameters for the search
+     * into a generated InvertedListScanner object instance.
+     *
+     * The default search implementation uses this to compute the distances.
+     * The default implementation of this function just forward the call
+     * to get_InvertedListScanner() function.
+     */
+    virtual InvertedListScanner* get_InvertedListScanner_2(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr,
+            const IVFSearchParameters* search_params = nullptr) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */

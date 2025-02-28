@@ -455,7 +455,7 @@ void IndexIVF::search_preassigned(
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
         std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs, sel));
+                get_InvertedListScanner_2(store_pairs, sel, params));
 
         /*****************************************************
          * Depending on parallel_mode, there are two possible ways
@@ -796,7 +796,7 @@ void IndexIVF::range_search_preassigned(
     {
         RangeSearchPartialResult pres(result);
         std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs, sel));
+                get_InvertedListScanner_2(store_pairs, sel, params));
         FAISS_THROW_IF_NOT(scanner.get());
         all_pres[omp_get_thread_num()] = &pres;
 
@@ -914,6 +914,15 @@ InvertedListScanner* IndexIVF::get_InvertedListScanner(
         bool /*store_pairs*/,
         const IDSelector* /* sel */) const {
     FAISS_THROW_MSG("get_InvertedListScanner not implemented");
+}
+
+InvertedListScanner* IndexIVF::get_InvertedListScanner_2(
+        bool store_pairs,
+        const IDSelector* sel,
+        const IVFSearchParameters* /* search_params */) const {
+    // By default, search_params are ignored, and the call
+    //   is forwarded to get_InvertedListScanner().
+    return get_InvertedListScanner(store_pairs, sel);
 }
 
 void IndexIVF::reconstruct(idx_t key, float* recons) const {
@@ -1290,6 +1299,14 @@ size_t InvertedListScanner::scan_codes(
 
     if (!keep_max) {
         for (size_t j = 0; j < list_size; j++) {
+            if (sel != nullptr) {
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                if (!sel->is_member(id)) {
+                    codes += code_size;
+                    continue;
+                }
+            }
+
             float dis = distance_to_code(codes);
             if (dis < simi[0]) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
@@ -1300,6 +1317,14 @@ size_t InvertedListScanner::scan_codes(
         }
     } else {
         for (size_t j = 0; j < list_size; j++) {
+            if (sel != nullptr) {
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                if (!sel->is_member(id)) {
+                    codes += code_size;
+                    continue;
+                }
+            }
+
             float dis = distance_to_code(codes);
             if (dis > simi[0]) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
