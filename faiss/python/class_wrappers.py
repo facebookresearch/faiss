@@ -869,7 +869,7 @@ def handle_IndexBinary(the_class):
         self.reconstruct_n_c(n0, ni, swig_ptr(x))
         return x
 
-    def replacement_search(self, x, k):
+    def replacement_search(self, x, k, *, params=None):
         x = _check_dtype_uint8(x)
         n, d = x.shape
         assert d == self.code_size
@@ -878,7 +878,8 @@ def handle_IndexBinary(the_class):
         labels = np.empty((n, k), dtype=np.int64)
         self.search_c(n, swig_ptr(x),
                       k, swig_ptr(distances),
-                      swig_ptr(labels))
+                      swig_ptr(labels),
+                      params=params)
         return distances, labels
 
     def replacement_search_preassigned(self, x, k, Iq, Dq):
@@ -906,12 +907,12 @@ def handle_IndexBinary(the_class):
         )
         return D, I
 
-    def replacement_range_search(self, x, thresh):
+    def replacement_range_search(self, x, thresh, *, params=None):
         n, d = x.shape
         x = _check_dtype_uint8(x)
         assert d == self.code_size
         res = RangeSearchResult(n)
-        self.range_search_c(n, swig_ptr(x), thresh, res)
+        self.range_search_c(n, swig_ptr(x), thresh, res, params=params)
         # get pointers and copy them
         lims = rev_swig_ptr(res.lims, n + 1).copy()
         nd = int(lims[-1])
