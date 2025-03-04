@@ -15,6 +15,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
@@ -121,7 +122,7 @@ struct HNSW {
 
     /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
     /// for all levels. this is where all storage goes.
-    std::vector<storage_idx_t> neighbors;
+    MaybeOwnedVector<storage_idx_t> neighbors;
 
     /// entry point in the search structure (one of the points with maximum
     /// level
