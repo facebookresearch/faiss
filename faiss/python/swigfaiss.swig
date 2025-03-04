@@ -32,6 +32,7 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 #pragma SWIG nowarn=362
+#pragma SWIG nowarn=509
 
 // we need explict control of these typedefs...
 // %include <stdint.i>
@@ -81,6 +82,11 @@ typedef uint64_t size_t;
 
 #endif
 
+#include <faiss/impl/io.h>
+
+#include <faiss/impl/maybe_owned_vector.h>
+#include <faiss/impl/mapped_io.h>
+#include <faiss/impl/zerocopy_io.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -505,6 +511,14 @@ void gpu_sync_all_devices()
 %include  <faiss/Index.h>
 
 %include <faiss/impl/DistanceComputer.h>
+
+%include <faiss/impl/io.h>
+
+%ignore faiss::MmappedFileMappingOwner::p_impl;
+
+%include <faiss/impl/maybe_owned_vector.h>
+%include <faiss/impl/mapped_io.h>
+%include <faiss/impl/zerocopy_io.h>
 
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
@@ -991,6 +1005,10 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 %template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
 %template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
 %template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+%template(MaybeOwnedVectorUInt8) faiss::MaybeOwnedVector<uint8_t>;
+%template(MaybeOwnedVectorInt32) faiss::MaybeOwnedVector<int32_t>;
+%template(MaybeOwnedVectorFloat32) faiss::MaybeOwnedVector<float>;
 
 
 // SWIG seems to have some trouble resolving function template types here, so
