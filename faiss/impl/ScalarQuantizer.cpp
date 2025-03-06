@@ -44,7 +44,8 @@ namespace faiss {
  * that hides the template mess.
  ********************************************************************/
 
-#if defined(ENABLE_AVX512_FP16) && defined(__FLT16_MANT_DIG__) && defined(__AVX512FP16__)
+#if defined(ENABLE_AVX512_FP16) && defined(__FLT16_MANT_DIG__) && \
+        defined(__AVX512FP16__)
 #define USE_AVX512_FP16
 #elif defined(__AVX512F__) && defined(__F16C__)
 #define USE_AVX512_F16C

@@ -58,7 +58,8 @@ struct ScalarQuantizer : Quantizer {
     size_t bits = 0;
 
     /// trained values (including the range)
-#if defined(ENABLE_AVX512_FP16) && defined(__AVX512FP16__) && defined(__FLT16_MANT_DIG__) 
+#if defined(ENABLE_AVX512_FP16) && defined(__AVX512FP16__) && \
+        defined(__FLT16_MANT_DIG__)
     std::vector<_Float16> trained;
 #else
     std::vector<float> trained;
