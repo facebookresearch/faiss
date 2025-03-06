@@ -182,6 +182,7 @@ runs:
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
         path: test-results
+        overwrite: true
     - name: Check installed packages channel
       shell: bash
       run: |
