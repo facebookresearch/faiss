@@ -106,6 +106,8 @@ class DatasetDescriptor:
     # desc_name
     desc_name: Optional[str] = None
 
+    normalize_L2: bool = False
+
     def __hash__(self):
         return hash(self.get_filename())
 
