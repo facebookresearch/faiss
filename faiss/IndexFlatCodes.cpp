@@ -110,7 +110,7 @@ CodePacker* IndexFlatCodes::get_CodePacker() const {
 }
 
 void IndexFlatCodes::permute_entries(const idx_t* perm) {
-    std::vector<uint8_t> new_codes(codes.size());
+    MaybeOwnedVector<uint8_t> new_codes(codes.size());
 
     for (idx_t i = 0; i < ntotal; i++) {
         memcpy(new_codes.data() + i * code_size,
