@@ -83,6 +83,9 @@ class DatasetDescriptor:
 
     embedding_column: Optional[str] = None
 
+    # only when the embedding column is a map
+    embedding_column_key: Optional[Any] = None
+
     embedding_id_column: Optional[str] = None
 
     # unused in open-source
