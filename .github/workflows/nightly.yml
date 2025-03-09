@@ -105,6 +105,9 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
+      - name: Setup tmate session
+        if: failure()
+        uses: mxschmitt/action-tmate@v3
   osx-arm64-nightly:
     name: OSX arm64 nightlies
     runs-on: macos-14
