@@ -6,7 +6,7 @@
  */
 
 // -*- c++ -*-
-
+// test CI
 #include <faiss/impl/ScalarQuantizer.h>
 
 #include <algorithm>
