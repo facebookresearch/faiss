@@ -16,11 +16,11 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <string>
 #include <vector>
-
-#include <faiss/Index.h>
 
 namespace faiss {
 
