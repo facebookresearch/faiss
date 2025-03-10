@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #pragma once
 
 #include <cstddef>
@@ -48,6 +55,13 @@ struct MaybeOwnedVector {
         owned_data.resize(initial_size);
         c_ptr = owned_data.data();
         c_size = owned_data.size();
+    }
+
+    explicit MaybeOwnedVector(const std::vector<T>& vec)
+            : faiss::MaybeOwnedVector<T>(vec.size()) {
+        if (vec.size() > 0) {
+            memcpy(owned_data.data(), vec.data(), sizeof(T) * vec.size());
+        }
     }
 
     MaybeOwnedVector(const MaybeOwnedVector& other) {

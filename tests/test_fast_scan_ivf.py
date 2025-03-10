@@ -270,8 +270,9 @@ class TestEquivPQ(unittest.TestCase):
         index_pq = faiss.index_factory(32, "PQ16x4np")
         index_pq.pq = index.pq
         index_pq.is_trained = True
-        index_pq.codes = faiss. downcast_InvertedLists(
+        codevec = faiss.downcast_InvertedLists(
             index.invlists).codes.at(0)
+        index_pq.codes = faiss.MaybeOwnedVectorUInt8(codevec)
         index_pq.ntotal = index.ntotal
         Dnew, Inew = index_pq.search(xq, 4)
 

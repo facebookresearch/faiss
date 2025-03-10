@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -11,8 +18,8 @@
 
 #elif defined(_WIN32)
 
-#include <Windows.h>
-#include <io.h>
+#include <Windows.h> // @manual
+#include <io.h>      // @manual
 
 #endif
 
