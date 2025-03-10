@@ -43,6 +43,7 @@ outputs:
         - cmake >=3.24.0
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl-devel =2023.0  # [x86_64]
         - python_abi <3.12
@@ -53,6 +54,7 @@ outputs:
         {% endif %}
       host:
         - python {{ python }}
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
         - python_abi <3.12
@@ -64,6 +66,7 @@ outputs:
         - openblas =0.3.29 # [not x86_64]
       run:
         - python {{ python }}
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
         - python_abi <3.12
@@ -99,6 +102,7 @@ outputs:
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
         - python_abi <3.12
@@ -112,6 +116,7 @@ outputs:
         - numpy >=1.19,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
         - python_abi <3.12
@@ -125,6 +130,7 @@ outputs:
         - numpy >=1.19,<2
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
+        - vc14_runtime =14.42.34433  # [win]
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2023.0  # [x86_64]
         - python_abi <3.12
