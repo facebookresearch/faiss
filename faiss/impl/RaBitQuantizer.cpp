@@ -215,7 +215,7 @@ float RaBitDistanceComputerNotQ::distance_to_code_L2(
     //
     // compute <q,o> using floats
     float dot_qo = 0;
-    // It was a willful decision (after the discussion) to not to pre-cache 
+    // It was a willful decision (after the discussion) to not to pre-cache
     //   the sum of all bits, just in order to reduce the overhead per vector.
     uint64_t sum_q = 0;
     for (size_t i = 0; i < d; i++) {
@@ -345,7 +345,7 @@ float RaBitDistanceComputerQ::distance_to_code_L2(const uint8_t* code) const {
         dot_qo += (count_dot << j);
     }
 
-    // It was a willful decision (after the discussion) to not to pre-cache 
+    // It was a willful decision (after the discussion) to not to pre-cache
     //   the sum of all bits, just in order to reduce the overhead per vector.
     uint64_t sum_q = 0;
     {
