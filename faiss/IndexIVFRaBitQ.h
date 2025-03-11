@@ -46,10 +46,10 @@ struct IndexIVFRaBitQ : IndexIVF {
             const idx_t* precomputed_idx,
             void* inverted_list_context = nullptr) override;
 
-    InvertedListScanner* get_InvertedListScanner_2(
+    InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
             const IDSelector* sel,
-            const IVFSearchParameters* search_params) const override;
+            const IVFSearchParameters* params) const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;

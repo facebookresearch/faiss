@@ -171,7 +171,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 };
 
-InvertedListScanner* IndexIVFRaBitQ::get_InvertedListScanner_2(
+InvertedListScanner* IndexIVFRaBitQ::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters* search_params_in) const {
