@@ -34,7 +34,8 @@ struct IndexRaBitQ : IndexFlatCodes {
 
     // returns a quantized-to-qb bits DC if qb_in > 0
     // returns a default fp32-based DC if qb_in == 0
-    FlatCodesDistanceComputer* get_quantized_distance_computer(const uint8_t qb_in) const;
+    FlatCodesDistanceComputer* get_quantized_distance_computer(
+            const uint8_t qb_in) const;
 
     // Don't rely on sa_decode(), bcz it is good for IP, but not for L2.
     //   As a result, use get_FlatCodesDistanceComputer() for the search.
@@ -54,4 +55,4 @@ struct IndexRaBitQ : IndexFlatCodes {
             const SearchParameters* params = nullptr) const override;
 };
 
-}
+} // namespace faiss
