@@ -83,6 +83,9 @@ class DatasetDescriptor:
 
     embedding_column: Optional[str] = None
 
+    # only when the embedding column is a map
+    embedding_column_key: Optional[Any] = None
+
     embedding_id_column: Optional[str] = None
 
     # unused in open-source
@@ -105,6 +108,8 @@ class DatasetDescriptor:
 
     # desc_name
     desc_name: Optional[str] = None
+
+    normalize_L2: bool = False
 
     def __hash__(self):
         return hash(self.get_filename())

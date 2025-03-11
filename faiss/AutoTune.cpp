@@ -314,7 +314,7 @@ bool ParameterSpace::combination_ge(size_t c1, size_t c2) const {
 }
 
 #define DC(classname) \
-    const classname* ix = dynamic_cast<const classname*>(index)
+    [[maybe_unused]] const classname* ix = dynamic_cast<const classname*>(index)
 
 static void init_pq_ParameterRange(
         const ProductQuantizer& pq,
