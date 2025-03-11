@@ -29,6 +29,7 @@ set(FAISS_C_SRC
   index_factory_c.cpp
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
+  impl/io_c.cpp
   utils/distances_c.cpp
   utils/utils_c.cpp
 )
