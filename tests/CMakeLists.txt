@@ -36,8 +36,6 @@ set(FAISS_TEST_SRC
   test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
-  test_mmap.cpp
-  test_zerocopy.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

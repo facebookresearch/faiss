@@ -53,166 +53,7 @@
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
 
-// mmap-ing and viewing facilities
-#include <faiss/impl/maybe_owned_vector.h>
-
-#include <faiss/impl/mapped_io.h>
-#include <faiss/impl/zerocopy_io.h>
-
 namespace faiss {
-
-/*************************************************************
- * Mmap-ing and viewing facilities
- **************************************************************/
-
-template <typename VectorT>
-void read_vector_with_size(VectorT& target, IOReader* f, size_t size) {
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // create a view
-            char* address = nullptr;
-            size_t nread = zr->get_data_view(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-
-            FAISS_THROW_IF_NOT_FMT(
-                    nread == (size),
-                    "read error in %s: %zd != %zd (%s)",
-                    f->name.c_str(),
-                    nread,
-                    size_t(size),
-                    strerror(errno));
-
-            VectorT view = VectorT::create_view(address, nread);
-            target = std::move(view);
-
-            return;
-        }
-    }
-
-    target.resize(size);
-    READANDCHECK(target.data(), size);
-}
-
-template <typename VectorT>
-void read_vector(VectorT& target, IOReader* f) {
-    // is it a mmap-enabled reader?
-    MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
-    if (mf != nullptr) {
-        // check if the use case is right
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size
-            size_t size = 0;
-            READANDCHECK(&size, 1);
-            // ok, mmap and check
-            char* address = nullptr;
-            const size_t nread = mf->mmap(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-
-            FAISS_THROW_IF_NOT_FMT(
-                    nread == (size),
-                    "read error in %s: %zd != %zd (%s)",
-                    f->name.c_str(),
-                    nread,
-                    size,
-                    strerror(errno));
-
-            VectorT mmapped_view =
-                    VectorT::create_view(address, nread, mf->mmap_owner);
-            target = std::move(mmapped_view);
-
-            return;
-        }
-    }
-
-    // is it a zero-copy reader?
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size first
-            size_t size = target.size();
-            READANDCHECK(&size, 1);
-
-            // create a view
-            char* address = nullptr;
-            size_t nread = zr->get_data_view(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-            VectorT view = VectorT::create_view(address, nread, nullptr);
-            target = std::move(view);
-
-            return;
-        }
-    }
-
-    // the default case
-    READVECTOR(target);
-}
-
-template <typename VectorT>
-void read_xb_vector(VectorT& target, IOReader* f) {
-    // is it a mmap-enabled reader?
-    MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
-    if (mf != nullptr) {
-        // check if the use case is right
-        if constexpr (is_maybe_owned_vector_v<VectorT>) {
-            // read the size
-            size_t size = 0;
-            READANDCHECK(&size, 1);
-
-            size *= 4;
-
-            // ok, mmap and check
-            char* address = nullptr;
-            const size_t nread = mf->mmap(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-
-            FAISS_THROW_IF_NOT_FMT(
-                    nread == (size),
-                    "read error in %s: %zd != %zd (%s)",
-                    f->name.c_str(),
-                    nread,
-                    size,
-                    strerror(errno));
-
-            VectorT mmapped_view =
-                    VectorT::create_view(address, nread, mf->mmap_owner);
-            target = std::move(mmapped_view);
-
-            return;
-        }
-    }
-
-    ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
-    if (zr != nullptr) {
-        if constexpr (std::is_same_v<VectorT, MaybeOwnedVector<uint8_t>>) {
-            // read the size first
-            size_t size = target.size();
-            READANDCHECK(&size, 1);
-
-            size *= 4;
-
-            char* address = nullptr;
-            size_t nread = zr->get_data_view(
-                    (void**)&address,
-                    sizeof(typename VectorT::value_type),
-                    size);
-            VectorT view = VectorT::create_view(address, nread, nullptr);
-            target = std::move(view);
-            return;
-        }
-    }
-
-    // the default case
-    READXBVECTOR(target);
-}
 
 /*************************************************************
  * Read
@@ -434,7 +275,7 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
         aq->search_type == AdditiveQuantizer::ST_norm_cqint4 ||
         aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
         aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
-        read_xb_vector(aq->qnorm.codes, f);
+        READXBVECTOR(aq->qnorm.codes);
         aq->qnorm.ntotal = aq->qnorm.codes.size() / 4;
         aq->qnorm.update_permutation();
     }
@@ -524,7 +365,7 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READVECTOR(hnsw->cum_nneighbor_per_level);
     READVECTOR(hnsw->levels);
     READVECTOR(hnsw->offsets);
-    read_vector(hnsw->neighbors, f);
+    READVECTOR(hnsw->neighbors);
 
     READ1(hnsw->entry_point);
     READ1(hnsw->max_level);
@@ -704,7 +545,7 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_index_header(idxf, f);
         idxf->code_size = idxf->d * sizeof(float);
-        read_xb_vector(idxf->codes, f);
+        READXBVECTOR(idxf->codes);
         FAISS_THROW_IF_NOT(
                 idxf->codes.size() == idxf->ntotal * idxf->code_size);
         // leak!
@@ -735,7 +576,7 @@ Index* read_index(IOReader* f, int io_flags) {
             idxl->rrot = *rrot;
             delete rrot;
         }
-        read_vector(idxl->codes, f);
+        READVECTOR(idxl->codes);
         FAISS_THROW_IF_NOT(
                 idxl->rrot.d_in == idxl->d && idxl->rrot.d_out == idxl->nbits);
         FAISS_THROW_IF_NOT(
@@ -748,7 +589,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(idxp, f);
         read_ProductQuantizer(&idxp->pq, f);
         idxp->code_size = idxp->pq.code_size;
-        read_vector(idxp->codes, f);
+        READVECTOR(idxp->codes);
         if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
             READ1(idxp->search_type);
             READ1(idxp->encode_signs);
@@ -770,28 +611,28 @@ Index* read_index(IOReader* f, int io_flags) {
             read_ResidualQuantizer(&idxr->rq, f, io_flags);
         }
         READ1(idxr->code_size);
-        read_vector(idxr->codes, f);
+        READVECTOR(idxr->codes);
         idx = idxr;
     } else if (h == fourcc("IxLS")) {
         auto idxr = new IndexLocalSearchQuantizer();
         read_index_header(idxr, f);
         read_LocalSearchQuantizer(&idxr->lsq, f);
         READ1(idxr->code_size);
-        read_vector(idxr->codes, f);
+        READVECTOR(idxr->codes);
         idx = idxr;
     } else if (h == fourcc("IxPR")) {
         auto idxpr = new IndexProductResidualQuantizer();
         read_index_header(idxpr, f);
         read_ProductResidualQuantizer(&idxpr->prq, f, io_flags);
         READ1(idxpr->code_size);
-        read_vector(idxpr->codes, f);
+        READVECTOR(idxpr->codes);
         idx = idxpr;
     } else if (h == fourcc("IxPL")) {
         auto idxpl = new IndexProductLocalSearchQuantizer();
         read_index_header(idxpl, f);
         read_ProductLocalSearchQuantizer(&idxpl->plsq, f);
         READ1(idxpl->code_size);
-        read_vector(idxpl->codes, f);
+        READVECTOR(idxpl->codes);
         idx = idxpl;
     } else if (h == fourcc("ImRQ")) {
         ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
@@ -948,7 +789,7 @@ Index* read_index(IOReader* f, int io_flags) {
         IndexScalarQuantizer* idxs = new IndexScalarQuantizer();
         read_index_header(idxs, f);
         read_ScalarQuantizer(&idxs->sq, f);
-        read_vector(idxs->codes, f);
+        READVECTOR(idxs->codes);
         idxs->code_size = idxs->sq.code_size;
         idx = idxs;
     } else if (h == fourcc("IxLa")) {
@@ -1106,7 +947,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxp->code_size_1);
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
-        read_vector(idxp->codes, f);
+        READVECTOR(idxp->codes);
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
@@ -1230,28 +1071,14 @@ Index* read_index(IOReader* f, int io_flags) {
 }
 
 Index* read_index(FILE* f, int io_flags) {
-    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
-        // enable mmap-supporting IOReader
-        auto owner = std::make_shared<MmappedFileMappingOwner>(f);
-        MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags);
-    } else {
-        FileIOReader reader(f);
-        return read_index(&reader, io_flags);
-    }
+    FileIOReader reader(f);
+    return read_index(&reader, io_flags);
 }
 
 Index* read_index(const char* fname, int io_flags) {
-    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
-        // enable mmap-supporting IOReader
-        auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
-        MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags);
-    } else {
-        FileIOReader reader(fname);
-        Index* idx = read_index(&reader, io_flags);
-        return idx;
-    }
+    FileIOReader reader(fname);
+    Index* idx = read_index(&reader, io_flags);
+    return idx;
 }
 
 VectorTransform* read_VectorTransform(const char* fname) {
