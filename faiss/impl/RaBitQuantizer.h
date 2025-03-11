@@ -81,14 +81,6 @@ struct RaBitQuantizer : Quantizer {
             uint8_t qb,
             MetricType metric,
             const float* centroid_in = nullptr) const;
-
-    // a generalized version
-    static float symmetric_dis_core(
-            const uint8_t* code_i,
-            const float* centroid_i,
-            const uint8_t* code_j,
-            const float* centroid_j,
-            const size_t d);
 };
 
 } // namespace faiss
