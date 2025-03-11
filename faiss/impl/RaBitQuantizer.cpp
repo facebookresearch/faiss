@@ -64,7 +64,7 @@ void RaBitQuantizer::compute_codes_core(
 
     // compute codes
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         // ||or - c||^2
         float norm_L2sqr = 0;
         // ||or||^2, which is equal to ||P(or)||^2 and ||P^(-1)(or)||^2
@@ -137,7 +137,7 @@ void RaBitQuantizer::decode_core(
     const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
 
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const uint8_t* code = codes + i * code_size;
 
         // split the code into parts

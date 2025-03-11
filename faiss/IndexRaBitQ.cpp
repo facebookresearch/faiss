@@ -113,7 +113,9 @@ void IndexRaBitQ::search(
     }
 
     const IDSelector* sel = (params_in != nullptr) ? params_in->sel : nullptr;
-    Run_search_with_dc_res r{.qb = used_qb};
+    Run_search_with_dc_res r;
+    r.qb = used_qb;
+
     dispatch_knn_ResultHandler(
             n, distances, labels, k, metric_type, sel, r, this, x);
 }
@@ -130,7 +132,9 @@ void IndexRaBitQ::range_search(
     }
 
     const IDSelector* sel = (params_in != nullptr) ? params_in->sel : nullptr;
-    Run_search_with_dc_res r{.qb = used_qb};
+    Run_search_with_dc_res r;
+    r.qb = used_qb;
+
     dispatch_range_ResultHandler(result, radius, metric_type, sel, r, this, x);
 }
 
