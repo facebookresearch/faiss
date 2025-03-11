@@ -1476,17 +1476,10 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="5">
-        <label>faiss::MaybeOwnedVector&lt; storage_idx_t &gt;</label>
-        <link refid="structfaiss_1_1MaybeOwnedVector"/>
-      </node>
       <node id="4">
         <label>faiss::HNSW</label>
         <link refid="structfaiss_1_1HNSW"/>
         <childnode refid="5" relation="usage">
-          <edgelabel>neighbors</edgelabel>
-        </childnode>
-        <childnode refid="6" relation="usage">
           <edgelabel>rng</edgelabel>
         </childnode>
       </node>
@@ -1512,7 +1505,7 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="5">
         <label>faiss::RandomGenerator</label>
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>

@@ -1327,10 +1327,6 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="10">
-        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
-        <link refid="structfaiss_1_1MaybeOwnedVector"/>
-      </node>
       <node id="2">
         <label>faiss::AdditiveCoarseQuantizer</label>
         <link refid="structfaiss_1_1AdditiveCoarseQuantizer"/>
@@ -1370,9 +1366,6 @@
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="10" relation="usage">
-          <edgelabel>codes</edgelabel>
-        </childnode>
       </node>
       <node id="7">
         <label>faiss::IndexFlatL2</label>
@@ -1385,16 +1378,16 @@
         <link refid="structfaiss_1_1LocalSearchCoarseQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="11" relation="usage">
+        <childnode refid="10" relation="usage">
           <edgelabel>lsq</edgelabel>
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
         <label>faiss::LocalSearchQuantizer</label>
         <link refid="structfaiss_1_1LocalSearchQuantizer"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
-        <childnode refid="12" relation="usage">
+        <childnode refid="11" relation="usage">
           <edgelabel>icm_encoder_factory</edgelabel>
         </childnode>
       </node>
@@ -1402,7 +1395,7 @@
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
-      <node id="12">
+      <node id="11">
         <label>faiss::lsq::IcmEncoderFactory</label>
         <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
       </node>

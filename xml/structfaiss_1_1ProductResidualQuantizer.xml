@@ -1296,10 +1296,6 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="10">
-        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
-        <link refid="structfaiss_1_1MaybeOwnedVector"/>
-      </node>
       <node id="3">
         <label>faiss::AdditiveQuantizer</label>
         <link refid="structfaiss_1_1AdditiveQuantizer"/>
@@ -1329,9 +1325,6 @@
         <label>faiss::IndexFlatCodes</label>
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="9" relation="public-inheritance">
-        </childnode>
-        <childnode refid="10" relation="usage">
-          <edgelabel>codes</edgelabel>
         </childnode>
       </node>
       <node id="6">

@@ -1905,10 +1905,6 @@
         <label>faiss::AlignedTableTightAlloc&lt; uint8_t, 32 &gt;</label>
         <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
       </node>
-      <node id="12">
-        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
-        <link refid="structfaiss_1_1MaybeOwnedVector"/>
-      </node>
       <node id="6">
         <label>faiss::AdditiveQuantizer</label>
         <link refid="structfaiss_1_1AdditiveQuantizer"/>
@@ -1956,9 +1952,6 @@
         <label>faiss::IndexFlatCodes</label>
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="3" relation="public-inheritance">
-        </childnode>
-        <childnode refid="12" relation="usage">
-          <edgelabel>codes</edgelabel>
         </childnode>
       </node>
       <node id="9">

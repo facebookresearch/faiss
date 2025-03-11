@@ -2922,10 +2922,6 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="17">
-        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
-        <link refid="structfaiss_1_1MaybeOwnedVector"/>
-      </node>
       <node id="12">
         <label>faiss::AdditiveQuantizer</label>
         <link refid="structfaiss_1_1AdditiveQuantizer"/>
@@ -2963,9 +2959,6 @@
         <label>faiss::IndexFlatCodes</label>
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="5" relation="public-inheritance">
-        </childnode>
-        <childnode refid="17" relation="usage">
-          <edgelabel>codes</edgelabel>
         </childnode>
       </node>
       <node id="14">
@@ -3020,7 +3013,7 @@
         <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="18" relation="usage">
+        <childnode refid="17" relation="usage">
           <edgelabel>plsq</edgelabel>
         </childnode>
       </node>
@@ -3039,16 +3032,16 @@
           <edgelabel>cp</edgelabel>
         </childnode>
       </node>
-      <node id="19">
+      <node id="18">
         <label>faiss::ProductAdditiveQuantizer</label>
         <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
         <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="18">
+      <node id="17">
         <label>faiss::ProductLocalSearchQuantizer</label>
         <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
-        <childnode refid="19" relation="public-inheritance">
+        <childnode refid="18" relation="public-inheritance">
         </childnode>
       </node>
       <node id="11">
