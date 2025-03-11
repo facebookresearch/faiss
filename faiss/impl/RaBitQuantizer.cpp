@@ -14,13 +14,10 @@
 namespace faiss {
 
 struct FactorsData {
-    // ||or - c||
-    float factor_0 = 0;
-    // sum_xb
-    float factor_1 = 0;
-    float factor_2 = 0;
-    // ||or||^2
-    float factor_3 = 0;
+    float or_minus_c_l2sqr = 0;
+    float dp_multiplier = 0;
+    // this is needed to support BOTH L2 and IP on the same data
+    float or_l2sqr = 0;
 };
 
 struct QueryFactorsData {
@@ -90,7 +87,6 @@ void RaBitQuantizer::compute_codes_core(
             or_L2sqr += x[i * d + j] * x[i * d + j];
 
             const bool xb = (or_minus_c > 0);
-            sum_xb += xb ? 1 : 0;
 
             dp_oO += xb ? or_minus_c : (-or_minus_c);
 
@@ -118,10 +114,9 @@ void RaBitQuantizer::compute_codes_core(
                 ? 1.0f
                 : (1.0f / dp_oO);
 
-        fac->factor_0 = norm_L2sqr;
-        fac->factor_1 = sum_xb;
-        fac->factor_2 = inv_dp_oO * std::sqrt(norm_L2sqr);
-        fac->factor_3 = or_L2sqr;
+        fac->or_minus_c_l2sqr = norm_L2sqr;
+        fac->dp_multiplier = inv_dp_oO * std::sqrt(norm_L2sqr);
+        fac->or_l2sqr = or_L2sqr;
     }
 }
 
@@ -152,7 +147,7 @@ void RaBitQuantizer::decode_core(
             const float bit = ((binary_data[j / 8] & masker) == masker) ? 1 : 0;
 
             // compute the output code
-            x[i * d + j] = (bit - 0.5f) * fac->factor_2 * 2 * inv_d_sqrt +
+            x[i * d + j] = (bit - 0.5f) * fac->dp_multiplier * 2 * inv_d_sqrt +
                     ((centroid_in == nullptr) ? 0 : centroid_in[j]);
         }
     }
@@ -220,30 +215,35 @@ float RaBitDistanceComputerNotQ::distance_to_code_L2(
     //
     // compute <q,o> using floats
     float dot_qo = 0;
+    // It was a willful decision (after the discussion) to not to pre-cache 
+    //   the sum of all bits, just in order to reduce the overhead per vector.
+    uint64_t sum_q = 0;
     for (size_t i = 0; i < d; i++) {
         // extract i-th bit
         const uint8_t masker = (1 << (i % 8));
-        const float bit = ((binary_data[i / 8] & masker) == masker) ? 1 : 0;
+        const bool b_bit = ((binary_data[i / 8] & masker) == masker);
 
         // accumulate dp
-        dot_qo += bit * rotated_q[i];
+        dot_qo += (b_bit) ? rotated_q[i] : 0;
+        // accumulate sum-of-bits
+        sum_q += (b_bit) ? 1 : 0;
     }
 
     float final_dot = 0;
     // dot-product itself
     final_dot += query_fac.c1 * dot_qo;
     // normalizer coefficients
-    final_dot += query_fac.c2 * fac->factor_1;
+    final_dot += query_fac.c2 * sum_q;
     // normalizer coefficients
     final_dot -= query_fac.c34;
 
     // this is ||or - c||^2
-    const float or_c_l2sqr = fac->factor_0;
+    const float or_c_l2sqr = fac->or_minus_c_l2sqr;
 
     // ||or - q||^ 2 = ||or - c||^2 + ||qr - c||^2 -
     //     2 * ||or - c|| * ||qr - c|| * <q,o>
     const float dist_l2sqr = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
-            2 * fac->factor_2 * final_dot;
+            2 * fac->dp_multiplier * final_dot;
     return dist_l2sqr;
 }
 
@@ -258,7 +258,7 @@ float RaBitDistanceComputerNotQ::distance_to_code_IP(
     // this is ||q||^2
     const float query_norm_sqr = query_fac.qr_norm_L2sqr;
     // this is ||or||^2
-    const float or_norm_sqr = fac->factor_3;
+    const float or_norm_sqr = fac->or_l2sqr;
 
     // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
     return -0.5f * (l2 - query_norm_sqr - or_norm_sqr);
@@ -323,43 +323,60 @@ float RaBitDistanceComputerQ::distance_to_code_L2(const uint8_t* code) const {
     const size_t di_8b = (d + 7) / 8;
     const size_t di_64b = (di_8b / 8) * 8;
 
-    unsigned long long dot_qo = 0;
+    uint64_t dot_qo = 0;
     for (size_t j = 0; j < qb; j++) {
         const uint8_t* query_j = rearranged_rotated_qq.data() + j * di_8b;
 
         // process 64-bit popcounts
-        unsigned long long count = 0;
+        uint64_t count_dot = 0;
         for (size_t i = 0; i < di_64b; i += 8) {
-            const auto qv = *(const unsigned long long*)(query_j + i);
-            const auto yv = *(const unsigned long long*)(binary_data + i);
-            count += __builtin_popcountll(qv & yv);
+            const auto qv = *(const uint64_t*)(query_j + i);
+            const auto yv = *(const uint64_t*)(binary_data + i);
+            count_dot += __builtin_popcountll(qv & yv);
         }
 
         // process leftovers
         for (size_t i = di_64b; i < di_8b; i++) {
             const auto qv = *(query_j + i);
             const auto yv = *(binary_data + i);
-            count += __builtin_popcount(qv & yv);
+            count_dot += __builtin_popcount(qv & yv);
         }
 
-        dot_qo += (count << j);
+        dot_qo += (count_dot << j);
+    }
+
+    // It was a willful decision (after the discussion) to not to pre-cache 
+    //   the sum of all bits, just in order to reduce the overhead per vector.
+    uint64_t sum_q = 0;
+    {
+        // process 64-bit popcounts
+        for (size_t i = 0; i < di_64b; i += 8) {
+            const auto yv = *(const uint64_t*)(binary_data + i);
+            sum_q += __builtin_popcountll(yv);
+        }
+
+        // process leftovers
+        for (size_t i = di_64b; i < di_8b; i++) {
+            const auto yv = *(binary_data + i);
+            sum_q += __builtin_popcount(yv);
+        }
     }
 
     float final_dot = 0;
     // dot-product itself
     final_dot += query_fac.c1 * dot_qo;
     // normalizer coefficients
-    final_dot += query_fac.c2 * fac->factor_1;
+    final_dot += query_fac.c2 * sum_q;
     // normalizer coefficients
     final_dot -= query_fac.c34;
 
     // this is ||or - c||^2
-    const float or_c_l2sqr = fac->factor_0;
+    const float or_c_l2sqr = fac->or_minus_c_l2sqr;
 
     // ||or - q||^ 2 = ||or - c||^2 + ||qr - c||^2 -
     //     2 * ||or - c|| * ||qr - c|| * <q,o>
     const float dist_l2sqr = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
-            2 * fac->factor_2 * final_dot;
+            2 * fac->dp_multiplier * final_dot;
     return dist_l2sqr;
 }
 
@@ -373,7 +390,7 @@ float RaBitDistanceComputerQ::distance_to_code_IP(const uint8_t* code) const {
     // this is ||q||^2
     const float query_norm_sqr = query_fac.qr_norm_L2sqr;
     // this is ||or||^2
-    const float or_norm_sqr = fac->factor_3;
+    const float or_norm_sqr = fac->or_l2sqr;
 
     // -2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
     return -0.5f * (l2 - query_norm_sqr - or_norm_sqr);
@@ -472,15 +489,6 @@ RaBitQuantizer::RaBitDistanceComputer* RaBitQuantizer::get_distance_computer(
 }
 
 float RaBitQuantizer::RaBitDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
-    FAISS_THROW_MSG("Not implemented");
-}
-
-float RaBitQuantizer::symmetric_dis_core(
-        const uint8_t* code_i,
-        const float* centroid_i,
-        const uint8_t* code_j,
-        const float* centroid_j,
-        const size_t d) {
     FAISS_THROW_MSG("Not implemented");
 }
 
