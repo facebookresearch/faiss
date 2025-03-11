@@ -80,13 +80,15 @@
       <node id="28">
         <label>faiss/impl/io.h</label>
         <link refid="io_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -153,6 +155,9 @@
       </node>
       <node id="22">
         <label>cmath</label>
+      </node>
+      <node id="29">
+        <label>cstddef</label>
       </node>
       <node id="11">
         <label>cstdint</label>

@@ -18,6 +18,8 @@
     <innerfile refid="lattice__Zn_8h">lattice_Zn.h</innerfile>
     <innerfile refid="LocalSearchQuantizer_8h">LocalSearchQuantizer.h</innerfile>
     <innerfile refid="LookupTableScaler_8h">LookupTableScaler.h</innerfile>
+    <innerfile refid="mapped__io_8h">mapped_io.h</innerfile>
+    <innerfile refid="maybe__owned__vector_8h">maybe_owned_vector.h</innerfile>
     <innerfile refid="NNDescent_8h">NNDescent.h</innerfile>
     <innerfile refid="NSG_8h">NSG.h</innerfile>
     <innerfile refid="platform__macros_8h">platform_macros.h</innerfile>
@@ -34,6 +36,7 @@
     <innerfile refid="simd__result__handlers_8h">simd_result_handlers.h</innerfile>
     <innerfile refid="ThreadedIndex-inl_8h">ThreadedIndex-inl.h</innerfile>
     <innerfile refid="ThreadedIndex_8h">ThreadedIndex.h</innerfile>
+    <innerfile refid="zerocopy__io_8h">zerocopy_io.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

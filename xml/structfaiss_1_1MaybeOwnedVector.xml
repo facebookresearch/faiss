@@ -1,0 +1,574 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1MaybeOwnedVector" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::MaybeOwnedVector</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1MaybeOwnedVector_1af45877feef35013d0bbaff215c0e81fc" prot="public" static="no">
+        <type>T</type>
+        <definition>using faiss::MaybeOwnedVector&lt; T &gt;::value_type =  T</definition>
+        <argsstring></argsstring>
+        <name>value_type</name>
+        <qualifiedname>faiss::MaybeOwnedVector::value_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="28" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1MaybeOwnedVector_1a1d54ef0d9be90bed0d1d0c59fb5c16be" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; T &gt;</type>
+        <definition>using faiss::MaybeOwnedVector&lt; T &gt;::self_type =  MaybeOwnedVector&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>self_type</name>
+        <qualifiedname>faiss::MaybeOwnedVector::self_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="29" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1MaybeOwnedVector_1a1f30e71eb59849d87f4b99d06288d4a6" prot="public" static="no">
+        <type>typename std::vector&lt; T &gt;::const_iterator</type>
+        <definition>using faiss::MaybeOwnedVector&lt; T &gt;::vec_iterator =  typename std::vector&lt;T&gt;::const_iterator</definition>
+        <argsstring></argsstring>
+        <name>vec_iterator</name>
+        <qualifiedname>faiss::MaybeOwnedVector::vec_iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="30" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1a377d1af938d0d8b7314854988a955924" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::MaybeOwnedVector&lt; T &gt;::is_owned</definition>
+        <argsstring></argsstring>
+        <name>is_owned</name>
+        <qualifiedname>faiss::MaybeOwnedVector::is_owned</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="32" column="10" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1a234101972588711108383cb92c8fe2a9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt;T&gt; faiss::MaybeOwnedVector&lt; T &gt;::owned_data</definition>
+        <argsstring></argsstring>
+        <name>owned_data</name>
+        <qualifiedname>faiss::MaybeOwnedVector::owned_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="35" column="17" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1ac671adaffb62c64a13e051a87eef2435" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* faiss::MaybeOwnedVector&lt; T &gt;::view_data</definition>
+        <argsstring></argsstring>
+        <name>view_data</name>
+        <qualifiedname>faiss::MaybeOwnedVector::view_data</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="38" column="7" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1a7175a37341e462c0cf50cf22174c3ba3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MaybeOwnedVector&lt; T &gt;::view_size</definition>
+        <argsstring></argsstring>
+        <name>view_size</name>
+        <qualifiedname>faiss::MaybeOwnedVector::view_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="40" column="12" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1abf6037a45619877647227151b11f4883" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1MaybeOwnedVectorOwner" kindref="compound">MaybeOwnedVectorOwner</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;MaybeOwnedVectorOwner&gt; faiss::MaybeOwnedVector&lt; T &gt;::owner</definition>
+        <argsstring></argsstring>
+        <name>owner</name>
+        <qualifiedname>faiss::MaybeOwnedVector::owner</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="44" column="21" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1ad930ec112e09eeb027c634f590afd8ee" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* faiss::MaybeOwnedVector&lt; T &gt;::c_ptr</definition>
+        <argsstring></argsstring>
+        <name>c_ptr</name>
+        <qualifiedname>faiss::MaybeOwnedVector::c_ptr</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="47" column="7" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MaybeOwnedVector_1a4574312cd190267ffe01350c2def26b3" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MaybeOwnedVector&lt; T &gt;::c_size</definition>
+        <argsstring></argsstring>
+        <name>c_size</name>
+        <qualifiedname>faiss::MaybeOwnedVector::c_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="49" column="12" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1abd9c96ddcb45030f72aa0ee02592bd19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>()=default</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="51" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aedacf52f62070b5574c0585695fb2dff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>(const size_t initial_size)</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>initial_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="52" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="52" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1ac78978ea8620e5d18f593264b18ae9be" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>(const std::vector&lt; T &gt; &amp;vec)</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <param>
+          <type>const std::vector&lt; T &gt; &amp;</type>
+          <declname>vec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="60" column="14" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="60" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1ae274bd543f038ac5b741a4872ab41266" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>(const MaybeOwnedVector &amp;other)</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="67" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="67" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1ac2490b02d11bddf520889c8b29e63035" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>(MaybeOwnedVector &amp;&amp;other)</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="84" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="84" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aa87aa6e038621be7a5b70c81ee41bc7b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;</type>
+        <definition>MaybeOwnedVector &amp; faiss::MaybeOwnedVector&lt; T &gt;::operator=</definition>
+        <argsstring>(const MaybeOwnedVector &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::MaybeOwnedVector::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="102" column="22" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="102" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a10d5cb6001a9643b53e24ad42287fe86" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;</type>
+        <definition>MaybeOwnedVector &amp; faiss::MaybeOwnedVector&lt; T &gt;::operator=</definition>
+        <argsstring>(MaybeOwnedVector &amp;&amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::MaybeOwnedVector::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="115" column="22" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="115" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aaec95112ed1e68cc48b35406ea7be00d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
+        <argsstring>(std::vector&lt; T &gt; &amp;&amp;other)</argsstring>
+        <name>MaybeOwnedVector</name>
+        <qualifiedname>faiss::MaybeOwnedVector::MaybeOwnedVector</qualifiedname>
+        <param>
+          <type>std::vector&lt; T &gt; &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="128" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="128" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a8816f7a1dddc67ee37e32f2e76e445ea" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const T *</type>
+        <definition>const T * faiss::MaybeOwnedVector&lt; T &gt;::data</definition>
+        <argsstring>() const</argsstring>
+        <name>data</name>
+        <qualifiedname>faiss::MaybeOwnedVector::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="152" column="13" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="152" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aa0239dd49c97f9f2d01cca61a27175d5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T *</type>
+        <definition>T * faiss::MaybeOwnedVector&lt; T &gt;::data</definition>
+        <argsstring>()</argsstring>
+        <name>data</name>
+        <qualifiedname>faiss::MaybeOwnedVector::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="156" column="7" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="156" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1abfec9cee5e11a6a937b5b19872895640" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::MaybeOwnedVector&lt; T &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>faiss::MaybeOwnedVector::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="160" column="12" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="160" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a646ccabd85e38f38ed3244070709824d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T &amp;</type>
+        <definition>T &amp; faiss::MaybeOwnedVector&lt; T &gt;::operator[]</definition>
+        <argsstring>(const size_t idx)</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>faiss::MaybeOwnedVector::operator[]</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="164" column="7" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="164" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a929b09afed3f8413d39080cc8d9a3956" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const T &amp;</type>
+        <definition>const T &amp; faiss::MaybeOwnedVector&lt; T &gt;::operator[]</definition>
+        <argsstring>(const size_t idx) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>faiss::MaybeOwnedVector::operator[]</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="168" column="13" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="168" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a543f092cd9c3efb47e4ca0da6d49152e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>vec_iterator</type>
+        <definition>vec_iterator faiss::MaybeOwnedVector&lt; T &gt;::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>faiss::MaybeOwnedVector::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="172" column="18" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="172" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a9d6baacf1542580906854b7eff56cb83" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>vec_iterator</type>
+        <definition>vec_iterator faiss::MaybeOwnedVector&lt; T &gt;::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>faiss::MaybeOwnedVector::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="180" column="18" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="180" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a05b49f9ce2153260d87137bd798e9ca0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>vec_iterator</type>
+        <definition>vec_iterator faiss::MaybeOwnedVector&lt; T &gt;::erase</definition>
+        <argsstring>(vec_iterator begin, vec_iterator end)</argsstring>
+        <name>erase</name>
+        <qualifiedname>faiss::MaybeOwnedVector::erase</qualifiedname>
+        <param>
+          <type>vec_iterator</type>
+          <declname>begin</declname>
+        </param>
+        <param>
+          <type>vec_iterator</type>
+          <declname>end</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="188" column="18" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="188" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a50204f6efd583ae275282d463c8f87a3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::MaybeOwnedVector&lt; T &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>faiss::MaybeOwnedVector::clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="196" column="10" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="196" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a2bc9aa850ae6f8dc31569c429fa1cb52" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::MaybeOwnedVector&lt; T &gt;::resize</definition>
+        <argsstring>(const size_t new_size)</argsstring>
+        <name>resize</name>
+        <qualifiedname>faiss::MaybeOwnedVector::resize</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>new_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="206" column="10" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="206" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a39dc60a2a0c2d62d8fe39f9fc9f333fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::MaybeOwnedVector&lt; T &gt;::resize</definition>
+        <argsstring>(const size_t new_size, const value_type v)</argsstring>
+        <name>resize</name>
+        <qualifiedname>faiss::MaybeOwnedVector::resize</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>new_size</declname>
+        </param>
+        <param>
+          <type>const value_type</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="216" column="10" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="216" bodyend="224"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1a25df948e94e224d5012b6c9a9822c731" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref></type>
+        <definition>static MaybeOwnedVector faiss::MaybeOwnedVector&lt; T &gt;::create_view</definition>
+        <argsstring>(void *address, const size_t n_elements, const std::shared_ptr&lt; MaybeOwnedVectorOwner &gt; &amp;owner)</argsstring>
+        <name>create_view</name>
+        <qualifiedname>faiss::MaybeOwnedVector::create_view</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>address</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>n_elements</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structfaiss_1_1MaybeOwnedVectorOwner" kindref="compound">MaybeOwnedVectorOwner</ref> &gt; &amp;</type>
+          <declname>owner</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="136" column="29" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="136" bodyend="150"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structfaiss_1_1MaybeOwnedVector_1aaa25ee959e82919358265c43baba5b8d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void swap</definition>
+        <argsstring>(self_type &amp;a, self_type &amp;b)</argsstring>
+        <name>swap</name>
+        <qualifiedname>faiss::MaybeOwnedVector::swap</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">self_type</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">self_type</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="226" column="17" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="226" bodyend="234"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/maybe_owned_vector.h" line="27" column="1" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="27" bodyend="235"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a543f092cd9c3efb47e4ca0da6d49152e" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1ad930ec112e09eeb027c634f590afd8ee" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>c_ptr</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a4574312cd190267ffe01350c2def26b3" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>c_size</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a50204f6efd583ae275282d463c8f87a3" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a25df948e94e224d5012b6c9a9822c731" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>create_view</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a8816f7a1dddc67ee37e32f2e76e445ea" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>data</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1aa0239dd49c97f9f2d01cca61a27175d5" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>data</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a9d6baacf1542580906854b7eff56cb83" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>end</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a05b49f9ce2153260d87137bd798e9ca0" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>erase</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a377d1af938d0d8b7314854988a955924" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>is_owned</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1abd9c96ddcb45030f72aa0ee02592bd19" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1aedacf52f62070b5574c0585695fb2dff" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1ac78978ea8620e5d18f593264b18ae9be" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1ae274bd543f038ac5b741a4872ab41266" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1ac2490b02d11bddf520889c8b29e63035" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1aaec95112ed1e68cc48b35406ea7be00d" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>MaybeOwnedVector</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1aa87aa6e038621be7a5b70c81ee41bc7b" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a10d5cb6001a9643b53e24ad42287fe86" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a646ccabd85e38f38ed3244070709824d" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>operator[]</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a929b09afed3f8413d39080cc8d9a3956" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>operator[]</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a234101972588711108383cb92c8fe2a9" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>owned_data</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1abf6037a45619877647227151b11f4883" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>owner</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a2bc9aa850ae6f8dc31569c429fa1cb52" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>resize</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a39dc60a2a0c2d62d8fe39f9fc9f333fa" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>resize</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a1d54ef0d9be90bed0d1d0c59fb5c16be" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>self_type</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1abfec9cee5e11a6a937b5b19872895640" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>size</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1aaa25ee959e82919358265c43baba5b8d" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>swap</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1af45877feef35013d0bbaff215c0e81fc" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>value_type</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a1f30e71eb59849d87f4b99d06288d4a6" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>vec_iterator</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1ac671adaffb62c64a13e051a87eef2435" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>view_data</name></member>
+      <member refid="structfaiss_1_1MaybeOwnedVector_1a7175a37341e462c0cf50cf22174c3ba3" prot="public" virt="non-virtual"><scope>faiss::MaybeOwnedVector</scope><name>view_size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

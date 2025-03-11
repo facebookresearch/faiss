@@ -1604,6 +1604,10 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="9">
+        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
+        <link refid="structfaiss_1_1MaybeOwnedVector"/>
+      </node>
       <node id="2">
         <label>faiss::AdditiveQuantizer</label>
         <link refid="structfaiss_1_1AdditiveQuantizer"/>
@@ -1613,7 +1617,7 @@
           <edgelabel>qnorm</edgelabel>
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
@@ -1638,6 +1642,9 @@
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="8" relation="public-inheritance">
         </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>codes</edgelabel>
+        </childnode>
       </node>
       <node id="5">
         <label>faiss::IndexFlatL2</label>
@@ -1645,13 +1652,13 @@
         <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss::ProgressiveDimClusteringParameters</label>
         <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
-        <childnode refid="10" relation="public-inheritance">
+        <childnode refid="11" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss::ProgressiveDimIndexFactory</label>
         <link refid="structfaiss_1_1ProgressiveDimIndexFactory"/>
       </node>
@@ -1664,10 +1671,10 @@
         <link refid="structfaiss_1_1ResidualQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="9" relation="usage">
+        <childnode refid="10" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
-        <childnode refid="11" relation="usage">
+        <childnode refid="12" relation="usage">
           <edgelabel>assign_index_factory</edgelabel>
         </childnode>
       </node>
