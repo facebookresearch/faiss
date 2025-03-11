@@ -475,7 +475,7 @@ float RaBitQuantizer::RaBitDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
     FAISS_THROW_MSG("Not implemented");
 }
 
-float symmetric_dis_core(
+float RaBitQuantizer::symmetric_dis_core(
         const uint8_t* code_i,
         const float* centroid_i,
         const uint8_t* code_j,
