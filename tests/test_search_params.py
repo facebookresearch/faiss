@@ -23,11 +23,11 @@ class TestSelector(unittest.TestCase):
     """
 
     def do_test_id_selector(
-        self, 
-        index_key, 
-        id_selector_type="batch", 
-        mt=faiss.METRIC_L2, 
-        k=10, 
+        self,
+        index_key,
+        id_selector_type="batch",
+        mt=faiss.METRIC_L2,
+        k=10,
         use_heap=True
     ):
         """ Verify that the id selector returns the subset of results that are
@@ -151,12 +151,12 @@ class TestSelector(unittest.TestCase):
         )
 
         Dnew, Inew = index.search(xq, k, params=params)
-        
+
         if is_binary:
             # For binary indexes, we need to check:
             # 1. All returned IDs are valid (in the subset or -1)
             # 2. The distances match
-            
+
             # Check that all returned IDs are valid
             valid_ids = np.ones_like(Inew, dtype=bool)
             # Create a mask of valid IDs (those in subset)
@@ -166,9 +166,9 @@ class TestSelector(unittest.TestCase):
                 Inew == -1,
                 np.isin(Inew, list(subset_set))
             )
-            
+
             self.assertTrue(np.all(valid_ids), "Some returned IDs are not in the subset")
-            
+
             # Check that distances match
             np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
         else:
@@ -180,16 +180,16 @@ class TestSelector(unittest.TestCase):
             Rlims_new, RDnew, RInew = index.range_search(xq, radius, params=params)
             np.testing.assert_array_equal(Rlims_ref, Rlims_new)
             RDref, RIref = sort_range_res_2(Rlims_ref, RDref, RIref)
-            
+
             if is_binary:
                 # For binary indexes, check that all returned IDs are valid
                 valid_ids = np.ones(len(RInew), dtype=bool)
                 # Use vectorized operation instead of loop
                 subset_set = set(subset)  # Convert to set for O(1) lookups
                 valid_ids = np.isin(RInew, list(subset_set))
-                
+
                 self.assertTrue(np.all(valid_ids), "Some range search IDs are not in the subset")
-                
+
                 # Check that distances match
                 np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
             else:
