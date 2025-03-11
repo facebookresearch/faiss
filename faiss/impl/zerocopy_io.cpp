@@ -1,10 +1,3 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 #include <faiss/impl/zerocopy_io.h>
 #include <cstring>
 
@@ -44,9 +37,6 @@ void ZeroCopyIOReader::reset() {
 }
 
 size_t ZeroCopyIOReader::operator()(void* ptr, size_t size, size_t nitems) {
-    if (size * nitems == 0) {
-        return 0;
-    }
     if (rp_ >= total_) {
         return 0;
     }
