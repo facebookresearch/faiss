@@ -167,8 +167,6 @@ class DatasetDescriptor:
 class IndexBaseDescriptor:
     d: int
     metric: str
-    desc_name: Optional[str] = None
-    flat_desc_name: Optional[str] = None
     bucket: Optional[str] = None
     path: Optional[str] = None
     num_threads: int = 1
@@ -219,6 +217,8 @@ class CodecDescriptor(IndexBaseDescriptor):
     factory: Optional[str] = None
     construction_params: Optional[List[Dict[str, int]]] = None
     training_vectors: Optional[DatasetDescriptor] = None
+    __desc_name: Optional[str] = None
+    __flat_desc_name: Optional[str] = None
     FILENAME_PREFIX: str = "xt"
 
     def __post_init__(self):
@@ -231,21 +231,21 @@ class CodecDescriptor(IndexBaseDescriptor):
         return self.factory is not None or self.path is not None
 
     def get_name(self) -> str:
-        if self.desc_name is not None:
-            return self.desc_name
+        if self.__desc_name is not None:
+            return self.__desc_name
         if self.factory is not None:
-            self.desc_name = self.name_from_factory()
-            return self.desc_name
+            self.__desc_name = self.name_from_factory()
+            return self.__desc_name
         if self.path is not None:
-            self.desc_name = self.name_from_path()
-            return self.desc_name
+            self.__desc_name = self.name_from_path()
+            return self.__desc_name
         raise ValueError("name, factory or path must be set")
 
     def flat_name(self) -> str:
-        if self.flat_desc_name is not None:
-            return self.flat_desc_name
-        self.flat_desc_name = f"Flat.d_{self.d}.{self.metric.upper()}."
-        return self.flat_desc_name
+        if self.__flat_desc_name is not None:
+            return self.__flat_desc_name
+        self.__flat_desc_name = f"Flat.d_{self.d}.{self.metric.upper()}."
+        return self.__flat_desc_name
 
     def path(self, benchmark_io) -> str:
         if self.path is not None:
@@ -284,6 +284,8 @@ class CodecDescriptor(IndexBaseDescriptor):
 class IndexDescriptor(IndexBaseDescriptor):
     codec_desc: Optional[CodecDescriptor] = None
     database_desc: Optional[DatasetDescriptor] = None
+    __desc_name: Optional[str] = None
+    __flat_desc_name: Optional[str] = None
     FILENAME_PREFIX: str = "xb"
 
     def __hash__(self):
@@ -296,16 +298,18 @@ class IndexDescriptor(IndexBaseDescriptor):
         return self.codec_desc is None and self.database_desc is None
 
     def get_name(self) -> str:
-        if self.desc_name is None:
-            self.desc_name = self.codec_desc.get_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
+        if self.__desc_name is None:
+            self.__desc_name = self.codec_desc.get_name() + \
+                self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
 
-        return self.desc_name
+        return self.__desc_name
 
     def flat_name(self):
-        if self.flat_desc_name is not None:
-            return self.flat_desc_name
-        self.flat_desc_name = self.codec_desc.flat_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
-        return self.flat_desc_name
+        if self.__flat_desc_name is not None:
+            return self.__flat_desc_name
+        self.__flat_desc_name = self.codec_desc.flat_name() + \
+            self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
+        return self.__flat_desc_name
 
     # alias is used to refer when index is uploaded to blobstore and refered again
     def alias(self, benchmark_io: BenchmarkIO):
@@ -319,6 +323,8 @@ class KnnDescriptor(IndexBaseDescriptor):
     gt_index_desc: Optional[IndexDescriptor] = None
     query_dataset: Optional[DatasetDescriptor] = None
     search_params: Optional[Dict[str, int]] = None
+    __desc_name: Optional[str] = None
+    __flat_desc_name: Optional[str] = None
     reconstruct: bool = False
     FILENAME_PREFIX: str = "q"
     # range metric definitions
@@ -346,8 +352,8 @@ class KnnDescriptor(IndexBaseDescriptor):
         return hash(str(self))
 
     def get_name(self):
-        if self.desc_name is not None:
-            return self.desc_name
+        if self.__desc_name is not None:
+            return self.__desc_name
         name = self.index_desc.get_name()
         name += IndexBaseDescriptor.param_dict_to_name(self.search_params)
         name += self.query_dataset.get_filename(KnnDescriptor.FILENAME_PREFIX)
@@ -357,12 +363,12 @@ class KnnDescriptor(IndexBaseDescriptor):
             name += "rec."
         else:
             name += "knn."
-        self.desc_name = name
+        self.__desc_name = name
         return name
 
     def flat_name(self):
-        if self.flat_desc_name is not None:
-            return self.flat_desc_name
+        if self.__flat_desc_name is not None:
+            return self.__flat_desc_name
         name = self.index_desc.flat_name()
         name += self.query_dataset.get_filename(KnnDescriptor.FILENAME_PREFIX)
         name += f"k_{self.k}."
@@ -371,5 +377,5 @@ class KnnDescriptor(IndexBaseDescriptor):
             name += "rec."
         else:
             name += "knn."
-        self.flat_desc_name = name
+        self.__flat_desc_name = name
         return name
