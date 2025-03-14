@@ -193,6 +193,26 @@ TEST(HNSW, Test_popmin_infinite_distances) {
     }
 }
 
+TEST(HNSW, Test_IndexHNSWFlat_METRIC_Lp) {
+    // Create an HNSW index with METRIC_Lp and metric_arg = 3
+    faiss::IndexHNSWFlat index(1, 32, faiss::METRIC_Lp);
+    index.metric_arg = 3;
+
+    // Add a single data point
+    float data[1] = {0.0};
+    index.add(1, data);
+
+    // Prepare a query
+    float query[1] = {2.0};
+    float distance;
+    faiss::idx_t label;
+
+    index.search(1, query, 1, &distance, &label);
+
+    EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
+    EXPECT_EQ(label, 0); // Label should be 0
+}
+
 class HNSWTest : public testing::Test {
    protected:
     HNSWTest() {
