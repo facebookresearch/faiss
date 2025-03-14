@@ -210,7 +210,7 @@ TEST(HNSW, Test_IndexHNSWFlat_METRIC_Lp) {
     index.search(1, query, 1, &distance, &label);
 
     EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
-    EXPECT_EQ(label, 0); // Label should be 0
+    EXPECT_EQ(label, 0);              // Label should be 0
 }
 
 class HNSWTest : public testing::Test {
