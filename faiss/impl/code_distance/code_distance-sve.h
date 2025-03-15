@@ -14,6 +14,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/code_distance/code_distance-generic.h>
 
 namespace faiss {
@@ -48,7 +49,7 @@ static inline void distance_codes_kernel(
     partialSum = svadd_f32_m(pg, partialSum, collected);
 }
 
-static float distance_single_code_sve_for_small_m(
+static inline float distance_single_code_sve_for_small_m(
         // the product quantizer
         const size_t M,
         // precomputed distances, layout (M, ksub)
@@ -196,7 +197,7 @@ distance_four_codes_sve(
             result3);
 }
 
-static void distance_four_codes_sve_for_small_m(
+static inline void distance_four_codes_sve_for_small_m(
         // the product quantizer
         const size_t M,
         // precomputed distances, layout (M, ksub)
@@ -216,8 +217,6 @@ static void distance_four_codes_sve_for_small_m(
     const size_t ksub = 1 << nbits;
 
     const auto offsets_0 = svindex_u32(0, static_cast<uint32_t>(ksub));
-
-    const auto quad_lanes = svcntw();
 
     // loop
     const auto pg = svwhilelt_b32_u64(0, M);

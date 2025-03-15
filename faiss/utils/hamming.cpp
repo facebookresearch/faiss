@@ -62,15 +62,15 @@ void hammings(
         const uint64_t* __restrict bs2,
         size_t n1,
         size_t n2,
-        size_t nwords,
+        size_t nbits,
         hamdis_t* __restrict dis) {
     size_t i, j;
-    n1 *= nwords;
-    n2 *= nwords;
-    for (i = 0; i < n1; i += nwords) {
-        const uint64_t* bs1_ = bs1 + i;
-        for (j = 0; j < n2; j += nwords)
-            dis[j] = hamming(bs1_, bs2 + j, nwords);
+    const size_t nwords = nbits / 64;
+    for (i = 0; i < n1; i++) {
+        const uint64_t* __restrict bs1_ = bs1 + i * nwords;
+        hamdis_t* __restrict dis_ = dis + i * n2;
+        for (j = 0; j < n2; j++)
+            dis_[j] = hamming(bs1_, bs2 + j * nwords, nwords);
     }
 }
 

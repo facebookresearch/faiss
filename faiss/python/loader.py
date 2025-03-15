@@ -108,7 +108,7 @@ if has_AVX512_SPR:
         loaded = False
 
 has_AVX512 = any("AVX512" in x.upper() for x in instruction_sets)
-if has_AVX512:
+if has_AVX512 and not loaded:
     try:
         logger.info("Loading faiss with AVX512 support.")
         from .swigfaiss_avx512 import *
