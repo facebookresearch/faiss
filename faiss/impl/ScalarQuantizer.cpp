@@ -459,7 +459,7 @@ struct QuantizerTemplate<T, Codec, QuantizerTemplateScaling::UNIFORM, 1>
         for (size_t i = 0; i < d; i++) {
             T xi = 0;
             if (vdiff != 0) {
-                xi = static_cast<T>(x[i] - vmin / vdiff);
+                xi = static_cast<T>((x[i] - vmin) / vdiff);
                 if (xi < 0) {
                     xi = 0;
                 }
@@ -582,7 +582,7 @@ struct QuantizerTemplate<T, Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
         for (size_t i = 0; i < d; i++) {
             T xi = 0;
             if (vdiff[i] != 0) {
-                xi = static_cast<T>(x[i] - vmin[i] / vdiff[i]);
+                xi = static_cast<T>((x[i] - vmin[i]) / vdiff[i]);
                 if (xi < 0) {
                     xi = 0;
                 }
