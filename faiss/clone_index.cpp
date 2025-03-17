@@ -9,9 +9,6 @@
 
 #include <faiss/clone_index.h>
 
-#include <cstdio>
-#include <cstdlib>
-
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/Index2Layer.h>

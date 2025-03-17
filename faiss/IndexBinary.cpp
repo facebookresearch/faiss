@@ -11,7 +11,6 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cinttypes>
-#include <cstring>
 
 namespace faiss {
 

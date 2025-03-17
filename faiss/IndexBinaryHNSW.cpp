@@ -8,12 +8,9 @@
 #include <faiss/IndexBinaryHNSW.h>
 
 #include <omp.h>
-#include <cassert>
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <memory>
 
 #include <cstdint>
 

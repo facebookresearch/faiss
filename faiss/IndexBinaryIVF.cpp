@@ -13,9 +13,6 @@
 #include <cinttypes>
 #include <cstdio>
 
-#include <algorithm>
-#include <memory>
-
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/impl/AuxIndexStructures.h>

@@ -14,7 +14,6 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
-#include <cstring>
 
 namespace faiss {
 

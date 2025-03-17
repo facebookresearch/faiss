@@ -11,8 +11,6 @@
 
 #include <faiss/index_factory.h>
 
-#include <map>
-
 #include <regex>
 
 #include <faiss/impl/FaissAssert.h>

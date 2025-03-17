@@ -7,9 +7,6 @@
 
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 
-#include <cassert>
-#include <memory>
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/LookupTableScaler.h>
