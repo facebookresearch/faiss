@@ -1138,6 +1138,8 @@ class IndexFromFactory(Index):
                 return None, None, ""
             logger.info(f"assemble, train {self.factory}")
             xt = self.io.get_dataset(self.training_vectors)
+            if self.training_vectors.normalize_L2:
+                faiss.normalize_L2(xt)
             _, t, _ = timer("train", lambda: codec.train(xt), once=True)
             t_aggregate += t
 
