@@ -37,8 +37,8 @@ void IndexBinaryFlat::search(
         int32_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    // Extract IDSelector from params if present
+    const IDSelector* sel = params ? params->sel : nullptr;
     FAISS_THROW_IF_NOT(k > 0);
 
     const idx_t block_size = query_batch_size;
@@ -60,7 +60,8 @@ void IndexBinaryFlat::search(
                     ntotal,
                     code_size,
                     /* ordered = */ true,
-                    approx_topk_mode);
+                    approx_topk_mode,
+                    sel);
         } else {
             hammings_knn_mc(
                     x + s * code_size,
@@ -70,7 +71,8 @@ void IndexBinaryFlat::search(
                     k,
                     code_size,
                     distances + s * k,
-                    labels + s * k);
+                    labels + s * k,
+                    sel);
         }
     }
 }
@@ -107,9 +109,9 @@ void IndexBinaryFlat::range_search(
         int radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
-    hamming_range_search(x, xb.data(), n, ntotal, radius, code_size, result);
+    const IDSelector* sel = params ? params->sel : nullptr;
+    hamming_range_search(
+            x, xb.data(), n, ntotal, radius, code_size, result, sel);
 }
 
 } // namespace faiss
