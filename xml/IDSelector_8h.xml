@@ -10,6 +10,7 @@
     <includedby refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includedby>
     <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
+    <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <incdepgraph>
       <node id="4">
         <label>faiss/MetricType.h</label>
@@ -218,6 +219,8 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="29">
         <label>faiss/impl/ResultHandler.h</label>
@@ -258,6 +261,10 @@
       <node id="33">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
+      </node>
+      <node id="34">
+        <label>faiss/utils/hamming.h</label>
+        <link refid="hamming_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1IDSelector" prot="public">faiss::IDSelector</innerclass>

@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="88" column="19" bodyfile="faiss/utils/hamming.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="89" column="19" bodyfile="faiss/utils/hamming.h" bodystart="89" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BitstringReader_1aff839ea7bd1813717c2bc1feabab2773" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="89" column="12" bodyfile="faiss/utils/hamming.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="90" column="12" bodyfile="faiss/utils/hamming.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BitstringReader_1ae0a26c23a5659205cd1221b7f9e379eb" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="90" column="12" bodyfile="faiss/utils/hamming.h" bodystart="90" bodyend="-1"/>
+        <location file="faiss/utils/hamming.h" line="91" column="12" bodyfile="faiss/utils/hamming.h" bodystart="91" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="93" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="37" bodyend="38"/>
+        <location file="faiss/utils/hamming.h" line="94" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="37" bodyend="38"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BitstringReader_1a9d9f24ba35ee13dbdc8a90fd74d76066" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -85,14 +85,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="96" column="14" bodyfile="faiss/utils/hamming-inl.h" bodystart="40" bodyend="65"/>
+        <location file="faiss/utils/hamming.h" line="97" column="14" bodyfile="faiss/utils/hamming-inl.h" bodystart="40" bodyend="65"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming.h" line="87" column="1" bodyfile="faiss/utils/hamming.h" bodystart="87" bodyend="97"/>
+    <location file="faiss/utils/hamming.h" line="88" column="1" bodyfile="faiss/utils/hamming.h" bodystart="88" bodyend="98"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BitstringReader_1ae4ce587dda2c41d64f445019781d9f86" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>BitstringReader</name></member>
       <member refid="structfaiss_1_1BitstringReader_1a923b543ec505de62bc9a571027cb7e62" prot="public" virt="non-virtual"><scope>faiss::BitstringReader</scope><name>code</name></member>

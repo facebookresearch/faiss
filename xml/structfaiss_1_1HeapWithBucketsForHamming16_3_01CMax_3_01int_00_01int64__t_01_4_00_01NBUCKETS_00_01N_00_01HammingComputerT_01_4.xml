@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="199" column="31" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="199" bodyend="-1"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="217" column="31" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="217" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="204" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="204" bodyend="219"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="222" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="222" bodyend="237"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1ae282b1c61a04d586d5d7011ac7211b07" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -113,14 +113,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="221" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="221" bodyend="364"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="239" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="239" bodyend="382"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="194" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="198" bodyend="365"/>
+    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="212" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="216" bodyend="383"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a98e332265502eaa21b24f37bcd74e0cb" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>addn</name></member>
       <member refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1ae282b1c61a04d586d5d7011ac7211b07" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>bs_addn</name></member>

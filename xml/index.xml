@@ -1859,8 +1859,8 @@
   </compound>
   <compound refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" kind="struct"><name>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</name>
     <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" kind="variable"><name>NBUCKETS_8</name></member>
-    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a55d7edca6fba66c8615d4b29f7cf24b4" kind="function"><name>addn</name></member>
-    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1afa7026574eb078b135203d287244fbd4" kind="function"><name>bs_addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" kind="function"><name>bs_addn</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSW" kind="struct"><name>faiss::HNSW</name>
     <member refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kind="typedef"><name>storage_idx_t</name></member>
@@ -9396,10 +9396,10 @@
     <member refid="namespacefaiss_1afde8c1f96d4c776b101dd67cc0064c3d" kind="function"><name>fvec2bitvec</name></member>
     <member refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" kind="function"><name>bitvec_shuffle</name></member>
     <member refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" kind="function"><name>hammings</name></member>
-    <member refid="namespacefaiss_1a82773978ee635588284b8a74135d0b76" kind="function"><name>hammings_knn_hc</name></member>
+    <member refid="namespacefaiss_1ac7029919748e69f5ef7f813deb2b04d8" kind="function"><name>hammings_knn_hc</name></member>
     <member refid="namespacefaiss_1a0c5abbe20058359340d9c7cb635f344b" kind="function"><name>hammings_knn</name></member>
-    <member refid="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca" kind="function"><name>hammings_knn_mc</name></member>
-    <member refid="namespacefaiss_1a1032890ca79ab7443c0af4fde09b121c" kind="function"><name>hamming_range_search</name></member>
+    <member refid="namespacefaiss_1a35a6c82c3a7b3d7616fc2c6cee53979d" kind="function"><name>hammings_knn_mc</name></member>
+    <member refid="namespacefaiss_1a182286f2abe99d5570f6308474b55e83" kind="function"><name>hamming_range_search</name></member>
     <member refid="namespacefaiss_1ac713458e556afa5bd612b88944292d65" kind="function"><name>hamming_count_thres</name></member>
     <member refid="namespacefaiss_1ad32229f823f2a0a920f0b62a702a67c5" kind="function"><name>match_hamming_thres</name></member>
     <member refid="namespacefaiss_1a399cfe2b1a7b2e3d722e10654c164ae0" kind="function"><name>crosshamming_count_thres</name></member>

@@ -35,10 +35,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a55d7edca6fba66c8615d4b29f7cf24b4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</definition>
-        <argsstring>(const uint32_t n, const HammingComputerT &amp;hc, const uint8_t *const __restrict binaryVectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids)</argsstring>
+        <argsstring>(const uint32_t n, const HammingComputerT &amp;hc, const uint8_t *const __restrict binaryVectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids, const IDSelector *sel=nullptr)</argsstring>
         <name>addn</name>
         <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::addn</qualifiedname>
         <param>
@@ -65,18 +65,23 @@
           <type>int64_t *const __restrict</type>
           <declname>bh_ids</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="37" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="37" bodyend="52"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="37" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="37" bodyend="54"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1afa7026574eb078b135203d287244fbd4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</definition>
-        <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const HammingComputerT &amp;hc, const uint8_t *const __restrict binary_vectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids)</argsstring>
+        <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const HammingComputerT &amp;hc, const uint8_t *const __restrict binary_vectors, const uint32_t k, int *const __restrict bh_val, int64_t *const __restrict bh_ids, const IDSelector *sel=nullptr)</argsstring>
         <name>bs_addn</name>
         <qualifiedname>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;::bs_addn</qualifiedname>
         <param>
@@ -107,23 +112,28 @@
           <type>int64_t *const __restrict</type>
           <declname>bh_ids</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="54" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="54" bodyend="179"/>
+        <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="56" column="17" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="56" bodyend="197"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="27" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="31" bodyend="180"/>
+    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="27" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="31" bodyend="198"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a55d7edca6fba66c8615d4b29f7cf24b4" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>addn</name></member>
-      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1afa7026574eb078b135203d287244fbd4" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>bs_addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>bs_addn</name></member>
       <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</scope><name>NBUCKETS_8</name></member>
     </listofallmembers>
   </compounddef>
