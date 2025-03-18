@@ -2048,7 +2048,7 @@ struct DCTemplate<T, Quantizer, Similarity, 8> : SQDistanceComputer {
 
 template <class T, class Quantizer, class Similarity>
 struct DCTemplate<T, Quantizer, Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity<T, 8>;
+    using Sim = Similarity;
 
     Quantizer quant;
 
@@ -2318,7 +2318,7 @@ struct DistanceComputerByte<T, Similarity, 8> : SQDistanceComputer {
 
 template <class T, class Similarity>
 struct DistanceComputerByte<T, Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity<T, 8>;
+    using Sim = Similarity;
 
     int d;
     std::vector<uint8_t> tmp;
