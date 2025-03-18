@@ -90,7 +90,7 @@ __global__ void pass1SelectLists(
 
             // Write out the final k-selected values; they should be all
             // together
-            for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            for (auto i = threadIdx.x; i < k; i += blockDim.x) {
                 heapDistances[queryId][sliceId][i] = smemK[i];
                 heapIndices[queryId][sliceId][i] = idx_t(smemV[i]);
             }
