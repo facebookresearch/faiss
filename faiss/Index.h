@@ -6,7 +6,6 @@
  */
 
 // -*- c++ -*-
-// more dummy changes
 
 #ifndef FAISS_INDEX_H
 #define FAISS_INDEX_H
