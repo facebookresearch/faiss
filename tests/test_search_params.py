@@ -22,14 +22,38 @@ class TestSelector(unittest.TestCase):
     combinations as possible.
     """
 
-    def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2, k=10):
+    def do_test_id_selector(
+        self,
+        index_key,
+        id_selector_type="batch",
+        mt=faiss.METRIC_L2,
+        k=10,
+        use_heap=True
+    ):
         """ Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
         Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
         """
-        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
-        index = faiss.index_factory(ds.d, index_key, mt)
-        index.train(ds.get_train())
+        d = 32  # make sure dimension is multiple of 8 for binary
+        ds = datasets.SyntheticDataset(d, 1000, 100, 20)
+
+        if index_key == "BinaryFlat":
+            rs = np.random.RandomState(123)
+            xb = rs.randint(256, size=(ds.nb, d // 8), dtype='uint8')
+            xq = rs.randint(256, size=(ds.nq, d // 8), dtype='uint8')
+            index = faiss.IndexBinaryFlat(d)
+            index.use_heap = use_heap
+            # Use smaller radius for Hamming distance
+            base_radius = 4
+            is_binary = True
+        else:
+            xb = ds.get_database()
+            xq = ds.get_queries()
+            xt = ds.get_train()
+            index = faiss.index_factory(d, index_key, mt)
+            index.train(xt)
+            base_radius = float('inf')  # Will be set based on results
+            is_binary = False
 
         # reference result
         if "range" in id_selector_type:
@@ -54,20 +78,22 @@ class TestSelector(unittest.TestCase):
             subset = np.setxor1d(lhs_subset, rhs_subset)
         else:
             rs = np.random.RandomState(123)
-            subset = rs.choice(ds.nb, 50, replace=False).astype("int64")
-        # add_with_ids not supported for all index types
-        # index.add_with_ids(ds.get_database()[subset], subset)
-        index.add(ds.get_database()[subset])
+            subset = rs.choice(ds.nb, 50, replace=False).astype('int64')
+
+        index.add(xb[subset])
         if "IVF" in index_key and id_selector_type == "range_sorted":
             self.assertTrue(index.check_ids_sorted())
-        Dref, Iref0 = index.search(ds.get_queries(), k)
+        Dref, Iref0 = index.search(xq, k)
         Iref = subset[Iref0]
         Iref[Iref0 < 0] = -1
 
-        radius = float(Dref[Iref > 0].max()) * 1.01
+        if base_radius == float('inf'):
+            radius = float(Dref[Iref > 0].max()) * 1.01
+        else:
+            radius = base_radius
+
         try:
-            Rlims_ref, RDref, RIref = index.range_search(
-                ds.get_queries(), radius)
+            Rlims_ref, RDref, RIref = index.range_search(xq, radius)
         except RuntimeError as e:
             if "not implemented" in str(e):
                 have_range_search = False
@@ -81,7 +107,7 @@ class TestSelector(unittest.TestCase):
 
         # result with selector: fill full database and search with selector
         index.reset()
-        index.add(ds.get_database())
+        index.add(xb)
         if id_selector_type == "range":
             sel = faiss.IDSelectorRange(30, 80)
         elif id_selector_type == "range_sorted":
@@ -123,17 +149,53 @@ class TestSelector(unittest.TestCase):
             faiss.SearchParametersPQ(sel=sel) if "PQ" in index_key else
             faiss.SearchParameters(sel=sel)
         )
-        Dnew, Inew = index.search(ds.get_queries(), k, params=params)
-        np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
+
+        Dnew, Inew = index.search(xq, k, params=params)
+
+        if is_binary:
+            # For binary indexes, we need to check:
+            # 1. All returned IDs are valid (in the subset or -1)
+            # 2. The distances match
+
+            # Check that all returned IDs are valid
+            valid_ids = np.ones_like(Inew, dtype=bool)
+            # Create a mask of valid IDs (those in subset)
+            subset_set = set(subset)  # Convert to set for O(1) lookups
+            # Handle -1 values separately (they're always valid)
+            valid_ids = np.logical_or(
+                Inew == -1,
+                np.isin(Inew, list(subset_set))
+            )
+
+            self.assertTrue(np.all(valid_ids), "Some returned IDs are not in the subset")
+
+            # Check that distances match
+            np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
+        else:
+            # For non-binary indexes, we can do exact comparison
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
 
         if have_range_search:
-            Rlims_new, RDnew, RInew = index.range_search(
-                ds.get_queries(), radius, params=params)
+            Rlims_new, RDnew, RInew = index.range_search(xq, radius, params=params)
             np.testing.assert_array_equal(Rlims_ref, Rlims_new)
             RDref, RIref = sort_range_res_2(Rlims_ref, RDref, RIref)
-            np.testing.assert_array_equal(RIref, RInew)
-            np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
+
+            if is_binary:
+                # For binary indexes, check that all returned IDs are valid
+                valid_ids = np.ones(len(RInew), dtype=bool)
+                # Use vectorized operation instead of loop
+                subset_set = set(subset)  # Convert to set for O(1) lookups
+                valid_ids = np.isin(RInew, list(subset_set))
+
+                self.assertTrue(np.all(valid_ids), "Some range search IDs are not in the subset")
+
+                # Check that distances match
+                np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
+            else:
+                # For non-binary indexes, we can do exact comparison
+                np.testing.assert_array_equal(RIref, RInew)
+                np.testing.assert_almost_equal(RDref, RDnew, decimal=5)
 
     def test_IVFFlat(self):
         self.do_test_id_selector("IVF32,Flat")
@@ -284,6 +346,17 @@ class TestSelector(unittest.TestCase):
         distances, indices = index_ip.search(xb[:2], k=3, params=search_params)
         distances, indices = index_l2.search(xb[:2], k=3, params=search_params)
 
+    def test_BinaryFlat(self):
+        self.do_test_id_selector("BinaryFlat")
+
+    def test_BinaryFlat_id_range(self):
+        self.do_test_id_selector("BinaryFlat", id_selector_type="range")
+
+    def test_BinaryFlat_id_array(self):
+        self.do_test_id_selector("BinaryFlat", id_selector_type="array")
+
+    def test_BinaryFlat_no_heap(self):
+        self.do_test_id_selector("BinaryFlat", use_heap=False)
 
 class TestSearchParams(unittest.TestCase):
 
