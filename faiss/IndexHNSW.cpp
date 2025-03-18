@@ -210,7 +210,9 @@ IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
         : Index(d, metric), hnsw(M) {}
 
 IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {}
+        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {
+    metric_arg = storage->metric_arg;
+}
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {
@@ -332,7 +334,6 @@ void IndexHNSW::add(idx_t n, const float* x) {
             storage,
             "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
     FAISS_THROW_IF_NOT(is_trained);
-    storage->metric_arg = metric_arg;
     int n0 = ntotal;
     storage->add(n, x);
     ntotal = storage->ntotal;
