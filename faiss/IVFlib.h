@@ -191,19 +191,23 @@ struct DefaultShardingFunction : ShardingFunction {
  * @param filename_template Template for shard filenames.
  * @param sharding_function The function to shard by. The default is ith vector
  *                          mod shard_count.
+ * @param generate_ids      Generates ids using IndexIDMap2. If true, ids will
+ *                          match the default ids in the unsharded index.
  * @return                  The number of shards written.
  */
 void shard_ivf_index_centroids(
         IndexIVF* index,
         int64_t shard_count = 20,
         const std::string& filename_template = "shard.%d.index",
-        ShardingFunction* sharding_function = nullptr);
+        ShardingFunction* sharding_function = nullptr,
+        bool generate_ids = false);
 
 void shard_binary_ivf_index_centroids(
         faiss::IndexBinaryIVF* index,
         int64_t shard_count = 20,
         const std::string& filename_template = "shard.%d.index",
-        ShardingFunction* sharding_function = nullptr);
+        ShardingFunction* sharding_function = nullptr,
+        bool generate_ids = false);
 
 } // namespace ivflib
 } // namespace faiss

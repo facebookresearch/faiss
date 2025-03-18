@@ -9,6 +9,7 @@
 #include <omp.h>
 
 #include <memory>
+#include <numeric>
 
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
@@ -529,20 +530,30 @@ void handle_ivf(
         faiss::IndexIVF* index,
         int64_t shard_count,
         const std::string& filename_template,
-        ShardingFunction* sharding_function) {
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
     std::vector<faiss::IndexIVF*> sharded_indexes(shard_count);
     auto clone = static_cast<faiss::IndexIVF*>(faiss::clone_index(index));
     clone->quantizer->reset();
     for (int64_t i = 0; i < shard_count; i++) {
         sharded_indexes[i] =
                 static_cast<faiss::IndexIVF*>(faiss::clone_index(clone));
+        if (generate_ids) {
+            // Assume the quantizer does not natively support add_with_ids.
+            sharded_indexes[i]->quantizer =
+                    new IndexIDMap2(sharded_indexes[i]->quantizer);
+        }
     }
 
     // assign centroids to each sharded Index based on sharding_function, and
     // add them to the quantizer of each sharded index
     std::vector<std::vector<float>> sharded_centroids(shard_count);
+    std::vector<std::vector<idx_t>> xids(shard_count);
     for (int64_t i = 0; i < index->quantizer->ntotal; i++) {
         int64_t shard_id = (*sharding_function)(i, shard_count);
+        // Since the quantizer does not natively support add_with_ids, we simply
+        // generate them.
+        xids[shard_id].push_back(i);
         float* reconstructed = new float[index->quantizer->d];
         index->quantizer->reconstruct(i, reconstructed);
         sharded_centroids[shard_id].insert(
@@ -552,9 +563,16 @@ void handle_ivf(
         delete[] reconstructed;
     }
     for (int64_t i = 0; i < shard_count; i++) {
-        sharded_indexes[i]->quantizer->add(
-                sharded_centroids[i].size() / index->quantizer->d,
-                sharded_centroids[i].data());
+        if (generate_ids) {
+            sharded_indexes[i]->quantizer->add_with_ids(
+                    sharded_centroids[i].size() / index->quantizer->d,
+                    sharded_centroids[i].data(),
+                    xids[i].data());
+        } else {
+            sharded_indexes[i]->quantizer->add(
+                    sharded_centroids[i].size() / index->quantizer->d,
+                    sharded_centroids[i].data());
+        }
     }
 
     for (int64_t i = 0; i < shard_count; i++) {
@@ -572,7 +590,8 @@ void handle_binary_ivf(
         faiss::IndexBinaryIVF* index,
         int64_t shard_count,
         const std::string& filename_template,
-        ShardingFunction* sharding_function) {
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
     std::vector<faiss::IndexBinaryIVF*> sharded_indexes(shard_count);
 
     auto clone = static_cast<faiss::IndexBinaryIVF*>(
@@ -582,14 +601,23 @@ void handle_binary_ivf(
     for (int64_t i = 0; i < shard_count; i++) {
         sharded_indexes[i] = static_cast<faiss::IndexBinaryIVF*>(
                 faiss::clone_binary_index(clone));
+        if (generate_ids) {
+            // Assume the quantizer does not natively support add_with_ids.
+            sharded_indexes[i]->quantizer =
+                    new IndexBinaryIDMap2(sharded_indexes[i]->quantizer);
+        }
     }
 
     // assign centroids to each sharded Index based on sharding_function, and
     // add them to the quantizer of each sharded index
     int64_t reconstruction_size = index->quantizer->d / 8;
     std::vector<std::vector<uint8_t>> sharded_centroids(shard_count);
+    std::vector<std::vector<idx_t>> xids(shard_count);
     for (int64_t i = 0; i < index->quantizer->ntotal; i++) {
         int64_t shard_id = (*sharding_function)(i, shard_count);
+        // Since the quantizer does not natively support add_with_ids, we simply
+        // generate them.
+        xids[shard_id].push_back(i);
         uint8_t* reconstructed = new uint8_t[reconstruction_size];
         index->quantizer->reconstruct(i, reconstructed);
         sharded_centroids[shard_id].insert(
@@ -599,9 +627,16 @@ void handle_binary_ivf(
         delete[] reconstructed;
     }
     for (int64_t i = 0; i < shard_count; i++) {
-        sharded_indexes[i]->quantizer->add(
-                sharded_centroids[i].size() / reconstruction_size,
-                sharded_centroids[i].data());
+        if (generate_ids) {
+            sharded_indexes[i]->quantizer->add_with_ids(
+                    sharded_centroids[i].size() / reconstruction_size,
+                    sharded_centroids[i].data(),
+                    xids[i].data());
+        } else {
+            sharded_indexes[i]->quantizer->add(
+                    sharded_centroids[i].size() / reconstruction_size,
+                    sharded_centroids[i].data());
+        }
     }
 
     for (int64_t i = 0; i < shard_count; i++) {
@@ -620,7 +655,8 @@ void sharding_helper(
         IndexType* index,
         int64_t shard_count,
         const std::string& filename_template,
-        ShardingFunction* sharding_function) {
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
     FAISS_THROW_IF_MSG(index->quantizer->ntotal == 0, "No centroids to shard.");
     FAISS_THROW_IF_MSG(
             filename_template.find("%d") == std::string::npos,
@@ -636,13 +672,15 @@ void sharding_helper(
                 dynamic_cast<faiss::IndexIVF*>(index),
                 shard_count,
                 filename_template,
-                sharding_function);
+                sharding_function,
+                generate_ids);
     } else if (typeid(IndexType) == typeid(faiss::IndexBinaryIVF)) {
         handle_binary_ivf(
                 dynamic_cast<faiss::IndexBinaryIVF*>(index),
                 shard_count,
                 filename_template,
-                sharding_function);
+                sharding_function,
+                generate_ids);
     }
 }
 
@@ -650,16 +688,28 @@ void shard_ivf_index_centroids(
         faiss::IndexIVF* index,
         int64_t shard_count,
         const std::string& filename_template,
-        ShardingFunction* sharding_function) {
-    sharding_helper(index, shard_count, filename_template, sharding_function);
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    sharding_helper(
+            index,
+            shard_count,
+            filename_template,
+            sharding_function,
+            generate_ids);
 }
 
 void shard_binary_ivf_index_centroids(
         faiss::IndexBinaryIVF* index,
         int64_t shard_count,
         const std::string& filename_template,
-        ShardingFunction* sharding_function) {
-    sharding_helper(index, shard_count, filename_template, sharding_function);
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    sharding_helper(
+            index,
+            shard_count,
+            filename_template,
+            sharding_function,
+            generate_ids);
 }
 
 } // namespace ivflib

@@ -11,9 +11,6 @@
 
 #include <faiss/index_factory.h>
 
-#include <cinttypes>
-#include <cmath>
-
 #include <map>
 
 #include <regex>
@@ -164,7 +161,7 @@ const std::string aq_norm_pattern =
 const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";
 
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
-        std::string stok,
+        const std::string& stok,
         MetricType metric) {
     if (stok == "") {
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
@@ -766,7 +763,7 @@ std::unique_ptr<Index> index_factory_sub(
     }
 
     if (verbose) {
-        printf("after () normalization: %s %ld parenthesis indexes d=%d\n",
+        printf("after () normalization: %s %zd parenthesis indexes d=%d\n",
                description.c_str(),
                parenthesis_indexes.size(),
                d);
