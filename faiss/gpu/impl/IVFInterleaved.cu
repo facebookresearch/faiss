@@ -27,7 +27,7 @@ __global__ void ivfInterleavedScan2(
         Tensor<float, 2, true> distanceOut,
         Tensor<idx_t, 2, true> indicesOut) {
     if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
-        int queryId = blockIdx.x;
+        auto queryId = blockIdx.x;
 
         constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
@@ -99,7 +99,7 @@ __global__ void ivfInterleavedScan2(
         // Merge all final results
         heap.reduce();
 
-        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+        for (auto i = threadIdx.x; i < k; i += blockDim.x) {
             // Re-adjust the value we are selecting based on the sorting order
             distanceOut[queryId][i] = smemK[i] * adj;
             auto packedIndex = smemV[i];
