@@ -860,7 +860,7 @@
 <codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>normalizers<sp/>=<sp/>norms;</highlight></codeline>
 <codeline lineno="577"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>q<sp/>=<sp/>0;<sp/>q<sp/>&lt;<sp/>nq;<sp/>++q)<sp/>{</highlight></codeline>
 <codeline lineno="578"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thresholds[q]<sp/>=</highlight></codeline>
-<codeline lineno="579"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>normalizers[2<sp/>*<sp/>q]<sp/>*<sp/>(radius<sp/>-<sp/>normalizers[2<sp/>*<sp/>q<sp/>+<sp/>1]);</highlight></codeline>
+<codeline lineno="579"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int(normalizers[2<sp/>*<sp/>q]<sp/>*<sp/>(radius<sp/>-<sp/>normalizers[2<sp/>*<sp/>q<sp/>+<sp/>1]));</highlight></codeline>
 <codeline lineno="580"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="581"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="582"><highlight class="normal"></highlight></codeline>
