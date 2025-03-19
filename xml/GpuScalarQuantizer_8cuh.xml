@@ -386,7 +386,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVmin<sp/>=<sp/>smem;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVdiff<sp/>=<sp/>smem<sp/>+<sp/>dim;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>are<sp/>performing<sp/>vmin<sp/>+<sp/>vdiff<sp/>*<sp/>(v<sp/>+<sp/>0.5)<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>This<sp/>can<sp/>be<sp/>simplified<sp/>to<sp/>vmin&apos;<sp/>+<sp/>vdiff&apos;<sp/>*<sp/>v<sp/>where:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>vdiff&apos;<sp/>=<sp/>vdiff<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>
@@ -596,7 +596,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVmin<sp/>=<sp/>smem;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVdiff<sp/>=<sp/>smem<sp/>+<sp/>dim;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>are<sp/>performing<sp/>vmin<sp/>+<sp/>vdiff<sp/>*<sp/>(v<sp/>+<sp/>0.5)<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>This<sp/>can<sp/>be<sp/>simplified<sp/>to<sp/>vmin&apos;<sp/>+<sp/>vdiff&apos;<sp/>*<sp/>v<sp/>where:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>vdiff&apos;<sp/>=<sp/>vdiff<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>
@@ -762,7 +762,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVmin<sp/>=<sp/>smem;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smemVdiff<sp/>=<sp/>smem<sp/>+<sp/>dim;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>dim;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>are<sp/>performing<sp/>vmin<sp/>+<sp/>vdiff<sp/>*<sp/>(v<sp/>+<sp/>0.5)<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>This<sp/>can<sp/>be<sp/>simplified<sp/>to<sp/>vmin&apos;<sp/>+<sp/>vdiff&apos;<sp/>*<sp/>v<sp/>where:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>vdiff&apos;<sp/>=<sp/>vdiff<sp/>/<sp/>(2^bits<sp/>-<sp/>1)</highlight></codeline>

@@ -65,7 +65,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>queryId<sp/>=<sp/>blockIdx.y;<sp/>queryId<sp/>&lt;<sp/>queries.getSize(0);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queryId<sp/>+=<sp/>gridDim.y)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>probeId<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>probeId<sp/>=<sp/>blockIdx.x;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>listId<sp/>=<sp/>listIds[queryId][probeId];</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Safety<sp/>guard<sp/>in<sp/>case<sp/>NaNs<sp/>in<sp/>input<sp/>cause<sp/>no<sp/>list<sp/>ID<sp/>to<sp/>be</highlight></codeline>
@@ -78,8 +78,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim<sp/>=<sp/>queries.getSize(1);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>some<sp/>issue<sp/>with<sp/>getLaneId()<sp/>and<sp/>CUDA<sp/>10.1<sp/>and<sp/>P4<sp/>GPUs?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>threadIdx.x<sp/>%<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>laneId<sp/>=<sp/>threadIdx.x<sp/>%<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>using<sp/>EncodeT<sp/>=<sp/>typename<sp/>Codec::EncodeT;</highlight></codeline>
 <codeline></codeline>
@@ -224,7 +224,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>distanceOutBase<sp/>=<sp/>distanceOut[queryId][probeId].data();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>indicesOutBase<sp/>=<sp/>indicesOut[queryId][probeId].data();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>k;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distanceOutBase[i]<sp/>=<sp/>smemK[i];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>indicesOutBase[i]<sp/>=<sp/>smemV[i];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>

@@ -312,7 +312,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>increment)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(idx_t<sp/>i<sp/>=<sp/>blockIdx.y;<sp/>i<sp/>&lt;<sp/>indices.getSize(0);<sp/>i<sp/>+=<sp/>gridDim.y)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>j<sp/>=<sp/>threadIdx.x;<sp/>j<sp/>&lt;<sp/>k;<sp/>j<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>j<sp/>=<sp/>threadIdx.x;<sp/>j<sp/>&lt;<sp/>k;<sp/>j<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>indices[i][idx_t(blockIdx.x)<sp/>*<sp/>k<sp/>+<sp/>j]<sp/>+=<sp/>blockIdx.x<sp/>*<sp/>increment;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
