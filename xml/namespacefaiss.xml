@@ -10540,14 +10540,14 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="83" column="8" declfile="faiss/utils/utils.h" declline="83" declcolumn="8"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aeffbb44eed1c07967d77b369d7ba7b1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a6bd11ae949782797ec7ad9e6cf562328" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::imbalance_factor</definition>
-        <argsstring>(int n, int k, const int64_t *assign)</argsstring>
+        <argsstring>(int64_t n, int k, const int64_t *assign)</argsstring>
         <name>imbalance_factor</name>
         <qualifiedname>faiss::imbalance_factor</qualifiedname>
         <param>
-          <type>int</type>
+          <type>int64_t</type>
           <declname>n</declname>
         </param>
         <param>
@@ -10567,10 +10567,10 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="95" column="8" declfile="faiss/utils/utils.h" declline="95" declcolumn="8"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a94c1d99ac39d22e362aa27ce7c7ff714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1ae6e153c78a45f44e454afe6778957a68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::imbalance_factor</definition>
-        <argsstring>(int k, const int *hist)</argsstring>
+        <argsstring>(int k, const int64_t *hist)</argsstring>
         <name>imbalance_factor</name>
         <qualifiedname>faiss::imbalance_factor</qualifiedname>
         <param>
@@ -10578,7 +10578,7 @@
           <declname>k</declname>
         </param>
         <param>
-          <type>const int *</type>
+          <type>const int64_t *</type>
           <declname>hist</declname>
         </param>
         <briefdescription>

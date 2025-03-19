@@ -9520,8 +9520,8 @@
     <member refid="namespacefaiss_1ad5827240bc67d6f8a612ba8761b34714" kind="function"><name>ranklist_handle_ties</name></member>
     <member refid="namespacefaiss_1a104f2c4626def41c53ad1ca0027741cb" kind="function"><name>ranklist_intersection_size</name></member>
     <member refid="namespacefaiss_1a7690bafb56c991da908ee11822c7a8da" kind="function"><name>merge_result_table_with</name></member>
-    <member refid="namespacefaiss_1aeffbb44eed1c07967d77b369d7ba7b1c" kind="function"><name>imbalance_factor</name></member>
-    <member refid="namespacefaiss_1a94c1d99ac39d22e362aa27ce7c7ff714" kind="function"><name>imbalance_factor</name></member>
+    <member refid="namespacefaiss_1a6bd11ae949782797ec7ad9e6cf562328" kind="function"><name>imbalance_factor</name></member>
+    <member refid="namespacefaiss_1ae6e153c78a45f44e454afe6778957a68" kind="function"><name>imbalance_factor</name></member>
     <member refid="namespacefaiss_1a7bea462108bee98d8d5859b51ec4db8e" kind="function"><name>ivec_hist</name></member>
     <member refid="namespacefaiss_1a154a47857ed321b9db91122770a16e09" kind="function"><name>bincode_hist</name></member>
     <member refid="namespacefaiss_1a9961a06bc9beb19366bb0437e11ac962" kind="function"><name>ivec_checksum</name></member>
