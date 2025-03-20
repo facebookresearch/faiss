@@ -687,6 +687,10 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
 
 class TestAdditiveQuantizerWithLUT(unittest.TestCase):
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_RCQ_knn(self):
         ds = datasets.SyntheticDataset(32, 1000, 0, 123)
         xt = ds.get_train()

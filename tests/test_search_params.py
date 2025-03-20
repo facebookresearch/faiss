@@ -228,6 +228,10 @@ class TestSelector(unittest.TestCase):
     def test_Flat(self):
         self.do_test_id_selector("Flat")
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_Flat_IP(self):
         self.do_test_id_selector("Flat", mt=faiss.METRIC_INNER_PRODUCT)
 
@@ -243,6 +247,10 @@ class TestSelector(unittest.TestCase):
     def test_Flat_id_array(self):
         self.do_test_id_selector("Flat", id_selector_type="array")
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_Flat_IP_id_array(self):
         self.do_test_id_selector(
             "Flat", id_selector_type="array",
