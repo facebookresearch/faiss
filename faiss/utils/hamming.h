@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
@@ -135,7 +136,8 @@ void hammings_knn_hc(
         size_t nb,
         size_t ncodes,
         int ordered,
-        ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK);
+        ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK,
+        const faiss::IDSelector* sel = nullptr);
 
 /* Legacy alias to hammings_knn_hc. */
 void hammings_knn(
@@ -166,7 +168,8 @@ void hammings_knn_mc(
         size_t k,
         size_t ncodes,
         int32_t* distances,
-        int64_t* labels);
+        int64_t* labels,
+        const faiss::IDSelector* sel = nullptr);
 
 /** same as hammings_knn except we are doing a range search with radius */
 void hamming_range_search(
@@ -176,7 +179,8 @@ void hamming_range_search(
         size_t nb,
         int radius,
         size_t ncodes,
-        RangeSearchResult* result);
+        RangeSearchResult* result,
+        const faiss::IDSelector* sel = nullptr);
 
 /* Counting the number of matches or of cross-matches (without returning them)
    For use with function that assume pre-allocated memory */

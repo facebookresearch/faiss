@@ -46,9 +46,11 @@ struct HeapWithBucketsForHamming32<
             // output distances
             int* const __restrict bh_val,
             // output indices, each being within [0, n) range
-            int64_t* const __restrict bh_ids) {
+            int64_t* const __restrict bh_ids,
+            // optional id selector for filtering
+            const IDSelector* sel = nullptr) {
         // forward a call to bs_addn with 1 beam
-        bs_addn(1, n, hc, binaryVectors, k, bh_val, bh_ids);
+        bs_addn(1, n, hc, binaryVectors, k, bh_val, bh_ids, sel);
     }
 
     static void bs_addn(
@@ -66,7 +68,9 @@ struct HeapWithBucketsForHamming32<
             int* const __restrict bh_val,
             // output indices, each being within [0, n_per_beam * beam_size)
             // range
-            int64_t* const __restrict bh_ids) {
+            int64_t* const __restrict bh_ids,
+            // optional id selector for filtering
+            const IDSelector* sel = nullptr) {
         //
         using C = CMax<int, int64_t>;
 
@@ -95,11 +99,22 @@ struct HeapWithBucketsForHamming32<
             for (uint32_t ip = 0; ip < nb; ip += NBUCKETS) {
                 for (uint32_t j = 0; j < NBUCKETS_8; j++) {
                     uint32_t hamming_distances[8];
+                    uint8_t valid_counter = 0;
                     for (size_t j8 = 0; j8 < 8; j8++) {
-                        hamming_distances[j8] = hc.hamming(
-                                binary_vectors +
-                                (j8 + j * 8 + ip + n_per_beam * beam_index) *
-                                        code_size);
+                        const uint32_t idx =
+                                j8 + j * 8 + ip + n_per_beam * beam_index;
+                        if (!sel || sel->is_member(idx)) {
+                            hamming_distances[j8] = hc.hamming(
+                                    binary_vectors + idx * code_size);
+                            valid_counter++;
+                        } else {
+                            hamming_distances[j8] =
+                                    std::numeric_limits<int32_t>::max();
+                        }
+                    }
+
+                    if (valid_counter == 8) {
+                        continue; // Skip if all vectors are filtered out
                     }
 
                     // loop. Compiler should get rid of unneeded ops
@@ -157,7 +172,8 @@ struct HeapWithBucketsForHamming32<
                         const auto value = min_distances_scalar[j8];
                         const auto index = min_indices_scalar[j8];
 
-                        if (C::cmp2(bh_val[0], value, bh_ids[0], index)) {
+                        if (value < std::numeric_limits<int32_t>::max() &&
+                            C::cmp2(bh_val[0], value, bh_ids[0], index)) {
                             heap_replace_top<C>(
                                     k, bh_val, bh_ids, value, index);
                         }
@@ -168,11 +184,13 @@ struct HeapWithBucketsForHamming32<
             // process leftovers
             for (uint32_t ip = nb; ip < n_per_beam; ip++) {
                 const auto index = ip + n_per_beam * beam_index;
-                const auto value =
-                        hc.hamming(binary_vectors + (index)*code_size);
+                if (!sel || sel->is_member(index)) {
+                    const auto value =
+                            hc.hamming(binary_vectors + (index)*code_size);
 
-                if (C::cmp(bh_val[0], value)) {
-                    heap_replace_top<C>(k, bh_val, bh_ids, value, index);
+                    if (C::cmp(bh_val[0], value)) {
+                        heap_replace_top<C>(k, bh_val, bh_ids, value, index);
+                    }
                 }
             }
         }
