@@ -39,7 +39,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake=3.26 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
+        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -61,7 +61,7 @@ runs:
           conda install -y -q cuda-toolkit=12.4 -c "nvidia/label/cuda-12.4.0"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=24.12 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c conda-forge
+          conda install -y -q libcuvs=25.04 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
         # install test packages
