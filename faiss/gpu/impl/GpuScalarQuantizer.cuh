@@ -377,7 +377,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
         smemVmin = smem;
         smemVdiff = smem + dim;
 
-        for (int i = threadIdx.x; i < dim; i += blockDim.x) {
+        for (auto i = threadIdx.x; i < dim; i += blockDim.x) {
             // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
             // This can be simplified to vmin' + vdiff' * v where:
             // vdiff' = vdiff / (2^bits - 1)
@@ -587,7 +587,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_6bit, 1> {
         smemVmin = smem;
         smemVdiff = smem + dim;
 
-        for (int i = threadIdx.x; i < dim; i += blockDim.x) {
+        for (auto i = threadIdx.x; i < dim; i += blockDim.x) {
             // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
             // This can be simplified to vmin' + vdiff' * v where:
             // vdiff' = vdiff / (2^bits - 1)
@@ -753,7 +753,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
         smemVmin = smem;
         smemVdiff = smem + dim;
 
-        for (int i = threadIdx.x; i < dim; i += blockDim.x) {
+        for (auto i = threadIdx.x; i < dim; i += blockDim.x) {
             // We are performing vmin + vdiff * (v + 0.5) / (2^bits - 1)
             // This can be simplified to vmin' + vdiff' * v where:
             // vdiff' = vdiff / (2^bits - 1)

@@ -303,7 +303,7 @@ __global__ void incrementIndex(
         int k,
         idx_t increment) {
     for (idx_t i = blockIdx.y; i < indices.getSize(0); i += gridDim.y) {
-        for (int j = threadIdx.x; j < k; j += blockDim.x) {
+        for (auto j = threadIdx.x; j < k; j += blockDim.x) {
             indices[i][idx_t(blockIdx.x) * k + j] += blockIdx.x * increment;
         }
     }

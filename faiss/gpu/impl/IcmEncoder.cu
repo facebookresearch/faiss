@@ -46,8 +46,8 @@ __global__ void runIcmEncodeStep(
         int m) {
     using KVPair = Pair<float, int>;
 
-    int id = blockIdx.x;    // each block takes care of one vector
-    int code = threadIdx.x; // each thread takes care of one possible code
+    auto id = blockIdx.x;    // each block takes care of one vector
+    auto code = threadIdx.x; // each thread takes care of one possible code
 
     // compute the objective value by look-up tables
     KVPair obj(0.0f, code);
@@ -94,8 +94,8 @@ __global__ void runEvaluation(
         int M,
         int K,
         int dims) {
-    int id = blockIdx.x; // each block takes care of one vector
-    int d = threadIdx.x; // each thread takes care of one dimension
+    auto id = blockIdx.x; // each block takes care of one vector
+    auto d = threadIdx.x; // each thread takes care of one dimension
     float acc = 0.0f;
 
 #pragma unroll
@@ -136,7 +136,7 @@ __global__ void runCodesPerturbation(
         int K,
         int nperts) {
     // each thread takes care of one vector
-    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    auto id = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (id >= n) {
         return;
@@ -173,7 +173,7 @@ __global__ void runCodesSelection(
         int n,
         int M) {
     // each thread takes care of one vector
-    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    auto id = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (id >= n || objs[id] >= bestObjs[id]) {
         return;
@@ -195,8 +195,8 @@ __global__ void runCodesSelection(
  * @param K     number of codewords in a codebook
  */
 __global__ void runNormAddition(float* uterm, const float* norm, int K) {
-    int id = blockIdx.x;
-    int code = threadIdx.x;
+    auto id = blockIdx.x;
+    auto code = threadIdx.x;
 
     uterm[id * K + code] += norm[code];
 }

@@ -56,7 +56,7 @@ __global__ void ivfInterleavedScan(
 
         for (idx_t queryId = blockIdx.y; queryId < queries.getSize(0);
              queryId += gridDim.y) {
-            int probeId = blockIdx.x;
+            auto probeId = blockIdx.x;
             idx_t listId = listIds[queryId][probeId];
 
             // Safety guard in case NaNs in input cause no list ID to be
@@ -69,8 +69,8 @@ __global__ void ivfInterleavedScan(
             int dim = queries.getSize(1);
 
             // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
-            int laneId = threadIdx.x % kWarpSize;
-            int warpId = threadIdx.x / kWarpSize;
+            auto laneId = threadIdx.x % kWarpSize;
+            auto warpId = threadIdx.x / kWarpSize;
 
             using EncodeT = typename Codec::EncodeT;
 
@@ -215,7 +215,7 @@ __global__ void ivfInterleavedScan(
             auto distanceOutBase = distanceOut[queryId][probeId].data();
             auto indicesOutBase = indicesOut[queryId][probeId].data();
 
-            for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            for (auto i = threadIdx.x; i < k; i += blockDim.x) {
                 distanceOutBase[i] = smemK[i];
                 indicesOutBase[i] = smemV[i];
             }

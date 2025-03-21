@@ -368,9 +368,9 @@ __global__ void ivfInterleavedAppend(
         // The set of addresses for each of the lists
         void** listData) {
     // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
-    int laneId = threadIdx.x % kWarpSize;
-    int warpId = threadIdx.x / kWarpSize;
-    int warpsPerBlock = blockDim.x / kWarpSize;
+    auto laneId = threadIdx.x % kWarpSize;
+    auto warpId = threadIdx.x / kWarpSize;
+    auto warpsPerBlock = blockDim.x / kWarpSize;
 
     // Each block is dedicated to a separate list
     idx_t listId = uniqueLists[blockIdx.x];

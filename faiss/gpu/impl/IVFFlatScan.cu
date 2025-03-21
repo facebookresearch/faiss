@@ -65,9 +65,9 @@ struct IVFFlatScan {
         int limit = utils::divDown(dim, Codec::kDimPerIter);
 
         // Each warp handles a separate chunk of vectors
-        int warpId = threadIdx.x / kWarpSize;
+        auto warpId = threadIdx.x / kWarpSize;
         // FIXME: why does getLaneId() not work when we write out below!?!?!
-        int laneId = threadIdx.x % kWarpSize; // getLaneId();
+        auto laneId = threadIdx.x % kWarpSize; // getLaneId();
 
         // Divide the set of vectors among the warps
         idx_t vecsPerWarp = utils::divUp(numVecs, kIVFFlatScanWarps);

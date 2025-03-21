@@ -576,7 +576,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
         normalizers = norms;
         for (int q = 0; q < nq; ++q) {
             thresholds[q] =
-                    normalizers[2 * q] * (radius - normalizers[2 * q + 1]);
+                    int(normalizers[2 * q] * (radius - normalizers[2 * q + 1]));
         }
     }
 
