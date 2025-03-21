@@ -173,8 +173,8 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
     /// Number of Iterations to run if building with NN_DESCENT
     size_t nn_descent_niter = 20;
 
-    IVFPQBuildCagraConfig* ivf_pq_params = nullptr;
-    IVFPQSearchCagraConfig* ivf_pq_search_params = nullptr;
+    std::shared_ptr<IVFPQBuildCagraConfig> ivf_pq_params{nullptr};
+    std::shared_ptr<IVFPQSearchCagraConfig> ivf_pq_search_params{nullptr};
     float refine_rate = 2.0f;
     bool store_dataset = true;
 };
