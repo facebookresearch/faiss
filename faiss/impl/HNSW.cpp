@@ -1084,7 +1084,7 @@ void HNSW::permute_entries(const idx_t* map) {
     // swap everyone
     std::swap(levels, new_levels);
     std::swap(offsets, new_offsets);
-    std::swap(neighbors, new_neighbors);
+    neighbors = std::move(new_neighbors);
 }
 
 /**************************************************************
