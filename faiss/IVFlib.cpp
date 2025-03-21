@@ -202,7 +202,27 @@ static void shift_and_add(
 }
 
 template <class T>
+static void shift_and_add(
+        MaybeOwnedVector<T>& dst,
+        size_t remove,
+        const MaybeOwnedVector<T>& src) {
+    if (remove > 0)
+        memmove(dst.data(),
+                dst.data() + remove,
+                (dst.size() - remove) * sizeof(T));
+    size_t insert_point = dst.size() - remove;
+    dst.resize(insert_point + src.size());
+    memcpy(dst.data() + insert_point, src.data(), src.size() * sizeof(T));
+}
+
+template <class T>
 static void remove_from_begin(std::vector<T>& v, size_t remove) {
+    if (remove > 0)
+        v.erase(v.begin(), v.begin() + remove);
+}
+
+template <class T>
+static void remove_from_begin(MaybeOwnedVector<T>& v, size_t remove) {
     if (remove > 0)
         v.erase(v.begin(), v.begin() + remove);
 }
