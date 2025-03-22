@@ -14,10 +14,9 @@
 namespace faiss {
 
 struct FactorsData {
+    // ||or - c||^2 - ((metric==IP) ? ||or||^2 : 0)
     float or_minus_c_l2sqr = 0;
     float dp_multiplier = 0;
-    // this is needed to support BOTH L2 and IP on the same data
-    float or_l2sqr = 0;
 };
 
 struct QueryFactorsData {
@@ -33,7 +32,8 @@ static size_t get_code_size(const size_t d) {
     return (d + 7) / 8 + sizeof(FactorsData);
 }
 
-RaBitQuantizer::RaBitQuantizer(size_t d) : Quantizer(d, get_code_size(d)) {}
+RaBitQuantizer::RaBitQuantizer(size_t d, MetricType metric)
+        : Quantizer(d, get_code_size(d)), metric_type{metric} {}
 
 void RaBitQuantizer::train(size_t n, const float* x) {
     // does nothing
@@ -51,6 +51,9 @@ void RaBitQuantizer::compute_codes_core(
         const float* centroid_in) const {
     FAISS_ASSERT(codes != nullptr);
     FAISS_ASSERT(x != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
 
     if (n == 0) {
         return;
@@ -115,8 +118,11 @@ void RaBitQuantizer::compute_codes_core(
                 : (1.0f / dp_oO);
 
         fac->or_minus_c_l2sqr = norm_L2sqr;
+        if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+            fac->or_minus_c_l2sqr -= or_L2sqr;
+        }
+
         fac->dp_multiplier = inv_dp_oO * std::sqrt(norm_L2sqr);
-        fac->or_l2sqr = or_L2sqr;
     }
 }
 
@@ -129,6 +135,9 @@ void RaBitQuantizer::decode_core(
         float* x,
         size_t n,
         const float* centroid_in) const {
+    FAISS_ASSERT(codes != nullptr);
+    FAISS_ASSERT(x != nullptr);
+
     const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
 
 #pragma omp parallel for if (n > 1000)
@@ -153,20 +162,27 @@ void RaBitQuantizer::decode_core(
     }
 }
 
-RaBitQuantizer::RaBitDistanceComputer::RaBitDistanceComputer() = default;
+struct RaBitDistanceComputer : FlatCodesDistanceComputer {
+    // dimensionality
+    size_t d = 0;
+    // a centroid to use
+    const float* centroid = nullptr;
 
-float RaBitQuantizer::RaBitDistanceComputer::distance_to_code(
-        const uint8_t* code) {
-    if (metric == MetricType::METRIC_INNER_PRODUCT) {
-        return distance_to_code_IP(code);
-    } else if (metric == MetricType::METRIC_L2) {
-        return distance_to_code_L2(code);
-    } else {
-        FAISS_THROW_MSG("This distance type is not supported");
-    }
+    // the metric
+    MetricType metric_type = MetricType::METRIC_L2;
+
+    RaBitDistanceComputer();
+
+    float symmetric_dis(idx_t i, idx_t j) override;
+};
+
+RaBitDistanceComputer::RaBitDistanceComputer() = default;
+
+float RaBitDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
+    FAISS_THROW_MSG("Not implemented");
 }
 
-struct RaBitDistanceComputerNotQ : RaBitQuantizer::RaBitDistanceComputer {
+struct RaBitDistanceComputerNotQ : RaBitDistanceComputer {
     // the rotated query (qr - c)
     std::vector<float> rotated_q;
     // some additional numbers for the query
@@ -174,38 +190,19 @@ struct RaBitDistanceComputerNotQ : RaBitQuantizer::RaBitDistanceComputer {
 
     RaBitDistanceComputerNotQ();
 
-    float distance_to_code_IP(const uint8_t* code) const override;
-    float distance_to_code_L2(const uint8_t* code) const override;
-
-    void set_query(const float* x) override;
-};
-
-struct RaBitDistanceComputerQ : RaBitQuantizer::RaBitDistanceComputer {
-    // the rotated and quantized query (qr - c)
-    std::vector<uint8_t> rotated_qq;
-    // we're using the proposed relayout-ed scheme from 3.3 that allows
-    //    using popcounts for computing the distance.
-    std::vector<uint8_t> rearranged_rotated_qq;
-    // some additional numbers for the query
-    QueryFactorsData query_fac;
-
-    // the number of bits for SQ quantization of the query (qb > 0)
-    uint8_t qb = 8;
-    // the smallest value divisible by 8 that is not smaller than dim
-    size_t popcount_aligned_dim = 0;
-
-    RaBitDistanceComputerQ();
-
-    float distance_to_code_IP(const uint8_t* code) const override;
-    float distance_to_code_L2(const uint8_t* code) const override;
+    float distance_to_code(const uint8_t* code) override;
 
     void set_query(const float* x) override;
 };
 
 RaBitDistanceComputerNotQ::RaBitDistanceComputerNotQ() = default;
 
-float RaBitDistanceComputerNotQ::distance_to_code_L2(
-        const uint8_t* code) const {
+float RaBitDistanceComputerNotQ::distance_to_code(const uint8_t* code) {
+    FAISS_ASSERT(code != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
+
     // split the code into parts
     const uint8_t* binary_data = code;
     const FactorsData* fac =
@@ -237,34 +234,34 @@ float RaBitDistanceComputerNotQ::distance_to_code_L2(
     // normalizer coefficients
     final_dot -= query_fac.c34;
 
-    // this is ||or - c||^2
+    // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
     const float or_c_l2sqr = fac->or_minus_c_l2sqr;
 
-    // ||or - q||^ 2 = ||or - c||^2 + ||qr - c||^2 -
-    //     2 * ||or - c|| * ||qr - c|| * <q,o>
-    const float dist_l2sqr = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
+    // pre_dist = ||or - c||^2 + ||qr - c||^2 -
+    //     2 * ||or - c|| * ||qr - c|| * <q,o> - (IP ? ||or||^2 : 0)
+    const float pre_dist = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
             2 * fac->dp_multiplier * final_dot;
-    return dist_l2sqr;
-}
 
-float RaBitDistanceComputerNotQ::distance_to_code_IP(
-        const uint8_t* code) const {
-    // split the code into parts
-    const FactorsData* fac =
-            reinterpret_cast<const FactorsData*>(code + (d + 7) / 8);
+    if (metric_type == MetricType::METRIC_L2) {
+        // ||or - q||^ 2
+        return pre_dist;
+    } else {
+        // metric == MetricType::METRIC_INNER_PRODUCT
 
-    // this is ||or - q||^2
-    const float l2 = distance_to_code_L2(code);
-    // this is ||q||^2
-    const float query_norm_sqr = query_fac.qr_norm_L2sqr;
-    // this is ||or||^2
-    const float or_norm_sqr = fac->or_l2sqr;
+        // this is ||q||^2
+        const float query_norm_sqr = query_fac.qr_norm_L2sqr;
 
-    // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
-    return -0.5f * (l2 - query_norm_sqr - or_norm_sqr);
+        // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
+        return -0.5f * (pre_dist - query_norm_sqr);
+    }
 }
 
 void RaBitDistanceComputerNotQ::set_query(const float* x) {
+    FAISS_ASSERT(x != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
+
     // compute the distance from the query to the centroid
     if (centroid != nullptr) {
         query_fac.qr_to_c_L2sqr = fvec_L2sqr(x, centroid, d);
@@ -291,15 +288,42 @@ void RaBitDistanceComputerNotQ::set_query(const float* x) {
     query_fac.c2 = 0;
     query_fac.c34 = sum_q * inv_d;
 
-    if (metric == MetricType::METRIC_INNER_PRODUCT) {
+    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         // precompute if needed
         query_fac.qr_norm_L2sqr = fvec_norm_L2sqr(x, d);
     }
 }
 
+//
+struct RaBitDistanceComputerQ : RaBitDistanceComputer {
+    // the rotated and quantized query (qr - c)
+    std::vector<uint8_t> rotated_qq;
+    // we're using the proposed relayout-ed scheme from 3.3 that allows
+    //    using popcounts for computing the distance.
+    std::vector<uint8_t> rearranged_rotated_qq;
+    // some additional numbers for the query
+    QueryFactorsData query_fac;
+
+    // the number of bits for SQ quantization of the query (qb > 0)
+    uint8_t qb = 8;
+    // the smallest value divisible by 8 that is not smaller than dim
+    size_t popcount_aligned_dim = 0;
+
+    RaBitDistanceComputerQ();
+
+    float distance_to_code(const uint8_t* code) override;
+
+    void set_query(const float* x) override;
+};
+
 RaBitDistanceComputerQ::RaBitDistanceComputerQ() = default;
 
-float RaBitDistanceComputerQ::distance_to_code_L2(const uint8_t* code) const {
+float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
+    FAISS_ASSERT(code != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
+
     // split the code into parts
     const uint8_t* binary_data = code;
     const FactorsData* fac =
@@ -370,33 +394,34 @@ float RaBitDistanceComputerQ::distance_to_code_L2(const uint8_t* code) const {
     // normalizer coefficients
     final_dot -= query_fac.c34;
 
-    // this is ||or - c||^2
+    // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
     const float or_c_l2sqr = fac->or_minus_c_l2sqr;
 
-    // ||or - q||^ 2 = ||or - c||^2 + ||qr - c||^2 -
-    //     2 * ||or - c|| * ||qr - c|| * <q,o>
-    const float dist_l2sqr = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
+    // pre_dist = ||or - c||^2 + ||qr - c||^2 -
+    //     2 * ||or - c|| * ||qr - c|| * <q,o> - (IP ? ||or||^2 : 0)
+    const float pre_dist = or_c_l2sqr + query_fac.qr_to_c_L2sqr -
             2 * fac->dp_multiplier * final_dot;
-    return dist_l2sqr;
-}
 
-float RaBitDistanceComputerQ::distance_to_code_IP(const uint8_t* code) const {
-    // split the code into parts
-    const FactorsData* fac =
-            reinterpret_cast<const FactorsData*>(code + (d + 7) / 8);
+    if (metric_type == MetricType::METRIC_L2) {
+        // ||or - q||^ 2
+        return pre_dist;
+    } else {
+        // metric == MetricType::METRIC_INNER_PRODUCT
 
-    // this is ||or - q||^2
-    const float l2 = distance_to_code_L2(code);
-    // this is ||q||^2
-    const float query_norm_sqr = query_fac.qr_norm_L2sqr;
-    // this is ||or||^2
-    const float or_norm_sqr = fac->or_l2sqr;
+        // this is ||q||^2
+        const float query_norm_sqr = query_fac.qr_norm_L2sqr;
 
-    // -2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
-    return -0.5f * (l2 - query_norm_sqr - or_norm_sqr);
+        // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
+        return -0.5f * (pre_dist - query_norm_sqr);
+    }
 }
 
 void RaBitDistanceComputerQ::set_query(const float* x) {
+    FAISS_ASSERT(x != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
+
     // compute the distance from the query to the centroid
     if (centroid != nullptr) {
         query_fac.qr_to_c_L2sqr = fvec_L2sqr(x, centroid, d);
@@ -460,36 +485,31 @@ void RaBitDistanceComputerQ::set_query(const float* x) {
     query_fac.c2 = 2 * v_min * inv_d;
     query_fac.c34 = inv_d * (delta * sum_qq + d * v_min);
 
-    if (metric == MetricType::METRIC_INNER_PRODUCT) {
+    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         // precompute if needed
         query_fac.qr_norm_L2sqr = fvec_norm_L2sqr(x, d);
     }
 }
 
-RaBitQuantizer::RaBitDistanceComputer* RaBitQuantizer::get_distance_computer(
+FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
         uint8_t qb,
-        MetricType metric,
         const float* centroid_in) const {
     if (qb == 0) {
         auto dc = std::make_unique<RaBitDistanceComputerNotQ>();
-        dc->metric = metric;
+        dc->metric_type = metric_type;
         dc->d = d;
         dc->centroid = centroid_in;
 
         return dc.release();
     } else {
         auto dc = std::make_unique<RaBitDistanceComputerQ>();
-        dc->metric = metric;
+        dc->metric_type = metric_type;
         dc->d = d;
         dc->centroid = centroid_in;
         dc->qb = qb;
 
         return dc.release();
     }
-}
-
-float RaBitQuantizer::RaBitDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
-    FAISS_THROW_MSG("Not implemented");
 }
 
 } // namespace faiss

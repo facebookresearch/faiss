@@ -25,7 +25,13 @@ struct RaBitQuantizer : Quantizer {
     // This particular pointer will NOT be serialized.
     float* centroid = nullptr;
 
-    RaBitQuantizer(size_t d = 0);
+    // RaBitQ codes computations are independent from a metric. But it is needed
+    //   to store some additional fp32 constants together with a quantized code.
+    //   A decision was made to make this quantizer as space efficient as
+    //   possible. Thus, a quantizer has to introduce a metric.
+    MetricType metric_type = MetricType::METRIC_L2;
+
+    RaBitQuantizer(size_t d = 0, MetricType metric = MetricType::METRIC_L2);
 
     void train(size_t n, const float* x) override;
 
@@ -55,31 +61,11 @@ struct RaBitQuantizer : Quantizer {
             size_t n,
             const float* centroid_in) const;
 
-    struct RaBitDistanceComputer : FlatCodesDistanceComputer {
-        // dimensionality
-        size_t d = 0;
-        // a centroid to use
-        const float* centroid = nullptr;
-
-        // the metric
-        MetricType metric = MetricType::METRIC_L2;
-
-        RaBitDistanceComputer();
-
-        float distance_to_code(const uint8_t* code) override;
-
-        virtual float distance_to_code_IP(const uint8_t* code) const = 0;
-        virtual float distance_to_code_L2(const uint8_t* code) const = 0;
-
-        float symmetric_dis(idx_t i, idx_t j) override;
-    };
-
     // returns the distance computer.
     // specify qb = 0 to get an DC that does not quantize a query
     // specify qb > 0 to have SQ qb-bits query
-    RaBitDistanceComputer* get_distance_computer(
+    FlatCodesDistanceComputer* get_distance_computer(
             uint8_t qb,
-            MetricType metric,
             const float* centroid_in = nullptr) const;
 };
 

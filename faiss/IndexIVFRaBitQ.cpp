@@ -17,7 +17,7 @@ IndexIVFRaBitQ::IndexIVFRaBitQ(
         const size_t d,
         const size_t nlist,
         MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), rabitq(d) {
+        : IndexIVF(quantizer, d, nlist, 0, metric), rabitq(d, metric) {
     code_size = rabitq.code_size;
     invlists->code_size = code_size;
     is_trained = false;
@@ -120,7 +120,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     std::vector<float> reconstructed_centroid;
     std::vector<float> query_vector;
 
-    std::unique_ptr<RaBitQuantizer::RaBitDistanceComputer> dc;
+    std::unique_ptr<FlatCodesDistanceComputer> dc;
 
     uint8_t qb = 0;
 
@@ -164,7 +164,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             // both query_vector and centroid are available!
             // set up DistanceComputer
             dc.reset(ivf_rabitq.rabitq.get_distance_computer(
-                    qb, ivf_rabitq.metric_type, reconstructed_centroid.data()));
+                    qb, reconstructed_centroid.data()));
 
             dc->set_query(query_vector.data());
         }
@@ -249,9 +249,8 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
     // compute the distance
     float distance = 0;
 
-    std::unique_ptr<RaBitQuantizer::RaBitDistanceComputer> dc(
-            parent->rabitq.get_distance_computer(
-                    parent->qb, parent->metric_type, centroid.data()));
+    std::unique_ptr<FlatCodesDistanceComputer> dc(
+            parent->rabitq.get_distance_computer(parent->qb, centroid.data()));
     dc->set_query(q);
     distance = dc->distance_to_code(code);
 

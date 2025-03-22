@@ -8,7 +8,7 @@ namespace faiss {
 IndexRaBitQ::IndexRaBitQ() = default;
 
 IndexRaBitQ::IndexRaBitQ(idx_t d, MetricType metric)
-        : IndexFlatCodes(0, d, metric), rabitq(d) {
+        : IndexFlatCodes(0, d, metric), rabitq(d, metric) {
     code_size = rabitq.code_size;
 
     is_trained = false;
@@ -47,8 +47,8 @@ void IndexRaBitQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 }
 
 FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
-    RaBitQuantizer::RaBitDistanceComputer* dc =
-            rabitq.get_distance_computer(qb, metric_type, center.data());
+    FlatCodesDistanceComputer* dc =
+            rabitq.get_distance_computer(qb, center.data());
     dc->code_size = rabitq.code_size;
     dc->codes = codes.data();
     return dc;
@@ -56,8 +56,8 @@ FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
 
 FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
         const uint8_t qb) const {
-    RaBitQuantizer::RaBitDistanceComputer* dc =
-            rabitq.get_distance_computer(qb, metric_type, center.data());
+    FlatCodesDistanceComputer* dc =
+            rabitq.get_distance_computer(qb, center.data());
     dc->code_size = rabitq.code_size;
     dc->codes = codes.data();
     return dc;

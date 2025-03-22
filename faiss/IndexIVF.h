@@ -313,7 +313,8 @@ struct IndexIVF : Index, IndexIVFInterface {
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
      * The default search implementation uses this to compute the distances.
-     * Use sel instead of params->sel, because sel can get overriden.
+     * Use sel instead of params->sel, because sel is initialized with
+     * params->sel, but may get overriden by IndexIVF's internal logic.
      */
     virtual InvertedListScanner* get_InvertedListScanner(
             bool store_pairs = false,

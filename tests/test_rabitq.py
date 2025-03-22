@@ -395,3 +395,32 @@ class TestIVFRaBitQ(unittest.TestCase):
 
     def test_serde_ivfrabitq(self):
         self.do_test_serde("IVF16,RaBitQ")
+
+
+class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
+    def do_test_encode_decode(self, d, metric):
+        # rabitq must precisely reconstruct a vector, 
+        #   which consists of +A and -A values
+
+        seed = 123
+        rs = np.random.RandomState(seed)
+
+        ampl = 100
+        n = 10
+        vec = (2 * rs.randint(0, 2, d * n) - 1).astype(np.float32) * ampl
+        vec = np.reshape(vec, (n, d))
+
+        quantizer = faiss.RaBitQuantizer(d, metric)
+
+        # encode and decode
+        vec_q = quantizer.compute_codes(vec)
+        vec_rec = quantizer.decode(vec_q)
+
+        # verify
+        np.testing.assert_equal(vec, vec_rec)
+
+    def test_encode_decode_L2(self):
+        self.do_test_encode_decode(16, faiss.METRIC_L2)
+
+    def test_encode_decode_IP(self):
+        self.do_test_encode_decode(16, faiss.METRIC_INNER_PRODUCT)
