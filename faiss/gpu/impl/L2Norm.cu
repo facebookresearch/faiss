@@ -40,7 +40,7 @@ __global__ void l2NormRowMajor(
     // these are fine to be int (just based on block dimensions)
     int numWarps = utils::divUp(blockDim.x, kWarpSize);
     int laneId = getLaneId();
-    int warpId = threadIdx.x / kWarpSize;
+    auto warpId = threadIdx.x / kWarpSize;
 
     bool lastRowTile = (blockIdx.x == (gridDim.x - 1));
     idx_t rowStart = idx_t(blockIdx.x) * RowTileSize;

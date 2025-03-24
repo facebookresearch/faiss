@@ -33,22 +33,6 @@ Clustering::Clustering(int d, int k) : d(d), k(k) {}
 Clustering::Clustering(int d, int k, const ClusteringParameters& cp)
         : ClusteringParameters(cp), d(d), k(k) {}
 
-static double imbalance_factor(int n, int k, int64_t* assign) {
-    std::vector<int> hist(k, 0);
-    for (int i = 0; i < n; i++)
-        hist[assign[i]]++;
-
-    double tot = 0, uf = 0;
-
-    for (int i = 0; i < k; i++) {
-        tot += hist[i];
-        uf += hist[i] * (double)hist[i];
-    }
-    uf = uf * k / (tot * tot);
-
-    return uf;
-}
-
 void Clustering::post_process_centroids() {
     if (spherical) {
         fvec_renorm_L2(d, k, centroids.data());

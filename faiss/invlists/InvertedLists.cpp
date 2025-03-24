@@ -181,7 +181,7 @@ size_t InvertedLists::copy_subset_to(
 }
 
 double InvertedLists::imbalance_factor() const {
-    std::vector<int> hist(nlist);
+    std::vector<int64_t> hist(nlist);
 
     for (size_t i = 0; i < nlist; i++) {
         hist[i] = list_size(i);
