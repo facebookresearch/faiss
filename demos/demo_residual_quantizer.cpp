@@ -103,7 +103,7 @@ int main() {
         index.is_trained = true;
 
         // override vectors
-        index.codes = raw_codes;
+        index.codes = faiss::MaybeOwnedVector<uint8_t>(raw_codes);
         index.ntotal = nb;
 
         tic();
