@@ -899,6 +899,10 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="4">
+        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
+        <link refid="structfaiss_1_1MaybeOwnedVector"/>
+      </node>
       <node id="2">
         <label>faiss::IndexBinary</label>
         <link refid="structfaiss_1_1IndexBinary"/>
@@ -907,6 +911,9 @@
         <label>faiss::IndexBinaryFlat</label>
         <link refid="structfaiss_1_1IndexBinaryFlat"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>xb</edgelabel>
         </childnode>
       </node>
       <node id="1">

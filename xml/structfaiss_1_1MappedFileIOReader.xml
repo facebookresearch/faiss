@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1MappedFileIOReader" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::MappedFileIOReader</compoundname>
+    <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1MappedFileIOReader_1ab6d612025dff0e88bdb6fbad6a6fb7e0" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1MmappedFileMappingOwner" kindref="compound">MmappedFileMappingOwner</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;MmappedFileMappingOwner&gt; faiss::MappedFileIOReader::mmap_owner</definition>
+        <argsstring></argsstring>
+        <name>mmap_owner</name>
+        <qualifiedname>faiss::MappedFileIOReader::mmap_owner</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="36" column="21" bodyfile="faiss/impl/mapped_io.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1MappedFileIOReader_1a30126883731548cc47b067203735e15e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::MappedFileIOReader::pos</definition>
+        <argsstring></argsstring>
+        <name>pos</name>
+        <qualifiedname>faiss::MappedFileIOReader::pos</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="38" column="12" bodyfile="faiss/impl/mapped_io.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string faiss::IOReader::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>faiss::IOReader::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a6ecfc75a3943252a8ea632adee949208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::MappedFileIOReader::MappedFileIOReader</definition>
+        <argsstring>(const std::shared_ptr&lt; MmappedFileMappingOwner &gt; &amp;owner)</argsstring>
+        <name>MappedFileIOReader</name>
+        <qualifiedname>faiss::MappedFileIOReader::MappedFileIOReader</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structfaiss_1_1MmappedFileMappingOwner" kindref="compound">MmappedFileMappingOwner</ref> &gt; &amp;</type>
+          <declname>owner</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="40" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a84447096d23cc9f28f4e080292a153d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::MappedFileIOReader::operator()</definition>
+        <argsstring>(void *ptr, size_t size, size_t nitems) override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::MappedFileIOReader::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a">operator()</reimplements>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nitems</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="43" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a438a2b94829fd3fbb920285b4cca6a55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::MappedFileIOReader::mmap</definition>
+        <argsstring>(void **ptr, size_t size, size_t nitems)</argsstring>
+        <name>mmap</name>
+        <qualifiedname>faiss::MappedFileIOReader::mmap</qualifiedname>
+        <param>
+          <type>void **</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nitems</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="46" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1aff04a89bcf51948728d8bc0946fcab15" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int faiss::MappedFileIOReader::filedescriptor</definition>
+        <argsstring>() override</argsstring>
+        <name>filedescriptor</name>
+        <qualifiedname>faiss::MappedFileIOReader::filedescriptor</qualifiedname>
+        <reimplements refid="structfaiss_1_1IOReader_1a91eec3e578f8477753a2bf3e493e5df6">filedescriptor</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/mapped_io.h" line="48" column="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
+      <node id="1">
+        <label>faiss::MappedFileIOReader</label>
+        <link refid="structfaiss_1_1MappedFileIOReader"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
+      <node id="1">
+        <label>faiss::MappedFileIOReader</label>
+        <link refid="structfaiss_1_1MappedFileIOReader"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/mapped_io.h" line="35" column="1" bodyfile="faiss/impl/mapped_io.h" bodystart="35" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1MappedFileIOReader_1aff04a89bcf51948728d8bc0946fcab15" prot="public" virt="virtual"><scope>faiss::MappedFileIOReader</scope><name>filedescriptor</name></member>
+      <member refid="structfaiss_1_1MappedFileIOReader_1a6ecfc75a3943252a8ea632adee949208" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>MappedFileIOReader</name></member>
+      <member refid="structfaiss_1_1MappedFileIOReader_1a438a2b94829fd3fbb920285b4cca6a55" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>mmap</name></member>
+      <member refid="structfaiss_1_1MappedFileIOReader_1ab6d612025dff0e88bdb6fbad6a6fb7e0" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>mmap_owner</name></member>
+      <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>name</name></member>
+      <member refid="structfaiss_1_1MappedFileIOReader_1a84447096d23cc9f28f4e080292a153d6" prot="public" virt="virtual"><scope>faiss::MappedFileIOReader</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1MappedFileIOReader_1a30126883731548cc47b067203735e15e" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>pos</name></member>
+      <member refid="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" prot="public" virt="virtual"><scope>faiss::MappedFileIOReader</scope><name>~IOReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

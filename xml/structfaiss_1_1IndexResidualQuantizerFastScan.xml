@@ -1920,6 +1920,10 @@
         <label>faiss::AlignedTableTightAlloc&lt; uint8_t, 32 &gt;</label>
         <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
       </node>
+      <node id="13">
+        <label>faiss::MaybeOwnedVector&lt; uint8_t &gt;</label>
+        <link refid="structfaiss_1_1MaybeOwnedVector"/>
+      </node>
       <node id="7">
         <label>faiss::AdditiveQuantizer</label>
         <link refid="structfaiss_1_1AdditiveQuantizer"/>
@@ -1929,7 +1933,7 @@
           <edgelabel>qnorm</edgelabel>
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
@@ -1972,6 +1976,9 @@
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>codes</edgelabel>
+        </childnode>
       </node>
       <node id="10">
         <label>faiss::IndexFlatL2</label>
@@ -1984,17 +1991,17 @@
         <link refid="structfaiss_1_1IndexResidualQuantizerFastScan"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="13" relation="usage">
+        <childnode refid="14" relation="usage">
           <edgelabel>rq</edgelabel>
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss::ProgressiveDimClusteringParameters</label>
         <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
-        <childnode refid="15" relation="public-inheritance">
+        <childnode refid="16" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss::ProgressiveDimIndexFactory</label>
         <link refid="structfaiss_1_1ProgressiveDimIndexFactory"/>
       </node>
@@ -2002,15 +2009,15 @@
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss::ResidualQuantizer</label>
         <link refid="structfaiss_1_1ResidualQuantizer"/>
         <childnode refid="7" relation="public-inheritance">
         </childnode>
-        <childnode refid="14" relation="usage">
+        <childnode refid="15" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
-        <childnode refid="16" relation="usage">
+        <childnode refid="17" relation="usage">
           <edgelabel>assign_index_factory</edgelabel>
         </childnode>
       </node>

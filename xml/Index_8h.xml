@@ -35,7 +35,6 @@
     <includedby refid="NSG_8h" local="no">faiss/impl/NSG.h</includedby>
     <includedby refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includedby>
     <includedby refid="ThreadedIndex_8h" local="no">faiss/impl/ThreadedIndex.h</includedby>
-    <includedby refid="io_8h" local="no">faiss/impl/io.h</includedby>
     <includedby refid="kmeans1d_8h" local="no">faiss/impl/kmeans1d.h</includedby>
     <includedby refid="residual__quantizer__encode__steps_8h" local="no">faiss/impl/residual_quantizer_encode_steps.h</includedby>
     <includedby refid="index__factory_8h" local="no">faiss/index_factory.h</includedby>
@@ -175,13 +174,11 @@
         </childnode>
         <childnode refid="77" relation="include">
         </childnode>
-        <childnode refid="80" relation="include">
-        </childnode>
-        <childnode refid="81" relation="include">
+        <childnode refid="78" relation="include">
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
-        <childnode refid="82" relation="include">
+        <childnode refid="79" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -683,38 +680,16 @@
         <link refid="index__read__utils_8h_source"/>
       </node>
       <node id="77">
-        <label>faiss/impl/io.h</label>
-        <link refid="io_8h_source"/>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="78" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="80">
         <label>faiss/impl/kmeans1d.h</label>
         <link refid="kmeans1d_8h_source"/>
       </node>
-      <node id="81">
+      <node id="78">
         <label>faiss/impl/residual_quantizer_encode_steps.h</label>
         <link refid="residual__quantizer__encode__steps_8h_source"/>
       </node>
       <node id="51">
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
-      </node>
-      <node id="79">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h_source"/>
-      </node>
-      <node id="78">
-        <label>faiss/invlists/InvertedListsIOHook.h</label>
-        <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="79" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
       </node>
       <node id="29">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
@@ -724,7 +699,7 @@
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
-      <node id="82">
+      <node id="79">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>

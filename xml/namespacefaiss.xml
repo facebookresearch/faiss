@@ -166,6 +166,8 @@
     <innerclass refid="structfaiss_1_1InvertedListsIterator" prot="public">faiss::InvertedListsIterator</innerclass>
     <innerclass refid="structfaiss_1_1IOReader" prot="public">faiss::IOReader</innerclass>
     <innerclass refid="structfaiss_1_1IOWriter" prot="public">faiss::IOWriter</innerclass>
+    <innerclass refid="structfaiss_1_1is__maybe__owned__vector" prot="public">faiss::is_maybe_owned_vector</innerclass>
+    <innerclass refid="structfaiss_1_1is__maybe__owned__vector_3_01MaybeOwnedVector_3_01T_01_4_01_4" prot="public">faiss::is_maybe_owned_vector&lt; MaybeOwnedVector&lt; T &gt; &gt;</innerclass>
     <innerclass refid="structfaiss_1_1ITQMatrix" prot="public">faiss::ITQMatrix</innerclass>
     <innerclass refid="structfaiss_1_1ITQTransform" prot="public">faiss::ITQTransform</innerclass>
     <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
@@ -174,8 +176,12 @@
     <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
     <innerclass refid="structfaiss_1_1LocalSearchCoarseQuantizer" prot="public">faiss::LocalSearchCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1LocalSearchQuantizer" prot="public">faiss::LocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1MappedFileIOReader" prot="public">faiss::MappedFileIOReader</innerclass>
     <innerclass refid="structfaiss_1_1MaskedInvertedLists" prot="public">faiss::MaskedInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1MatrixStats" prot="public">faiss::MatrixStats</innerclass>
+    <innerclass refid="structfaiss_1_1MaybeOwnedVector" prot="public">faiss::MaybeOwnedVector</innerclass>
+    <innerclass refid="structfaiss_1_1MaybeOwnedVectorOwner" prot="public">faiss::MaybeOwnedVectorOwner</innerclass>
+    <innerclass refid="structfaiss_1_1MmappedFileMappingOwner" prot="public">faiss::MmappedFileMappingOwner</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer" prot="public">faiss::MultiIndexQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1MultiIndexQuantizer2" prot="public">faiss::MultiIndexQuantizer2</innerclass>
     <innerclass refid="structfaiss_1_1NegativeDistanceComputer" prot="public">faiss::NegativeDistanceComputer</innerclass>
@@ -262,6 +268,7 @@
     <innerclass refid="structfaiss_1_1VisitedTable" prot="public">faiss::VisitedTable</innerclass>
     <innerclass refid="structfaiss_1_1VStackInvertedLists" prot="public">faiss::VStackInvertedLists</innerclass>
     <innerclass refid="classfaiss_1_1WorkerThread" prot="public">faiss::WorkerThread</innerclass>
+    <innerclass refid="structfaiss_1_1ZeroCopyIOReader" prot="public">faiss::ZeroCopyIOReader</innerclass>
     <innerclass refid="structfaiss_1_1ZnSphereCodec" prot="public">faiss::ZnSphereCodec</innerclass>
     <innerclass refid="structfaiss_1_1ZnSphereCodecAlt" prot="public">faiss::ZnSphereCodecAlt</innerclass>
     <innerclass refid="structfaiss_1_1ZnSphereCodecRec" prot="public">faiss::ZnSphereCodecRec</innerclass>
@@ -521,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="327" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="327" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="329" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="329" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>
@@ -608,7 +615,27 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="256" column="28" declfile="faiss/impl/HNSW.h" declline="256" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="257" column="28" declfile="faiss/impl/HNSW.h" declline="257" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a6ea61905a62fd4878c2cbbda144836a1" prot="public" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::is_maybe_owned_vector_v</definition>
+        <argsstring></argsstring>
+        <name>is_maybe_owned_vector_v</name>
+        <qualifiedname>faiss::is_maybe_owned_vector_v</qualifiedname>
+        <initializer>= <ref refid="structfaiss_1_1is__maybe__owned__vector" kindref="compound">is_maybe_owned_vector</ref>&lt;T&gt;::value</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="299" column="23" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="299" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
@@ -786,6 +813,21 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/index_io.h" line="64" column="11" bodyfile="faiss/index_io.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1ad8bcb6b2cf7cd16a616ffbc6656a2ca4" prot="public" static="no" mutable="no">
+        <type>const int</type>
+        <definition>const int faiss::IO_FLAG_MMAP_IFC</definition>
+        <argsstring></argsstring>
+        <name>IO_FLAG_MMAP_IFC</name>
+        <qualifiedname>faiss::IO_FLAG_MMAP_IFC</qualifiedname>
+        <initializer>= 1 &lt;&lt; 9</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="68" column="11" bodyfile="faiss/index_io.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a308343dfd91ddc2dad5d62c9fa79a65e" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexBinaryHashStats" kindref="compound">IndexBinaryHashStats</ref></type>
@@ -1523,7 +1565,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="258" column="5" declfile="faiss/impl/HNSW.h" declline="258" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="259" column="5" declfile="faiss/impl/HNSW.h" declline="259" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -1557,7 +1599,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="269" column="11" declfile="faiss/impl/HNSW.h" declline="269" declcolumn="11"/>
+        <location file="faiss/impl/HNSW.h" line="270" column="11" declfile="faiss/impl/HNSW.h" declline="270" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::priority_queue&lt; HNSW::Node &gt;</type>
@@ -1595,7 +1637,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="276" column="21" declfile="faiss/impl/HNSW.h" declline="276" declcolumn="21"/>
+        <location file="faiss/impl/HNSW.h" line="277" column="21" declfile="faiss/impl/HNSW.h" declline="277" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1642,7 +1684,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="284" column="6" declfile="faiss/impl/HNSW.h" declline="284" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="285" column="6" declfile="faiss/impl/HNSW.h" declline="285" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2039,6 +2081,60 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/kmeans1d.h" line="46" column="8" declfile="faiss/impl/kmeans1d.h" declline="46" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae753c3918c4698ce7ad1eacb25b9c574" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool faiss::operator==</definition>
+        <argsstring>(const MaybeOwnedVector&lt; T &gt; &amp;lhs, const MaybeOwnedVector&lt; T &gt; &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>faiss::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; T &gt; &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="302" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="302" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a19490ca11481c398d216a3e808386497" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool faiss::operator!=</definition>
+        <argsstring>(const MaybeOwnedVector&lt; T &gt; &amp;lhs, const MaybeOwnedVector&lt; T &gt; &amp;rhs)</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>faiss::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; T &gt; &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/maybe_owned_vector.h" line="310" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="310" bodyend="314"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a96c58ee85ae690c955ed9e9d2b417b09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3444,7 +3540,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="66" column="7" declfile="faiss/index_io.h" declline="66" declcolumn="7"/>
+        <location file="faiss/index_io.h" line="70" column="7" declfile="faiss/index_io.h" declline="70" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad1b8eddfcbc56b5e1d9024e5cb04ae74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -3467,7 +3563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="67" column="7" declfile="faiss/index_io.h" declline="67" declcolumn="7"/>
+        <location file="faiss/index_io.h" line="71" column="7" declfile="faiss/index_io.h" declline="71" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad853cba80f253e352e27605b1a351725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -3490,7 +3586,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="68" column="7" declfile="faiss/index_io.h" declline="68" declcolumn="7"/>
+        <location file="faiss/index_io.h" line="72" column="7" declfile="faiss/index_io.h" declline="72" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a08da4fc593a4a6fa63bb2d9c95fa4a13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
@@ -3513,7 +3609,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="70" column="13" declfile="faiss/index_io.h" declline="70" declcolumn="13"/>
+        <location file="faiss/index_io.h" line="74" column="13" declfile="faiss/index_io.h" declline="74" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a30ff4b85a6a940724f3ea38bc1c903cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
@@ -3536,7 +3632,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="71" column="13" declfile="faiss/index_io.h" declline="71" declcolumn="13"/>
+        <location file="faiss/index_io.h" line="75" column="13" declfile="faiss/index_io.h" declline="75" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a21d9992c103952690484664d16423a22" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
@@ -3559,7 +3655,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="72" column="13" declfile="faiss/index_io.h" declline="72" declcolumn="13"/>
+        <location file="faiss/index_io.h" line="76" column="13" declfile="faiss/index_io.h" declline="76" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad72efd9404a8058159f1ae48225a2d94" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3581,7 +3677,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="74" column="6" declfile="faiss/index_io.h" declline="74" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="78" column="6" declfile="faiss/index_io.h" declline="78" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af06ee18cec9686419b641298e3a0667e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3603,7 +3699,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="75" column="6" declfile="faiss/index_io.h" declline="75" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="79" column="6" declfile="faiss/index_io.h" declline="79" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a73e97b42d11f03a68bfda4ad5c569dd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
@@ -3621,7 +3717,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="77" column="17" declfile="faiss/index_io.h" declline="77" declcolumn="17"/>
+        <location file="faiss/index_io.h" line="81" column="17" declfile="faiss/index_io.h" declline="81" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a10cc4174ae7af7d3f0ec05d1494cc0c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
@@ -3639,7 +3735,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="78" column="17" declfile="faiss/index_io.h" declline="78" declcolumn="17"/>
+        <location file="faiss/index_io.h" line="82" column="17" declfile="faiss/index_io.h" declline="82" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a818fa626e2368301ccf872b7ba65383a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> *</type>
@@ -3657,7 +3753,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="80" column="18" declfile="faiss/index_io.h" declline="80" declcolumn="18"/>
+        <location file="faiss/index_io.h" line="84" column="18" declfile="faiss/index_io.h" declline="84" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a39b1ff6a5c7baacea4002473dde1f8d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> *</type>
@@ -3675,7 +3771,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="81" column="18" declfile="faiss/index_io.h" declline="81" declcolumn="18"/>
+        <location file="faiss/index_io.h" line="85" column="18" declfile="faiss/index_io.h" declline="85" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aeecb2752b0d13ace2d17ebc0189e9ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3697,7 +3793,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="83" column="6" declfile="faiss/index_io.h" declline="83" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="87" column="6" declfile="faiss/index_io.h" declline="87" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1adbd20721104c8523bbc53d82f839b03c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3719,7 +3815,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="84" column="6" declfile="faiss/index_io.h" declline="84" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="88" column="6" declfile="faiss/index_io.h" declline="88" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aceed566acb3d5edfa90c70198ba5d962" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3741,7 +3837,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="86" column="6" declfile="faiss/index_io.h" declline="86" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="90" column="6" declfile="faiss/index_io.h" declline="90" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa406bd6a2e1b397ad15954d9fd67c251" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -3764,7 +3860,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="87" column="15" declfile="faiss/index_io.h" declline="87" declcolumn="15"/>
+        <location file="faiss/index_io.h" line="91" column="15" declfile="faiss/index_io.h" declline="91" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

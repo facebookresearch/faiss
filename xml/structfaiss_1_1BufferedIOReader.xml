@@ -189,6 +189,8 @@
         <name>filedescriptor</name>
         <qualifiedname>faiss::IOReader::filedescriptor</qualifiedname>
         <reimplementedby refid="structfaiss_1_1FileIOReader_1aebd8ec08fe7dc8d92dc62a11a6ef7b53">filedescriptor</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1MappedFileIOReader_1aff04a89bcf51948728d8bc0946fcab15">filedescriptor</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ZeroCopyIOReader_1a19ea02cf81c6cd7c3dda101be5246c49">filedescriptor</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

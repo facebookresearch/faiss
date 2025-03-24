@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1is__maybe__owned__vector" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::is_maybe_owned_vector</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::false_type</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::is_maybe_owned_vector&lt; T &gt;</label>
+        <link refid="structfaiss_1_1is__maybe__owned__vector"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::false_type</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::is_maybe_owned_vector&lt; T &gt;</label>
+        <link refid="structfaiss_1_1is__maybe__owned__vector"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::false_type</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/maybe_owned_vector.h" line="293" column="1" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="293" bodyend="293"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
