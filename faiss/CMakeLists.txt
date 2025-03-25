@@ -69,12 +69,12 @@ set(FAISS_SRC
   impl/io.cpp
   impl/kmeans1d.cpp
   impl/lattice_Zn.cpp
+  impl/mapped_io.cpp
   impl/pq4_fast_scan.cpp
   impl/pq4_fast_scan_search_1.cpp
   impl/pq4_fast_scan_search_qbs.cpp
   impl/residual_quantizer_encode_steps.cpp
-  impl/io.cpp
-  impl/lattice_Zn.cpp
+  impl/zerocopy_io.cpp
   impl/NNDescent.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
