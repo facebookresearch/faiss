@@ -1455,7 +1455,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>SQ index topped with with a <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> structure to access elements more efficiently. </para>
+<para>SQ index topped with a <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> structure to access elements more efficiently. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
