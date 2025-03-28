@@ -13,22 +13,8 @@ def Version(v):
     return [int(x) for x in v.split('.')]
 
 def supported_instruction_sets():
-    """
-    Returns the set of supported CPU features, see
-    https://github.com/numpy/numpy/blob/master/numpy/core/src/common/npy_cpu_features.h
-    for the list of features that this set may contain per architecture.
-
-    Example:
-    >>> supported_instruction_sets()  # for x86
-    {"SSE2", "AVX2", "AVX512", ...}
-    >>> supported_instruction_sets()  # for PPC
-    {"VSX", "VSX2", ...}
-    >>> supported_instruction_sets()  # for ARM
-    {"NEON", "ASIMD", ...}
-    """
-
     # Old numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
-    # so let's read Features in numpy.distutils.cpuinfo and search 'sve' entry
+    # so let's read Features in cpuinfo and search 'sve' entry
     def is_sve_supported():
         if platform.machine() != "aarch64":
             return False
@@ -39,9 +25,9 @@ def supported_instruction_sets():
         import numpy
         if Version(numpy.__version__) >= Version("2.0"):
             return False
-        # platform-dependent legacy fallback using numpy.distutils.cpuinfo
-        import numpy.distutils.cpuinfo
-        return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
+        # platform-dependent legacy fallback using cpuinfo
+        import cpuinfo
+        return "sve" in cpuinfo.get_cpu_info()['flags']
 
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
@@ -61,13 +47,13 @@ def supported_instruction_sets():
         if subprocess.check_output(["/usr/sbin/sysctl", "hw.optional.avx2_0"])[-1] == '1':
             return {"AVX2"}
     elif platform.system() == "Linux":
-        import numpy.distutils.cpuinfo
+        import cpuinfo
         result = set()
-        if "avx2" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx2" in cpuinfo.get_cpu_info()['flags']:
             result.add("AVX2")
-        if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512" in cpuinfo.get_cpu_info()['flags']:
             result.add("AVX512")
-        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+        if "avx512_fp16" in cpuinfo.get_cpu_info()['flags']:
             # avx512_fp16 is supported starting SPR
             result.add("AVX512_SPR")
         if is_sve_supported():
