@@ -119,6 +119,7 @@
     <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFProductLocalSearchQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizer" prot="public">faiss::IndexIVFProductResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan" prot="public">faiss::IndexIVFProductResidualQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFRaBitQ" prot="public">faiss::IndexIVFRaBitQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizer" prot="public">faiss::IndexIVFResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public">faiss::IndexIVFResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
@@ -144,6 +145,7 @@
     <innerclass refid="structfaiss_1_1IndexProductResidualQuantizer" prot="public">faiss::IndexProductResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" prot="public">faiss::IndexProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexQINCo" prot="public">faiss::IndexQINCo</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRaBitQ" prot="public">faiss::IndexRaBitQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexRandom" prot="public">faiss::IndexRandom</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
@@ -172,6 +174,7 @@
     <innerclass refid="structfaiss_1_1ITQTransform" prot="public">faiss::ITQTransform</innerclass>
     <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1IVFPQSearchParameters" prot="public">faiss::IVFPQSearchParameters</innerclass>
+    <innerclass refid="structfaiss_1_1IVFRaBitQSearchParameters" prot="public">faiss::IVFRaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
     <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
     <innerclass refid="structfaiss_1_1LocalSearchCoarseQuantizer" prot="public">faiss::LocalSearchCoarseQuantizer</innerclass>
@@ -219,6 +222,8 @@
     <innerclass refid="structfaiss_1_1QINCo" prot="public">faiss::QINCo</innerclass>
     <innerclass refid="structfaiss_1_1QINCoStep" prot="public">faiss::QINCoStep</innerclass>
     <innerclass refid="structfaiss_1_1Quantizer" prot="public">faiss::Quantizer</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQuantizer" prot="public">faiss::RaBitQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
     <innerclass refid="structfaiss_1_1RangeQueryResult" prot="public">faiss::RangeQueryResult</innerclass>
@@ -869,7 +874,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="532" column="23" declfile="faiss/IndexIVF.h" declline="532" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="535" column="23" declfile="faiss/IndexIVF.h" declline="535" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -883,7 +888,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="550" column="32" declfile="faiss/IndexIVF.h" declline="550" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="553" column="32" declfile="faiss/IndexIVF.h" declline="553" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -925,7 +930,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="146" column="22" declfile="faiss/IndexIVFPQ.h" declline="146" declcolumn="22"/>
+        <location file="faiss/IndexIVFPQ.h" line="147" column="22" declfile="faiss/IndexIVFPQ.h" declline="147" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae040bf76054f16979b15559f8ffc5727" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref></type>
@@ -939,7 +944,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="186" column="34" declfile="faiss/IndexIVFPQ.h" declline="186" declcolumn="34"/>
+        <location file="faiss/IndexIVFPQ.h" line="187" column="34" declfile="faiss/IndexIVFPQ.h" declline="187" declcolumn="34"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexPQStats" kindref="compound">IndexPQStats</ref></type>
@@ -3917,7 +3922,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="159" column="6" declfile="faiss/IndexIVFPQ.h" declline="159" declcolumn="6"/>
+        <location file="faiss/IndexIVFPQ.h" line="160" column="6" declfile="faiss/IndexIVFPQ.h" declline="160" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>

@@ -4,6 +4,7 @@
     <compoundname>faiss::Quantizer</compoundname>
     <derivedcompoundref refid="structfaiss_1_1AdditiveQuantizer" prot="public" virt="non-virtual">faiss::AdditiveQuantizer</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ProductQuantizer" prot="public" virt="non-virtual">faiss::ProductQuantizer</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1RaBitQuantizer" prot="public" virt="non-virtual">faiss::RaBitQuantizer</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ScalarQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer</derivedcompoundref>
     <includes refid="Quantizer_8h" local="no">Quantizer.h</includes>
     <sectiondef kind="public-attrib">
@@ -72,6 +73,7 @@
         <reimplementedby refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a3d066376adf471dd936c251f9f5706c3">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RaBitQuantizer_1a253ae543d36c51c3ca63d520d7afb475">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ResidualQuantizer_1a0985eadd777003e6faca9b2247d3b30b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1a7cc2c64ef7cde9e5d319378d7afd986e">train</reimplementedby>
         <param>
@@ -109,6 +111,7 @@
         <qualifiedname>faiss::Quantizer::compute_codes</qualifiedname>
         <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1aa75999838c16331a2a2b437cc6283291">compute_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a4cf7deeb4d4454e2b79876458ada36bc">compute_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RaBitQuantizer_1a834365870994ed1e8b10a3601e9ff3ff">compute_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1abfd07a93dca7826709b5d3ab7767f5da">compute_codes</reimplementedby>
         <param>
           <type>const float *</type>
@@ -159,6 +162,7 @@
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1af605deafd19bab5777d29e035ed5e510">decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1a851fda9f520d3a358abbf0bffe34135f">decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a1cbf18c081882301bc41d447f3845295">decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267">decode</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -259,13 +263,19 @@
         <label>faiss::Quantizer</label>
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
+      <node id="9">
+        <label>faiss::RaBitQuantizer</label>
+        <link refid="structfaiss_1_1RaBitQuantizer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="7">
         <label>faiss::ResidualQuantizer</label>
         <link refid="structfaiss_1_1ResidualQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss::ScalarQuantizer</label>
         <link refid="structfaiss_1_1ScalarQuantizer"/>
         <childnode refid="1" relation="public-inheritance">

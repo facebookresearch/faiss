@@ -1105,6 +1105,7 @@
         <reimplementedby refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a3d066376adf471dd936c251f9f5706c3">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RaBitQuantizer_1a253ae543d36c51c3ca63d520d7afb475">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ResidualQuantizer_1a0985eadd777003e6faca9b2247d3b30b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1a7cc2c64ef7cde9e5d319378d7afd986e">train</reimplementedby>
         <param>

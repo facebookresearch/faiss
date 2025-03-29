@@ -660,6 +660,7 @@
         <reimplementedby refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatL2_1a146056772fd978a5e46adf23bf424c6d">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a85e6888092abc5f631913d4d8402ae35">get_FlatCodesDistanceComputer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a4631ebaf645ef681120397fa23cfc053">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1acad760d45f38de9cd8ce8b6ad331ea42">get_FlatCodesDistanceComputer</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -678,6 +679,7 @@
         <name>range_search</name>
         <qualifiedname>faiss::IndexFlatCodes::range_search</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba">range_search</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a97da3c2d6eeba361a5af60a6a07e62e9">range_search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>

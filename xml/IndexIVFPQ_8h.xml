@@ -494,62 +494,63 @@
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>xcodes,</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"></highlight></codeline>
-<codeline lineno="135" refid="structfaiss_1_1IndexIVFPQ_1aba8274ca9de1f46c890e496a8866eb45" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref>*<sp/><ref refid="structfaiss_1_1IndexIVFPQ_1aba8274ca9de1f46c890e496a8866eb45" kindref="member">get_InvertedListScanner</ref>(</highlight></codeline>
+<codeline lineno="135" refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref>*<sp/><ref refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c" kindref="member">get_InvertedListScanner</ref>(</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>store_pairs,</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="139"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>build<sp/>precomputed<sp/>table</highlight></codeline>
-<codeline lineno="140" refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" kindref="member">precompute_table</ref>();</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref>();</highlight></codeline>
-<codeline lineno="143"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight></codeline>
-<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment">//<sp/>block<sp/>size<sp/>used<sp/>in<sp/>IndexIVFPQ::add_core_o</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>index_ivfpq_add_core_o_bs;</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="148"><highlight class="comment">/**<sp/>Pre-compute<sp/>distance<sp/>tables<sp/>for<sp/>IVFPQ<sp/>with<sp/>by-residual<sp/>and<sp/>METRIC_L2</highlight></codeline>
-<codeline lineno="149"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>@param<sp/>use_precomputed_table<sp/>(I/O)</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=-1:<sp/>force<sp/>disable</highlight></codeline>
-<codeline lineno="152"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=0:<sp/>decide<sp/>heuristically<sp/>(default:<sp/>use<sp/>tables<sp/>only<sp/>if<sp/>they<sp/>are</highlight></codeline>
-<codeline lineno="153"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;<sp/>precomputed_tables_max_bytes),<sp/>set<sp/>use_precomputed_table<sp/>on</highlight></codeline>
-<codeline lineno="154"><highlight class="comment"><sp/>*<sp/>output<sp/>=1:<sp/>tables<sp/>that<sp/>work<sp/>for<sp/>all<sp/>quantizers<sp/>(size<sp/>256<sp/>*<sp/>nlist<sp/>*<sp/>M)<sp/>=2:</highlight></codeline>
-<codeline lineno="155"><highlight class="comment"><sp/>*<sp/>specific<sp/>version<sp/>for<sp/>MultiIndexQuantizer<sp/>(much<sp/>more<sp/>compact)</highlight></codeline>
-<codeline lineno="156"><highlight class="comment"><sp/>*<sp/>@param<sp/>precomputed_table<sp/>precomputed<sp/>table<sp/>to<sp/>initialize</highlight></codeline>
-<codeline lineno="157"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight></codeline>
-<codeline lineno="159" refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" kindref="member">initialize_IVFPQ_precomputed_table</ref>(</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>use_precomputed_table,</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>quantizer,</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq,</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable&lt;float&gt;</ref>&amp;<sp/>precomputed_table,</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>by_residual,</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose);</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="167"><highlight class="comment">///<sp/>statistics<sp/>are<sp/>robust<sp/>to<sp/>internal<sp/>threading,<sp/>but<sp/>not<sp/>if</highlight></codeline>
-<codeline lineno="168"><highlight class="comment">///<sp/>IndexIVFPQ::search_preassigned<sp/>is<sp/>called<sp/>by<sp/>multiple<sp/>threads</highlight></codeline>
-<codeline lineno="169" refid="structfaiss_1_1IndexIVFPQStats" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref><sp/>{</highlight></codeline>
-<codeline lineno="170" refid="structfaiss_1_1IndexIVFPQStats_1a85d2d75d38483d9929383448e4e8cb33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1a85d2d75d38483d9929383448e4e8cb33" kindref="member">nrefine</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>nb<sp/>of<sp/>refines<sp/>(IVFPQR)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight></codeline>
-<codeline lineno="172" refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" kindref="member">n_hamming_pass</ref>;</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="173"><highlight class="comment"><sp/><sp/><sp/><sp/>///&lt;<sp/>nb<sp/>of<sp/>passed<sp/>Hamming<sp/>distance<sp/>tests<sp/>(for<sp/>polysemous)</highlight></codeline>
-<codeline lineno="174"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>timings<sp/>measured<sp/>with<sp/>the<sp/>CPU<sp/>RTC<sp/>on<sp/>all<sp/>threads</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>search_cycles;</highlight></codeline>
-<codeline lineno="177" refid="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" kindref="member">refine_cycles</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>only<sp/>for<sp/>IVFPQR</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reset();</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset();</highlight></codeline>
-<codeline lineno="183"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"></highlight></codeline>
-<codeline lineno="185"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="186"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>IndexIVFPQStats<sp/>indexIVFPQ_stats;</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="189"><highlight class="normal"></highlight></codeline>
-<codeline lineno="190"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel,</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>build<sp/>precomputed<sp/>table</highlight></codeline>
+<codeline lineno="141" refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQ_1ad99c215aeaf92e995cb97f4044c4d267" kindref="member">precompute_table</ref>();</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref>();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="comment">//<sp/>block<sp/>size<sp/>used<sp/>in<sp/>IndexIVFPQ::add_core_o</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>index_ivfpq_add_core_o_bs;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="149"><highlight class="comment">/**<sp/>Pre-compute<sp/>distance<sp/>tables<sp/>for<sp/>IVFPQ<sp/>with<sp/>by-residual<sp/>and<sp/>METRIC_L2</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/>*<sp/>@param<sp/>use_precomputed_table<sp/>(I/O)</highlight></codeline>
+<codeline lineno="152"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=-1:<sp/>force<sp/>disable</highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=0:<sp/>decide<sp/>heuristically<sp/>(default:<sp/>use<sp/>tables<sp/>only<sp/>if<sp/>they<sp/>are</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;<sp/>precomputed_tables_max_bytes),<sp/>set<sp/>use_precomputed_table<sp/>on</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"><sp/>*<sp/>output<sp/>=1:<sp/>tables<sp/>that<sp/>work<sp/>for<sp/>all<sp/>quantizers<sp/>(size<sp/>256<sp/>*<sp/>nlist<sp/>*<sp/>M)<sp/>=2:</highlight></codeline>
+<codeline lineno="156"><highlight class="comment"><sp/>*<sp/>specific<sp/>version<sp/>for<sp/>MultiIndexQuantizer<sp/>(much<sp/>more<sp/>compact)</highlight></codeline>
+<codeline lineno="157"><highlight class="comment"><sp/>*<sp/>@param<sp/>precomputed_table<sp/>precomputed<sp/>table<sp/>to<sp/>initialize</highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160" refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" kindref="member">initialize_IVFPQ_precomputed_table</ref>(</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>use_precomputed_table,</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>quantizer,</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq,</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable&lt;float&gt;</ref>&amp;<sp/>precomputed_table,</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>by_residual,</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="168"><highlight class="comment">///<sp/>statistics<sp/>are<sp/>robust<sp/>to<sp/>internal<sp/>threading,<sp/>but<sp/>not<sp/>if</highlight></codeline>
+<codeline lineno="169"><highlight class="comment">///<sp/>IndexIVFPQ::search_preassigned<sp/>is<sp/>called<sp/>by<sp/>multiple<sp/>threads</highlight></codeline>
+<codeline lineno="170" refid="structfaiss_1_1IndexIVFPQStats" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref><sp/>{</highlight></codeline>
+<codeline lineno="171" refid="structfaiss_1_1IndexIVFPQStats_1a85d2d75d38483d9929383448e4e8cb33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1a85d2d75d38483d9929383448e4e8cb33" kindref="member">nrefine</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>nb<sp/>of<sp/>refines<sp/>(IVFPQR)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight></codeline>
+<codeline lineno="173" refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1ae531123f47fc777db3e4d95789bfd6c6" kindref="member">n_hamming_pass</ref>;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="174"><highlight class="comment"><sp/><sp/><sp/><sp/>///&lt;<sp/>nb<sp/>of<sp/>passed<sp/>Hamming<sp/>distance<sp/>tests<sp/>(for<sp/>polysemous)</highlight></codeline>
+<codeline lineno="175"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>timings<sp/>measured<sp/>with<sp/>the<sp/>CPU<sp/>RTC<sp/>on<sp/>all<sp/>threads</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>search_cycles;</highlight></codeline>
+<codeline lineno="178" refid="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVFPQStats_1a893c0045f56cccbfb73e42a716903fa0" kindref="member">refine_cycles</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>only<sp/>for<sp/>IVFPQR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reset();</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset();</highlight></codeline>
+<codeline lineno="184"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>IndexIVFPQStats<sp/>indexIVFPQ_stats;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/IndexIVFPQ.h"/>
   </compounddef>

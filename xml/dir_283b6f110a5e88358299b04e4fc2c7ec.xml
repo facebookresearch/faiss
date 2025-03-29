@@ -37,6 +37,7 @@
     <innerfile refid="IndexIVFPQ_8h">IndexIVFPQ.h</innerfile>
     <innerfile refid="IndexIVFPQFastScan_8h">IndexIVFPQFastScan.h</innerfile>
     <innerfile refid="IndexIVFPQR_8h">IndexIVFPQR.h</innerfile>
+    <innerfile refid="IndexIVFRaBitQ_8h">IndexIVFRaBitQ.h</innerfile>
     <innerfile refid="IndexIVFSpectralHash_8h">IndexIVFSpectralHash.h</innerfile>
     <innerfile refid="IndexLattice_8h">IndexLattice.h</innerfile>
     <innerfile refid="IndexLSH_8h">IndexLSH.h</innerfile>
@@ -46,6 +47,7 @@
     <innerfile refid="IndexPQ_8h">IndexPQ.h</innerfile>
     <innerfile refid="IndexPQFastScan_8h">IndexPQFastScan.h</innerfile>
     <innerfile refid="IndexPreTransform_8h">IndexPreTransform.h</innerfile>
+    <innerfile refid="IndexRaBitQ_8h">IndexRaBitQ.h</innerfile>
     <innerfile refid="IndexRefine_8h">IndexRefine.h</innerfile>
     <innerfile refid="IndexReplicas_8h">IndexReplicas.h</innerfile>
     <innerfile refid="IndexRowwiseMinMax_8h">IndexRowwiseMinMax.h</innerfile>

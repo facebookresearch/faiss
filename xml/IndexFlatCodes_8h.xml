@@ -13,6 +13,7 @@
     <includedby refid="IndexLattice_8h" local="no">faiss/IndexLattice.h</includedby>
     <includedby refid="IndexNeuralNetCodec_8h" local="no">faiss/IndexNeuralNetCodec.h</includedby>
     <includedby refid="IndexPQ_8h" local="no">faiss/IndexPQ.h</includedby>
+    <includedby refid="IndexRaBitQ_8h" local="no">faiss/IndexRaBitQ.h</includedby>
     <includedby refid="IndexScalarQuantizer_8h" local="no">faiss/IndexScalarQuantizer.h</includedby>
     <incdepgraph>
       <node id="3">
@@ -186,6 +187,8 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
       </node>
       <node id="6">
         <label>faiss/IndexHNSW.h</label>
@@ -258,20 +261,24 @@
         <link refid="IndexPQFastScan_8h_source"/>
       </node>
       <node id="24">
+        <label>faiss/IndexRaBitQ.h</label>
+        <link refid="IndexRaBitQ_8h_source"/>
+      </node>
+      <node id="25">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="13">
         <label>faiss/gpu/GpuIcmEncoder.h</label>
         <link refid="GpuIcmEncoder_8h_source"/>
       </node>
-      <node id="25">
+      <node id="26">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>

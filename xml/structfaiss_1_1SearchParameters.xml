@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1SearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::SearchParameters</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IndexRefineSearchParameters" prot="public" virt="non-virtual">faiss::IndexRefineSearchParameters</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1RaBitQSearchParameters" prot="public" virt="non-virtual">faiss::RaBitQSearchParameters</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersHNSW" prot="public" virt="non-virtual">faiss::SearchParametersHNSW</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPQ" prot="public" virt="non-virtual">faiss::SearchParametersPQ</derivedcompoundref>
@@ -52,10 +53,16 @@
 <para>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="5">
+      <node id="6">
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::IVFRaBitQSearchParameters</label>
+        <link refid="structfaiss_1_1IVFRaBitQSearchParameters"/>
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
@@ -64,41 +71,47 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss::RaBitQSearchParameters</label>
+        <link refid="structfaiss_1_1RaBitQSearchParameters"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::SearchParameters</label>
         <link refid="structfaiss_1_1SearchParameters"/>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss::SearchParametersHNSW</label>
         <link refid="structfaiss_1_1SearchParametersHNSW"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::SearchParametersIVF</label>
         <link refid="structfaiss_1_1SearchParametersIVF"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="8">
         <label>faiss::SearchParametersPQ</label>
         <link refid="structfaiss_1_1SearchParametersPQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="9">
         <label>faiss::SearchParametersPreTransform</label>
         <link refid="structfaiss_1_1SearchParametersPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="10">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>
         <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="11">
         <label>faiss::gpu::SearchParametersCagra</label>
         <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
         <childnode refid="1" relation="public-inheritance">

@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RaBitQuantizer" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RaBitQuantizer</compoundname>
+    <basecompoundref refid="structfaiss_1_1Quantizer" prot="public" virt="non-virtual">faiss::Quantizer</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQuantizer_1a20997370b2bffaf0ae8ec79cec16bbb0" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::RaBitQuantizer::centroid</definition>
+        <argsstring></argsstring>
+        <name>centroid</name>
+        <qualifiedname>faiss::RaBitQuantizer::centroid</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="32" column="11" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQuantizer_1ac5bbf60e15a32d80ee98b52db5e2e13f" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::RaBitQuantizer::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::RaBitQuantizer::metric_type</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">MetricType::METRIC_L2</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="38" column="16" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Quantizer::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::Quantizer::d</qualifiedname>
+        <briefdescription>
+<para>size of the input vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="16" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Quantizer::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::Quantizer::code_size</qualifiedname>
+        <briefdescription>
+<para>bytes per indexed vector </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="17" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="17" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a01c3617328434712979aa160f4b56787" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RaBitQuantizer::RaBitQuantizer</definition>
+        <argsstring>(size_t d=0, MetricType metric=MetricType::METRIC_L2)</argsstring>
+        <name>RaBitQuantizer</name>
+        <qualifiedname>faiss::RaBitQuantizer::RaBitQuantizer</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+          <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">MetricType::METRIC_L2</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="40" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a253ae543d36c51c3ca63d520d7afb475" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQuantizer::train</definition>
+        <argsstring>(size_t n, const float *x) override</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::RaBitQuantizer::train</qualifiedname>
+        <reimplements refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9">train</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Train the quantizer</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>training vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="42" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a834365870994ed1e8b10a3601e9ff3ff" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQuantizer::compute_codes</definition>
+        <argsstring>(const float *x, uint8_t *codes, size_t n) const override</argsstring>
+        <name>compute_codes</name>
+        <qualifiedname>faiss::RaBitQuantizer::compute_codes</qualifiedname>
+        <reimplements refid="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205">compute_codes</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Quantize a set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output codes, size n * code_size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="45" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1aee80494414b88ac1ccf8aa3aeb1bca0d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQuantizer::compute_codes_core</definition>
+        <argsstring>(const float *x, uint8_t *codes, size_t n, const float *centroid_in) const</argsstring>
+        <name>compute_codes_core</name>
+        <qualifiedname>faiss::RaBitQuantizer::compute_codes_core</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="47" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQuantizer::decode</definition>
+        <argsstring>(const uint8_t *codes, float *x, size_t n) const override</argsstring>
+        <name>decode</name>
+        <qualifiedname>faiss::RaBitQuantizer::decode</qualifiedname>
+        <reimplements refid="structfaiss_1_1Quantizer_1a71b20a9a5f98f9e8889bb22cfb7f9fac">decode</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Decode a set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input codes, size n * code_size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="62" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a3157fded0bb1a02ad828cd88f4d53b96" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQuantizer::decode_core</definition>
+        <argsstring>(const uint8_t *codes, float *x, size_t n, const float *centroid_in) const</argsstring>
+        <name>decode_core</name>
+        <qualifiedname>faiss::RaBitQuantizer::decode_core</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="64" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a2365cee249242f496e3759c7d28da80e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
+        <definition>FlatCodesDistanceComputer * faiss::RaBitQuantizer::get_distance_computer</definition>
+        <argsstring>(uint8_t qb, const float *centroid_in=nullptr) const</argsstring>
+        <name>get_distance_computer</name>
+        <qualifiedname>faiss::RaBitQuantizer::get_distance_computer</qualifiedname>
+        <param>
+          <type>uint8_t</type>
+          <declname>qb</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid_in</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizer.h" line="73" column="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::RaBitQuantizer</label>
+        <link refid="structfaiss_1_1RaBitQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::RaBitQuantizer</label>
+        <link refid="structfaiss_1_1RaBitQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/RaBitQuantizer.h" line="24" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="24" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a20997370b2bffaf0ae8ec79cec16bbb0" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>centroid</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a834365870994ed1e8b10a3601e9ff3ff" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>compute_codes</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1aee80494414b88ac1ccf8aa3aeb1bca0d" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>compute_codes_core</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>d</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a3157fded0bb1a02ad828cd88f4d53b96" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>decode_core</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a2365cee249242f496e3759c7d28da80e" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1ac5bbf60e15a32d80ee98b52db5e2e13f" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a01c3617328434712979aa160f4b56787" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>RaBitQuantizer</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a253ae543d36c51c3ca63d520d7afb475" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>~Quantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
