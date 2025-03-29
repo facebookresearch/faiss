@@ -580,6 +580,7 @@ static void read_RaBitQuantizer(RaBitQuantizer* rabitq, IOReader* f) {
     // don't care about rabitq->centroid
     READ1(rabitq->d);
     READ1(rabitq->code_size);
+    READ1(rabitq->metric_type);
 }
 
 void read_direct_map(DirectMap* dm, IOReader* f) {
