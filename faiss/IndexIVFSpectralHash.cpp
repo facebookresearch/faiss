@@ -301,7 +301,8 @@ struct BuildScanner {
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
     BuildScanner bs;
     return dispatch_HammingComputer(code_size, bs, this, store_pairs);
