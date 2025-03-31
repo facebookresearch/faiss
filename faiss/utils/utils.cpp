@@ -387,7 +387,7 @@ size_t ranklist_intersection_size(
     return count;
 }
 
-double imbalance_factor(int k, const int* hist) {
+double imbalance_factor(int k, const int64_t* hist) {
     double tot = 0, uf = 0;
 
     for (int i = 0; i < k; i++) {
@@ -399,9 +399,9 @@ double imbalance_factor(int k, const int* hist) {
     return uf;
 }
 
-double imbalance_factor(int n, int k, const int64_t* assign) {
-    std::vector<int> hist(k, 0);
-    for (int i = 0; i < n; i++) {
+double imbalance_factor(int64_t n, int k, const int64_t* assign) {
+    std::vector<int64_t> hist(k, 0);
+    for (int64_t i = 0; i < n; i++) {
         hist[assign[i]]++;
     }
 

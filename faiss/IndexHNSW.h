@@ -138,7 +138,7 @@ struct IndexHNSWPQ : IndexHNSW {
     void train(idx_t n, const float* x) override;
 };
 
-/** SQ index topped with with a HNSW structure to access elements
+/** SQ index topped with a HNSW structure to access elements
  *  more efficiently.
  */
 struct IndexHNSWSQ : IndexHNSW {
