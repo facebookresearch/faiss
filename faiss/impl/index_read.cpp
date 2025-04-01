@@ -12,6 +12,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <optional>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
@@ -33,6 +34,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -41,6 +43,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -53,7 +56,140 @@
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
 
+// mmap-ing and viewing facilities
+#include <faiss/impl/maybe_owned_vector.h>
+
+#include <faiss/impl/mapped_io.h>
+#include <faiss/impl/zerocopy_io.h>
+
 namespace faiss {
+
+/*************************************************************
+ * Mmap-ing and viewing facilities
+ **************************************************************/
+
+// This is a baseline functionality for reading mmapped and zerocopied vector.
+// * if `beforeknown_size` is defined, then a size of the vector won't be read.
+// * if `size_multiplier` is defined, then a size will be multiplied by it.
+// * returns true is the case was handled; ownerwise, false
+template <typename VectorT>
+bool read_vector_base(
+        VectorT& target,
+        IOReader* f,
+        const std::optional<size_t> beforeknown_size,
+        const std::optional<size_t> size_multiplier) {
+    // check if the use case is right
+    if constexpr (is_maybe_owned_vector_v<VectorT>) {
+        // is it a mmap-enabled reader?
+        MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
+        if (mf != nullptr) {
+            // read the size or use a known one
+            size_t size = 0;
+            if (beforeknown_size.has_value()) {
+                size = beforeknown_size.value();
+            } else {
+                READANDCHECK(&size, 1);
+            }
+
+            // perform the size multiplication
+            size *= size_multiplier.value_or(1);
+
+            // ok, mmap and check
+            char* address = nullptr;
+            const size_t nread = mf->mmap(
+                    (void**)&address,
+                    sizeof(typename VectorT::value_type),
+                    size);
+
+            FAISS_THROW_IF_NOT_FMT(
+                    nread == (size),
+                    "read error in %s: %zd != %zd (%s)",
+                    f->name.c_str(),
+                    nread,
+                    size,
+                    strerror(errno));
+
+            VectorT mmapped_view =
+                    VectorT::create_view(address, nread, mf->mmap_owner);
+            target = std::move(mmapped_view);
+
+            return true;
+        }
+
+        // is it a zero-copy reader?
+        ZeroCopyIOReader* zr = dynamic_cast<ZeroCopyIOReader*>(f);
+        if (zr != nullptr) {
+            // read the size or use a known one
+            size_t size = 0;
+            if (beforeknown_size.has_value()) {
+                size = beforeknown_size.value();
+            } else {
+                READANDCHECK(&size, 1);
+            }
+
+            // perform the size multiplication
+            size *= size_multiplier.value_or(1);
+
+            // create a view
+            char* address = nullptr;
+            size_t nread = zr->get_data_view(
+                    (void**)&address,
+                    sizeof(typename VectorT::value_type),
+                    size);
+
+            FAISS_THROW_IF_NOT_FMT(
+                    nread == (size),
+                    "read error in %s: %zd != %zd (%s)",
+                    f->name.c_str(),
+                    nread,
+                    size_t(size),
+                    strerror(errno));
+
+            VectorT view = VectorT::create_view(address, nread, nullptr);
+            target = std::move(view);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// a replacement for READANDCHECK for reading data into std::vector
+template <typename VectorT>
+void read_vector_with_known_size(VectorT& target, IOReader* f, size_t size) {
+    // size is known beforehand, no size multiplication
+    if (read_vector_base<VectorT>(target, f, size, std::nullopt)) {
+        return;
+    }
+
+    // the default case
+    READANDCHECK(target.data(), size);
+}
+
+// a replacement for READVECTOR
+template <typename VectorT>
+void read_vector(VectorT& target, IOReader* f) {
+    // size is not known beforehand, no size multiplication
+    if (read_vector_base<VectorT>(target, f, std::nullopt, std::nullopt)) {
+        return;
+    }
+
+    // the default case
+    READVECTOR(target);
+}
+
+// a replacement for READXBVECTOR
+template <typename VectorT>
+void read_xb_vector(VectorT& target, IOReader* f) {
+    // size is not known beforehand, nultiply the size 4x
+    if (read_vector_base<VectorT>(target, f, std::nullopt, 4)) {
+        return;
+    }
+
+    // the default case
+    READXBVECTOR(target);
+}
 
 /*************************************************************
  * Read
@@ -205,8 +341,9 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();
             if (n > 0) {
-                READANDCHECK(ails->codes[i].data(), n * ails->code_size);
-                READANDCHECK(ails->ids[i].data(), n);
+                read_vector_with_known_size(
+                        ails->codes[i], f, n * ails->code_size);
+                read_vector_with_known_size(ails->ids[i], f, n);
             }
         }
         return ails;
@@ -275,7 +412,7 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
         aq->search_type == AdditiveQuantizer::ST_norm_cqint4 ||
         aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
         aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
-        READXBVECTOR(aq->qnorm.codes);
+        read_xb_vector(aq->qnorm.codes, f);
         aq->qnorm.ntotal = aq->qnorm.codes.size() / 4;
         aq->qnorm.update_permutation();
     }
@@ -365,7 +502,7 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READVECTOR(hnsw->cum_nneighbor_per_level);
     READVECTOR(hnsw->levels);
     READVECTOR(hnsw->offsets);
-    READVECTOR(hnsw->neighbors);
+    read_vector(hnsw->neighbors, f);
 
     READ1(hnsw->entry_point);
     READ1(hnsw->max_level);
@@ -439,6 +576,13 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     return pq;
 }
 
+static void read_RaBitQuantizer(RaBitQuantizer* rabitq, IOReader* f) {
+    // don't care about rabitq->centroid
+    READ1(rabitq->d);
+    READ1(rabitq->code_size);
+    READ1(rabitq->metric_type);
+}
+
 void read_direct_map(DirectMap* dm, IOReader* f) {
     char maintain_direct_map;
     READ1(maintain_direct_map);
@@ -478,7 +622,12 @@ ArrayInvertedLists* set_array_invlist(
         std::vector<std::vector<idx_t>>& ids) {
     ArrayInvertedLists* ail =
             new ArrayInvertedLists(ivf->nlist, ivf->code_size);
-    std::swap(ail->ids, ids);
+
+    ail->ids.resize(ids.size());
+    for (size_t i = 0; i < ids.size(); i++) {
+        ail->ids[i] = MaybeOwnedVector<idx_t>(std::move(ids[i]));
+    }
+
     ivf->invlists = ail;
     ivf->own_invlists = true;
     return ail;
@@ -545,7 +694,7 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_index_header(idxf, f);
         idxf->code_size = idxf->d * sizeof(float);
-        READXBVECTOR(idxf->codes);
+        read_xb_vector(idxf->codes, f);
         FAISS_THROW_IF_NOT(
                 idxf->codes.size() == idxf->ntotal * idxf->code_size);
         // leak!
@@ -576,7 +725,7 @@ Index* read_index(IOReader* f, int io_flags) {
             idxl->rrot = *rrot;
             delete rrot;
         }
-        READVECTOR(idxl->codes);
+        read_vector(idxl->codes, f);
         FAISS_THROW_IF_NOT(
                 idxl->rrot.d_in == idxl->d && idxl->rrot.d_out == idxl->nbits);
         FAISS_THROW_IF_NOT(
@@ -589,7 +738,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(idxp, f);
         read_ProductQuantizer(&idxp->pq, f);
         idxp->code_size = idxp->pq.code_size;
-        READVECTOR(idxp->codes);
+        read_vector(idxp->codes, f);
         if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
             READ1(idxp->search_type);
             READ1(idxp->encode_signs);
@@ -611,28 +760,28 @@ Index* read_index(IOReader* f, int io_flags) {
             read_ResidualQuantizer(&idxr->rq, f, io_flags);
         }
         READ1(idxr->code_size);
-        READVECTOR(idxr->codes);
+        read_vector(idxr->codes, f);
         idx = idxr;
     } else if (h == fourcc("IxLS")) {
         auto idxr = new IndexLocalSearchQuantizer();
         read_index_header(idxr, f);
         read_LocalSearchQuantizer(&idxr->lsq, f);
         READ1(idxr->code_size);
-        READVECTOR(idxr->codes);
+        read_vector(idxr->codes, f);
         idx = idxr;
     } else if (h == fourcc("IxPR")) {
         auto idxpr = new IndexProductResidualQuantizer();
         read_index_header(idxpr, f);
         read_ProductResidualQuantizer(&idxpr->prq, f, io_flags);
         READ1(idxpr->code_size);
-        READVECTOR(idxpr->codes);
+        read_vector(idxpr->codes, f);
         idx = idxpr;
     } else if (h == fourcc("IxPL")) {
         auto idxpl = new IndexProductLocalSearchQuantizer();
         read_index_header(idxpl, f);
         read_ProductLocalSearchQuantizer(&idxpl->plsq, f);
         READ1(idxpl->code_size);
-        READVECTOR(idxpl->codes);
+        read_vector(idxpl->codes, f);
         idx = idxpl;
     } else if (h == fourcc("ImRQ")) {
         ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
@@ -789,7 +938,7 @@ Index* read_index(IOReader* f, int io_flags) {
         IndexScalarQuantizer* idxs = new IndexScalarQuantizer();
         read_index_header(idxs, f);
         read_ScalarQuantizer(&idxs->sq, f);
-        READVECTOR(idxs->codes);
+        read_vector(idxs->codes, f);
         idxs->code_size = idxs->sq.code_size;
         idx = idxs;
     } else if (h == fourcc("IxLa")) {
@@ -947,7 +1096,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxp->code_size_1);
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
-        READVECTOR(idxp->codes);
+        read_vector(idxp->codes, f);
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
@@ -1060,6 +1209,24 @@ Index* read_index(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = imm;
+    } else if (h == fourcc("Ixrq")) {
+        IndexRaBitQ* idxq = new IndexRaBitQ();
+        read_index_header(idxq, f);
+        read_RaBitQuantizer(&idxq->rabitq, f);
+        READVECTOR(idxq->codes);
+        READVECTOR(idxq->center);
+        READ1(idxq->qb);
+        idxq->code_size = idxq->rabitq.code_size;
+        idx = idxq;
+    } else if (h == fourcc("Iwrq")) {
+        IndexIVFRaBitQ* ivrq = new IndexIVFRaBitQ();
+        read_ivf_header(ivrq, f);
+        read_RaBitQuantizer(&ivrq->rabitq, f);
+        READ1(ivrq->code_size);
+        READ1(ivrq->by_residual);
+        READ1(ivrq->qb);
+        read_InvertedLists(ivrq, f, io_flags);
+        idx = ivrq;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",
@@ -1071,14 +1238,28 @@ Index* read_index(IOReader* f, int io_flags) {
 }
 
 Index* read_index(FILE* f, int io_flags) {
-    FileIOReader reader(f);
-    return read_index(&reader, io_flags);
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(f);
+        MappedFileIOReader reader(owner);
+        return read_index(&reader, io_flags);
+    } else {
+        FileIOReader reader(f);
+        return read_index(&reader, io_flags);
+    }
 }
 
 Index* read_index(const char* fname, int io_flags) {
-    FileIOReader reader(fname);
-    Index* idx = read_index(&reader, io_flags);
-    return idx;
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
+        MappedFileIOReader reader(owner);
+        return read_index(&reader, io_flags);
+    } else {
+        FileIOReader reader(fname);
+        Index* idx = read_index(&reader, io_flags);
+        return idx;
+    }
 }
 
 VectorTransform* read_VectorTransform(const char* fname) {
@@ -1181,7 +1362,7 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
     if (h == fourcc("IBxF")) {
         IndexBinaryFlat* idxf = new IndexBinaryFlat();
         read_index_binary_header(idxf, f);
-        READVECTOR(idxf->xb);
+        read_vector(idxf->xb, f);
         FAISS_THROW_IF_NOT(idxf->xb.size() == idxf->ntotal * idxf->code_size);
         // leak!
         idx = idxf;
@@ -1249,14 +1430,28 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
 }
 
 IndexBinary* read_index_binary(FILE* f, int io_flags) {
-    FileIOReader reader(f);
-    return read_index_binary(&reader, io_flags);
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(f);
+        MappedFileIOReader reader(owner);
+        return read_index_binary(&reader, io_flags);
+    } else {
+        FileIOReader reader(f);
+        return read_index_binary(&reader, io_flags);
+    }
 }
 
 IndexBinary* read_index_binary(const char* fname, int io_flags) {
-    FileIOReader reader(fname);
-    IndexBinary* idx = read_index_binary(&reader, io_flags);
-    return idx;
+    if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+        // enable mmap-supporting IOReader
+        auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
+        MappedFileIOReader reader(owner);
+        return read_index_binary(&reader, io_flags);
+    } else {
+        FileIOReader reader(fname);
+        IndexBinary* idx = read_index_binary(&reader, io_flags);
+        return idx;
+    }
 }
 
 } // namespace faiss

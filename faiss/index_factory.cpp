@@ -30,6 +30,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -37,6 +38,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -64,6 +66,7 @@ namespace {
  */
 
 bool re_match(const std::string& s, const std::string& pat, std::smatch& sm) {
+    // @lint-ignore CLANGTIDY
     return std::regex_match(s, sm, std::regex(pat));
 }
 
@@ -174,6 +177,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
 std::vector<size_t> aq_parse_nbits(std::string stok) {
     std::vector<size_t> nbits;
     std::smatch sm;
+    // @lint-ignore CLANGTIDY
     while (std::regex_search(stok, sm, std::regex("[^q]([0-9]+)x([0-9]+)"))) {
         int M = std::stoi(sm[1].str());
         int nbit = std::stoi(sm[2].str());
@@ -182,6 +186,8 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     }
     return nbits;
 }
+
+const std::string rabitq_pattern = "(RaBitQ)";
 
 /***************************************************************
  * Parse VectorTransform
@@ -433,6 +439,9 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
+    if (match(rabitq_pattern)) {
+        return new IndexIVFRaBitQ(get_q(), d, nlist, mt);
+    }
     return nullptr;
 }
 
@@ -652,6 +661,11 @@ Index* parse_other_indexes(
             return new IndexProductLocalSearchQuantizerFastScan(
                     d, nsplits, Msub, 4, metric, st, bbs);
         }
+    }
+
+    // IndexRaBitQ
+    if (match(rabitq_pattern)) {
+        return new IndexRaBitQ(d, metric);
     }
 
     return nullptr;

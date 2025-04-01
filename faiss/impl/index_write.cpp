@@ -32,6 +32,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -40,6 +41,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -362,6 +364,13 @@ static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
     WRITE1(nnd->has_built);
 
     WRITEVECTOR(nnd->final_graph);
+}
+
+static void write_RaBitQuantizer(const RaBitQuantizer* rabitq, IOWriter* f) {
+    // don't care about rabitq->centroid
+    WRITE1(rabitq->d);
+    WRITE1(rabitq->code_size);
+    WRITE1(rabitq->metric_type);
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
@@ -850,6 +859,26 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(imm_2, f);
         write_index(imm_2->index, f);
+    } else if (
+            const IndexRaBitQ* idxq = dynamic_cast<const IndexRaBitQ*>(idx)) {
+        uint32_t h = fourcc("Ixrq");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_RaBitQuantizer(&idxq->rabitq, f);
+        WRITEVECTOR(idxq->codes);
+        WRITEVECTOR(idxq->center);
+        WRITE1(idxq->qb);
+    } else if (
+            const IndexIVFRaBitQ* ivrq =
+                    dynamic_cast<const IndexIVFRaBitQ*>(idx)) {
+        uint32_t h = fourcc("Iwrq");
+        WRITE1(h);
+        write_ivf_header(ivrq, f);
+        write_RaBitQuantizer(&ivrq->rabitq, f);
+        WRITE1(ivrq->code_size);
+        WRITE1(ivrq->by_residual);
+        WRITE1(ivrq->qb);
+        write_InvertedLists(ivrq->invlists, f);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }
