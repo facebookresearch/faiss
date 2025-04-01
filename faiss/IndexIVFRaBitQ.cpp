@@ -183,13 +183,9 @@ InvertedListScanner* IndexIVFRaBitQ::get_InvertedListScanner(
         const IDSelector* sel,
         const IVFSearchParameters* search_params_in) const {
     uint8_t used_qb = qb;
-    if (search_params_in != nullptr) {
-        const auto* search_params =
-                dynamic_cast<const IVFRaBitQSearchParameters*>(
-                        search_params_in);
-        FAISS_THROW_IF_NOT_MSG(search_params, "invalid search params");
-
-        used_qb = search_params->qb;
+    if (auto params = dynamic_cast<const IVFRaBitQSearchParameters*>(
+                search_params_in)) {
+        used_qb = params->qb;
     }
 
     return new RaBitInvertedListScanner(*this, store_pairs, sel, used_qb);
