@@ -950,8 +950,8 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a87acf1279cf0b243bc435f8fb4c3855f" kind="variable"><name>graph_degree</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ac6925aa5047e8a6a9924485e69d10ef2" kind="variable"><name>build_algo</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1aa5418f19f7773b9693b6f3ef6633f0a9" kind="variable"><name>nn_descent_niter</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a4bdda51bf5c1bf1893ed7ea336a6e366" kind="variable"><name>ivf_pq_params</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ab6411191d974fce518395829130386bd" kind="variable"><name>ivf_pq_search_params</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a35354d39a8050b96831d2a60f33cf76c" kind="variable"><name>ivf_pq_params</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1addd87b5c8686273497ac070d6dee60dd" kind="variable"><name>ivf_pq_search_params</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a7aa44a80bd06361d2b706b640b2b9ebc" kind="variable"><name>refine_rate</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a9e78e2878d8e67a123577adb36d9d190" kind="variable"><name>store_dataset</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>

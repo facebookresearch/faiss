@@ -68,35 +68,35 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexCagra.h" line="174" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="174" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a4bdda51bf5c1bf1893ed7ea336a6e366" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" kindref="compound">IVFPQBuildCagraConfig</ref> *</type>
-        <definition>IVFPQBuildCagraConfig* faiss::gpu::GpuIndexCagraConfig::ivf_pq_params</definition>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a35354d39a8050b96831d2a60f33cf76c" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" kindref="compound">IVFPQBuildCagraConfig</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;IVFPQBuildCagraConfig&gt; faiss::gpu::GpuIndexCagraConfig::ivf_pq_params</definition>
         <argsstring></argsstring>
         <name>ivf_pq_params</name>
         <qualifiedname>faiss::gpu::GpuIndexCagraConfig::ivf_pq_params</qualifiedname>
-        <initializer>= nullptr</initializer>
+        <initializer>{nullptr}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="176" column="27" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="176" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="176" column="21" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="176" bodyend="176"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ab6411191d974fce518395829130386bd" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" kindref="compound">IVFPQSearchCagraConfig</ref> *</type>
-        <definition>IVFPQSearchCagraConfig* faiss::gpu::GpuIndexCagraConfig::ivf_pq_search_params</definition>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1addd87b5c8686273497ac070d6dee60dd" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" kindref="compound">IVFPQSearchCagraConfig</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;IVFPQSearchCagraConfig&gt; faiss::gpu::GpuIndexCagraConfig::ivf_pq_search_params</definition>
         <argsstring></argsstring>
         <name>ivf_pq_search_params</name>
         <qualifiedname>faiss::gpu::GpuIndexCagraConfig::ivf_pq_search_params</qualifiedname>
-        <initializer>= nullptr</initializer>
+        <initializer>{nullptr}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="177" column="28" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="177" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="177" column="21" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="177" bodyend="177"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a7aa44a80bd06361d2b706b640b2b9ebc" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -199,24 +199,10 @@
         <link refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="3" relation="usage">
-          <edgelabel>ivf_pq_params</edgelabel>
-        </childnode>
-        <childnode refid="4" relation="usage">
-          <edgelabel>ivf_pq_search_params</edgelabel>
-        </childnode>
       </node>
       <node id="2">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
-      </node>
-      <node id="3">
-        <label>faiss::gpu::IVFPQBuildCagraConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig"/>
-      </node>
-      <node id="4">
-        <label>faiss::gpu::IVFPQSearchCagraConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig"/>
       </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuIndexCagra.h" line="166" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="166" bodyend="180"/>
@@ -225,8 +211,8 @@
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a87acf1279cf0b243bc435f8fb4c3855f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>graph_degree</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1adf71c6aa489b10677432b0c55daa25b2" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>intermediate_graph_degree</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a4bdda51bf5c1bf1893ed7ea336a6e366" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>ivf_pq_params</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1ab6411191d974fce518395829130386bd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>ivf_pq_search_params</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a35354d39a8050b96831d2a60f33cf76c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>ivf_pq_params</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1addd87b5c8686273497ac070d6dee60dd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>ivf_pq_search_params</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>memorySpace</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1aa5418f19f7773b9693b6f3ef6633f0a9" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>nn_descent_niter</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a7aa44a80bd06361d2b706b640b2b9ebc" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagraConfig</scope><name>refine_rate</name></member>

@@ -1355,24 +1355,10 @@
         <link refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
-        <childnode refid="6" relation="usage">
-          <edgelabel>ivf_pq_params</edgelabel>
-        </childnode>
-        <childnode refid="7" relation="usage">
-          <edgelabel>ivf_pq_search_params</edgelabel>
-        </childnode>
       </node>
       <node id="4">
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
-      </node>
-      <node id="6">
-        <label>faiss::gpu::IVFPQBuildCagraConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig"/>
-      </node>
-      <node id="7">
-        <label>faiss::gpu::IVFPQSearchCagraConfig</label>
-        <link refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig"/>
       </node>
     </collaborationgraph>
     <location file="faiss/gpu/GpuIndexCagra.h" line="240" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="240" bodyend="292"/>
