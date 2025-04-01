@@ -66,7 +66,8 @@ namespace {
  */
 
 bool re_match(const std::string& s, const std::string& pat, std::smatch& sm) {
-    return std::regex_match(s, sm, std::regex(pat)); // NO-LINT : regex_match
+    // @lint-ignore CLANGTIDY
+    return std::regex_match(s, sm, std::regex(pat));
 }
 
 // find first pair of matching parentheses
@@ -176,8 +177,8 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
 std::vector<size_t> aq_parse_nbits(std::string stok) {
     std::vector<size_t> nbits;
     std::smatch sm;
-    while (std::regex_search(
-            stok, sm, std::regex("[^q]([0-9]+)x([0-9]+)"))) { // NO-LINT
+    // @lint-ignore CLANGTIDY
+    while (std::regex_search(stok, sm, std::regex("[^q]([0-9]+)x([0-9]+)"))) {
         int M = std::stoi(sm[1].str());
         int nbit = std::stoi(sm[2].str());
         nbits.resize(nbits.size() + M, nbit);
