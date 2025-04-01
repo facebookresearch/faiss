@@ -370,6 +370,7 @@ static void write_RaBitQuantizer(const RaBitQuantizer* rabitq, IOWriter* f) {
     // don't care about rabitq->centroid
     WRITE1(rabitq->d);
     WRITE1(rabitq->code_size);
+    WRITE1(rabitq->metric_type);
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
