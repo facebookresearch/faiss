@@ -11,6 +11,7 @@ import os
 import io
 import sys
 import pickle
+import platform
 from multiprocessing.pool import ThreadPool
 from common_faiss_tests import get_dataset_2
 
@@ -485,6 +486,10 @@ class TestIVFPQRead(unittest.TestCase):
 
 
 class TestIOFlatMMap(unittest.TestCase):
+    @unittest.skipIf(
+        platform.system() not in ["Windows", "Linux"],
+        "supported OSes only"
+    )
     def test_mmap(self): 
         xt, xb, xq = get_dataset_2(32, 0, 100, 50)
         index = faiss.index_factory(32, "SQfp16", faiss.METRIC_L2)
