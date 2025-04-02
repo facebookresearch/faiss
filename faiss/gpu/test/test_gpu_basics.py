@@ -469,3 +469,26 @@ class TestGpuFlags(unittest.TestCase):
 
     def test_gpu_flag(self):
         assert "GPU" in faiss.get_compile_options().split()
+
+
+class TestStructPacking(unittest.TestCase): 
+    """ Verify if the size structures as seen from Cuda and C++ are the same """
+
+    def test_swig(self): 
+        " This test is redundant with the CPU tests, but let's check run it just in case"
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_swig(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])
+
+    def test_cuda(self): 
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_cuda(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])
