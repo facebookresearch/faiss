@@ -227,12 +227,15 @@ struct MmappedFileMappingOwner::PImpl {
 #else
 
 struct MmappedFileMappingOwner::PImpl {
-    PImpl(FILE* f) {
-        FAISS_THROW_FMT("Not implemented");
+    void* ptr = nullptr;
+    size_t ptr_size = 0;
+
+    PImpl(const std::string& filename) {
+        FAISS_THROW_MSG("Not implemented");
     }
 
-    ~PImpl() {
-        FAISS_THROW_FMT("Not implemented");
+    PImpl(FILE* f) {
+        FAISS_THROW_MSG("Not implemented");
     }
 };
 
