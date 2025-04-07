@@ -8,7 +8,9 @@
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>
+#include <cassert>
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -286,6 +288,61 @@ void hnsw_search(
     hnsw_stats.combine({n1, n2, ndis, nhops});
 }
 
+template <class BlockResultHandler>
+void hnsw_search_level_0(
+        const IndexHNSW* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const storage_idx_t* nearest,
+        const float* nearest_d,
+        float* distances,
+        idx_t* labels,
+        int nprobe,
+        int search_type,
+        const SearchParameters* params_in,
+        BlockResultHandler& bres) {
+
+    const HNSW& hnsw = index->hnsw;
+    const SearchParametersHNSW* params = nullptr;
+
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
+    }
+
+#pragma omp parallel
+    {
+        std::unique_ptr<DistanceComputer> qdis(
+                storage_distance_computer(index->storage));
+        HNSWStats search_stats;
+        VisitedTable vt(index->ntotal);
+        typename BlockResultHandler::SingleResultHandler res(bres);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            res.begin(i);
+            qdis->set_query(x + i * index->d);
+
+            hnsw.search_level_0(
+                    *qdis.get(),
+                    res,
+                    nprobe,
+                    nearest + i * nprobe,
+                    nearest_d + i * nprobe,
+                    search_type,
+                    search_stats,
+                    vt,
+                    params);
+            res.end();
+            vt.advance();
+        }
+#pragma omp critical
+        { hnsw_stats.combine(search_stats); }
+    }
+
+}
+
 } // anonymous namespace
 
 void IndexHNSW::search(
@@ -408,43 +465,48 @@ void IndexHNSW::search_level_0(
         idx_t* labels,
         int nprobe,
         int search_type,
-        const SearchParameters* params) const {
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
     storage_idx_t ntotal = hnsw.levels.size();
 
-    using RH = HeapBlockResultHandler<HNSW::C>;
-    RH bres(n, distances, labels, k);
 
-#pragma omp parallel
-    {
-        std::unique_ptr<DistanceComputer> qdis(
-                storage_distance_computer(storage));
-        HNSWStats search_stats;
-        VisitedTable vt(ntotal);
-        RH::SingleResultHandler res(bres);
+    if (params_in && params_in->grp) {
+        using RH = GroupedHeapBlockResultHandler<HNSW::C>;
+        RH bres(n, distances, labels, k, params_in->grp);
 
-#pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            res.begin(i);
-            qdis->set_query(x + i * d);
 
-            hnsw.search_level_0(
-                    *qdis.get(),
-                    res,
-                    nprobe,
-                    nearest + i * nprobe,
-                    nearest_d + i * nprobe,
-                    search_type,
-                    search_stats,
-                    vt,
-                    params);
-            res.end();
-            vt.advance();
-        }
-#pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        hnsw_search_level_0(
+                this,
+                n,
+                x,
+                k,
+                nearest,
+                nearest_d,
+                distances,
+                labels,
+                nprobe, // n_probes
+                search_type, // search_type
+                params_in,
+                bres);
+    } else {
+        using RH = HeapBlockResultHandler<HNSW::C>;
+        RH bres(n, distances, labels, k);
+
+        hnsw_search_level_0(
+                this,
+                n,
+                x,
+                k,
+                nearest,
+                nearest_d,
+                distances,
+                labels,
+                nprobe, // n_probes
+                search_type, // search_type
+                params_in,
+                bres);
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances

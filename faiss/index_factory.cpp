@@ -11,6 +11,9 @@
 
 #include <faiss/index_factory.h>
 
+#include <cinttypes>
+#include <cmath>
+
 #include <map>
 
 #include <regex>
@@ -459,6 +462,11 @@ IndexHNSW* parse_IndexHNSW(
         return re_match(code_string, pattern, sm);
     };
 
+    if (match("Cagra")) {
+        IndexHNSWCagra* cagra = new IndexHNSWCagra(d, hnsw_M, mt);
+        return cagra;
+    }
+
     if (match("Flat|")) {
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
@@ -792,7 +800,7 @@ std::unique_ptr<Index> index_factory_sub(
 
     // HNSW variants (it was unclear in the old version that the separator was a
     // "," so we support both "_" and ",")
-    if (re_match(description, "HNSW([0-9]*)([,_].*)?", sm)) {
+    if (re_match(description, "HNSW([0-9]*)([,_].*)?(Cagra)?", sm)) {
         int hnsw_M = mres_to_int(sm[1], 32);
         // We also accept empty code string (synonym of Flat)
         std::string code_string =
