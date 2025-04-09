@@ -17,7 +17,7 @@ template <typename T>
 std::string print_data(
         std::shared_ptr<std::vector<T>> data,
         const size_t divider) {
-    std::string ret = "";
+    std::string ret;
     for (int i = 0; i < data->size(); ++i) {
         if (i % divider) {
             ret += " ";
