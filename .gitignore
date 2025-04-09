@@ -22,3 +22,4 @@ faiss/python/swigfaiss_avx512.swig
 faiss/python/swigfaiss_avx512_spr.swig
 faiss/python/swigfaiss_sve.swig
 .cache/
+compile_commands.json
