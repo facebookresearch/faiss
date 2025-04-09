@@ -12,12 +12,12 @@ def read_fvecs(fp):
     a = np.fromfile(fp, dtype='int32')
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy().view('float32')
-
+SIFT_DIR="/home/ubuntu/Power-RAG/HNSW/HNSWfaiss/sift"
 # 1M samples
-xb = read_fvecs('./sift/sift_base.fvecs')
+xb = read_fvecs(SIFT_DIR + '/sift_base.fvecs')
 # queries
-xq = read_fvecs('./sift/sift_query.fvecs')[0].reshape(1, -1)
-xq_full = read_fvecs('./sift/sift_query.fvecs')
+xq = read_fvecs(SIFT_DIR + '/sift_query.fvecs')[0].reshape(1, -1)
+xq_full = read_fvecs(SIFT_DIR + '/sift_query.fvecs')
 print(xb.shape)
 
 print('building index')

@@ -78,11 +78,11 @@ void HNSW::set_default_probas(int M, float levelMult) {
     cum_nneighbor_per_level.push_back(0);
     for (int level = 0;; level++) {
         float proba = exp(-level / levelMult) * (1 - exp(-1 / levelMult));
-        printf("level: %d, proba: %f\n", level, proba);
         if (proba < 1e-9)
             break;
         assign_probas.push_back(proba);
         nn += level == 0 ? M * 2 : M;
+        printf("level %d, proba %f, nn %d\n", level, proba, nn);
         cum_nneighbor_per_level.push_back(nn);
     }
 }
