@@ -206,11 +206,13 @@ void hnsw_add_vertices(
  * IndexHNSW implementation
  **************************************************************/
 
-IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
-        : Index(d, metric), hnsw(M) {}
+IndexHNSW::IndexHNSW(int d, int M, MetricType metric, int M0)
+        : Index(d, metric), hnsw(M, M0) {}
 
-IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {
+IndexHNSW::IndexHNSW(Index* storage, int M, int M0)
+        : Index(storage->d, storage->metric_type),
+          hnsw(M, M0),
+          storage(storage) {
     metric_arg = storage->metric_arg;
 }
 
@@ -444,7 +446,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -625,11 +629,12 @@ IndexHNSWFlat::IndexHNSWFlat() {
     is_trained = true;
 }
 
-IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
+IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric, int M0)
         : IndexHNSW(
                   (metric == METRIC_L2) ? new IndexFlatL2(d)
                                         : new IndexFlat(d, metric),
-                  M) {
+                  M,
+                  M0) {
     own_fields = true;
     is_trained = true;
 }

@@ -55,8 +55,8 @@ void HNSW::neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
     *end = o + cum_nb_neighbors(layer_no + 1);
 }
 
-HNSW::HNSW(int M) : rng(12345) {
-    set_default_probas(M, 1.0 / log(M));
+HNSW::HNSW(int M, int M0) : rng(12345) {
+    set_default_probas(M, 1.0 / log(M), M0);
     offsets.push_back(0);
 }
 
@@ -73,15 +73,18 @@ int HNSW::random_level() {
     return assign_probas.size() - 1;
 }
 
-void HNSW::set_default_probas(int M, float levelMult) {
+void HNSW::set_default_probas(int M, float levelMult, int M0) {
     int nn = 0;
+    if (M0 == -1) {
+        M0 = M * 2;
+    }
     cum_nneighbor_per_level.push_back(0);
     for (int level = 0;; level++) {
         float proba = exp(-level / levelMult) * (1 - exp(-1 / levelMult));
         if (proba < 1e-9)
             break;
         assign_probas.push_back(proba);
-        nn += level == 0 ? M * 2 : M;
+        nn += level == 0 ? M0 : M;
         printf("level %d, proba %f, nn %d\n", level, proba, nn);
         cum_nneighbor_per_level.push_back(nn);
     }

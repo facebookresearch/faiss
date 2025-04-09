@@ -12,7 +12,8 @@ def read_fvecs(fp):
     a = np.fromfile(fp, dtype='int32')
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy().view('float32')
-SIFT_DIR="/home/ubuntu/Power-RAG/HNSW/HNSWfaiss/sift"
+
+SIFT_DIR = "./sift"
 # 1M samples
 xb = read_fvecs(SIFT_DIR + '/sift_base.fvecs')
 # queries
@@ -21,7 +22,7 @@ xq_full = read_fvecs(SIFT_DIR + '/sift_query.fvecs')
 print(xb.shape)
 
 print('building index')
-index = faiss.IndexHNSWFlat(xb.shape[1], M)
+index = faiss.IndexHNSWFlat(xb.shape[1], M, faiss.METRIC_L2, M)
 index.hnsw.efConstruction = efConstruction
 index.add(xb)
 

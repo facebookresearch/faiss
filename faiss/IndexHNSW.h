@@ -46,8 +46,12 @@ struct IndexHNSW : Index {
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
 
-    explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
-    explicit IndexHNSW(Index* storage, int M = 32);
+    explicit IndexHNSW(
+            int d = 0,
+            int M = 32,
+            MetricType metric = METRIC_L2,
+            int M0 = -1);
+    explicit IndexHNSW(Index* storage, int M = 32, int M0 = -1);
 
     ~IndexHNSW() override;
 
@@ -121,7 +125,7 @@ struct IndexHNSW : Index {
 
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
-    IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2);
+    IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2, int M0 = -1);
 };
 
 /** PQ index topped with with a HNSW structure to access elements
