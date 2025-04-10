@@ -75,6 +75,8 @@ int HNSW::random_level() {
 
 void HNSW::set_default_probas(int M, float levelMult, int M0) {
     int nn = 0;
+    printf("M0: %d\n", M0);
+    printf("M: %d\n", M);
     if (M0 == -1) {
         M0 = M * 2;
     }
