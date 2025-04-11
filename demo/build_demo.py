@@ -3,7 +3,7 @@ import numpy as np
 
 M = 32
 efSearch = 32  # number of entry points (neighbors) we use on each layer
-efConstruction = 32  # number of entry points used on each layer
+efConstruction = 256  # number of entry points used on each layer
                      # during construction
 
 
@@ -32,7 +32,7 @@ D_flat, recall_idx_flat = index_flat.search(xq_full[:1000], k=3)
 print(recall_idx_flat)
 
 print('building index')
-index = faiss.IndexHNSWFlat(xb.shape[1], 64, faiss.METRIC_L2, 64)
+index = faiss.IndexHNSWFlat(xb.shape[1], 32, faiss.METRIC_L2, 32)
 index.hnsw.efConstruction = efConstruction
 index.add(xb)
 import time
