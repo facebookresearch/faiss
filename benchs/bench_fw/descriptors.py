@@ -224,6 +224,7 @@ class CodecDescriptor(IndexBaseDescriptor):
     construction_params: Optional[List[Dict[str, int]]] = None
     training_vectors: Optional[DatasetDescriptor] = None
     normalize_l2: bool = False
+    is_spherical: bool = False
     FILENAME_PREFIX: str = "xt"
 
     def __post_init__(self):
