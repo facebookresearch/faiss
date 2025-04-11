@@ -163,6 +163,7 @@ set(FAISS_HEADERS
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
   impl/LookupTableScaler.h
+  impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
   impl/PolysemousTraining.h
