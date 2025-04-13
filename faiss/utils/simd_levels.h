@@ -24,8 +24,6 @@ struct SIMDConfig {
     SIMDConfig();
 };
 
-extern SIMDConfig simd_config;
-
 /*********************** x86 SIMD */
 
 #ifdef COMPILE_SIMD_AVX2
@@ -65,7 +63,7 @@ extern SIMDConfig simd_config;
 /* dispatch function f to f<SIMDLevel> */
 
 #define DISPATCH_SIMDLevel(f, ...)                       \
-    switch (simd_config::level) {                        \
+    switch (SIMDConfig::level) {                         \
         case SIMDLevel::NONE:                            \
             return f<SIMDLevel::NONE>(__VA_ARGS__);      \
             DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \

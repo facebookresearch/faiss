@@ -15,6 +15,7 @@
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -471,6 +472,10 @@ void compute_PQ_dis_tables_dsub2(
  * @param b   size n
  * @param c   result table, size n
  */
+void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
+
+/* same statically */
+template <SIMDLevel>
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 
 /** same as fvec_madd, also return index of the min of the result table
