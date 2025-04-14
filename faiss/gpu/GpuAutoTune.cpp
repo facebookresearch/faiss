@@ -28,7 +28,8 @@ using namespace ::faiss;
  * Parameters to auto-tune on GpuIndex'es
  **********************************************************/
 
-#define DC(classname) auto ix = dynamic_cast<const classname*>(index)
+#define DC(classname) \
+    [[maybe_unused]] auto ix = dynamic_cast<const classname*>(index)
 
 void GpuParameterSpace::initialize(const Index* index) {
     if (DC(IndexPreTransform)) {
