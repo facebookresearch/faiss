@@ -9,12 +9,16 @@
 
 namespace faiss {
 
+// levels should be of increasing capacity
 enum SIMDLevel {
     NONE,
+    // x86
     AVX2,
     AVX512F,
+    // arm
     ARM_NEON,
     ARM_SVE,
+    // ppc
     PPC_ALTIVEC,
 };
 

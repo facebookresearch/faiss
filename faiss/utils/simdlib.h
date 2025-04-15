@@ -16,8 +16,8 @@
 
 #if defined(__AVX512F__)
 
-#include <faiss/utils/simdlib_avx2.h>
-#include <faiss/utils/simdlib_avx512.h>
+#include <faiss/utils/simd_impl/simdlib_avx2.h>
+#include <faiss/utils/simd_impl/simdlib_avx512.h>
 
 #elif defined(__AVX2__)
 
