@@ -1038,7 +1038,7 @@ def handle_VectorTransform(the_class):
 
 def handle_AutoTuneCriterion(the_class):
     def replacement_set_groundtruth(self, D, I):
-        if D:
+        if D is not None:
             assert I.shape == D.shape
         self.nq, self.gt_nnn = I.shape
         self.set_groundtruth_c(
