@@ -66,6 +66,7 @@ option(FAISS_ENABLE_MKL "Enable MKL." ON)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
+option(FAISS_BUILD_GPU_SHARED_LIBS "Build GPU shared libraries." OFF)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
 
 if(FAISS_ENABLE_GPU)

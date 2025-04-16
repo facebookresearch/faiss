@@ -258,7 +258,11 @@ if(FAISS_ENABLE_CUVS)
           utils/CuvsUtils.cu)
 endif()
 
-add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+if(FAISS_BUILD_GPU_SHARED_LIBS)
+  add_library(faiss_gpu SHARED ${FAISS_GPU_SRC})
+else()
+  add_library(faiss_gpu STATIC ${FAISS_GPU_SRC})
+endif()
 set_target_properties(faiss_gpu PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON
@@ -308,11 +312,13 @@ endif()
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_avx512_spr PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
-target_link_libraries(faiss_sve PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+if(NOT FAISS_BUILD_GPU_SHARED_LIBS)
+  target_link_libraries(faiss PRIVATE  "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+  target_link_libraries(faiss_avx2 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+  target_link_libraries(faiss_avx512 PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+  target_link_libraries(faiss_avx512_spr PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+  target_link_libraries(faiss_sve PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,faiss_gpu>")
+endif()
 
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
