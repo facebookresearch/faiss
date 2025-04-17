@@ -1,75 +1,67 @@
+import os
+import pickle
 import faiss
 import numpy as np
-
-M = 32
-efSearch = 32  # number of entry points (neighbors) we use on each layer
-efConstruction = 256  # number of entry points used on each layer
-                     # during construction
-
-
-# now define a function to read the fvecs file format of Sift1M dataset
-def read_fvecs(fp):
-    a = np.fromfile(fp, dtype='int32')
-    d = a[0]
-    return a.reshape(-1, d + 1)[:, 1:].copy().view('float32')
-
-SIFT_DIR = "/home/ubuntu/Power-RAG/HNSW/HNSWfaiss/sift"
-# 1M samples
-xb = read_fvecs(SIFT_DIR + '/sift_base.fvecs')
-# queries
-xq = read_fvecs(SIFT_DIR + '/sift_query.fvecs')[0].reshape(1, -1)
-xq_full = read_fvecs(SIFT_DIR + '/sift_query.fvecs')
-xq_1 = xq[0].reshape(1, xq.shape[1])
-print(xb.shape)
-
-
-# recall_idx = []
-
-index_flat = faiss.IndexFlatL2(xb.shape[1])
-index_flat.add(xb)
-D_flat, recall_idx_flat = index_flat.search(xq_full[:1000], k=3)
-
-print(recall_idx_flat)
-
-print('building index')
-index = faiss.IndexHNSWFlat(xb.shape[1], 32, faiss.METRIC_L2, 32)
-index.hnsw.efConstruction = efConstruction
-index.add(xb)
 import time
 
-for efSearch in [2, 4, 8, 16, 32, 64]:
-    index.efSearch = efSearch
-    # print('searching')
-    index.hnsw.efSearch = efSearch
-    # calculate the time of searching
-    start_time = time.time()
-    D, I = index.search(xq_full[:1000], 3)
-    end_time = time.time()
-    print(f'time: {end_time - start_time}')
-    # print(I)
+EMBEDDING_FILE = "/opt/dlami/nvme/scaling_out/embeddings/facebook/contriever-msmarco/rpj_wiki/1-shards/passages_00.pkl"
+INDEX_OUTPUT_DIR = "/opt/dlami/nvme/scaling_out/indices/rpj_wiki/facebook/contriever-msmarco/hnsw" # 保存索引的目录
+M_VALUES_FOR_L2 = [30, 60] # M values for L2
+EF_CONSTRUCTION_FOR_L2 = 128 # fixed efConstruction
 
-    # calculate the recall using the flat index the formula:
-    # recall = sum(recall_idx == recall_idx_flat) / len(recall_idx)
-    recall=[]
-    for i in range(len(I)):
-        acc = 0
-        for j in range(len(I[i])):
-            if I[i][j] in recall_idx_flat[i]:
-                acc += 1
-        recall.append(acc / len(I[i]))
-    recall = sum(recall) / len(recall)
-    print(f'efSearch: {efSearch}')
-    print(f'recall: {recall}')
+if not os.path.exists(INDEX_OUTPUT_DIR):
+    print(f"Creating index directory: {INDEX_OUTPUT_DIR}")
+    os.makedirs(INDEX_OUTPUT_DIR)
 
-# print('searching q1')
-# D, I = index.search(xq_1, 10)
-# print(I)
+print(f"Loading embeddings from {EMBEDDING_FILE}...")
+with open(EMBEDDING_FILE, 'rb') as f:
+    data = pickle.load(f)
+# Directly assume data is a tuple and the second element is embeddings
+embeddings = data[1]
 
-# levels = faiss.vector_to_array(index.hnsw.levels)
-# print(levels)
+print(f"Converting embeddings from {embeddings.dtype} to float32.")
+embeddings = embeddings.astype(np.float32)
+print(f"Loaded embeddings, shape: {embeddings.shape}")
+dim = embeddings.shape[1]
 
-# cum_nneighbor_per_level = faiss.vector_to_array(index.hnsw.cum_nneighbor_per_level)
-# print(cum_nneighbor_per_level)
+# --- Build HNSW L2 index ---
+print("\n--- Build HNSW L2 index ---")
 
-# offsets = faiss.vector_to_array(index.hnsw.offsets)
-# print(offsets)
+# Loop through M values
+for HNSW_M in M_VALUES_FOR_L2:
+    efConstruction = EF_CONSTRUCTION_FOR_L2
+
+    print(f"\nBuilding HNSW L2 index: M={HNSW_M}, efConstruction={efConstruction}...")
+
+    # Define the filename and path for the L2 index
+    hnsw_filename = f"hnsw_IP_M{HNSW_M}_efC{efConstruction}.index"
+    hnsw_filepath = os.path.join(INDEX_OUTPUT_DIR, hnsw_filename)
+
+    # Note: No longer check if the file exists, it will be overwritten if it exists
+
+    # Create HNSW L2 index
+    index_hnsw = faiss.IndexHNSWFlat(dim, HNSW_M, faiss.METRIC_INNER_PRODUCT)
+    index_hnsw.hnsw.efConstruction = efConstruction
+
+    index_hnsw.verbose = True
+
+    print(f"Adding {embeddings.shape[0]} vectors to HNSW L2 (M={HNSW_M}) index...")
+    start_time_build = time.time()
+
+    index_hnsw.add(embeddings) 
+
+    end_time_build = time.time()
+    build_time_s = end_time_build - start_time_build
+    print(f"HNSW L2 build time: {build_time_s:.4f} seconds")
+
+    # Save L2 index (direct operation, no try-except)
+    print(f"Saving HNSW L2 index to {hnsw_filepath}")
+    faiss.write_index(index_hnsw, hnsw_filepath)
+    # Do not check storage size or handle save errors
+
+    print(f"Index {hnsw_filename} saved.")
+
+    del index_hnsw
+
+print("\n--- HNSW L2 index build completed ---")
+print("\nScript ended.")
