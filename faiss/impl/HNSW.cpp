@@ -111,6 +111,63 @@ void HNSW::reset() {
     neighbors.clear();
 }
 
+
+void HNSW::save_degree_distribution(int level, const char* filename) const {
+    // Check if level is valid
+    if (level < 0 || level >= cum_nneighbor_per_level.size() - 1) {
+        fprintf(stderr,
+                "Invalid level %d (max level is %d)\n",
+                level,
+                (int)cum_nneighbor_per_level.size() - 2);
+        return;
+    }
+
+    // Open file for writing
+    FILE* f = fopen(filename, "w");
+    if (!f) {
+        fprintf(stderr, "Could not open %s for writing\n", filename);
+        return;
+    }
+
+    // For each node, count actual neighbors at the specified level
+    printf("Computing degree distribution for level %d\n", level);
+
+    // Only consider nodes that exist at this level or above
+    int nodes_at_level = 0;
+    for (int i = 0; i < levels.size(); i++) {
+        if (levels[i] > level) {
+            nodes_at_level++;
+
+            // Count actual neighbors (not -1)
+            size_t begin, end;
+            neighbor_range(i, level, &begin, &end);
+
+            int degree = 0;
+            for (size_t j = begin; j < end; j++) {
+                if (neighbors[j] >= 0) {
+                    degree++;
+                } else {
+                    break; // Stop at first -1
+                }
+            }
+
+            // Write the degree to the file
+            fprintf(f, "%d\n", degree);
+        }
+    }
+
+    fclose(f);
+    printf("Saved degree distribution for %d nodes at level %d to %s\n",
+           nodes_at_level,
+           level,
+           filename);
+
+    // Print command to generate the plot
+    printf("To visualize the distribution, run:\n");
+    printf("python -m faiss.contrib.plot_degree_distribution %s\n", filename);
+}
+
+
 void HNSW::print_neighbor_stats(int level) const {
     FAISS_THROW_IF_NOT(level < cum_nneighbor_per_level.size());
     printf("stats on level %d, max %d neighbors per vertex:\n",

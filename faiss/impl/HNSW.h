@@ -230,6 +230,8 @@ struct HNSW {
             bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);
+
+    void save_degree_distribution(int level, const char* filename) const;
 };
 
 struct HNSWStats {
