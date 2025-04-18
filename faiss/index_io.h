@@ -67,9 +67,9 @@ const int IO_FLAG_MMAP = IO_FLAG_SKIP_IVF_DATA | 0x646f0000;
 //   after OnDiskInvertedLists get properly updated.
 const int IO_FLAG_MMAP_IFC = 1 << 9;
 
-Index* read_index(const char* fname, int io_flags = 0);
-Index* read_index(FILE* f, int io_flags = 0);
-Index* read_index(IOReader* reader, int io_flags = 0);
+Index* read_index(const char* fname, int io_flags = 0, const char* external_storage_path = nullptr);
+Index* read_index(FILE* f, int io_flags = 0, const char* external_storage_path = nullptr);
+Index* read_index(IOReader* reader, int io_flags = 0, const char* external_storage_path = nullptr);
 
 IndexBinary* read_index_binary(const char* fname, int io_flags = 0);
 IndexBinary* read_index_binary(FILE* f, int io_flags = 0);

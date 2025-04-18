@@ -674,7 +674,10 @@ static IndexIVFPQ* read_ivfpq(IOReader* f, uint32_t h, int io_flags) {
 
 int read_old_fmt_hack = 0;
 
-Index* read_index(IOReader* f, int io_flags) {
+Index* read_index(
+        IOReader* f,
+        int io_flags,
+        const char* external_storage_path) {
     Index* idx = nullptr;
     uint32_t h;
     READ1(h);
@@ -1119,7 +1122,64 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
         }
         read_HNSW(&idxhnsw->hnsw, f);
-        idxhnsw->storage = read_index(f, io_flags);
+
+        if (external_storage_path != nullptr) {
+            // Load storage from the external file
+            printf("INFO: Loading external storage from: %s\n",
+                   external_storage_path);
+            try {
+                // Decide reader type based on io_flags if desired (e.g., mmap)
+                std::unique_ptr<IOReader> storage_reader;
+                if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+                    auto owner = std::make_shared<MmappedFileMappingOwner>(
+                            external_storage_path);
+                    storage_reader =
+                            std::make_unique<MappedFileIOReader>(owner);
+                    printf("INFO: Using MappedFileIOReader for external storage.\n");
+                } else {
+                    storage_reader = std::make_unique<FileIOReader>(
+                            external_storage_path);
+                    printf("INFO: Using FileIOReader for external storage.\n");
+                }
+
+                // Recursively call read_index for the storage part, passing
+                // flags Pass nullptr for external_storage_path in recursive
+                // call
+                idxhnsw->storage =
+                        read_index(storage_reader.get(), io_flags, nullptr);
+
+                if (!idxhnsw->storage) {
+                    FAISS_THROW_FMT(
+                            "Failed to read external storage index from %s",
+                            external_storage_path);
+                }
+                printf("INFO: Successfully loaded external storage.\n");
+
+            } catch (const std::exception& e) {
+                // Clean up partially created index if external load fails
+                delete idxhnsw;
+                FAISS_THROW_FMT(
+                        "Error reading external storage from %s: %s",
+                        external_storage_path,
+                        e.what());
+            }
+            // IMPORTANT: We DO NOT read storage from the primary reader 'f'
+            // anymore. 'f' remains positioned after the HNSW graph data.
+
+        } else if (io_flags & IO_FLAG_SKIP_STORAGE) {
+            // Original logic for skipping storage from primary reader
+            uint32_t null_check;
+            READ1(null_check);
+            FAISS_THROW_IF_NOT_MSG(
+                    null_check == fourcc("null"),
+                    "IO_FLAG_SKIP_STORAGE set, but storage field was not null");
+            idxhnsw->storage = nullptr; // Explicitly set to null
+        } else {
+            // Original logic: Read storage sequentially from primary reader 'f'
+            // Pass nullptr for external_storage_path in recursive call
+            idxhnsw->storage = read_index(f, io_flags, nullptr);
+        }
+
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
@@ -1236,27 +1296,30 @@ Index* read_index(IOReader* f, int io_flags) {
     return idx;
 }
 
-Index* read_index(FILE* f, int io_flags) {
+Index* read_index(FILE* f, int io_flags, const char* external_storage_path) {
     if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
         // enable mmap-supporting IOReader
         auto owner = std::make_shared<MmappedFileMappingOwner>(f);
         MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags);
+        return read_index(&reader, io_flags, external_storage_path);
     } else {
         FileIOReader reader(f);
-        return read_index(&reader, io_flags);
+        return read_index(&reader, io_flags, external_storage_path);
     }
 }
 
-Index* read_index(const char* fname, int io_flags) {
+Index* read_index(
+        const char* fname,
+        int io_flags,
+        const char* external_storage_path) {
     if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
         // enable mmap-supporting IOReader
         auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
         MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags);
+        return read_index(&reader, io_flags, external_storage_path);
     } else {
         FileIOReader reader(fname);
-        Index* idx = read_index(&reader, io_flags);
+        Index* idx = read_index(&reader, io_flags, external_storage_path);
         return idx;
     }
 }
