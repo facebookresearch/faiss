@@ -150,6 +150,8 @@ void NSG::build(
     ntotal = n;
     init_graph(storage, knn_graph);
 
+    printf("graph init done\n");
+
     std::vector<int> degrees(n, 0);
     {
         nsg::Graph<Node> tmp_graph(n, R);

@@ -141,9 +141,9 @@ struct NNDescent {
     int search_L = 0;       // size of candidate pool in searching
     int random_seed = 2021; // random seed for generators
 
-    int K; // K in KNN graph
-    int d; // dimensions
-    int L; // size of the candidate pool in building
+    idx_t K; // K in KNN graph
+    int d;   // dimensions
+    int L;   // size of the candidate pool in building
 
     int ntotal = 0;
 

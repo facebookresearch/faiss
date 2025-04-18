@@ -299,6 +299,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
             printf("Iter: %d, recall@%d: %lf\n", it, K, recall);
         }
     }
+    printf("Final graph: %ld\n", final_graph.size());
 }
 
 /// Sample a small number of points to evaluate the quality of KNNG built
@@ -398,20 +399,21 @@ void NNDescent::build(DistanceComputer& qdis, const int n, bool verbose) {
 
     ntotal = n;
     init_graph(qdis);
+    final_graph.resize(uint64_t(ntotal) * K);
     nndescent(qdis, verbose);
-
-    final_graph.resize(ntotal * K);
 
     // Store the neighbor link structure into final_graph
     // Clear the old graph
-    for (int i = 0; i < ntotal; i++) {
+    for (idx_t i = 0; i < ntotal; i++) {
         std::sort(graph[i].pool.begin(), graph[i].pool.end());
         for (int j = 0; j < K; j++) {
             FAISS_ASSERT(graph[i].pool[j].id < ntotal);
             final_graph[i * K + j] = graph[i].pool[j].id;
         }
     }
+    printf("swapping graph\n");
     std::vector<Nhood>().swap(graph);
+    printf("swapped graph\n");
     has_built = true;
 
     if (verbose) {

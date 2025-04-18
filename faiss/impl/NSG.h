@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -54,17 +55,17 @@ struct Node;
 template <class node_t>
 struct Graph {
     node_t* data;    ///< the flattened adjacency matrix, size N-by-K
-    int K;           ///< nb of neighbors per node
+    uint64_t K;      ///< nb of neighbors per node
     int N;           ///< total nb of nodes
     bool own_fields; ///< the underlying data owned by itself or not
 
     // construct from a known graph
-    Graph(node_t* data, int N, int K)
+    Graph(node_t* data, int N, uint64_t K)
             : data(data), K(K), N(N), own_fields(false) {}
 
     // construct an empty graph
     // NOTE: the newly allocated data needs to be destroyed at destruction time
-    Graph(int N, int K) : K(K), N(N), own_fields(true) {
+    Graph(int N, uint64_t K) : K(K), N(N), own_fields(true) {
         data = new node_t[N * K];
     }
 

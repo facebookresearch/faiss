@@ -175,6 +175,28 @@ void IndexNSG::add(idx_t n, const float* x) {
         }
 
     } else if (build_type == 1) { // build with NNDescent
+        idx_t knng_size_nnd = (size_t)n * GK;
+        if (verbose) {
+            printf("  Resizing knng vector (n=%" PRId64 ", GK=%d)\n", n, GK);
+        }
+        try {
+            knng.resize(knng_size_nnd);
+        } catch (const std::bad_alloc& e) {
+            fprintf(stderr,
+                    "FATAL: Failed to allocate memory for knng (%" PRId64
+                    " * %d * %zu bytes). std::bad_alloc: %s\n",
+                    n,
+                    GK,
+                    sizeof(idx_t),
+                    e.what());
+            FAISS_THROW_FMT(
+                    "Memory allocation failed for knng vector of size %zd",
+                    knng_size_nnd);
+        }
+        if (verbose) {
+            printf("  Successfully resized knng vector.\n");
+        }
+
         IndexNNDescent index(storage, GK);
         index.nndescent.S = nndescent_S;
         index.nndescent.R = nndescent_R;
@@ -199,9 +221,9 @@ void IndexNSG::add(idx_t n, const float* x) {
         ntotal = storage->ntotal;
         FAISS_THROW_IF_NOT(ntotal == n);
 
-        knng.resize(ntotal * GK);
-
         // cast from idx_t to int
+        printf("index.nndescent.final_graph.data() = %p\n",
+               index.nndescent.final_graph.data());
         const int* knn_graph = index.nndescent.final_graph.data();
 #pragma omp parallel for
         for (idx_t i = 0; i < ntotal * GK; i++) {
