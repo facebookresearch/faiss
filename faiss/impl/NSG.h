@@ -204,6 +204,12 @@ struct NSG {
 
     // check the integrity of the NSG built
     void check_graph() const;
+
+    /// Print statistics about the graph connectivity at a given level
+    void print_neighbor_stats(int level = 0) const;
+
+    /// Save the degree distribution of the graph to a file
+    void save_degree_distribution(const char* filename) const;
 };
 
 } // namespace faiss

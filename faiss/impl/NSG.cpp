@@ -11,6 +11,7 @@
 #include <memory>
 #include <mutex>
 #include <stack>
+#include <unordered_set>
 
 #include <faiss/impl/DistanceComputer.h>
 
@@ -648,6 +649,117 @@ void NSG::check_graph() const {
             FAISS_THROW_IF_NOT(id < ntotal && (id >= 0 || id == EMPTY_ID));
         }
     }
+}
+
+void NSG::print_neighbor_stats(int level) const {
+    FAISS_THROW_IF_NOT(is_built);
+    FAISS_THROW_IF_NOT(final_graph);
+    FAISS_THROW_IF_NOT(level == 0); // NSG only has one level
+
+    printf("stats on NSG graph, max %d neighbors per vertex:\n", R);
+    size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
+    size_t n_self_connections = 0;
+#pragma omp parallel for reduction(+ : tot_neigh) reduction(+ : tot_common) \
+        reduction(+ : tot_reciprocal) reduction(+ : n_node)                 \
+        reduction(+ : n_self_connections)
+    for (int i = 0; i < ntotal; i++) {
+        n_node++;
+        std::unordered_set<int> neighset;
+        for (int j = 0; j < R; j++) {
+            int neigh = final_graph->at(i, j);
+            if (neigh < 0)
+                break;
+            if (neigh == i) {
+                n_self_connections++;
+                continue; // Skip self-connections
+            }
+            neighset.insert(neigh);
+        }
+        int n_neigh = neighset.size();
+        int n_common = 0;
+        int n_reciprocal = 0;
+        for (int j = 0; j < R; j++) {
+            int i2 = final_graph->at(i, j);
+            if (i2 < 0)
+                break;
+            if (i2 == i)
+                continue; // Skip self-connections
+
+            for (int j2 = 0; j2 < R; j2++) {
+                int i3 = final_graph->at(i2, j2);
+                if (i3 < 0)
+                    break;
+                if (i3 == i) {
+                    n_reciprocal++;
+                    continue;
+                }
+                if (neighset.count(i3)) {
+                    neighset.erase(i3);
+                    n_common++;
+                }
+            }
+        }
+        tot_neigh += n_neigh;
+        tot_common += n_common;
+        tot_reciprocal += n_reciprocal;
+    }
+    float normalizer = n_node;
+    printf("   nb of nodes in the graph: %zd\n", n_node);
+    printf("   neighbors per node: %.2f (%zd)\n",
+           tot_neigh / normalizer,
+           tot_neigh);
+    printf("   nb of reciprocal neighbors: %.2f\n",
+           tot_reciprocal / normalizer);
+    printf("   nb of neighbors that are also neighbor-of-neighbors: %.2f (%zd)\n",
+           tot_common / normalizer,
+           tot_common);
+    if (n_self_connections > 0) {
+        printf("   WARNING: Found %zd self-connections in the graph\n",
+               n_self_connections);
+    }
+}
+
+void NSG::save_degree_distribution(const char* filename) const {
+    FAISS_THROW_IF_NOT(is_built);
+    FAISS_THROW_IF_NOT(final_graph);
+
+    // Open file for writing
+    FILE* f = fopen(filename, "w");
+    if (!f) {
+        fprintf(stderr, "Could not open %s for writing\n", filename);
+        return;
+    }
+
+    // For each node, count actual unique neighbors (not -1 and not self)
+    printf("Computing degree distribution for NSG graph\n");
+
+    int nodes_in_graph = 0;
+    for (int i = 0; i < ntotal; i++) {
+        nodes_in_graph++;
+
+        // Count actual unique neighbors (not -1 and not self)
+        std::unordered_set<int> neighset;
+        for (int j = 0; j < R; j++) {
+            int neigh = final_graph->at(i, j);
+            if (neigh < 0)
+                break;
+            if (neigh == i)
+                continue; // Skip self-connections
+            neighset.insert(neigh);
+        }
+
+        // Write the unique degree to the file
+        fprintf(f, "%d\n", (int)neighset.size());
+    }
+
+    fclose(f);
+    printf("Saved degree distribution for %d nodes to %s\n",
+           nodes_in_graph,
+           filename);
+
+    // Print command to generate the plot
+    printf("To visualize the distribution, run:\n");
+    printf("python -m faiss.contrib.plot_degree_distribution %s\n", filename);
 }
 
 } // namespace faiss
