@@ -11,6 +11,7 @@
 #include <faiss/MetricType.h>
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
+#include <unordered_map>
 
 namespace faiss {
 namespace gpu {
@@ -28,6 +29,7 @@ class IVFPQ : public IVFBase {
           bool useFloat16LookupTables,
           bool useMMCodeDistance,
           bool interleavedLayout,
+          bool precomputeCodesOnCpu,
           float* pqCentroidData,
           IndicesOptions indicesOptions,
           MemorySpace space);
@@ -37,13 +39,43 @@ class IVFPQ : public IVFBase {
 
     ~IVFPQ() override;
 
+    /// Calculate the memory space in bytes for storing in the index a given
+    /// number of vectors according to given dimension and the stored format
+    static size_t calcMemorySpaceSize(
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout,
+            IndicesOptions options);
+
+    /// Return a map of required bytes per allocation type for a given number of
+    /// vectors and the compression setting
+    static std::unordered_map<AllocType, size_t> getAllocSizePerTypeInfo(
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout,
+            IndicesOptions options);
+
+    /// Move precomputed codes from CPU
+    void movePrecomputedCodesFrom(
+            Index* coarseQuantizer,
+            DeviceTensor<float, 3, true>& precomputedCode);
+
     /// Enable or disable pre-computed codes. The quantizer is needed to gather
     /// the IVF centroids for use
     virtual void setPrecomputedCodes(Index* coarseQuantizer, bool enable);
 
+    /// Return number of subquantizer codes
+    int getNumSubQuantizerCodes();
+
     /// Returns our set of sub-quantizers of the form
     /// (sub q)(code id)(sub dim)
     Tensor<float, 3, true> getPQCentroids();
+
+    /// Returns our set of float precomputed codes of the form
+    /// (centroid id)(sub q)(code id)
+    Tensor<float, 3, true> getPrecomputedCodesVecFloat32();
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
@@ -68,6 +100,16 @@ class IVFPQ : public IVFBase {
             bool storePairs) override;
 
    protected:
+    static size_t calcVectorsEncodingMemorySpaceSize(
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout);
+
+    static size_t calcIndicesMemorySpaceSize(
+            int numVecs,
+            IndicesOptions options);
+
     /// Returns the encoding size for a PQ-encoded IVF list
     size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
     size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
@@ -168,6 +210,9 @@ class IVFPQ : public IVFBase {
     /// Are precomputed codes enabled? (additional factoring and
     /// precomputation of the residual distance, to reduce query-time work)
     bool precomputedCodes_;
+
+    /// Enable loading precomputed codes from CPU
+    bool precomputeCodesOnCpu_;
 
     /// Precomputed term 2 in float form
     /// (centroid id)(sub q)(code id)

@@ -10,6 +10,7 @@
 #include <faiss/gpu/impl/IVFUtils.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/Limits.cuh>
+#include <faiss/gpu/utils/MultiSequence-inl.cuh>
 #include <faiss/gpu/utils/Select.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
@@ -252,6 +253,527 @@ void runPass2SelectLists(
 #undef RUN_PASS
 
     CUDA_TEST_ERROR();
+}
+
+template <
+        typename IndexT,
+        int ThreadsPerBlock,
+        int NumWarpQ,
+        int NumThreadQ,
+        bool Dir>
+__global__ void pass2SelectLists(
+        Tensor<float, 2, true> heapDistances,
+        Tensor<int, 2, true> heapIndices,
+        Tensor<IndexT*, 1, true> listIndices,
+        Tensor<int, 2, true> prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true> topQueryToCentroid,
+        int k,
+        IndicesOptions opt,
+        Tensor<float, 2, true> outDistances,
+        Tensor<idx_t, 2, true> outIndices) {
+    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+
+    __shared__ float smemK[kNumWarps * NumWarpQ];
+    __shared__ int smemV[kNumWarps * NumWarpQ];
+
+    constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
+    BlockSelect<
+            float,
+            int,
+            Dir,
+            Comparator<float>,
+            NumWarpQ,
+            NumThreadQ,
+            ThreadsPerBlock>
+            heap(kInit, -1, smemK, smemV, k);
+
+    auto queryId = blockIdx.x;
+    int num = heapDistances.getSize(1);
+    int limit = utils::roundDown(num, kWarpSize);
+
+    int i = threadIdx.x;
+    auto heapDistanceStart = heapDistances[queryId];
+
+    // BlockSelect add cannot be used in a warp divergent circumstance; we
+    // handle the remainder warp below
+    for (; i < limit; i += blockDim.x) {
+        heap.add(heapDistanceStart[i], i);
+    }
+
+    // Handle warp divergence separately
+    if (i < num) {
+        heap.addThreadQ(heapDistanceStart[i], i);
+    }
+
+    // Merge all final results
+    heap.reduce();
+
+    for (int i = threadIdx.x; i < k; i += blockDim.x) {
+        outDistances[queryId][i] = smemK[i];
+
+        // `v` is the index in `heapIndices`
+        // We need to translate this into an original user index. The
+        // reason why we don't maintain intermediate results in terms of
+        // user indices is to substantially reduce temporary memory
+        // requirements and global memory write traffic for the list
+        // scanning.
+        // This code is highly divergent, but it's probably ok, since this
+        // is the very last step and it is happening a small number of
+        // times (#queries x k).
+        int v = smemV[i];
+        idx_t index = -1;
+
+        if (v != -1) {
+            // `offset` is the offset of the intermediate result, as
+            // calculated by the original scan.
+            int offset = heapIndices[queryId][v];
+
+            // In order to determine the actual user index, we need to first
+            // determine what list it was in.
+            // We do this by binary search in the prefix sum list.
+            int probe = binarySearchForBucket(
+                    prefixSumOffsets[queryId].data(),
+                    (int)prefixSumOffsets.getSize(1),
+                    offset);
+
+            // This is then the probe for the query; we can find the actual
+            // list ID from this
+            ushort2 listId2 = topQueryToCentroid[queryId][probe];
+            int listId = toMultiIndex<ushort, int>(
+                    coarseCodebookSize, listId2.x, listId2.y);
+
+            // Now, we need to know the offset within the list
+            // We ensure that before the array (at offset -1), there is a 0
+            // value
+            int listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
+            int listOffset = offset - listStart;
+
+            // This gives us our final index
+            if (opt == INDICES_32_BIT || opt == INDICES_64_BIT) {
+                index = listIndices[listId][listOffset];
+            } else {
+                index = ((idx_t)listId << 32 | (idx_t)listOffset);
+            }
+        }
+
+        outIndices[queryId][i] = index;
+    }
+}
+
+template <
+        typename IndexT,
+        int ThreadsPerBlock,
+        int NumWarpQ,
+        int NumThreadQ,
+        bool Dir>
+__global__ void pass2SelectLists(
+        Tensor<float, 2, true> heapDistances,
+        Tensor<int, 2, true> heapIndices,
+        Tensor<IndexT, 1, true> listIndices,
+        Tensor<unsigned int, 1, true> listOffsets,
+        Tensor<int, 2, true> prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true> topQueryToCentroid,
+        int k,
+        IndicesOptions opt,
+        Tensor<float, 2, true> outDistances,
+        Tensor<idx_t, 2, true> outIndices) {
+    constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
+
+    __shared__ float smemK[kNumWarps * NumWarpQ];
+    __shared__ int smemV[kNumWarps * NumWarpQ];
+
+    constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
+    BlockSelect<
+            float,
+            int,
+            Dir,
+            Comparator<float>,
+            NumWarpQ,
+            NumThreadQ,
+            ThreadsPerBlock>
+            heap(kInit, -1, smemK, smemV, k);
+
+    auto queryId = blockIdx.x;
+    int num = heapDistances.getSize(1);
+    int limit = utils::roundDown(num, kWarpSize);
+
+    int i = threadIdx.x;
+    auto heapDistanceStart = heapDistances[queryId];
+
+    // BlockSelect add cannot be used in a warp divergent circumstance; we
+    // handle the remainder warp below
+    for (; i < limit; i += blockDim.x) {
+        heap.add(heapDistanceStart[i], i);
+    }
+
+    // Handle warp divergence separately
+    if (i < num) {
+        heap.addThreadQ(heapDistanceStart[i], i);
+    }
+
+    // Merge all final results
+    heap.reduce();
+
+    for (int i = threadIdx.x; i < k; i += blockDim.x) {
+        outDistances[queryId][i] = smemK[i];
+
+        // `v` is the index in `heapIndices`
+        // We need to translate this into an original user index. The
+        // reason why we don't maintain intermediate results in terms of
+        // user indices is to substantially reduce temporary memory
+        // requirements and global memory write traffic for the list
+        // scanning.
+        // This code is highly divergent, but it's probably ok, since this
+        // is the very last step and it is happening a small number of
+        // times (#queries x k).
+        int v = smemV[i];
+        idx_t index = -1;
+
+        if (v != -1) {
+            // `offset` is the offset of the intermediate result, as
+            // calculated by the original scan.
+            int offset = heapIndices[queryId][v];
+
+            // In order to determine the actual user index, we need to first
+            // determine what list it was in.
+            // We do this by binary search in the prefix sum list.
+            int probe = binarySearchForBucket(
+                    prefixSumOffsets[queryId].data(),
+                    (int)prefixSumOffsets.getSize(1),
+                    offset);
+
+            // This is then the probe for the query; we can find the actual
+            // list ID from this
+            ushort2 listId2 = topQueryToCentroid[queryId][probe];
+            int listId = toMultiIndex<ushort, int>(
+                    coarseCodebookSize, listId2.x, listId2.y);
+
+            // Now, we need to know the offset within the list
+            // We ensure that before the array (at offset -1), there is a 0
+            // value
+            int listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
+            int listOffset = offset - listStart;
+
+            // This gives us our final index
+            if (opt == INDICES_32_BIT || opt == INDICES_64_BIT) {
+                auto listIndicesPointer =
+                        listIndices.data() + listOffsets[listId];
+                index = listIndicesPointer[listOffset];
+            } else {
+                index = ((idx_t)listId << 32 | (idx_t)listOffset);
+            }
+        }
+
+        outIndices[queryId][i] = index;
+    }
+}
+
+template <typename IndexT>
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<IndexT*, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    auto grid = dim3(topQueryToCentroid.getSize(0));
+
+#define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)                 \
+    do {                                                               \
+        pass2SelectLists<IndexT, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR> \
+                <<<grid, BLOCK, 0, stream>>>(                          \
+                        heapDistances,                                 \
+                        heapIndices,                                   \
+                        listIndices,                                   \
+                        prefixSumOffsets,                              \
+                        coarseCodebookSize,                            \
+                        topQueryToCentroid,                            \
+                        k,                                             \
+                        indicesOptions,                                \
+                        outDistances,                                  \
+                        outIndices);                                   \
+        CUDA_TEST_ERROR();                                             \
+        return; /* success */                                          \
+    } while (0)
+
+#if GPU_MAX_SELECTION_K >= 2048
+
+    // block size 128 for k <= 1024, 64 for k = 2048
+#define RUN_PASS_DIR(DIR)                \
+    do {                                 \
+        if (k == 1) {                    \
+            RUN_PASS(128, 1, 1, DIR);    \
+        } else if (k <= 32) {            \
+            RUN_PASS(128, 32, 2, DIR);   \
+        } else if (k <= 64) {            \
+            RUN_PASS(128, 64, 3, DIR);   \
+        } else if (k <= 128) {           \
+            RUN_PASS(128, 128, 3, DIR);  \
+        } else if (k <= 256) {           \
+            RUN_PASS(128, 256, 4, DIR);  \
+        } else if (k <= 512) {           \
+            RUN_PASS(128, 512, 8, DIR);  \
+        } else if (k <= 1024) {          \
+            RUN_PASS(128, 1024, 8, DIR); \
+        } else if (k <= 2048) {          \
+            RUN_PASS(64, 2048, 8, DIR);  \
+        }                                \
+    } while (0)
+
+#else
+
+#define RUN_PASS_DIR(DIR)                \
+    do {                                 \
+        if (k == 1) {                    \
+            RUN_PASS(128, 1, 1, DIR);    \
+        } else if (k <= 32) {            \
+            RUN_PASS(128, 32, 2, DIR);   \
+        } else if (k <= 64) {            \
+            RUN_PASS(128, 64, 3, DIR);   \
+        } else if (k <= 128) {           \
+            RUN_PASS(128, 128, 3, DIR);  \
+        } else if (k <= 256) {           \
+            RUN_PASS(128, 256, 4, DIR);  \
+        } else if (k <= 512) {           \
+            RUN_PASS(128, 512, 8, DIR);  \
+        } else if (k <= 1024) {          \
+            RUN_PASS(128, 1024, 8, DIR); \
+        }                                \
+    } while (0)
+
+#endif // GPU_MAX_SELECTION_K
+
+    if (chooseLargest) {
+        RUN_PASS_DIR(true);
+    } else {
+        RUN_PASS_DIR(false);
+    }
+
+    // unimplemented / too many resources
+    FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
+
+#undef RUN_PASS_DIR
+#undef RUN_PASS
+}
+
+template <typename IndexT>
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<IndexT, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<unsigned int, 1, true>& listOffsets,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    auto grid = dim3(topQueryToCentroid.getSize(0));
+
+#define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)                 \
+    do {                                                               \
+        pass2SelectLists<IndexT, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR> \
+                <<<grid, BLOCK, 0, stream>>>(                          \
+                        heapDistances,                                 \
+                        heapIndices,                                   \
+                        listIndices,                                   \
+                        listOffsets,                                   \
+                        prefixSumOffsets,                              \
+                        coarseCodebookSize,                            \
+                        topQueryToCentroid,                            \
+                        k,                                             \
+                        indicesOptions,                                \
+                        outDistances,                                  \
+                        outIndices);                                   \
+        CUDA_TEST_ERROR();                                             \
+        return; /* success */                                          \
+    } while (0)
+
+#if GPU_MAX_SELECTION_K >= 2048
+
+    // block size 128 for k <= 1024, 64 for k = 2048
+#define RUN_PASS_DIR(DIR)                \
+    do {                                 \
+        if (k == 1) {                    \
+            RUN_PASS(128, 1, 1, DIR);    \
+        } else if (k <= 32) {            \
+            RUN_PASS(128, 32, 2, DIR);   \
+        } else if (k <= 64) {            \
+            RUN_PASS(128, 64, 3, DIR);   \
+        } else if (k <= 128) {           \
+            RUN_PASS(128, 128, 3, DIR);  \
+        } else if (k <= 256) {           \
+            RUN_PASS(128, 256, 4, DIR);  \
+        } else if (k <= 512) {           \
+            RUN_PASS(128, 512, 8, DIR);  \
+        } else if (k <= 1024) {          \
+            RUN_PASS(128, 1024, 8, DIR); \
+        } else if (k <= 2048) {          \
+            RUN_PASS(64, 2048, 8, DIR);  \
+        }                                \
+    } while (0)
+
+#else
+
+#define RUN_PASS_DIR(DIR)                \
+    do {                                 \
+        if (k == 1) {                    \
+            RUN_PASS(128, 1, 1, DIR);    \
+        } else if (k <= 32) {            \
+            RUN_PASS(128, 32, 2, DIR);   \
+        } else if (k <= 64) {            \
+            RUN_PASS(128, 64, 3, DIR);   \
+        } else if (k <= 128) {           \
+            RUN_PASS(128, 128, 3, DIR);  \
+        } else if (k <= 256) {           \
+            RUN_PASS(128, 256, 4, DIR);  \
+        } else if (k <= 512) {           \
+            RUN_PASS(128, 512, 8, DIR);  \
+        } else if (k <= 1024) {          \
+            RUN_PASS(128, 1024, 8, DIR); \
+        }                                \
+    } while (0)
+
+#endif // GPU_MAX_SELECTION_K
+
+    if (chooseLargest) {
+        RUN_PASS_DIR(true);
+    } else {
+        RUN_PASS_DIR(false);
+    }
+
+    // unimplemented / too many resources
+    FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
+
+#undef RUN_PASS_DIR
+#undef RUN_PASS
+}
+
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<int*, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    runPass2SelectLists<int>(
+            heapDistances,
+            heapIndices,
+            listIndices,
+            indicesOptions,
+            prefixSumOffsets,
+            coarseCodebookSize,
+            topQueryToCentroid,
+            k,
+            chooseLargest,
+            outDistances,
+            outIndices,
+            stream);
+}
+
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<idx_t*, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    runPass2SelectLists<idx_t>(
+            heapDistances,
+            heapIndices,
+            listIndices,
+            indicesOptions,
+            prefixSumOffsets,
+            coarseCodebookSize,
+            topQueryToCentroid,
+            k,
+            chooseLargest,
+            outDistances,
+            outIndices,
+            stream);
+}
+
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<int, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<unsigned int, 1, true>& listOffsets,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    runPass2SelectLists<int>(
+            heapDistances,
+            heapIndices,
+            listIndices,
+            indicesOptions,
+            listOffsets,
+            prefixSumOffsets,
+            coarseCodebookSize,
+            topQueryToCentroid,
+            k,
+            chooseLargest,
+            outDistances,
+            outIndices,
+            stream);
+}
+
+void runPass2SelectLists(
+        Tensor<float, 2, true>& heapDistances,
+        Tensor<int, 2, true>& heapIndices,
+        Tensor<idx_t, 1, true>& listIndices,
+        IndicesOptions indicesOptions,
+        Tensor<unsigned int, 1, true>& listOffsets,
+        Tensor<int, 2, true>& prefixSumOffsets,
+        int coarseCodebookSize,
+        Tensor<ushort2, 2, true>& topQueryToCentroid,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        cudaStream_t stream) {
+    runPass2SelectLists<idx_t>(
+            heapDistances,
+            heapIndices,
+            listIndices,
+            indicesOptions,
+            listOffsets,
+            prefixSumOffsets,
+            coarseCodebookSize,
+            topQueryToCentroid,
+            k,
+            chooseLargest,
+            outDistances,
+            outIndices,
+            stream);
 }
 
 } // namespace gpu

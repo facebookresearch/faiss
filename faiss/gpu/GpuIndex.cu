@@ -70,6 +70,7 @@ GpuIndex::GpuIndex(
 
     FAISS_THROW_IF_NOT_FMT(
             config_.memorySpace == MemorySpace::Device ||
+                    config_.memorySpace == MemorySpace::Fixed ||
                     (config_.memorySpace == MemorySpace::Unified &&
                      getFullUnifiedMemSupport(config_.device)),
             "Device %d does not support full CUDA 8 Unified Memory (CC 6.0+)",

@@ -10,6 +10,7 @@
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace faiss {
@@ -46,6 +47,9 @@ struct GpuIndexIVFPQConfig : public GpuIndexIVFConfig {
     /// of dimensions per sub-quantizer that is not natively specialized (an odd
     /// number like 7 or so).
     bool useMMCodeDistance = false;
+
+    /// Enable loading precomputed for IVF indexes from CPU
+    bool precomputeCodesOnCpu = false;
 };
 
 /// IVFPQ index for the GPU
@@ -83,6 +87,52 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
     ~GpuIndexIVFPQ() override;
 
+    /// Return the required bytes per allocation type for the inverted lists
+    /// according the the number of vectors and the storage setting
+    static std::unordered_map<AllocType, size_t> getInvListsAllocSizePerTypeInfo(
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout,
+            IndicesOptions options);
+
+    /// Return the required bytes per allocation type for the inverted lists
+    /// according the the number of vectors and the storage setting
+    static size_t calcInvListsMemorySpaceSize(
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout,
+            IndicesOptions options);
+
+    /// Calculate the memory space in bytes for storing in the index a given
+    /// number of vectors according to given dimension and the stored format
+    static size_t calcMemorySpaceSize(
+            int numTotalVecsCoarseQuantizer,
+            int dimPerCodebook,
+            bool useFloat16,
+            int numVecs,
+            int numSubQuantizers,
+            int bitsPerSubQuantizer,
+            bool interleavedLayout,
+            IndicesOptions options);
+
+    /// Search the closest inverted list for the n given vectors in x,
+    /// then update the internal expected number of vectors per inverted list
+    /// for every association found
+    void updateExpectedNumAddsPerList(idx_t n, const float* x);
+
+    /// Reserve the amount of memory used by every inverted list according
+    /// to the current internal number of expected number of vectors per
+    /// inverted list. This is important for avoiding memory fragmentation
+    void applyExpectedNumAddsPerList();
+
+    /// Reset the internal expected number of vectors per inverted list
+    void resetExpectedNumAddsPerList();
+
+    /// Move given precomputed codes from CPU to CPU
+    void copyPrecomputedCodesFrom(const float* precomputedCodes);
+
     /// Reserve space on the GPU for the inverted lists for `num`
     /// vectors, assumed equally distributed among
 
@@ -102,6 +152,8 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
     /// Are pre-computed codes enabled?
     bool getPrecomputedCodes() const;
+
+    int getMaxListLength() const;
 
     /// Return the number of sub-quantizers we are using
     int getNumSubQuantizers() const;
@@ -127,6 +179,9 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
     /// Trains the coarse and product quantizer based on the given vector data
     void train(idx_t n, const float* x) override;
+
+    // returns precomputedCodesVec (centroid id)(sub q)(code id)
+    std::vector<float> getPrecomputedCodesVec() const;
 
    public:
     /// Like the CPU version, we expose a publically-visible ProductQuantizer
@@ -171,6 +226,9 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
     /// Desired inverted list memory reservation
     size_t reserveMemoryVecs_;
+
+    /// Internal map storing the expected number of vectors per inverted list
+    std::unique_ptr<std::unordered_map<int, int>> expectedNumAddsPerList;
 
     /// The product quantizer instance that we own; contains the
     /// inverted lists
