@@ -470,6 +470,13 @@ class TestSearchParams(unittest.TestCase):
         self.assertTrue(sel1.this.own())
         self.assertTrue(sel2.this.own())
 
+    def test_ownership_2(self):
+        subset = np.arange(0, 5000000)
+        sel = faiss.IDSelectorBatch(subset)
+        assert sel.this.own()    # True: correct
+        _ = faiss.SearchParameters(sel=sel)
+        assert sel.this.own()   # False: why???
+
 
 class TestSelectorCallback(unittest.TestCase):
 
