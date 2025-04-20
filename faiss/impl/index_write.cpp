@@ -298,13 +298,28 @@ void write_ProductQuantizer(const ProductQuantizer* pq, const char* fname) {
     FileIOWriter writer(fname);
     write_ProductQuantizer(pq, &writer);
 }
-
+// faiss/index_io.cpp
 static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     WRITEVECTOR(hnsw->assign_probas);
     WRITEVECTOR(hnsw->cum_nneighbor_per_level);
     WRITEVECTOR(hnsw->levels);
-    WRITEVECTOR(hnsw->offsets);
-    WRITEVECTOR(hnsw->neighbors);
+
+    // --- NEW: Write storage format flag ---
+    WRITE1(hnsw->storage_is_compact);
+
+    if (hnsw->storage_is_compact) {
+        // --- Write Compact Storage ---
+        WRITEVECTOR(hnsw->compact_neighbors_data);
+        WRITEVECTOR(hnsw->compact_level_ptr);
+        WRITEVECTOR(hnsw->compact_node_offsets);
+        // Write empty original storage vectors for compatibility if needed?
+        // Let's assume reader knows based on flag, don't write empty ones.
+    } else {
+        // --- Write Original Storage ---
+        WRITEVECTOR(hnsw->offsets);
+        WRITEVECTOR(hnsw->neighbors); // Assuming WRITEVECTOR works for
+                                      // MaybeOwnedVector
+    }
 
     WRITE1(hnsw->entry_point);
     WRITE1(hnsw->max_level);

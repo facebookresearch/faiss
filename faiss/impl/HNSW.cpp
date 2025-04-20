@@ -50,9 +50,67 @@ int HNSW::cum_nb_neighbors(int layer_no) const {
 
 void HNSW::neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
         const {
-    size_t o = offsets[no];
-    *begin = o + cum_nb_neighbors(layer_no);
-    *end = o + cum_nb_neighbors(layer_no + 1);
+    if (storage_is_compact) {
+        // CSR Format Logic
+        // Basic bounds check for the node index itself
+        FAISS_THROW_IF_NOT_FMT(
+                no < compact_node_offsets.size() - 1,
+                "Node index %ld out of bounds for compact_node_offsets (size %zd)",
+                no,
+                compact_node_offsets.size());
+
+        size_t ptr_start = compact_node_offsets[no];
+        size_t ptr_end =
+                compact_node_offsets[no + 1]; // Exclusive end for level
+                                              // pointers of this node
+
+        // Calculate the number of levels stored for this node in the ptr array
+        // Each level needs two entries in level_ptr (start and end offset),
+        // so (ptr_end - ptr_start) gives num_levels + 1 entries.
+        int num_level_entries = ptr_end - ptr_start;
+        int num_levels_for_node =
+                (num_level_entries > 0) ? (num_level_entries - 1) : 0;
+
+        // Check if the requested layer exists for this node
+        if (layer_no < 0 || layer_no >= num_levels_for_node) {
+            // Layer does not exist for this node or invalid layer index
+            *begin = 0;
+            *end = 0; // Indicate empty range
+        } else {
+            // Valid layer, get data pointers from compact_level_ptr
+            size_t level_ptr_index_begin = ptr_start + layer_no;
+            size_t level_ptr_index_end = ptr_start + layer_no + 1;
+
+            // Bounds check for level_ptr access
+            FAISS_THROW_IF_NOT_FMT(
+                    level_ptr_index_end < compact_level_ptr.size(),
+                    "Level pointer index %zd out of bounds for compact_level_ptr (size %zd)",
+                    level_ptr_index_end,
+                    compact_level_ptr.size());
+
+            *begin = compact_level_ptr[level_ptr_index_begin];
+            *end = compact_level_ptr
+                    [level_ptr_index_end]; // Exclusive end for neighbors at
+                                           // this level in
+                                           // compact_neighbors_data
+        }
+    } else {
+        // Original Format Logic
+        FAISS_THROW_IF_NOT_FMT(
+                no < offsets.size() - 1,
+                "Node index %ld out of bounds for offsets (size %zd)",
+                no,
+                offsets.size());
+        FAISS_THROW_IF_NOT_FMT(
+                layer_no + 1 < cum_nneighbor_per_level.size(),
+                "Layer index %d out of bounds for cum_nneighbor_per_level (size %zd)",
+                layer_no,
+                cum_nneighbor_per_level.size());
+
+        size_t o = offsets[no];
+        *begin = o + cum_nb_neighbors(layer_no);
+        *end = o + cum_nb_neighbors(layer_no + 1);
+    }
 }
 
 HNSW::HNSW(int M, int M0) : rng(12345) {
@@ -109,8 +167,13 @@ void HNSW::reset() {
     offsets.push_back(0);
     levels.clear();
     neighbors.clear();
-}
 
+    // Clear compact storage fields
+    storage_is_compact = false; // Reset flag to default
+    compact_neighbors_data.clear();
+    compact_level_ptr.clear();
+    compact_node_offsets.clear();
+}
 
 void HNSW::save_degree_distribution(int level, const char* filename) const {
     // Check if level is valid
@@ -166,7 +229,6 @@ void HNSW::save_degree_distribution(int level, const char* filename) const {
     printf("To visualize the distribution, run:\n");
     printf("python -m faiss.contrib.plot_degree_distribution %s\n", filename);
 }
-
 
 void HNSW::print_neighbor_stats(int level) const {
     FAISS_THROW_IF_NOT(level < cum_nneighbor_per_level.size());
@@ -640,6 +702,16 @@ void HNSW::add_with_locks(
  * Searching
  **************************************************************/
 
+inline HNSW::storage_idx_t get_neighbor_id_internal(
+        const HNSW& hnsw,
+        size_t index_in_neighbor_array) {
+    // assumes index_in_neighbor_array is valid based on begin/end from
+    // neighbor_range
+    return hnsw.storage_is_compact
+            ? hnsw.compact_neighbors_data[index_in_neighbor_array]
+            : hnsw.neighbors[index_in_neighbor_array];
+}
+
 using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 using C = HNSW::C;
@@ -709,11 +781,16 @@ int search_from_candidates(
         // the following version processes 4 neighbors at a time
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
-            int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            // *** CSR Change: Conditional neighbor access ***
+            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
+                                             : hnsw.neighbors[j];
+            // *** CSR Change: Conditional break for original format ***
+            if (!hnsw.storage_is_compact && v1 < 0)
                 break;
 
-            prefetch_L2(vt.visited.data() + v1);
+            if (v1 >= 0) {
+                prefetch_L2(vt.visited.data() + v1);
+            }
             jmax += 1;
         }
 
@@ -735,7 +812,9 @@ int search_from_candidates(
         };
 
         for (size_t j = begin; j < jmax; j++) {
-            int v1 = hnsw.neighbors[j];
+            // *** CSR Change: Conditional neighbor access ***
+            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
+                                             : hnsw.neighbors[j];
 
             bool vget = vt.get(v1);
             vt.set(v1);
@@ -823,11 +902,16 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         // the following version processes 4 neighbors at a time
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
-            int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            // *** CSR Change: Conditional neighbor access ***
+            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
+                                             : hnsw.neighbors[j];
+            // *** CSR Change: Conditional break for original format ***
+            if (!hnsw.storage_is_compact && v1 < 0)
                 break;
 
-            prefetch_L2(vt->visited.data() + v1);
+            if (v1 >= 0) {
+                prefetch_L2(vt->visited.data() + v1);
+            }
             jmax += 1;
         }
 
@@ -847,12 +931,17 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         };
 
         for (size_t j = begin; j < jmax; j++) {
-            int v1 = hnsw.neighbors[j];
+            // *** CSR Change: Conditional neighbor access ***
+            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
+                                             : hnsw.neighbors[j];
 
             bool vget = vt->get(v1);
             vt->set(v1);
-            saved_j[counter] = v1;
-            counter += vget ? 0 : 1;
+            if (!vget) {
+                vt->set(v1);
+                saved_j[counter] = v1;
+                counter += 1;
+            }
 
             if (counter == 4) {
                 float dis[4];
@@ -926,9 +1015,14 @@ HNSWStats greedy_update_nearest(
         storage_idx_t buffered_ids[4];
 
         for (size_t j = begin; j < end; j++) {
-            storage_idx_t v = hnsw.neighbors[j];
+            // *** CSR Change: Conditional neighbor access ***
+            HNSW::storage_idx_t v = hnsw.storage_is_compact
+                    ? hnsw.compact_neighbors_data[j]
+                    : hnsw.neighbors[j]; // 保持类型 HNSW::storage_idx_t
+            // *** CSR Change: Conditional break for original format ***
             if (v < 0)
                 break;
+
             ndis += 1;
 
             buffered_ids[n_buffered] = v;

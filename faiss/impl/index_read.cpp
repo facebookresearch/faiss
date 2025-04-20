@@ -496,22 +496,67 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READVECTOR(ivsc->trained);
     ivsc->set_derived_sizes();
 }
-
 static void read_HNSW(HNSW* hnsw, IOReader* f) {
+    printf("[READ_HNSW] Reading HNSW graph data...\n"); // 添加日志点 1
     READVECTOR(hnsw->assign_probas);
     READVECTOR(hnsw->cum_nneighbor_per_level);
     READVECTOR(hnsw->levels);
-    READVECTOR(hnsw->offsets);
-    read_vector(hnsw->neighbors, f);
+    printf("[READ_HNSW] Read levels vector, size: %zd\n",
+           hnsw->levels.size()); // 添加日志点 2
 
+    // --- NEW: Read storage format flag (written after levels) ---
+    READ1(hnsw->storage_is_compact);
+    printf("[READ_HNSW] Read storage_is_compact flag: %s\n",
+           hnsw->storage_is_compact ? "true (Compact)" : "false (Original)");
+    // hnsw->storage_is_compact = false;
+
+    if (hnsw->storage_is_compact) {
+        printf("[READ_HNSW] Reading Compact Storage format...\n"); // 添加日志点
+                                                                   // 4
+        // --- Read Compact Storage data ---
+        READVECTOR(hnsw->compact_neighbors_data);
+        READVECTOR(hnsw->compact_level_ptr);
+        READVECTOR(hnsw->compact_node_offsets);
+        printf("[READ_HNSW] Compact Storage sizes: neighbors_data=%zd, level_ptr=%zd, node_offsets=%zd\n",
+               hnsw->compact_neighbors_data.size(),
+               hnsw->compact_level_ptr.size(),
+               hnsw->compact_node_offsets.size());
+
+        // Ensure original storage vectors are cleared as they are not used
+        hnsw->offsets.clear();
+        hnsw->neighbors.clear(); // Use clear for MaybeOwnedVector
+    } else {
+        printf("[READ_HNSW] Reading Original Storage format...\n"); // 添加日志点
+                                                                    // 6
+        // --- Read Original Storage data ---
+        READVECTOR(hnsw->offsets);
+        // Use the specific read_vector function for MaybeOwnedVector
+        read_vector(hnsw->neighbors, f);
+        printf("[READ_HNSW] Original Storage sizes: offsets=%zd, neighbors=%zd\n",
+               hnsw->offsets.size(),
+               hnsw->neighbors.size());
+
+        // Ensure compact storage vectors are cleared as they are not used
+        hnsw->compact_neighbors_data.clear();
+        hnsw->compact_neighbors_data.owned_data.shrink_to_fit();
+        hnsw->compact_level_ptr.clear();
+        hnsw->compact_node_offsets.clear();
+        hnsw->compact_node_offsets.owned_data.shrink_to_fit();
+    }
+
+    hnsw->compact_level_ptr.owned_data.shrink_to_fit();
     READ1(hnsw->entry_point);
     READ1(hnsw->max_level);
+    printf("[READ_HNSW] Read entry_point: %d, max_level: %d\n",
+           hnsw->entry_point,
+           hnsw->max_level);
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
 
     // // deprecated field
     // READ1(hnsw->upper_beam);
     READ1_DUMMY(int)
+    printf("[READ_HNSW] Finished reading HNSW graph data.\n"); // 添加日志点 9
 }
 
 static void read_NSG(NSG* nsg, IOReader* f) {

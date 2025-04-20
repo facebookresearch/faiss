@@ -124,6 +124,12 @@ struct HNSW {
     /// for all levels. this is where all storage goes.
     MaybeOwnedVector<storage_idx_t> neighbors;
 
+    // --- Compact CSR Storage (New) ---
+    bool storage_is_compact = false; // Flag read from file
+    MaybeOwnedVector<storage_idx_t> compact_neighbors_data; // CSR data
+    MaybeOwnedVector<size_t> compact_level_ptr;             // CSR indptr part 1
+    MaybeOwnedVector<size_t> compact_node_offsets;          // CSR indptr part 2
+
     /// entry point in the search structure (one of the points with maximum
     /// level
     storage_idx_t entry_point = -1;
