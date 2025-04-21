@@ -22,6 +22,7 @@ K_NEIGHBORS = 3
 
 
 DB_EMBEDDING_FILE = "/powerrag/scaling_out/embeddings/facebook/contriever-msmarco/rpj_wiki_1M/1-shards/passages_00.pkl"
+INDEX_SAVING_FILE = "/powerrag/scaling_out/embeddings/facebook/contriever-msmarco/rpj_wiki_1M/1-shards/indices"
 TASK_NAME = "nq"
 EMBEDDER_MODEL_NAME = "facebook/contriever-msmarco"
 MAX_QUERIES_TO_LOAD = 1000
@@ -125,11 +126,43 @@ D_flat, recall_idx_flat = index_flat.search(xq_full, k=K_NEIGHBORS)
 
 print(recall_idx_flat)
 
-print('Building HNSW index (IP)...')
-index = faiss.IndexHNSWFlat(d, M, faiss.METRIC_INNER_PRODUCT)
-index.hnsw.efConstruction = efConstruction
-index.add(xb)
-print('HNSW index built.')
+# Create a specific directory for this index configuration
+index_dir = f"{INDEX_SAVING_FILE}/hnsw_IP_M{M}_efC{efConstruction}"
+os.makedirs(index_dir, exist_ok=True)
+index_filename = f"{index_dir}/index.faiss"
+
+# Check if index already exists
+if os.path.exists(index_filename):
+    print(f"Found existing index at {index_filename}, loading...")
+    index = faiss.read_index(index_filename)
+    print("Index loaded successfully.")
+else:
+    print('Building HNSW index (IP)...')
+    # add build time
+    start_time = time.time()
+    index = faiss.IndexHNSWFlat(d, M, faiss.METRIC_INNER_PRODUCT)
+    index.hnsw.efConstruction = efConstruction
+    index.add(xb)
+    end_time = time.time()
+    print(f'time: {end_time - start_time}')
+    print('HNSW index built.')
+    
+    # Save the HNSW index
+    print(f"Saving index to {index_filename}...")
+    faiss.write_index(index, index_filename)
+    print("Index saved successfully.")
+
+# Analyze the HNSW index
+print("\nAnalyzing HNSW index...")
+print(f"Total number of nodes: {index.ntotal}")
+print("Neighbor statistics:")
+print(index.hnsw.print_neighbor_stats(0))
+
+# Save degree distribution
+distribution_filename = f"{index_dir}/degree_distribution.txt"
+print(f"Saving degree distribution to {distribution_filename}...")
+index.hnsw.save_degree_distribution(0, distribution_filename)
+print("Degree distribution saved successfully.")
 
 print('Searching HNSW index...')
 for efSearch in [2, 4, 8, 16, 32, 64]:
