@@ -1,19 +1,35 @@
+import sys
 import time
 import faiss
 import numpy as np
 import pickle
 import os
+import json
+import time
+import torch
+from tqdm import tqdm
+from pathlib import Path
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+sys.path.append(os.path.join(project_root, "demo"))
+from config import SCALING_OUT_DIR, get_example_path, TASK_CONFIGS
+sys.path.append(project_root)
+from contriever.src.contriever import Contriever, load_retriever
 
 M = 32
-efSearch = 32  # number of entry points (neighbors) we use on each layer
-efConstruction = 256  # number of entry points used on each layer
-                     # during construction
+efConstruction = 256
+K_NEIGHBORS = 3
 
 
-EMBEDDING_FILE = "/powerrag/scaling_out/embeddings/facebook/contriever-msmarco/rpj_wiki_1M/1-shards/passages_00.pkl"
+DB_EMBEDDING_FILE = "/powerrag/scaling_out/embeddings/facebook/contriever-msmarco/rpj_wiki_1M/1-shards/passages_00.pkl"
+TASK_NAME = "nq"
+EMBEDDER_MODEL_NAME = "facebook/contriever-msmarco"
+MAX_QUERIES_TO_LOAD = 1000
+QUERY_ENCODING_BATCH_SIZE = 64
+
 # 1M samples
-print(f"Loading embeddings from {EMBEDDING_FILE}...")
-with open(EMBEDDING_FILE, 'rb') as f:
+print(f"Loading embeddings from {DB_EMBEDDING_FILE}...")
+with open(DB_EMBEDDING_FILE, 'rb') as f:
     data = pickle.load(f)
 
 xb = data[1]
@@ -27,37 +43,100 @@ else:
 print(f"Loaded database embeddings (xb), shape: {xb.shape}")
 d = xb.shape[1] # Get dimension
 
-# 1000 queries
-num_queries = 1000
-if num_queries > xb.shape[0]:
-    print(f"Warning: Requested {num_queries} queries, but only {xb.shape[0]} vectors available. Using all vectors as queries.")
-    num_queries = xb.shape[0]
+query_file_path = TASK_CONFIGS[TASK_NAME].query_path
+print(f"Using query path from TASK_CONFIGS: {query_file_path}")
 
-print(f"Using the first {num_queries} vectors from the database as queries (xq_full).")
-xq_full = xb[:num_queries]
-print(f"Query embeddings (xq_full), shape: {xq_full.shape}")
+query_texts = []
+print(f"Reading queries from: {query_file_path}")
+with open(query_file_path, 'r') as f:
+    for i, line in enumerate(f):
+        if i >= MAX_QUERIES_TO_LOAD:
+            print(f"Stopped loading queries at limit: {MAX_QUERIES_TO_LOAD}")
+            break
+        record = json.loads(line)
+        query_texts.append(record["query"])
+print(f"Loaded {len(query_texts)} query texts.")
 
+print("\nInitializing retriever model for encoding queries...")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+model, tokenizer, _ = load_retriever(EMBEDDER_MODEL_NAME)
+model.to(device)
+model.eval() # Set to evaluation mode
+print("Retriever model loaded.")
+
+
+def embed_queries(queries, model, tokenizer, model_name_or_path, per_gpu_batch_size=64):
+    """Embed queries using the model with batching"""
+    model = model.half()
+    model.eval()
+    embeddings = []
+    batch_question = []
+
+    with torch.no_grad():
+        for k, query in tqdm(enumerate(queries), desc="Encoding queries"):
+            batch_question.append(query)
+
+            # Process when batch is full or at the end
+            if len(batch_question) == per_gpu_batch_size or k == len(queries) - 1:
+                encoded_batch = tokenizer.batch_encode_plus(
+                    batch_question,
+                    return_tensors="pt",
+                    max_length=512,
+                    padding=True,
+                    truncation=True,
+                )
+
+                encoded_batch = {k: v.to(device) for k, v in encoded_batch.items()}
+                output = model(**encoded_batch)
+
+                # Contriever typically uses output.last_hidden_state pooling or something specialized
+                if "contriever" not in model_name_or_path:
+                    output = output.last_hidden_state[:, 0, :]
+
+                embeddings.append(output.cpu())
+                batch_question = []  # Reset batch
+
+    embeddings = torch.cat(embeddings, dim=0).numpy()
+    print(f"Query embeddings shape: {embeddings.shape}")
+    return embeddings
+
+print(f"\nEncoding {len(query_texts)} queries (batch size: {QUERY_ENCODING_BATCH_SIZE})...")
+xq_full = embed_queries(query_texts, model, tokenizer, EMBEDDER_MODEL_NAME, per_gpu_batch_size=QUERY_ENCODING_BATCH_SIZE)
+
+# Ensure float32 for Faiss compatibility after encoding
+if xq_full.dtype != np.float32:
+    print(f"Converting encoded queries from {xq_full.dtype} to float32.")
+    xq_full = xq_full.astype(np.float32)
+
+print(f"Encoded queries (xq_full), shape: {xq_full.shape}, dtype: {xq_full.dtype}")
+
+# Check dimension consistency
+if xq_full.shape[1] != d:
+     raise ValueError(f"Query embedding dimension ({xq_full.shape[1]}) does not match database dimension ({d})")
 
 # recall_idx = []
 
-index_flat = faiss.IndexFlatL2(d)
+print("\nBuilding FlatIP index for ground truth...")
+index_flat = faiss.IndexFlatIP(d)  # Use Inner Product
 index_flat.add(xb)
-D_flat, recall_idx_flat = index_flat.search(xq_full[:1000], k=3)
+print(f"Searching FlatIP index with {MAX_QUERIES_TO_LOAD} queries (k={K_NEIGHBORS})...")
+D_flat, recall_idx_flat = index_flat.search(xq_full, k=K_NEIGHBORS)
 
 print(recall_idx_flat)
 
-print('building index')
-index = faiss.IndexHNSWFlat(d, 32, faiss.METRIC_L2, 32)
+print('Building HNSW index (IP)...')
+index = faiss.IndexHNSWFlat(d, M, faiss.METRIC_INNER_PRODUCT)
 index.hnsw.efConstruction = efConstruction
 index.add(xb)
+print('HNSW index built.')
 
+print('Searching HNSW index...')
 for efSearch in [2, 4, 8, 16, 32, 64]:
-    index.efSearch = efSearch
-    # print('searching')
     index.hnsw.efSearch = efSearch
     # calculate the time of searching
     start_time = time.time()
-    D, I = index.timech(xq_full[:1000], 3)
+    D, I = index.search(xq_full, K_NEIGHBORS)
     end_time = time.time()
     print(f'time: {end_time - start_time}')
     # print(I)
