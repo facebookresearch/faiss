@@ -255,6 +255,11 @@ struct ZmqDistanceComputer : DistanceComputer {
     // query. This is needed because we need to return a stable pointer.
     std::vector<float> last_fetched_zmq_vector;
 
+    // ---- Additions ----
+    /// Tracks number of successful fetches via ZMQ
+    mutable size_t fetch_count = 0;
+    // ---- End Additions ----
+
     ZmqDistanceComputer(const Index* storage_ref)
             : d(storage_ref->d),
               metric_type(storage_ref->metric_type),
@@ -272,9 +277,11 @@ struct ZmqDistanceComputer : DistanceComputer {
                 storage != nullptr,
                 "Storage cannot be null for ZmqDistanceComputer");
         FAISS_THROW_IF_NOT(storage_dc_orig && storage_dc_search);
+        reset_fetch_count(); // Initialize count
     }
 
-    // --- MODIFIED get_vector_zmq: No Cache, stores result in member ---
+    // --- MODIFIED get_vector_zmq: No Cache, stores result in member and tracks
+    // fetches ---
     const float* get_vector_zmq(idx_t id) {
         printf("DEBUG get_vector_zmq: Fetching ID %ld via ZMQ (no cache)...\n",
                (long)id); // Log fetch attempt
@@ -313,6 +320,10 @@ struct ZmqDistanceComputer : DistanceComputer {
                fetched_embeddings[0].data(),
                d * sizeof(float));
 
+        // ---- Addition: Increment fetch count on success ----
+        fetch_count++;
+        // ---- End Addition ----
+
         // --- Log values RIGHT BEFORE returning pointer ---
         const float* return_ptr = last_fetched_zmq_vector.data();
         bool has_nan_before_return = false;
@@ -332,6 +343,16 @@ struct ZmqDistanceComputer : DistanceComputer {
 
         return return_ptr; // Return pointer to member data
     }
+
+    // ---- Additions: Override virtual methods ----
+    size_t get_fetch_count() const override {
+        return fetch_count;
+    }
+
+    void reset_fetch_count() override {
+        fetch_count = 0;
+    }
+    // ---- End Additions ----
 
     // --- MODIFIED compare_and_log: Add check immediately after getting pointer
     // ---
@@ -537,6 +558,9 @@ struct ZmqDistanceComputer : DistanceComputer {
         // --- End ZMQ Functional ---
     }
     void set_query(const float* x) override {
+        // ---- Addition: Reset count on new query ----
+        reset_fetch_count();
+        // ---- End Addition ----
         memcpy(query.data(), x, d * sizeof(float));
         storage_dc_orig->set_query(x);
         storage_dc_search->set_query(x); /* No cache to clear */
@@ -714,19 +738,26 @@ void hnsw_add_vertices(
  **************************************************************/
 
 IndexHNSW::IndexHNSW(int d, int M, MetricType metric, int M0)
-        : Index(d, metric), hnsw(M, M0) {}
+        : Index(d, metric), hnsw(M, M0) {
+    // Initialize the fetch counter
+    fetch_count_ptr = new std::atomic<size_t>(0);
+}
 
 IndexHNSW::IndexHNSW(Index* storage, int M, int M0)
         : Index(storage->d, storage->metric_type),
           hnsw(M, M0),
           storage(storage) {
     metric_arg = storage->metric_arg;
+    // Initialize the fetch counter
+    fetch_count_ptr = new std::atomic<size_t>(0);
 }
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {
         delete storage;
     }
+    // Delete the fetch counter
+    delete fetch_count_ptr;
 }
 
 void IndexHNSW::train(idx_t n, const float* x) {
@@ -753,6 +784,13 @@ void hnsw_search(
             "instead of IndexHNSW directly");
     const HNSW& hnsw = index->hnsw;
 
+    // ---- Addition: Reset total fetch count at the beginning of search ----
+    // Ensure the pointer is valid before dereferencing
+    if (index->fetch_count_ptr) {
+        index->fetch_count_ptr->store(0, std::memory_order_relaxed);
+    }
+    // ---- End Addition ----
+
     int efSearch = hnsw.efSearch;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
@@ -761,6 +799,10 @@ void hnsw_search(
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+
+    // ---- Addition: Accumulator for fetch counts ----
+    size_t total_fetches_accum = 0;
+    // ---- End Addition ----
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -778,7 +820,8 @@ void hnsw_search(
             std::unique_ptr<DistanceComputer> dis(
                     index->get_distance_computer());
 
-#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
+#pragma omp for reduction(+ : n1, n2, ndis, nhops, total_fetches_accum) \
+        schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 res.begin(i);
                 dis->set_query(x + i * index->d);
@@ -788,9 +831,24 @@ void hnsw_search(
                 n2 += stats.n2;
                 ndis += stats.ndis;
                 nhops += stats.nhops;
+
+                // ---- Addition: Accumulate fetch count ----
+                total_fetches_accum += dis->get_fetch_count();
+                // ---- End Addition ----
+
                 res.end();
             }
         }
+
+        // ---- Addition: Update the index's total count ----
+        // Use += because the search might be split over multiple check_period
+        // iterations
+        if (index->fetch_count_ptr) {
+            index->fetch_count_ptr->fetch_add(
+                    total_fetches_accum, std::memory_order_relaxed);
+        }
+        // ---- End Addition ----
+
         InterruptCallback::check();
     }
 
@@ -1143,6 +1201,18 @@ DistanceComputer* IndexHNSW::get_distance_computer() const {
     return new ZmqDistanceComputer(storage);
     // return storage->get_distance_computer();
 }
+
+// ---- Addition: Implement method to get fetch count ----
+size_t IndexHNSW::get_last_total_fetch_count() const {
+    // Safety check in case the pointer is null
+    if (!fetch_count_ptr) {
+        return 0;
+    }
+    // Use load() for atomic read, although direct read might be okay on many
+    // platforms
+    return fetch_count_ptr->load(std::memory_order_relaxed);
+}
+// ---- End Addition ----
 
 /**************************************************************
  * IndexHNSWFlat implementation

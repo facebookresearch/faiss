@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <vector>
 
 #include <faiss/IndexFlat.h>
@@ -45,6 +46,12 @@ struct IndexHNSW : Index {
     // IndexHHNSWCagra to create a full base layer graph that is
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
+
+    // ---- Modifications for atomic counter ----
+    // Instead of a direct std::atomic member (which can't be copied),
+    // use a pointer to an atomic. The pointer can be copied, and each
+    // copy gets its own atomic counter.
+    mutable std::atomic<size_t>* fetch_count_ptr = nullptr;
 
     explicit IndexHNSW(
             int d = 0,
@@ -117,6 +124,9 @@ struct IndexHNSW : Index {
     void permute_entries(const idx_t* perm);
 
     DistanceComputer* get_distance_computer() const override;
+
+    /// Get the total number of vector fetches performed during the last search.
+    size_t get_last_total_fetch_count() const;
 };
 
 /** Flat index topped with with a HNSW structure to access elements

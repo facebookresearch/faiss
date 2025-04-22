@@ -56,6 +56,17 @@ struct DistanceComputer {
     /// compute distance between two stored vectors
     virtual float symmetric_dis(idx_t i, idx_t j) = 0;
 
+    /// Get statistics specific to this DistanceComputer instance (e.g., fetch
+    /// count).
+    virtual size_t get_fetch_count() const {
+        return 0; // Base implementation returns 0
+    }
+
+    /// Reset any internal counters or state related to statistics.
+    virtual void reset_fetch_count() {
+        // Base implementation does nothing
+    }
+
     virtual ~DistanceComputer() {}
 };
 
