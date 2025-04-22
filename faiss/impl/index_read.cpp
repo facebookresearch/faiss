@@ -505,10 +505,10 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
            hnsw->levels.size()); // 添加日志点 2
 
     // --- NEW: Read storage format flag (written after levels) ---
-    READ1(hnsw->storage_is_compact);
-    printf("[READ_HNSW] Read storage_is_compact flag: %s\n",
-           hnsw->storage_is_compact ? "true (Compact)" : "false (Original)");
-    // hnsw->storage_is_compact = false;
+    // READ1(hnsw->storage_is_compact);
+    // printf("[READ_HNSW] Read storage_is_compact flag: %s\n",
+    //        hnsw->storage_is_compact ? "true (Compact)" : "false (Original)");
+    hnsw->storage_is_compact = false;
 
     if (hnsw->storage_is_compact) {
         printf("[READ_HNSW] Reading Compact Storage format...\n"); // 添加日志点

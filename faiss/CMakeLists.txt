@@ -3,6 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# --- Add ZMQ and MessagePack Dependencies (Add these lines at the top) ---
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ZeroMQ REQUIRED IMPORTED_TARGET libzmq) # Find libzmq via pkg-config
+pkg_check_modules(MSGPACK msgpack REQUIRED)
+
+if(NOT MSGPACK_FOUND)
+    message(FATAL_ERROR "msgpack-c library not found. Please install it (e.g., libmsgpack-dev on Debian/Ubuntu) or configure PKG_CONFIG_PATH.")
+endif()
+# --- End Add Dependencies ---
+
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
@@ -320,19 +330,30 @@ endif()
 
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-# Handle `#include <faiss/foo.h>`.
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}> # Keep existing
+  ${ZeroMQ_INCLUDE_DIRS}                   # Add ZMQ
+  ${MSGPACK_INCLUDE_DIRS}                  # Add msgpack-c
+)
 target_include_directories(faiss_avx2 PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-# Handle `#include <faiss/foo.h>`.
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  ${ZeroMQ_INCLUDE_DIRS}
+  ${MSGPACK_INCLUDE_DIRS}
+)
 target_include_directories(faiss_avx512 PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-# Handle `#include <faiss/foo.h>`.
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  ${ZeroMQ_INCLUDE_DIRS}
+  ${MSGPACK_INCLUDE_DIRS}
+)
 target_include_directories(faiss_avx512_spr PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-# Handle `#include <faiss/foo.h>`.
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  ${ZeroMQ_INCLUDE_DIRS}
+  ${MSGPACK_INCLUDE_DIRS}
+)
 target_include_directories(faiss_sve PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  ${ZeroMQ_INCLUDE_DIRS}
+  ${MSGPACK_INCLUDE_DIRS}
+)
 
 set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve PROPERTIES
   POSITION_INDEPENDENT_CODE ON
@@ -376,11 +397,26 @@ if(FAISS_USE_LTO)
 endif()
 
 find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX
+${ZeroMQ_LIBRARIES}       # Add ZMQ
+${MSGPACK_LIBRARIES}      # Add msgpack-c
+)
+target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX
+${ZeroMQ_LIBRARIES}       # Add ZMQ
+${MSGPACK_LIBRARIES}      # Add msgpack-c
+)
+target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX
+${ZeroMQ_LIBRARIES}       # Add ZMQ
+${MSGPACK_LIBRARIES}      # Add msgpack-c
+)
+target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX
+${ZeroMQ_LIBRARIES}       # Add ZMQ
+${MSGPACK_LIBRARIES}      # Add msgpack-c
+)
+target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX
+${ZeroMQ_LIBRARIES}       # Add ZMQ
+${MSGPACK_LIBRARIES}      # Add msgpack-c
+)
 
 if(FAISS_ENABLE_MKL)
   find_package(MKL)
