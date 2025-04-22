@@ -40,12 +40,12 @@ DEFINE_SETTER(IndexBinaryIVF, size_t, max_codes)
 /** Select between using a heap or counting to select the k smallest values
  * when scanning inverted lists.
  */
-DEFINE_GETTER(IndexBinaryIVF, bool, use_heap)
-DEFINE_SETTER(IndexBinaryIVF, bool, use_heap)
+DEFINE_GETTER(IndexBinaryIVF, int, use_heap)
+DEFINE_SETTER(IndexBinaryIVF, int, use_heap)
 
 /// collect computations per batch
-DEFINE_GETTER(IndexBinaryIVF, bool, per_invlist_search)
-DEFINE_SETTER(IndexBinaryIVF, bool, per_invlist_search)
+DEFINE_GETTER(IndexBinaryIVF, int, per_invlist_search)
+DEFINE_SETTER(IndexBinaryIVF, int, per_invlist_search)
 
 int faiss_IndexBinaryIVF_merge_from(
         FaissIndexBinaryIVF* index,
@@ -67,7 +67,7 @@ int faiss_IndexBinaryIVF_search_preassigned(
         const int32_t* cdis,
         int32_t* dis,
         idx_t* idx,
-        bool store_pairs,
+        int store_pairs,
         const FaissSearchParametersIVF* params) {
     try {
         const faiss::SearchParametersIVF* sp =

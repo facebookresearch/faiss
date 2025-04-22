@@ -47,10 +47,10 @@ FAISS_DECLARE_GETTER_SETTER(IndexBinaryIVF, size_t, max_codes)
 /** Select between using a heap or counting to select the k smallest values
  * when scanning inverted lists.
  */
-FAISS_DECLARE_GETTER_SETTER(IndexBinaryIVF, bool, use_heap)
+FAISS_DECLARE_GETTER_SETTER(IndexBinaryIVF, int, use_heap)
 
 /// collect computations per batch
-FAISS_DECLARE_GETTER_SETTER(IndexBinaryIVF, bool, per_invlist_search)
+FAISS_DECLARE_GETTER_SETTER(IndexBinaryIVF, int, per_invlist_search)
 
 /** moves the entries from another dataset to self. On output,
  * other is empty. add_id is added to all moved ids (for
@@ -86,7 +86,7 @@ int faiss_IndexBinaryIVF_search_preassigned(
         const int32_t* cdis,
         int32_t* dis,
         idx_t* idx,
-        bool store_pairs,
+        int store_pairs,
         const FaissSearchParametersIVF* params);
 
 size_t faiss_IndexBinaryIVF_get_list_size(
