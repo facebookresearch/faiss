@@ -624,14 +624,14 @@ void HNSW::add_links_starting_from(
 
     // but we can afford only this many neighbors
     int M = nb_neighbors(level);
-    bool pruning_during_construction = false;
+    bool pruning_during_construction = true;
 
     // Apply pruning during construction with 90% probability
     int effective_M = M;
     if (pruning_during_construction) {
         // Use random number generator to decide whether to prune
         float r = rng.rand_float();           // Assuming rng is accessible here
-        if (r < 0.9) {                        // 90% probability
+        if (r < 0.9 && level ==0) {                        // 90% probability
             effective_M = std::max(M / 8, 1); // Reduce to M/8 but at least 1
         }
     }
