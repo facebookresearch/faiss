@@ -444,6 +444,8 @@ void add_link(
         bool keep_max_size_level0 = false) {
     size_t begin, end;
     hnsw.neighbor_range(src, level, &begin, &end);
+    
+    int strict_end = end;
     if (hnsw.neighbors[end - 1] == -1) {
         // there is enough room, find a slot to add it
         size_t i = end;
@@ -452,8 +454,11 @@ void add_link(
                 break;
             i--;
         }
-        hnsw.neighbors[i] = dest;
-        return;
+        strict_end = i;
+        if (level == 0 && strict_end - begin < hnsw.ems[src]) {
+            hnsw.neighbors[i] = dest;
+            return;
+        }
     }
 
     // otherwise we let them fight out which to keep
@@ -461,12 +466,15 @@ void add_link(
     // copy to resultSet...
     std::priority_queue<NodeDistCloser> resultSet;
     resultSet.emplace(qdis.symmetric_dis(src, dest), dest);
-    for (size_t i = begin; i < end; i++) { // HERE WAS THE BUG
+    for (size_t i = begin; i < strict_end; i++) { // HERE WAS THE BUG
         storage_idx_t neigh = hnsw.neighbors[i];
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
+    // printf("end - begin: %zd, strict_end - begin: %zd\n", end - begin, strict_end - begin);
+    int len = strict_end - begin;
+    len = std::min(len, hnsw.ems[src]);
+    shrink_neighbor_list(qdis, resultSet, len, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
@@ -624,20 +632,9 @@ void HNSW::add_links_starting_from(
 
     // but we can afford only this many neighbors
     int M = nb_neighbors(level);
-    bool pruning_during_construction = false;
-
-    // Apply pruning during construction with 90% probability
-    int effective_M = M;
-    if (pruning_during_construction) {
-        // Use random number generator to decide whether to prune
-        float r = rng.rand_float();           // Assuming rng is accessible here
-        if (r < 0.9) {                        // 90% probability
-            effective_M = std::max(M / 8, 1); // Reduce to M/8 but at least 1
-        }
-    }
 
     ::faiss::shrink_neighbor_list(
-            ptdis, link_targets, effective_M, keep_max_size_level0);
+            ptdis, link_targets, ems[pt_id], keep_max_size_level0);
 
     std::vector<storage_idx_t> neighbors_to_add;
     neighbors_to_add.reserve(link_targets.size());
