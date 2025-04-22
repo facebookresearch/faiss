@@ -357,10 +357,11 @@ void HNSW::shrink_neighbor_list(
         std::vector<NodeDistFarther>& output,
         int max_size,
         bool keep_max_size_level0) {
-    // This prevents number of neighbors at
-    // level 0 from being shrunk to less than 2 * M.
-    // This is essential in making sure
-    // `faiss::gpu::GpuIndexCagra::copyFrom(IndexHNSWCagra*)` is functional
+    // RNG pruning
+    //  This prevents number of neighbors at
+    //  level 0 from being shrunk to less than 2 * M.
+    //  This is essential in making sure
+    //  `faiss::gpu::GpuIndexCagra::copyFrom(IndexHNSWCagra*)` is functional
     std::vector<NodeDistFarther> outsiders;
 
     while (input.size() > 0) {
@@ -410,6 +411,9 @@ void shrink_neighbor_list(
         std::priority_queue<NodeDistCloser>& resultSet1,
         int max_size,
         bool keep_max_size_level0 = false) {
+    // if remove this, which menas we will enforce RNG check no matter if the
+    // degree is too high this does not work to save degree()may because nodes
+    // with low degree already hvae strict go though RNG test
     if (resultSet1.size() < max_size) {
         return;
     }
@@ -620,8 +624,20 @@ void HNSW::add_links_starting_from(
 
     // but we can afford only this many neighbors
     int M = nb_neighbors(level);
+    bool pruning_during_construction = false;
 
-    ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
+    // Apply pruning during construction with 90% probability
+    int effective_M = M;
+    if (pruning_during_construction) {
+        // Use random number generator to decide whether to prune
+        float r = rng.rand_float();           // Assuming rng is accessible here
+        if (r < 0.9) {                        // 90% probability
+            effective_M = std::max(M / 8, 1); // Reduce to M/8 but at least 1
+        }
+    }
+
+    ::faiss::shrink_neighbor_list(
+            ptdis, link_targets, effective_M, keep_max_size_level0);
 
     std::vector<storage_idx_t> neighbors_to_add;
     neighbors_to_add.reserve(link_targets.size());

@@ -127,7 +127,7 @@ D_flat, recall_idx_flat = index_flat.search(xq_full, k=K_NEIGHBORS)
 print(recall_idx_flat)
 
 # Create a specific directory for this index configuration
-index_dir = f"{INDEX_SAVING_FILE}/hnsw_IP_M{M}_efC{efConstruction}"
+index_dir = f"{INDEX_SAVING_FILE}/random_shrink_neighbor_list_hnsw_IP_M{M}_efC{efConstruction}"
 os.makedirs(index_dir, exist_ok=True)
 index_filename = f"{index_dir}/index.faiss"
 
@@ -165,24 +165,29 @@ index.hnsw.save_degree_distribution(0, distribution_filename)
 print("Degree distribution saved successfully.")
 
 print('Searching HNSW index...')
-for efSearch in [2, 4, 8, 16, 32, 64]:
-    index.hnsw.efSearch = efSearch
-    # calculate the time of searching
-    start_time = time.time()
-    D, I = index.search(xq_full, K_NEIGHBORS)
-    end_time = time.time()
-    print(f'time: {end_time - start_time}')
-    # print(I)
 
-    # calculate the recall using the flat index the formula:
-    # recall = sum(recall_idx == recall_idx_flat) / len(recall_idx)
-    recall=[]
-    for i in range(len(I)):
-        acc = 0
-        for j in range(len(I[i])):
-            if I[i][j] in recall_idx_flat[i]:
-                acc += 1
-        recall.append(acc / len(I[i]))
-    recall = sum(recall) / len(recall)
-    print(f'efSearch: {efSearch}')
-    print(f'recall: {recall}')
+recall_result_file = f"{index_dir}/recall_result.txt"
+with open(recall_result_file, 'w') as f:
+    for efSearch in [2, 4, 8, 16, 32, 64,128,256]:
+        index.hnsw.efSearch = efSearch
+        # calculate the time of searching
+        start_time = time.time()
+        D, I = index.search(xq_full, K_NEIGHBORS)
+        end_time = time.time()
+        print(f'time: {end_time - start_time}')
+        # print(I)
+
+        # calculate the recall using the flat index the formula:
+        # recall = sum(recall_idx == recall_idx_flat) / len(recall_idx)
+        recall=[]
+        for i in range(len(I)):
+            acc = 0
+            for j in range(len(I[i])):
+                if I[i][j] in recall_idx_flat[i]:
+                    acc += 1
+            recall.append(acc / len(I[i]))
+        recall = sum(recall) / len(recall)
+        print(f'efSearch: {efSearch}')
+        print(f'recall: {recall}')
+        f.write(f'efSearch: {efSearch}, recall: {recall}\n')
+print(f'Done and result saved to {recall_result_file}')
