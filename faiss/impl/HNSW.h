@@ -238,6 +238,8 @@ struct HNSW {
     void permute_entries(const idx_t* map);
 
     void save_degree_distribution(int level, const char* filename) const;
+
+    std::vector<int> ems;
 };
 
 struct HNSWStats {

@@ -116,6 +116,7 @@ void hnsw_add_vertices(
     idx_t check_period = InterruptCallback::get_period_hint(
             max_level * index_hnsw.d * hnsw.efConstruction);
 
+
     { // perform add
         RandomGenerator rng2(789);
 
@@ -124,6 +125,10 @@ void hnsw_add_vertices(
         for (int pt_level = hist.size() - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
+            int M = hnsw.nb_neighbors(pt_level);
+            printf("M: %d for level: %d\n", M, pt_level);
+            hnsw.ems.resize(ntotal, M);
+
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -152,6 +157,15 @@ void hnsw_add_vertices(
 #pragma omp for schedule(static)
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
+                    bool prune = true;
+
+                    if (pt_level == 0 && prune) {
+                        // printf("i: %d, order[i]: %d\n", i, order[i]);
+                        float r = rng2.rand_float();           // Assuming rng is accessible here
+                        if (r < 0.9) {                        // 90% probability
+                            hnsw.ems[pt_id] = std::max(M / 8, 1); // Reduce to M/8 but at least 1
+                        }
+                    }
                     dis->set_query(x + (pt_id - n0) * d);
 
                     // cannot break
