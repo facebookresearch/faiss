@@ -52,6 +52,7 @@ struct SearchParametersHNSW : SearchParameters {
     ~SearchParametersHNSW() {}
 };
 
+class IndexHNSW;
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
@@ -207,7 +208,8 @@ struct HNSW {
             DistanceComputer& qdis,
             ResultHandler<C>& res,
             VisitedTable& vt,
-            const SearchParameters* params = nullptr) const;
+            const SearchParameters* params = nullptr,
+            const IndexHNSW* hnsw = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
@@ -273,7 +275,8 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in = 0,
-        const SearchParameters* params = nullptr);
+        const SearchParameters* params = nullptr,
+        const IndexHNSW* hnsw_index = nullptr);
 
 HNSWStats greedy_update_nearest(
         const HNSW& hnsw,

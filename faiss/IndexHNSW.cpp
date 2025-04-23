@@ -85,16 +85,16 @@ bool fetch_embeddings_zmq(
     // 1) 创建上下文和套接字 (Same as before)
     void* context = zmq_ctx_new();
     if (!context) {
-        fprintf(stderr,
-                "[fetch_zmq] zmq_ctx_new failed: %s\n",
-                zmq_strerror(zmq_errno()));
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_ctx_new failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
         return false;
     }
     void* socket = zmq_socket(context, ZMQ_REQ);
     if (!socket) {
-        fprintf(stderr,
-                "[fetch_zmq] zmq_socket failed: %s\n",
-                zmq_strerror(zmq_errno()));
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_socket failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
         zmq_ctx_destroy(context);
         return false;
     }
@@ -103,9 +103,9 @@ bool fetch_embeddings_zmq(
     zmq_setsockopt(socket, ZMQ_SNDTIMEO, &timeout, sizeof(timeout));
     std::string endpoint = "tcp://127.0.0.1:" + std::to_string(zmq_port);
     if (zmq_connect(socket, endpoint.c_str()) != 0) {
-        fprintf(stderr,
-                "[fetch_zmq] zmq_connect failed: %s\n",
-                zmq_strerror(zmq_errno()));
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_connect failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
         zmq_close(socket);
         zmq_ctx_destroy(context);
         return false;
@@ -113,9 +113,9 @@ bool fetch_embeddings_zmq(
 
     // 4) 发送序列化请求
     if (zmq_send(socket, req_str.data(), req_str.size(), 0) < 0) { /*...*/
-        fprintf(stderr,
-                "[fetch_zmq] zmq_msg_recv failed: %s\n",
-                zmq_strerror(zmq_errno()));
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_msg_recv failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
         zmq_close(socket);
         zmq_ctx_destroy(context);
         return false;
@@ -125,9 +125,9 @@ bool fetch_embeddings_zmq(
     zmq_msg_t response;
     zmq_msg_init(&response);
     if (zmq_msg_recv(&response, socket, 0) < 0) { /*...*/
-        fprintf(stderr,
-                "[fetch_zmq] zmq_msg_recv failed: %s\n",
-                zmq_strerror(zmq_errno()));
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_msg_recv failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
         zmq_msg_close(&response);
         zmq_close(socket);
         zmq_ctx_destroy(context);
@@ -138,39 +138,40 @@ bool fetch_embeddings_zmq(
     EmbeddingResponseMsgpack resp_msgpack;
     const char* resp_data = static_cast<const char*>(zmq_msg_data(&response));
     size_t resp_size = zmq_msg_size(&response);
-    printf("[fetch_zmq] Raw response bytes (first %d): ",
-           (int)std::min((size_t)64, resp_size));
+    // printf("[fetch_zmq] Raw response bytes (first %d): ",
+    //        (int)std::min((size_t)64, resp_size));
 
     msgpack::object_handle oh = msgpack::unpack(resp_data, resp_size);
     msgpack::object obj = oh.get();
     obj.convert(resp_msgpack); // Convert msgpack object to our struct
-    for (size_t k = 0; k < std::min((size_t)64, resp_size); ++k)
-        printf("%02x ", (unsigned char)resp_data[k]);
-    printf("\n");
+    // for (size_t k = 0; k < std::min((size_t)64, resp_size); ++k)
+    //     printf("%02x ", (unsigned char)resp_data[k]);
+    // printf("\n");
 
     // --- Print parsed values BEFORE NaN check ---
-    printf("[fetch_zmq] Parsed response. Dimensions: %d x %d. Data floats: %zu\n",
-           resp_msgpack.dimensions.empty() ? 0 : resp_msgpack.dimensions[0],
-           resp_msgpack.dimensions.size() < 2 ? 0 : resp_msgpack.dimensions[1],
-           resp_msgpack.embeddings_data.size());
-    printf("[fetch_zmq] Parsed embeddings_data (first %d floats): ",
-           (int)std::min((size_t)10, resp_msgpack.embeddings_data.size()));
-    bool parse_contains_nan = false;
-    for (size_t k = 0;
-         k < std::min((size_t)10, resp_msgpack.embeddings_data.size());
-         ++k) {
-        printf("%.6f ", resp_msgpack.embeddings_data[k]);
-        if (std::isnan(resp_msgpack.embeddings_data[k]))
-            parse_contains_nan = true;
-    }
-    printf("%s\n",
-           parse_contains_nan ? "!!! CONTAINS NaN AFTER PARSE !!!"
-                              : "(Checked first 10 for NaN)");
+    // printf("[fetch_zmq] Parsed response. Dimensions: %d x %d. Data floats:
+    // %zu\n",
+    //        resp_msgpack.dimensions.empty() ? 0 : resp_msgpack.dimensions[0],
+    //        resp_msgpack.dimensions.size() < 2 ? 0 :
+    //        resp_msgpack.dimensions[1], resp_msgpack.embeddings_data.size());
+    // printf("[fetch_zmq] Parsed embeddings_data (first %d floats): ",
+    //        (int)std::min((size_t)10, resp_msgpack.embeddings_data.size()));
+    // bool parse_contains_nan = false;
+    // for (size_t k = 0;
+    //      k < std::min((size_t)10, resp_msgpack.embeddings_data.size());
+    //      ++k) {
+    //     printf("%.6f ", resp_msgpack.embeddings_data[k]);
+    //     if (std::isnan(resp_msgpack.embeddings_data[k]))
+    //         parse_contains_nan = true;
+    // }
+    // printf("%s\n",
+    //        parse_contains_nan ? "!!! CONTAINS NaN AFTER PARSE !!!"
+    //                           : "(Checked first 10 for NaN)");
 
     // 7) 验证维度
     if (resp_msgpack.dimensions.size() != 2) {
-        std::cerr << "Server response has invalid dimensions size: "
-                  << resp_msgpack.dimensions.size() << std::endl;
+        // std::cerr << "Server response has invalid dimensions size: "
+        //           << resp_msgpack.dimensions.size() << std::endl;
         zmq_msg_close(&response);
         zmq_close(socket);
         zmq_ctx_destroy(context);
@@ -191,10 +192,11 @@ bool fetch_embeddings_zmq(
     // 验证数据大小
     size_t expected_floats = (size_t)batch_size * embedding_dim;
     if (resp_msgpack.embeddings_data.size() != expected_floats) {
-        std::cerr << "Embedding data size mismatch: Got "
-                  << resp_msgpack.embeddings_data.size() << " floats, expected "
-                  << expected_floats << " (" << batch_size << "x"
-                  << embedding_dim << ")" << std::endl;
+        // std::cerr << "Embedding data size mismatch: Got "
+        //           << resp_msgpack.embeddings_data.size() << " floats,
+        //           expected "
+        //           << expected_floats << " (" << batch_size << "x"
+        //           << embedding_dim << ")" << std::endl;
         zmq_msg_close(&response);
         zmq_close(socket);
         zmq_ctx_destroy(context);
@@ -209,12 +211,14 @@ bool fetch_embeddings_zmq(
         }
     }
     if (received_nan) {
-        fprintf(stderr,
-                "!!! [fetch_zmq] ERROR: Final check confirms NaN values in parsed embeddings_data! First requested ID: %u !!!\n",
-                node_ids.empty() ? 0 : node_ids[0]);
+        // fprintf(stderr,
+        //         "!!! [fetch_zmq] ERROR: Final check confirms NaN values in
+        //         parsed embeddings_data! First requested ID: %u !!!\n",
+        //         node_ids.empty() ? 0 : node_ids[0]);
         return false; // Decide whether to fail here
     } else {
-        printf("[fetch_zmq] Final check confirms embeddings data appears clean (no NaNs checked).\n"); // Can be verbose
+        // printf("[fetch_zmq] Final check confirms embeddings data appears
+        // clean (no NaNs checked).\n"); // Can be verbose
     }
 
     // 8) 组装返回
@@ -283,8 +287,9 @@ struct ZmqDistanceComputer : DistanceComputer {
     // --- MODIFIED get_vector_zmq: No Cache, stores result in member and tracks
     // fetches ---
     const float* get_vector_zmq(idx_t id) {
-        printf("DEBUG get_vector_zmq: Fetching ID %ld via ZMQ (no cache)...\n",
-               (long)id); // Log fetch attempt
+        // printf("DEBUG get_vector_zmq: Fetching ID %ld via ZMQ (no
+        // cache)...\n",
+        //        (long)id); // Log fetch attempt
 
         std::vector<uint32_t> ids_to_fetch = {(uint32_t)id};
         std::vector<std::vector<float>>
@@ -292,9 +297,9 @@ struct ZmqDistanceComputer : DistanceComputer {
                                     // structure
 
         if (!fetch_embeddings_zmq(ids_to_fetch, fetched_embeddings, ZMQ_PORT)) {
-            fprintf(stderr,
-                    "!!! ERROR get_vector_zmq: fetch_embeddings_zmq call failed for ID %ld !!!\n",
-                    (long)id);
+            // fprintf(stderr,
+            //         "!!! ERROR get_vector_zmq: fetch_embeddings_zmq call
+            //         failed for ID %ld !!!\n", (long)id);
             // Fill member with NaN to indicate failure?
             std::fill(
                     last_fetched_zmq_vector.begin(),
@@ -303,9 +308,9 @@ struct ZmqDistanceComputer : DistanceComputer {
             return nullptr; // Indicate failure upstream
         }
         if (fetched_embeddings.empty() || fetched_embeddings[0].size() != d) {
-            fprintf(stderr,
-                    "!!! ERROR get_vector_zmq: fetch_embeddings_zmq returned incorrect data for ID %ld !!!\n",
-                    (long)id);
+            // fprintf(stderr,
+            //         "!!! ERROR get_vector_zmq: fetch_embeddings_zmq returned
+            //         incorrect data for ID %ld !!!\n", (long)id);
             std::fill(
                     last_fetched_zmq_vector.begin(),
                     last_fetched_zmq_vector.end(),
@@ -326,19 +331,20 @@ struct ZmqDistanceComputer : DistanceComputer {
 
         // --- Log values RIGHT BEFORE returning pointer ---
         const float* return_ptr = last_fetched_zmq_vector.data();
-        bool has_nan_before_return = false;
-        printf("DEBUG get_vector_zmq: Fetched ID %ld. Values BEFORE return (ptr %p) [0..%d]: ",
-               (long)id,
-               (void*)return_ptr,
-               (int)std::min((size_t)4, d - 1));
-        for (size_t k = 0; k < std::min((size_t)5, d); ++k) {
-            printf("%.6f ", return_ptr[k]);
-            if (std::isnan(return_ptr[k]) || std::isinf(return_ptr[k]))
-                has_nan_before_return = true;
-        }
-        printf("%s\n",
-               has_nan_before_return ? "!!! HAS NaN/Inf BEFORE RETURN !!!"
-                                     : "(OK Before Return)");
+        // bool has_nan_before_return = false;
+        // printf("DEBUG get_vector_zmq: Fetched ID %ld. Values BEFORE return
+        // (ptr %p) [0..%d]: ",
+        //        (long)id,
+        //        (void*)return_ptr,
+        //        (int)std::min((size_t)4, d - 1));
+        // for (size_t k = 0; k < std::min((size_t)5, d); ++k) {
+        //     printf("%.6f ", return_ptr[k]);
+        // if (std::isnan(return_ptr[k]) || std::isinf(return_ptr[k]))
+        //         has_nan_before_return = true;
+        // }
+        // printf("%s\n",
+        //        has_nan_before_return ? "!!! HAS NaN/Inf BEFORE RETURN !!!"
+        //                              : "(OK Before Return)");
         // -------------------------------------------
 
         return return_ptr; // Return pointer to member data
@@ -362,10 +368,11 @@ struct ZmqDistanceComputer : DistanceComputer {
         const float* vec_zmq = get_vector_zmq(id);
 
         // --- ADD CHECK IMMEDIATELY AFTER get_vector_zmq returns ---
-        printf("DEBUG_COMPARE [%s] ID %ld: Got vec_zmq ptr %p. Checking for NaN/Inf...\n",
-               context,
-               (long)id,
-               (void*)vec_zmq);
+        // printf("DEBUG_COMPARE [%s] ID %ld: Got vec_zmq ptr %p. Checking for
+        // NaN/Inf...\n",
+        //        context,
+        //        (long)id,
+        //        (void*)vec_zmq);
         bool zmq_has_nan_inf = false;
         if (vec_zmq) { // Check if pointer is valid first
             for (size_t k = 0; k < d; ++k) {
@@ -381,10 +388,10 @@ struct ZmqDistanceComputer : DistanceComputer {
                 printf("\n");
             } else {
                 // Optional: print confirmation values look ok here
-                printf("ZMQ Vec OK After Get. First values: ");
-                for (size_t k = 0; k < std::min((size_t)5, d); ++k)
-                    printf("%.6f ", vec_zmq[k]);
-                printf("\n");
+                // printf("ZMQ Vec OK After Get. First values: ");
+                // for (size_t k = 0; k < std::min((size_t)5, d); ++k)
+                //     printf("%.6f ", vec_zmq[k]);
+                // printf("\n");
             }
         } else {
             printf("ZMQ Vec ptr is NULL after get_vector_zmq.\n");
@@ -413,7 +420,7 @@ struct ZmqDistanceComputer : DistanceComputer {
         }
 
         // Original comparison log header
-        printf("DEBUG_COMPARE [%s] ID %ld: ", context, (long)id);
+        // printf("DEBUG_COMPARE [%s] ID %ld: ", context, (long)id);
 
         // Report fetch status (unchanged)
         if (!vec_zmq && !vec_storage) {
@@ -447,7 +454,7 @@ struct ZmqDistanceComputer : DistanceComputer {
             else if (diff_sq > tol_vec) {
                 printf("!!! VEC MISMATCH !!! Diff^2=%.6f ", diff_sq);
             } else {
-                printf("Vec OK (D2=%.6f), ", diff_sq);
+                // printf("Vec OK (D2=%.6f), ", diff_sq);
             }
 
             // Compare Distances
@@ -467,9 +474,9 @@ struct ZmqDistanceComputer : DistanceComputer {
                        dist_zmq,
                        dist_diff);
             } else {
-                printf("Dist OK (Sto=%.6f, Zmq=%.6f)\n",
-                       dist_storage,
-                       dist_zmq);
+                // printf("Dist OK (Sto=%.6f, Zmq=%.6f)\n",
+                //        dist_storage,
+                //        dist_zmq);
             }
         } else {
             printf("Comparison skipped due to invalid/NaN/Inf vectors.\n");
@@ -478,7 +485,7 @@ struct ZmqDistanceComputer : DistanceComputer {
 
     // --- Other DistanceComputer methods unchanged ---
     float operator()(idx_t i) override {
-        compare_and_log(i, "operator()");
+        // compare_and_log(i, "operator()");
         // --- RETURN STORAGE DISTANCE (for recall stability during debug) ---
         // return (*storage_dc_search)(i);
         // --- TO MAKE ZMQ FUNCTIONAL (after debugging): ---
@@ -530,6 +537,56 @@ struct ZmqDistanceComputer : DistanceComputer {
         }
     }
 
+    void distances_batch(
+            const std::vector<idx_t>& ids,
+            std::vector<float>& distances_out) override {
+        if (ids.empty()) {
+            distances_out.clear();
+            return;
+        }
+
+        std::vector<uint32_t> node_ids(ids.size());
+        for (size_t i = 0; i < ids.size(); i++) {
+            node_ids[i] = (uint32_t)ids[i];
+        }
+
+        std::vector<std::vector<float>> fetched_embeddings;
+        bool fetch_success =
+                fetch_embeddings_zmq(node_ids, fetched_embeddings, ZMQ_PORT);
+
+        distances_out.resize(ids.size());
+
+        if (!fetch_success || fetched_embeddings.size() != ids.size()) {
+            std::fill(
+                    distances_out.begin(),
+                    distances_out.end(),
+                    (metric_type == METRIC_INNER_PRODUCT)
+                            ? -std::numeric_limits<float>::max()
+                            : std::numeric_limits<float>::max());
+            return;
+        }
+
+        fetch_count += fetched_embeddings.size();
+
+        for (size_t i = 0; i < fetched_embeddings.size(); i++) {
+            const std::vector<float>& embedding = fetched_embeddings[i];
+            if (embedding.size() != d) {
+                distances_out[i] = (metric_type == METRIC_INNER_PRODUCT)
+                        ? -std::numeric_limits<float>::max()
+                        : std::numeric_limits<float>::max();
+                continue;
+            }
+
+            if (is_similarity_metric(metric_type)) {
+                distances_out[i] =
+                        -fvec_inner_product(query.data(), embedding.data(), d);
+            } else {
+                distances_out[i] =
+                        fvec_L2sqr(query.data(), embedding.data(), d);
+            }
+        }
+    }
+
     void distances_batch_4(
             idx_t id0,
             idx_t id1,
@@ -539,22 +596,23 @@ struct ZmqDistanceComputer : DistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) override {
-        compare_and_log(id0, "batch4_0");
-        compare_and_log(id1, "batch4_1");
-        compare_and_log(id2, "batch4_2");
-        compare_and_log(id3, "batch4_3");
+        // compare_and_log(id0, "batch4_0");
+        // compare_and_log(id1, "batch4_1");
+        // compare_and_log(id2, "batch4_2");
+        // compare_and_log(id3, "batch4_3");
         // --- RETURN STORAGE DISTANCES (for recall stability during debug) ---
         //  storage_dc_search->distances_batch_4(id0, id1, id2, id3, dis0, dis1,
         //  dis2, dis3);
         // --- TO MAKE ZMQ FUNCTIONAL (after debugging): ---
-        const float* vec0 = get_vector_zmq(id0);
-        dis0 = distance_func(vec0); // Need updated distance_func
-        const float* vec1 = get_vector_zmq(id1);
-        dis1 = distance_func(vec1);
-        const float* vec2 = get_vector_zmq(id2);
-        dis2 = distance_func(vec2);
-        const float* vec3 = get_vector_zmq(id3);
-        dis3 = distance_func(vec3);
+        std::vector<idx_t> batch_ids = {id0, id1, id2, id3};
+        std::vector<float> batch_distances;
+
+        this->distances_batch(batch_ids, batch_distances);
+
+        dis0 = batch_distances[0];
+        dis1 = batch_distances[1];
+        dis2 = batch_distances[2];
+        dis3 = batch_distances[3];
         // --- End ZMQ Functional ---
     }
     void set_query(const float* x) override {
@@ -826,7 +884,7 @@ void hnsw_search(
                 res.begin(i);
                 dis->set_query(x + i * index->d);
 
-                HNSWStats stats = hnsw.search(*dis, res, vt, params);
+                HNSWStats stats = hnsw.search(*dis, res, vt, params, index);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;

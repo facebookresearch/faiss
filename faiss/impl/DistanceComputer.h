@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <vector>
 
 namespace faiss {
 
@@ -51,6 +52,19 @@ struct DistanceComputer {
         dis1 = d1;
         dis2 = d2;
         dis3 = d3;
+    }
+
+    /// compute distances of current query to a batch of stored vectors.
+    /// DistanceComputer implementations that can fetch data in batches
+    /// will benefit significantly from this.
+    virtual void distances_batch(
+            const std::vector<idx_t>& ids,
+            std::vector<float>& distances_out) {
+        // Default implementation: call operator() for each id
+        distances_out.resize(ids.size());
+        for (size_t i = 0; i < ids.size(); i++) {
+            distances_out[i] = this->operator()(ids[i]);
+        }
     }
 
     /// compute distance between two stored vectors
@@ -104,6 +118,18 @@ struct NegativeDistanceComputer : DistanceComputer {
         dis1 = -dis1;
         dis2 = -dis2;
         dis3 = -dis3;
+    }
+
+    /// compute distances of current query to a batch of stored vectors.
+    /// DistanceComputer implementations that can fetch data in batches
+    /// will benefit significantly from this.
+    void distances_batch(
+            const std::vector<idx_t>& ids,
+            std::vector<float>& distances_out) override {
+        basedis->distances_batch(ids, distances_out);
+        for (float& dis : distances_out) {
+            dis = -dis;
+        }
     }
 
     /// compute distance between two stored vectors
