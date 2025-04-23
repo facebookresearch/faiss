@@ -126,8 +126,15 @@ void hnsw_add_vertices(
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
             int M = hnsw.nb_neighbors(pt_level);
-            printf("M: %d for level: %d\n", M, pt_level);
-            hnsw.ems.resize(ntotal, M);
+            if (pt_level == 0) {
+                printf("M: %d for level: %d\n", M, pt_level);
+                // assign new vector to ems
+                hnsw.ems = std::vector<int>(ntotal, M);
+            }
+            else {
+                // value set to infinity
+                hnsw.ems = std::vector<int>(ntotal, std::numeric_limits<int>::max());
+            }
 
             int i0 = i1 - hist[pt_level];
 

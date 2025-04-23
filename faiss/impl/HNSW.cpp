@@ -490,6 +490,7 @@ void add_link_pruned(
         storage_idx_t dest,
         int level,
         bool keep_max_size_level0 = false) {
+    assert (level == 0);
     size_t begin, end;
     hnsw.neighbor_range(src, level, &begin, &end);
     
@@ -508,6 +509,7 @@ void add_link_pruned(
             return;
         }
     }
+    // printf("strict_end: %d\n", strict_end);
 
     // otherwise we let them fight out which to keep
 
@@ -522,6 +524,9 @@ void add_link_pruned(
     // printf("end - begin: %zd, strict_end - begin: %zd\n", end - begin, strict_end - begin);
     int len = strict_end - begin;
     len = std::min(len, hnsw.ems[src]);
+    printf("len: %d, ems[src]: %d\n", len, hnsw.ems[src]);
+    // assert (len != 64);
+    // assert (len==8);
     shrink_neighbor_list(qdis, resultSet, len, keep_max_size_level0);
 
     // ...and back
@@ -686,7 +691,7 @@ void HNSW::add_links_starting_from(
 
     std::vector<storage_idx_t> neighbors_to_add;
     neighbors_to_add.reserve(link_targets.size());
-    bool prune_in_add_link = true;
+    bool prune_in_add_link = false;
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
         if (level == 0 && M > ems[pt_id] && prune_in_add_link) {
@@ -701,7 +706,7 @@ void HNSW::add_links_starting_from(
     omp_unset_lock(&locks[pt_id]);
     for (storage_idx_t other_id : neighbors_to_add) {
         omp_set_lock(&locks[other_id]);
-        if (level == 0 && M > ems[pt_id] && prune_in_add_link) {
+        if (level == 0 && M > ems[other_id] && prune_in_add_link) {
             add_link_pruned(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         } else {
             add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
