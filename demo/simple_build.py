@@ -127,7 +127,7 @@ D_flat, recall_idx_flat = index_flat.search(xq_full, k=K_NEIGHBORS)
 print(recall_idx_flat)
 
 # Create a specific directory for this index configuration
-index_dir = f"{INDEX_SAVING_FILE}/random_in_first_add_shrink_neighbor_list_hnsw_IP_M{M}_efC{efConstruction}"
+index_dir = f"{INDEX_SAVING_FILE}/degree_based_prune_in_first_add_shrink_neighbor_list_hnsw_IP_M{M}_efC{efConstruction}"
 os.makedirs(index_dir, exist_ok=True)
 index_filename = f"{index_dir}/index.faiss"
 
