@@ -768,6 +768,8 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexRaBitQ )
+    DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
