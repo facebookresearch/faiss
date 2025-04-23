@@ -108,6 +108,9 @@ int faiss_IndexBinaryIVF_make_direct_map(
  */
 double faiss_IndexBinaryIVF_imbalance_factor(const FaissIndexBinaryIVF* index);
 
+/// display some stats about the inverted lists of the index
+void faiss_IndexBinaryIVF_print_stats(const FaissIndexBinaryIVF* index);
+
 #ifdef __cplusplus
 }
 #endif

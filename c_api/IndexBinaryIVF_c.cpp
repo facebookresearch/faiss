@@ -100,6 +100,11 @@ double faiss_IndexBinaryIVF_imbalance_factor(const FaissIndexBinaryIVF* index) {
             ->invlists->imbalance_factor();
 }
 
+/// display some stats about the inverted lists
+void faiss_IndexBinaryIVF_print_stats(const FaissIndexBinaryIVF* index) {
+    reinterpret_cast<const IndexBinaryIVF*>(index)->invlists->print_stats();
+}
+
 /// get inverted lists ids
 void faiss_IndexBinaryIVF_invlists_get_ids(
         const FaissIndexBinaryIVF* index,
