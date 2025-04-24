@@ -48,6 +48,7 @@ struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
     bool check_relative_distance = true;
     bool bounded_queue = true;
+    int beam_threshold = -1;
 
     ~SearchParametersHNSW() {}
 };

@@ -746,6 +746,8 @@ int search_from_candidates(
         const IndexHNSW* hnsw_index) {
     int nres = nres_in;
     int ndis = 0;
+    const int beam_width = 2;
+    int neighbor_threshold = 60;
 
     // can be overridden by search params
     bool do_dis_check = hnsw.check_relative_distance;
@@ -756,6 +758,7 @@ int search_from_candidates(
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
             do_dis_check = hnsw_params->check_relative_distance;
             efSearch = hnsw_params->efSearch;
+            // neighbor_threshold = hnsw_params->beam_threshold;
         }
         sel = params->sel;
     }
@@ -779,93 +782,129 @@ int search_from_candidates(
     int neighbors_count = 0;
 
     while (candidates.size() > 0) {
-        float d0 = 0;
-        int v0 = candidates.pop_min(&d0);
+        // Process nodes based on strategy
+        std::vector<int> beam_nodes;
+        std::vector<float> beam_distances;
+        std::vector<int> neighbor_counts;
+        int total_neighbors = 0;
 
+        if (neighbor_threshold > 0) {
+            while (candidates.size() > 0 &&
+                   (beam_nodes.empty() ||
+                    total_neighbors < neighbor_threshold)) {
+                float d0 = 0;
+                int v0 = candidates.pop_min(&d0);
+                if (v0 < 0)
+                    continue;
+
+                size_t begin, end;
+                hnsw.neighbor_range(v0, level, &begin, &end);
+
+                int node_neighbor_count = 0;
+                if (!hnsw.storage_is_compact) {
+                    for (size_t j = begin; j < end; j++) {
+                        if (hnsw.neighbors[j] < 0)
+                            break;
+                        node_neighbor_count++;
+                    }
+                } else {
+                    node_neighbor_count = end - begin;
+                }
+
+                beam_nodes.push_back(v0);
+                beam_distances.push_back(d0);
+                neighbor_counts.push_back(node_neighbor_count);
+
+                total_neighbors += node_neighbor_count;
+            }
+        } else {
+            for (int b = 0; b < beam_width && candidates.size() > 0; b++) {
+                float d0 = 0;
+                int v0 = candidates.pop_min(&d0);
+                if (v0 >= 0) {
+                    beam_nodes.push_back(v0);
+                    beam_distances.push_back(d0);
+                }
+            }
+        }
+
+        // Continue if we couldn't pop any valid nodes
+        if (beam_nodes.empty()) {
+            continue;
+        }
+
+        // Check stopping condition for the first (best) node
         if (do_dis_check) {
-            // tricky stopping condition: there are more that ef
-            // distances that are processed already that are smaller
-            // than d0
-
-            int n_dis_below = candidates.count_below(d0);
+            int n_dis_below = candidates.count_below(beam_distances[0]);
             if (n_dis_below >= efSearch) {
                 break;
             }
         }
 
-        size_t begin, end;
-        hnsw.neighbor_range(v0, level, &begin, &end);
-        // printf("for node %d, level %d, neighbors: %ld\n",
-        //        v0,
-        //        level,
-        //        end - begin);
-
-        // a faster version: reference version in unit test test_hnsw.cpp
-        // the following version processes 4 neighbors at a time
-        size_t jmax = begin;
-        for (size_t j = begin; j < end; j++) {
-            // *** CSR Change: Conditional neighbor access ***
-            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
-                                             : hnsw.neighbors[j];
-            // *** CSR Change: Conditional break for original format ***
-            if (!hnsw.storage_is_compact && v1 < 0)
-                break;
-
-            if (v1 >= 0) {
-                prefetch_L2(vt.visited.data() + v1);
-            }
-            jmax += 1;
-        }
-
-        int counter = 0;
-        size_t saved_j[4];
-
         threshold = res.threshold;
+        std::vector<idx_t> all_ids_to_process;
 
-        auto add_to_heap = [&](const size_t idx, const float dis) {
-            if (!sel || sel->is_member(idx)) {
-                if (dis < threshold) {
-                    if (res.add_result(dis, idx)) {
-                        threshold = res.threshold;
-                        nres += 1;
-                    }
+        // Process neighbors of all nodes in the beam
+        for (size_t b = 0; b < beam_nodes.size(); b++) {
+            int v0 = beam_nodes[b];
+
+            size_t begin, end;
+            hnsw.neighbor_range(v0, level, &begin, &end);
+
+            // Scan all neighbors and prepare them for processing
+            size_t jmax = begin;
+            for (size_t j = begin; j < end; j++) {
+                int v1 = hnsw.storage_is_compact
+                        ? hnsw.compact_neighbors_data[j]
+                        : hnsw.neighbors[j];
+                if (!hnsw.storage_is_compact && v1 < 0)
+                    break;
+
+                if (v1 >= 0) {
+                    prefetch_L2(vt.visited.data() + v1);
+                }
+                jmax += 1;
+            }
+
+            neighbors_count += jmax - begin;
+
+            // Collect unvisited neighbors
+            for (size_t j = begin; j < jmax; j++) {
+                int v1 = hnsw.storage_is_compact
+                        ? hnsw.compact_neighbors_data[j]
+                        : hnsw.neighbors[j];
+
+                bool vget = vt.get(v1);
+                vt.set(v1);
+                if (!vget) {
+                    all_ids_to_process.push_back(v1);
                 }
             }
-            candidates.push(idx, dis);
-        };
-
-        neighbors_count += jmax - begin;
-        // printf("accumulated neighbors count: %d\n", neighbors_count);
-        // printf("zmq side fetch count: %ld\n", qdis.get_fetch_count());
-        // printf("step %d, neighbors: %ld\n", nstep, jmax - begin);
-
-        std::vector<idx_t> ids_to_process;
-        ids_to_process.reserve(jmax - begin); // 预分配足够空间
-
-        for (size_t j = begin; j < jmax; j++) {
-            // *** CSR Change: Conditional neighbor access ***
-            int v1 = hnsw.storage_is_compact ? hnsw.compact_neighbors_data[j]
-                                             : hnsw.neighbors[j];
-
-            bool vget = vt.get(v1);
-            vt.set(v1);
-            if (!vget) {
-                ids_to_process.push_back(v1);
-            }
         }
 
-        if (!ids_to_process.empty()) {
+        // Process all collected neighbors in batch
+        if (!all_ids_to_process.empty()) {
             std::vector<float> batch_distances;
-            qdis.distances_batch(ids_to_process, batch_distances);
+            qdis.distances_batch(all_ids_to_process, batch_distances);
 
-            for (size_t i = 0; i < ids_to_process.size(); i++) {
-                add_to_heap(ids_to_process[i], batch_distances[i]);
+            auto add_to_heap = [&](const size_t idx, const float dis) {
+                if (!sel || sel->is_member(idx)) {
+                    if (dis < threshold) {
+                        if (res.add_result(dis, idx)) {
+                            threshold = res.threshold;
+                            nres += 1;
+                        }
+                    }
+                }
+                candidates.push(idx, dis);
+            };
+
+            for (size_t i = 0; i < all_ids_to_process.size(); i++) {
+                add_to_heap(all_ids_to_process[i], batch_distances[i]);
             }
 
-            ndis += ids_to_process.size();
+            ndis += all_ids_to_process.size();
         }
-
-        // printf("recompute count %ld\n", qdis.get_fetch_count());
 
         nstep++;
         if (!do_dis_check && nstep > efSearch) {
