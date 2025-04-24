@@ -18,6 +18,8 @@
 
 #include <faiss/impl/platform_macros.h>
 
+#include "faiss/impl/pq.h"
+
 #ifdef __AVX2__
 #include <immintrin.h>
 
@@ -26,6 +28,53 @@
 #endif
 
 namespace faiss {
+
+void HNSW::load_pq_pruning_data(
+        const std::string& pq_pivots_path,
+        const std::string& pq_compressed_path) {
+    use_pq_pruning = false;
+    pq_data_loader = nullptr;
+
+    auto loader = std::make_shared<PQPrunerDataLoader>();
+
+    if (!loader->load_pq_pivots(pq_pivots_path)) {
+        std::cerr
+                << "Failed to load PQ pivots for pruning. PQ pruning disabled."
+                << std::endl;
+        return;
+    }
+
+    uint8_t* loaded_codes_ptr = nullptr;
+    size_t num_vectors, codes_per_vector;
+    if (!load_simple_bin<uint8_t>(
+                pq_compressed_path,
+                loaded_codes_ptr,
+                num_vectors,
+                codes_per_vector)) {
+        std::cerr
+                << "Failed to load PQ compressed codes for pruning. PQ pruning disabled."
+                << std::endl;
+        return;
+    }
+    if (codes_per_vector != loader->get_num_chunks()) {
+        std::cerr << "Error: Chunk count mismatch between pivots ("
+                  << loader->get_num_chunks() << ") and compressed codes ("
+                  << codes_per_vector << "). PQ pruning disabled." << std::endl;
+        delete[] loaded_codes_ptr;
+        return;
+    }
+
+    code_size = codes_per_vector;
+    n_total_vectors = num_vectors;
+    pq_codes.resize(num_vectors * code_size);
+    memcpy(pq_codes.data(), loaded_codes_ptr, num_vectors * code_size);
+    delete[] loaded_codes_ptr;
+
+    pq_data_loader = loader;
+    use_pq_pruning = true;
+    std::cout << "Successfully loaded data for PQ pruning: " << num_vectors
+              << " vectors, " << code_size << " bytes/vector." << std::endl;
+}
 
 /**************************************************************
  * HNSW structure implementation
@@ -753,15 +802,60 @@ int search_from_candidates(
     bool do_dis_check = hnsw.check_relative_distance;
     int efSearch = hnsw.efSearch;
     const IDSelector* sel = nullptr;
+
+    // PQ pruning setup
+    bool perform_pq_pruning = hnsw.use_pq_pruning && hnsw.pq_data_loader &&
+            hnsw.pq_data_loader->is_initialized();
+    std::vector<float> pq_dists_lookup;
+    std::vector<float> query_preprocessed;
+    std::vector<uint8_t> pq_code_scratch;
+    std::vector<float> pq_dists_out;
+    float pq_select_ratio =
+            0.5; // Default ratio of candidates to select from PQ queue
+
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
             do_dis_check = hnsw_params->check_relative_distance;
             efSearch = hnsw_params->efSearch;
             // neighbor_threshold = hnsw_params->beam_threshold;
+            if (hnsw_params->use_pq_pruning) {
+                perform_pq_pruning = hnsw_params->use_pq_pruning;
+            }
+            if (hnsw_params->pq_pruning_ratio > 0) {
+                pq_select_ratio = hnsw_params->pq_pruning_ratio;
+            }
         }
         sel = params->sel;
     }
+
+    // Initialize PQ data if needed
+    if (perform_pq_pruning) {
+        size_t dim = hnsw.pq_data_loader->get_dims();
+        size_t n_chunks = hnsw.pq_data_loader->get_num_chunks();
+        const float* original_query = qdis.get_query();
+        if (!original_query) {
+            perform_pq_pruning = false;
+        } else {
+            query_preprocessed.resize(dim);
+            memcpy(query_preprocessed.data(),
+                   original_query,
+                   dim * sizeof(float));
+            hnsw.pq_data_loader->preprocess_query(
+                    query_preprocessed.data(), query_preprocessed.data());
+            pq_dists_lookup.resize(256 * n_chunks);
+            hnsw.pq_data_loader->populate_chunk_distances(
+                    query_preprocessed.data(), pq_dists_lookup.data());
+        }
+    }
+
+    // Global PQ candidate queue (min-heap)
+    using PQCandidate = std::pair<float, idx_t>; // (pq_distance, node_id)
+    using PQCandidateQueue = std::priority_queue<
+            PQCandidate,
+            std::vector<PQCandidate>,
+            std::greater<PQCandidate>>;
+    PQCandidateQueue pq_candidate_queue;
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -776,6 +870,31 @@ int search_from_candidates(
             }
         }
         vt.set(v1);
+
+        // Add initial candidates to PQ queue if using PQ pruning
+        if (perform_pq_pruning) {
+            pq_code_scratch.resize(hnsw.code_size);
+            pq_dists_out.resize(1);
+
+            size_t aggregated_count = aggregate_pq_codes(
+                    &v1,
+                    1,
+                    hnsw.pq_codes.data(),
+                    hnsw.n_total_vectors,
+                    hnsw.code_size,
+                    pq_code_scratch.data());
+
+            if (aggregated_count == 1) {
+                pq_distance_lookup(
+                        pq_code_scratch.data(),
+                        1,
+                        hnsw.pq_data_loader->get_num_chunks(),
+                        pq_dists_lookup.data(),
+                        pq_dists_out.data());
+
+                pq_candidate_queue.push({pq_dists_out[0], v1});
+            }
+        }
     }
 
     int nstep = 0;
@@ -843,6 +962,7 @@ int search_from_candidates(
 
         threshold = res.threshold;
         std::vector<idx_t> all_ids_to_process;
+        std::vector<idx_t> all_new_neighbors;
 
         // Process neighbors of all nodes in the beam
         for (size_t b = 0; b < beam_nodes.size(); b++) {
@@ -875,10 +995,85 @@ int search_from_candidates(
                         : hnsw.neighbors[j];
 
                 bool vget = vt.get(v1);
-                vt.set(v1);
                 if (!vget) {
-                    all_ids_to_process.push_back(v1);
+                    // Don't set visited yet for PQ pruning
+                    all_new_neighbors.push_back(v1);
                 }
+            }
+        }
+
+        // Calculate PQ distances for unvisited neighbors and add to global PQ
+        // queue
+        if (perform_pq_pruning && !all_new_neighbors.empty()) {
+            size_t n_new = all_new_neighbors.size();
+            if (pq_code_scratch.size() < n_new * hnsw.code_size) {
+                pq_code_scratch.resize(n_new * hnsw.code_size);
+            }
+            if (pq_dists_out.size() < n_new) {
+                pq_dists_out.resize(n_new);
+            }
+
+            size_t aggregated_count = aggregate_pq_codes(
+                    all_new_neighbors.data(),
+                    n_new,
+                    hnsw.pq_codes.data(),
+                    hnsw.n_total_vectors,
+                    hnsw.code_size,
+                    pq_code_scratch.data());
+
+            if (aggregated_count > 0) {
+                pq_distance_lookup(
+                        pq_code_scratch.data(),
+                        aggregated_count,
+                        hnsw.pq_data_loader->get_num_chunks(),
+                        pq_dists_lookup.data(),
+                        pq_dists_out.data());
+
+                // Add to global PQ queue
+                for (size_t i = 0; i < aggregated_count; i++) {
+                    pq_candidate_queue.push(
+                            {pq_dists_out[i], all_new_neighbors[i]});
+                }
+            }
+
+            // Select top candidates from PQ queue for exact distance
+            // calculation
+            int num_to_select = std::max(1, int(n_new * pq_select_ratio));
+            num_to_select =
+                    std::min(num_to_select, int(pq_candidate_queue.size()));
+
+            // Temporary storage for popped PQ candidates
+            std::vector<PQCandidate> popped_pq_nodes;
+
+            // Select nodes for exact calculation from PQ queue
+            for (int i = 0; i < num_to_select && !pq_candidate_queue.empty();
+                 i++) {
+                PQCandidate top_pq = pq_candidate_queue.top();
+                pq_candidate_queue.pop();
+                popped_pq_nodes.push_back(top_pq);
+
+                if (!vt.get(top_pq.second)) {
+                    all_ids_to_process.push_back(top_pq.second);
+                    vt.set(top_pq.second); // Mark as visited
+                }
+            }
+
+            // Push back unselected nodes
+            for (const auto& pq_node : popped_pq_nodes) {
+                // If not selected for exact calculation, keep in queue
+                if (vt.get(pq_node.second) &&
+                    std::find(
+                            all_ids_to_process.begin(),
+                            all_ids_to_process.end(),
+                            pq_node.second) == all_ids_to_process.end()) {
+                    pq_candidate_queue.push(pq_node);
+                }
+            }
+        } else {
+            // If not using PQ pruning, process all new neighbors normally
+            for (idx_t v1 : all_new_neighbors) {
+                vt.set(v1);
+                all_ids_to_process.push_back(v1);
             }
         }
 

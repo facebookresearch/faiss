@@ -28,6 +28,10 @@ struct DistanceComputer {
     /// while operator () is called
     virtual void set_query(const float* x) = 0;
 
+    virtual const float* get_query() {
+        return nullptr;
+    }
+
     /// compute distance of vector i to current query
     virtual float operator()(idx_t i) = 0;
 

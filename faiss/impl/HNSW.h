@@ -20,6 +20,8 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
 
+#include "pq.h"
+
 namespace faiss {
 
 /** Implementation of the Hierarchical Navigable Small World
@@ -49,6 +51,8 @@ struct SearchParametersHNSW : SearchParameters {
     bool check_relative_distance = true;
     bool bounded_queue = true;
     int beam_threshold = -1;
+    bool use_pq_pruning = false;
+    float pq_pruning_ratio = 0.5;
 
     ~SearchParametersHNSW() {}
 };
@@ -241,6 +245,18 @@ struct HNSW {
     void permute_entries(const idx_t* map);
 
     void save_degree_distribution(int level, const char* filename) const;
+
+    bool use_pq_pruning = false;
+    float pq_pruning_ratio = 0.5;
+
+    std::shared_ptr<PQPrunerDataLoader> pq_data_loader;
+    std::vector<uint8_t> pq_codes; // PQ codes of all vectors (N * code_size)
+    size_t n_total_vectors = 0;    // number of vectors
+    size_t code_size = 0;          // number of chunks per vector
+
+    void load_pq_pruning_data(
+            const std::string& pq_pivots_path,
+            const std::string& pq_compressed_path);
 };
 
 struct HNSWStats {

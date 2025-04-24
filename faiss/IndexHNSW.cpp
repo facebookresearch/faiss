@@ -249,6 +249,10 @@ struct ZmqDistanceComputer : DistanceComputer {
     std::unique_ptr<DistanceComputer> storage_dc_search;
     std::vector<float> query;
 
+    const float* get_query() override {
+        return query.data();
+    }
+
     // --- REMOVED CACHE ---
     // thread_local static std::unordered_map<idx_t, std::vector<float>>
     // zmq_embedding_cache;

@@ -16,6 +16,14 @@
 
 %module swigfaiss;
 
+%ignore faiss::HNSW::pq_data_loader;
+%ignore faiss::HNSW::use_pq_pruning;
+%ignore faiss::HNSW::pq_pruning_ratio;
+%ignore faiss::HNSW::pq_codes;
+%ignore faiss::HNSW::n_total_vectors;
+%ignore faiss::HNSW::code_size;
+%ignore faiss::HNSW::load_pq_pruning_data;
+
 // NOTE: While parsing the headers to generate the interface, SWIG does not know
 // about `_MSC_VER`.
 // TODO: Remove the need for this hack.
