@@ -942,6 +942,7 @@ int search_from_candidates(
     }
 
     int nstep = 0;
+    int total_neigh_fetch=0;
 
     while (candidates.size() > 0) {
         float d0 = 0;
@@ -1034,11 +1035,15 @@ int search_from_candidates(
             ndis += 1;
         }
 
+        total_neigh_fetch += jmax - begin;
+
         nstep++;
         if (!do_dis_check && nstep > efSearch) {
             break;
         }
     }
+    
+    printf("total_neigh_fetch: %d\n", total_neigh_fetch);
 
     if (level == 0) {
         stats.n1++;

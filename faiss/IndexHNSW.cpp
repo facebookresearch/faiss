@@ -192,13 +192,13 @@ void hnsw_add_vertices(
 #pragma omp for schedule(static)
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
-                    bool prune = false;
+                    bool prune = true;
                     if (pt_level == 0 && prune) {
                         if (!degree_based_prune) {
                             // printf("i: %d, order[i]: %d\n", i, order[i]);
                             float r = rng2.rand_float(); // Assuming rng is
                                                          // accessible here
-                            if (r < 0.95) {               // 90% probability
+                            if (r < 0.995) {               // 90% probability
                                 hnsw.ems[pt_id] = std::max(
                                         M / 10,
                                         1); // Reduce to M/8 but at least 1
