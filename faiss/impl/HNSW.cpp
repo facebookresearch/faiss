@@ -30,6 +30,110 @@ namespace faiss {
  * HNSW structure implementation
  **************************************************************/
 
+// Minimal, level-0 only, non-compact edge deletion
+void HNSW::delete_random_level0_edges_minimal(float prune_ratio) {
+    // --- Assert assumptions ---
+    FAISS_THROW_IF_NOT_FMT(
+            !storage_is_compact,
+            "Function %s requires non-compact storage",
+            __func__);
+
+    if (prune_ratio == 0) {
+        return; // Nothing to do
+    }
+    if (levels.empty()) {
+        return; // No nodes
+    }
+
+    // --- Step 1: Identify all valid level 0 edge locations ---
+    std::vector<Level0EdgeLocation> candidates;
+    // Simple estimate, could be refined
+    candidates.reserve(levels.size() * nb_neighbors(0));
+
+    for (storage_idx_t node_id = 0; node_id < levels.size(); ++node_id) {
+        // Skip nodes that don't exist at level 0 (shouldn't happen if
+        // levels[node_id] >= 1)
+        if (levels[node_id] <= 0)
+            continue;
+
+        size_t begin, end;
+        neighbor_range(node_id, 0, &begin, &end); // Get level 0 range
+
+        for (size_t idx = begin; idx < end; ++idx) {
+            if (neighbors[idx] != -1) {
+                candidates.emplace_back(node_id, idx);
+            } else {
+                // Found the -1 sentinel, stop searching for this node's level 0
+                // neighbors
+                break;
+            }
+        }
+    }
+
+    // --- Step 2: Shuffle and Select ---
+    if (candidates.empty()) {
+        printf("No valid level 0 edges found to delete.\n");
+        return;
+    }
+
+    size_t actual_num_to_delete = prune_ratio * candidates.size();
+    printf("Found %zd level 0 edges. Attempting to delete %zd.\n",
+           candidates.size(),
+           actual_num_to_delete);
+
+    std::random_device rd;
+    std::default_random_engine engine(rd());
+    std::shuffle(candidates.begin(), candidates.end(), engine);
+
+    // --- Step 3: Delete using "swap with last" ---
+    size_t deleted_count = 0;
+    for (size_t i = 0; i < actual_num_to_delete; ++i) {
+        const auto& loc = candidates[i];
+        storage_idx_t node_id = loc.node_id;
+        size_t index_to_delete = loc.neighbor_array_index;
+
+        // Minimal check: Skip if it somehow already got deleted
+        // if (neighbors[index_to_delete] == -1) {
+        //     continue;
+        // }
+        while (neighbors[index_to_delete] == -1 && index_to_delete > 0) {
+            index_to_delete--;
+        }
+        assert(neighbors[index_to_delete] != -1);
+        size_t begin, end;
+        neighbor_range(node_id, 0, &begin, &end); // Level 0 range
+
+        // Find last valid neighbor index in [begin, end)
+        size_t idx_last_valid = begin; // Initialize, will be overwritten
+        bool found_last = false;
+        for (size_t j = end; j > begin; --j) {
+            if (neighbors[j - 1] != -1) {
+                idx_last_valid = j - 1;
+                found_last = true;
+                break;
+            }
+        }
+
+        // If no valid neighbor found (only possible if list was already all
+        // -1s?) Or if somehow the target index is beyond last valid (should not
+        // happen)
+        if (!found_last || index_to_delete > idx_last_valid) {
+            assert(false);
+        }
+
+        // Swap-and-delete
+        if (index_to_delete == idx_last_valid) {
+            neighbors[index_to_delete] = -1;
+        } else {
+            std::swap(neighbors[index_to_delete], neighbors[idx_last_valid]);
+            neighbors[idx_last_valid] = -1;
+        }
+        deleted_count++;
+    }
+
+    printf("Minimal delete: %zd level 0 edges processed.\n", deleted_count);
+}
+
 int HNSW::nb_neighbors(int layer_no) const {
     FAISS_THROW_IF_NOT(layer_no + 1 < cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no + 1] -
@@ -490,10 +594,10 @@ void add_link_pruned(
         storage_idx_t dest,
         int level,
         bool keep_max_size_level0 = false) {
-    assert (level == 0);
+    assert(level == 0);
     size_t begin, end;
     hnsw.neighbor_range(src, level, &begin, &end);
-    
+
     int strict_end = end;
     if (hnsw.neighbors[end - 1] == -1) {
         // there is enough room, find a slot to add it
@@ -521,7 +625,8 @@ void add_link_pruned(
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    // printf("end - begin: %zd, strict_end - begin: %zd\n", end - begin, strict_end - begin);
+    // printf("end - begin: %zd, strict_end - begin: %zd\n", end - begin,
+    // strict_end - begin);
     int len = strict_end - begin;
     len = std::min(len, hnsw.ems[src]);
     printf("len: %d, ems[src]: %d\n", len, hnsw.ems[src]);
@@ -695,9 +800,11 @@ void HNSW::add_links_starting_from(
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
         if (level == 0 && M > ems[pt_id] && prune_in_add_link) {
-            add_link_pruned(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
+            add_link_pruned(
+                    *this, ptdis, pt_id, other_id, level, keep_max_size_level0);
         } else {
-            add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
+            add_link(
+                    *this, ptdis, pt_id, other_id, level, keep_max_size_level0);
         }
         neighbors_to_add.push_back(other_id);
         link_targets.pop();
@@ -707,9 +814,11 @@ void HNSW::add_links_starting_from(
     for (storage_idx_t other_id : neighbors_to_add) {
         omp_set_lock(&locks[other_id]);
         if (level == 0 && M > ems[other_id] && prune_in_add_link) {
-            add_link_pruned(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
+            add_link_pruned(
+                    *this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         } else {
-            add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
+            add_link(
+                    *this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         }
         omp_unset_lock(&locks[other_id]);
     }

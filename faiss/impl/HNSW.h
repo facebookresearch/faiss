@@ -56,6 +56,17 @@ struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
 
+    struct Level0EdgeLocation {
+        storage_idx_t node_id;
+        size_t neighbor_array_index; // Index in the flat neighbors array
+
+        Level0EdgeLocation(int n, size_t idx)
+                : node_id(n), neighbor_array_index(idx) {}
+    };
+
+    void delete_random_level0_edges_minimal(
+            float prune_ratio = 0.5);
+
     // for now we do only these distances
     using C = CMax<float, int64_t>;
 
