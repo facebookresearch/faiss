@@ -193,20 +193,21 @@ void hnsw_add_vertices(
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
                     bool prune = false;
-
                     if (pt_level == 0 && prune) {
                         if (!degree_based_prune) {
                             // printf("i: %d, order[i]: %d\n", i, order[i]);
                             float r = rng2.rand_float(); // Assuming rng is
                                                          // accessible here
-                            if (r < 0.9) {               // 90% probability
+                            if (r < 0.95) {               // 90% probability
                                 hnsw.ems[pt_id] = std::max(
-                                        M / 8,
+                                        M / 10,
                                         1); // Reduce to M/8 but at least 1
                             }
                         } else {
                             // get pid degree first and combine with the
                             // threshold
+                            // TODO: can design a better heruistic here instead of simply cut the top 10%
+                            // let me think about it
                             int pid_degree = degree_distribution[pt_id];
                             if (pid_degree < degree_threshold) {
                                 hnsw.ems[pt_id] = std::max(M / 8, 1);
@@ -262,7 +263,7 @@ void hnsw_add_vertices(
         omp_destroy_lock(&locks[i]);
     }
 
-    hnsw.delete_random_level0_edges_minimal(0.4);
+    // hnsw.delete_random_level0_edges_minimal(0.5);
 }
 
 } // namespace
