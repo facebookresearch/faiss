@@ -3,6 +3,87 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.11.0] - 2025-04-24
+
+
+Added
+- RaBitQ implementation (#4235)
+- Add RaBitQ to the swigfaiss so we can access its properties correctly in python (#4304)
+- Add date and time to the codec file path so that the file doesn't get overridden with each run (#4303)
+- Add missing header in faiss/CMakeLists.txt (#4285)
+- Implement is_spherical and normalize_L2 booleans as part of the training APIs (#4279)
+- Add normalize_l2 boolean to distributed training API
+- re-land mmap diff (#4250)
+- SearchParameters support for IndexBinaryFlat (#4055)
+- Support non-partition col and map in the embedding reader (#4229)
+- Support cosine distance for training vectors (#4227)
+- Add missing #include in code_distance-sve.h (#4219)
+- Add the support for IndexIDMap with Cagra index (#4188)
+- Add bounds checking to hnsw nb_neighbors (#4185)
+- Add sharding convenience function for IVF indexes (#4150)
+- Added support for building for MinGW, in addition to MSVC (#4145)
+
+Changed
+- Skip mmap test case in AIX. (#4275)
+- Handle insufficient driver gracefully (#4271)
+- relax input params for IndexIVFRaBitQ::get_InvertedListScanner() (#4270)
+- Allow using custom index readers and writers (#4180)
+- Upgrade to libcuvs=25.04 (#4164)
+- ignore regex (#4264)
+- Publish the C API to Conda (#4186)
+- Pass row filters to Hive Reader to filter rows (#4256)
+- Back out "test merge with internal repo" (#4244)
+- test merge with internal repo (#4242)
+- Revert D69972250: Memory-mapping and Zero-copy deserializers
+- Revert D69984379: mem mapping and zero-copy python fixes
+- mem mapping and zero-copy python fixes (#4212)
+- Memory-mapping and Zero-copy deserializers (#4199)
+- Use `nullptr` in faiss/gpu/StandardGpuResources.cpp (#4232)
+- Make static method in header inline (#4214)
+- Upgrade openblas to 0.3.29 for ARM architectures (#4203)
+- Pass `store_dataset` argument along to cuVS CAGRA (#4173)
+- Handle plain SearchParameters in HNSW searches (#4167)
+- Update INSTALL.md to remove some raft references, add missing dependency (#4176)
+- Update README.md (#4169)
+- Update CAGRA docs (#4152)
+- Expose IDSelectorBitmap in the C_API (#4158)
+
+Fixed
+- fix: algorithm of spreading vectors over shards (#4299)
+- Fix overflow of int32 in IndexNSG (#4297)
+- Fix Type Error in Conditional Logic (#4294)
+- faiss/gpu/GpuAutoTune.cpp: fix llvm-19-exposed -Wunused-but-set-variable warnings
+- Fix nightly by pinning conda-build to prevent regression in 25.3.2 (#4287)
+- Fix CQS signal. Id] 88153895 -- readability-redundant-string-init in fbcode/faiss (#4283)
+- Fix a placeholder for 'unimplemented' in mapped_io.cpp (#4268)
+- fix bug: IVFPQ of raft/cuvs does not require redundant check (#4241)
+- fix a serialization problem in RaBitQ (#4261)
+- Grammar fix in FlatIndexHNSW (#4253)
+- Fix CUDA kernel index data type in faiss/gpu/impl/DistanceUtils.cuh +10 (#4246)
+- fix `IVFPQFastScan::RangeSearch()` on the `ARM` architecture (#4247)
+- fix integer overflow issue when calculating imbalance_factor (#4245)
+- Fix bug with metric_arg in IndexHNSW (#4239)
+- Address compile errors and warnings (#4238)
+- faiss: fix non-templated hammings function (#4195)
+- Fix LLVM-19 compilation issue in faiss/AutoTune.cpp (#4220)
+- Fix cloning and reverse index factory for NSG indices (#4151)
+- Remove python_abi to fix nightly (#4217)
+- Fix IVF quantizer centroid sharding so IDs are generated (#4197)
+- Pin lief to fix nightly (#4211)
+- Fix Sapphire Rapids never loading in Python bindings (#4209)
+- Attempt to nightly fix (#4204)
+- Fix nightly by installing earlier version of lief (#4198)
+- Check for not completed
+- Fix install error when building avx512_spr variant (#4170)
+- fix: gpu tests link failure with static lib (#4137)
+- Fix the order of parameters in bench_scalar_quantizer_distance. (#4159)
+
+Deprecated
+- Remove unused exception parameter from faiss/impl/ResultHandler.h (#4243)
+- Remove unused variable (#4205)
+
+
+
 ## [1.10.0] - 2025-01-30
 
 
@@ -459,7 +540,9 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/facebookresearch/faiss/compare/v1.10.0...v1.11.0
+[1.10.0]: https://github.com/facebookresearch/faiss/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/facebookresearch/faiss/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/facebookresearch/faiss/compare/v1.7.4...v1.8.0
 [1.7.4]: https://github.com/facebookresearch/faiss/compare/v1.7.3...v1.7.4
