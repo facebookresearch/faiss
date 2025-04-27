@@ -171,7 +171,7 @@ void hnsw_add_vertices(
 
                 // Find the degree threshold for top 10%
                 int threshold_index =
-                        std::max(0, int(sorted_degrees.size() * 0.1) - 1);
+                        std::max(0, int(sorted_degrees.size() * 0.03) - 1);
                 degree_threshold = sorted_degrees[threshold_index];
                 printf("Degree threshold: %d\n", degree_threshold);
             }
@@ -193,14 +193,15 @@ void hnsw_add_vertices(
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
                     bool prune = true;
+                    degree_based_prune = true;
                     if (pt_level == 0 && prune) {
                         if (!degree_based_prune) {
                             // printf("i: %d, order[i]: %d\n", i, order[i]);
                             float r = rng2.rand_float(); // Assuming rng is
                                                          // accessible here
-                            if (r < 0.995) {               // 90% probability
+                            if (r < 0.95) {               // 90% probability
                                 hnsw.ems[pt_id] = std::max(
-                                        M / 10,
+                                        4,
                                         1); // Reduce to M/8 but at least 1
                             }
                         } else {
@@ -210,9 +211,9 @@ void hnsw_add_vertices(
                             // let me think about it
                             int pid_degree = degree_distribution[pt_id];
                             if (pid_degree < degree_threshold) {
-                                hnsw.ems[pt_id] = std::max(M / 8, 1);
+                                hnsw.ems[pt_id] = std::max(4, 1);
                             } else {
-                                hnsw.ems[pt_id] = M;
+                                hnsw.ems[pt_id] = 4;
                             }
                         }
                     }
