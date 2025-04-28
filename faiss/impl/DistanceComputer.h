@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <vector>
 
 namespace faiss {
 
@@ -26,6 +27,10 @@ struct DistanceComputer {
     /// called before computing distances. Pointer x should remain valid
     /// while operator () is called
     virtual void set_query(const float* x) = 0;
+
+    virtual const float* get_query() {
+        return nullptr;
+    }
 
     /// compute distance of vector i to current query
     virtual float operator()(idx_t i) = 0;
@@ -53,8 +58,42 @@ struct DistanceComputer {
         dis3 = d3;
     }
 
+    /// compute distances of current query to a batch of stored vectors.
+    /// DistanceComputer implementations that can fetch data in batches
+    /// will benefit significantly from this.
+    virtual void distances_batch(
+            const std::vector<idx_t>& ids,
+            std::vector<float>& distances_out) {
+        size_t counter = 0;
+        for (counter = 0; counter < (ids.size() / 4) * 4; counter += 4) {
+            distances_batch_4(
+                    ids[counter],
+                    ids[counter + 1],
+                    ids[counter + 2],
+                    ids[counter + 3],
+                    distances_out[counter],
+                    distances_out[counter + 1],
+                    distances_out[counter + 2],
+                    distances_out[counter + 3]);
+        }
+        for (size_t i = counter; i < ids.size(); i++) {
+            distances_out[i] = this->operator()(ids[i]);
+        }
+    }
+
     /// compute distance between two stored vectors
     virtual float symmetric_dis(idx_t i, idx_t j) = 0;
+
+    /// Get statistics specific to this DistanceComputer instance (e.g., fetch
+    /// count).
+    virtual size_t get_fetch_count() const {
+        return 0; // Base implementation returns 0
+    }
+
+    /// Reset any internal counters or state related to statistics.
+    virtual void reset_fetch_count() {
+        // Base implementation does nothing
+    }
 
     virtual ~DistanceComputer() {}
 };
@@ -94,6 +133,18 @@ struct NegativeDistanceComputer : DistanceComputer {
         dis2 = -dis2;
         dis3 = -dis3;
     }
+
+    /// compute distances of current query to a batch of stored vectors.
+    /// DistanceComputer implementations that can fetch data in batches
+    /// will benefit significantly from this.
+    // void distances_batch(
+    //         const std::vector<idx_t>& ids,
+    //         std::vector<float>& distances_out) override {
+    //     basedis->distances_batch(ids, distances_out);
+    //     for (float& dis : distances_out) {
+    //         dis = -dis;
+    //     }
+    // }
 
     /// compute distance between two stored vectors
     float symmetric_dis(idx_t i, idx_t j) override {

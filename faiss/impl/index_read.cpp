@@ -10,7 +10,7 @@
 
 #include <faiss/impl/io_macros.h>
 
-#include <cstdio>
+#include <cstdio> // For ftell, fseek
 #include <cstdlib>
 #include <optional>
 
@@ -61,7 +61,7 @@
 
 #include <faiss/impl/mapped_io.h>
 #include <faiss/impl/zerocopy_io.h>
-
+#include <cinttypes>
 namespace faiss {
 
 /*************************************************************
@@ -496,38 +496,65 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READVECTOR(ivsc->trained);
     ivsc->set_derived_sizes();
 }
-static void read_HNSW(HNSW* hnsw, IOReader* f) {
-    printf("[READ_HNSW] Reading HNSW graph data...\n"); // 添加日志点 1
-    READVECTOR(hnsw->assign_probas);
-    READVECTOR(hnsw->cum_nneighbor_per_level);
-    READVECTOR(hnsw->levels);
-    printf("[READ_HNSW] Read levels vector, size: %zd\n",
-           hnsw->levels.size()); // 添加日志点 2
 
-    // --- NEW: Read storage format flag (written after levels) ---
-    READ1(hnsw->storage_is_compact);
-    printf("[READ_HNSW] Read storage_is_compact flag: %s\n",
-           hnsw->storage_is_compact ? "true (Compact)" : "false (Original)");
-    // hnsw->storage_is_compact = false;
+// Modified version of READ1
+#define READ1_AND_COUNT(var, count_var, reader_f) \
+    do {                                          \
+        READANDCHECK(&(var), 1);                  \
+        (count_var) += sizeof(var);               \
+    } while (0)
 
-    if (hnsw->storage_is_compact) {
-        printf("[READ_HNSW] Reading Compact Storage format...\n"); // 添加日志点
-                                                                   // 4
-        // --- Read Compact Storage data ---
-        READVECTOR(hnsw->compact_neighbors_data);
-        READVECTOR(hnsw->compact_level_ptr);
-        READVECTOR(hnsw->compact_node_offsets);
-        printf("[READ_HNSW] Compact Storage sizes: neighbors_data=%zd, level_ptr=%zd, node_offsets=%zd\n",
-               hnsw->compact_neighbors_data.size(),
-               hnsw->compact_level_ptr.size(),
+// Modified version of READVECTOR
+#define READVECTOR_AND_COUNT(vec, count_var, reader_f)               \
+    do {                                                             \
+        size_t size;                                                 \
+        READANDCHECK(&size, 1);                                      \
+        (count_var) += sizeof(size_t);                               \
+        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
+        (vec).resize(size);                                          \
+        size_t bytes_to_read =                                       \
+                size * sizeof(typename decltype(vec)::value_type);   \
+        READANDCHECK((vec).data(), size);                            \
+        (count_var) += bytes_to_read;                                \
+    } while (0)
+
+static void read_HNSW(
+        HNSW* hnsw,
+        IOReader* f,
+        const HNSWIndexConfig& config = HNSWIndexConfig()) {
+    if (!config.is_compact && config.is_skip_neighbors) {
+        throw std::invalid_argument(
+                "Skipping neighbors data is not allowed for non-compact HNSW indices.");
+    }
+    printf("[read_HNSW - CSR NL v4] Reading metadata & CSR indices (manual offset)...\n");
+    uint64_t calculated_offset = 0;
+
+    READVECTOR_AND_COUNT(hnsw->assign_probas, calculated_offset, f);
+    READVECTOR_AND_COUNT(hnsw->cum_nneighbor_per_level, calculated_offset, f);
+    READVECTOR_AND_COUNT(hnsw->levels, calculated_offset, f);
+
+    printf("[read_HNSW NL v4] Read levels vector, size: %zd\n",
+           hnsw->levels.size());
+
+    if (config.is_compact) {
+        bool compact_flag_read;
+        READ1_AND_COUNT(compact_flag_read, calculated_offset, f);
+        FAISS_THROW_IF_NOT_MSG(
+                compact_flag_read == true, "Expected CSR format flag in file.");
+        hnsw->storage_is_compact = compact_flag_read;
+
+        printf("[read_HNSW NL v4] Reading Compact Storage format indices...\n");
+
+        READVECTOR_AND_COUNT(hnsw->compact_level_ptr, calculated_offset, f);
+        printf("[read_HNSW NL v4] Read compact_level_ptr, size: %zd\n",
+               hnsw->compact_level_ptr.size());
+        READVECTOR_AND_COUNT(hnsw->compact_node_offsets, calculated_offset, f);
+        printf("[read_HNSW NL v4] Read compact_node_offsets, size: %zd\n",
                hnsw->compact_node_offsets.size());
-
-        // Ensure original storage vectors are cleared as they are not used
-        hnsw->offsets.clear();
-        hnsw->neighbors.clear(); // Use clear for MaybeOwnedVector
+        FAISS_THROW_IF_NOT(
+                hnsw->compact_node_offsets.size() == hnsw->levels.size() + 1);
     } else {
-        printf("[READ_HNSW] Reading Original Storage format...\n"); // 添加日志点
-                                                                    // 6
+        printf("[READ_HNSW] Reading Original Storage format...\n");
         // --- Read Original Storage data ---
         READVECTOR(hnsw->offsets);
         // Use the specific read_vector function for MaybeOwnedVector
@@ -535,28 +562,179 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
         printf("[READ_HNSW] Original Storage sizes: offsets=%zd, neighbors=%zd\n",
                hnsw->offsets.size(),
                hnsw->neighbors.size());
-
-        // Ensure compact storage vectors are cleared as they are not used
-        hnsw->compact_neighbors_data.clear();
-        hnsw->compact_neighbors_data.owned_data.shrink_to_fit();
-        hnsw->compact_level_ptr.clear();
-        hnsw->compact_node_offsets.clear();
-        hnsw->compact_node_offsets.owned_data.shrink_to_fit();
     }
 
-    hnsw->compact_level_ptr.owned_data.shrink_to_fit();
-    READ1(hnsw->entry_point);
-    READ1(hnsw->max_level);
-    printf("[READ_HNSW] Read entry_point: %d, max_level: %d\n",
-           hnsw->entry_point,
-           hnsw->max_level);
-    READ1(hnsw->efConstruction);
-    READ1(hnsw->efSearch);
+    READ1_AND_COUNT(hnsw->entry_point, calculated_offset, f);
+    READ1_AND_COUNT(hnsw->max_level, calculated_offset, f);
+    READ1_AND_COUNT(hnsw->efConstruction, calculated_offset, f);
+    READ1_AND_COUNT(hnsw->efSearch, calculated_offset, f);
 
-    // // deprecated field
-    // READ1(hnsw->upper_beam);
     READ1_DUMMY(int)
-    printf("[READ_HNSW] Finished reading HNSW graph data.\n"); // 添加日志点 9
+    calculated_offset += sizeof(int);
+
+    printf("[read_HNSW NL v4] Read entry_point: %ld, max_level: %d\n",
+           (long)hnsw->entry_point,
+           hnsw->max_level);
+
+    if (config.is_compact) {
+        uint32_t storage_fourcc;
+        READ1_AND_COUNT(storage_fourcc, calculated_offset, f);
+        printf("[read_HNSW NL v4] Read storage fourcc: 0x%x\n", storage_fourcc);
+
+        // Attempt to determine the reader type
+        FileIOReader* file_reader = dynamic_cast<FileIOReader*>(f);
+        MappedFileIOReader* mmap_reader = dynamic_cast<MappedFileIOReader*>(f);
+
+        // Initialize offset before obtaining it
+        hnsw->neighbors_start_offset = -1; // Default to invalid
+
+        // Get the current position *after* reading storage_fourcc.
+        // This position points to the start of the 8-byte size field for the
+        // neighbors vector.
+        if (file_reader != nullptr) {
+            long current_pos = ftell(file_reader->f);
+            if (current_pos == -1) {
+                int RTERRNO = errno;
+                FAISS_THROW_FMT(
+                        "ftell failed after reading storage_fourcc: %s",
+                        strerror(RTERRNO));
+            }
+            hnsw->neighbors_start_offset = (off_t)current_pos;
+            printf("[read_HNSW NL v4 FIX] Detected FileIOReader. Neighbors size field offset: %ld\n",
+                   (long)hnsw->neighbors_start_offset);
+        } else if (mmap_reader != nullptr) {
+            // For MappedFileIOReader, 'pos' is the relevant offset within the
+            // map
+            hnsw->neighbors_start_offset =
+                    (off_t)mmap_reader->pos; // pos is size_t, cast to off_t
+            printf("[read_HNSW NL v4 FIX] Detected MappedFileIOReader. Neighbors size field relative offset: %zu\n",
+                   mmap_reader->pos);
+        } else {
+            // Handle unexpected reader types if necessary, or assume only these
+            // two
+            printf("[read_HNSW NL v4 FIX] Warning: Unknown IOReader type. Cannot reliably determine neighbor offset.\n");
+            // Optionally: FAISS_THROW_MSG("Unsupported IOReader for HNSW
+            // neighbor offset detection");
+        }
+
+        // Ensure the offset was successfully obtained if using file reader
+        if (file_reader != nullptr) {
+            FAISS_THROW_IF_NOT_FMT(
+                    hnsw->neighbors_start_offset >= 0,
+                    "Failed to obtain valid file offset (ftell result: %ld)",
+                    (long)hnsw->neighbors_start_offset);
+        }
+
+        if (config.is_skip_neighbors) {
+            printf("[read_HNSW NL v4] Skipping neighbors data.\n");
+
+            // Determine the type of reader and handle accordingly
+            FileIOReader* file_reader = dynamic_cast<FileIOReader*>(f);
+            MappedFileIOReader* mmap_reader =
+                    dynamic_cast<MappedFileIOReader*>(f);
+
+            // Set flag that neighbors should be read on-demand
+            hnsw->neighbors_on_disk = true;
+
+            if (file_reader) {
+                // --- FileIOReader case: use file offset + pread ---
+                printf("[read_HNSW NL v4] Using FileIOReader, will read on demand with pread.\n");
+
+                // Set flag that we're using pread (not mmap)
+                hnsw->neighbors_use_mmap = false;
+
+                // Read the size field (8 bytes) to skip past it
+                size_t neighbors_size_field;
+                if ((*f)(&neighbors_size_field, sizeof(size_t), 1) != 1) {
+                    FAISS_THROW_MSG(
+                            "Failed to read neighbors size field while skipping");
+                }
+
+                // Calculate bytes to skip
+                size_t neighbors_bytes =
+                        neighbors_size_field * sizeof(HNSW::storage_idx_t);
+
+                // Skip past the neighbor data
+                if (fseek(file_reader->f, neighbors_bytes, SEEK_CUR) != 0) {
+                    int RTERRNO = errno;
+                    FAISS_THROW_FMT(
+                            "fseek failed to skip %zu bytes of neighbor data: %s",
+                            neighbors_bytes,
+                            strerror(RTERRNO));
+                }
+
+                printf("[read_HNSW NL v4] Skipped %zu bytes of neighbor data.\n",
+                       neighbors_bytes);
+
+            } else if (mmap_reader) {
+                // --- MappedFileIOReader case: use memory pointer ---
+                printf("[read_HNSW NL v4] Using MappedFileIOReader, will access via memory pointer.\n");
+
+                // Set flag that we're using mmap
+                hnsw->neighbors_use_mmap = true;
+
+                // Record current position (pointing to size field) for
+                // debugging
+                hnsw->neighbors_start_offset = mmap_reader->pos;
+
+                // Read the size field (8 bytes) to skip past it
+                size_t neighbors_size_field;
+                if ((*f)(&neighbors_size_field, sizeof(size_t), 1) != 1) {
+                    FAISS_THROW_MSG(
+                            "Failed to read neighbors size field while skipping (mmap)");
+                }
+
+                // Store the memory pointer where neighbors data starts (right
+                // after size field) At this point, pos is positioned at the
+                // start of actual data
+                hnsw->neighbors_mmap_ptr =
+                        (HNSW::storage_idx_t*)((char*)mmap_reader->mmap_owner
+                                                       ->data() +
+                                               mmap_reader->pos);
+
+                printf("[read_HNSW NL v4] Neighbor data starts at mmap offset (relative): %zu, pointer: %p\n",
+                       mmap_reader->pos,
+                       (void*)hnsw->neighbors_mmap_ptr);
+
+                // Calculate bytes to skip and the end position
+                size_t neighbors_bytes =
+                        neighbors_size_field * sizeof(HNSW::storage_idx_t);
+                size_t end_pos = mmap_reader->pos + neighbors_bytes;
+
+                // Check boundary
+                FAISS_THROW_IF_NOT_FMT(
+                        end_pos <= mmap_reader->mmap_owner->size(),
+                        "Attempt to skip past mmap region (current pos %zu, skip %zu, total size %zu)",
+                        mmap_reader->pos,
+                        neighbors_bytes,
+                        mmap_reader->mmap_owner->size());
+
+                // Advance mmap reader's position to skip data
+                mmap_reader->pos = end_pos;
+
+                printf("[read_HNSW NL v4] Advanced mmap reader pos by %zu bytes to %zu.\n",
+                       neighbors_bytes,
+                       mmap_reader->pos);
+
+            } else {
+                // Unsupported reader type
+                FAISS_THROW_MSG(
+                        "Skipping neighbors requires FileIOReader or MappedFileIOReader");
+            }
+
+        } else {
+            printf("[read_HNSW NL v4] Reading neighbors data into memory.\n");
+
+            // Read neighbors into memory as before
+            hnsw->neighbors_on_disk = false;
+            hnsw->neighbors_use_mmap = false;
+            READVECTOR_AND_COUNT(
+                    hnsw->compact_neighbors_data, calculated_offset, f);
+            printf("[read_HNSW NL v4] Read neighbors data, size: %zd\n",
+                   hnsw->compact_neighbors_data.size());
+        }
+    }
+    printf("[read_HNSW NL v4] Finished reading metadata and CSR indices.\n");
 }
 
 static void read_NSG(NSG* nsg, IOReader* f) {
@@ -722,7 +900,7 @@ int read_old_fmt_hack = 0;
 Index* read_index(
         IOReader* f,
         int io_flags,
-        const char* external_storage_path) {
+        const HNSWIndexConfig& hnsw_config) {
     Index* idx = nullptr;
     uint32_t h;
     READ1(h);
@@ -1166,48 +1344,40 @@ Index* read_index(
             READ1(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
         }
-        read_HNSW(&idxhnsw->hnsw, f);
+        read_HNSW(&idxhnsw->hnsw, f, hnsw_config);
 
-        if (external_storage_path != nullptr) {
+        if (hnsw_config.is_recompute) {
+            printf("INFO: Skipping external storage loading, since is_recompute is true.\n");
+            idxhnsw->is_recompute = true;
+        } else if (hnsw_config.external_storage_path != nullptr) {
             // Load storage from the external file
             printf("INFO: Loading external storage from: %s\n",
-                   external_storage_path);
-            try {
-                // Decide reader type based on io_flags if desired (e.g., mmap)
-                std::unique_ptr<IOReader> storage_reader;
-                if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
-                    auto owner = std::make_shared<MmappedFileMappingOwner>(
-                            external_storage_path);
-                    storage_reader =
-                            std::make_unique<MappedFileIOReader>(owner);
-                    printf("INFO: Using MappedFileIOReader for external storage.\n");
-                } else {
-                    storage_reader = std::make_unique<FileIOReader>(
-                            external_storage_path);
-                    printf("INFO: Using FileIOReader for external storage.\n");
-                }
-
-                // Recursively call read_index for the storage part, passing
-                // flags Pass nullptr for external_storage_path in recursive
-                // call
-                idxhnsw->storage =
-                        read_index(storage_reader.get(), io_flags, nullptr);
-
-                if (!idxhnsw->storage) {
-                    FAISS_THROW_FMT(
-                            "Failed to read external storage index from %s",
-                            external_storage_path);
-                }
-                printf("INFO: Successfully loaded external storage.\n");
-
-            } catch (const std::exception& e) {
-                // Clean up partially created index if external load fails
-                delete idxhnsw;
-                FAISS_THROW_FMT(
-                        "Error reading external storage from %s: %s",
-                        external_storage_path,
-                        e.what());
+                   hnsw_config.external_storage_path);
+            // Decide reader type based on io_flags if desired (e.g.,
+            // mmap)
+            std::unique_ptr<IOReader> storage_reader;
+            if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
+                auto owner = std::make_shared<MmappedFileMappingOwner>(
+                        hnsw_config.external_storage_path);
+                storage_reader = std::make_unique<MappedFileIOReader>(owner);
+                printf("INFO: Using MappedFileIOReader for external storage.\n");
+            } else {
+                storage_reader = std::make_unique<FileIOReader>(
+                        hnsw_config.external_storage_path);
+                printf("INFO: Using FileIOReader for external storage.\n");
             }
+
+            // Recursively call read_index for the storage part, passing
+            // flags Pass nullptr for external_storage_path in recursive
+            // call
+            idxhnsw->storage = read_index(storage_reader.get(), io_flags);
+
+            if (!idxhnsw->storage) {
+                FAISS_THROW_FMT(
+                        "Failed to read external storage index from %s",
+                        hnsw_config.external_storage_path);
+            }
+            printf("INFO: Successfully loaded external storage.\n");
             // IMPORTANT: We DO NOT read storage from the primary reader 'f'
             // anymore. 'f' remains positioned after the HNSW graph data.
 
@@ -1222,7 +1392,7 @@ Index* read_index(
         } else {
             // Original logic: Read storage sequentially from primary reader 'f'
             // Pass nullptr for external_storage_path in recursive call
-            idxhnsw->storage = read_index(f, io_flags, nullptr);
+            idxhnsw->storage = read_index(f, io_flags);
         }
 
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
@@ -1341,30 +1511,30 @@ Index* read_index(
     return idx;
 }
 
-Index* read_index(FILE* f, int io_flags, const char* external_storage_path) {
+Index* read_index(FILE* f, int io_flags, const HNSWIndexConfig& hnsw_config) {
     if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
         // enable mmap-supporting IOReader
         auto owner = std::make_shared<MmappedFileMappingOwner>(f);
         MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags, external_storage_path);
+        return read_index(&reader, io_flags, hnsw_config);
     } else {
         FileIOReader reader(f);
-        return read_index(&reader, io_flags, external_storage_path);
+        return read_index(&reader, io_flags, hnsw_config);
     }
 }
 
 Index* read_index(
         const char* fname,
         int io_flags,
-        const char* external_storage_path) {
+        const HNSWIndexConfig& hnsw_config) {
     if ((io_flags & IO_FLAG_MMAP_IFC) == IO_FLAG_MMAP_IFC) {
         // enable mmap-supporting IOReader
         auto owner = std::make_shared<MmappedFileMappingOwner>(fname);
         MappedFileIOReader reader(owner);
-        return read_index(&reader, io_flags, external_storage_path);
+        return read_index(&reader, io_flags, hnsw_config);
     } else {
         FileIOReader reader(fname);
-        Index* idx = read_index(&reader, io_flags, external_storage_path);
+        Index* idx = read_index(&reader, io_flags, hnsw_config);
         return idx;
     }
 }

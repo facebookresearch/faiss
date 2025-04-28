@@ -27,8 +27,13 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
+
+#include <msgpack.hpp>
+#include <zmq.h>
+#include <sstream> // For msgpack stringstream buffer
 
 namespace faiss {
 
@@ -37,6 +42,595 @@ using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
 HNSWStats hnsw_stats;
+// --- MessagePack Data Structures (Define simple structs for serialization) ---
+struct EmbeddingRequestMsgpack {
+    std::vector<uint32_t> node_ids;
+    MSGPACK_DEFINE_ARRAY(node_ids); // Use array format [ [ids] ]
+};
+
+struct EmbeddingResponseMsgpack {
+    // Store dimensions as separate fields for clarity with msgpack map
+    // Or keep as vector [batch_size, dim] if using array format
+    // Let's use array format for simplicity matching MSGPACK_DEFINE_ARRAY
+    std::vector<uint32_t> dimensions; // [batch_size, embedding_dim]
+    // Store flat embedding data as raw bytes or vector<float>
+    // Using vector<float> is easier to handle with msgpack-c directly
+    std::vector<float>
+            embeddings_data; // Flattened [batch_size * embedding_dim]
+    // Optional: Add missing_ids if needed
+    // std::vector<uint32_t> missing_ids;
+
+    MSGPACK_DEFINE_ARRAY(dimensions, embeddings_data); // [ [dims], [data] ]
+};
+
+// --- ZMQ Fetch Function (Using MessagePack) ---
+bool fetch_embeddings_zmq(
+        const std::vector<uint32_t>& node_ids,
+        std::vector<std::vector<float>>& out_embeddings,
+        int zmq_port = 5555) // Default port kept
+{
+    EmbeddingRequestMsgpack req_msgpack;
+    req_msgpack.node_ids = node_ids;
+
+    std::stringstream buffer;
+    try {
+        msgpack::pack(buffer, req_msgpack);
+    } catch (const std::exception& e) {
+        std::cerr << "MessagePack pack failed: " << e.what() << std::endl;
+        return false;
+    }
+    std::string req_str = buffer.str();
+
+    void* context = zmq_ctx_new();
+    if (!context) {
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_ctx_new failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
+        return false;
+    }
+    void* socket = zmq_socket(context, ZMQ_REQ);
+    if (!socket) {
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_socket failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
+        zmq_ctx_destroy(context);
+        return false;
+    }
+    int timeout = 30000;
+    zmq_setsockopt(socket, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
+    zmq_setsockopt(socket, ZMQ_SNDTIMEO, &timeout, sizeof(timeout));
+    std::string endpoint = "tcp://127.0.0.1:" + std::to_string(zmq_port);
+    if (zmq_connect(socket, endpoint.c_str()) != 0) {
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_connect failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    if (zmq_send(socket, req_str.data(), req_str.size(), 0) < 0) { /*...*/
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_msg_recv failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    zmq_msg_t response;
+    zmq_msg_init(&response);
+    if (zmq_msg_recv(&response, socket, 0) < 0) { /*...*/
+        // fprintf(stderr,
+        //         "[fetch_zmq] zmq_msg_recv failed: %s\n",
+        //         zmq_strerror(zmq_errno()));
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    EmbeddingResponseMsgpack resp_msgpack;
+    const char* resp_data = static_cast<const char*>(zmq_msg_data(&response));
+    size_t resp_size = zmq_msg_size(&response);
+    // printf("[fetch_zmq] Raw response bytes (first %d): ",
+    //        (int)std::min((size_t)64, resp_size));
+
+    msgpack::object_handle oh = msgpack::unpack(resp_data, resp_size);
+    msgpack::object obj = oh.get();
+    obj.convert(resp_msgpack); // Convert msgpack object to our struct
+    // for (size_t k = 0; k < std::min((size_t)64, resp_size); ++k)
+    //     printf("%02x ", (unsigned char)resp_data[k]);
+    // printf("\n");
+
+    // --- Print parsed values BEFORE NaN check ---
+    // printf("[fetch_zmq] Parsed response. Dimensions: %d x %d. Data floats:
+    // %zu\n",
+    //        resp_msgpack.dimensions.empty() ? 0 : resp_msgpack.dimensions[0],
+    //        resp_msgpack.dimensions.size() < 2 ? 0 :
+    //        resp_msgpack.dimensions[1], resp_msgpack.embeddings_data.size());
+    // printf("[fetch_zmq] Parsed embeddings_data (first %d floats): ",
+    //        (int)std::min((size_t)10, resp_msgpack.embeddings_data.size()));
+    // bool parse_contains_nan = false;
+    // for (size_t k = 0;
+    //      k < std::min((size_t)10, resp_msgpack.embeddings_data.size());
+    //      ++k) {
+    //     printf("%.6f ", resp_msgpack.embeddings_data[k]);
+    //     if (std::isnan(resp_msgpack.embeddings_data[k]))
+    //         parse_contains_nan = true;
+    // }
+    // printf("%s\n",
+    //        parse_contains_nan ? "!!! CONTAINS NaN AFTER PARSE !!!"
+    //                           : "(Checked first 10 for NaN)");
+
+    if (resp_msgpack.dimensions.size() != 2) {
+        // std::cerr << "Server response has invalid dimensions size: "
+        //           << resp_msgpack.dimensions.size() << std::endl;
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+    int batch_size = resp_msgpack.dimensions[0];
+    int embedding_dim = resp_msgpack.dimensions[1];
+
+    // Handle empty response
+    if (batch_size == 0) {
+        out_embeddings.clear();
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return true; // Successful communication, no data returned
+    }
+
+    size_t expected_floats = (size_t)batch_size * embedding_dim;
+    if (resp_msgpack.embeddings_data.size() != expected_floats) {
+        // std::cerr << "Embedding data size mismatch: Got "
+        //           << resp_msgpack.embeddings_data.size() << " floats,
+        //           expected "
+        //           << expected_floats << " (" << batch_size << "x"
+        //           << embedding_dim << ")" << std::endl;
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    bool received_nan = false;
+    for (float val : resp_msgpack.embeddings_data) {
+        if (std::isnan(val)) {
+            received_nan = true;
+            break;
+        }
+    }
+    if (received_nan) {
+        // fprintf(stderr,
+        //         "!!! [fetch_zmq] ERROR: Final check confirms NaN values in
+        //         parsed embeddings_data! First requested ID: %u !!!\n",
+        //         node_ids.empty() ? 0 : node_ids[0]);
+        return false; // Decide whether to fail here
+    } else {
+        // printf("[fetch_zmq] Final check confirms embeddings data appears
+        // clean (no NaNs checked).\n"); // Can be verbose
+    }
+
+    out_embeddings.clear();
+    out_embeddings.resize(batch_size);
+    const float* flat_data_ptr = resp_msgpack.embeddings_data.data();
+    for (int i = 0; i < batch_size; i++) {
+        out_embeddings[i].assign(
+                flat_data_ptr + (size_t)i * embedding_dim,
+                flat_data_ptr + ((size_t)i + 1) * embedding_dim);
+    }
+
+    zmq_msg_close(&response);
+    zmq_close(socket);
+    zmq_ctx_destroy(context);
+
+    return true;
+}
+
+struct ZmqDistanceComputer : DistanceComputer {
+    size_t d;
+    const int ZMQ_PORT = 5555;
+    MetricType metric_type;
+    float metric_arg;
+    const Index* storage;
+    std::unique_ptr<DistanceComputer> storage_dc_orig;
+    std::unique_ptr<DistanceComputer> storage_dc_search;
+    std::vector<float> query;
+
+    const float* get_query() override {
+        return query.data();
+    }
+
+    // --- REMOVED CACHE ---
+    // thread_local static std::unordered_map<idx_t, std::vector<float>>
+    // zmq_embedding_cache;
+
+    // --- ADD Member variable to hold the *last* fetched ZMQ vector ---
+    // This is NOT thread-safe if the same DistanceComputer instance is shared
+    // across threads, but Faiss search typically creates one DC per thread per
+    // query. This is needed because we need to return a stable pointer.
+    std::vector<float> last_fetched_zmq_vector;
+
+    // ---- Additions ----
+    /// Tracks number of successful fetches via ZMQ
+    mutable size_t fetch_count = 0;
+    // ---- End Additions ----
+
+    ZmqDistanceComputer(size_t dim, MetricType mt, float marg = 0)
+            : d(dim), metric_type(mt), metric_arg(marg) {
+        FAISS_THROW_IF_NOT_MSG(d > 0, "Dimension must be positive");
+        query.resize(d);
+        last_fetched_zmq_vector.resize(d); // Preallocate
+        reset_fetch_count();               // Initialize count
+        printf("ZmqDistanceComputer initialized: d=%zu, metric=%d\n",
+               d,
+               (int)mt);
+    }
+
+    ZmqDistanceComputer(const Index* storage_ref)
+            : d(storage_ref->d),
+              metric_type(storage_ref->metric_type),
+              metric_arg(storage_ref->metric_arg),
+              storage(storage_ref),
+              storage_dc_orig(storage_ref->get_distance_computer()),
+              storage_dc_search(
+                      is_similarity_metric(storage_ref->metric_type)
+                              ? new NegativeDistanceComputer(
+                                        storage_ref->get_distance_computer())
+                              : storage_ref->get_distance_computer()) {
+        query.resize(d);
+        last_fetched_zmq_vector.resize(d); // Preallocate
+        FAISS_THROW_IF_NOT_MSG(
+                storage != nullptr,
+                "Storage cannot be null for ZmqDistanceComputer");
+        FAISS_THROW_IF_NOT(storage_dc_orig && storage_dc_search);
+        reset_fetch_count(); // Initialize count
+    }
+
+    // --- MODIFIED get_vector_zmq: No Cache, stores result in member and tracks
+    // fetches ---
+    const float* get_vector_zmq(idx_t id) {
+        // printf("DEBUG get_vector_zmq: Fetching ID %ld via ZMQ (no
+        // cache)...\n",
+        //        (long)id); // Log fetch attempt
+
+        std::vector<uint32_t> ids_to_fetch = {(uint32_t)id};
+        std::vector<std::vector<float>>
+                fetched_embeddings; // fetch_embeddings_zmq expects this
+                                    // structure
+
+        if (!fetch_embeddings_zmq(ids_to_fetch, fetched_embeddings, ZMQ_PORT)) {
+            // fprintf(stderr,
+            //         "!!! ERROR get_vector_zmq: fetch_embeddings_zmq call
+            //         failed for ID %ld !!!\n", (long)id);
+            // Fill member with NaN to indicate failure?
+            std::fill(
+                    last_fetched_zmq_vector.begin(),
+                    last_fetched_zmq_vector.end(),
+                    std::numeric_limits<float>::quiet_NaN());
+            return nullptr; // Indicate failure upstream
+        }
+        if (fetched_embeddings.empty() || fetched_embeddings[0].size() != d) {
+            // fprintf(stderr,
+            //         "!!! ERROR get_vector_zmq: fetch_embeddings_zmq returned
+            //         incorrect data for ID %ld !!!\n", (long)id);
+            std::fill(
+                    last_fetched_zmq_vector.begin(),
+                    last_fetched_zmq_vector.end(),
+                    std::numeric_limits<float>::quiet_NaN());
+            return nullptr;
+        }
+
+        // --- Copy fetched data to member variable ---
+        // fetched_embeddings[0] contains the vector data
+        FAISS_ASSERT(fetched_embeddings[0].size() == d);
+        memcpy(last_fetched_zmq_vector.data(),
+               fetched_embeddings[0].data(),
+               d * sizeof(float));
+
+        // ---- Addition: Increment fetch count on success ----
+        fetch_count++;
+        // ---- End Addition ----
+
+        // --- Log values RIGHT BEFORE returning pointer ---
+        const float* return_ptr = last_fetched_zmq_vector.data();
+        // bool has_nan_before_return = false;
+        // printf("DEBUG get_vector_zmq: Fetched ID %ld. Values BEFORE return
+        // (ptr %p) [0..%d]: ",
+        //        (long)id,
+        //        (void*)return_ptr,
+        //        (int)std::min((size_t)4, d - 1));
+        // for (size_t k = 0; k < std::min((size_t)5, d); ++k) {
+        //     printf("%.6f ", return_ptr[k]);
+        // if (std::isnan(return_ptr[k]) || std::isinf(return_ptr[k]))
+        //         has_nan_before_return = true;
+        // }
+        // printf("%s\n",
+        //        has_nan_before_return ? "!!! HAS NaN/Inf BEFORE RETURN !!!"
+        //                              : "(OK Before Return)");
+        // -------------------------------------------
+
+        return return_ptr; // Return pointer to member data
+    }
+
+    // ---- Additions: Override virtual methods ----
+    size_t get_fetch_count() const override {
+        return fetch_count;
+    }
+
+    void reset_fetch_count() override {
+        fetch_count = 0;
+    }
+    // ---- End Additions ----
+
+    // --- MODIFIED compare_and_log: Add check immediately after getting pointer
+    // ---
+    void compare_and_log(idx_t id, const char* context) {
+        // Get pointer (which now triggers fetch and stores in
+        // last_fetched_zmq_vector)
+        const float* vec_zmq = get_vector_zmq(id);
+
+        // --- ADD CHECK IMMEDIATELY AFTER get_vector_zmq returns ---
+        // printf("DEBUG_COMPARE [%s] ID %ld: Got vec_zmq ptr %p. Checking for
+        // NaN/Inf...\n",
+        //        context,
+        //        (long)id,
+        //        (void*)vec_zmq);
+        bool zmq_has_nan_inf = false;
+        if (vec_zmq) { // Check if pointer is valid first
+            for (size_t k = 0; k < d; ++k) {
+                if (std::isnan(vec_zmq[k]) || std::isinf(vec_zmq[k])) {
+                    zmq_has_nan_inf = true;
+                    break;
+                }
+            }
+            if (zmq_has_nan_inf) {
+                printf("!!! ZMQ VEC HAS NaN/Inf AFTER get_vector_zmq !!! First values: ");
+                for (size_t k = 0; k < std::min((size_t)5, d); ++k)
+                    printf("%.6f ", vec_zmq[k]);
+                printf("\n");
+            } else {
+                // Optional: print confirmation values look ok here
+                // printf("ZMQ Vec OK After Get. First values: ");
+                // for (size_t k = 0; k < std::min((size_t)5, d); ++k)
+                //     printf("%.6f ", vec_zmq[k]);
+                // printf("\n");
+            }
+        } else {
+            printf("ZMQ Vec ptr is NULL after get_vector_zmq.\n");
+        }
+        // --- END IMMEDIATE CHECK ---
+
+        // Fetch ground truth (unchanged)
+        std::vector<float> vec_storage_data(d);
+        const float* vec_storage = nullptr;
+        bool reconstruct_ok = false;
+        // ... (rest of reconstruct logic unchanged) ...
+        if (id >= 0 && id < storage->ntotal) {
+            try {
+                storage->reconstruct(id, vec_storage_data.data());
+                vec_storage = vec_storage_data.data();
+                reconstruct_ok = true;
+            } catch (...) {
+                printf("DEBUG_COMPARE [%s] ID %ld: Reconstruct failed.\n",
+                       context,
+                       (long)id);
+            }
+        } else {
+            printf("DEBUG_COMPARE [%s] ID %ld: Out of bounds.\n",
+                   context,
+                   (long)id);
+        }
+
+        // Original comparison log header
+        // printf("DEBUG_COMPARE [%s] ID %ld: ", context, (long)id);
+
+        // Report fetch status (unchanged)
+        if (!vec_zmq && !vec_storage) {
+            printf("Both ZMQ and Storage fetch failed/skipped.\n");
+            return;
+        }
+        if (!vec_zmq) {
+            printf("ZMQ fetch failed, Storage fetch %s.\n",
+                   reconstruct_ok ? "OK" : "Failed/Skipped");
+            return;
+        }
+        if (!vec_storage) {
+            printf("ZMQ fetch OK, Storage fetch failed/skipped.\n");
+            return;
+        }
+
+        // Now report the NaN status we checked earlier
+        if (zmq_has_nan_inf)
+            printf("!!! ZMQ VEC HAS NaN/Inf !!! ");
+        // (Optionally add storage NaN check here too)
+
+        // Proceed with comparison only if ZMQ vec is valid (and optionally
+        // storage vec)
+        if (!zmq_has_nan_inf /* && !storage_has_nan_inf */) {
+            // Compare Vectors
+            float diff_sq = fvec_L2sqr(vec_zmq, vec_storage, d);
+            const float tol_vec = 1e-5;
+            if (std::isnan(diff_sq)) {
+                printf("!!! VEC L2sqr is NaN !!! ");
+            } // Check L2 result too
+            else if (diff_sq > tol_vec) {
+                printf("!!! VEC MISMATCH !!! Diff^2=%.6f ", diff_sq);
+            } else {
+                // printf("Vec OK (D2=%.6f), ", diff_sq);
+            }
+
+            // Compare Distances
+            float dist_storage = (*storage_dc_search)(id);
+            float dist_zmq = 0;
+            if (is_similarity_metric(metric_type)) {
+                dist_zmq = -fvec_inner_product(query.data(), vec_zmq, d);
+            } else {
+                dist_zmq = fvec_L2sqr(query.data(), vec_zmq, d);
+            }
+            float dist_diff = std::abs(dist_storage - dist_zmq);
+            const float tol_dist = 1e-3;
+            if (dist_diff > tol_dist ||
+                std::isnan(dist_storage) != std::isnan(dist_zmq)) {
+                printf("!!! DIST MISMATCH !!! Sto=%.6f, Zmq=%.6f, Diff=%.6f\n",
+                       dist_storage,
+                       dist_zmq,
+                       dist_diff);
+            } else {
+                // printf("Dist OK (Sto=%.6f, Zmq=%.6f)\n",
+                //        dist_storage,
+                //        dist_zmq);
+            }
+        } else {
+            printf("Comparison skipped due to invalid/NaN/Inf vectors.\n");
+        }
+    }
+
+    // --- Other DistanceComputer methods unchanged ---
+    float operator()(idx_t i) override {
+        // compare_and_log(i, "operator()");
+        // --- RETURN STORAGE DISTANCE (for recall stability during debug) ---
+        // return (*storage_dc_search)(i);
+        // --- TO MAKE ZMQ FUNCTIONAL (after debugging): ---
+        const float* vec_zmq = get_vector_zmq(i);
+        if (!vec_zmq)
+            return (metric_type == METRIC_INNER_PRODUCT)
+                    ? -std::numeric_limits<float>::max()
+                    : std::numeric_limits<float>::max();
+        if (is_similarity_metric(metric_type)) {
+            return -fvec_inner_product(query.data(), vec_zmq, d);
+        } else {
+            return fvec_L2sqr(query.data(), vec_zmq, d);
+        }
+        // --- End ZMQ Functional ---
+    }
+    float symmetric_dis(idx_t i, idx_t j) override {
+        // printf("DEBUG_COMPARE [symmetric_dis] ID %ld vs %ld - Using storage
+        // value.\n", (long)i, (long)j);
+
+        // --- RETURN STORAGE DISTANCE (for recall stability during debug) ---
+        // return storage_dc_search->symmetric_dis(i, j);
+        // --- TO MAKE ZMQ FUNCTIONAL (after debugging): ---
+        const float* vec_i_zmq = get_vector_zmq(i);
+        const float* vec_j_zmq = get_vector_zmq(j);
+        if (!vec_i_zmq || !vec_j_zmq)
+            return std::numeric_limits<float>::max();
+        // Calculate appropriate symmetric distance (e.g., L2) based on ZMQ
+        // vectors
+        return fvec_L2sqr(vec_i_zmq, vec_j_zmq, d);
+        // --- End ZMQ Functional ---
+    }
+
+    float distance_func(const float* vec_zmq) {
+        if (!vec_zmq) // Handle case where ZMQ fetch failed
+            return (metric_type == METRIC_INNER_PRODUCT)
+                    ? -std::numeric_limits<float>::max()
+                    : std::numeric_limits<float>::max();
+
+        switch (metric_type) {
+            case METRIC_INNER_PRODUCT:
+                return -fvec_inner_product(
+                        query.data(), vec_zmq, d); // Return negative IP
+            case METRIC_L2:
+                return fvec_L2sqr(
+                        query.data(), vec_zmq, d); // Return L2 squared
+            default:
+                // Return max distance for unsupported metrics
+                return std::numeric_limits<float>::max();
+        }
+    }
+
+    void distances_batch(
+            const std::vector<idx_t>& ids,
+            std::vector<float>& distances_out) override {
+        if (ids.empty()) {
+            distances_out.clear();
+            return;
+        }
+
+        std::vector<uint32_t> node_ids(ids.size());
+        for (size_t i = 0; i < ids.size(); i++) {
+            node_ids[i] = (uint32_t)ids[i];
+        }
+
+        std::vector<std::vector<float>> fetched_embeddings;
+        bool fetch_success =
+                fetch_embeddings_zmq(node_ids, fetched_embeddings, ZMQ_PORT);
+
+        distances_out.resize(ids.size());
+
+        if (!fetch_success || fetched_embeddings.size() != ids.size()) {
+            std::fill(
+                    distances_out.begin(),
+                    distances_out.end(),
+                    (metric_type == METRIC_INNER_PRODUCT)
+                            ? -std::numeric_limits<float>::max()
+                            : std::numeric_limits<float>::max());
+            return;
+        }
+
+        fetch_count += fetched_embeddings.size();
+
+        for (size_t i = 0; i < fetched_embeddings.size(); i++) {
+            const std::vector<float>& embedding = fetched_embeddings[i];
+            if (embedding.size() != d) {
+                distances_out[i] = (metric_type == METRIC_INNER_PRODUCT)
+                        ? -std::numeric_limits<float>::max()
+                        : std::numeric_limits<float>::max();
+                continue;
+            }
+
+            if (is_similarity_metric(metric_type)) {
+                distances_out[i] =
+                        -fvec_inner_product(query.data(), embedding.data(), d);
+            } else {
+                distances_out[i] =
+                        fvec_L2sqr(query.data(), embedding.data(), d);
+            }
+        }
+    }
+
+    void distances_batch_4(
+            idx_t id0,
+            idx_t id1,
+            idx_t id2,
+            idx_t id3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) override {
+        // compare_and_log(id0, "batch4_0");
+        // compare_and_log(id1, "batch4_1");
+        // compare_and_log(id2, "batch4_2");
+        // compare_and_log(id3, "batch4_3");
+        // --- RETURN STORAGE DISTANCES (for recall stability during debug) ---
+        //  storage_dc_search->distances_batch_4(id0, id1, id2, id3, dis0, dis1,
+        //  dis2, dis3);
+        // --- TO MAKE ZMQ FUNCTIONAL (after debugging): ---
+        std::vector<idx_t> batch_ids = {id0, id1, id2, id3};
+        std::vector<float> batch_distances;
+
+        this->distances_batch(batch_ids, batch_distances);
+
+        dis0 = batch_distances[0];
+        dis1 = batch_distances[1];
+        dis2 = batch_distances[2];
+        dis3 = batch_distances[3];
+        // --- End ZMQ Functional ---
+    }
+    void set_query(const float* x) override {
+        // ---- Addition: Reset count on new query ----
+        reset_fetch_count();
+        // ---- End Addition ----
+        memcpy(query.data(), x, d * sizeof(float));
+        // storage_dc_orig->set_query(x);
+        // storage_dc_search->set_query(x); /* No cache to clear */
+    }
+    ~ZmqDistanceComputer() override = default;
+};
 
 /**************************************************************
  * add / search blocks of descriptors
@@ -274,19 +868,26 @@ void hnsw_add_vertices(
  **************************************************************/
 
 IndexHNSW::IndexHNSW(int d, int M, MetricType metric, int M0)
-        : Index(d, metric), hnsw(M, M0) {}
+        : Index(d, metric), hnsw(M, M0) {
+    // Initialize the fetch counter
+    fetch_count_ptr = new std::atomic<size_t>(0);
+}
 
 IndexHNSW::IndexHNSW(Index* storage, int M, int M0)
         : Index(storage->d, storage->metric_type),
           hnsw(M, M0),
           storage(storage) {
     metric_arg = storage->metric_arg;
+    // Initialize the fetch counter
+    fetch_count_ptr = new std::atomic<size_t>(0);
 }
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {
         delete storage;
     }
+    // Delete the fetch counter
+    delete fetch_count_ptr;
 }
 
 void IndexHNSW::train(idx_t n, const float* x) {
@@ -307,11 +908,18 @@ void hnsw_search(
         const float* x,
         BlockResultHandler& bres,
         const SearchParameters* params) {
-    FAISS_THROW_IF_NOT_MSG(
-            index->storage,
-            "No storage index, please use IndexHNSWFlat (or variants) "
-            "instead of IndexHNSW directly");
+    // FAISS_THROW_IF_NOT_MSG(
+    //         index->storage,
+    //         "No storage index, please use IndexHNSWFlat (or variants) "
+    //         "instead of IndexHNSW directly");
     const HNSW& hnsw = index->hnsw;
+
+    // ---- Addition: Reset total fetch count at the beginning of search ----
+    // Ensure the pointer is valid before dereferencing
+    if (index->fetch_count_ptr) {
+        index->fetch_count_ptr->store(0, std::memory_order_relaxed);
+    }
+    // ---- End Addition ----
 
     int efSearch = hnsw.efSearch;
     if (params) {
@@ -321,6 +929,10 @@ void hnsw_search(
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+
+    // ---- Addition: Accumulator for fetch counts ----
+    size_t total_fetches_accum = 0;
+    // ---- End Addition ----
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
@@ -333,22 +945,46 @@ void hnsw_search(
             VisitedTable vt(index->ntotal);
             typename BlockResultHandler::SingleResultHandler res(bres);
 
-            std::unique_ptr<DistanceComputer> dis(
-                    storage_distance_computer(index->storage));
+            // Select the appropriate distance computer based on use_recompute
+            // flag
+            std::unique_ptr<DistanceComputer> dis;
+            if (index->is_recompute) {
+                // Use ZmqDistanceComputer for recomputation
+                dis.reset(new ZmqDistanceComputer(index->d, index->metric_type, index->metric_arg));
+            } else {
+                // Use standard distance computer
+                dis.reset(storage_distance_computer(index->storage));
+            }
 
-#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
+#pragma omp for reduction(+ : n1, n2, ndis, nhops, total_fetches_accum) \
+        schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 res.begin(i);
                 dis->set_query(x + i * index->d);
 
-                HNSWStats stats = hnsw.search(*dis, res, vt, params);
+                HNSWStats stats = hnsw.search(*dis, res, vt, params, index);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;
                 nhops += stats.nhops;
+
+                // ---- Addition: Accumulate fetch count ----
+                total_fetches_accum += dis->get_fetch_count();
+                // ---- End Addition ----
+
                 res.end();
             }
         }
+
+        // ---- Addition: Update the index's total count ----
+        // Use += because the search might be split over multiple check_period
+        // iterations
+        if (index->fetch_count_ptr) {
+            index->fetch_count_ptr->fetch_add(
+                    total_fetches_accum, std::memory_order_relaxed);
+        }
+        // ---- End Addition ----
+
         InterruptCallback::check();
     }
 
@@ -417,7 +1053,14 @@ void IndexHNSW::reset() {
 }
 
 void IndexHNSW::reconstruct(idx_t key, float* recons) const {
-    storage->reconstruct(key, recons);
+    if (is_recompute) {
+        ZmqDistanceComputer fetcher(storage);
+        const float* vec = fetcher.get_vector_zmq(key);
+        assert(vec);
+        memcpy(recons, vec, d * sizeof(float));
+    } else {
+        storage->reconstruct(key, recons);
+    }
 }
 
 /**************************************************************
@@ -685,8 +1328,25 @@ void IndexHNSW::permute_entries(const idx_t* perm) {
 }
 
 DistanceComputer* IndexHNSW::get_distance_computer() const {
-    return storage->get_distance_computer();
+    if (is_recompute) {
+        return new ZmqDistanceComputer(
+                this->d, this->metric_type, this->metric_arg);
+    } else {
+        return storage->get_distance_computer();
+    }
 }
+
+// ---- Addition: Implement method to get fetch count ----
+size_t IndexHNSW::get_last_total_fetch_count() const {
+    // Safety check in case the pointer is null
+    if (!fetch_count_ptr) {
+        return 0;
+    }
+    // Use load() for atomic read, although direct read might be okay on many
+    // platforms
+    return fetch_count_ptr->load(std::memory_order_relaxed);
+}
+// ---- End Addition ----
 
 /**************************************************************
  * IndexHNSWFlat implementation

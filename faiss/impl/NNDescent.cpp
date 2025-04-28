@@ -296,7 +296,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
 
         if (verbose) {
             float recall = eval_recall(eval_points, acc_eval_set);
-            printf("Iter: %d, recall@%d: %lf\n", it, K, recall);
+            printf("Iter: %d, recall@%ld: %lf\n", it, K, recall);
         }
     }
     printf("Final graph: %ld\n", final_graph.size());
@@ -389,7 +389,7 @@ void NNDescent::build(DistanceComputer& qdis, const int n, bool verbose) {
             int(NUM_EVAL_POINTS));
 
     if (verbose) {
-        printf("Parameters: K=%d, S=%d, R=%d, L=%d, iter=%d\n",
+        printf("Parameters: K=%ld, S=%d, R=%d, L=%d, iter=%d\n",
                K,
                S,
                R,

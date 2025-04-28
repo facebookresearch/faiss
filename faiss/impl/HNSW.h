@@ -15,10 +15,14 @@
 
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/io.h>
 #include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
+#include <unistd.h>
+
+#include "pq.h"
 
 namespace faiss {
 
@@ -49,9 +53,19 @@ struct SearchParametersHNSW : SearchParameters {
     bool check_relative_distance = true;
     bool bounded_queue = true;
 
+    // Batch processing and beam size
+    int beam_size = 1;  // Beam size for beam search (1 = original)
+    int batch_size = 0; // Batch size for neighbor processing (0 = no batching)
+
+    // PQ-instructed pruning
+    float pq_pruning_ratio = 0; // Ratio of candidates to select via PQ
+
+    //     bool cache_distances = false;
+
     ~SearchParametersHNSW() {}
 };
 
+class IndexHNSW;
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
@@ -156,6 +170,18 @@ struct HNSW {
     /// expansion factor at search time
     int efSearch = 16;
 
+    bool neighbors_on_disk = false;
+    std::string hnsw_index_filename; // Used for pread
+    int graph_fd = -1;               // File descriptor for pread
+
+    // --- New members for disk/mmap access ---
+    off_t neighbors_start_offset = -1; // For pread: offset to size field; For
+                                       // mmap: relative offset (debug)
+    storage_idx_t* neighbors_mmap_ptr =
+            nullptr; // For mmap: pointer to neighbor data in memory
+    bool neighbors_use_mmap =
+            false; // Whether to use mmap pointer instead of pread
+
     /// during search: do we check whether the next best distance is good
     /// enough?
     bool check_relative_distance = true;
@@ -218,7 +244,8 @@ struct HNSW {
             DistanceComputer& qdis,
             ResultHandler<C>& res,
             VisitedTable& vt,
-            const SearchParameters* params = nullptr) const;
+            const SearchParameters* params = nullptr,
+            const IndexHNSW* hnsw = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
@@ -250,6 +277,27 @@ struct HNSW {
 
     void save_degree_distribution(int level, const char* filename) const;
 
+    float pq_pruning_ratio = 0;
+
+    std::shared_ptr<PQPrunerDataLoader> pq_data_loader;
+    std::vector<uint8_t> pq_codes; // PQ codes of all vectors (N * code_size)
+    size_t code_size = 0;          // number of chunks per vector
+
+    bool load_pq_pruning_data(
+            const std::string& pq_pivots_path,
+            const std::string& pq_compressed_path);
+
+    bool pq_loaded = false;
+
+    // On-demand neighbor fetch method
+    size_t fetch_neighbors(
+            idx_t node_id,
+            int level,
+            std::vector<storage_idx_t>& buffer) const;
+
+    void initialize_graph(const std::string& index_filename);
+
+    ~HNSW(); // Close file descriptor
     std::vector<int> ems;
 };
 
@@ -257,13 +305,21 @@ struct HNSWStats {
     size_t n1 = 0; /// number of vectors searched
     size_t n2 =
             0; /// number of queries for which the candidate list is exhausted
-    size_t ndis = 0;  /// number of distances computed
-    size_t nhops = 0; /// number of hops aka number of edges traversed
+    size_t ndis = 0;   /// number of distances computed
+    size_t nhops = 0;  /// number of hops aka number of edges traversed
+    size_t npq = 0;    /// number of PQ candidates
+    size_t nfetch = 0; /// number of neighbors fetched
+    size_t n_ios = 0;  /// number of neighbors fetched on demand
+    size_t n_pq_calcs = 0;
 
     void reset() {
         n1 = n2 = 0;
         ndis = 0;
         nhops = 0;
+        npq = 0;
+        nfetch = 0;
+        n_ios = 0;
+        n_pq_calcs = 0;
     }
 
     void combine(const HNSWStats& other) {
@@ -271,6 +327,10 @@ struct HNSWStats {
         n2 += other.n2;
         ndis += other.ndis;
         nhops += other.nhops;
+        npq += other.npq;
+        nfetch += other.nfetch;
+        n_ios += other.n_ios;
+        n_pq_calcs += other.n_pq_calcs;
     }
 };
 
@@ -286,7 +346,8 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in = 0,
-        const SearchParameters* params = nullptr);
+        const SearchParameters* params = nullptr,
+        const IndexHNSW* hnsw_index = nullptr);
 
 HNSWStats greedy_update_nearest(
         const HNSW& hnsw,
