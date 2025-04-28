@@ -1043,7 +1043,7 @@ int search_from_candidates(
         }
     }
     
-    // printf("total_neigh_fetch: %d\n", total_neigh_fetch);
+    // printf("total_neigh_fetch: %d\n", ndis);
 
     if (level == 0) {
         stats.n1++;

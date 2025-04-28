@@ -9,6 +9,7 @@ import time
 import torch
 from tqdm import tqdm
 from pathlib import Path
+import subprocess
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(os.path.join(project_root, "demo"))
@@ -16,7 +17,7 @@ from config import SCALING_OUT_DIR, get_example_path, TASK_CONFIGS
 sys.path.append(project_root)
 from contriever.src.contriever import Contriever, load_retriever
 
-M = 128
+M = 32
 efConstruction = 256
 K_NEIGHBORS = 3
 
@@ -127,7 +128,7 @@ D_flat, recall_idx_flat = index_flat.search(xq_full, k=K_NEIGHBORS)
 print(recall_idx_flat)
 
 # Create a specific directory for this index configuration
-index_dir = f"{INDEX_SAVING_FILE}/very_high_hnsw_IP_M{M}_efC{efConstruction}"
+index_dir = f"{INDEX_SAVING_FILE}/5percent_degree_based_hnsw_IP_M{M}_efC{efConstruction}"
 os.makedirs(index_dir, exist_ok=True)
 index_filename = f"{index_dir}/index.faiss"
 
@@ -164,16 +165,30 @@ print(f"Saving degree distribution to {distribution_filename}...")
 index.hnsw.save_degree_distribution(0, distribution_filename)
 print("Degree distribution saved successfully.")
 
+# Plot the degree distribution
+plot_output_path = f"{index_dir}/degree_distribution.png"
+print(f"Generating degree distribution plot to {plot_output_path}...")
+try:
+    subprocess.run(
+        ["python", "/home/ubuntu/Power-RAG/utils/plot_degree_distribution.py", distribution_filename, "-o", plot_output_path],
+        check=True
+    )
+    print(f"Degree distribution plot saved to {plot_output_path}")
+except subprocess.CalledProcessError as e:
+    print(f"Error generating degree distribution plot: {e}")
+except FileNotFoundError:
+    print("Warning: plot_degree_distribution.py script not found in current directory")
+
 print('Searching HNSW index...')
 
 
 
-# for efSearch in [2, 4, 8, 16, 32, 64,128,256,512,1024]:
-#     print(f'*************efSearch: {efSearch}*************')
-#     for i in range(10):
-#         index.hnsw.efSearch = efSearch
-#         D, I = index.search(xq_full[i:i+1], K_NEIGHBORS)
-# exit()
+for efSearch in [2, 4, 8, 16, 32, 64,128,256,512,1024]:
+    print(f'*************efSearch: {efSearch}*************')
+    for i in range(10):
+        index.hnsw.efSearch = efSearch
+        D, I = index.search(xq_full[i:i+1], K_NEIGHBORS)
+exit()
 
 
 recall_result_file = f"{index_dir}/recall_result.txt"

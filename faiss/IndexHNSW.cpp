@@ -211,9 +211,9 @@ void hnsw_add_vertices(
                             // let me think about it
                             int pid_degree = degree_distribution[pt_id];
                             if (pid_degree < degree_threshold) {
-                                hnsw.ems[pt_id] = std::max(4, 1);
+                                hnsw.ems[pt_id] = std::max(8, 1);
                             } else {
-                                hnsw.ems[pt_id] = 4;
+                                hnsw.ems[pt_id] = M;
                             }
                         }
                     }
