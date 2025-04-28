@@ -555,6 +555,77 @@ static void read_HNSW(
                 hnsw->compact_node_offsets.size() == hnsw->levels.size() + 1);
     } else {
         printf("[READ_HNSW] Reading Original Storage format...\n");
+
+        // --- BEGIN INSERTED CODE for handling potential extra byte ---
+        printf("[READ_HNSW] Probing for potential extra byte before non-compact offsets...\n");
+
+        // Get reader type for potential rewind
+        FileIOReader* file_reader_nc = dynamic_cast<FileIOReader*>(f);
+        MappedFileIOReader* mmap_reader_nc =
+                dynamic_cast<MappedFileIOReader*>(f);
+
+        off_t pos_before_probe = -1;
+        if (file_reader_nc) {
+            pos_before_probe = ftell(file_reader_nc->f);
+            if (pos_before_probe == -1) {
+                int RTERRNO = errno;
+                FAISS_THROW_FMT(
+                        "ftell failed before extra byte probe: %s",
+                        strerror(RTERRNO));
+            }
+        } else if (mmap_reader_nc) {
+            pos_before_probe = (off_t)mmap_reader_nc->pos;
+        }
+        // else: maybe print warning or throw for unknown reader if rewind is
+        // needed
+
+        uint8_t suspected_flag;
+        size_t read_count =
+                (*f)(&suspected_flag, 1, 1); // Tentatively read 1 byte
+
+        bool is_back_to_original_position = true;
+        if (read_count == 1) {
+            // Successfully read one byte
+            if (suspected_flag == 0x00) {
+                // It's exactly 0x00. Assume it's the unexpected 'false' flag.
+                // Consume it.
+                printf("[READ_HNSW] Found and consumed an unexpected 0x00 byte.\n");
+                is_back_to_original_position = false;
+            } else if (suspected_flag == 0x01) {
+                printf("is_compact is false, but we read 0x01\n");
+                assert(false);
+            }
+        } else {
+            // Failed to read (e.g., EOF). Cannot consume or rewind.
+            printf("[READ_HNSW] Warning: Failed to probe for extra byte (read_count=%zu).\n",
+                   read_count);
+            // Proceed assuming no extra byte, rewind is not needed/possible.
+        }
+
+        // If the byte read was not the specific 0x00 we decided to consume,
+        // rewind.
+        if (read_count == 1 && is_back_to_original_position) {
+            FAISS_ASSERT_MSG(
+                    pos_before_probe != -1,
+                    "Cannot rewind reader, initial position unknown for rewind.");
+            if (file_reader_nc) {
+                if (fseek(file_reader_nc->f, pos_before_probe, SEEK_SET) != 0) {
+                    int RTERRNO = errno;
+                    FAISS_THROW_FMT(
+                            "fseek failed to rewind to original position. errno=%d (%s)",
+                            RTERRNO,
+                            strerror(RTERRNO));
+                }
+                printf("[READ_HNSW] Rewound to original position for FileIOReader.\n");
+            } else if (mmap_reader_nc) {
+                mmap_reader_nc->pos = pos_before_probe;
+                printf("[READ_HNSW] Reset MappedFileIOReader pos to original position.\n");
+            } else {
+                FAISS_THROW_MSG("Cannot rewind unknown reader type.");
+            }
+        }
+        // --- END INSERTED CODE ---
+
         // --- Read Original Storage data ---
         READVECTOR(hnsw->offsets);
         // Use the specific read_vector function for MaybeOwnedVector
