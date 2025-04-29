@@ -59,11 +59,22 @@ struct EmbeddingResponseMsgpack {
     MSGPACK_DEFINE_ARRAY(dimensions, embeddings_data); // [ [dims], [data] ]
 };
 
+struct DistanceRequestMsgpack {
+    std::vector<uint32_t> node_ids;
+    std::vector<float> query_vector;
+    MSGPACK_DEFINE_ARRAY(node_ids, query_vector); // [ [ids], [query_vector] ]
+};
+
+struct DistanceResponseMsgpack {
+    std::vector<float> distances;    // Direct distances between query and nodes
+    MSGPACK_DEFINE_ARRAY(distances); // [ [distances] ]
+};
+
 // --- ZMQ Fetch Function (Using MessagePack) ---
 bool fetch_embeddings_zmq(
         const std::vector<uint32_t>& node_ids,
         std::vector<std::vector<float>>& out_embeddings,
-        int zmq_port = 5555) // Default port kept
+        int zmq_port = 5557) // Default port kept
 {
     EmbeddingRequestMsgpack req_msgpack;
     req_msgpack.node_ids = node_ids;
@@ -286,6 +297,103 @@ const float* ZmqDistanceComputer::get_vector_zmq(idx_t id) {
     return return_ptr; // Return pointer to member data
 }
 
+// --- ZMQ Distance Calculation Function (Using MessagePack) ---
+bool fetch_distances_zmq(
+        const std::vector<uint32_t>& node_ids,
+        const float* query_vector,
+        size_t query_dim,
+        std::vector<float>& out_distances,
+        int zmq_port = 5557) {
+    DistanceRequestMsgpack req_msgpack;
+    req_msgpack.node_ids = node_ids;
+
+    // Copy query vector
+    req_msgpack.query_vector.resize(query_dim);
+    memcpy(req_msgpack.query_vector.data(),
+           query_vector,
+           query_dim * sizeof(float));
+
+    std::stringstream buffer;
+    try {
+        msgpack::pack(buffer, req_msgpack);
+    } catch (const std::exception& e) {
+        std::cerr << "MessagePack pack failed for distance request: "
+                  << e.what() << std::endl;
+        return false;
+    }
+    std::string req_str = buffer.str();
+
+    void* context = zmq_ctx_new();
+    if (!context) {
+        return false;
+    }
+    void* socket = zmq_socket(context, ZMQ_REQ);
+    if (!socket) {
+        zmq_ctx_destroy(context);
+        return false;
+    }
+    int timeout = 30000;
+    zmq_setsockopt(socket, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
+    zmq_setsockopt(socket, ZMQ_SNDTIMEO, &timeout, sizeof(timeout));
+    std::string endpoint = "tcp://127.0.0.1:" + std::to_string(zmq_port);
+    if (zmq_connect(socket, endpoint.c_str()) != 0) {
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    if (zmq_send(socket, req_str.data(), req_str.size(), 0) < 0) {
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    zmq_msg_t response;
+    zmq_msg_init(&response);
+    if (zmq_msg_recv(&response, socket, 0) < 0) {
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    DistanceResponseMsgpack resp_msgpack;
+    const char* resp_data = static_cast<const char*>(zmq_msg_data(&response));
+    size_t resp_size = zmq_msg_size(&response);
+
+    try {
+        msgpack::object_handle oh = msgpack::unpack(resp_data, resp_size);
+        msgpack::object obj = oh.get();
+        obj.convert(resp_msgpack); // Convert msgpack object to our struct
+    } catch (const std::exception& e) {
+        std::cerr << "MessagePack unpack failed for distance response: "
+                  << e.what() << std::endl;
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    if (resp_msgpack.distances.size() != node_ids.size()) {
+        std::cerr << "Distance response size mismatch: Got "
+                  << resp_msgpack.distances.size() << " distances, expected "
+                  << node_ids.size() << std::endl;
+        zmq_msg_close(&response);
+        zmq_close(socket);
+        zmq_ctx_destroy(context);
+        return false;
+    }
+
+    // Copy distances to output vector
+    out_distances = resp_msgpack.distances;
+
+    zmq_msg_close(&response);
+    zmq_close(socket);
+    zmq_ctx_destroy(context);
+
+    return true;
+}
+
 void ZmqDistanceComputer::distances_batch(
         const std::vector<idx_t>& ids,
         std::vector<float>& distances_out) {
@@ -299,13 +407,21 @@ void ZmqDistanceComputer::distances_batch(
         node_ids[i] = (uint32_t)ids[i];
     }
 
-    std::vector<std::vector<float>> fetched_embeddings;
-    bool fetch_success =
-            fetch_embeddings_zmq(node_ids, fetched_embeddings, ZMQ_PORT);
+    // Use server-side distance calculation instead of fetching embeddings
+    auto start_time = std::chrono::high_resolution_clock::now();
+    bool fetch_success = fetch_distances_zmq(
+            node_ids, query.data(), d, distances_out, ZMQ_PORT);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
+                            end_time - start_time)
+                            .count();
 
-    distances_out.resize(ids.size());
+    std::cout << "fetch_distances_zmq took " << duration << " microseconds for "
+              << ids.size() << " nodes" << std::endl;
 
-    if (!fetch_success || fetched_embeddings.size() != ids.size()) {
+    if (!fetch_success || distances_out.size() != ids.size()) {
+        // Use fallback values on error
+        distances_out.resize(ids.size());
         std::fill(
                 distances_out.begin(),
                 distances_out.end(),
@@ -315,24 +431,7 @@ void ZmqDistanceComputer::distances_batch(
         return;
     }
 
-    fetch_count += fetched_embeddings.size();
-
-    for (size_t i = 0; i < fetched_embeddings.size(); i++) {
-        const std::vector<float>& embedding = fetched_embeddings[i];
-        if (embedding.size() != d) {
-            distances_out[i] = (metric_type == METRIC_INNER_PRODUCT)
-                    ? -std::numeric_limits<float>::max()
-                    : std::numeric_limits<float>::max();
-            continue;
-        }
-
-        if (is_similarity_metric(metric_type)) {
-            distances_out[i] =
-                    -fvec_inner_product(query.data(), embedding.data(), d);
-        } else {
-            distances_out[i] = fvec_L2sqr(query.data(), embedding.data(), d);
-        }
-    }
+    // Update fetch count
+    fetch_count += ids.size();
 }
-
 } // namespace faiss
