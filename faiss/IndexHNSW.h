@@ -203,6 +203,16 @@ struct IndexHNSWCagra : IndexHNSW {
 
     void add(idx_t n, const float* x) override;
 
+    /// Initialize or re-initialize the atomic counter
+    void init_counter() {
+        // Delete any existing counter first
+        if (fetch_count_ptr) {
+            delete fetch_count_ptr;
+        }
+        // Create a new atomic counter initialized to 0
+        fetch_count_ptr = new std::atomic<size_t>(0);
+    }
+
     /// entry point for search
     void search(
             idx_t n,

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <queue>
 #include <unordered_set>
 #include <vector>
@@ -78,8 +79,7 @@ struct HNSW {
                 : node_id(n), neighbor_array_index(idx) {}
     };
 
-    void delete_random_level0_edges_minimal(
-            float prune_ratio = 0.5);
+    void delete_random_level0_edges_minimal(float prune_ratio = 0.5);
 
     // for now we do only these distances
     using C = CMax<float, int64_t>;

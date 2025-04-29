@@ -68,6 +68,8 @@ set(FAISS_SRC
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
+  impl/HNSW_zmq.cpp
+  impl/HNSW_search.cpp
   impl/pq.cpp
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
@@ -171,6 +173,7 @@ set(FAISS_HEADERS
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
+  impl/HNSW_zmq.h
   impl/pq.h
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
