@@ -25,7 +25,7 @@ __forceinline__ __device__ void warpFence() {
     __threadfence_block();
 }
 
-#define GPU_MAX_SELECTION_K 2048
+#define GPU_MAX_SELECTION_K 32768
 
 #else // USE_AMD_ROCM
 
@@ -51,7 +51,7 @@ __forceinline__ __device__ void warpFence() {
 // Based on the CUDA version (we assume what version of nvcc/ptxas we were
 // compiled with), the register allocation algorithm is much better, so only
 // enable the 2048 selection code if we are above 9.0 (9.2 seems to be ok)
-#define GPU_MAX_SELECTION_K 2048
+#define GPU_MAX_SELECTION_K 32768
 #else
 #define GPU_MAX_SELECTION_K 1024
 #endif
