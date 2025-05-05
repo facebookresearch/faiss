@@ -154,7 +154,7 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     // here we can't just dispatch because the SIMD code works only on certain
     // vector sizes
-#ifdef COMPILE_SIMD_AVX512
+#ifdef COMPILE_SIMD_AVX512F
     if (d % 16 == 0 && SIMDConfig::level >= SIMDLevel::AVX512F) {
         return select_quantizer_1<SIMDLevel::AVX512F>(qtype, d, trained);
     } else
@@ -187,7 +187,7 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
 
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(
         MetricType metric) const {
-#ifdef COMPILE_SIMD_AVX512
+#ifdef COMPILE_SIMD_AVX512F
     if (d % 16 == 0 && SIMDConfig::level >= SIMDLevel::AVX512F) {
         return select_distance_computer_1<SIMDLevel::AVX512F>(
                 metric, qtype, d, trained);
@@ -216,7 +216,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool by_residual) const {
-#ifdef COMPILE_SIMD_AVX512
+#ifdef COMPILE_SIMD_AVX512F
     if (d % 16 == 0 && SIMDConfig::level >= SIMDLevel::AVX512F) {
         return sel0_InvertedListScanner<SIMDLevel::AVX512F>(
                 mt, this, quantizer, store_pairs, sel, by_residual);

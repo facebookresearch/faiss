@@ -7,9 +7,12 @@
 
 #pragma once
 
+#include <string>
+
 namespace faiss {
 
-// levels should be of increasing capacity
+/* SIMD levels, used as template parameters. All levels are defined, even for
+ * architectures different of the current one. */
 enum class SIMDLevel {
     NONE,
     // x86
@@ -22,11 +25,16 @@ enum class SIMDLevel {
     PPC_ALTIVEC,
 };
 
+/* Current SIMD configuration. This static class manages the current SIMD level
+ * and intializes it from the cpuid and the FAISS_SIMD_LEVEL
+ * environment variable  */
 struct SIMDConfig {
     static SIMDLevel level;
+    static void set_level(SIMDLevel level);
+    static SIMDLevel get_level();
+    static std::string get_level_name();
     static const char* level_names[];
-    // initializes the simd_level from the cpuid and the FAISS_SIMD_LEVEL
-    // environment variable
+
     SIMDConfig();
 };
 
@@ -77,7 +85,7 @@ struct SIMDConfig {
             DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__); \
             DISPATCH_SIMDLevel_ARM_SVE(f, __VA_ARGS__);  \
         default:                                         \
-            assert(!"invlalid SIMD level");              \
+            FAISS_ASSERT(!"invlalid SIMD level");        \
     }
 
 } // namespace faiss

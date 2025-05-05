@@ -105,7 +105,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/utils/simdlib.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -323,6 +323,9 @@ namespace std {
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
+
+%ignore faiss::SIMDConfig::level_names;
+%include <faiss/utils/simd_levels.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -618,7 +621,7 @@ void gpu_sync_all_devices()
 // NOTE(matthijs) let's not go into wrapping simdlib
 struct faiss::simd16uint16 {};
 
-%include  <faiss/impl/simd_result_handlers.h>
+%include  <faiss/impl/pq_4bit/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>

@@ -23,6 +23,8 @@ namespace faiss {
 struct DummyScaler {
     static constexpr int nscale = 0;
 
+    explicit DummyScaler(int x = -1) {}
+
     inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
         return simd32uint8(0);
@@ -64,12 +66,12 @@ struct DummyScaler {
 
 /// consumes 2x4 bits to encode a norm as a scalar additive quantizer
 /// the norm is scaled because its range if larger than other components
-struct NormTableScaler {
+struct Scaler2x4bit {
     static constexpr int nscale = 2;
     int scale_int;
     simd16uint16 scale_simd;
 
-    explicit NormTableScaler(int scale) : scale_int(scale), scale_simd(scale) {}
+    explicit Scaler2x4bit(int scale) : scale_int(scale), scale_simd(scale) {}
 
     inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
             const {
