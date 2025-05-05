@@ -9,6 +9,9 @@
 
 #include <immintrin.h>
 
+#define AUTOVEC_LEVEL SIMDLevel::AVX512F
+#include <faiss/utils/simd_impl/distances_autovec-inl.h>
+
 namespace faiss {
 
 template <>
