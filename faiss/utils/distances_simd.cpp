@@ -19,6 +19,9 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/simdlib.h>
 
+#define AUTOVEC_LEVEL SIMDLevel::NONE
+#include <faiss/utils/simd_impl/distances_autovec-inl.h>
+
 #ifdef __SSE3__
 #include <immintrin.h>
 #endif
@@ -191,43 +194,19 @@ void fvec_inner_products_ny_ref(
  * Autovectorized implementations
  */
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    float res = 0.F;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (size_t i = 0; i != d; ++i) {
-        res += x[i] * y[i];
-    }
-    return res;
-}
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+// dispatching functions
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 float fvec_norm_L2sqr(const float* x, size_t d) {
-    // the double in the _ref is suspected to be a typo. Some of the manual
-    // implementations this replaces used float.
-    float res = 0;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (size_t i = 0; i != d; ++i) {
-        res += x[i] * x[i];
-    }
-
-    return res;
+    DISPATCH_SIMDLevel(fvec_norm_L2sqr, x, d);
 }
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    size_t i;
-    float res = 0;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (i = 0; i < d; i++) {
-        const float tmp = x[i] - y[i];
-        res += tmp * tmp;
-    }
-    return res;
+    DISPATCH_SIMDLevel(fvec_L2sqr, x, y, d);
 }
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+float fvec_inner_product(const float* x, const float* y, size_t d) {
+    DISPATCH_SIMDLevel(fvec_inner_product, x, y, d);
+}
 
 /// Special version of inner product that computes 4 distances
 /// between x and yi
