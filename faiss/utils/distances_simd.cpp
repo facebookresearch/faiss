@@ -3246,7 +3246,8 @@ void fvec_inner_products_ny(
  * heavily optimized table computations
  ***************************************************************************/
 
-[[maybe_unused]] static inline void fvec_madd_ref(
+template <>
+void fvec_madd<SIMDLevel::NONE>(
         size_t n,
         const float* a,
         float bf,
@@ -3255,94 +3256,6 @@ void fvec_inner_products_ny(
     for (size_t i = 0; i < n; i++)
         c[i] = a[i] + bf * b[i];
 }
-
-#if defined(__AVX512F__)
-
-static inline void fvec_madd_avx512(
-        const size_t n,
-        const float* __restrict a,
-        const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
-    const size_t n16 = n / 16;
-    const size_t n_for_masking = n % 16;
-
-    const __m512 bfmm = _mm512_set1_ps(bf);
-
-    size_t idx = 0;
-    for (idx = 0; idx < n16 * 16; idx += 16) {
-        const __m512 ax = _mm512_loadu_ps(a + idx);
-        const __m512 bx = _mm512_loadu_ps(b + idx);
-        const __m512 abmul = _mm512_fmadd_ps(bfmm, bx, ax);
-        _mm512_storeu_ps(c + idx, abmul);
-    }
-
-    if (n_for_masking > 0) {
-        const __mmask16 mask = (1 << n_for_masking) - 1;
-
-        const __m512 ax = _mm512_maskz_loadu_ps(mask, a + idx);
-        const __m512 bx = _mm512_maskz_loadu_ps(mask, b + idx);
-        const __m512 abmul = _mm512_fmadd_ps(bfmm, bx, ax);
-        _mm512_mask_storeu_ps(c + idx, mask, abmul);
-    }
-}
-
-#elif defined(__AVX2__)
-
-static inline void fvec_madd_avx2(
-        const size_t n,
-        const float* __restrict a,
-        const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
-    //
-    const size_t n8 = n / 8;
-    const size_t n_for_masking = n % 8;
-
-    const __m256 bfmm = _mm256_set1_ps(bf);
-
-    size_t idx = 0;
-    for (idx = 0; idx < n8 * 8; idx += 8) {
-        const __m256 ax = _mm256_loadu_ps(a + idx);
-        const __m256 bx = _mm256_loadu_ps(b + idx);
-        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
-        _mm256_storeu_ps(c + idx, abmul);
-    }
-
-    if (n_for_masking > 0) {
-        __m256i mask;
-        switch (n_for_masking) {
-            case 1:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, -1);
-                break;
-            case 2:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, -1, -1);
-                break;
-            case 3:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, -1, -1, -1);
-                break;
-            case 4:
-                mask = _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1);
-                break;
-            case 5:
-                mask = _mm256_set_epi32(0, 0, 0, -1, -1, -1, -1, -1);
-                break;
-            case 6:
-                mask = _mm256_set_epi32(0, 0, -1, -1, -1, -1, -1, -1);
-                break;
-            case 7:
-                mask = _mm256_set_epi32(0, -1, -1, -1, -1, -1, -1, -1);
-                break;
-        }
-
-        const __m256 ax = _mm256_maskload_ps(a + idx, mask);
-        const __m256 bx = _mm256_maskload_ps(b + idx, mask);
-        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
-        _mm256_maskstore_ps(c + idx, mask, abmul);
-    }
-}
-
-#endif
 
 #ifdef __SSE3__
 
@@ -3367,16 +3280,7 @@ static inline void fvec_madd_avx2(
 }
 
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
-#ifdef __AVX512F__
-    fvec_madd_avx512(n, a, bf, b, c);
-#elif __AVX2__
-    fvec_madd_avx2(n, a, bf, b, c);
-#else
-    if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
-        fvec_madd_sse(n, a, bf, b, c);
-    else
-        fvec_madd_ref(n, a, bf, b, c);
-#endif
+    DISPATCH_SIMDLevel(fvec_madd, n, a, bf, b, c);
 }
 
 #elif defined(__ARM_FEATURE_SVE)
