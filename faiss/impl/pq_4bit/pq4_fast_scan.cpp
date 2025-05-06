@@ -7,10 +7,18 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/platform_macros.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
-#include <array>
+#ifdef __x86_64__
+#ifdef __AVX2__
+#error "this should not be compiled with AVX2"
+#endif
+#endif
+
+#include <faiss/impl/pq_4bit/kernels_simd256.h>
+
+#include <faiss/impl/pq_4bit/dispatching.h>
 
 namespace faiss {
 
@@ -318,6 +326,184 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+/***************************************************************
+ * Packing functions
+ ***************************************************************/
+
+int pq4_qbs_to_nq(int qbs) {
+    int i0 = 0;
+    int qi = qbs;
+    while (qi) {
+        int nq = qi & 15;
+        qi >>= 4;
+        i0 += nq;
+    }
+    return i0;
+}
+
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    StoreResultHandler<SIMDLevel::NONE> handler(accu, ntotal2);
+    DummyScaler scaler;
+    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler);
+}
+
+int pq4_preferred_qbs(int n) {
+    // from timmings in P141901742, P141902828
+    static int map[12] = {
+            0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
+    if (n <= 11) {
+        return map[n];
+    } else if (n <= 24) {
+        // override qbs: all first stages with 3 steps
+        // then 1 stage with the rest
+        int nbit = 4 * (n / 3); // nbits with only 3s
+        int qbs = 0x33333333 & ((1 << nbit) - 1);
+        qbs |= (n % 3) << nbit;
+        return qbs;
+    } else {
+        FAISS_THROW_FMT("number of queries %d too large", n);
+    }
+}
+
+/**************************** Dispatching  */
+
+template <>
+PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, false>(KNN_ARGS_LIST) {
+    return make_pq4_scanner_1<SIMDLevel::NONE, false>(KNN_ARGS_LIST_2);
+}
+
+template <>
+PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, true>(KNN_ARGS_LIST) {
+    return make_pq4_scanner_1<SIMDLevel::NONE, true>(KNN_ARGS_LIST_2);
+}
+
+template <>
+PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, true>(RRES_ARGS_LIST) {
+    return make_pq4_scanner_1<SIMDLevel::NONE, true>(RRES_ARGS_LIST_2);
+}
+
+template <>
+PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, true>(PRES_ARGS_LIST) {
+    return make_pq4_scanner_1<SIMDLevel::NONE, true>(PRES_ARGS_LIST_2);
+}
+
+template <bool with_id_map>
+PQ4CodeScanner* make_knn_scanner(
+        bool is_max,
+        int ns,
+        bool ur,
+        idx_t nq,
+        idx_t ntotal,
+        idx_t k,
+        float* dis,
+        idx_t* ids,
+        const IDSelector* sel) {
+#ifdef COMPILE_SIMD_AVX512F
+    if (SIMDConfig::level == SIMDLevel::AVX512F) {
+        return make_pq4_scanner<SIMDLevel::AVX512F, with_id_map>(
+                is_max, ns, ur, nq, ntotal, k, dis, ids, nullptr);
+    } else
+#endif
+#ifdef COMPILE_SIMD_AVX2
+            if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return make_pq4_scanner<SIMDLevel::AVX2, with_id_map>(
+                is_max, ns, ur, nq, ntotal, k, dis, ids, nullptr);
+    } else
+#endif
+    {
+        return make_pq4_scanner<SIMDLevel::NONE, with_id_map>(
+                is_max, ns, ur, nq, ntotal, k, dis, ids, nullptr);
+    }
+}
+
+PQ4CodeScanner* pq4_make_flat_knn_handler(
+        bool is_max,
+        bool ur,
+        idx_t nq,
+        idx_t k,
+        idx_t ntotal,
+        float* dis,
+        idx_t* ids,
+        int ns,
+        const float* normalizers,
+        bool disable) {
+    PQ4CodeScanner* res = make_knn_scanner<false>(
+            is_max, ns, ur, nq, ntotal, k, dis, ids, nullptr);
+    res->disable = disable;
+    res->normalizers = normalizers;
+    return res;
+}
+
+PQ4CodeScanner* pq4_make_ivf_knn_handler(
+        bool is_max,
+        bool use_reservoir,
+        idx_t nq,
+        idx_t k,
+        float* dis,
+        idx_t* ids,
+        int norm_scale,
+        const IDSelector* sel) {
+    return make_knn_scanner<true>(
+            is_max, norm_scale, use_reservoir, nq, 0, k, dis, ids, sel);
+}
+
+PQ4CodeScanner* pq4_make_ivf_range_handler(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        int norm_scale,
+        const IDSelector* sel) {
+#ifdef COMPILE_SIMD_AVX512F
+    if (SIMDConfig::level == SIMDLevel::AVX512F) {
+        return make_pq4_scanner<SIMDLevel::AVX512F, true>(
+                is_max, norm_scale, &rres, radius, 0, sel);
+    } else
+#endif
+#ifdef COMPILE_SIMD_AVX2
+            if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return make_pq4_scanner<SIMDLevel::AVX2, true>(
+                is_max, norm_scale, &rres, radius, 0, sel);
+    } else
+#endif
+    {
+        return make_pq4_scanner<SIMDLevel::NONE, true>(
+                is_max, norm_scale, &rres, radius, 0, sel);
+    }
+}
+
+PQ4CodeScanner* pq4_make_ivf_partial_range_handler(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        idx_t i0,
+        idx_t i1,
+        int norm_scale,
+        const IDSelector* sel) {
+#ifdef COMPILE_SIMD_AVX512F
+    if (SIMDConfig::level == SIMDLevel::AVX512F) {
+        return make_pq4_scanner<SIMDLevel::AVX512F, true>(
+                is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    } else
+#endif
+#ifdef COMPILE_SIMD_AVX2
+            if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return make_pq4_scanner<SIMDLevel::AVX2, true>(
+                is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    } else
+#endif
+    {
+        return make_pq4_scanner<SIMDLevel::NONE, true>(
+                is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    }
 }
 
 } // namespace faiss

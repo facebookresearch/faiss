@@ -18,6 +18,9 @@ SIMDLevel SIMDConfig::level = SIMDLevel::NONE;
 const char* SIMDConfig::level_names[] =
         {"NONE", "AVX2", "AVX512F", "ARM_NEON", "ARM_SVE", "PPC"};
 
+// it is there to make sure the constructor runs
+static SIMDConfig dummy_config;
+
 SIMDConfig::SIMDConfig() {
     char* env_var = getenv("FAISS_SIMD_LEVEL");
     if (env_var) {
@@ -44,18 +47,31 @@ SIMDConfig::SIMDConfig() {
 
 #ifdef COMPILE_SIMD_AVX512F
         if (ebx & (1 << 16)) {
-            level = AVX512F;
+            level = SIMDLevel::AVX512F;
         } else
 #endif
 
 #ifdef COMPILE_SIMD_AVX2
                 if (ecx & 32) {
-            level = AVX2;
+            level = SIMDLevel::AVX2;
         } else
 #endif
-            level = NONE;
+            level = SIMDLevel::NONE;
     }
 #endif
+}
+
+void SIMDConfig::set_level(SIMDLevel l) {
+    level = l;
+    // this could be used to set function pointers in the future
+}
+
+SIMDLevel SIMDConfig::get_level() {
+    return level;
+}
+
+std::string SIMDConfig::get_level_name() {
+    return std::string(level_names[int(level)]);
 }
 
 } // namespace faiss

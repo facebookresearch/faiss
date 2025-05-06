@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 
 #include <cstddef>
 #include <cstdint>
