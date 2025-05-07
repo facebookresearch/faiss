@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/GeneralDistance.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
+#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -93,6 +95,24 @@ void runL2Distance(
         int k,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
+        std::vector<cudaStream_t> streams,
+        // Do we care about `outDistances`? If not, we can
+        // take shortcuts.
+        bool ignoreOutDistances = false);
+
+void runL2Distance(
+        GpuResources* resources,
+        cudaStream_t stream,
+        Tensor<float, 2, true>& vectors,
+        bool vectorsRowMajor,
+        // can be optionally pre-computed; nullptr if we
+        // have to compute it upon the call
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<float, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
         // Do we care about `outDistances`? If not, we can
         // take shortcuts.
         bool ignoreOutDistances = false);
@@ -109,6 +129,33 @@ void runL2Distance(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         bool ignoreOutDistances = false);
+
+void runL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<float, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<float, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<unsigned short, 2, true>& outIndices,
+        std::vector<cudaStream_t> streams,
+        bool ignoreOutDistances);
+
+void runL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<float, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<float, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<unsigned short, 2, true>& outIndices,
+        bool ignoreOutDistances);
 
 void runL2Distance(
         GpuResources* resources,
