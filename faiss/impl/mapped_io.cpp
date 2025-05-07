@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -30,7 +30,7 @@
 
 namespace faiss {
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
 
 struct MmappedFileMappingOwner::PImpl {
     void* ptr = nullptr;
