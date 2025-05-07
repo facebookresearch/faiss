@@ -14,6 +14,7 @@
 #include <random>
 
 #include <algorithm>
+#include <utility>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
@@ -825,7 +826,7 @@ void LSQTimer::reset() {
 }
 
 LSQTimerScope::LSQTimerScope(LSQTimer* timer, std::string name)
-        : timer(timer), name(name), finished(false) {
+        : timer(timer), name(std::move(name)), finished(false) {
     t0 = getmillisecs();
 }
 
