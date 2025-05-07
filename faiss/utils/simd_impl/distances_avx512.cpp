@@ -15,6 +15,16 @@
 namespace faiss {
 
 template <>
+float fvec_L1<SIMDLevel::AVX512F>(const float* x, const float* y, size_t d) {
+    return fvec_L1<SIMDLevel::NONE>(x, y, d);
+}
+
+template <>
+float fvec_Linf<SIMDLevel::AVX512F>(const float* x, const float* y, size_t d) {
+    return fvec_Linf<SIMDLevel::NONE>(x, y, d);
+}
+
+template <>
 void fvec_madd<SIMDLevel::AVX512F>(
         const size_t n,
         const float* __restrict a,

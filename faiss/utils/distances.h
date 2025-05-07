@@ -40,7 +40,13 @@ float fvec_inner_product(const float* x, const float* y, size_t d);
 /// L1 distance
 float fvec_L1(const float* x, const float* y, size_t d);
 
+template <SIMDLevel>
+float fvec_L1(const float* x, const float* y, size_t d);
+
 /// infinity distance
+float fvec_Linf(const float* x, const float* y, size_t d);
+
+template <SIMDLevel>
 float fvec_Linf(const float* x, const float* y, size_t d);
 
 /// Special version of inner product that computes 4 distances
