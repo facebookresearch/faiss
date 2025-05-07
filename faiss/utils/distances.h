@@ -15,6 +15,7 @@
 
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -27,7 +28,13 @@ struct IDSelector;
 /// Squared L2 distance between two vectors
 float fvec_L2sqr(const float* x, const float* y, size_t d);
 
+template <SIMDLevel>
+float fvec_L2sqr(const float* x, const float* y, size_t d);
+
 /// inner product
+float fvec_inner_product(const float* x, const float* y, size_t d);
+
+template <SIMDLevel>
 float fvec_inner_product(const float* x, const float* y, size_t d);
 
 /// L1 distance
@@ -136,6 +143,9 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
         size_t ny);
 
 /** squared norm of a vector */
+float fvec_norm_L2sqr(const float* x, size_t d);
+
+template <SIMDLevel>
 float fvec_norm_L2sqr(const float* x, size_t d);
 
 /** compute the L2 norms for a set of vectors
@@ -471,6 +481,10 @@ void compute_PQ_dis_tables_dsub2(
  * @param b   size n
  * @param c   result table, size n
  */
+void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
+
+/* specialized version for each SIMD level */
+template <SIMDLevel>
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 
 /** same as fvec_madd, also return index of the min of the result table
