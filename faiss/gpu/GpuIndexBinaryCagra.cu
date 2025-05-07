@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ GpuIndexBinaryCagra::GpuIndexBinaryCagra(
     this->is_trained = false;
 }
 
-void GpuIndexBinaryCagra::train(idx_t n, const char* x) {
+void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
     DeviceScope scope(config_.device);
     if (this->is_trained) {
         FAISS_ASSERT(index_);
@@ -101,7 +101,7 @@ void GpuIndexBinaryCagra::train(idx_t n, const char* x) {
     this->ntotal = n;
 }
 
-void GpuIndexBinaryCagra::add(idx_t n, const char* x) {
+void GpuIndexBinaryCagra::add(idx_t n, const uint8_t* x) {
     train(n, x);
     this->is_trained = true;
     this->ntotal = n;
@@ -111,9 +111,123 @@ bool GpuIndexBinaryCagra::addImplRequiresIDs_() const {
     return false;
 };
 
-void GpuIndexBinaryCagra::addImpl_(idx_t n, const char* x, const idx_t* ids) {
+void GpuIndexBinaryCagra::addImpl_(idx_t n, const uint8_t* x, const idx_t* ids) {
     FAISS_THROW_MSG("adding vectors is not supported by GpuIndexBinaryCagra.");
 };
+
+void GpuIndexBinaryCagra::search(
+    idx_t n,
+    const uint8_t* x,
+    idx_t k,
+    int32_t* distances,
+    faiss::idx_t* labels,
+    const SearchParameters* params) const {
+DeviceScope scope(binaryCagraConfig_.device);
+auto stream = resources_->getDefaultStream(binaryCagraConfig_.device);
+
+if (n == 0) {
+    return;
+}
+
+FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
+
+validateKSelect(k);
+
+// The input vectors may be too large for the GPU, but we still
+// assume that the output distances and labels are not.
+// Go ahead and make space for output distances and labels on the
+// GPU.
+// If we reach a point where all inputs are too big, we can add
+// another level of tiling.
+auto outDistances = toDeviceTemporary<int32_t, 2>(
+        resources_.get(),
+        binaryCagraConfig_.device,
+        distances,
+        stream,
+        {n, k});
+
+auto outIndices = toDeviceTemporary<idx_t, 2>(
+        resources_.get(), binaryCagraConfig_.device, labels, stream, {n, k});
+
+bool usePaged = false;
+
+if (getDeviceForAddress(x) == -1) {
+    // It is possible that the user is querying for a vector set size
+    // `x` that won't fit on the GPU.
+    // In this case, we will have to handle paging of the data from CPU
+    // -> GPU.
+    // Currently, we don't handle the case where the output data won't
+    // fit on the GPU (e.g., n * k is too large for the GPU memory).
+    size_t dataSize = n * (this->d / 8) * sizeof(uint8_t);
+
+    if (dataSize >= kMinPageSize) {
+        searchFromCpuPaged_(
+                n, x, k, outDistances.data(), outIndices.data());
+        usePaged = true;
+    }
+}
+
+if (!usePaged) {
+    searchNonPaged_(n, x, k, outDistances.data(), outIndices.data());
+}
+
+// Copy back if necessary
+fromDevice<int32_t, 2>(outDistances, distances, stream);
+fromDevice<idx_t, 2>(outIndices, labels, stream);
+}
+
+void GpuIndexBinaryFlat::searchNonPaged_(
+    idx_t n,
+    const uint8_t* x,
+    int k,
+    int32_t* outDistancesData,
+    idx_t* outIndicesData) const {
+Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
+Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
+
+auto stream = resources_->getDefaultStream(binaryFlatConfig_.device);
+
+// Make sure arguments are on the device we desire; use temporary
+// memory allocations to move it if necessary
+auto vecs = toDeviceTemporary<uint8_t, 2>(
+        resources_.get(),
+        binaryFlatConfig_.device,
+        const_cast<uint8_t*>(x),
+        stream,
+        {n, (this->d / 8)});
+
+data_->query(vecs, k, outDistances, outIndices);
+}
+
+void GpuIndexBinaryFlat::searchFromCpuPaged_(
+    idx_t n,
+    const uint8_t* x,
+    int k,
+    int32_t* outDistancesData,
+    idx_t* outIndicesData) const {
+Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
+Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
+
+idx_t vectorSize = sizeof(uint8_t) * (this->d / 8);
+
+// Just page without overlapping copy with compute (as GpuIndexFlat does)
+auto batchSize =
+        utils::nextHighestPowerOf2(((idx_t)kMinPageSize / vectorSize));
+
+for (idx_t cur = 0; cur < n; cur += batchSize) {
+    auto num = std::min(batchSize, n - cur);
+
+    auto outDistancesSlice = outDistances.narrowOutermost(cur, num);
+    auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
+
+    searchNonPaged_(
+            num,
+            x + cur * (this->d / 8),
+            k,
+            outDistancesSlice.data(),
+            outIndicesSlice.data());
+}
+}
 
 void GpuIndexCagra::searchImpl_(
         idx_t n,
@@ -161,7 +275,7 @@ void GpuIndexCagra::searchImpl_(
     }
 }
 
-void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
+void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
     FAISS_ASSERT(index);
 
     DeviceScope scope(config_.device);
@@ -188,7 +302,7 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
         }
     }
 
-    index_ = std::make_shared<CuvsCagra>(
+    index_ = std::make_shared<BinaryCuvsCagra>(
             this->resources_.get(),
             this->d,
             index->ntotal,
@@ -202,7 +316,7 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
     this->is_trained = true;
 }
 
-void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
+void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
 
     DeviceScope scope(config_.device);
@@ -277,7 +391,7 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     index->init_level0 = true;
 }
 
-void GpuIndexCagra::reset() {
+void GpuIndexBinaryCagra::reset() {
     DeviceScope scope(config_.device);
 
     if (index_) {
@@ -289,7 +403,7 @@ void GpuIndexCagra::reset() {
     }
 }
 
-std::vector<idx_t> GpuIndexCagra::get_knngraph() const {
+std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
     FAISS_ASSERT(index_ && this->is_trained);
 
     return index_->get_knngraph();
