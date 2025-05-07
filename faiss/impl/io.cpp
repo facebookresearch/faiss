@@ -260,7 +260,7 @@ std::string fourcc_inv(uint32_t x) {
 std::string fourcc_inv_printable(uint32_t x) {
     char cstr[5];
     fourcc_inv(x, cstr);
-    std::string str = "";
+    std::string str;
     for (int i = 0; i < 4; i++) {
         uint8_t c = cstr[i];
         if (32 <= c && c < 127) {
