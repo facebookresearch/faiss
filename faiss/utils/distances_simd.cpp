@@ -10,7 +10,6 @@
 #include <faiss/utils/distances.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -18,6 +17,9 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/simdlib.h>
+
+#define AUTOVEC_LEVEL SIMDLevel::NONE
+#include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
 #ifdef __SSE3__
 #include <immintrin.h>
@@ -66,7 +68,8 @@ namespace faiss {
  * Reference implementations
  */
 
-float fvec_L1_ref(const float* x, const float* y, size_t d) {
+template <>
+float fvec_L1<SIMDLevel::NONE>(const float* x, const float* y, size_t d) {
     size_t i;
     float res = 0;
     for (i = 0; i < d; i++) {
@@ -76,13 +79,22 @@ float fvec_L1_ref(const float* x, const float* y, size_t d) {
     return res;
 }
 
-float fvec_Linf_ref(const float* x, const float* y, size_t d) {
+float fvec_L1(const float* x, const float* y, size_t d) {
+    DISPATCH_SIMDLevel(fvec_L1, x, y, d);
+}
+
+template <>
+float fvec_Linf<SIMDLevel::NONE>(const float* x, const float* y, size_t d) {
     size_t i;
     float res = 0;
     for (i = 0; i < d; i++) {
         res = fmax(res, fabs(x[i] - y[i]));
     }
     return res;
+}
+
+float fvec_Linf(const float* x, const float* y, size_t d) {
+    DISPATCH_SIMDLevel(fvec_Linf, x, y, d);
 }
 
 void fvec_L2sqr_ny_ref(
@@ -191,43 +203,19 @@ void fvec_inner_products_ny_ref(
  * Autovectorized implementations
  */
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    float res = 0.F;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (size_t i = 0; i != d; ++i) {
-        res += x[i] * y[i];
-    }
-    return res;
-}
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+// dispatching functions
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 float fvec_norm_L2sqr(const float* x, size_t d) {
-    // the double in the _ref is suspected to be a typo. Some of the manual
-    // implementations this replaces used float.
-    float res = 0;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (size_t i = 0; i != d; ++i) {
-        res += x[i] * x[i];
-    }
-
-    return res;
+    DISPATCH_SIMDLevel(fvec_norm_L2sqr, x, d);
 }
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
-FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    size_t i;
-    float res = 0;
-    FAISS_PRAGMA_IMPRECISE_LOOP
-    for (i = 0; i < d; i++) {
-        const float tmp = x[i] - y[i];
-        res += tmp * tmp;
-    }
-    return res;
+    DISPATCH_SIMDLevel(fvec_L2sqr, x, y, d);
 }
-FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+float fvec_inner_product(const float* x, const float* y, size_t d) {
+    DISPATCH_SIMDLevel(fvec_inner_product, x, y, d);
+}
 
 /// Special version of inner product that computes 4 distances
 /// between x and yi
@@ -304,24 +292,6 @@ FAISS_PRAGMA_IMPRECISE_FUNCTION_END
  */
 
 #ifdef __SSE3__
-
-// reads 0 <= d < 4 floats as __m128
-static inline __m128 masked_read(int d, const float* x) {
-    assert(0 <= d && d < 4);
-    ALIGNED(16) float buf[4] = {0, 0, 0, 0};
-    switch (d) {
-        case 3:
-            buf[2] = x[2];
-            [[fallthrough]];
-        case 2:
-            buf[1] = x[1];
-            [[fallthrough]];
-        case 1:
-            buf[0] = x[0];
-    }
-    return _mm_load_ps(buf);
-    // cannot use AVX2 _mm_mask_set1_epi32
-}
 
 namespace {
 
@@ -2587,101 +2557,7 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
 
 #ifdef USE_AVX
 
-float fvec_L1(const float* x, const float* y, size_t d) {
-    __m256 msum1 = _mm256_setzero_ps();
-    // signmask used for absolute value
-    __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
-
-    while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps(x);
-        x += 8;
-        __m256 my = _mm256_loadu_ps(y);
-        y += 8;
-        // subtract
-        const __m256 a_m_b = _mm256_sub_ps(mx, my);
-        // find sum of absolute value of distances (manhattan distance)
-        msum1 = _mm256_add_ps(msum1, _mm256_and_ps(signmask, a_m_b));
-        d -= 8;
-    }
-
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 = _mm_add_ps(msum2, _mm256_extractf128_ps(msum1, 0));
-    __m128 signmask2 = _mm_castsi128_ps(_mm_set1_epi32(0x7fffffffUL));
-
-    if (d >= 4) {
-        __m128 mx = _mm_loadu_ps(x);
-        x += 4;
-        __m128 my = _mm_loadu_ps(y);
-        y += 4;
-        const __m128 a_m_b = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_and_ps(signmask2, a_m_b));
-        d -= 4;
-    }
-
-    if (d > 0) {
-        __m128 mx = masked_read(d, x);
-        __m128 my = masked_read(d, y);
-        __m128 a_m_b = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_and_ps(signmask2, a_m_b));
-    }
-
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    return _mm_cvtss_f32(msum2);
-}
-
-float fvec_Linf(const float* x, const float* y, size_t d) {
-    __m256 msum1 = _mm256_setzero_ps();
-    // signmask used for absolute value
-    __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
-
-    while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps(x);
-        x += 8;
-        __m256 my = _mm256_loadu_ps(y);
-        y += 8;
-        // subtract
-        const __m256 a_m_b = _mm256_sub_ps(mx, my);
-        // find max of absolute value of distances (chebyshev distance)
-        msum1 = _mm256_max_ps(msum1, _mm256_and_ps(signmask, a_m_b));
-        d -= 8;
-    }
-
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 = _mm_max_ps(msum2, _mm256_extractf128_ps(msum1, 0));
-    __m128 signmask2 = _mm_castsi128_ps(_mm_set1_epi32(0x7fffffffUL));
-
-    if (d >= 4) {
-        __m128 mx = _mm_loadu_ps(x);
-        x += 4;
-        __m128 my = _mm_loadu_ps(y);
-        y += 4;
-        const __m128 a_m_b = _mm_sub_ps(mx, my);
-        msum2 = _mm_max_ps(msum2, _mm_and_ps(signmask2, a_m_b));
-        d -= 4;
-    }
-
-    if (d > 0) {
-        __m128 mx = masked_read(d, x);
-        __m128 my = masked_read(d, y);
-        __m128 a_m_b = _mm_sub_ps(mx, my);
-        msum2 = _mm_max_ps(msum2, _mm_and_ps(signmask2, a_m_b));
-    }
-
-    msum2 = _mm_max_ps(_mm_movehl_ps(msum2, msum2), msum2);
-    msum2 = _mm_max_ps(msum2, _mm_shuffle_ps(msum2, msum2, 1));
-    return _mm_cvtss_f32(msum2);
-}
-
 #elif defined(__SSE3__) // But not AVX
-
-float fvec_L1(const float* x, const float* y, size_t d) {
-    return fvec_L1_ref(x, y, d);
-}
-
-float fvec_Linf(const float* x, const float* y, size_t d) {
-    return fvec_Linf_ref(x, y, d);
-}
 
 #elif defined(__ARM_FEATURE_SVE)
 
@@ -3075,14 +2951,6 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
             distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
 }
 
-float fvec_L1(const float* x, const float* y, size_t d) {
-    return fvec_L1_ref(x, y, d);
-}
-
-float fvec_Linf(const float* x, const float* y, size_t d) {
-    return fvec_Linf_ref(x, y, d);
-}
-
 void fvec_inner_products_ny(
         float* dis,
         const float* x,
@@ -3162,14 +3030,6 @@ size_t fvec_L2sqr_ny_nearest_y_transposed(
             distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
 }
 
-float fvec_L1(const float* x, const float* y, size_t d) {
-    return fvec_L1_ref(x, y, d);
-}
-
-float fvec_Linf(const float* x, const float* y, size_t d) {
-    return fvec_Linf_ref(x, y, d);
-}
-
 void fvec_inner_products_ny(
         float* dis,
         const float* x,
@@ -3181,14 +3041,6 @@ void fvec_inner_products_ny(
 
 #else
 // scalar implementation
-
-float fvec_L1(const float* x, const float* y, size_t d) {
-    return fvec_L1_ref(x, y, d);
-}
-
-float fvec_Linf(const float* x, const float* y, size_t d) {
-    return fvec_Linf_ref(x, y, d);
-}
 
 void fvec_L2sqr_ny(
         float* dis,
@@ -3246,7 +3098,8 @@ void fvec_inner_products_ny(
  * heavily optimized table computations
  ***************************************************************************/
 
-[[maybe_unused]] static inline void fvec_madd_ref(
+template <>
+void fvec_madd<SIMDLevel::NONE>(
         size_t n,
         const float* a,
         float bf,
@@ -3255,94 +3108,6 @@ void fvec_inner_products_ny(
     for (size_t i = 0; i < n; i++)
         c[i] = a[i] + bf * b[i];
 }
-
-#if defined(__AVX512F__)
-
-static inline void fvec_madd_avx512(
-        const size_t n,
-        const float* __restrict a,
-        const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
-    const size_t n16 = n / 16;
-    const size_t n_for_masking = n % 16;
-
-    const __m512 bfmm = _mm512_set1_ps(bf);
-
-    size_t idx = 0;
-    for (idx = 0; idx < n16 * 16; idx += 16) {
-        const __m512 ax = _mm512_loadu_ps(a + idx);
-        const __m512 bx = _mm512_loadu_ps(b + idx);
-        const __m512 abmul = _mm512_fmadd_ps(bfmm, bx, ax);
-        _mm512_storeu_ps(c + idx, abmul);
-    }
-
-    if (n_for_masking > 0) {
-        const __mmask16 mask = (1 << n_for_masking) - 1;
-
-        const __m512 ax = _mm512_maskz_loadu_ps(mask, a + idx);
-        const __m512 bx = _mm512_maskz_loadu_ps(mask, b + idx);
-        const __m512 abmul = _mm512_fmadd_ps(bfmm, bx, ax);
-        _mm512_mask_storeu_ps(c + idx, mask, abmul);
-    }
-}
-
-#elif defined(__AVX2__)
-
-static inline void fvec_madd_avx2(
-        const size_t n,
-        const float* __restrict a,
-        const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
-    //
-    const size_t n8 = n / 8;
-    const size_t n_for_masking = n % 8;
-
-    const __m256 bfmm = _mm256_set1_ps(bf);
-
-    size_t idx = 0;
-    for (idx = 0; idx < n8 * 8; idx += 8) {
-        const __m256 ax = _mm256_loadu_ps(a + idx);
-        const __m256 bx = _mm256_loadu_ps(b + idx);
-        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
-        _mm256_storeu_ps(c + idx, abmul);
-    }
-
-    if (n_for_masking > 0) {
-        __m256i mask;
-        switch (n_for_masking) {
-            case 1:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, -1);
-                break;
-            case 2:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, -1, -1);
-                break;
-            case 3:
-                mask = _mm256_set_epi32(0, 0, 0, 0, 0, -1, -1, -1);
-                break;
-            case 4:
-                mask = _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1);
-                break;
-            case 5:
-                mask = _mm256_set_epi32(0, 0, 0, -1, -1, -1, -1, -1);
-                break;
-            case 6:
-                mask = _mm256_set_epi32(0, 0, -1, -1, -1, -1, -1, -1);
-                break;
-            case 7:
-                mask = _mm256_set_epi32(0, -1, -1, -1, -1, -1, -1, -1);
-                break;
-        }
-
-        const __m256 ax = _mm256_maskload_ps(a + idx, mask);
-        const __m256 bx = _mm256_maskload_ps(b + idx, mask);
-        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
-        _mm256_maskstore_ps(c + idx, mask, abmul);
-    }
-}
-
-#endif
 
 #ifdef __SSE3__
 
@@ -3367,16 +3132,7 @@ static inline void fvec_madd_avx2(
 }
 
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
-#ifdef __AVX512F__
-    fvec_madd_avx512(n, a, bf, b, c);
-#elif __AVX2__
-    fvec_madd_avx2(n, a, bf, b, c);
-#else
-    if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
-        fvec_madd_sse(n, a, bf, b, c);
-    else
-        fvec_madd_ref(n, a, bf, b, c);
-#endif
+    DISPATCH_SIMDLevel(fvec_madd, n, a, bf, b, c);
 }
 
 #elif defined(__ARM_FEATURE_SVE)

@@ -7,14 +7,10 @@
 
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 
-#include <cassert>
-#include <memory>
-
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResidualQuantizer.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
 
@@ -199,11 +195,10 @@ void IndexAdditiveQuantizerFastScan::search(
         return;
     }
 
-    NormTableScaler scaler(norm_scale);
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<true>(n, x, k, distances, labels, norm_scale);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<false>(n, x, k, distances, labels, norm_scale);
     }
 }
 

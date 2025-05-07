@@ -13,7 +13,6 @@
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
@@ -95,7 +94,7 @@ struct IndexFastScan : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const NormTableScaler* scaler) const;
+            int norm_scale) const;
 
     template <class Cfloat>
     void search_implem_234(
@@ -104,7 +103,7 @@ struct IndexFastScan : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const NormTableScaler* scaler) const;
+            int norm_scale) const;
 
     template <class C>
     void search_implem_12(
@@ -114,7 +113,7 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const NormTableScaler* scaler) const;
+            int norm_scale) const;
 
     template <class C>
     void search_implem_14(
@@ -124,7 +123,7 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const NormTableScaler* scaler) const;
+            int norm_scale) const;
 
     void reconstruct(idx_t key, float* recons) const override;
     size_t remove_ids(const IDSelector& sel) override;

@@ -8,10 +8,6 @@
 #include <faiss/IndexIVFPQFastScan.h>
 
 #include <cassert>
-#include <cinttypes>
-#include <cstdio>
-
-#include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
@@ -20,8 +16,8 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
 namespace faiss {
 
