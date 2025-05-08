@@ -266,11 +266,20 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
                     raft_handle, cuvs_index_params, dataset_h);
         }
 
-        quantizer->train(
-                nlist, cuvs_ivfflat_index.value().centers().data_handle());
-        quantizer->add(
-                nlist, cuvs_ivfflat_index.value().centers().data_handle());
-        raft_handle.sync_stream();
+        if (isGpuIndex(quantizer)) {
+            quantizer->train(
+                    nlist, cuvs_ivfflat_index.value().centers().data_handle());
+            quantizer->add(
+                    nlist, cuvs_ivfflat_index.value().centers().data_handle());
+        } else {
+            // transfer centroids to host
+            auto host_centroids = toHost<float, 2>(
+                    cuvs_ivfflat_index.value().centers().data_handle(),
+                    raft_handle.get_stream(),
+                    {idx_t(nlist), this->d});
+            quantizer->train(nlist, host_centroids.data());
+            quantizer->add(nlist, host_centroids.data());
+        }
 
         cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfflat_index));
 #else
