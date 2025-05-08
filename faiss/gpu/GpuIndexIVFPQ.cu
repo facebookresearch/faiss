@@ -432,7 +432,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
             auto host_centroids = toHost<float, 2>(
                     cluster_centers.data_handle(),
                     raft_handle.get_stream(),
-                    {nlist, this->d});
+                    {idx_t(nlist), this->d});
             quantizer->train(nlist, host_centroids.data_handle());
             quantizer->add(nlist, host_centroids.data_handle());
         }
