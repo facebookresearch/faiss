@@ -276,9 +276,9 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             auto host_centroids = toHost<float, 2>(
                     cuvs_ivfflat_index.value().centers().data_handle(),
                     raft_handle.get_stream(),
-                    {nlist, this->d});
-            quantizer->train(nlist, host_centroids.data_handle());
-            quantizer->add(nlist, host_centroids.data_handle());
+                    {idx_t(nlist), this->d});
+            quantizer->train(idx_t(nlist), host_centroids.data());
+            quantizer->add(idx_t(nlist), host_centroids.data());
         }
 
         cuvsIndex_->setCuvsIndex(std::move(*cuvs_ivfflat_index));
