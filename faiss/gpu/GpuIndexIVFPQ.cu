@@ -433,8 +433,8 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
                     cluster_centers.data_handle(),
                     raft_handle.get_stream(),
                     {idx_t(nlist), this->d});
-            quantizer->train(nlist, host_centroids.data_handle());
-            quantizer->add(nlist, host_centroids.data_handle());
+            quantizer->train(nlist, host_centroids.data());
+            quantizer->add(nlist, host_centroids.data());
         }
 
         raft::copy(
