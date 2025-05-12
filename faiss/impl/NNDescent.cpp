@@ -400,7 +400,7 @@ void NNDescent::build(DistanceComputer& qdis, const int n, bool verbose) {
     init_graph(qdis);
     nndescent(qdis, verbose);
 
-    final_graph.resize(ntotal * K);
+    final_graph.resize(uint64_t(ntotal) * K);
 
     // Store the neighbor link structure into final_graph
     // Clear the old graph

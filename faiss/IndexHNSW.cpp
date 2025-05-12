@@ -8,9 +8,7 @@
 #include <faiss/IndexHNSW.h>
 
 #include <omp.h>
-#include <cassert>
 #include <cinttypes>
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -124,7 +122,7 @@ void hnsw_add_vertices(
         int i1 = n;
 
         for (int pt_level = hist.size() - 1;
-             pt_level >= !index_hnsw.init_level0;
+             pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
             int i0 = i1 - hist[pt_level];
 
@@ -212,7 +210,9 @@ IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
         : Index(d, metric), hnsw(M) {}
 
 IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {}
+        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {
+    metric_arg = storage->metric_arg;
+}
 
 IndexHNSW::~IndexHNSW() {
     if (own_fields) {

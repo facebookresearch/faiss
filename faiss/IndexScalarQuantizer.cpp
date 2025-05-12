@@ -254,7 +254,8 @@ void IndexIVFScalarQuantizer::add_core(
 
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     return sq.select_InvertedListScanner(
             metric_type, quantizer, store_pairs, sel, by_residual);
 }

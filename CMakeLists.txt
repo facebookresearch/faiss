@@ -34,20 +34,20 @@ if(FAISS_ENABLE_GPU)
 endif()
 
 if(FAISS_ENABLE_CUVS)
-include(cmake/thirdparty/fetch_rapids.cmake)
-include(rapids-cmake)
-include(rapids-cpm)
-include(rapids-cuda)
-include(rapids-export)
-include(rapids-find)
+  include(cmake/thirdparty/fetch_rapids.cmake)
+  include(rapids-cmake)
+  include(rapids-cpm)
+  include(rapids-cuda)
+  include(rapids-export)
+  include(rapids-find)
 
-rapids_cuda_init_architectures(faiss)
-rapids_cuda_init_architectures(pyfaiss)
-rapids_cuda_init_architectures(faiss_c_library)
+  rapids_cuda_init_architectures(faiss)
+  rapids_cuda_init_architectures(pyfaiss)
+  rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
 project(faiss
-  VERSION 1.10.0
+  VERSION 1.11.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})

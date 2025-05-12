@@ -1321,7 +1321,8 @@ InvertedListScanner* get_InvertedListScanner2(
 
 InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     if (sel) {
         return get_InvertedListScanner2<true>(*this, store_pairs, sel);
     } else {

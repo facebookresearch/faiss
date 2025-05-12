@@ -8,7 +8,6 @@
 #include <faiss/impl/HNSW.h>
 
 #include <cstddef>
-#include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
@@ -1085,7 +1084,7 @@ void HNSW::permute_entries(const idx_t* map) {
     // swap everyone
     std::swap(levels, new_levels);
     std::swap(offsets, new_offsets);
-    std::swap(neighbors, new_neighbors);
+    neighbors = std::move(new_neighbors);
 }
 
 /**************************************************************

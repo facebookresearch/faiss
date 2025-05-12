@@ -11,6 +11,7 @@ import os
 import io
 import sys
 import pickle
+import platform
 from multiprocessing.pool import ThreadPool
 from common_faiss_tests import get_dataset_2
 
@@ -481,3 +482,53 @@ class TestIVFPQRead(unittest.TestCase):
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
+
+
+
+class TestIOFlatMMap(unittest.TestCase):
+    @unittest.skipIf(
+        platform.system() not in ["Windows", "Linux"],
+        "supported OSes only"
+    )
+    def test_mmap(self): 
+        xt, xb, xq = get_dataset_2(32, 0, 100, 50)
+        index = faiss.index_factory(32, "SQfp16", faiss.METRIC_L2)
+        # does not need training 
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        index2 = None
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
+            Dnew, Inew = index2.search(xq, 10)
+            np.testing.assert_array_equal(Iref, Inew)
+            np.testing.assert_array_equal(Dref, Dnew)
+        finally:
+            del index2
+
+            if os.path.exists(fname):
+                # skip the error. On Windows, index2 holds the handle file, 
+                #   so it cannot be ensured that the file can be deleted
+                #   unless index2 is collected by a GC
+                try:
+                    os.unlink(fname)
+                except:
+                    pass
+
+    def test_zerocopy(self): 
+        xt, xb, xq = get_dataset_2(32, 0, 100, 50)
+        index = faiss.index_factory(32, "SQfp16", faiss.METRIC_L2)
+        # does not need training 
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        serialized_index = faiss.serialize_index(index)
+        reader = faiss.ZeroCopyIOReader(faiss.swig_ptr(serialized_index), serialized_index.size)
+        index2 = faiss.read_index(reader)
+        Dnew, Inew = index2.search(xq, 10)
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)

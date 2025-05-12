@@ -23,7 +23,14 @@ class TestComputeGT(unittest.TestCase):
 
         res = faiss.StandardGpuResources()
 
-        index = faiss.GpuIndexCagra(res, d, metric)
+        # attempt to set custom IVF-PQ params
+        cagraIndexConfig = faiss.GpuIndexCagraConfig()
+        cagraIndexIVFPQConfig = faiss.IVFPQBuildCagraConfig()
+        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.1
+        cagraIndexConfig.ivf_pq_params = cagraIndexIVFPQConfig
+        cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
+
+        index = faiss.GpuIndexCagra(res, d, metric, cagraIndexConfig)
         index.train(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), k)
         
