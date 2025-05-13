@@ -77,6 +77,8 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
+        sudo ln -snf /usr/share/zoneinfo/America/Chicago /etc/localtime && sudo echo America/Chicago > /etc/timezone
+
         sudo apt-get -qq update >/dev/null
         sudo apt-get -qq install -y apt-utils >/dev/null
 
