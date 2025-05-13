@@ -87,9 +87,9 @@ runs:
         # Download, prepare, and install the package for ROCm 6.4
         wget https://repo.radeon.com/amdgpu-install/6.4/ubuntu/jammy/amdgpu-install_6.4.60400-1_all.deb
         sudo apt-get install -y ./amdgpu-install_6.4.60400-1_all.deb
-        sudo apt-get -qq update --allow-insecure-repositories >/dev/null
-        sudo apt-get -qq -y install python3-setuptools python3-wheel >/dev/null
-        sudo apt-get -qq install -y --allow-unauthenticated rocm >/dev/null
+        sudo apt-get update --allow-insecure-repositories
+        sudo apt-get install -y python3-setuptools python3-wheel
+        sudo apt-get install -y --allow-unauthenticated rocm
 
         # Fake presence of MI200-class accelerators
         echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
