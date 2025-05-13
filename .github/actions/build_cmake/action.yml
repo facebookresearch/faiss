@@ -77,6 +77,9 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y apt-utils >/dev/null
+
         # Update repos and install kmod, wget, gpg
         sudo apt-get -qq update >/dev/null
         sudo apt-get -qq install -y kmod wget gpg >/dev/null
