@@ -55,4 +55,20 @@ struct IndexBinaryHNSW : IndexBinary {
     void reset() override;
 };
 
+// struct IndexBinaryHNSWCagra : IndexBinaryHNSW {
+//     IndexBinaryHNSWCagra();
+//     IndexBinaryHNSWCagra(int d, int M);
+
+//     void add(idx_t n, const uint8_t* x) override;
+
+//     /// entry point for search
+//     void search(
+//         idx_t n,
+//         const uint8_t* x,
+//         idx_t k,
+//         int32_t* distances,
+//         idx_t* labels,
+//         const SearchParameters* params = nullptr) const override;
+// };
+
 } // namespace faiss

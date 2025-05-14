@@ -57,9 +57,6 @@ BinaryCuvsCagra::BinaryCuvsCagra(
           ivf_pq_search_params_(ivf_pq_search_params),
           refine_rate_(refine_rate) {
     FAISS_THROW_IF_NOT_MSG(
-            metric == faiss::METRIC_L2 || metric == faiss::METRIC_INNER_PRODUCT,
-            "CAGRA currently only supports L2 or Inner Product metric.");
-    FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
 
@@ -71,7 +68,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         ivf_pq_search_params_ =
                 std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
     }
-    index_params_.metric = metricFaissToCuvs(metric_, false);
+    index_params_.metric = cuvs::distance::DistanceType::BitwiseHamming;
 
     reset();
 }
@@ -149,7 +146,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
     }
 }
 
-void CuvsCagra::train(idx_t n, const char* x) {
+void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
     storage_ = x;
     n_ = n;
 
@@ -198,10 +195,10 @@ void CuvsCagra::train(idx_t n, const char* x) {
     }
 }
 
-void CuvsCagra::search(
-        Tensor<char, 2, true>& queries,
+void BinaryCuvsCagra::search(
+        Tensor<uint8_t, 2, true>& queries,
         int k,
-        Tensor<float, 2, true>& outDistances,
+        Tensor<uint8_t, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         idx_t max_queries,
         idx_t itopk_size,
@@ -228,18 +225,18 @@ void CuvsCagra::search(
 
     if (!store_dataset_) {
         if (getDeviceForAddress(storage_) >= 0) {
-            auto dataset = raft::make_device_matrix_view<const char, int64_t>(
+            auto dataset = raft::make_device_matrix_view<const uint8_t, int64_t>(
                     storage_, n_, dim_);
             cuvs_index->update_dataset(raft_handle, dataset);
         } else {
-            auto dataset = raft::make_host_matrix_view<const char, int64_t>(
+            auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
                     storage_, n_, dim_);
             cuvs_index->update_dataset(raft_handle, dataset);
         }
         store_dataset_ = true;
     }
 
-    auto queries_view = raft::make_device_matrix_view<const float, int64_t>(
+    auto queries_view = raft::make_device_matrix_view<const uint8_t, int64_t>(
             queries.data(), numQueries, cols);
     auto distances_view = raft::make_device_matrix_view<float, int64_t>(
             outDistances.data(), numQueries, k_);
@@ -280,39 +277,8 @@ void CuvsCagra::search(
             indices_view.data_handle());
 }
 
-void CuvsBinaryCagra::reset() {
+void BinaryCuvsCagra::reset() {
     cuvs_index.reset();
-}
-
-// idx_t CuvsCagra::get_knngraph_degree() const {
-//     FAISS_ASSERT(cuvs_index);
-//     return static_cast<idx_t>(cuvs_index->graph_degree());
-// }
-
-// std::vector<idx_t> CuvsCagra::get_knngraph() const {
-//     FAISS_ASSERT(cuvs_index);
-//     const raft::device_resources& raft_handle =
-//             resources_->getRaftHandleCurrentDevice();
-//     auto stream = raft_handle.get_stream();
-
-//     auto device_graph = cuvs_index->graph();
-
-//     std::vector<idx_t> host_graph(
-//             device_graph.extent(0) * device_graph.extent(1));
-
-//     raft_handle.sync_stream();
-
-//     thrust::copy(
-//             thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
-//             thrust::device_ptr<const uint32_t>(
-//                     device_graph.data_handle() + device_graph.size()),
-//             host_graph.data());
-
-//     return host_graph;
-// }
-
-const float* BinaryCuvsCagra::get_training_dataset() const {
-    return storage_;
 }
 
 } // namespace gpu

@@ -23,9 +23,7 @@
 
 #pragma once
 
-#include <faiss/IndexIVF.h>
-#include <faiss/gpu/GpuIndex.h>
-#include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/IndexBinary.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 
 // namespace faiss {
@@ -37,59 +35,75 @@ namespace gpu {
 
 class BinaryCuvsCagra;
 
-using GpuIndexBinaryCagraConfig = GpuIndexCagraConfig;
-using GpuIndexBinaryCagraSearchConfig = SearchParametersCagra;
-
-struct GpuIndexBinaryCagra : public GpuIndex {
+struct GpuIndexBinaryCagra : public IndexBinary {
    public:
     GpuIndexBinaryCagra(
             GpuResourcesProvider* provider,
             int dims,
-            GpuIndexBinaryCagraConfig config = GpuIndexBinaryCagraConfig());
+            GpuIndexCagraConfig config = GpuIndexCagraConfig());
+
+    ~GpuIndexBinaryCagra() override;
+
+    int getDevice() const;
 
     /// Trains CAGRA based on the given vector data and add them along with ids.
     /// NB: The use of the add function here is to build the CAGRA graph on
     /// the base dataset. Use this function when you want to add vectors with
     /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
-    void add(idx_t n, const char* x);
+    void add(idx_t n, const uint8_t* x) override;
 
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
     /// the base dataset and is currently the only function to add the full set
     /// of vectors (without IDs) to the index. There is no external quantizer to
     /// be trained here.
-    void train(idx_t n, const char* x);
+    void train(idx_t n, const uint8_t* x) override;
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
-    // void copyFrom(const faiss::IndexHNSWCagra* index);
+    //     void copyFrom(const faiss::IndexBinaryHNSW* index);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
-    // void copyTo(faiss::IndexHNSWCagra* index) const;
+    //     void copyTo(faiss::IndexBinaryHNSW* index) const;
 
     void reset() override;
 
-    std::vector<idx_t> get_knngraph() const;
+    //     std::vector<idx_t> get_knngraph() const;
 
    protected:
-    bool addImplRequiresIDs_() const override;
+    /// Called from search when the input data is on the CPU;
+    /// potentially allows for pinned memory usage
+    void searchFromCpuPaged_(
+            idx_t n,
+            const uint8_t* x,
+            int k,
+            int32_t* outDistancesData,
+            idx_t* outIndicesData) const;
 
-    void addImpl_(idx_t n, const char* x, const idx_t* ids);
+    void searchNonPaged_(
+            idx_t n,
+            const uint8_t* x,
+            int k,
+            int32_t* outDistancesData,
+            idx_t* outIndicesData) const;
 
-    /// Called from GpuIndex for search
     void searchImpl_(
             idx_t n,
-            const char* x,
+            const uint8_t* x,
             int k,
             float* distances,
             idx_t* labels,
             const SearchParameters* search_params) const;
 
-    /// Our configuration options
-    const GpuIndexBinaryCagraConfig cagraConfig_;
+   protected:
+    /// Manages streans, cuBLAS handles and scratch memory for devices
+    std::shared_ptr<GpuResources> resources_;
 
-    /// Instance that we own; contains the inverted lists
+    /// Configuration options
+    const GpuIndexCagraConfig cagraConfig_;
+
+    /// Instance that we own; contains the cuVS index
     std::shared_ptr<BinaryCuvsCagra> index_;
 };
 

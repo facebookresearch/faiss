@@ -67,10 +67,10 @@ class BinaryCuvsCagra {
 
     ~BinaryCuvsCagra() = default;
 
-    void train(idx_t n, const char* x);
+    void train(idx_t n, const uint8_t* x);
 
     void search(
-            Tensor<char, 2, true>& queries,
+            Tensor<uint8_t, 2, true>& queries,
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
@@ -90,18 +90,14 @@ class BinaryCuvsCagra {
 
     void reset();
 
-    // idx_t get_knngraph_degree() const;
-
-    // std::vector<idx_t> get_knngraph() const;
-
-    const char* get_training_dataset() const;
+    const uint8_t* get_training_dataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
     /// Training dataset
-    const char* storage_;
+    const uint8_t* storage_;
     int n_;
 
     /// Expected dimensionality of the vectors

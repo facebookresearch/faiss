@@ -21,12 +21,15 @@
  * limitations under the License.
  */
 
-#include <faiss/IndexHNSW.h>
+// #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <cstddef>
-#include <faiss/gpu/impl/CuvsCagra.cuh>
+#include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
 #include <optional>
+#include "GpuIndexBinaryCagra.h"
+#include "GpuIndexCagra.h"
+#include "GpuResources.h"
 
 namespace faiss {
 namespace gpu {
@@ -34,14 +37,32 @@ namespace gpu {
 GpuIndexBinaryCagra::GpuIndexBinaryCagra(
         GpuResourcesProvider* provider,
         int dims,
-        GpuIndexbinaryCagraConfig config)
-        : GpuIndexCagra(provider, dims, metric, config),
-          cagraConfig_(config) {
+        GpuIndexCagraConfig config)
+        : IndexBinary(dims),
+          resources_(provider->getResources()),
+          cagraConfig_(std::move(config)) {
+    DeviceScope scope(cagraConfig_.device);
+    FAISS_THROW_IF_NOT_FMT(
+            this->d % 8 == 0,
+            "vector dimension (number of bits) "
+            "must be divisible by 8 (passed %d)",
+            this->d);
+
     this->is_trained = false;
 }
 
+GpuIndexBinaryCagra::~GpuIndexBinaryCagra() {}
+
+int GpuIndexBinaryCagra::getDevice() const {
+    return cagraConfig_.device;
+}
+
+std::shared_ptr<GpuResources> GpuIndexBinaryCagra::getResources() {
+    return resources_;
+}
+
 void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
-    DeviceScope scope(config_.device);
+    DeviceScope scope(cagraConfig_.device);
     if (this->is_trained) {
         FAISS_ASSERT(index_);
         return;
@@ -81,7 +102,7 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
         ivf_pq_search_params->preferred_shmem_carveout =
                 cagraConfig_.ivf_pq_search_params->preferred_shmem_carveout;
     }
-    index_ = std::make_shared<CuvsBinaryCagra>(
+    index_ = std::make_shared<BinaryCuvsCagra>(
             this->resources_.get(),
             this->d,
             cagraConfig_.intermediate_graph_degree,
@@ -89,7 +110,6 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
             static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
             cagraConfig_.nn_descent_niter,
             cagraConfig_.store_dataset,
-            this->metric_arg,
             INDICES_64_BIT,
             ivf_pq_params,
             ivf_pq_search_params,
@@ -103,135 +123,130 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
 
 void GpuIndexBinaryCagra::add(idx_t n, const uint8_t* x) {
     train(n, x);
-    this->is_trained = true;
-    this->ntotal = n;
 }
-
-bool GpuIndexBinaryCagra::addImplRequiresIDs_() const {
-    return false;
-};
-
-void GpuIndexBinaryCagra::addImpl_(idx_t n, const uint8_t* x, const idx_t* ids) {
-    FAISS_THROW_MSG("adding vectors is not supported by GpuIndexBinaryCagra.");
-};
 
 void GpuIndexBinaryCagra::search(
-    idx_t n,
-    const uint8_t* x,
-    idx_t k,
-    int32_t* distances,
-    faiss::idx_t* labels,
-    const SearchParameters* params) const {
-DeviceScope scope(binaryCagraConfig_.device);
-auto stream = resources_->getDefaultStream(binaryCagraConfig_.device);
+        idx_t n,
+        const uint8_t* x,
+        idx_t k,
+        int32_t* distances,
+        faiss::idx_t* labels,
+        const SearchParameters* params) const {
+    DeviceScope scope(cagraConfig_.device);
+    auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
-if (n == 0) {
-    return;
-}
-
-FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
-
-validateKSelect(k);
-
-// The input vectors may be too large for the GPU, but we still
-// assume that the output distances and labels are not.
-// Go ahead and make space for output distances and labels on the
-// GPU.
-// If we reach a point where all inputs are too big, we can add
-// another level of tiling.
-auto outDistances = toDeviceTemporary<int32_t, 2>(
-        resources_.get(),
-        binaryCagraConfig_.device,
-        distances,
-        stream,
-        {n, k});
-
-auto outIndices = toDeviceTemporary<idx_t, 2>(
-        resources_.get(), binaryCagraConfig_.device, labels, stream, {n, k});
-
-bool usePaged = false;
-
-if (getDeviceForAddress(x) == -1) {
-    // It is possible that the user is querying for a vector set size
-    // `x` that won't fit on the GPU.
-    // In this case, we will have to handle paging of the data from CPU
-    // -> GPU.
-    // Currently, we don't handle the case where the output data won't
-    // fit on the GPU (e.g., n * k is too large for the GPU memory).
-    size_t dataSize = n * (this->d / 8) * sizeof(uint8_t);
-
-    if (dataSize >= kMinPageSize) {
-        searchFromCpuPaged_(
-                n, x, k, outDistances.data(), outIndices.data());
-        usePaged = true;
+    if (n == 0) {
+        return;
     }
+
+    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
+
+    validateKSelect(k);
+
+    // The input vectors may be too large for the GPU, but we still
+    // assume that the output distances and labels are not.
+    // Go ahead and make space for output distances and labels on the
+    // GPU.
+    // If we reach a point where all inputs are too big, we can add
+    // another level of tiling.
+    auto outDistances = toDeviceTemporary<int32_t, 2>(
+            resources_.get(), cagraConfig_.device, distances, stream, {n, k});
+
+    auto outIndices = toDeviceTemporary<idx_t, 2>(
+            resources_.get(), cagraConfig_.device, labels, stream, {n, k});
+
+    bool usePaged = false;
+
+    if (getDeviceForAddress(x) == -1) {
+        // It is possible that the user is querying for a vector set size
+        // `x` that won't fit on the GPU.
+        // In this case, we will have to handle paging of the data from CPU
+        // -> GPU.
+        // Currently, we don't handle the case where the output data won't
+        // fit on the GPU (e.g., n * k is too large for the GPU memory).
+        size_t dataSize = n * (this->d / 8) * sizeof(uint8_t);
+
+        if (dataSize >= kMinPageSize) {
+            searchFromCpuPaged_(
+                    n, x, k, outDistances.data(), outIndices.data(), params);
+            usePaged = true;
+        }
+    }
+
+    if (!usePaged) {
+        searchNonPaged_(
+                n, x, k, outDistances.data(), outIndices.data(), params);
+    }
+
+    // Copy back if necessary
+    fromDevice<int32_t, 2>(outDistances, distances, stream);
+    fromDevice<idx_t, 2>(outIndices, labels, stream);
 }
 
-if (!usePaged) {
-    searchNonPaged_(n, x, k, outDistances.data(), outIndices.data());
-}
+void GpuIndexBinaryCagra::searchNonPaged_(
+        idx_t n,
+        const uint8_t* x,
+        int k,
+        int32_t* outDistancesData,
+        idx_t* outIndicesData,
+        const SearchParameters* params) const {
+    Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
+    Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
 
-// Copy back if necessary
-fromDevice<int32_t, 2>(outDistances, distances, stream);
-fromDevice<idx_t, 2>(outIndices, labels, stream);
-}
+    auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
-void GpuIndexBinaryFlat::searchNonPaged_(
-    idx_t n,
-    const uint8_t* x,
-    int k,
-    int32_t* outDistancesData,
-    idx_t* outIndicesData) const {
-Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
-Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
+    // Make sure arguments are on the device we desire; use temporary
+    // memory allocations to move it if necessary
+    auto vecs = toDeviceTemporary<uint8_t, 2>(
+            resources_.get(),
+            cagraConfig_.device,
+            const_cast<uint8_t*>(x),
+            stream,
+            {n, (this->d / 8)});
 
-auto stream = resources_->getDefaultStream(binaryFlatConfig_.device);
-
-// Make sure arguments are on the device we desire; use temporary
-// memory allocations to move it if necessary
-auto vecs = toDeviceTemporary<uint8_t, 2>(
-        resources_.get(),
-        binaryFlatConfig_.device,
-        const_cast<uint8_t*>(x),
-        stream,
-        {n, (this->d / 8)});
-
-data_->query(vecs, k, outDistances, outIndices);
-}
-
-void GpuIndexBinaryFlat::searchFromCpuPaged_(
-    idx_t n,
-    const uint8_t* x,
-    int k,
-    int32_t* outDistancesData,
-    idx_t* outIndicesData) const {
-Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
-Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
-
-idx_t vectorSize = sizeof(uint8_t) * (this->d / 8);
-
-// Just page without overlapping copy with compute (as GpuIndexFlat does)
-auto batchSize =
-        utils::nextHighestPowerOf2(((idx_t)kMinPageSize / vectorSize));
-
-for (idx_t cur = 0; cur < n; cur += batchSize) {
-    auto num = std::min(batchSize, n - cur);
-
-    auto outDistancesSlice = outDistances.narrowOutermost(cur, num);
-    auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
-
-    searchNonPaged_(
-            num,
-            x + cur * (this->d / 8),
+    searchImpl_(
+            n,
+            vecs.data(),
             k,
-            outDistancesSlice.data(),
-            outIndicesSlice.data());
+            outDistancesData,
+            outIndicesData,
+            const SearchParameters* search_params)
 }
+
+void GpuIndexBinaryCagra::searchFromCpuPaged_(
+        idx_t n,
+        const uint8_t* x,
+        int k,
+        int32_t* outDistancesData,
+        idx_t* outIndicesData,
+        const SearchParameters* params) const {
+    Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
+    Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
+
+    idx_t vectorSize = sizeof(uint8_t) * (this->d / 8);
+
+    // Just page without overlapping copy with compute (as GpuIndexFlat does)
+    auto batchSize =
+            utils::nextHighestPowerOf2(((idx_t)kMinPageSize / vectorSize));
+
+    for (idx_t cur = 0; cur < n; cur += batchSize) {
+        auto num = std::min(batchSize, n - cur);
+
+        auto outDistancesSlice = outDistances.narrowOutermost(cur, num);
+        auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
+
+        searchNonPaged_(
+                num,
+                x + cur * (this->d / 8),
+                k,
+                outDistancesSlice.data(),
+                outIndicesSlice.data());
+    }
 }
 
 void GpuIndexCagra::searchImpl_(
         idx_t n,
-        const char* x,
+        const uint8_t* x,
         int k,
         float* distances,
         idx_t* labels,
@@ -239,8 +254,9 @@ void GpuIndexCagra::searchImpl_(
     FAISS_ASSERT(this->is_trained && index_);
     FAISS_ASSERT(n > 0);
 
-    Tensor<float, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d});
-    Tensor<float, 2, true> outDistances(distances, {n, k});
+    Tensor<uint8_t, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d});
+    Tensor<float, 2, true> outDistances(
+            reinterpret_cast<float*>(distances), {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
     SearchParametersCagra* params;
@@ -275,139 +291,139 @@ void GpuIndexCagra::searchImpl_(
     }
 }
 
-void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
-    FAISS_ASSERT(index);
+// void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
+//     FAISS_ASSERT(index);
 
-    DeviceScope scope(config_.device);
+//     DeviceScope scope(config_.device);
 
-    GpuIndex::copyFrom(index);
+//     GpuIndex::copyFrom(index);
 
-    auto base_index = dynamic_cast<IndexFlat*>(index->storage);
-    FAISS_ASSERT(base_index);
-    auto distances = base_index->get_xb();
+//     auto base_index = dynamic_cast<IndexFlat*>(index->storage);
+//     FAISS_ASSERT(base_index);
+//     auto distances = base_index->get_xb();
 
-    auto hnsw = index->hnsw;
-    // copy level 0 to a dense knn graph matrix
-    std::vector<idx_t> knn_graph;
-    knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
+//     auto hnsw = index->hnsw;
+//     // copy level 0 to a dense knn graph matrix
+//     std::vector<idx_t> knn_graph;
+//     knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
 
-#pragma omp parallel for
-    for (size_t i = 0; i < index->ntotal; ++i) {
-        size_t begin, end;
-        hnsw.neighbor_range(i, 0, &begin, &end);
-        for (size_t j = begin; j < end; j++) {
-            // knn_graph.push_back(hnsw.neighbors[j]);
-            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
-                    hnsw.neighbors[j];
-        }
-    }
+// #pragma omp parallel for
+//     for (size_t i = 0; i < index->ntotal; ++i) {
+//         size_t begin, end;
+//         hnsw.neighbor_range(i, 0, &begin, &end);
+//         for (size_t j = begin; j < end; j++) {
+//             // knn_graph.push_back(hnsw.neighbors[j]);
+//             knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
+//                     hnsw.neighbors[j];
+//         }
+//     }
 
-    index_ = std::make_shared<BinaryCuvsCagra>(
-            this->resources_.get(),
-            this->d,
-            index->ntotal,
-            hnsw.nb_neighbors(0),
-            distances,
-            knn_graph.data(),
-            this->metric_type,
-            this->metric_arg,
-            INDICES_64_BIT);
+//     index_ = std::make_shared<BinaryCuvsCagra>(
+//             this->resources_.get(),
+//             this->d,
+//             index->ntotal,
+//             hnsw.nb_neighbors(0),
+//             distances,
+//             knn_graph.data(),
+//             this->metric_type,
+//             this->metric_arg,
+//             INDICES_64_BIT);
 
-    this->is_trained = true;
-}
+//     this->is_trained = true;
+// }
 
-void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
-    FAISS_ASSERT(index_ && this->is_trained && index);
+// void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
+//     FAISS_ASSERT(index_ && this->is_trained && index);
 
-    DeviceScope scope(config_.device);
+//     DeviceScope scope(config_.device);
 
-    //
-    // Index information
-    //
-    GpuIndex::copyTo(index);
-    // This needs to be zeroed out as this implementation adds vectors to the
-    // cpuIndex instead of copying fields
-    index->ntotal = 0;
+//     //
+//     // Index information
+//     //
+//     GpuIndex::copyTo(index);
+//     // This needs to be zeroed out as this implementation adds vectors to the
+//     // cpuIndex instead of copying fields
+//     index->ntotal = 0;
 
-    auto graph_degree = index_->get_knngraph_degree();
-    auto M = graph_degree / 2;
-    if (index->storage and index->own_fields) {
-        delete index->storage;
-    }
+//     auto graph_degree = index_->get_knngraph_degree();
+//     auto M = graph_degree / 2;
+//     if (index->storage and index->own_fields) {
+//         delete index->storage;
+//     }
 
-    if (this->metric_type == METRIC_L2) {
-        index->storage = new IndexFlatL2(index->d);
-    } else if (this->metric_type == METRIC_INNER_PRODUCT) {
-        index->storage = new IndexFlatIP(index->d);
-    }
-    index->own_fields = true;
-    index->keep_max_size_level0 = true;
-    index->hnsw.reset();
-    index->hnsw.assign_probas.clear();
-    index->hnsw.cum_nneighbor_per_level.clear();
-    index->hnsw.set_default_probas(M, 1.0 / log(M));
+//     if (this->metric_type == METRIC_L2) {
+//         index->storage = new IndexFlatL2(index->d);
+//     } else if (this->metric_type == METRIC_INNER_PRODUCT) {
+//         index->storage = new IndexFlatIP(index->d);
+//     }
+//     index->own_fields = true;
+//     index->keep_max_size_level0 = true;
+//     index->hnsw.reset();
+//     index->hnsw.assign_probas.clear();
+//     index->hnsw.cum_nneighbor_per_level.clear();
+//     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
-    auto n_train = this->ntotal;
-    float* train_dataset;
-    auto dataset = index_->get_training_dataset();
-    bool allocation = false;
-    if (getDeviceForAddress(dataset) >= 0) {
-        train_dataset = new float[n_train * index->d];
-        allocation = true;
-        raft::copy(
-                train_dataset,
-                dataset,
-                n_train * index->d,
-                this->resources_->getRaftHandleCurrentDevice().get_stream());
-    } else {
-        train_dataset = const_cast<float*>(dataset);
-    }
+//     auto n_train = this->ntotal;
+//     float* train_dataset;
+//     auto dataset = index_->get_training_dataset();
+//     bool allocation = false;
+//     if (getDeviceForAddress(dataset) >= 0) {
+//         train_dataset = new uint8_t[n_train * index->d * 8];
+//         allocation = true;
+//         raft::copy(
+//                 train_dataset,
+//                 dataset,
+//                 n_train * index->d,
+//                 this->resources_->getRaftHandleCurrentDevice().get_stream());
+//     } else {
+//         train_dataset = const_cast<float*>(dataset);
+//     }
 
-    // turn off as level 0 is copied from CAGRA graph
-    index->init_level0 = false;
-    if (!index->base_level_only) {
-        index->add(n_train, train_dataset);
-    } else {
-        index->hnsw.prepare_level_tab(n_train, false);
-        index->storage->add(n_train, train_dataset);
-        index->ntotal = n_train;
-    }
-    if (allocation) {
-        delete[] train_dataset;
-    }
+//     // turn off as level 0 is copied from CAGRA graph
+//     index->init_level0 = false;
+//     if (!index->base_level_only) {
+//         index->add(n_train, train_dataset);
+//     } else {
+//         index->hnsw.prepare_level_tab(n_train, false);
+//         index->storage->add(n_train, train_dataset);
+//         index->ntotal = n_train;
+//     }
+//     if (allocation) {
+//         delete[] train_dataset;
+//     }
 
-    auto graph = get_knngraph();
+//     auto graph = get_knngraph();
 
-#pragma omp parallel for
-    for (idx_t i = 0; i < n_train; i++) {
-        size_t begin, end;
-        index->hnsw.neighbor_range(i, 0, &begin, &end);
-        for (size_t j = begin; j < end; j++) {
-            index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
-        }
-    }
+// #pragma omp parallel for
+//     for (idx_t i = 0; i < n_train; i++) {
+//         size_t begin, end;
+//         index->hnsw.neighbor_range(i, 0, &begin, &end);
+//         for (size_t j = begin; j < end; j++) {
+//             index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
+//         }
+//     }
 
-    // turn back on to allow new vectors to be added to level 0
-    index->init_level0 = true;
-}
+//     // turn back on to allow new vectors to be added to level 0
+//     index->init_level0 = true;
+// }
 
-void GpuIndexBinaryCagra::reset() {
-    DeviceScope scope(config_.device);
+// void GpuIndexBinaryCagra::reset() {
+//     DeviceScope scope(config_.device);
 
-    if (index_) {
-        index_->reset();
-        this->ntotal = 0;
-        this->is_trained = false;
-    } else {
-        FAISS_ASSERT(this->ntotal == 0);
-    }
-}
+//     if (index_) {
+//         index_->reset();
+//         this->ntotal = 0;
+//         this->is_trained = false;
+//     } else {
+//         FAISS_ASSERT(this->ntotal == 0);
+//     }
+// }
 
-std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
-    FAISS_ASSERT(index_ && this->is_trained);
+// std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
+//     FAISS_ASSERT(index_ && this->is_trained);
 
-    return index_->get_knngraph();
-}
+//     return index_->get_knngraph();
+// }
 
 } // namespace gpu
 } // namespace faiss
