@@ -206,8 +206,8 @@ void CuvsCagra::train(idx_t n, const float* x) {
     }
 }
 
-void BinaryCuvsCagra::search(
-        Tensor<char, 2, true>& queries,
+void CuvsCagra::search(
+        Tensor<float, 2, true>& queries,
         int k,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
@@ -292,12 +292,12 @@ void CuvsCagra::reset() {
     cuvs_index.reset();
 }
 
-idx_t BinaryCuvsCagra::get_knngraph_degree() const {
+idx_t CuvsCagra::get_knngraph_degree() const {
     FAISS_ASSERT(cuvs_index);
     return static_cast<idx_t>(cuvs_index->graph_degree());
 }
 
-std::vector<idx_t> BinaryCuvsCagra::get_knngraph() const {
+std::vector<idx_t> CuvsCagra::get_knngraph() const {
     FAISS_ASSERT(cuvs_index);
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
@@ -319,7 +319,7 @@ std::vector<idx_t> BinaryCuvsCagra::get_knngraph() const {
     return host_graph;
 }
 
-const unsigned char* BinaryCuvsCagra::get_training_dataset() const {
+const float* CuvsCagra::get_training_dataset() const {
     return storage_;
 }
 
