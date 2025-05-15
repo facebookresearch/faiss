@@ -89,12 +89,20 @@ class TestIndexFlat(unittest.TestCase):
 
     def test_noblas(self):
         self.do_test(10)
-
+    
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_with_blas_ip(self):
         self.set_blas_blocks(small=True)
         self.do_test(200, faiss.METRIC_INNER_PRODUCT)
         self.set_blas_blocks(small=False)
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_noblas_ip(self):
         self.do_test(10, faiss.METRIC_INNER_PRODUCT)
 
@@ -104,9 +112,17 @@ class TestIndexFlat(unittest.TestCase):
     def test_with_blas_reservoir(self):
         self.do_test(200, k=150)
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_noblas_reservoir_ip(self):
         self.do_test(10, faiss.METRIC_INNER_PRODUCT, k=150)
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_with_blas_reservoir_ip(self):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
