@@ -222,6 +222,7 @@ set(FAISS_HEADERS
   utils/simdlib_emulated.h
   utils/simdlib_neon.h
   utils/simdlib_ppc64.h
+  utils/struct_packing_test.h
   utils/utils.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
