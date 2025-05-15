@@ -88,6 +88,11 @@ class DatasetDescriptor:
 
     embedding_id_column: Optional[str] = None
 
+    # only used when previous_assignment_table is set
+    # this represents the centroid id that the embedding was mapped to
+    # in a previous clustering job
+    centroid_id_column: Optional[str] = None
+
     # filters on the dataset where each filter is a
     # string rep of a filter expression
     filters: Optional[List[str]] = None

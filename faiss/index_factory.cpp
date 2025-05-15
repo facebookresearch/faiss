@@ -170,7 +170,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind("_");
+    int pos = stok.rfind('_');
     return aq_search_type[stok.substr(pos)];
 }
 
@@ -838,7 +838,7 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexRowwiseMinMax, fp32 version
     if (description.compare(0, 7, "MinMax,") == 0) {
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string sub_index_string = description.substr(comma + 1);
         auto sub_index = index_factory_sub(d, sub_index_string, metric);
 
@@ -850,7 +850,7 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexRowwiseMinMax, fp16 version
     if (description.compare(0, 11, "MinMaxFP16,") == 0) {
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string sub_index_string = description.substr(comma + 1);
         auto sub_index = index_factory_sub(d, sub_index_string, metric);
 
@@ -864,7 +864,7 @@ std::unique_ptr<Index> index_factory_sub(
     {
         size_t nlist;
         bool use_2layer;
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string coarse_string = description.substr(0, comma);
         // Match coarse quantizer part first
         std::unique_ptr<Index> quantizer(parse_coarse_quantizer(
