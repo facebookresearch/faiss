@@ -58,6 +58,15 @@ FlatIndex::FlatIndex(
                           space,
                           res->getDefaultStreamCurrentDevice())) {}
 
+size_t FlatIndex::calcMemorySpaceSize(int numVecs, int dims, bool useFloat16) {
+    const size_t normMemorySpaceSize = (size_t)numVecs * sizeof(float);
+    if (!useFloat16) {
+        return (size_t)numVecs * dims * sizeof(float) + normMemorySpaceSize;
+    }
+
+    return (size_t)numVecs * dims * sizeof(half) + normMemorySpaceSize;
+}
+
 bool FlatIndex::getUseFloat16() const {
     return useFloat16_;
 }

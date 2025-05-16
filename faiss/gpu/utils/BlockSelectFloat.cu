@@ -43,6 +43,28 @@ BLOCK_SELECT_DECL(float, false, 1024);
 BLOCK_SELECT_DECL(float, false, 2048);
 #endif
 
+BLOCK_SELECT_DECL_INDEX(float, true, 1, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 32, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 64, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 128, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 256, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 512, ushort);
+BLOCK_SELECT_DECL_INDEX(float, true, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+BLOCK_SELECT_DECL_INDEX(float, true, 2048, ushort);
+#endif
+
+BLOCK_SELECT_DECL_INDEX(float, false, 1, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 32, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 64, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 128, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 256, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 512, ushort);
+BLOCK_SELECT_DECL_INDEX(float, false, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+BLOCK_SELECT_DECL_INDEX(float, false, 2048, ushort);
+#endif
+
 void runBlockSelect(
         Tensor<float, 2, true>& in,
         Tensor<float, 2, true>& outK,
@@ -143,6 +165,111 @@ void runBlockSelectPair(
 #if GPU_MAX_SELECTION_K >= 2048
         } else if (k <= 2048) {
             BLOCK_SELECT_PAIR_CALL(float, false, 2048);
+#endif
+        }
+    }
+}
+
+void runBlockSelect(
+        Tensor<float, 2, true>& in,
+        Tensor<float, 2, true>& outK,
+        Tensor<ushort, 2, true>& outV,
+        bool dir,
+        int k,
+        cudaStream_t stream) {
+    FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
+
+    if (dir) {
+        if (k == 1) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 1, ushort);
+        } else if (k <= 32) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 32, ushort);
+        } else if (k <= 64) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 64, ushort);
+        } else if (k <= 128) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 128, ushort);
+        } else if (k <= 256) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 256, ushort);
+        } else if (k <= 512) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 512, ushort);
+        } else if (k <= 1024) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+        } else if (k <= 2048) {
+            BLOCK_SELECT_CALL_INDEX(float, true, 2048, ushort);
+#endif
+        }
+    } else {
+        if (k == 1) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 1, ushort);
+        } else if (k <= 32) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 32, ushort);
+        } else if (k <= 64) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 64, ushort);
+        } else if (k <= 128) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 128, ushort);
+        } else if (k <= 256) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 256, ushort);
+        } else if (k <= 512) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 512, ushort);
+        } else if (k <= 1024) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+        } else if (k <= 2048) {
+            BLOCK_SELECT_CALL_INDEX(float, false, 2048, ushort);
+#endif
+        }
+    }
+}
+
+void runBlockSelectPair(
+        Tensor<float, 2, true>& inK,
+        Tensor<ushort, 2, true>& inV,
+        Tensor<float, 2, true>& outK,
+        Tensor<ushort, 2, true>& outV,
+        bool dir,
+        int k,
+        cudaStream_t stream) {
+    FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
+
+    if (dir) {
+        if (k == 1) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 1, ushort);
+        } else if (k <= 32) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 32, ushort);
+        } else if (k <= 64) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 64, ushort);
+        } else if (k <= 128) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 128, ushort);
+        } else if (k <= 256) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 256, ushort);
+        } else if (k <= 512) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 512, ushort);
+        } else if (k <= 1024) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+        } else if (k <= 2048) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, true, 2048, ushort);
+#endif
+        }
+    } else {
+        if (k == 1) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 1, ushort);
+        } else if (k <= 32) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 32, ushort);
+        } else if (k <= 64) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 64, ushort);
+        } else if (k <= 128) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 128, ushort);
+        } else if (k <= 256) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 256, ushort);
+        } else if (k <= 512) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 512, ushort);
+        } else if (k <= 1024) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 1024, ushort);
+#if GPU_MAX_SELECTION_K >= 2048
+        } else if (k <= 2048) {
+            BLOCK_SELECT_PAIR_CALL_INDEX(float, false, 2048, ushort);
 #endif
         }
     }
