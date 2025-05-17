@@ -291,139 +291,127 @@ void GpuIndexCagra::searchImpl_(
     }
 }
 
-// void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
-//     FAISS_ASSERT(index);
+void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
+    FAISS_ASSERT(index);
 
-//     DeviceScope scope(config_.device);
+    DeviceScope scope(cagraConfig_.device);
 
-//     GpuIndex::copyFrom(index);
+    this->d = index->d;
+    this->ntotal = index->ntotal;
+    this->is_trained = index->is_trained;
 
-//     auto base_index = dynamic_cast<IndexFlat*>(index->storage);
-//     FAISS_ASSERT(base_index);
-//     auto distances = base_index->get_xb();
+    IndexBinaryFlat* flat_storage =
+            dynamic_cast<IndexBinaryFlat*>(index->storage);
+    FAISS_ASSERT(flat_storage);
 
-//     auto hnsw = index->hnsw;
-//     // copy level 0 to a dense knn graph matrix
-//     std::vector<idx_t> knn_graph;
-//     knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
+    auto hnsw = index->hnsw;
+    // copy level 0 to a dense knn graph matrix
+    std::vector<idx_t> knn_graph;
+    knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
 
-// #pragma omp parallel for
-//     for (size_t i = 0; i < index->ntotal; ++i) {
-//         size_t begin, end;
-//         hnsw.neighbor_range(i, 0, &begin, &end);
-//         for (size_t j = begin; j < end; j++) {
-//             // knn_graph.push_back(hnsw.neighbors[j]);
-//             knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
-//                     hnsw.neighbors[j];
-//         }
-//     }
+#pragma omp parallel for
+    for (size_t i = 0; i < index->ntotal; ++i) {
+        size_t begin, end;
+        hnsw.neighbor_range(i, 0, &begin, &end);
+        for (size_t j = begin; j < end; j++) {
+            // knn_graph.push_back(hnsw.neighbors[j]);
+            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
+                    hnsw.neighbors[j];
+        }
+    }
 
-//     index_ = std::make_shared<BinaryCuvsCagra>(
-//             this->resources_.get(),
-//             this->d,
-//             index->ntotal,
-//             hnsw.nb_neighbors(0),
-//             distances,
-//             knn_graph.data(),
-//             this->metric_type,
-//             this->metric_arg,
-//             INDICES_64_BIT);
+    index_ = std::make_shared<BinaryCuvsCagra>(
+            this->resources_.get(),
+            this->d,
+            index->ntotal,
+            hnsw.nb_neighbors(0),
+            flat_storage->xb.data(),
+            knn_graph.data(),
+            INDICES_64_BIT);
 
-//     this->is_trained = true;
-// }
+    this->is_trained = true;
+}
 
-// void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
-//     FAISS_ASSERT(index_ && this->is_trained && index);
+void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
+    FAISS_ASSERT(index_ && this->is_trained && index);
 
-//     DeviceScope scope(config_.device);
+    DeviceScope scope(cagraConfig_.device);
 
-//     //
-//     // Index information
-//     //
-//     GpuIndex::copyTo(index);
-//     // This needs to be zeroed out as this implementation adds vectors to the
-//     // cpuIndex instead of copying fields
-//     index->ntotal = 0;
+    //
+    // Index information
+    //
+    index->d = this->d;
+    index->is_trained = this->is_trained;
+    // This needs to be zeroed out as this implementation adds vectors to the
+    // cpuIndex instead of copying fields
+    index->ntotal = 0;
 
-//     auto graph_degree = index_->get_knngraph_degree();
-//     auto M = graph_degree / 2;
-//     if (index->storage and index->own_fields) {
-//         delete index->storage;
-//     }
+    auto graph_degree = index_->get_knngraph_degree();
+    auto M = graph_degree / 2;
+    if (index->storage and index->own_fields) {
+        delete index->storage;
+    }
 
-//     if (this->metric_type == METRIC_L2) {
-//         index->storage = new IndexFlatL2(index->d);
-//     } else if (this->metric_type == METRIC_INNER_PRODUCT) {
-//         index->storage = new IndexFlatIP(index->d);
-//     }
-//     index->own_fields = true;
-//     index->keep_max_size_level0 = true;
-//     index->hnsw.reset();
-//     index->hnsw.assign_probas.clear();
-//     index->hnsw.cum_nneighbor_per_level.clear();
-//     index->hnsw.set_default_probas(M, 1.0 / log(M));
+    index->storage = new IndexBinaryFlat(index->d);
+    index->own_fields = true;
+    index->hnsw.reset();
+    index->hnsw.assign_probas.clear();
+    index->hnsw.cum_nneighbor_per_level.clear();
+    index->hnsw.set_default_probas(M, 1.0 / log(M));
 
-//     auto n_train = this->ntotal;
-//     float* train_dataset;
-//     auto dataset = index_->get_training_dataset();
-//     bool allocation = false;
-//     if (getDeviceForAddress(dataset) >= 0) {
-//         train_dataset = new uint8_t[n_train * index->d * 8];
-//         allocation = true;
-//         raft::copy(
-//                 train_dataset,
-//                 dataset,
-//                 n_train * index->d,
-//                 this->resources_->getRaftHandleCurrentDevice().get_stream());
-//     } else {
-//         train_dataset = const_cast<float*>(dataset);
-//     }
+    auto n_train = this->ntotal;
+    uint8_t* train_dataset;
+    auto dataset = index_->get_training_dataset();
+    bool allocation = false;
+    auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
-//     // turn off as level 0 is copied from CAGRA graph
-//     index->init_level0 = false;
-//     if (!index->base_level_only) {
-//         index->add(n_train, train_dataset);
-//     } else {
-//         index->hnsw.prepare_level_tab(n_train, false);
-//         index->storage->add(n_train, train_dataset);
-//         index->ntotal = n_train;
-//     }
-//     if (allocation) {
-//         delete[] train_dataset;
-//     }
+    auto train_data = toHost<uint8_t, 2>(
+        index_->get_training_data(),
+        stream,
+        {idx_t(this->n_train), this->d / 8});
 
-//     auto graph = get_knngraph();
+    // turn off as level 0 is copied from CAGRA graph
+    index->init_level0 = false;
+    if (!index->base_level_only) {
+        index->add(n_train, train_dataset);
+    } else {
+        index->hnsw.prepare_level_tab(n_train, false);
+        index->storage->add(n_train, train_dataset);
+        index->ntotal = n_train;
+    }
 
-// #pragma omp parallel for
-//     for (idx_t i = 0; i < n_train; i++) {
-//         size_t begin, end;
-//         index->hnsw.neighbor_range(i, 0, &begin, &end);
-//         for (size_t j = begin; j < end; j++) {
-//             index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
-//         }
-//     }
+    auto graph = get_knngraph();
 
-//     // turn back on to allow new vectors to be added to level 0
-//     index->init_level0 = true;
-// }
+#pragma omp parallel for
+    for (idx_t i = 0; i < n_train; i++) {
+        size_t begin, end;
+        index->hnsw.neighbor_range(i, 0, &begin, &end);
+        for (size_t j = begin; j < end; j++) {
+            index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
+        }
+    }
 
-// void GpuIndexBinaryCagra::reset() {
-//     DeviceScope scope(config_.device);
+    // turn back on to allow new vectors to be added to level 0
+    index->init_level0 = true;
+}
 
-//     if (index_) {
-//         index_->reset();
-//         this->ntotal = 0;
-//         this->is_trained = false;
-//     } else {
-//         FAISS_ASSERT(this->ntotal == 0);
-//     }
-// }
+void GpuIndexBinaryCagra::reset() {
+    DeviceScope scope(cagraConfig_.device);
 
-// std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
-//     FAISS_ASSERT(index_ && this->is_trained);
+    if (index_) {
+        index_->reset();
+        this->ntotal = 0;
+        this->is_trained = false;
+    } else {
+        FAISS_ASSERT(this->ntotal == 0);
+    }
+}
 
-//     return index_->get_knngraph();
-// }
+std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
+    FAISS_ASSERT(index_ && this->is_trained);
+
+    return index_->get_knngraph();
+}
 
 } // namespace gpu
 } // namespace faiss

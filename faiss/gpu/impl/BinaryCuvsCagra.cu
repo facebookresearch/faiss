@@ -78,7 +78,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         int dim,
         idx_t n,
         int graph_degree,
-        const float* distances,
+        const uint8_t* distances,
         const idx_t* knn_graph,
         IndicesOptions indicesOptions)
         : resources_(resources),
@@ -281,5 +281,35 @@ void BinaryCuvsCagra::reset() {
     cuvs_index.reset();
 }
 
+idx_t BinaryCuvsCagra::get_knngraph_degree() const {
+        FAISS_ASSERT(cuvs_index);
+        return static_cast<idx_t>(cuvs_index->graph_degree());
+    }
+    
+    std::vector<idx_t> BinaryCuvsCagra::get_knngraph() const {
+        FAISS_ASSERT(cuvs_index);
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+        auto stream = raft_handle.get_stream();
+    
+        auto device_graph = cuvs_index->graph();
+    
+        std::vector<idx_t> host_graph(
+                device_graph.extent(0) * device_graph.extent(1));
+    
+        raft_handle.sync_stream();
+    
+        thrust::copy(
+                thrust::device_ptr<const uint32_t>(device_graph.data_handle()),
+                thrust::device_ptr<const uint32_t>(
+                        device_graph.data_handle() + device_graph.size()),
+                host_graph.data());
+    
+        return host_graph;
+    }
+    
+const uint8_t* BinaryCuvsCagra::get_training_dataset() const {
+    return storage_;
+}
 } // namespace gpu
 } // namespace faiss

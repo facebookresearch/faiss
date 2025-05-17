@@ -28,6 +28,18 @@ struct IndexBinaryHNSW : IndexBinary {
     bool own_fields;
     IndexBinary* storage;
 
+    // When set to false, level 0 in the knn graph is not initialized.
+    // This option is used by GpuIndexCagra::copyTo(IndexBinaryHNSW*)
+    // as level 0 knn graph is copied over from the index built by
+    // GpuIndexBinaryCagra.
+    bool init_level0 = true;
+
+    // When set to true, all neighbors in level 0 are filled up
+    // to the maximum size allowed (2 * M). This option is used by
+    // IndexBinaryHHNSW to create a full base layer graph that is
+    // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryCagra*) is called.
+    bool keep_max_size_level0 = false;
+
     explicit IndexBinaryHNSW();
     explicit IndexBinaryHNSW(int d, int M = 32);
     explicit IndexBinaryHNSW(IndexBinary* storage, int M = 32);
@@ -54,21 +66,5 @@ struct IndexBinaryHNSW : IndexBinary {
 
     void reset() override;
 };
-
-// struct IndexBinaryHNSWCagra : IndexBinaryHNSW {
-//     IndexBinaryHNSWCagra();
-//     IndexBinaryHNSWCagra(int d, int M);
-
-//     void add(idx_t n, const uint8_t* x) override;
-
-//     /// entry point for search
-//     void search(
-//         idx_t n,
-//         const uint8_t* x,
-//         idx_t k,
-//         int32_t* distances,
-//         idx_t* labels,
-//         const SearchParameters* params = nullptr) const override;
-// };
 
 } // namespace faiss

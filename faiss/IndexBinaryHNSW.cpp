@@ -98,7 +98,7 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
+        for (int pt_level = hist.size() - 1; pt_level >= int(!index_hnsw.init_level0); pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -136,7 +136,11 @@ void hnsw_add_vertices(
             }
             i1 = i0;
         }
-        FAISS_ASSERT(i1 == 0);
+        if (index_hnsw.init_level0) {
+            FAISS_ASSERT(i1 == 0);
+        } else {
+            FAISS_ASSERT((i1 - hist[0]) == 0);
+        }
     }
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);

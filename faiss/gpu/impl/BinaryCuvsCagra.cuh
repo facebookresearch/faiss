@@ -90,6 +90,10 @@ class BinaryCuvsCagra {
 
     void reset();
 
+    idx_t get_knngraph_degree() const;
+
+    std::vector<idx_t> get_knngraph() const;
+
     const uint8_t* get_training_dataset() const;
 
    private:

@@ -69,7 +69,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     void reset() override;
 
-    //     std::vector<idx_t> get_knngraph() const;
+    std::vector<idx_t> get_knngraph() const;
 
    protected:
     /// Called from search when the input data is on the CPU;
