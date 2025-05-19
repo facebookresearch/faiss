@@ -24,11 +24,8 @@
 #pragma once
 
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
-
-// namespace faiss {
-// struct IndexHNSWCagra;
-// }
 
 namespace faiss {
 namespace gpu {
@@ -46,6 +43,10 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     int getDevice() const;
 
+    /// Returns a reference to our GpuResources object that manages memory,
+    /// stream and handle resources on the GPU
+    std::shared_ptr<GpuResources> getResources();
+
     /// Trains CAGRA based on the given vector data and add them along with ids.
     /// NB: The use of the add function here is to build the CAGRA graph on
     /// the base dataset. Use this function when you want to add vectors with
@@ -61,15 +62,24 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
-    //     void copyFrom(const faiss::IndexBinaryHNSW* index);
+    void copyFrom(const faiss::IndexBinaryHNSW* index);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
-    //     void copyTo(faiss::IndexBinaryHNSW* index) const;
+    void copyTo(faiss::IndexBinaryHNSW* index) const;
 
     void reset() override;
 
     std::vector<idx_t> get_knngraph() const;
+
+    void search(
+            idx_t n,
+            const uint8_t* x,
+            // faiss::IndexBinary has idx_t for k
+            idx_t k,
+            int32_t* distances,
+            faiss::idx_t* labels,
+            const faiss::SearchParameters* params = nullptr) const override;
 
    protected:
     /// Called from search when the input data is on the CPU;
@@ -79,20 +89,22 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             const uint8_t* x,
             int k,
             int32_t* outDistancesData,
-            idx_t* outIndicesData) const;
+            idx_t* outIndicesData,
+            const SearchParameters* search_params) const;
 
     void searchNonPaged_(
             idx_t n,
             const uint8_t* x,
             int k,
             int32_t* outDistancesData,
-            idx_t* outIndicesData) const;
+            idx_t* outIndicesData,
+            const SearchParameters* search_params) const;
 
     void searchImpl_(
             idx_t n,
             const uint8_t* x,
             int k,
-            float* distances,
+            int* distances,
             idx_t* labels,
             const SearchParameters* search_params) const;
 

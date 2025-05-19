@@ -21,18 +21,26 @@
  * limitations under the License.
  */
 
-// #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryFlat.h>
+#include <faiss/IndexBinaryHNSW.h>
+
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
+#include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
-#include <cstddef>
+#include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
+#include <faiss/gpu/utils/CopyUtils.cuh>
+
+#include <cstddef>
+
 #include <optional>
-#include "GpuIndexBinaryCagra.h"
-#include "GpuIndexCagra.h"
 #include "GpuResources.h"
 
 namespace faiss {
 namespace gpu {
+
+/// Default CPU search size for which we use paged copies
+constexpr size_t kMinPageSize = (size_t)256 * 1024 * 1024;
 
 GpuIndexBinaryCagra::GpuIndexBinaryCagra(
         GpuResourcesProvider* provider,
@@ -141,7 +149,7 @@ void GpuIndexBinaryCagra::search(
 
     FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
 
-    validateKSelect(k);
+    // validateKSelect(k);
 
     // The input vectors may be too large for the GPU, but we still
     // assume that the output distances and labels are not.
@@ -204,13 +212,7 @@ void GpuIndexBinaryCagra::searchNonPaged_(
             stream,
             {n, (this->d / 8)});
 
-    searchImpl_(
-            n,
-            vecs.data(),
-            k,
-            outDistancesData,
-            outIndicesData,
-            const SearchParameters* search_params)
+    searchImpl_(n, vecs.data(), k, outDistancesData, outIndicesData, params);
 }
 
 void GpuIndexBinaryCagra::searchFromCpuPaged_(
@@ -240,15 +242,16 @@ void GpuIndexBinaryCagra::searchFromCpuPaged_(
                 x + cur * (this->d / 8),
                 k,
                 outDistancesSlice.data(),
-                outIndicesSlice.data());
+                outIndicesSlice.data(),
+                params);
     }
 }
 
-void GpuIndexCagra::searchImpl_(
+void GpuIndexBinaryCagra::searchImpl_(
         idx_t n,
         const uint8_t* x,
         int k,
-        float* distances,
+        int* distances,
         idx_t* labels,
         const SearchParameters* search_params) const {
     FAISS_ASSERT(this->is_trained && index_);
@@ -291,7 +294,7 @@ void GpuIndexCagra::searchImpl_(
     }
 }
 
-void GpuIndexCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
+void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
     FAISS_ASSERT(index);
 
     DeviceScope scope(cagraConfig_.device);
@@ -360,25 +363,16 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     auto n_train = this->ntotal;
-    uint8_t* train_dataset;
-    auto dataset = index_->get_training_dataset();
-    bool allocation = false;
     auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
     auto train_data = toHost<uint8_t, 2>(
-        index_->get_training_data(),
-        stream,
-        {idx_t(this->n_train), this->d / 8});
+            const_cast<uint8_t*>(index_->get_training_dataset()),
+            stream,
+            {idx_t(n_train), this->d / 8});
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
-    if (!index->base_level_only) {
-        index->add(n_train, train_dataset);
-    } else {
-        index->hnsw.prepare_level_tab(n_train, false);
-        index->storage->add(n_train, train_dataset);
-        index->ntotal = n_train;
-    }
+    index->add(n_train, train_data.data());
 
     auto graph = get_knngraph();
 

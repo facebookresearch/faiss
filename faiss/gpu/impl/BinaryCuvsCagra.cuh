@@ -25,8 +25,8 @@
 
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
-#include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <cstddef>
+#include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <optional>
 
@@ -61,7 +61,7 @@ class BinaryCuvsCagra {
             int dim,
             idx_t n,
             int graph_degree,
-            const float* distances,
+            const uint8_t* train_dataset,
             const idx_t* knn_graph,
             IndicesOptions indicesOptions);
 
@@ -127,8 +127,8 @@ class BinaryCuvsCagra {
     size_t nn_descent_niter_ = 20;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>> cuvs_index{
-            nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
+            cuvs_index{nullptr};
 };
 
 } // namespace gpu

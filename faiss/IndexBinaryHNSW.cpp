@@ -98,7 +98,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= int(!index_hnsw.init_level0); pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= int(!index_hnsw.init_level0);
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -279,7 +281,9 @@ struct FlatHammingDis : DistanceComputer {
 
     ~FlatHammingDis() override {
 #pragma omp critical
-        { hnsw_stats.ndis += ndis; }
+        {
+            hnsw_stats.ndis += ndis;
+        }
     }
 };
 
