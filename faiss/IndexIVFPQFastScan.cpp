@@ -38,11 +38,13 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(
         size_t M,
         size_t nbits,
         MetricType metric,
-        int bbs)
-        : IndexIVFFastScan(quantizer, d, nlist, 0, metric), pq(d, M, nbits) {
+        int bbs,
+        bool own_invlists)
+        : IndexIVFFastScan(quantizer, d, nlist, 0, metric, own_invlists),
+          pq(d, M, nbits) {
     by_residual = false; // set to false by default because it's faster
 
-    init_fastscan(&pq, M, nbits, nlist, metric, bbs);
+    init_fastscan(&pq, M, nbits, nlist, metric, bbs, own_invlists);
 }
 
 IndexIVFPQFastScan::IndexIVFPQFastScan() {
@@ -57,12 +59,19 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs)
                   orig.d,
                   orig.nlist,
                   orig.pq.code_size,
-                  orig.metric_type),
+                  orig.metric_type,
+                  orig.own_invlists),
           pq(orig.pq) {
     FAISS_THROW_IF_NOT(orig.pq.nbits == 4);
 
     init_fastscan(
-            &pq, orig.pq.M, orig.pq.nbits, orig.nlist, orig.metric_type, bbs);
+            &pq,
+            orig.pq.M,
+            orig.pq.nbits,
+            orig.nlist,
+            orig.metric_type,
+            bbs,
+            orig.own_invlists);
 
     by_residual = orig.by_residual;
     ntotal = orig.ntotal;

@@ -17,11 +17,17 @@ namespace faiss {
 Index* index_factory(
         int d,
         const char* description,
-        MetricType metric = METRIC_L2);
+        MetricType metric = METRIC_L2,
+        // Whether to maintain inverted list within faiss index (only applicable
+        // to IndexIVF*)
+        bool own_invlists = true);
 
 /// set to > 0 to get more logs from index_factory
 FAISS_API extern int index_factory_verbose;
 
-IndexBinary* index_binary_factory(int d, const char* description);
+IndexBinary* index_binary_factory(
+        int d,
+        const char* description,
+        bool own_invlists = true);
 
 } // namespace faiss
