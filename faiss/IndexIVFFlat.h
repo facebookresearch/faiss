@@ -26,7 +26,8 @@ struct IndexIVFFlat : IndexIVF {
             Index* quantizer,
             size_t d,
             size_t nlist_,
-            MetricType = METRIC_L2);
+            MetricType = METRIC_L2,
+            bool own_invlists = true);
 
     void add_core(
             idx_t n,
@@ -65,7 +66,8 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
             Index* quantizer,
             size_t d,
             size_t nlist_,
-            MetricType = METRIC_L2);
+            MetricType = METRIC_L2,
+            bool own_invlists = true);
 
     /// also dedups the training set
     void train(idx_t n, const float* x) override;

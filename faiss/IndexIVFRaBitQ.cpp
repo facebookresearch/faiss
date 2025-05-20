@@ -23,10 +23,14 @@ IndexIVFRaBitQ::IndexIVFRaBitQ(
         Index* quantizer,
         const size_t d,
         const size_t nlist,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), rabitq(d, metric) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
+          rabitq(d, metric) {
     code_size = rabitq.code_size;
-    invlists->code_size = code_size;
+    if (own_invlists) {
+        invlists->code_size = code_size;
+    }
     is_trained = false;
 
     by_residual = true;

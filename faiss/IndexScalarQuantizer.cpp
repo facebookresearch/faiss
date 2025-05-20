@@ -122,12 +122,15 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
         size_t nlist,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric,
-        bool by_residual)
-        : IndexIVF(quantizer, d, nlist, 0, metric), sq(d, qtype) {
+        bool by_residual,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists), sq(d, qtype) {
     code_size = sq.code_size;
     this->by_residual = by_residual;
-    // was not known at construction time
-    invlists->code_size = code_size;
+    if (invlists) {
+        // was not known at construction time
+        invlists->code_size = code_size;
+    }
     is_trained = false;
 }
 

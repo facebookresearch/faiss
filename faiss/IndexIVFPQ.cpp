@@ -46,10 +46,14 @@ IndexIVFPQ::IndexIVFPQ(
         size_t nlist,
         size_t M,
         size_t nbits_per_idx,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), pq(d, M, nbits_per_idx) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
+          pq(d, M, nbits_per_idx) {
     code_size = pq.code_size;
-    invlists->code_size = code_size;
+    if (own_invlists) {
+        invlists->code_size = code_size;
+    }
     is_trained = false;
     by_residual = true;
     use_precomputed_table = 0;
