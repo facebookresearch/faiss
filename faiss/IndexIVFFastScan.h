@@ -68,7 +68,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t d,
             size_t nlist,
             size_t code_size,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     IndexIVFFastScan();
 
@@ -79,7 +80,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t nbits,
             size_t nlist,
             MetricType metric,
-            int bbs);
+            int bbs,
+            bool own_invlists);
 
     // initialize the CodePacker in the InvertedLists
     void init_code_packer();

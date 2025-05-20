@@ -30,7 +30,8 @@ struct IndexIVFPQR : IndexIVFPQ {
             size_t M,
             size_t nbits_per_idx,
             size_t M_refine,
-            size_t nbits_per_idx_refine);
+            size_t nbits_per_idx_refine,
+            bool own_invlists = true);
 
     void reset() override;
 
