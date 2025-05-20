@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="538" column="12" bodyfile="faiss/IndexIVF.h" bodystart="538" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="539" column="12" bodyfile="faiss/IndexIVF.h" bodystart="539" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1a17f1e02b488a05d2dd117d540c16e86d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="539" column="12" bodyfile="faiss/IndexIVF.h" bodystart="539" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="540" column="12" bodyfile="faiss/IndexIVF.h" bodystart="540" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1a9a1c44adba73e94c5d46dcf5c0076942" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="540" column="12" bodyfile="faiss/IndexIVF.h" bodystart="540" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="541" column="12" bodyfile="faiss/IndexIVF.h" bodystart="541" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1a8c235053dcbbaa31ca15abc0af619e37" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="541" column="12" bodyfile="faiss/IndexIVF.h" bodystart="541" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="542" column="12" bodyfile="faiss/IndexIVF.h" bodystart="542" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1a76921d378c428b0448664e9a2c797942" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -71,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="542" column="12" bodyfile="faiss/IndexIVF.h" bodystart="542" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="543" column="12" bodyfile="faiss/IndexIVF.h" bodystart="543" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFStats_1a121510b37cfa603d7a40c5d7c8f8501c" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="543" column="12" bodyfile="faiss/IndexIVF.h" bodystart="543" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="544" column="12" bodyfile="faiss/IndexIVF.h" bodystart="544" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -101,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="545" column="5" bodyfile="faiss/IndexIVF.h" bodystart="545" bodyend="547"/>
+        <location file="faiss/IndexIVF.h" line="546" column="5" bodyfile="faiss/IndexIVF.h" bodystart="546" bodyend="548"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFStats_1a211fe212aeb58cb10c0f0083cb9fbff9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="548" column="10"/>
+        <location file="faiss/IndexIVF.h" line="549" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFStats_1a369d717ea654ebfc1dc393ca28e82fc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -133,14 +133,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="549" column="10"/>
+        <location file="faiss/IndexIVF.h" line="550" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexIVF.h" line="537" column="1" bodyfile="faiss/IndexIVF.h" bodystart="537" bodyend="550"/>
+    <location file="faiss/IndexIVF.h" line="538" column="1" bodyfile="faiss/IndexIVF.h" bodystart="538" bodyend="551"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVFStats_1a369d717ea654ebfc1dc393ca28e82fc0" prot="public" virt="non-virtual"><scope>faiss::IndexIVFStats</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVFStats_1a05922812f1133c096bf2c8e1f3123d15" prot="public" virt="non-virtual"><scope>faiss::IndexIVFStats</scope><name>IndexIVFStats</name></member>

@@ -711,7 +711,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_factory.h" line="23" column="22" declfile="faiss/index_factory.h" declline="23" declcolumn="22"/>
+        <location file="faiss/index_factory.h" line="26" column="22" declfile="faiss/index_factory.h" declline="26" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a1b8b979f26be5ebe9a037a5144fb796e" prot="public" static="no" mutable="no">
         <type>const int</type>
@@ -874,7 +874,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="535" column="23" declfile="faiss/IndexIVF.h" declline="535" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="536" column="23" declfile="faiss/IndexIVF.h" declline="536" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -888,7 +888,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="553" column="32" declfile="faiss/IndexIVF.h" declline="553" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="554" column="32" declfile="faiss/IndexIVF.h" declline="554" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -902,7 +902,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="270" column="35" declfile="faiss/IndexIVFFastScan.h" declline="270" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="272" column="35" declfile="faiss/IndexIVFFastScan.h" declline="272" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API size_t</type>
@@ -930,7 +930,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="147" column="22" declfile="faiss/IndexIVFPQ.h" declline="147" declcolumn="22"/>
+        <location file="faiss/IndexIVFPQ.h" line="148" column="22" declfile="faiss/IndexIVFPQ.h" declline="148" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae040bf76054f16979b15559f8ffc5727" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref></type>
@@ -944,7 +944,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="187" column="34" declfile="faiss/IndexIVFPQ.h" declline="187" declcolumn="34"/>
+        <location file="faiss/IndexIVFPQ.h" line="188" column="34" declfile="faiss/IndexIVFPQ.h" declline="188" declcolumn="34"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexPQStats" kindref="compound">IndexPQStats</ref></type>
@@ -3327,10 +3327,10 @@
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="658" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="658" bodyend="685"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a7920e25266303e1a760a091027143dec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
         <definition>Index * faiss::index_factory</definition>
-        <argsstring>(int d, const char *description, MetricType metric=METRIC_L2)</argsstring>
+        <argsstring>(int d, const char *description, MetricType metric=METRIC_L2, bool own_invlists=true)</argsstring>
         <name>index_factory</name>
         <qualifiedname>faiss::index_factory</qualifiedname>
         <param>
@@ -3346,6 +3346,11 @@
           <declname>metric</declname>
           <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
         </param>
+        <param>
+          <type>bool</type>
+          <declname>own_invlists</declname>
+          <defval>true</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -3355,10 +3360,10 @@
         </inbodydescription>
         <location file="faiss/index_factory.h" line="17" column="7" declfile="faiss/index_factory.h" declline="17" declcolumn="7"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1adb54e49cab9467f117b131f803c583b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1ac0168767072b3aa5b10dbc0a8867814b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
         <definition>IndexBinary * faiss::index_binary_factory</definition>
-        <argsstring>(int d, const char *description)</argsstring>
+        <argsstring>(int d, const char *description, bool own_invlists=true)</argsstring>
         <name>index_binary_factory</name>
         <qualifiedname>faiss::index_binary_factory</qualifiedname>
         <param>
@@ -3369,13 +3374,18 @@
           <type>const char *</type>
           <declname>description</declname>
         </param>
+        <param>
+          <type>bool</type>
+          <declname>own_invlists</declname>
+          <defval>true</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_factory.h" line="25" column="13" declfile="faiss/index_factory.h" declline="25" declcolumn="13"/>
+        <location file="faiss/index_factory.h" line="28" column="13" declfile="faiss/index_factory.h" declline="28" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a621db8cef79acb407c178adc10a47206" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3922,7 +3932,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="160" column="6" declfile="faiss/IndexIVFPQ.h" declline="160" declcolumn="6"/>
+        <location file="faiss/IndexIVFPQ.h" line="161" column="6" declfile="faiss/IndexIVFPQ.h" declline="161" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>

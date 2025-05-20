@@ -292,10 +292,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a569058430e4b1b81204df1c2cbd3084a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1abede87586b4e3b35d5d3e4cd114371de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexBinaryIVF::IndexBinaryIVF</definition>
-        <argsstring>(IndexBinary *quantizer, size_t d, size_t nlist)</argsstring>
+        <argsstring>(IndexBinary *quantizer, size_t d, size_t nlist, bool own_invlists=true)</argsstring>
         <name>IndexBinaryIVF</name>
         <qualifiedname>faiss::IndexBinaryIVF::IndexBinaryIVF</qualifiedname>
         <param>
@@ -309,6 +309,11 @@
         <param>
           <type>size_t</type>
           <declname>nlist</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>own_invlists</declname>
+          <defval>true</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -331,7 +336,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="73" column="5"/>
+        <location file="faiss/IndexBinaryIVF.h" line="77" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a61d4c2975de4f28f5ca42b29de901155" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -345,7 +350,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="75" column="5"/>
+        <location file="faiss/IndexBinaryIVF.h" line="79" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a9dfe26312102f0010940fd2fbdf87d85" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -361,7 +366,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="77" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a4b4b1ba42e6af7c30ccbaf0fc0f38034" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -385,7 +390,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="80" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="84" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1aaa0eb1eca49892304ceaa11bd3a5ffa1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -419,7 +424,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="82" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="86" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ace01cca47e08dfe5c74c5b4f31977032" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -458,7 +463,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="84" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="88" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a9155bcbd5293dc8946b108dd05050f47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -499,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="92" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="96" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ab297ab36edb45eb4a9d766e6d4481caa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -617,7 +622,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="115" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="119" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ab53f2452fa1b182f1d8a12507eb88286" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1BinaryInvertedListScanner" kindref="compound">BinaryInvertedListScanner</ref> *</type>
@@ -636,7 +641,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="126" column="39"/>
+        <location file="faiss/IndexBinaryIVF.h" line="130" column="39"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a0e0b02bc84fa9d3980ee66bfe8a9089a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -677,7 +682,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="130" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="134" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a0c916e679ab3ebc366d16e55d77995d2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -741,7 +746,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="138" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="142" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a84ad5f009fad999e54567bbb3f6a4fab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -779,7 +784,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="145" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="149" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ad233d3fcf4e001849301c0fbeb675f81" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -821,7 +826,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="153" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="157" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a4a8cd9437b9adc21696aefe1fa440a22" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -876,7 +881,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="164" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="168" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a198ca7067fd9a08583f257f00b741b39" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -932,7 +937,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="175" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="179" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1abd9ffe1e326ab9d9784ad51e5e17dfea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -960,7 +965,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="191" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="195" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ad05e4e6f3ce7bb54f88ece7fe645447b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -980,7 +985,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="197" column="12"/>
+        <location file="faiss/IndexBinaryIVF.h" line="201" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1ad80e8243ce1a800b7e22088b0fb2800d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1004,7 +1009,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="199" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="203" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a6a65e485671efc395161c12ee6fe3fc5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1024,7 +1029,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="201" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="205" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a290f056430225f11ea4c31615a61886b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -1042,7 +1047,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="204" column="12" bodyfile="faiss/IndexBinaryIVF.h" bodystart="204" bodyend="206"/>
+        <location file="faiss/IndexBinaryIVF.h" line="208" column="12" bodyfile="faiss/IndexBinaryIVF.h" bodystart="208" bodyend="210"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a280d0a3958664c3eb4164fcb62496b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1072,7 +1077,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="213" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="217" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a75f1c3083cfa725de7c9a7ad712c7d3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1090,7 +1095,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="215" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="219" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryIVF_1a053815f897da67f2ceefe11f2c6c79fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1113,7 +1118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="217" column="10"/>
+        <location file="faiss/IndexBinaryIVF.h" line="221" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1315,7 +1320,7 @@
         <link refid="structfaiss_1_1InvertedLists"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryIVF.h" line="33" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="33" bodyend="218"/>
+    <location file="faiss/IndexBinaryIVF.h" line="33" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="33" bodyend="222"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryIVF_1aaa0eb1eca49892304ceaa11bd3a5ffa1" prot="public" virt="virtual"><scope>faiss::IndexBinaryIVF</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinaryIVF_1a9155bcbd5293dc8946b108dd05050f47" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>add_core</name></member>
@@ -1334,7 +1339,7 @@
       <member refid="structfaiss_1_1IndexBinaryIVF_1ab53f2452fa1b182f1d8a12507eb88286" prot="public" virt="virtual"><scope>faiss::IndexBinaryIVF</scope><name>get_InvertedListScanner</name></member>
       <member refid="structfaiss_1_1IndexBinaryIVF_1a290f056430225f11ea4c31615a61886b" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>get_list_size</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a2a76f22851e42963b6a42c6d39e93b4b" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>IndexBinary</name></member>
-      <member refid="structfaiss_1_1IndexBinaryIVF_1a569058430e4b1b81204df1c2cbd3084a" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>IndexBinaryIVF</name></member>
+      <member refid="structfaiss_1_1IndexBinaryIVF_1abede87586b4e3b35d5d3e4cd114371de" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>IndexBinaryIVF</name></member>
       <member refid="structfaiss_1_1IndexBinaryIVF_1a9166b9b564b59e3d770488a3f355d1fc" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>IndexBinaryIVF</name></member>
       <member refid="structfaiss_1_1IndexBinaryIVF_1a094ef9572645ff86a76ff4df967bf65a" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>invlists</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryIVF</scope><name>is_trained</name></member>
