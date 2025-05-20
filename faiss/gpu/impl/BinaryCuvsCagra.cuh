@@ -33,7 +33,6 @@
 #include <faiss/MetricType.h>
 
 #include <cuvs/neighbors/cagra.hpp>
-#include <cuvs/neighbors/ivf_pq.hpp>
 
 namespace faiss {
 
@@ -46,15 +45,8 @@ class BinaryCuvsCagra {
             int dim,
             idx_t intermediate_graph_degree,
             idx_t graph_degree,
-            faiss::cagra_build_algo graph_build_algo,
-            size_t nn_descent_niter,
             bool store_dataset,
-            IndicesOptions indicesOptions,
-            std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
-                    std::nullopt,
-            std::optional<cuvs::neighbors::ivf_pq::search_params>
-                    ivf_pq_search_params = std::nullopt,
-            float refine_rate = 2.0f);
+            IndicesOptions indicesOptions);
 
     BinaryCuvsCagra(
             GpuResources* resources,
@@ -115,16 +107,7 @@ class BinaryCuvsCagra {
     bool store_dataset_ = true;
 
     /// Parameters to build cuVS CAGRA index
-    faiss::cagra_build_algo graph_build_algo_;
     cuvs::neighbors::cagra::index_params index_params_;
-
-    /// Parameters to build CAGRA graph using IVF PQ
-    std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params_;
-    std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
-    std::optional<float> refine_rate_;
-
-    /// Parameters to build CAGRA graph using NN Descent
-    size_t nn_descent_niter_ = 20;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>

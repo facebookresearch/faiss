@@ -39,23 +39,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         int dim,
         idx_t intermediate_graph_degree,
         idx_t graph_degree,
-        faiss::cagra_build_algo graph_build_algo,
-        size_t nn_descent_niter,
         bool store_dataset,
-        IndicesOptions indicesOptions,
-        std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params,
-        std::optional<cuvs::neighbors::ivf_pq::search_params>
-                ivf_pq_search_params,
-        float refine_rate)
-        : resources_(resources),
-          dim_(dim),
-          graph_build_algo_(graph_build_algo),
-          nn_descent_niter_(nn_descent_niter),
-          store_dataset_(store_dataset),
-          index_params_(),
-          ivf_pq_params_(ivf_pq_params),
-          ivf_pq_search_params_(ivf_pq_search_params),
-          refine_rate_(refine_rate) {
+        IndicesOptions indicesOptions)
+        : resources_(resources), dim_(dim), store_dataset_(store_dataset) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
@@ -64,10 +50,6 @@ BinaryCuvsCagra::BinaryCuvsCagra(
     index_params_.graph_degree = graph_degree;
     index_params_.attach_dataset_on_build = store_dataset;
 
-    if (!ivf_pq_search_params_) {
-        ivf_pq_search_params_ =
-                std::make_optional<cuvs::neighbors::ivf_pq::search_params>();
-    }
     index_params_.metric = cuvs::distance::DistanceType::BitwiseHamming;
 
     reset();
@@ -149,30 +131,9 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    if (!ivf_pq_params_) {
-        ivf_pq_params_ = cuvs::neighbors::ivf_pq::index_params::from_dataset(
-                raft::make_extents<uint32_t>(
-                        static_cast<uint32_t>(n_), static_cast<uint32_t>(dim_)),
-                cuvs::distance::DistanceType::BitwiseHamming);
-    }
-    if (graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
-        cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
-                graph_build_params;
-        graph_build_params.build_params = ivf_pq_params_.value();
-        graph_build_params.search_params = ivf_pq_search_params_.value();
-        graph_build_params.refinement_rate = refine_rate_.value();
-        index_params_.graph_build_params = graph_build_params;
-        if (index_params_.graph_degree ==
-            index_params_.intermediate_graph_degree) {
-            index_params_.intermediate_graph_degree =
-                    1.5 * index_params_.graph_degree;
-        }
-    } else {
-        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
-                graph_build_params(index_params_.intermediate_graph_degree);
-        graph_build_params.max_iterations = nn_descent_niter_;
-        index_params_.graph_build_params = graph_build_params;
-    }
+    cuvs::neighbors::cagra::graph_build_params::iterative_search_params
+            graph_build_params;
+    index_params_.graph_build_params = graph_build_params;
 
     if (getDeviceForAddress(x) >= 0) {
         auto dataset = raft::make_device_matrix_view<const uint8_t, int64_t>(

@@ -281,9 +281,7 @@ struct FlatHammingDis : DistanceComputer {
 
     ~FlatHammingDis() override {
 #pragma omp critical
-        {
-            hnsw_stats.ndis += ndis;
-        }
+        { hnsw_stats.ndis += ndis; }
     }
 };
 
