@@ -30,6 +30,7 @@
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
+#include <raft/linalg/map.cuh>
 
 namespace faiss {
 namespace gpu {
@@ -178,8 +179,8 @@ void BinaryCuvsCagra::search(
     idx_t numQueries = queries.getSize(0);
     idx_t cols = queries.getSize(1);
     idx_t k_ = k;
-    auto distances_float = raft::make_device_matrix<float>(
-            raft_handle, n, static_cast<idx_t>(k));
+    auto distances_float =
+            raft::make_device_matrix<float>(raft_handle, numQueries, k_);
 
     FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
@@ -199,9 +200,6 @@ void BinaryCuvsCagra::search(
         store_dataset_ = true;
     }
 
-    auto queries_view = raft::make_device_matrix_view<const uint8_t, int64_t>(
-            queries.data(), numQueries, cols);
-    auto distances_float_view = distances_float.view();
     auto indices_view = raft::make_device_matrix_view<idx_t, int64_t>(
             outIndices.data(), numQueries, k_);
 
@@ -222,8 +220,11 @@ void BinaryCuvsCagra::search(
     search_pams.num_random_samplings = num_random_samplings;
     search_pams.rand_xor_mask = rand_xor_mask;
 
+    auto queries_view = raft::make_device_matrix_view<const uint8_t, int64_t>(
+            queries.data(), numQueries, cols);
     auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
             raft_handle, numQueries, k_);
+    auto distances_float_view = distances_float.view();
 
     cuvs::neighbors::cagra::search(
             raft_handle,
@@ -234,17 +235,19 @@ void BinaryCuvsCagra::search(
             distances_float_view);
     raft::print_device_vector(
             "distances from search",
-            distances_view.data_handle(),
+            distances_float.data_handle(),
             100,
             std::cout);
-    raft::copy(
-            indices_view.data_handle(),
+    thrust::copy(
+            raft::resource::get_thrust_policy(raft_handle),
             indices_copy.data_handle(),
-            indices_copy.size(),
-            raft_handle.get_stream());
+            indices_copy.data_handle() + indices_copy.size(),
+            indices_view.data_handle());
     auto distances_view = raft::make_device_matrix_view(
-            distances, static_cast<int64_t>(n), static_cast<int64_t>(k));
-    auto distances_float_view = distances_float.view();
+            outDistances.data(),
+            static_cast<int64_t>(numQueries),
+            static_cast<int64_t>(k));
+
     raft::linalg::map_offset(
             raft_handle,
             distances_view,
@@ -253,7 +256,6 @@ void BinaryCuvsCagra::search(
                 int col_idx = i % k_;
                 return static_cast<int>(distances_float_view(row_idx, col_idx));
             });
-    raft::print_device_vector("after search ended", distances, 100, std::cout);
 }
 
 void BinaryCuvsCagra::reset() {

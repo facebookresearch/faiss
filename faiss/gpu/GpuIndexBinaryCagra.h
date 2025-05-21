@@ -100,9 +100,6 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             idx_t* outIndicesData,
             const SearchParameters* search_params) const;
 
-   public:
-    // public for now because __device__ lambdas cannot be contained inside
-    // protected / private members
     void searchImpl_(
             idx_t n,
             const uint8_t* x,

@@ -36,8 +36,6 @@
 #include <optional>
 #include "GpuResources.h"
 
-#include <raft/linalg/map.cuh>
-
 namespace faiss {
 namespace gpu {
 
@@ -225,7 +223,7 @@ void GpuIndexBinaryCagra::searchImpl_(
 
     Tensor<uint8_t, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d / 8});
 
-    Tensor<float, 2, true> outDistances(distances, {n, k});
+    Tensor<int, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
     SearchParametersCagra* params;
