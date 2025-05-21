@@ -321,6 +321,7 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
 
     index->storage = new IndexBinaryFlat(index->d);
     index->own_fields = true;
+    index->keep_max_size_level0 = true;
     index->hnsw.reset();
     index->hnsw.assign_probas.clear();
     index->hnsw.cum_nneighbor_per_level.clear();
@@ -351,6 +352,7 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
 
     // turn back on to allow new vectors to be added to level 0
     index->init_level0 = true;
+    index->keep_max_size_level0 = false;
 }
 
 void GpuIndexBinaryCagra::reset() {
