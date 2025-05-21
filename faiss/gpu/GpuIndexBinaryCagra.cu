@@ -225,9 +225,7 @@ void GpuIndexBinaryCagra::searchImpl_(
 
     Tensor<uint8_t, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d / 8});
 
-    auto raft_handle = resources_->getRaftHandleCurrentDevice();
-    auto distances_float = raft::make_device_matrix<float>(raft_handle, n, static_cast<idx_t>(k));
-    Tensor<float, 2, true> outDistances(distances_float.data_handle(), {n, k});
+    Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
     SearchParametersCagra* params;
@@ -260,16 +258,6 @@ void GpuIndexBinaryCagra::searchImpl_(
     if (not search_params) {
         delete params;
     }
-
-    auto distances_view  = raft::make_device_matrix_view(distances, static_cast<int64_t>(n), static_cast<int64_t>(k));
-    auto distances_float_view = distances_float.view();
-    raft::linalg::map_offset(raft_handle, distances_view, [distances_float_view, k] __device__(size_t i) {
-                int row_idx = i / k;
-                int col_idx = i % k;
-                return static_cast<int>(distances_float_view(row_idx, col_idx));});
-    // raft::copy(distances, float_distances.data_handle(), 100, std::cout);
-    // raft::resource::sync_stream(this->resources_->getRaftHandleCurrentDevice());
-    raft::print_device_vector("after search ended", distances, 100, std::cout);
 }
 
 void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {

@@ -64,7 +64,7 @@ class BinaryCuvsCagra {
     void search(
             Tensor<uint8_t, 2, true>& queries,
             int k,
-            Tensor<float, 2, true>& outDistances,
+            Tensor<int, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
             idx_t max_queries,
             idx_t itopk_size,

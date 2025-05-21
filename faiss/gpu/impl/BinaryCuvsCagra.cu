@@ -132,7 +132,8 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    // BitwiseHamming metric only supports CAGRA iterative search as the graph building algorithm
+    // BitwiseHamming metric only supports CAGRA iterative search as the graph
+    // building algorithm
     cuvs::neighbors::cagra::graph_build_params::iterative_search_params
             graph_build_params;
     index_params_.graph_build_params = graph_build_params;
@@ -145,8 +146,8 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
                 cuvs::neighbors::cagra::build(
                         raft_handle, index_params_, dataset));
     } else {
-        auto dataset =
-                raft::make_host_matrix_view<const uint8_t, int64_t>(x, n, dim_ / 8);
+        auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
+                x, n, dim_ / 8);
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
                 cuvs::neighbors::cagra::build(
@@ -157,7 +158,7 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
 void BinaryCuvsCagra::search(
         Tensor<uint8_t, 2, true>& queries,
         int k,
-        Tensor<float, 2, true>& outDistances,
+        Tensor<int, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         idx_t max_queries,
         idx_t itopk_size,
@@ -177,6 +178,8 @@ void BinaryCuvsCagra::search(
     idx_t numQueries = queries.getSize(0);
     idx_t cols = queries.getSize(1);
     idx_t k_ = k;
+    auto distances_float = raft::make_device_matrix<float>(
+            raft_handle, n, static_cast<idx_t>(k));
 
     FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
@@ -198,8 +201,7 @@ void BinaryCuvsCagra::search(
 
     auto queries_view = raft::make_device_matrix_view<const uint8_t, int64_t>(
             queries.data(), numQueries, cols);
-    auto distances_view = raft::make_device_matrix_view<float, int64_t>(
-            outDistances.data(), numQueries, k_);
+    auto distances_float_view = distances_float.view();
     auto indices_view = raft::make_device_matrix_view<idx_t, int64_t>(
             outIndices.data(), numQueries, k_);
 
@@ -229,13 +231,29 @@ void BinaryCuvsCagra::search(
             *cuvs_index,
             queries_view,
             indices_copy.view(),
-            distances_view);
-    raft::print_device_vector("distances from search", distances_view.data_handle(), 100, std::cout);
-    thrust::copy(
-            raft::resource::get_thrust_policy(raft_handle),
+            distances_float_view);
+    raft::print_device_vector(
+            "distances from search",
+            distances_view.data_handle(),
+            100,
+            std::cout);
+    raft::copy(
+            indices_view.data_handle(),
             indices_copy.data_handle(),
-            indices_copy.data_handle() + indices_copy.size(),
-            indices_view.data_handle());
+            indices_copy.size(),
+            raft_handle.get_stream());
+    auto distances_view = raft::make_device_matrix_view(
+            distances, static_cast<int64_t>(n), static_cast<int64_t>(k));
+    auto distances_float_view = distances_float.view();
+    raft::linalg::map_offset(
+            raft_handle,
+            distances_view,
+            [distances_float_view, k_] __device__(size_t i) {
+                int row_idx = i / k_;
+                int col_idx = i % k_;
+                return static_cast<int>(distances_float_view(row_idx, col_idx));
+            });
+    raft::print_device_vector("after search ended", distances, 100, std::cout);
 }
 
 void BinaryCuvsCagra::reset() {
