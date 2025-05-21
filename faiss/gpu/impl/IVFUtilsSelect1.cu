@@ -26,14 +26,15 @@ template <
         int ThreadsPerBlock,
         int NumWarpQ,
         int NumThreadQ,
-        bool Dir>
+        bool Dir,
+        typename IndexInT>
 __global__ void pass1SelectLists(
-        Tensor<idx_t, 2, true> prefixSumOffsets,
+        Tensor<IndexInT, 2, true> prefixSumOffsets,
         Tensor<float, 1, true> distance,
         int nprobe,
         int k,
         Tensor<float, 3, true> heapDistances,
-        Tensor<idx_t, 3, true> heapIndices) {
+        Tensor<IndexInT, 3, true> heapIndices) {
     if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
         constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
@@ -92,21 +93,22 @@ __global__ void pass1SelectLists(
             // together
             for (auto i = threadIdx.x; i < k; i += blockDim.x) {
                 heapDistances[queryId][sliceId][i] = smemK[i];
-                heapIndices[queryId][sliceId][i] = idx_t(smemV[i]);
+                heapIndices[queryId][sliceId][i] = IndexInT(smemV[i]);
             }
         }
     }
 }
 
+template <typename IndexInT>
 void runPass1SelectLists(
-        Tensor<idx_t, 2, true>& prefixSumOffsets,
+        Tensor<IndexInT, 2, true>& prefixSumOffsets,
         Tensor<float, 1, true>& distance,
         int nprobe,
         int k,
         bool use64BitSelection,
         bool chooseLargest,
         Tensor<float, 3, true>& heapDistances,
-        Tensor<idx_t, 3, true>& heapIndices,
+        Tensor<IndexInT, 3, true>& heapIndices,
         cudaStream_t stream) {
     // This is also caught at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
@@ -114,20 +116,25 @@ void runPass1SelectLists(
     auto grid =
             dim3(heapDistances.getSize(1),
                  std::min(
-                         prefixSumOffsets.getSize(0),
-                         (idx_t)getMaxGridCurrentDevice().y));
+                         (IndexInT)prefixSumOffsets.getSize(0),
+                         (IndexInT)getMaxGridCurrentDevice().y));
 
-#define RUN_PASS(INDEX_T, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
-    do {                                                                \
-        pass1SelectLists<INDEX_T, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR> \
-                <<<grid, BLOCK, 0, stream>>>(                           \
-                        prefixSumOffsets,                               \
-                        distance,                                       \
-                        nprobe,                                         \
-                        k,                                              \
-                        heapDistances,                                  \
-                        heapIndices);                                   \
-        return; /* success */                                           \
+#define RUN_PASS(INDEX_T, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR) \
+    do {                                                        \
+        pass1SelectLists<                                       \
+                INDEX_T,                                        \
+                BLOCK,                                          \
+                NUM_WARP_Q,                                     \
+                NUM_THREAD_Q,                                   \
+                DIR,                                            \
+                IndexInT><<<grid, BLOCK, 0, stream>>>(          \
+                prefixSumOffsets,                               \
+                distance,                                       \
+                nprobe,                                         \
+                k,                                              \
+                heapDistances,                                  \
+                heapIndices);                                   \
+        return; /* success */                                   \
     } while (0)
 
 #if GPU_MAX_SELECTION_K >= 2048
@@ -195,6 +202,49 @@ void runPass1SelectLists(
 #undef RUN_PASS
 
     CUDA_TEST_ERROR();
+}
+
+void runPass1SelectLists(
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
+        Tensor<float, 1, true>& distance,
+        int nprobe,
+        int k,
+        bool use64BitSelection,
+        bool chooseLargest,
+        Tensor<float, 3, true>& heapDistances,
+        Tensor<idx_t, 3, true>& heapIndices,
+        cudaStream_t stream) {
+    runPass1SelectLists<idx_t>(
+            prefixSumOffsets,
+            distance,
+            nprobe,
+            k,
+            use64BitSelection,
+            chooseLargest,
+            heapDistances,
+            heapIndices,
+            stream);
+}
+
+void runPass1SelectLists(
+        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<float, 1, true>& distance,
+        int nprobe,
+        int k,
+        bool chooseLargest,
+        Tensor<float, 3, true>& heapDistances,
+        Tensor<int, 3, true>& heapIndices,
+        cudaStream_t stream) {
+    runPass1SelectLists<int>(
+            prefixSumOffsets,
+            distance,
+            nprobe,
+            k,
+            false,
+            chooseLargest,
+            heapDistances,
+            heapIndices,
+            stream);
 }
 
 } // namespace gpu

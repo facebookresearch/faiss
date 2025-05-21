@@ -13,6 +13,7 @@ namespace gpu {
 
 #if GPU_MAX_SELECTION_K >= 2048
 BLOCK_SELECT_IMPL(float, false, 2048, 8);
+BLOCK_SELECT_IMPL_INDEX(float, false, 2048, 8, ushort);
 #endif
 
 } // namespace gpu
