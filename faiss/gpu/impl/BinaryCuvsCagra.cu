@@ -92,7 +92,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 
         auto dataset_mds =
                 raft::make_device_matrix_view<const uint8_t, int64_t>(
-                        train_dataset, n, dim);
+                        train_dataset, n, dim / 8);
 
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
@@ -110,7 +110,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
                 knn_graph_copy.data_handle());
 
         auto dataset_mds = raft::make_host_matrix_view<const uint8_t, int64_t>(
-                train_dataset, n, dim);
+                train_dataset, n, dim / 8);
 
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
@@ -125,26 +125,28 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 }
 
 void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
+    std::cout << "dim" << dim_ << std::endl;
     storage_ = x;
     n_ = n;
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
+    // BitwiseHamming metric only supports CAGRA iterative search as the graph building algorithm
     cuvs::neighbors::cagra::graph_build_params::iterative_search_params
             graph_build_params;
     index_params_.graph_build_params = graph_build_params;
 
     if (getDeviceForAddress(x) >= 0) {
         auto dataset = raft::make_device_matrix_view<const uint8_t, int64_t>(
-                x, n, dim_);
+                x, n, dim_ / 8);
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
                 cuvs::neighbors::cagra::build(
                         raft_handle, index_params_, dataset));
     } else {
         auto dataset =
-                raft::make_host_matrix_view<const uint8_t, int64_t>(x, n, dim_);
+                raft::make_host_matrix_view<const uint8_t, int64_t>(x, n, dim_ / 8);
         cuvs_index = std::make_shared<
                 cuvs::neighbors::cagra::index<uint8_t, uint32_t>>(
                 cuvs::neighbors::cagra::build(
@@ -178,17 +180,17 @@ void BinaryCuvsCagra::search(
 
     FAISS_ASSERT(cuvs_index);
     FAISS_ASSERT(numQueries > 0);
-    FAISS_ASSERT(cols == dim_);
+    FAISS_ASSERT(cols == dim_ / 8);
 
     if (!store_dataset_) {
         if (getDeviceForAddress(storage_) >= 0) {
             auto dataset =
                     raft::make_device_matrix_view<const uint8_t, int64_t>(
-                            storage_, n_, dim_);
+                            storage_, n_, dim_ / 8);
             cuvs_index->update_dataset(raft_handle, dataset);
         } else {
             auto dataset = raft::make_host_matrix_view<const uint8_t, int64_t>(
-                    storage_, n_, dim_);
+                    storage_, n_, dim_ / 8);
             cuvs_index->update_dataset(raft_handle, dataset);
         }
         store_dataset_ = true;
@@ -228,6 +230,7 @@ void BinaryCuvsCagra::search(
             queries_view,
             indices_copy.view(),
             distances_view);
+    raft::print_device_vector("distances from search", distances_view.data_handle(), 100, std::cout);
     thrust::copy(
             raft::resource::get_thrust_policy(raft_handle),
             indices_copy.data_handle(),

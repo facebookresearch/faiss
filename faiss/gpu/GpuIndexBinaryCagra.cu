@@ -36,6 +36,8 @@
 #include <optional>
 #include "GpuResources.h"
 
+#include <raft/linalg/map.cuh>
+
 namespace faiss {
 namespace gpu {
 
@@ -100,7 +102,7 @@ void GpuIndexBinaryCagra::search(
         idx_t n,
         const uint8_t* x,
         idx_t k,
-        int32_t* distances,
+        int* distances,
         faiss::idx_t* labels,
         const SearchParameters* params) const {
     DeviceScope scope(cagraConfig_.device);
@@ -120,7 +122,11 @@ void GpuIndexBinaryCagra::search(
     // GPU.
     // If we reach a point where all inputs are too big, we can add
     // another level of tiling.
-    auto outDistances = toDeviceTemporary<int32_t, 2>(
+    // In order to remain consistent with other IndexBinary, we must return
+    // distances as integers despite cuVS search functions requiring the
+    // distances to be float. This can lead to up to 2x the allocation of
+    // distances.
+    auto outDistances = toDeviceTemporary<int, 2>(
             resources_.get(), cagraConfig_.device, distances, stream, {n, k});
 
     auto outIndices = toDeviceTemporary<idx_t, 2>(
@@ -150,7 +156,7 @@ void GpuIndexBinaryCagra::search(
     }
 
     // Copy back if necessary
-    fromDevice<int32_t, 2>(outDistances, distances, stream);
+    fromDevice<int, 2>(outDistances, distances, stream);
     fromDevice<idx_t, 2>(outIndices, labels, stream);
 }
 
@@ -158,12 +164,9 @@ void GpuIndexBinaryCagra::searchNonPaged_(
         idx_t n,
         const uint8_t* x,
         int k,
-        int32_t* outDistancesData,
+        int* outDistancesData,
         idx_t* outIndicesData,
         const SearchParameters* params) const {
-    Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
-    Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
-
     auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
     // Make sure arguments are on the device we desire; use temporary
@@ -182,10 +185,10 @@ void GpuIndexBinaryCagra::searchFromCpuPaged_(
         idx_t n,
         const uint8_t* x,
         int k,
-        int32_t* outDistancesData,
+        int* outDistancesData,
         idx_t* outIndicesData,
         const SearchParameters* params) const {
-    Tensor<int32_t, 2, true> outDistances(outDistancesData, {n, k});
+    Tensor<int, 2, true> outDistances(outDistancesData, {n, k});
     Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
 
     idx_t vectorSize = sizeof(uint8_t) * (this->d / 8);
@@ -220,9 +223,11 @@ void GpuIndexBinaryCagra::searchImpl_(
     FAISS_ASSERT(this->is_trained && index_);
     FAISS_ASSERT(n > 0);
 
-    Tensor<uint8_t, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d});
-    Tensor<float, 2, true> outDistances(
-            reinterpret_cast<float*>(distances), {n, k});
+    Tensor<uint8_t, 2, true> queries(const_cast<uint8_t*>(x), {n, this->d / 8});
+
+    auto raft_handle = resources_->getRaftHandleCurrentDevice();
+    auto distances_float = raft::make_device_matrix<float>(raft_handle, n, static_cast<idx_t>(k));
+    Tensor<float, 2, true> outDistances(distances_float.data_handle(), {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
     SearchParametersCagra* params;
@@ -255,6 +260,16 @@ void GpuIndexBinaryCagra::searchImpl_(
     if (not search_params) {
         delete params;
     }
+
+    auto distances_view  = raft::make_device_matrix_view(distances, static_cast<int64_t>(n), static_cast<int64_t>(k));
+    auto distances_float_view = distances_float.view();
+    raft::linalg::map_offset(raft_handle, distances_view, [distances_float_view, k] __device__(size_t i) {
+                int row_idx = i / k;
+                int col_idx = i % k;
+                return static_cast<int>(distances_float_view(row_idx, col_idx));});
+    // raft::copy(distances, float_distances.data_handle(), 100, std::cout);
+    // raft::resource::sync_stream(this->resources_->getRaftHandleCurrentDevice());
+    raft::print_device_vector("after search ended", distances, 100, std::cout);
 }
 
 void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {

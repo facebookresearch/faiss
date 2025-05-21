@@ -77,9 +77,9 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             const uint8_t* x,
             // faiss::IndexBinary has idx_t for k
             idx_t k,
-            int32_t* distances,
+            int* distances,
             faiss::idx_t* labels,
-            const faiss::SearchParameters* params = nullptr) const override;
+            const faiss::SearchParameters* params = nullptr) const;
 
    protected:
     /// Called from search when the input data is on the CPU;
@@ -88,7 +88,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             idx_t n,
             const uint8_t* x,
             int k,
-            int32_t* outDistancesData,
+            int* outDistancesData,
             idx_t* outIndicesData,
             const SearchParameters* search_params) const;
 
@@ -96,10 +96,13 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             idx_t n,
             const uint8_t* x,
             int k,
-            int32_t* outDistancesData,
+            int* outDistancesData,
             idx_t* outIndicesData,
             const SearchParameters* search_params) const;
 
+   public:
+    // public for now because __device__ lambdas cannot be contained inside
+    // protected / private members
     void searchImpl_(
             idx_t n,
             const uint8_t* x,

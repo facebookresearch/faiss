@@ -44,9 +44,6 @@ struct Options {
 
         graphDegree = faiss::gpu::randSelect({32, 64});
         intermediateGraphDegree = faiss::gpu::randSelect({64, 98});
-        buildAlgo = faiss::gpu::randSelect(
-                {faiss::gpu::graph_build_algo::IVF_PQ,
-                 faiss::gpu::graph_build_algo::NN_DESCENT});
 
         numQuery = faiss::gpu::randVal(32, 100);
         k = faiss::gpu::randVal(10, 30);
@@ -59,8 +56,7 @@ struct Options {
         str << "CAGRA device " << device << " numVecs " << numTrain << " dim "
             << dim << " graphDegree " << graphDegree
             << " intermediateGraphDegree " << intermediateGraphDegree
-            << "buildAlgo " << static_cast<int>(buildAlgo) << " numQuery "
-            << numQuery << " k " << k;
+            << " numQuery " << numQuery << " k " << k;
 
         return str.str();
     }
@@ -70,7 +66,6 @@ struct Options {
     int dim;
     size_t graphDegree;
     size_t intermediateGraphDegree;
-    faiss::gpu::graph_build_algo buildAlgo;
     int numQuery;
     int k;
     int device;
@@ -95,7 +90,6 @@ void queryTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
-        config.build_algo = opt.buildAlgo;
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, cpuIndex.d, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
@@ -174,6 +168,8 @@ void queryTest(double expected_recall) {
                 recall_score.view(),
                 test_dis_mds_opt,
                 ref_dis_mds_opt);
+        raft::print_device_vector("testDists", testDistance.data(), 100, std::cout);
+        raft::print_device_vector("refInds", refDistanceDev.data(), 100, std::cout);
         std::cout << "true recall" << *recall_score.data_handle();
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
@@ -198,7 +194,6 @@ void copyToTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
-        config.build_algo = opt.buildAlgo;
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
@@ -298,6 +293,8 @@ void copyToTest(double expected_recall) {
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
+                raft::print_device_vector("testInds", copyRefIndicesDev.data(), 100, std::cout);
+                raft::print_device_vector("refInds", refIndicesDev.data(), 100, std::cout);
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
@@ -329,7 +326,6 @@ void copyFromTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
-        config.build_algo = opt.buildAlgo;
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
