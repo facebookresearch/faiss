@@ -328,7 +328,13 @@ IndexIVF* parse_IndexIVF(
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
-                get_q(), d, nlist, sq_types[sm[1].str()], mt, own_il);
+                get_q(),
+                d,
+                nlist,
+                sq_types[sm[1].str()],
+                mt,
+                /*by_residual=*/true,
+                own_il);
     }
     if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = mres_to_int(sm[1]), nbit = mres_to_int(sm[2], 8, 1);
