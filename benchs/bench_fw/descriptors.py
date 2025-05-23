@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import faiss  # @manual=//faiss/python:pyfaiss
+from fblearner.flow.projects.faiss.core.hive_util import preprocess_partitions
 
 from .benchmark_io import BenchmarkIO
 from .utils import timer
@@ -121,6 +122,14 @@ class DatasetDescriptor:
     filename_suffix: Optional[str] = None
 
     normalize_L2: bool = False
+
+    def __post_init__(self):
+        ret_partition = []
+        if self.partitions:
+            for partition in self.partitions:
+                partition = preprocess_partitions(partition)
+                ret_partition.append(partition)
+        self.partitions = ret_partition
 
     def __hash__(self):
         return hash(self.get_filename())
