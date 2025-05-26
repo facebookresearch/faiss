@@ -830,40 +830,31 @@ void IndexBinaryIVF::search_preassigned(
         idx_t n,
         const uint8_t* x,
         idx_t k,
-        const idx_t* assign,
-        const int32_t* centroid_dis,
-        int32_t* distances,
-        idx_t* labels,
+        const idx_t* cidx,
+        const int32_t* cdis,
+        int32_t* dis,
+        idx_t* idx,
         bool store_pairs,
         const IVFSearchParameters* params,
         const IDSelector* sel) const {
     if (per_invlist_search) {
         Run_search_knn_hamming_per_invlist r;
         // clang-format off
-         dispatch_HammingComputer(
-                 code_size, r, this, n, x, k,
-                assign, centroid_dis, distances, labels, store_pairs, params);
+        dispatch_HammingComputer(
+                code_size, r, this, n, x, k,
+                cidx, cdis, dis, idx, store_pairs, params);
         // clang-format on
     } else if (use_heap) {
         search_knn_hamming_heap(
-                this,
-                n,
-                x,
-                k,
-                assign,
-                centroid_dis,
-                distances,
-                labels,
-                store_pairs,
-                params);
+                this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
     } else if (store_pairs) { // !use_heap && store_pairs
         Run_search_knn_hamming_count<true> r;
         dispatch_HammingComputer(
-                code_size, r, this, n, x, assign, k, distances, labels, params);
+                code_size, r, this, n, x, cidx, k, dis, idx, params);
     } else { // !use_heap && !store_pairs
         Run_search_knn_hamming_count<false> r;
         dispatch_HammingComputer(
-                code_size, r, this, n, x, assign, k, distances, labels, params);
+                code_size, r, this, n, x, cidx, k, dis, idx, params);
     }
 }
 
