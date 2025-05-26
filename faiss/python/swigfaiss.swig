@@ -406,6 +406,8 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
+%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
+%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
 %{
 
@@ -768,6 +770,8 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexRaBitQ )
+    DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
