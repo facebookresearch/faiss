@@ -72,7 +72,8 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             size_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric = METRIC_L2,
-            bool by_residual = true);
+            bool by_residual = true,
+            bool own_invlists = true);
 
     IndexIVFScalarQuantizer();
 
