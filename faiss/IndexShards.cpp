@@ -9,9 +9,7 @@
 
 #include <cinttypes>
 #include <cstdio>
-#include <ctime>
 #include <functional>
-#include <iostream>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
