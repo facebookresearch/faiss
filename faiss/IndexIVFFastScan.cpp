@@ -40,8 +40,9 @@ IndexIVFFastScan::IndexIVFFastScan(
         size_t d,
         size_t nlist,
         size_t code_size,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, code_size, metric) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, code_size, metric, own_invlists) {
     // unlike other indexes, we prefer no residuals for performance reasons.
     by_residual = false;
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
@@ -60,7 +61,8 @@ void IndexIVFFastScan::init_fastscan(
         size_t nbits_init,
         size_t nlist,
         MetricType /* metric */,
-        int bbs_2) {
+        int bbs_2,
+        bool own_invlists) {
     FAISS_THROW_IF_NOT(bbs_2 % 32 == 0);
     FAISS_THROW_IF_NOT(nbits_init == 4);
     FAISS_THROW_IF_NOT(fine_quantizer->d == d);
@@ -75,7 +77,9 @@ void IndexIVFFastScan::init_fastscan(
     FAISS_THROW_IF_NOT(code_size == fine_quantizer->code_size);
 
     is_trained = false;
-    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+    if (own_invlists) {
+        replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+    }
 }
 
 void IndexIVFFastScan::init_code_packer() {

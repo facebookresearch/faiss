@@ -33,8 +33,15 @@ IndexIVFFlat::IndexIVFFlat(
         Index* quantizer,
         size_t d,
         size_t nlist,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, sizeof(float) * d, metric) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(
+                  quantizer,
+                  d,
+                  nlist,
+                  sizeof(float) * d,
+                  metric,
+                  own_invlists) {
     code_size = sizeof(float) * d;
     by_residual = false;
 }
@@ -247,8 +254,9 @@ IndexIVFFlatDedup::IndexIVFFlatDedup(
         Index* quantizer,
         size_t d,
         size_t nlist_,
-        MetricType metric_type)
-        : IndexIVFFlat(quantizer, d, nlist_, metric_type) {}
+        MetricType metric_type,
+        bool own_invlists)
+        : IndexIVFFlat(quantizer, d, nlist_, metric_type, own_invlists) {}
 
 void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     std::unordered_map<uint64_t, idx_t> map;
