@@ -233,11 +233,7 @@ void BinaryCuvsCagra::search(
             queries_view,
             indices_copy.view(),
             distances_float_view);
-    raft::print_device_vector(
-            "distances from search",
-            distances_float.data_handle(),
-            100,
-            std::cout);
+
     thrust::copy(
             raft::resource::get_thrust_policy(raft_handle),
             indices_copy.data_handle(),

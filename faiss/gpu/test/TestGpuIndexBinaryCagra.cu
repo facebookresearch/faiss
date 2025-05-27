@@ -168,9 +168,6 @@ void queryTest(double expected_recall) {
                 recall_score.view(),
                 test_dis_mds_opt,
                 ref_dis_mds_opt);
-        raft::print_device_vector("testDists", testDistance.data(), 100, std::cout);
-        raft::print_device_vector("refInds", refDistanceDev.data(), 100, std::cout);
-        std::cout << "true recall" << *recall_score.data_handle();
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
@@ -293,8 +290,7 @@ void copyToTest(double expected_recall) {
                 recall_score.view(),
                 copy_ref_dis_mds_opt,
                 ref_dis_mds_opt);
-                raft::print_device_vector("testInds", copyRefIndicesDev.data(), 100, std::cout);
-                raft::print_device_vector("refInds", refIndicesDev.data(), 100, std::cout);
+
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }
@@ -397,7 +393,6 @@ void copyFromTest(double expected_recall) {
                 recall_score.view(),
                 copy_test_dis_mds_opt,
                 test_dis_mds_opt);
-        std::cout << "true recall" << *recall_score.data_handle();
         ASSERT_TRUE(*recall_score.data_handle() > expected_recall);
     }
 }

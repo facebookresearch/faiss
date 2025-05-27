@@ -127,7 +127,13 @@ void hnsw_add_vertices(
                     dis->set_query(
                             (float*)(x + (pt_id - n0) * index_hnsw.code_size));
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt, index_hnsw.keep_max_size_level0 && (pt_level == 0));
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
