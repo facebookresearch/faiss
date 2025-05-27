@@ -13,6 +13,7 @@
 #include <faiss/utils/distances.h>
 #include <cmath>
 #include <type_traits>
+#include <iostream>
 
 namespace faiss {
 
@@ -180,22 +181,28 @@ inline float VectorDistance<METRIC_GOWER>::operator()(
         if (x[i] >= 0 && y[i] >= 0) {
             // Check if numeric values are in [0,1] range
             if (x[i] > 1 || y[i] > 1) {
-                FAISS_THROW_MSG("Numeric values must be in [0,1] range for Gower distance");
+                std::cerr << "Warning: Numeric values must be in [0,1] range for Gower distance" << std::endl;
+                return std::numeric_limits<float>::quiet_NaN();
             }
             // Numeric dimension: use absolute difference
             accu += fabs(x[i] - y[i]);
         } else if (x[i] < 0 && y[i] < 0) {
             // Categorical dimension: use 0 if equal, 1 if different
-            accu += (x[i] != y[i]);
+            accu += float(int(x[i] != y[i]));
         } else {
-            // Mixed numeric and categorical - this is an error
-            FAISS_THROW_MSG("Cannot mix numeric and categorical values in Gower distance");
+            // Mixed numeric and categorical - return NaN
+            std::cerr << "Warning: Cannot mix numeric and categorical values in Gower distance" << std::endl;
+            return std::numeric_limits<float>::quiet_NaN();
         }
         valid_dims++;
     }
     
     // Return average distance over valid dimensions
-    return valid_dims > 0 ? accu / valid_dims : 0;
+    if (valid_dims == 0) {
+        std::cerr << "Warning: No valid dimensions found for Gower distance" << std::endl;
+        return std::numeric_limits<float>::quiet_NaN();
+    }
+    return  accu / valid_dims;
 }
 
 /***************************************************************************

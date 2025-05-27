@@ -121,7 +121,7 @@ class TestExtraDistances(unittest.TestCase):
         gt_dis = np.abs(xq @ yb.T)
         np.testing.assert_allclose(dis, gt_dis, atol=1e-5)
 
-    def test_Gower(self):
+    def test_gower(self):
         # Create test data with mixed numeric and categorical features
         # First 2 dimensions are numeric (0-1), last 2 are categorical (negative integers)
         xq = np.array([
@@ -138,6 +138,7 @@ class TestExtraDistances(unittest.TestCase):
 
         # Compute distances using FAISS
         dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_GOWER)
+        
 
         # Expected distances:
         # For first query [0.5, 0.3, -1, -2]:
@@ -158,6 +159,7 @@ class TestExtraDistances(unittest.TestCase):
         ], dtype='float32')
 
         self.assertTrue(np.allclose(dis, expected, rtol=1e-5))
+        
 
         # Test with NaN values
         xq_nan = np.array([
@@ -171,6 +173,7 @@ class TestExtraDistances(unittest.TestCase):
         ], dtype='float32')
 
         dis_nan = faiss.pairwise_distances(xq_nan, yb_nan, faiss.METRIC_GOWER)
+        
         
         # For first query [0.5, nan, -1, -2]:
         # - [0.4, 0.2, -1, -2]: (|0.5-0.4| + 0 + 0) / 3 = 0.0333...
@@ -186,7 +189,8 @@ class TestExtraDistances(unittest.TestCase):
         ], dtype='float32')
 
         self.assertTrue(np.allclose(dis_nan, expected_nan, rtol=1e-5))
-
+        
+    
         # Test error case: mixing numeric and categorical values
         xq_mixed = np.array([
             [0.5, -1, -1, -2],  # Second value is categorical but first is numeric
@@ -196,8 +200,9 @@ class TestExtraDistances(unittest.TestCase):
             [0.4, 0.2, -1, -2],  # Second value is numeric
         ], dtype='float32')
 
-        with self.assertRaises(RuntimeError):
-            faiss.pairwise_distances(xq_mixed, yb_mixed, faiss.METRIC_GOWER)
+        dis_mixed = faiss.pairwise_distances(xq_mixed, yb_mixed, faiss.METRIC_GOWER)
+        
+        self.assertTrue(np.all(np.isnan(dis_mixed)))
 
         # Test error case: numeric values outside [0,1] range
         xq_out_of_range = np.array([
@@ -208,8 +213,8 @@ class TestExtraDistances(unittest.TestCase):
             [0.4, 0.2, -1, -2],
         ], dtype='float32')
 
-        with self.assertRaises(RuntimeError):
-            faiss.pairwise_distances(xq_out_of_range, yb_out_of_range, faiss.METRIC_GOWER)
+        dis_out_of_range = faiss.pairwise_distances(xq_out_of_range, yb_out_of_range, faiss.METRIC_GOWER)
+        self.assertTrue(np.all(np.isnan(dis_out_of_range)))
 
 
 class TestKNN(unittest.TestCase):
