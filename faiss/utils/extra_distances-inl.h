@@ -163,6 +163,41 @@ inline float VectorDistance<METRIC_ABS_INNER_PRODUCT>::operator()(
     return accu;
 }
 
+template <>
+inline float VectorDistance<METRIC_GOWER>::operator()(
+        const float* x,
+        const float* y) const {
+    float accu = 0;
+    size_t valid_dims = 0;
+    
+    for (size_t i = 0; i < d; i++) {
+        // Skip NaN values
+        if (std::isnan(x[i]) || std::isnan(y[i])) {
+            continue;
+        }
+        
+        // Check if this is a numeric dimension (0-1) or categorical (negative)
+        if (x[i] >= 0 && y[i] >= 0) {
+            // Check if numeric values are in [0,1] range
+            if (x[i] > 1 || y[i] > 1) {
+                FAISS_THROW_MSG("Numeric values must be in [0,1] range for Gower distance");
+            }
+            // Numeric dimension: use absolute difference
+            accu += fabs(x[i] - y[i]);
+        } else if (x[i] < 0 && y[i] < 0) {
+            // Categorical dimension: use 0 if equal, 1 if different
+            accu += (x[i] != y[i]);
+        } else {
+            // Mixed numeric and categorical - this is an error
+            FAISS_THROW_MSG("Cannot mix numeric and categorical values in Gower distance");
+        }
+        valid_dims++;
+    }
+    
+    // Return average distance over valid dimensions
+    return valid_dims > 0 ? accu / valid_dims : 0;
+}
+
 /***************************************************************************
  * Dispatching function that takes a metric type and a consumer object
  * the consumer object should contain a retun type T and a operation template
@@ -194,6 +229,7 @@ typename Consumer::T dispatch_VectorDistance(
         DISPATCH_VD(METRIC_Jaccard);
         DISPATCH_VD(METRIC_NaNEuclidean);
         DISPATCH_VD(METRIC_ABS_INNER_PRODUCT);
+        DISPATCH_VD(METRIC_GOWER);
         default:
             FAISS_THROW_FMT("Invalid metric %d", metric);
     }

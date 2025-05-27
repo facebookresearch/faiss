@@ -38,6 +38,8 @@ enum MetricType {
     METRIC_NaNEuclidean,
     /// abs(x | y): the distance to a hyperplane
     METRIC_ABS_INNER_PRODUCT,
+    /// Gower's distance - treats numeric dimensions (0-1) and categorical dimensions (negative integers) differently
+    METRIC_GOWER,
 };
 
 /// all vector indices are this type

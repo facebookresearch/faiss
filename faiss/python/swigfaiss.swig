@@ -514,6 +514,15 @@ void gpu_sync_all_devices()
 
 %include  <faiss/MetricType.h>
 
+%pythoncode %{
+import sys as _sys
+if hasattr(_sys, 'modules'):
+    _mod = _sys.modules[__name__]
+    for _k in dir(_mod):
+        if _k.startswith('faiss__MetricType_'):
+            setattr(_mod, _k.replace('faiss__MetricType_', 'METRIC_'), getattr(_mod, _k))
+%}
+
 %newobject *::get_distance_computer() const;
 %newobject *::get_CodePacker() const;
 
