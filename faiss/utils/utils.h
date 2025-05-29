@@ -204,6 +204,8 @@ struct CodeSet {
     void insert(size_t n, const uint8_t* codes, bool* inserted);
 };
 
+int struct_packing_test_cpp(int q);
+
 } // namespace faiss
 
 #endif /* FAISS_utils_h */
