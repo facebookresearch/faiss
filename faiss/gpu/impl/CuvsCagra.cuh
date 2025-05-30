@@ -45,6 +45,7 @@ enum class cagra_hash_mode { HASH, SMALL, AUTO };
 
 namespace gpu {
 
+template <typename data_t = float>
 class CuvsCagra {
    public:
     CuvsCagra(
@@ -69,7 +70,7 @@ class CuvsCagra {
             int dim,
             idx_t n,
             int graph_degree,
-            const float* distances,
+            const data_t* dataset,
             const idx_t* knn_graph,
             faiss::MetricType metric,
             float metricArg,
@@ -77,10 +78,10 @@ class CuvsCagra {
 
     ~CuvsCagra() = default;
 
-    void train(idx_t n, const float* x);
+    void train(idx_t n, const data_t* x);
 
     void search(
-            Tensor<float, 2, true>& queries,
+            Tensor<data_t, 2, true>& queries,
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
@@ -104,14 +105,14 @@ class CuvsCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const float* get_training_dataset() const;
+    const data_t* get_training_dataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
     /// Training dataset
-    const float* storage_;
+    const data_t* storage_;
     int n_;
 
     /// Expected dimensionality of the vectors
@@ -143,9 +144,8 @@ class CuvsCagra {
     size_t nn_descent_niter_ = 20;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<float, uint32_t>> cuvs_index{
+    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
             nullptr};
 };
-
 } // namespace gpu
 } // namespace faiss

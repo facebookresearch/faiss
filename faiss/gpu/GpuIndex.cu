@@ -109,12 +109,20 @@ size_t GpuIndex::getMinPagingSize() const {
     return minPagedSize_;
 }
 
-void GpuIndex::add(idx_t n, const float* x) {
-    // Pass to add_with_ids
-    add_with_ids(n, x, nullptr);
+void GpuIndex::add(idx_t n, const void* x, NumericType numeric_type) {
+    add_with_ids(n, x, numeric_type, nullptr);
 }
 
-void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
+void GpuIndex::add(idx_t n, const float* x) {
+    // Pass to add_with_ids
+    add(n, x, NumericType::Float32);
+}
+
+void GpuIndex::add_with_ids(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
@@ -134,18 +142,33 @@ void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
         }
     }
 
-    addPaged_(n, x, ids ? ids : generatedIds.data());
+    addPaged_(n, x, numeric_type, ids ? ids : generatedIds.data());
 }
 
-void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
-    if (n > 0) {
-        idx_t totalSize = n * this->d * sizeof(float);
+void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
+    add_with_ids(n, static_cast<const void*>(x), NumericType::Float32, ids);
+}
+
+void GpuIndex::addPaged_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
+    if (n <= 0) {
+        return;
+    }
+
+    auto dispatch = [&](auto dummy_type) {
+        using data_t = decltype(dummy_type);
+        const data_t* typed_x = reinterpret_cast<const data_t*>(x);
+
+        idx_t totalSize = n * this->d * sizeof(data_t);
 
         if (!should_use_cuvs(config_) &&
             (totalSize > kAddPageSize || n > kAddVecSize)) {
             // How many vectors fit into kAddPageSize?
             idx_t maxNumVecsForPageSize =
-                    kAddPageSize / (this->d * sizeof(float));
+                    kAddPageSize / (this->d * sizeof(data_t));
 
             // Always add at least 1 vector, if we have huge vectors
             maxNumVecsForPageSize = std::max(maxNumVecsForPageSize, idx_t(1));
@@ -155,16 +178,35 @@ void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
 
             for (idx_t i = 0; i < n; i += tileSize) {
                 auto curNum = std::min(tileSize, n - i);
-
-                addPage_(curNum, x + i * this->d, ids ? ids + i : nullptr);
+                addPage_(
+                        curNum,
+                        static_cast<const void*>(typed_x + i * this->d),
+                        numeric_type,
+                        ids ? ids + i : nullptr);
             }
         } else {
-            addPage_(n, x, ids);
+            addPage_(n, static_cast<const void*>(typed_x), numeric_type, ids);
         }
+    };
+
+    if (numeric_type == NumericType::Float32) {
+        dispatch(float{});
+    } else if (numeric_type == NumericType::Float16) {
+        dispatch(half{});
+    } else {
+        FAISS_THROW_MSG("GpuIndex::addPaged_: Unsupported numeric type");
     }
 }
 
-void GpuIndex::addPage_(idx_t n, const float* x, const idx_t* ids) {
+void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
+    addPaged_(n, static_cast<const void*>(x), NumericType::Float32, ids);
+}
+
+void GpuIndex::addPage_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
     // At this point, `x` can be resident on CPU or GPU, and `ids` may be
     // resident on CPU, GPU or may be null.
     //
@@ -172,25 +214,49 @@ void GpuIndex::addPage_(idx_t n, const float* x, const idx_t* ids) {
     // GPU.
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
-    auto vecs = toDeviceTemporary<float, 2>(
-            resources_.get(),
-            config_.device,
-            const_cast<float*>(x),
-            stream,
-            {n, this->d});
+    auto dispatch = [&](auto dummy_type) {
+        using data_t = decltype(dummy_type);
 
-    if (ids) {
-        auto indices = toDeviceTemporary<idx_t, 1>(
+        auto vecs = toDeviceTemporary<data_t, 2>(
                 resources_.get(),
                 config_.device,
-                const_cast<idx_t*>(ids),
+                const_cast<data_t*>(reinterpret_cast<const data_t*>(x)),
                 stream,
-                {n});
+                {n, this->d});
 
-        addImpl_(n, vecs.data(), ids ? indices.data() : nullptr);
+        if (ids) {
+            auto indices = toDeviceTemporary<idx_t, 1>(
+                    resources_.get(),
+                    config_.device,
+                    const_cast<idx_t*>(ids),
+                    stream,
+                    {n});
+
+            addImpl_(
+                    n,
+                    static_cast<const void*>(vecs.data()),
+                    numeric_type,
+                    ids ? indices.data() : nullptr);
+        } else {
+            addImpl_(
+                    n,
+                    static_cast<const void*>(vecs.data()),
+                    numeric_type,
+                    nullptr);
+        }
+    };
+
+    if (numeric_type == NumericType::Float32) {
+        dispatch(float{});
+    } else if (numeric_type == NumericType::Float16) {
+        dispatch(half{});
     } else {
-        addImpl_(n, vecs.data(), nullptr);
+        FAISS_THROW_MSG("GpuIndex::addPage_: Unsupported numeric type");
     }
+}
+
+void GpuIndex::addPage_(idx_t n, const float* x, const idx_t* ids) {
+    addPage_(n, static_cast<const void*>(x), NumericType::Float32, ids);
 }
 
 void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
@@ -212,7 +278,8 @@ void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
 
 void GpuIndex::search(
         idx_t n,
-        const float* x,
+        const void* x,
+        NumericType numeric_type,
         idx_t k,
         float* distances,
         idx_t* labels,
@@ -253,22 +320,52 @@ void GpuIndex::search(
         // -> GPU.
         // Currently, we don't handle the case where the output data won't
         // fit on the GPU (e.g., n * k is too large for the GPU memory).
-        size_t dataSize = (size_t)n * this->d * sizeof(float);
+        size_t dataSize =
+                (size_t)n * this->d * get_numeric_type_size(numeric_type);
 
         if (dataSize >= minPagedSize_) {
             searchFromCpuPaged_(
-                    n, x, k, outDistances.data(), outLabels.data(), params);
+                    n,
+                    x,
+                    numeric_type,
+                    k,
+                    outDistances.data(),
+                    outLabels.data(),
+                    params);
             usePaged = true;
         }
     }
 
     if (!usePaged) {
-        searchNonPaged_(n, x, k, outDistances.data(), outLabels.data(), params);
+        searchNonPaged_(
+                n,
+                x,
+                numeric_type,
+                k,
+                outDistances.data(),
+                outLabels.data(),
+                params);
     }
 
     // Copy back if necessary
     fromDevice<float, 2>(outDistances, distances, stream);
     fromDevice<idx_t, 2>(outLabels, labels, stream);
+}
+
+void GpuIndex::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    search(n,
+           static_cast<const void*>(x),
+           NumericType::Float32,
+           k,
+           distances,
+           labels,
+           params);
 }
 
 void GpuIndex::search_and_reconstruct(
@@ -285,7 +382,8 @@ void GpuIndex::search_and_reconstruct(
 
 void GpuIndex::searchNonPaged_(
         idx_t n,
-        const float* x,
+        const void* x,
+        NumericType numeric_type,
         int k,
         float* outDistancesData,
         idx_t* outIndicesData,
@@ -294,19 +392,58 @@ void GpuIndex::searchNonPaged_(
 
     // Make sure arguments are on the device we desire; use temporary
     // memory allocations to move it if necessary
-    auto vecs = toDeviceTemporary<float, 2>(
-            resources_.get(),
-            config_.device,
-            const_cast<float*>(x),
-            stream,
-            {n, this->d});
+    if (numeric_type == NumericType::Float32) {
+        auto vecs = toDeviceTemporary<float, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<float*>(static_cast<const float*>(x)),
+                stream,
+                {n, this->d});
 
-    searchImpl_(n, vecs.data(), k, outDistancesData, outIndicesData, params);
+        searchImpl_(
+                n, vecs.data(), k, outDistancesData, outIndicesData, params);
+    } else if (numeric_type == NumericType::Float16) {
+        auto vecs = toDeviceTemporary<half, 2>(
+                resources_.get(),
+                config_.device,
+                const_cast<half*>(static_cast<const half*>(x)),
+                stream,
+                {n, this->d});
+
+        searchImpl_(
+                n,
+                static_cast<const void*>(vecs.data()),
+                numeric_type,
+                k,
+                outDistancesData,
+                outIndicesData,
+                params);
+    } else {
+        FAISS_THROW_MSG("GpuIndex::search: Unsupported numeric type");
+    }
+}
+
+void GpuIndex::searchNonPaged_(
+        idx_t n,
+        const float* x,
+        int k,
+        float* outDistancesData,
+        idx_t* outIndicesData,
+        const SearchParameters* params) const {
+    searchNonPaged_(
+            n,
+            static_cast<const void*>(x),
+            NumericType::Float32,
+            k,
+            outDistancesData,
+            outIndicesData,
+            params);
 }
 
 void GpuIndex::searchFromCpuPaged_(
         idx_t n,
-        const float* x,
+        const void* x,
+        NumericType numeric_type,
         int k,
         float* outDistancesData,
         idx_t* outIndicesData,
@@ -317,26 +454,41 @@ void GpuIndex::searchFromCpuPaged_(
     // Is pinned memory available?
     auto pinnedAlloc = resources_->getPinnedMemory();
     idx_t pageSizeInVecs =
-            ((pinnedAlloc.second / 2) / (sizeof(float) * this->d));
+            ((pinnedAlloc.second / 2) /
+             (get_numeric_type_size(numeric_type) * this->d));
 
     if (!pinnedAlloc.first || pageSizeInVecs < 1) {
         // Just page without overlapping copy with compute
         idx_t batchSize = utils::nextHighestPowerOf2(
-                (kNonPinnedPageSize / (sizeof(float) * this->d)));
+                (kNonPinnedPageSize /
+                 (get_numeric_type_size(numeric_type) * this->d)));
 
         for (idx_t cur = 0; cur < n; cur += batchSize) {
             auto num = std::min(batchSize, n - cur);
 
             auto outDistancesSlice = outDistances.narrowOutermost(cur, num);
             auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
-
-            searchNonPaged_(
-                    num,
-                    x + cur * this->d,
-                    k,
-                    outDistancesSlice.data(),
-                    outIndicesSlice.data(),
-                    params);
+            if (numeric_type == NumericType::Float32) {
+                searchNonPaged_(
+                        num,
+                        static_cast<const void*>(
+                                static_cast<const float*>(x) + cur * this->d),
+                        numeric_type,
+                        k,
+                        outDistancesSlice.data(),
+                        outIndicesSlice.data(),
+                        params);
+            } else if (numeric_type == NumericType::Float16) {
+                searchNonPaged_(
+                        num,
+                        static_cast<const void*>(
+                                static_cast<const half*>(x) + cur * this->d),
+                        numeric_type,
+                        k,
+                        outDistancesSlice.data(),
+                        outIndicesSlice.data(),
+                        params);
+            }
         }
 
         return;
@@ -359,125 +511,160 @@ void GpuIndex::searchFromCpuPaged_(
     auto defaultStream = resources_->getDefaultStream(config_.device);
     auto copyStream = resources_->getAsyncCopyStream(config_.device);
 
-    float* bufPinnedA = (float*)pinnedAlloc.first;
-    float* bufPinnedB = bufPinnedA + (size_t)pageSizeInVecs * this->d;
-    float* bufPinned[2] = {bufPinnedA, bufPinnedB};
+    auto dispatch = [&](auto dummy_type) {
+        using data_t = decltype(dummy_type);
 
-    // Reserve space on the GPU for the destination of the pinned buffer
-    // copy
-    DeviceTensor<float, 2, true> bufGpuA(
-            resources_.get(),
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {pageSizeInVecs, this->d});
-    DeviceTensor<float, 2, true> bufGpuB(
-            resources_.get(),
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {pageSizeInVecs, this->d});
-    DeviceTensor<float, 2, true>* bufGpus[2] = {&bufGpuA, &bufGpuB};
+        data_t* bufPinnedA = (data_t*)pinnedAlloc.first;
+        data_t* bufPinnedB = bufPinnedA + (size_t)pageSizeInVecs * this->d;
+        data_t* bufPinned[2] = {bufPinnedA, bufPinnedB};
 
-    // Copy completion events for the pinned buffers
-    std::unique_ptr<CudaEvent> eventPinnedCopyDone[2];
+        // Reserve space on the GPU for the destination of the pinned buffer
+        // copy
+        DeviceTensor<data_t, 2, true> bufGpuA(
+                resources_.get(),
+                makeTempAlloc(AllocType::Other, defaultStream),
+                {pageSizeInVecs, this->d});
+        DeviceTensor<data_t, 2, true> bufGpuB(
+                resources_.get(),
+                makeTempAlloc(AllocType::Other, defaultStream),
+                {pageSizeInVecs, this->d});
+        DeviceTensor<data_t, 2, true>* bufGpus[2] = {&bufGpuA, &bufGpuB};
 
-    // Execute completion events for the GPU buffers
-    std::unique_ptr<CudaEvent> eventGpuExecuteDone[2];
+        // Copy completion events for the pinned buffers
+        std::unique_ptr<CudaEvent> eventPinnedCopyDone[2];
 
-    // All offsets are in terms of number of vectors
+        // Execute completion events for the GPU buffers
+        std::unique_ptr<CudaEvent> eventGpuExecuteDone[2];
 
-    // Current start offset for buffer 1
-    idx_t cur1 = 0;
-    idx_t cur1BufIndex = 0;
+        // All offsets are in terms of number of vectors
 
-    // Current start offset for buffer 2
-    idx_t cur2 = -1;
-    idx_t cur2BufIndex = 0;
+        // Current start offset for buffer 1
+        idx_t cur1 = 0;
+        idx_t cur1BufIndex = 0;
 
-    // Current start offset for buffer 3
-    idx_t cur3 = -1;
-    idx_t cur3BufIndex = 0;
+        // Current start offset for buffer 2
+        idx_t cur2 = -1;
+        idx_t cur2BufIndex = 0;
 
-    while (cur3 < n) {
-        // Start async pinned -> GPU copy first (buf 2)
-        if (cur2 != -1 && cur2 < n) {
-            // Copy pinned to GPU
-            auto numToCopy = std::min(pageSizeInVecs, n - cur2);
+        // Current start offset for buffer 3
+        idx_t cur3 = -1;
+        idx_t cur3BufIndex = 0;
 
-            // Make sure any previous execution has completed before continuing
-            auto& eventPrev = eventGpuExecuteDone[cur2BufIndex];
-            if (eventPrev.get()) {
-                eventPrev->streamWaitOnEvent(copyStream);
+        while (cur3 < n) {
+            // Start async pinned -> GPU copy first (buf 2)
+            if (cur2 != -1 && cur2 < n) {
+                // Copy pinned to GPU
+                auto numToCopy = std::min(pageSizeInVecs, n - cur2);
+
+                // Make sure any previous execution has completed before
+                // continuing
+                auto& eventPrev = eventGpuExecuteDone[cur2BufIndex];
+                if (eventPrev.get()) {
+                    eventPrev->streamWaitOnEvent(copyStream);
+                }
+
+                CUDA_VERIFY(cudaMemcpyAsync(
+                        bufGpus[cur2BufIndex]->data(),
+                        bufPinned[cur2BufIndex],
+                        numToCopy * this->d * sizeof(data_t),
+                        cudaMemcpyHostToDevice,
+                        copyStream));
+
+                // Mark a completion event in this stream
+                eventPinnedCopyDone[cur2BufIndex].reset(
+                        new CudaEvent(copyStream));
+
+                // We pick up from here
+                cur3 = cur2;
+                cur2 += numToCopy;
+                cur2BufIndex = (cur2BufIndex == 0) ? 1 : 0;
             }
 
-            CUDA_VERIFY(cudaMemcpyAsync(
-                    bufGpus[cur2BufIndex]->data(),
-                    bufPinned[cur2BufIndex],
-                    numToCopy * this->d * sizeof(float),
-                    cudaMemcpyHostToDevice,
-                    copyStream));
+            if (cur3 != idx_t(-1) && cur3 < n) {
+                // Process on GPU
+                auto numToProcess = std::min(pageSizeInVecs, n - cur3);
 
-            // Mark a completion event in this stream
-            eventPinnedCopyDone[cur2BufIndex].reset(new CudaEvent(copyStream));
+                // Make sure the previous copy has completed before continuing
+                auto& eventPrev = eventPinnedCopyDone[cur3BufIndex];
+                FAISS_ASSERT(eventPrev.get());
 
-            // We pick up from here
-            cur3 = cur2;
-            cur2 += numToCopy;
-            cur2BufIndex = (cur2BufIndex == 0) ? 1 : 0;
-        }
+                eventPrev->streamWaitOnEvent(defaultStream);
 
-        if (cur3 != idx_t(-1) && cur3 < n) {
-            // Process on GPU
-            auto numToProcess = std::min(pageSizeInVecs, n - cur3);
+                // Create tensor wrappers
+                // DeviceTensor<float, 2, true>
+                // input(bufGpus[cur3BufIndex]->data(),
+                //                                    {numToProcess, this->d});
+                auto outDistancesSlice =
+                        outDistances.narrowOutermost(cur3, numToProcess);
+                auto outIndicesSlice =
+                        outIndices.narrowOutermost(cur3, numToProcess);
 
-            // Make sure the previous copy has completed before continuing
-            auto& eventPrev = eventPinnedCopyDone[cur3BufIndex];
-            FAISS_ASSERT(eventPrev.get());
+                searchImpl_(
+                        numToProcess,
+                        static_cast<const void*>(bufGpus[cur3BufIndex]->data()),
+                        numeric_type,
+                        k,
+                        outDistancesSlice.data(),
+                        outIndicesSlice.data(),
+                        params);
 
-            eventPrev->streamWaitOnEvent(defaultStream);
+                // Create completion event
+                eventGpuExecuteDone[cur3BufIndex].reset(
+                        new CudaEvent(defaultStream));
 
-            // Create tensor wrappers
-            // DeviceTensor<float, 2, true> input(bufGpus[cur3BufIndex]->data(),
-            //                                    {numToProcess, this->d});
-            auto outDistancesSlice =
-                    outDistances.narrowOutermost(cur3, numToProcess);
-            auto outIndicesSlice =
-                    outIndices.narrowOutermost(cur3, numToProcess);
-
-            searchImpl_(
-                    numToProcess,
-                    bufGpus[cur3BufIndex]->data(),
-                    k,
-                    outDistancesSlice.data(),
-                    outIndicesSlice.data(),
-                    params);
-
-            // Create completion event
-            eventGpuExecuteDone[cur3BufIndex].reset(
-                    new CudaEvent(defaultStream));
-
-            // We pick up from here
-            cur3BufIndex = (cur3BufIndex == 0) ? 1 : 0;
-            cur3 += numToProcess;
-        }
-
-        if (cur1 < n) {
-            // Copy CPU mem to CPU pinned
-            auto numToCopy = std::min(pageSizeInVecs, n - cur1);
-
-            // Make sure any previous copy has completed before continuing
-            auto& eventPrev = eventPinnedCopyDone[cur1BufIndex];
-            if (eventPrev.get()) {
-                eventPrev->cpuWaitOnEvent();
+                // We pick up from here
+                cur3BufIndex = (cur3BufIndex == 0) ? 1 : 0;
+                cur3 += numToProcess;
             }
 
-            memcpy(bufPinned[cur1BufIndex],
-                   x + cur1 * this->d,
-                   numToCopy * this->d * sizeof(float));
+            if (cur1 < n) {
+                // Copy CPU mem to CPU pinned
+                auto numToCopy = std::min(pageSizeInVecs, n - cur1);
 
-            // We pick up from here
-            cur2 = cur1;
-            cur1 += numToCopy;
-            cur1BufIndex = (cur1BufIndex == 0) ? 1 : 0;
+                // Make sure any previous copy has completed before continuing
+                auto& eventPrev = eventPinnedCopyDone[cur1BufIndex];
+                if (eventPrev.get()) {
+                    eventPrev->cpuWaitOnEvent();
+                }
+
+                memcpy(bufPinned[cur1BufIndex],
+                       static_cast<const data_t*>(x) + cur1 * this->d,
+                       numToCopy * this->d *
+                               get_numeric_type_size(numeric_type));
+
+                // We pick up from here
+                cur2 = cur1;
+                cur1 += numToCopy;
+                cur1BufIndex = (cur1BufIndex == 0) ? 1 : 0;
+            }
         }
+    };
+
+    if (numeric_type == NumericType::Float32) {
+        dispatch(float{});
+    } else if (numeric_type == NumericType::Float16) {
+        dispatch(half{});
+    } else {
+        FAISS_THROW_MSG(
+                "GpuIndex::searchFromCpuPaged_: Unsupported numeric type");
     }
+}
+
+void GpuIndex::searchFromCpuPaged_(
+        idx_t n,
+        const float* x,
+        int k,
+        float* outDistancesData,
+        idx_t* outIndicesData,
+        const SearchParameters* params) const {
+    searchFromCpuPaged_(
+            n,
+            static_cast<const void*>(x),
+            NumericType::Float32,
+            k,
+            outDistancesData,
+            outIndicesData,
+            params);
 }
 
 void GpuIndex::compute_residual(const float* x, float* residual, idx_t key)

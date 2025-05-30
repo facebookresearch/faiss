@@ -27,6 +27,9 @@
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 
+#include <variant>
+#include "faiss/Index.h"
+
 namespace faiss {
 struct IndexHNSWCagra;
 }
@@ -34,6 +37,7 @@ struct IndexHNSWCagra;
 namespace faiss {
 namespace gpu {
 
+template <typename data_t>
 class CuvsCagra;
 
 enum class graph_build_algo {
@@ -250,6 +254,7 @@ struct GpuIndexCagra : public GpuIndex {
     /// the base dataset. Use this function when you want to add vectors with
     /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
     void add(idx_t n, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
@@ -257,14 +262,17 @@ struct GpuIndexCagra : public GpuIndex {
     /// of vectors (without IDs) to the index. There is no external quantizer to
     /// be trained here.
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
     void copyFrom(const faiss::IndexHNSWCagra* index);
+    void copyFrom(const faiss::IndexHNSWCagra* index, NumericType numeric_type);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
     void copyTo(faiss::IndexHNSWCagra* index) const;
+    void copyTo(faiss::IndexHNSWCagra* index, NumericType numeric_type) const;
 
     void reset() override;
 
@@ -283,12 +291,24 @@ struct GpuIndexCagra : public GpuIndex {
             float* distances,
             idx_t* labels,
             const SearchParameters* search_params) const override;
+    void searchImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* search_params) const override;
 
     /// Our configuration options
     const GpuIndexCagraConfig cagraConfig_;
 
     /// Instance that we own; contains the inverted lists
-    std::shared_ptr<CuvsCagra> index_;
+    std::variant<
+            std::monostate,
+            std::shared_ptr<CuvsCagra<float>>,
+            std::shared_ptr<CuvsCagra<half>>>
+            index_;
 };
 
 } // namespace gpu
