@@ -36,6 +36,28 @@ void runUpdateListPointers(
         DeviceVector<void*>& listIndices,
         cudaStream_t stream);
 
+/// Update device-side list pointers in a batch
+void runUpdateListPointers(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& newListLength,
+        Tensor<uint8_t*, 1, true>& newCodePointers,
+        Tensor<int*, 1, true>& newIndexPointers,
+        Tensor<int, 1, true>& listLengths,
+        Tensor<uint8_t*, 1, true>& listCodes,
+        Tensor<int*, 1, true>& listIndices,
+        cudaStream_t stream);
+
+/// Update device-side list pointers in a batch
+void runUpdateListPointers(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& newListLength,
+        Tensor<uint8_t*, 1, true>& newCodePointers,
+        Tensor<idx_t*, 1, true>& newIndexPointers,
+        Tensor<int, 1, true>& listLengths,
+        Tensor<uint8_t*, 1, true>& listCodes,
+        Tensor<idx_t*, 1, true>& listIndices,
+        cudaStream_t stream);
+
 /// Append PQ codes to IVF lists (non-interleaved format)
 void runIVFPQAppend(
         Tensor<idx_t, 1, true>& listIds,
@@ -55,6 +77,17 @@ void runIVFPQInterleavedAppend(
         int bitsPerCode,
         Tensor<uint8_t, 2, true>& encodings,
         DeviceVector<void*>& listCodes,
+        cudaStream_t stream);
+
+/// Append PQ codes to IVF lists (interleaved format)
+void runIVFPQInterleavedAppend(
+        Tensor<int, 1, true>& uniqueLists,
+        Tensor<int, 1, true>& vectorsByUniqueList,
+        Tensor<int, 1, true>& uniqueListVectorStart,
+        Tensor<int, 1, true>& uniqueListStartOffset,
+        int bitsPerCode,
+        Tensor<uint8_t, 2, true>& encodings,
+        Tensor<uint8_t*, 1, true>& listCodes,
         cudaStream_t stream);
 
 /// Append SQ codes to IVF lists (non-interleaved, old format)
