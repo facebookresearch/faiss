@@ -143,8 +143,7 @@ class GpuIndex : public faiss::Index {
         if (numeric_type == NumericType::Float32) {
             copyFrom(index, NumericType::Float32);
         } else {
-            throw std::runtime_error(
-                    "GpuIndex::copyFrom: unsupported numeric type");
+            FAISS_THROW_MSG("GpuIndex::copyFrom: unsupported numeric type");
         }
     }
 
@@ -154,8 +153,7 @@ class GpuIndex : public faiss::Index {
         if (numeric_type == NumericType::Float32) {
             copyTo(index, NumericType::Float32);
         } else {
-            throw std::runtime_error(
-                    "GpuIndex::copyTo: unsupported numeric type");
+            FAISS_THROW_MSG("GpuIndex::copyTo: unsupported numeric type");
         }
     }
 
@@ -175,8 +173,7 @@ class GpuIndex : public faiss::Index {
         if (numeric_type == NumericType::Float32) {
             addImpl_(n, static_cast<const float*>(x), ids);
         } else {
-            throw std::runtime_error(
-                    "GpuIndex::addImpl_: unsupported numeric type");
+            FAISS_THROW_MSG("GpuIndex::addImpl_: unsupported numeric type");
         }
     };
 
@@ -207,8 +204,7 @@ class GpuIndex : public faiss::Index {
                     labels,
                     params);
         } else {
-            throw std::runtime_error(
-                    "GpuIndex::searchImpl_: unsupported numeric type");
+            FAISS_THROW_MSG("GpuIndex::searchImpl_: unsupported numeric type");
         }
     }
 
