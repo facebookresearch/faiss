@@ -256,10 +256,11 @@ void runL2SelectMin(
         } else if (k <= 1024) {
             RUN_L2_SELECT(128, 1024, 8);
 
-#if GPU_MAX_SELECTION_K >= 2048
-        } else if (k <= 2048) {
+#if GPU_MAX_SELECTION_K >= 16384
+        } else if (k <= 16384) {
             // smaller block for less shared memory
             RUN_L2_SELECT(64, 2048, 8);
+            // RUN_L2_SELECT(64, 16384, 8);
 #endif
         } else {
             FAISS_ASSERT(false);
