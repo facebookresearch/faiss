@@ -15,46 +15,39 @@ from faiss.contrib import datasets, evaluation
     "only if cuVS is compiled in")
 class TestComputeGT(unittest.TestCase):
 
-    def do_compute_GT(self, metric):
-        d = 64
+    def do_compute_GT(self):
+        d = 64 * 8
         k = 12
-        ds = datasets.SyntheticDataset(d, 0, 10000, 100)
-        Dref, Iref = faiss.knn(ds.get_queries(), ds.get_database(), k, metric)
+        ds = datasets.SyntheticDataset(d, 0, 1000000, 10000)
+        flat_index = faiss.IndexBinaryFlat(d)
+        flat_index.add(ds.get_database())
+        Dref, Iref = flat_index.search(ds.get_queries(), k)
 
         res = faiss.StandardGpuResources()
 
-        # attempt to set custom IVF-PQ params
-        cagraIndexConfig = faiss.GpuIndexCagraConfig()
-        cagraIndexIVFPQConfig = faiss.IVFPQBuildCagraConfig()
-        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.1
-        cagraIndexConfig.ivf_pq_params = cagraIndexIVFPQConfig
-        cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
-
-        index = faiss.GpuIndexCagra(res, d, metric, cagraIndexConfig)
+        index = faiss.GpuIndexBinaryCagra(res, d)
         index.train(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), k)
         
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
+    
+    def test_compute_GT(self):
+        self.do_compute_GT()
 
-    def test_compute_GT_L2(self):
-        self.do_compute_GT(faiss.METRIC_L2)
 
-    def test_compute_GT_IP(self):
-        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT)
-
-@unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if cuVS is compiled in")
+# @unittest.skipIf(
+#     "CUVS" not in faiss.get_compile_options(),
+#     "only if cuVS is compiled in")
 class TestInterop(unittest.TestCase):
 
-    def do_interop(self, metric):
-        d = 64
+    def do_interop(self):
+        d = 64 * 8
         k = 12
-        ds = datasets.SyntheticDataset(d, 0, 10000, 100)
+        ds = datasets.SyntheticDataset(d, 0, 100000, 1000)
 
         res = faiss.StandardGpuResources()
 
-        index = faiss.GpuIndexCagra(res, d, metric)
+        index = faiss.GpuIndexBinaryCagra(res, d)
         index.train(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), k)
 
@@ -70,9 +63,6 @@ class TestInterop(unittest.TestCase):
         Dnew2, Inew2 = gpu_index.search(ds.get_queries(), k)
 
         evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
-
-    def test_interop_L2(self):
-        self.do_interop(faiss.METRIC_L2)
-
-    def test_interop_IP(self):
-        self.do_interop(faiss.METRIC_INNER_PRODUCT)
+    
+    def test_interop(self):
+        self.do_interop()
