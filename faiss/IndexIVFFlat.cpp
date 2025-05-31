@@ -140,6 +140,7 @@ struct IVFFlatScanner : InvertedListScanner {
     IVFFlatScanner(size_t d, bool store_pairs, const IDSelector* sel)
             : InvertedListScanner(store_pairs, sel), d(d) {
         keep_max = is_similarity_metric(metric);
+        code_size = d * sizeof(float);
     }
 
     const float* xi;
