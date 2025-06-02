@@ -123,12 +123,13 @@ class TestExtraDistances(unittest.TestCase):
 
     def test_gower(self):
         # Create test data with mixed numeric and categorical features
-        # First 2 dimensions are numeric (0-1), last 2 are categorical (negative integers)
+        # First 2 dimensions are numeric (0-1), last 2 are categorical
+        # (negative integers)
         xq = np.array([
             [0.5, 0.3, -1, -2],  # First query vector
             [0.7, 0.8, -1, -3],  # Second query vector
         ], dtype='float32')
-        
+
         yb = np.array([
             [0.4, 0.2, -1, -2],  # Same categories, similar numeric values
             [0.9, 0.1, -1, -2],  # Same categories, different numeric values
@@ -138,7 +139,6 @@ class TestExtraDistances(unittest.TestCase):
 
         # Compute distances using FAISS
         dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_GOWER)
-        
 
         # Expected distances:
         # For first query [0.5, 0.3, -1, -2]:
@@ -159,22 +159,20 @@ class TestExtraDistances(unittest.TestCase):
         ], dtype='float32')
 
         self.assertTrue(np.allclose(dis, expected, rtol=1e-5))
-        
 
         # Test with NaN values
         xq_nan = np.array([
             [0.5, np.nan, -1, -2],
             [0.7, 0.8, -1, -3],
         ], dtype='float32')
-        
+
         yb_nan = np.array([
             [0.4, 0.2, -1, -2],
             [0.9, np.nan, -1, -2],
         ], dtype='float32')
 
         dis_nan = faiss.pairwise_distances(xq_nan, yb_nan, faiss.METRIC_GOWER)
-        
-        
+
         # For first query [0.5, nan, -1, -2]:
         # - [0.4, 0.2, -1, -2]: (|0.5-0.4| + 0 + 0) / 3 = 0.0333...
         # - [0.9, nan, -1, -2]: (|0.5-0.9| + 0 + 0) / 3 = 0.1333...
@@ -189,31 +187,33 @@ class TestExtraDistances(unittest.TestCase):
         ], dtype='float32')
 
         self.assertTrue(np.allclose(dis_nan, expected_nan, rtol=1e-5))
-        
-    
+
         # Test error case: mixing numeric and categorical values
         xq_mixed = np.array([
-            [0.5, -1, -1, -2],  # Second value is categorical but first is numeric
+            # Second value is categorical but first is numeric
+            [0.5, -1, -1, -2],
         ], dtype='float32')
-        
+
         yb_mixed = np.array([
             [0.4, 0.2, -1, -2],  # Second value is numeric
         ], dtype='float32')
 
-        dis_mixed = faiss.pairwise_distances(xq_mixed, yb_mixed, faiss.METRIC_GOWER)
-        
+        dis_mixed = faiss.pairwise_distances(xq_mixed, yb_mixed,
+                                             faiss.METRIC_GOWER)
+
         self.assertTrue(np.all(np.isnan(dis_mixed)))
 
         # Test error case: numeric values outside [0,1] range
         xq_out_of_range = np.array([
             [1.5, 0.3, -1, -2],  # First value is outside [0,1]
         ], dtype='float32')
-        
+
         yb_out_of_range = np.array([
             [0.4, 0.2, -1, -2],
         ], dtype='float32')
 
-        dis_out_of_range = faiss.pairwise_distances(xq_out_of_range, yb_out_of_range, faiss.METRIC_GOWER)
+        dis_out_of_range = faiss.pairwise_distances(
+            xq_out_of_range, yb_out_of_range, faiss.METRIC_GOWER)
         self.assertTrue(np.all(np.isnan(dis_out_of_range)))
 
 
