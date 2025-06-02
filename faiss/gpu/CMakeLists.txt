@@ -271,6 +271,7 @@ if(FAISS_ENABLE_CUVS)
   target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_CUVS=1)
   target_compile_definitions(faiss_avx512 PUBLIC USE_NVIDIA_CUVS=1)
   target_compile_definitions(faiss_avx512_spr PUBLIC USE_NVIDIA_CUVS=1)
+  target_compile_options(faiss_gpu_objs PRIVATE "-Wno-error=deprecated-declarations")
 
   # Mark all functions as hidden so that we don't generate
   # global 'public' functions that also exist in libcuvs.so

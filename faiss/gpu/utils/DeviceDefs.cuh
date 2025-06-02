@@ -47,14 +47,19 @@ __forceinline__ __device__ void warpFence() {
 #endif
 }
 
-#if CUDA_VERSION > 9000
+#if defined USE_NVIDIA_CUVS
+#define GPU_MAX_SELECTION_K 16384
+
+#elif CUDA_VERSION > 9000
 // Based on the CUDA version (we assume what version of nvcc/ptxas we were
 // compiled with), the register allocation algorithm is much better, so only
 // enable the 2048 selection code if we are above 9.0 (9.2 seems to be ok)
 #define GPU_MAX_SELECTION_K 2048
+
 #else
 #define GPU_MAX_SELECTION_K 1024
-#endif
+
+#endif // CUDA_VERSION > 9000
 
 #endif // USE_AMD_ROCM
 

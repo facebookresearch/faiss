@@ -256,7 +256,15 @@ void runL2SelectMin(
         } else if (k <= 1024) {
             RUN_L2_SELECT(128, 1024, 8);
 
-#if GPU_MAX_SELECTION_K >= 2048
+#if defined USE_NVIDIA_CUVS
+
+#if GPU_MAX_SELECTION_K >= 16384
+        } else if (k <= 16384) {
+            RUN_L2_SELECT(64, 16384, 8);
+
+#endif
+
+#elif GPU_MAX_SELECTION_K >= 2048
         } else if (k <= 2048) {
             // smaller block for less shared memory
             RUN_L2_SELECT(64, 2048, 8);
