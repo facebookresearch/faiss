@@ -67,6 +67,7 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
+option(FAISS_ENABLE_AVX512_FP16 "Enable AVX512-FP16 arithmetic (for avx512_spr opt level)." OFF)
 
 if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)
