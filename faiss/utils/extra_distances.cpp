@@ -38,7 +38,6 @@ struct Run_pairwise_extra_distances {
            int64_t ldq,
            int64_t ldb,
            int64_t ldd) {
-
 #pragma omp parallel for if (nq > 10)
         for (int64_t i = 0; i < nq; i++) {
             const float* xqi = xq + i * ldq;
