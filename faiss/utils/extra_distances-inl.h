@@ -13,7 +13,6 @@
 #include <faiss/utils/distances.h>
 #include <cmath>
 #include <type_traits>
-#include <iostream>
 
 namespace faiss {
 
