@@ -10,7 +10,7 @@
 
 namespace faiss {
 
-ZeroCopyIOReader::ZeroCopyIOReader(uint8_t* data, size_t size)
+ZeroCopyIOReader::ZeroCopyIOReader(const uint8_t* data, size_t size)
         : data_(data), rp_(0), total_(size) {}
 
 ZeroCopyIOReader::~ZeroCopyIOReader() {}
