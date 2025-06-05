@@ -9341,11 +9341,11 @@
     <member refid="classfaiss_1_1WorkerThread_1a1995b2a276e75326778af7e108d5a696" kind="function"><name>threadLoop</name></member>
   </compound>
   <compound refid="structfaiss_1_1ZeroCopyIOReader" kind="struct"><name>faiss::ZeroCopyIOReader</name>
-    <member refid="structfaiss_1_1ZeroCopyIOReader_1af1f95ed6aa0330e39b7058f5e8bafc97" kind="variable"><name>data_</name></member>
+    <member refid="structfaiss_1_1ZeroCopyIOReader_1ab9acf5e4e4ddc84b6995ebb294e138b9" kind="variable"><name>data_</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1aa1fe2e176dd5f358a921f9d3d5895c1f" kind="variable"><name>rp_</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1ae3197724359d9ac37f65ad730a8870c8" kind="variable"><name>total_</name></member>
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
-    <member refid="structfaiss_1_1ZeroCopyIOReader_1a6c21582ae77659c0130dc92cf090e5b2" kind="function"><name>ZeroCopyIOReader</name></member>
+    <member refid="structfaiss_1_1ZeroCopyIOReader_1aec85721a739ad0bd8c242f37f0b25f33" kind="function"><name>ZeroCopyIOReader</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a222793eb7a8743c81b211eba6fa065e2" kind="function"><name>~ZeroCopyIOReader</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a25f05b80188e4b36bab9bff76f9eae01" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a0e633f49e1b4cfb32daffc3904cdf2a7" kind="function"><name>get_data_view</name></member>

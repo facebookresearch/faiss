@@ -4,9 +4,9 @@
     <compoundname>faiss::ZeroCopyIOReader</compoundname>
     <basecompoundref refid="structfaiss_1_1IOReader" prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1ZeroCopyIOReader_1af1f95ed6aa0330e39b7058f5e8bafc97" prot="public" static="no" mutable="no">
-        <type>uint8_t *</type>
-        <definition>uint8_t* faiss::ZeroCopyIOReader::data_</definition>
+      <memberdef kind="variable" id="structfaiss_1_1ZeroCopyIOReader_1ab9acf5e4e4ddc84b6995ebb294e138b9" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::ZeroCopyIOReader::data_</definition>
         <argsstring></argsstring>
         <name>data_</name>
         <qualifiedname>faiss::ZeroCopyIOReader::data_</qualifiedname>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/zerocopy_io.h" line="18" column="13" bodyfile="faiss/impl/zerocopy_io.h" bodystart="18" bodyend="-1"/>
+        <location file="faiss/impl/zerocopy_io.h" line="18" column="19" bodyfile="faiss/impl/zerocopy_io.h" bodystart="18" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ZeroCopyIOReader_1aa1fe2e176dd5f358a921f9d3d5895c1f" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -64,14 +64,14 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ZeroCopyIOReader_1a6c21582ae77659c0130dc92cf090e5b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ZeroCopyIOReader_1aec85721a739ad0bd8c242f37f0b25f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZeroCopyIOReader::ZeroCopyIOReader</definition>
-        <argsstring>(uint8_t *data, size_t size)</argsstring>
+        <argsstring>(const uint8_t *data, size_t size)</argsstring>
         <name>ZeroCopyIOReader</name>
         <qualifiedname>faiss::ZeroCopyIOReader::ZeroCopyIOReader</qualifiedname>
         <param>
-          <type>uint8_t *</type>
+          <type>const uint8_t *</type>
           <declname>data</declname>
         </param>
         <param>
@@ -213,7 +213,7 @@
     </collaborationgraph>
     <location file="faiss/impl/zerocopy_io.h" line="17" column="1" bodyfile="faiss/impl/zerocopy_io.h" bodystart="17" bodyend="30"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1ZeroCopyIOReader_1af1f95ed6aa0330e39b7058f5e8bafc97" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>data_</name></member>
+      <member refid="structfaiss_1_1ZeroCopyIOReader_1ab9acf5e4e4ddc84b6995ebb294e138b9" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>data_</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1a19ea02cf81c6cd7c3dda101be5246c49" prot="public" virt="virtual"><scope>faiss::ZeroCopyIOReader</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1a0e633f49e1b4cfb32daffc3904cdf2a7" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>get_data_view</name></member>
       <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>name</name></member>
@@ -221,7 +221,7 @@
       <member refid="structfaiss_1_1ZeroCopyIOReader_1a25f05b80188e4b36bab9bff76f9eae01" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>reset</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1aa1fe2e176dd5f358a921f9d3d5895c1f" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>rp_</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1ae3197724359d9ac37f65ad730a8870c8" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>total_</name></member>
-      <member refid="structfaiss_1_1ZeroCopyIOReader_1a6c21582ae77659c0130dc92cf090e5b2" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>ZeroCopyIOReader</name></member>
+      <member refid="structfaiss_1_1ZeroCopyIOReader_1aec85721a739ad0bd8c242f37f0b25f33" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>ZeroCopyIOReader</name></member>
       <member refid="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" prot="public" virt="virtual"><scope>faiss::ZeroCopyIOReader</scope><name>~IOReader</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1a222793eb7a8743c81b211eba6fa065e2" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>~ZeroCopyIOReader</name></member>
     </listofallmembers>
