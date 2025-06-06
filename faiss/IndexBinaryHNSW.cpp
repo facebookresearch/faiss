@@ -98,7 +98,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= int(!index_hnsw.init_level0);
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -125,7 +127,13 @@ void hnsw_add_vertices(
                     dis->set_query(
                             (float*)(x + (pt_id - n0) * index_hnsw.code_size));
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
@@ -136,7 +144,11 @@ void hnsw_add_vertices(
             }
             i1 = i0;
         }
-        FAISS_ASSERT(i1 == 0);
+        if (index_hnsw.init_level0) {
+            FAISS_ASSERT(i1 == 0);
+        } else {
+            FAISS_ASSERT((i1 - hist[0]) == 0);
+        }
     }
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
