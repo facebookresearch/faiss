@@ -56,7 +56,7 @@ struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
 
-enum class NumericType {
+enum NumericType {
     Float32,
     Float16,
 };
