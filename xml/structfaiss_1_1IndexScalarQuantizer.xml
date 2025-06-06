@@ -174,18 +174,18 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>M</parametername>
+<parametername>qtype</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of subquantizers </para>
+<para>type of scalar quantizer (e.g., QT_4bit) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>nbits</parametername>
+<parametername>metric</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of bit per subvector index </para>
+<para>distance metric used for search (default: METRIC_L2) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

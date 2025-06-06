@@ -365,8 +365,8 @@
 <codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Constructor.</highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/>dimensionality<sp/>of<sp/>the<sp/>input<sp/>vectors</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>subquantizers</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>nbits<sp/><sp/>number<sp/>of<sp/>bit<sp/>per<sp/>subvector<sp/>index</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>qtype<sp/><sp/>type<sp/>of<sp/>scalar<sp/>quantizer<sp/>(e.g.,<sp/>QT_4bit)</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>metric<sp/>distance<sp/>metric<sp/>used<sp/>for<sp/>search<sp/>(default:<sp/>METRIC_L2)</highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="35" refid="structfaiss_1_1IndexScalarQuantizer_1a474ad5a50eb2e9f0d79f869855c57223" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexScalarQuantizer_1a474ad5a50eb2e9f0d79f869855c57223" kindref="member">IndexScalarQuantizer</ref>(</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>,</highlight></codeline>
