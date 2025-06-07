@@ -903,7 +903,7 @@ IndexHNSWCagra::IndexHNSWCagra(
     FAISS_THROW_IF_NOT_MSG(
             ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
             "unsupported metric type for IndexHNSWCagra");
-
+    numeric_type_ = numeric_type;
     if (numeric_type == NumericType::Float16) {
         auto qtype = ScalarQuantizer::QT_fp16;
         storage = new IndexScalarQuantizer(d, qtype, metric);
@@ -914,7 +914,7 @@ IndexHNSWCagra::IndexHNSWCagra(
                 : static_cast<Index*>(new IndexFlatIP(d));
     } else {
         FAISS_THROW_MSG(
-                "Unsupported numeric_type: only F16 and F32 are supported");
+                "Unsupported numeric_type: only F16 and F32 are supported for internal data representation");
     }
 
     metric_arg = storage->metric_arg;
@@ -982,6 +982,14 @@ void IndexHNSWCagra::search(
                 1, // search_type
                 params);
     }
+}
+
+faiss::NumericType IndexHNSWCagra::get_numeric_type() const {
+    return numeric_type_;
+}
+
+void IndexHNSWCagra::set_numeric_type(faiss::NumericType numeric_type) {
+    numeric_type_ = numeric_type;
 }
 
 } // namespace faiss

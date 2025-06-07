@@ -278,6 +278,8 @@ struct GpuIndexCagra : public GpuIndex {
 
     std::vector<idx_t> get_knngraph() const;
 
+    faiss::NumericType get_numeric_type() const;
+
    protected:
     bool addImplRequiresIDs_() const override;
 
@@ -302,6 +304,8 @@ struct GpuIndexCagra : public GpuIndex {
 
     /// Our configuration options
     const GpuIndexCagraConfig cagraConfig_;
+
+    faiss::NumericType numeric_type_;
 
     /// Instance that we own; contains the inverted lists
     std::variant<

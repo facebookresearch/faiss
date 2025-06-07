@@ -175,7 +175,7 @@ struct IndexHNSWCagra : IndexHNSW {
             int d,
             int M,
             MetricType metric = METRIC_L2,
-            NumericType numetic_type = NumericType::Float32);
+            NumericType numeric_type = NumericType::Float32);
 
     /// When set to true, the index is immutable.
     /// This option is used to copy the knn graph from GpuIndexCagra
@@ -200,6 +200,12 @@ struct IndexHNSWCagra : IndexHNSW {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+
+    faiss::NumericType get_numeric_type() const;
+    void set_numeric_type(faiss::NumericType numeric_type);
+
+   protected:
+    NumericType numeric_type_;
 };
 
 } // namespace faiss

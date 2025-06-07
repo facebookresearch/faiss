@@ -43,6 +43,7 @@ GpuIndexCagra::GpuIndexCagra(
 }
 
 void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
+    numeric_type_ = numeric_type;
     bool index_is_initialized = !std::holds_alternative<std::monostate>(index_);
 
     DeviceScope scope(config_.device);
@@ -161,6 +162,9 @@ void GpuIndexCagra::searchImpl_(
             this->is_trained &&
             !std::holds_alternative<std::monostate>(index_));
     FAISS_ASSERT(n > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == numeric_type_,
+            "Inconsistent numeric type for train and search");
 
     SearchParametersCagra* params;
     if (search_params) {
@@ -248,6 +252,7 @@ void GpuIndexCagra::copyFrom(
         const faiss::IndexHNSWCagra* index,
         NumericType numeric_type) {
     FAISS_ASSERT(index);
+    numeric_type_ = numeric_type;
 
     DeviceScope scope(config_.device);
 
@@ -326,13 +331,16 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
     copyFrom(index, NumericType::Float32);
 }
 
+// TOOD: can just get rid of the numeric type here
 void GpuIndexCagra::copyTo(
         faiss::IndexHNSWCagra* index,
         NumericType numeric_type) const {
     FAISS_ASSERT(
             !std::holds_alternative<std::monostate>(index_) &&
             this->is_trained && index);
-
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == numeric_type_,
+            "Inconsistent numeric type for train and copyTo");
     DeviceScope scope(config_.device);
 
     //
@@ -342,6 +350,7 @@ void GpuIndexCagra::copyTo(
     // This needs to be zeroed out as this implementation adds vectors to the
     // cpuIndex instead of copying fields
     index->ntotal = 0;
+    index->set_numeric_type(numeric_type_);
 
     idx_t graph_degree;
 
@@ -505,6 +514,10 @@ std::vector<idx_t> GpuIndexCagra::get_knngraph() const {
                 }
             },
             index_);
+}
+
+faiss::NumericType GpuIndexCagra::get_numeric_type() const {
+    return numeric_type_;
 }
 
 } // namespace gpu
