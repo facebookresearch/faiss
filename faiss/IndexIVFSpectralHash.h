@@ -56,7 +56,8 @@ struct IndexIVFSpectralHash : IndexIVF {
             size_t d,
             size_t nlist,
             int nbit,
-            float period);
+            float period,
+            bool own_invlists = true);
 
     IndexIVFSpectralHash();
 

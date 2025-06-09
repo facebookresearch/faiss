@@ -22,6 +22,7 @@ set(FAISS_C_SRC
   IndexReplicas_c.cpp
   Index_c.cpp
   IndexBinary_c.cpp
+  IndexBinaryIVF_c.cpp
   IndexScalarQuantizer_c.cpp
   MetaIndexes_c.cpp
   clone_index_c.cpp

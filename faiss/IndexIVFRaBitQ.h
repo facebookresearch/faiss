@@ -33,7 +33,8 @@ struct IndexIVFRaBitQ : IndexIVF {
             Index* quantizer,
             const size_t d,
             const size_t nlist,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     IndexIVFRaBitQ();
 
