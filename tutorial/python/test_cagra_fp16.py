@@ -41,11 +41,37 @@ def test_train_search_fp16(res, cagraIndexConfig, fp16_database, fp16_queries):
     # check_correctness(Dref, Iref, Dnew, Inew)
 
 
+def test_train_search_fp32(res, cagraIndexConfig, fp32_database, fp32_queries):
+    print("==================== Testing Cagra Train and Search in FP32 ====================")
+    print("Running Cagra Train and Search in FP32")
+    index = faiss.GpuIndexCagra(res, n_dim, metric, cagraIndexConfig)
+    index.train(fp32_database)
+    Dnew, Inew = index.search(fp32_queries, k)
+
+    return Dnew, Inew
+
+
 def gpu_to_cpu_fp16(res, cagraIndexConfig, fp16_database, fp32_queries):
     print("==================== Testing Cagra GPU Train FP16 -> CPU Search FP32 ====================")
     print("Running Cagra Train in FP16")
     index = faiss.GpuIndexCagra(res, n_dim, metric, cagraIndexConfig)
     index.train(fp16_database, faiss.Float16)
+
+    print("Copying trained GPU index (GpuIndexCagra) to CPU index")
+    copied_cpu_index = faiss.index_gpu_to_cpu(index)
+
+    print("Searching copied CPU index with FP32")
+    search_params = faiss.SearchParametersHNSW()
+    search_params.efSearch = 2*k
+    Dnew, Inew = copied_cpu_index.search(fp32_queries, k, params=search_params)
+    return Dnew, Inew
+
+
+def gpu_to_cpu_fp32(res, cagraIndexConfig, fp32_database, fp32_queries):
+    print("==================== Testing Cagra GPU Train FP32 -> CPU Search FP32 ====================")
+    print("Running Cagra Train in FP32")
+    index = faiss.GpuIndexCagra(res, n_dim, metric, cagraIndexConfig)
+    index.train(fp32_database)
 
     print("Copying trained GPU index (GpuIndexCagra) to CPU index")
     copied_cpu_index = faiss.index_gpu_to_cpu(index)
@@ -76,6 +102,25 @@ def gpu_to_cpu_to_gpu_fp16(res, cagraIndexConfig, fp16_database, fp16_queries):
     return Dnew, Inew
 
 
+def gpu_to_cpu_to_gpu_fp32(res, cagraIndexConfig, fp32_database, fp32_queries):
+    print("==================== Testing Cagra GPU Train FP32 -> CPU -> GPU Search FP32 ====================")
+    # IndexHNSWCagra is not directly exposed in python, so we check copyFrom (CPU ->GPU copy)
+    # by doing (GPU -> CPU -> GPU) copy
+    print("Running Cagra Train in FP32")
+    index = faiss.GpuIndexCagra(res, n_dim, metric, cagraIndexConfig)
+    index.train(fp32_database)
+
+    print("Copying trained GPU index (GpuIndexCagra) to CPU index")
+    copied_cpu_index = faiss.index_gpu_to_cpu(index)
+
+    print("Copying CPU index to GPU index again")
+    copied_gpu_index = faiss.index_cpu_to_gpu(res, 0, copied_cpu_index)
+
+    print("Searching copied GPU index with FP32")
+    Dnew, Inew = copied_gpu_index.search(fp32_queries, k)
+    return Dnew, Inew
+
+
 if __name__ == "__main__":
     res = faiss.StandardGpuResources()
     cagraIndexConfig = faiss.GpuIndexCagraConfig()
@@ -94,9 +139,21 @@ if __name__ == "__main__":
                                         dataset.get_queries().astype(np.float16))
     check_correctness(Dref, Iref, Dnew, Inew)
 
+    Dnew, Inew = test_train_search_fp32(res, 
+                                        cagraIndexConfig, 
+                                        dataset.get_database(),
+                                        dataset.get_queries())
+    check_correctness(Dref, Iref, Dnew, Inew)
+
     Dnew, Inew = gpu_to_cpu_fp16(res, 
                                 cagraIndexConfig, 
                                 dataset.get_database().astype(np.float16),
+                                dataset.get_queries())
+    check_correctness(Dref, Iref, Dnew, Inew)
+
+    Dnew, Inew = gpu_to_cpu_fp32(res, 
+                                cagraIndexConfig, 
+                                dataset.get_database(),
                                 dataset.get_queries())
     check_correctness(Dref, Iref, Dnew, Inew)
 
@@ -104,4 +161,10 @@ if __name__ == "__main__":
                                         cagraIndexConfig, 
                                         dataset.get_database().astype(np.float16),
                                         dataset.get_queries().astype(np.float16))
+    check_correctness(Dref, Iref, Dnew, Inew)
+
+    Dnew, Inew = gpu_to_cpu_to_gpu_fp32(res, 
+                                        cagraIndexConfig, 
+                                        dataset.get_database(),
+                                        dataset.get_queries())
     check_correctness(Dref, Iref, Dnew, Inew)
