@@ -354,10 +354,10 @@ void GpuIndexCagra::copyTo(
 
     idx_t graph_degree;
 
-    if (numeric_type == NumericType::Float32) {
+    if (numeric_type_ == NumericType::Float32) {
         graph_degree = std::get<std::shared_ptr<CuvsCagra<float>>>(index_)
                                ->get_knngraph_degree();
-    } else if (numeric_type == NumericType::Float16) {
+    } else if (numeric_type_ == NumericType::Float16) {
         graph_degree = std::get<std::shared_ptr<CuvsCagra<half>>>(index_)
                                ->get_knngraph_degree();
     } else {
@@ -370,13 +370,13 @@ void GpuIndexCagra::copyTo(
     }
 
     // storage depends on numerictype
-    if (numeric_type == NumericType::Float32) {
+    if (numeric_type_ == NumericType::Float32) {
         if (this->metric_type == METRIC_L2) {
             index->storage = new IndexFlatL2(index->d);
         } else if (this->metric_type == METRIC_INNER_PRODUCT) {
             index->storage = new IndexFlatIP(index->d);
         }
-    } else if (numeric_type == NumericType::Float16) {
+    } else if (numeric_type_ == NumericType::Float16) {
         auto qtype = ScalarQuantizer::QT_fp16;
         index->storage =
                 new IndexScalarQuantizer(index->d, qtype, this->metric_type);
@@ -392,7 +392,7 @@ void GpuIndexCagra::copyTo(
     auto n_train = this->ntotal;
     bool allocation = false;
 
-    if (numeric_type == NumericType::Float32) {
+    if (numeric_type_ == NumericType::Float32) {
         float* train_dataset;
         const float* dataset =
                 std::get<std::shared_ptr<CuvsCagra<float>>>(index_)
@@ -422,7 +422,7 @@ void GpuIndexCagra::copyTo(
         if (allocation) {
             delete[] train_dataset;
         }
-    } else if (numeric_type == NumericType::Float16) {
+    } else if (numeric_type_ == NumericType::Float16) {
         // fp16
         half* train_dataset;
         const half* dataset = std::get<std::shared_ptr<CuvsCagra<half>>>(index_)
