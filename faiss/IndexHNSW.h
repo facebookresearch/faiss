@@ -203,8 +203,6 @@ struct IndexHNSWCagra : IndexHNSW {
 
     faiss::NumericType get_numeric_type() const;
     void set_numeric_type(faiss::NumericType numeric_type);
-
-   protected:
     NumericType numeric_type_;
 };
 

@@ -781,6 +781,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             auto idx_hnsw_cagra = dynamic_cast<const IndexHNSWCagra*>(idxhnsw);
             WRITE1(idx_hnsw_cagra->base_level_only);
             WRITE1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+            WRITE1(idx_hnsw_cagra->numeric_type_);
         }
         write_HNSW(&idxhnsw->hnsw, f);
         if (io_flags & IO_FLAG_SKIP_STORAGE) {
