@@ -258,26 +258,26 @@ void GpuIndexCagra::copyFrom(
 
     GpuIndex::copyFrom(index);
 
+    auto hnsw = index->hnsw;
+    // copy level 0 to a dense knn graph matrix
+    std::vector<idx_t> knn_graph;
+    knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
+
+#pragma omp parallel for
+    for (size_t i = 0; i < index->ntotal; ++i) {
+        size_t begin, end;
+        hnsw.neighbor_range(i, 0, &begin, &end);
+        for (size_t j = begin; j < end; j++) {
+            // knn_graph.push_back(hnsw.neighbors[j]);
+            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
+                    hnsw.neighbors[j];
+        }
+    }
+
     if (numeric_type == NumericType::Float32) {
         auto base_index = dynamic_cast<IndexFlat*>(index->storage);
         FAISS_ASSERT(base_index);
         auto dataset = base_index->get_xb();
-
-        auto hnsw = index->hnsw;
-        // copy level 0 to a dense knn graph matrix
-        std::vector<idx_t> knn_graph;
-        knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
-
-#pragma omp parallel for
-        for (size_t i = 0; i < index->ntotal; ++i) {
-            size_t begin, end;
-            hnsw.neighbor_range(i, 0, &begin, &end);
-            for (size_t j = begin; j < end; j++) {
-                // knn_graph.push_back(hnsw.neighbors[j]);
-                knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
-                        hnsw.neighbors[j];
-            }
-        }
 
         index_ = std::make_shared<CuvsCagra<float>>(
                 this->resources_.get(),
@@ -293,22 +293,6 @@ void GpuIndexCagra::copyFrom(
         auto base_index = dynamic_cast<IndexScalarQuantizer*>(index->storage);
         FAISS_ASSERT(base_index);
         auto dataset = (half*)base_index->codes.data();
-
-        auto hnsw = index->hnsw;
-        // copy level 0 to a dense knn graph matrix
-        std::vector<idx_t> knn_graph;
-        knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
-
-#pragma omp parallel for
-        for (size_t i = 0; i < index->ntotal; ++i) {
-            size_t begin, end;
-            hnsw.neighbor_range(i, 0, &begin, &end);
-            for (size_t j = begin; j < end; j++) {
-                // knn_graph.push_back(hnsw.neighbors[j]);
-                knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
-                        hnsw.neighbors[j];
-            }
-        }
 
         index_ = std::make_shared<CuvsCagra<half>>(
                 this->resources_.get(),
@@ -331,16 +315,10 @@ void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
     copyFrom(index, NumericType::Float32);
 }
 
-// TOOD: can just get rid of the numeric type here
-void GpuIndexCagra::copyTo(
-        faiss::IndexHNSWCagra* index,
-        NumericType numeric_type) const {
+void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     FAISS_ASSERT(
             !std::holds_alternative<std::monostate>(index_) &&
             this->is_trained && index);
-    FAISS_THROW_IF_NOT_MSG(
-            numeric_type == numeric_type_,
-            "Inconsistent numeric type for train and copyTo");
     DeviceScope scope(config_.device);
 
     //
@@ -423,7 +401,6 @@ void GpuIndexCagra::copyTo(
             delete[] train_dataset;
         }
     } else if (numeric_type_ == NumericType::Float16) {
-        // fp16
         half* train_dataset;
         const half* dataset = std::get<std::shared_ptr<CuvsCagra<half>>>(index_)
                                       ->get_training_dataset();
@@ -471,10 +448,6 @@ void GpuIndexCagra::copyTo(
     index->init_level0 = true;
 }
 
-void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
-    GpuIndexCagra::copyTo(index, NumericType::Float32);
-}
-
 void GpuIndexCagra::reset() {
     DeviceScope scope(config_.device);
 
@@ -484,7 +457,7 @@ void GpuIndexCagra::reset() {
                     using IndexPtrT = std::decay_t<decltype(index_ptr)>;
                     if constexpr (std::is_same_v<IndexPtrT, std::monostate>) {
                         FAISS_THROW_MSG(
-                                "Index not initialized when calling GpuIndexCagra::reset");
+                                "CuvsCagra not initialized when calling GpuIndexCagra::reset");
                     } else {
                         return index_ptr->reset();
                     }
@@ -508,7 +481,7 @@ std::vector<idx_t> GpuIndexCagra::get_knngraph() const {
 
                 if constexpr (std::is_same_v<IndexPtrT, std::monostate>) {
                     FAISS_THROW_MSG(
-                            "Index not initialized when calling GpuIndexCagra::get_knngraph");
+                            "CuvsCagra not initialized when calling GpuIndexCagra::get_knngraph");
                 } else {
                     return index_ptr->get_knngraph();
                 }

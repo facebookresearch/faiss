@@ -11,6 +11,8 @@
 #define FAISS_INDEX_H
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
+
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -68,7 +70,8 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
         case NumericType::Float16:
             return 2;
         default:
-            throw std::invalid_argument("Unknown NumericType");
+            FAISS_THROW_MSG(
+                    "Unknown Numeric Type. Only supports Float32, Float16");
     }
 }
 
@@ -127,7 +130,7 @@ struct Index {
         if (numeric_type == NumericType::Float32) {
             train(n, static_cast<const float*>(x));
         } else {
-            throw std::runtime_error("Index::train: unsupported numeric type");
+            FAISS_THROW_MSG("Index::train: unsupported numeric type");
         }
     }
 
@@ -145,7 +148,7 @@ struct Index {
         if (numeric_type == NumericType::Float32) {
             add(n, static_cast<const float*>(x));
         } else {
-            throw std::runtime_error("Index::add: unsupported numeric type");
+            FAISS_THROW_MSG("Index::add: unsupported numeric type");
         }
     }
 
@@ -167,8 +170,7 @@ struct Index {
         if (numeric_type == NumericType::Float32) {
             add_with_ids(n, static_cast<const float*>(x), xids);
         } else {
-            throw std::runtime_error(
-                    "Index::add_with_ids: unsupported numeric type");
+            FAISS_THROW_MSG("Index::add_with_ids: unsupported numeric type");
         }
     }
 
@@ -207,7 +209,7 @@ struct Index {
                    labels,
                    params);
         } else {
-            throw std::runtime_error("Index::search: unsupported numeric type");
+            FAISS_THROW_MSG("Index::search: unsupported numeric type");
         }
     }
 

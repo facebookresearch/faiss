@@ -904,17 +904,17 @@ IndexHNSWCagra::IndexHNSWCagra(
             ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
             "unsupported metric type for IndexHNSWCagra");
     numeric_type_ = numeric_type;
-    if (numeric_type == NumericType::Float16) {
-        auto qtype = ScalarQuantizer::QT_fp16;
-        storage = new IndexScalarQuantizer(d, qtype, metric);
-    } else if (numeric_type == NumericType::Float32) {
+    if (numeric_type == NumericType::Float32) {
         // Use flat storage with full precision for fp32
         storage = (metric == METRIC_L2)
                 ? static_cast<Index*>(new IndexFlatL2(d))
                 : static_cast<Index*>(new IndexFlatIP(d));
+    } else if (numeric_type == NumericType::Float16) {
+        auto qtype = ScalarQuantizer::QT_fp16;
+        storage = new IndexScalarQuantizer(d, qtype, metric);
     } else {
         FAISS_THROW_MSG(
-                "Unsupported numeric_type: only F16 and F32 are supported for internal data representation");
+                "Unsupported numeric_type: only F16 and F32 are supported for IndexHNSWCagra");
     }
 
     metric_arg = storage->metric_arg;

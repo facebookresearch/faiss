@@ -538,23 +538,13 @@ void copyToTestFP16(
                 metric,
                 faiss::NumericType::Float16);
         copiedCpuIndex.base_level_only = base_level_only;
-        gpuIndex.copyTo(&copiedCpuIndex, faiss::NumericType::Float16);
+        gpuIndex.copyTo(&copiedCpuIndex);
         copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
-
-        // add more vecs to copied cpu index
-        if (!base_level_only) {
-            copiedCpuIndex.add(opt.numAdd, addVecs.data());
-        }
 
         // train cpu index
         faiss::IndexHNSWFlat cpuIndex(opt.dim, opt.graphDegree / 2, metric);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.add(opt.numTrain, trainVecs.data());
-
-        // add more vecs to cpu index
-        if (!base_level_only) {
-            cpuIndex.add(opt.numAdd, addVecs.data());
-        }
 
         // query indexes
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -641,17 +631,10 @@ void copyToTestFP16(
     }
 }
 
-// TEST(TestGpuIndexCagra, Float16_CopyTo_L2) {
-//     copyToTestFP16(faiss::METRIC_L2, 0.98, false);
-// }
-
+// For fp16, only base level copy is supported
 TEST(TestGpuIndexCagra, Float16_CopyTo_L2_BaseLevelOnly) {
     copyToTestFP16(faiss::METRIC_L2, 0.98, true);
 }
-
-//     TEST(TestGpuIndexCagra, Float32_CopyTo_IP) {
-//         copyToTest(faiss::METRIC_INNER_PRODUCT, 0.98, false);
-//     }
 
 TEST(TestGpuIndexCagra, Float16_CopyTo_IP_BaseLevelOnly) {
     copyToTestFP16(faiss::METRIC_INNER_PRODUCT, 0.98, true);

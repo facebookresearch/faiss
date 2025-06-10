@@ -29,20 +29,3 @@ target_link_libraries(8-PQFastScanRefine PRIVATE faiss)
 
 add_executable(9-RefineComparison EXCLUDE_FROM_ALL 9-RefineComparison.cpp)
 target_link_libraries(9-RefineComparison PRIVATE faiss)
-
-
-set(CMAKE_CUDA_ARCHITECTURES 70 75 80 86 89)
-add_executable(cuvs_cagra_fp16_test EXCLUDE_FROM_ALL cuvs_cagra_fp16_test.cu)
-set_target_properties(cuvs_cagra_fp16_test PROPERTIES LINKER_LANGUAGE CUDA)
-find_package(OpenMP REQUIRED)
-find_package(CUDAToolkit REQUIRED)
-find_package(cuvs)
-find_package(raft)
-
-target_compile_definitions(cuvs_cagra_fp16_test PRIVATE USE_NVIDIA_CUVS)
-target_compile_options(cuvs_cagra_fp16_test PRIVATE
-  $<$<COMPILE_LANGUAGE:CUDA>:
-    --diag-suppress=611
-  >
-)
-target_link_libraries(cuvs_cagra_fp16_test PRIVATE faiss OpenMP::OpenMP_CXX cuvs::cuvs raft::raft)
