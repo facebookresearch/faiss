@@ -15,11 +15,11 @@ namespace faiss {
 
 // ZeroCopyIOReader just maps the data from a given pointer.
 struct ZeroCopyIOReader : public faiss::IOReader {
-    uint8_t* data_;
+    const uint8_t* data_;
     size_t rp_ = 0;
     size_t total_ = 0;
 
-    ZeroCopyIOReader(uint8_t* data, size_t size);
+    ZeroCopyIOReader(const uint8_t* data, size_t size);
     ~ZeroCopyIOReader();
 
     void reset();

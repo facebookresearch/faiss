@@ -106,10 +106,10 @@ struct ScopedSelChange {
     SearchParameters* params = nullptr;
     IDSelector* old_sel = nullptr;
 
-    void set(SearchParameters* params_2, IDSelector* new_sel) {
-        this->params = params_2;
-        old_sel = params_2->sel;
-        params_2->sel = new_sel;
+    void set(SearchParameters* target_params, IDSelector* new_sel) {
+        this->params = target_params;
+        old_sel = target_params->sel;
+        target_params->sel = new_sel;
     }
     ~ScopedSelChange() {
         if (params) {

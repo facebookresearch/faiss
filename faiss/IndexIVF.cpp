@@ -158,11 +158,14 @@ IndexIVF::IndexIVF(
         size_t d,
         size_t nlist,
         size_t code_size,
-        MetricType metric)
+        MetricType metric,
+        bool own_invlists)
         : Index(d, metric),
           IndexIVFInterface(quantizer, nlist),
-          invlists(new ArrayInvertedLists(nlist, code_size)),
-          own_invlists(true),
+          invlists(
+                  own_invlists ? new ArrayInvertedLists(nlist, code_size)
+                               : nullptr),
+          own_invlists(own_invlists),
           code_size(code_size) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
