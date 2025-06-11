@@ -142,6 +142,9 @@ class CuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
+    /// Parameter to use MST optimization to guarantee graph connectivity
+    bool guarantee_connectivity_ = false;
+
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<float, uint32_t>> cuvs_index{
             nullptr};

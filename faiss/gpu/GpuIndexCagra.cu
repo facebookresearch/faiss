@@ -95,7 +95,8 @@ void GpuIndexCagra::train(idx_t n, const float* x) {
             INDICES_64_BIT,
             ivf_pq_params,
             ivf_pq_search_params,
-            cagraConfig_.refine_rate);
+            cagraConfig_.refine_rate,
+            cagraConfig_.guarantee_connectivity);
 
     index_->train(n, x);
 
