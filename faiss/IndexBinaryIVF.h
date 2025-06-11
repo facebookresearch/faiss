@@ -68,7 +68,11 @@ struct IndexBinaryIVF : IndexBinary {
      * identifier. The pointer is borrowed: the quantizer should not
      * be deleted while the IndexBinaryIVF is in use.
      */
-    IndexBinaryIVF(IndexBinary* quantizer, size_t d, size_t nlist);
+    IndexBinaryIVF(
+            IndexBinary* quantizer,
+            size_t d,
+            size_t nlist,
+            bool own_invlists = true);
 
     IndexBinaryIVF();
 

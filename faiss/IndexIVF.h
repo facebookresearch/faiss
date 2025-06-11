@@ -210,7 +210,8 @@ struct IndexIVF : Index, IndexIVFInterface {
             size_t d,
             size_t nlist,
             size_t code_size,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void reset() override;
 

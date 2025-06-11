@@ -26,9 +26,16 @@
 
 namespace faiss {
 
-IndexBinaryIVF::IndexBinaryIVF(IndexBinary* quantizer, size_t d, size_t nlist)
+IndexBinaryIVF::IndexBinaryIVF(
+        IndexBinary* quantizer,
+        size_t d,
+        size_t nlist,
+        bool own_invlists)
         : IndexBinary(d),
-          invlists(new ArrayInvertedLists(nlist, code_size)),
+          invlists(
+                  own_invlists ? new ArrayInvertedLists(nlist, code_size)
+                               : nullptr),
+          own_invlists(own_invlists),
           quantizer(quantizer),
           nlist(nlist) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
@@ -283,7 +290,7 @@ void IndexBinaryIVF::check_compatible_for_merge(
             direct_map.no() && other->direct_map.no(),
             "direct map copy not implemented");
     FAISS_THROW_IF_NOT_MSG(
-            typeid(*this) == typeid(other),
+            typeid(*this) == typeid(*other),
             "can only merge indexes of the same type");
 }
 

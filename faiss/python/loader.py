@@ -8,9 +8,8 @@ import subprocess
 import logging
 import os
 
+from packaging.version import Version
 
-def Version(v):
-    return [int(x) for x in v.split('.')]
 
 def supported_instruction_sets():
     """

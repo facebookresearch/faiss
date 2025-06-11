@@ -29,8 +29,8 @@ struct IndexScalarQuantizer : IndexFlatCodes {
     /** Constructor.
      *
      * @param d      dimensionality of the input vectors
-     * @param M      number of subquantizers
-     * @param nbits  number of bit per subvector index
+     * @param qtype  type of scalar quantizer (e.g., QT_4bit)
+     * @param metric distance metric used for search (default: METRIC_L2)
      */
     IndexScalarQuantizer(
             int d,
@@ -72,7 +72,8 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             size_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric = METRIC_L2,
-            bool by_residual = true);
+            bool by_residual = true,
+            bool own_invlists = true);
 
     IndexIVFScalarQuantizer();
 
