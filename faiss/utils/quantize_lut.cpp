@@ -122,7 +122,7 @@ void round_uint8_per_column_multi(
 }
 
 // translation of
-// https://github.com/fairinternal/faiss_improvements/blob/7122c3cc6ddb0a371d8aa6f1309cd8bcf2335e61/LUT_quantization.ipynb
+// https://gist.github.com/mdouze/f3a05bff5186c1874a77356452297357#file-lut_quantization-ipynb
 void quantize_LUT_and_bias(
         size_t nprobe,
         size_t M,
