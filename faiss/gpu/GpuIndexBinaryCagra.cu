@@ -264,6 +264,8 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
     DeviceScope scope(cagraConfig_.device);
 
     this->d = index->d;
+    FAISS_THROW_IF_NOT(this->d % 8 == 0);
+    this->code_size = index->d / 8;
     this->ntotal = index->ntotal;
     this->is_trained = index->is_trained;
 
@@ -308,6 +310,8 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
     // Index information
     //
     index->d = this->d;
+    FAISS_THROW_IF_NOT(this->d % 8 == 0);
+    index->code_size = this->d / 8;
     index->is_trained = this->is_trained;
     // This needs to be zeroed out as this implementation adds vectors to the
     // cpuIndex instead of copying fields
