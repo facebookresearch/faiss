@@ -16,6 +16,7 @@
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/CopyUtils.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
 
 #include <algorithm>
 #include <limits>
