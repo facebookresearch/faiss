@@ -180,6 +180,21 @@ TEST(TestGpuIndexFlat, L2_k_2048) {
     }
 }
 
+TEST(TestGpuIndexFlat, L2_Float32_large_k) {
+#if defined USE_NVIDIA_CUVS
+    TestFlatOptions opt;
+    opt.metric = faiss::MetricType::METRIC_L2;
+    opt.kOverride = 2049;
+    opt.numVecsOverride = 3000;
+    opt.useFloat16 = false;
+    opt.dimOverride = 64;
+    opt.numQueriesOverride = 10;
+
+    opt.use_cuvs = true;
+    testFlat(opt);
+#endif
+}
+
 // test specialized k == 1 codepath
 TEST(TestGpuIndexFlat, L2_Float32_K1) {
     for (int tries = 0; tries < 3; ++tries) {
