@@ -137,14 +137,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="120" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="120" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="119" column="10" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="119" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuIndexCagra.h" line="52" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="52" bodyend="121"/>
+    <location file="faiss/gpu/GpuIndexCagra.h" line="52" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="52" bodyend="120"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a0c4f52f09b36894948535a41f2dee860" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>codebook_kind</name></member>
       <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1afa6d4e798be91d7037d80bdad690236a" prot="public" virt="non-virtual"><scope>faiss::gpu::IVFPQBuildCagraConfig</scope><name>conservative_memory_allocation</name></member>

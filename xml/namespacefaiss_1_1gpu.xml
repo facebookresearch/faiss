@@ -208,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="182" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="182" bodyend="189"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="184" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="184" bodyend="191"/>
       </memberdef>
       <memberdef kind="enum" id="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821e" prot="public" static="no" strong="yes">
         <type></type>
@@ -241,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="191" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="191" bodyend="191"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="193" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="193" bodyend="193"/>
       </memberdef>
       <memberdef kind="enum" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no" strong="no">
         <type></type>

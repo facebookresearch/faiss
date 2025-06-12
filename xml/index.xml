@@ -954,6 +954,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1addd87b5c8686273497ac070d6dee60dd" kind="variable"><name>ivf_pq_search_params</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a7aa44a80bd06361d2b706b640b2b9ebc" kind="variable"><name>refine_rate</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a9e78e2878d8e67a123577adb36d9d190" kind="variable"><name>store_dataset</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig_1a773a2909a143ffe1a45bb3082f38b8d0" kind="variable"><name>guarantee_connectivity</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1ad0c59b7ef7ac3c1055da1addffb9dbb1" kind="variable"><name>use_cuvs</name></member>
