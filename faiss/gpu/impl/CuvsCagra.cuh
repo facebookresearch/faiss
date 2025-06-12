@@ -62,7 +62,8 @@ class CuvsCagra {
                     std::nullopt,
             std::optional<cuvs::neighbors::ivf_pq::search_params>
                     ivf_pq_search_params = std::nullopt,
-            float refine_rate = 2.0f);
+            float refine_rate = 2.0f,
+            bool guarantee_connectivity = false);
 
     CuvsCagra(
             GpuResources* resources,
