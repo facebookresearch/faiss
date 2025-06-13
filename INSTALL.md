@@ -98,7 +98,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=24.12
+  - libcuvs=25.04
 - for the python bindings:
   - python 3,
   - numpy,
