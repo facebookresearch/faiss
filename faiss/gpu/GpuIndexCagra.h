@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,6 @@ struct IVFPQBuildCagraConfig {
     /// the algorithm always allocates the minimum amount of memory required to
     /// store the given number of records. Set this flag to `true` if you prefer
     /// to use as little GPU memory for the database as possible.
-
     bool conservative_memory_allocation = false;
 };
 
@@ -177,6 +176,9 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
     std::shared_ptr<IVFPQSearchCagraConfig> ivf_pq_search_params{nullptr};
     float refine_rate = 2.0f;
     bool store_dataset = true;
+
+    /// Whether to use MST optimization to guarantee graph connectivity.
+    bool guarantee_connectivity = false;
 };
 
 enum class search_algo {
