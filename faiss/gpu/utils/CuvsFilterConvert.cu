@@ -32,14 +32,7 @@
 
 namespace faiss::gpu {
 
-/**
- * @brief CUDA kernel to set a range of bits in a bitset to true
- *
- * @param bitset_data Pointer to the bitset data
- * @param imin Starting index
- * @param imax Ending index
- * @param n_elements_to_set Number of elements to set
- */
+/// CUDA kernel to set a range of bits in a bitset to true
 template <typename bitset_t>
 RAFT_KERNEL set_range_kernel(
         bitset_t* bitset_data,
@@ -74,12 +67,6 @@ RAFT_KERNEL set_range_kernel(
     }
 }
 
-/**
- * @brief Convert a Faiss IDSelectorRange to a cuvs::core::bitset_view
- *
- * @param selector The Faiss IDSelectorRange to convert
- * @param bitset The cuvs::core::bitset_view to store the result
- */
 void convert_to_bitset_range(
         raft::resources const& res,
         const faiss::IDSelectorRange& selector,
@@ -117,12 +104,6 @@ void convert_to_bitset_range(
     }
 }
 
-/**
- * @brief Convert a Faiss IDSelectorRange to a cuvs::core::bitset_view
- *
- * @param selector The Faiss IDSelectorRange to convert
- * @param bitset The cuvs::core::bitset_view to store the result
- */
 void convert_to_bitset_array(
         raft::resources const& res,
         const faiss::IDSelectorArray& selector,
@@ -215,14 +196,6 @@ void convert_to_bitset_bruteforce(
     raft::resource::sync_stream(res);
 }
 
-/**
- * @brief Convert a Faiss IDSelector to a cuvs::core::bitset_view
- *
- * @param selector The Faiss IDSelector to convert
- * @param bitset The cuvs::core::bitset_view to store the result
- * @param num_threads Number of threads to use for the conversion. If 0, the
- * number of threads is set to the number of available threads.
- */
 void convert_to_bitset(
         faiss::gpu::GpuResources* res,
         const faiss::IDSelector& selector,

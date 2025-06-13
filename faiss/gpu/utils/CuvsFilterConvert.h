@@ -27,15 +27,12 @@
 
 #pragma GCC visibility push(default)
 namespace faiss::gpu {
-/**
- * @brief Convert a Faiss IDSelector to a cuvs::core::bitset_view
- *
- * @param res The GpuResources object to use for the conversion
- * @param selector The Faiss IDSelector to convert
- * @param bitset The cuvs::core::bitset_view to store the result
- * @param num_threads Number of threads to use for the conversion. If 0, the
- * number of threads is set to the number of available threads.
- */
+/// Convert a Faiss IDSelector to a cuvs::core::bitset_view
+/// @param res The GpuResources object to use for the conversion
+/// @param selector The Faiss IDSelector to convert
+/// @param bitset The cuvs::core::bitset_view to store the result
+/// @param num_threads Number of threads to use for the conversion. If 0, the
+/// number of threads is set to the number of available threads.
 void convert_to_bitset(
         faiss::gpu::GpuResources* res,
         const faiss::IDSelector& selector,
