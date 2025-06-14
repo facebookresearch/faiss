@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,8 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
                 INDICES_64_BIT,
                 ivf_pq_params,
                 ivf_pq_search_params,
-                cagraConfig_.refine_rate);
+                cagraConfig_.refine_rate,
+                cagraConfig_.guarantee_connectivity);
         std::get<std::shared_ptr<CuvsCagra<float>>>(index_)->train(
                 n, static_cast<const float*>(x));
     } else if (numeric_type == NumericType::Float16) {
@@ -119,7 +120,8 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
                 INDICES_64_BIT,
                 ivf_pq_params,
                 ivf_pq_search_params,
-                cagraConfig_.refine_rate);
+                cagraConfig_.refine_rate,
+                cagraConfig_.guarantee_connectivity);
         std::get<std::shared_ptr<CuvsCagra<half>>>(index_)->train(
                 n, static_cast<const half*>(x));
     } else {

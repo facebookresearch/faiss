@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ class CuvsCagra {
                     std::nullopt,
             std::optional<cuvs::neighbors::ivf_pq::search_params>
                     ivf_pq_search_params = std::nullopt,
-            float refine_rate = 2.0f);
+            float refine_rate = 2.0f,
+            bool guarantee_connectivity = false);
 
     CuvsCagra(
             GpuResources* resources,
@@ -142,6 +143,9 @@ class CuvsCagra {
 
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
+
+    /// Parameter to use MST optimization to guarantee graph connectivity
+    bool guarantee_connectivity_ = false;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
