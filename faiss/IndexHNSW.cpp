@@ -19,6 +19,7 @@
 #include <random>
 
 #include <cstdint>
+#include "faiss/Index.h"
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
@@ -893,15 +894,31 @@ IndexHNSWCagra::IndexHNSWCagra() {
     is_trained = true;
 }
 
-IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
-        : IndexHNSW(
-                  (metric == METRIC_L2)
-                          ? static_cast<IndexFlat*>(new IndexFlatL2(d))
-                          : static_cast<IndexFlat*>(new IndexFlatIP(d)),
-                  M) {
+IndexHNSWCagra::IndexHNSWCagra(
+        int d,
+        int M,
+        MetricType metric,
+        NumericType numeric_type)
+        : IndexHNSW(d, M, metric) {
     FAISS_THROW_IF_NOT_MSG(
             ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
             "unsupported metric type for IndexHNSWCagra");
+    numeric_type_ = numeric_type;
+    if (numeric_type == NumericType::Float32) {
+        // Use flat storage with full precision for fp32
+        storage = (metric == METRIC_L2)
+                ? static_cast<Index*>(new IndexFlatL2(d))
+                : static_cast<Index*>(new IndexFlatIP(d));
+    } else if (numeric_type == NumericType::Float16) {
+        auto qtype = ScalarQuantizer::QT_fp16;
+        storage = new IndexScalarQuantizer(d, qtype, metric);
+    } else {
+        FAISS_THROW_MSG(
+                "Unsupported numeric_type: only F16 and F32 are supported for IndexHNSWCagra");
+    }
+
+    metric_arg = storage->metric_arg;
+
     own_fields = true;
     is_trained = true;
     init_level0 = true;
@@ -965,6 +982,14 @@ void IndexHNSWCagra::search(
                 1, // search_type
                 params);
     }
+}
+
+faiss::NumericType IndexHNSWCagra::get_numeric_type() const {
+    return numeric_type_;
+}
+
+void IndexHNSWCagra::set_numeric_type(faiss::NumericType numeric_type) {
+    numeric_type_ = numeric_type;
 }
 
 } // namespace faiss

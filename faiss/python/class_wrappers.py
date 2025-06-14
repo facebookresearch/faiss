@@ -211,7 +211,7 @@ def handle_NSG(the_class):
 
 def handle_Index(the_class):
 
-    def replacement_add(self, x):
+    def replacement_add(self, x, numeric_type = faiss.Float32):
         """Adds vectors to the index.
         The index must be trained before vectors can be added to it.
         The vectors are implicitly numbered in sequence. When `n` vectors are
@@ -226,7 +226,10 @@ def handle_Index(the_class):
 
         n, d = x.shape
         assert d == self.d
-        x = np.ascontiguousarray(x, dtype='float32')
+        if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
+        else:
+            x = np.ascontiguousarray(x, dtype='float16')
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
@@ -282,7 +285,7 @@ def handle_Index(the_class):
         self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
         return labels
 
-    def replacement_train(self, x):
+    def replacement_train(self, x, numeric_type = faiss.Float32):
         """Trains the index on a representative set of vectors.
         The index must be trained before vectors can be added to it.
 
@@ -294,10 +297,15 @@ def handle_Index(the_class):
         """
         n, d = x.shape
         assert d == self.d
-        x = np.ascontiguousarray(x, dtype='float32')
-        self.train_c(n, swig_ptr(x))
+        if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
+            self.train_c(n, swig_ptr(x))
+        else:
+            x = np.ascontiguousarray(x, dtype='float16')
+            self.train_c(n, swig_ptr(x), faiss.Float16)
+        
 
-    def replacement_search(self, x, k, *, params=None, D=None, I=None):
+    def replacement_search(self, x, k, *, params=None, D=None, I=None, numeric_type = faiss.Float32):
         """Find the k nearest neighbors of the set of vectors x in the index.
 
         Parameters
@@ -325,7 +333,10 @@ def handle_Index(the_class):
         """
 
         n, d = x.shape
-        x = np.ascontiguousarray(x, dtype='float32')
+        if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
+        else:
+            x = np.ascontiguousarray(x, dtype='float16')
         assert d == self.d
 
         assert k > 0
@@ -340,7 +351,10 @@ def handle_Index(the_class):
         else:
             assert I.shape == (n, k)
 
-        self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
+        if numeric_type == faiss.Float32:
+            self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
+        else:
+            self.search_c(n, swig_ptr(x), faiss.Float16, k, swig_ptr(D), swig_ptr(I), params)
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):

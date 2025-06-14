@@ -10,6 +10,7 @@
 #pragma once
 
 #include <vector>
+#include "faiss/Index.h"
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexPQ.h>
@@ -170,7 +171,11 @@ struct IndexHNSW2Level : IndexHNSW {
 
 struct IndexHNSWCagra : IndexHNSW {
     IndexHNSWCagra();
-    IndexHNSWCagra(int d, int M, MetricType metric = METRIC_L2);
+    IndexHNSWCagra(
+            int d,
+            int M,
+            MetricType metric = METRIC_L2,
+            NumericType numeric_type = NumericType::Float32);
 
     /// When set to true, the index is immutable.
     /// This option is used to copy the knn graph from GpuIndexCagra
@@ -195,6 +200,10 @@ struct IndexHNSWCagra : IndexHNSW {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+
+    faiss::NumericType get_numeric_type() const;
+    void set_numeric_type(faiss::NumericType numeric_type);
+    NumericType numeric_type_;
 };
 
 } // namespace faiss
