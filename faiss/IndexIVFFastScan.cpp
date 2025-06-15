@@ -819,7 +819,7 @@ void IndexIVFFastScan::search_implem_1(
                     heap_ids,
                     scaler);
             nlist_visited++;
-            ndis++;
+            ndis += ls;
         }
         heap_reorder<C>(k, heap_dis, heap_ids);
     }
@@ -930,7 +930,7 @@ void IndexIVFFastScan::search_implem_10(
 
     bool single_LUT = !lookup_table_is_3d();
 
-    size_t ndis = 0;
+    size_t ndis = 0, nlist_visited = 0;
     int qmap1[1];
 
     handler.q_map = qmap1;
@@ -978,13 +978,14 @@ void IndexIVFFastScan::search_implem_10(
                     handler,
                     scaler);
 
-            ndis++;
+            ndis += ls;
+            nlist_visited++;
         }
     }
 
     handler.end();
     *ndis_out = ndis;
-    *nlist_out = nlist;
+    *nlist_out = nlist_visited;
 }
 
 void IndexIVFFastScan::search_implem_12(
@@ -1044,7 +1045,7 @@ void IndexIVFFastScan::search_implem_12(
         handler.dbias = tmp_bias.data();
     }
 
-    size_t ndis = 0;
+    size_t ndis = 0, nlist_visited = 0;
 
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
@@ -1066,6 +1067,7 @@ void IndexIVFFastScan::search_implem_12(
             i0 = i1;
             continue;
         }
+        nlist_visited++;
 
         // re-organize LUTs and biases into the right order
         int nc = i1 - i0;
@@ -1124,7 +1126,7 @@ void IndexIVFFastScan::search_implem_12(
     IVFFastScan_stats.t_scan += t_scan;
 
     *ndis_out = ndis;
-    *nlist_out = nlist;
+    *nlist_out = nlist_visited;
 }
 
 void IndexIVFFastScan::search_implem_14(

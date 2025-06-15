@@ -221,7 +221,6 @@ FlatCodesDistanceComputer* IndexAdditiveQuantizer::
                     return new AQDistanceComputerLUT<
                             false,
                             AdditiveQuantizer::ST_norm_cqint8>(*this);
-                    break;
 #undef DISPATCH
                 default:
                     FAISS_THROW_FMT(
