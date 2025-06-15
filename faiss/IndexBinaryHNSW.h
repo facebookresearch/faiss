@@ -29,7 +29,7 @@ struct IndexBinaryHNSW : IndexBinary {
     IndexBinary* storage;
 
     // When set to false, level 0 in the knn graph is not initialized.
-    // This option is used by GpuIndexCagra::copyTo(IndexBinaryHNSW*)
+    // This option is used by GpuIndexBinaryCagra::copyTo(IndexBinaryHNSW*)
     // as level 0 knn graph is copied over from the index built by
     // GpuIndexBinaryCagra.
     bool init_level0 = true;
@@ -37,7 +37,7 @@ struct IndexBinaryHNSW : IndexBinary {
     // When set to true, all neighbors in level 0 are filled up
     // to the maximum size allowed (2 * M). This option is used by
     // IndexBinaryHHNSW to create a full base layer graph that is
-    // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryCagra*) is called.
+    // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryHNSW*) is called.
     bool keep_max_size_level0 = false;
 
     explicit IndexBinaryHNSW();
