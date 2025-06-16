@@ -243,14 +243,18 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_CUVS)
   list(APPEND FAISS_GPU_HEADERS
+          GpuIndexBinaryCagra.h
           GpuIndexCagra.h
+          impl/BinaryCuvsCagra.cuh
           impl/CuvsCagra.cuh
           impl/CuvsFlatIndex.cuh
           impl/CuvsIVFFlat.cuh
           impl/CuvsIVFPQ.cuh
           utils/CuvsUtils.h)
   list(APPEND FAISS_GPU_SRC
+          GpuIndexBinaryCagra.cu
           GpuIndexCagra.cu
+          impl/BinaryCuvsCagra.cu
           impl/CuvsCagra.cu
           impl/CuvsFlatIndex.cu
           impl/CuvsIVFFlat.cu
