@@ -5,6 +5,7 @@
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includes>
     <includes refid="GpuIndexIVFPQ_8h" local="no">faiss/gpu/GpuIndexIVFPQ.h</includes>
+    <includedby refid="GpuIndexBinaryCagra_8h" local="no">faiss/gpu/GpuIndexBinaryCagra.h</includedby>
     <incdepgraph>
       <node id="7">
         <label>faiss/Clustering.h</label>
@@ -336,6 +337,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/gpu/GpuIndexBinaryCagra.h</label>
+        <link refid="GpuIndexBinaryCagra_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" prot="public">faiss::gpu::IVFPQBuildCagraConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" prot="public">faiss::gpu::IVFPQSearchCagraConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexCagraConfig" prot="public">faiss::gpu::GpuIndexCagraConfig</innerclass>

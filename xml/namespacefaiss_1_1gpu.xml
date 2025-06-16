@@ -13,6 +13,7 @@
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" prot="public">faiss::gpu::GpuIcmEncoder</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" prot="public">faiss::gpu::GpuIcmEncoderFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndex" prot="public">faiss::gpu::GpuIndex</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra" prot="public">faiss::gpu::GpuIndexBinaryCagra</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public">faiss::gpu::GpuIndexBinaryFlat</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexCagra" prot="public">faiss::gpu::GpuIndexCagra</innerclass>

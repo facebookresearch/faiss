@@ -490,6 +490,7 @@
         <argsstring>(idx_t n, const uint8_t *x)</argsstring>
         <name>train</name>
         <qualifiedname>faiss::IndexBinary::train</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a495d6b525bb80241efd78dd1e020cbed">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a7de4bb8e82f0dae621c87b44cfb64404">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a4b4b1ba42e6af7c30ccbaf0fc0f38034">train</reimplementedby>

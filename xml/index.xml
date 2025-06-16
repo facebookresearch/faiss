@@ -853,6 +853,46 @@
     <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
   </compound>
+  <compound refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra" kind="struct"><name>faiss::gpu::GpuIndexBinaryCagra</name>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ae7e1d29e5f39bd801140172b300f3ff8" kind="variable"><name>resources_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ac40092ea58d563632bacecf2ea5707dd" kind="variable"><name>cagraConfig_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ad629b0efe3bd05a36ff1da9a8e9ec4fa" kind="variable"><name>index_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a31b305edc1258b0edb714e86226d1b79" kind="function"><name>GpuIndexBinaryCagra</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1afd13ac3d5a07a333ecd779ba426467ed" kind="function"><name>~GpuIndexBinaryCagra</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1acf2956c7c90ffbc838615dcbaeceab08" kind="function"><name>getDevice</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ae3196a2628b55d29624bd9e48a21d479" kind="function"><name>getResources</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a8a49bf5b326d594e7e44cd7531eac5bf" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a495d6b525bb80241efd78dd1e020cbed" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a7d398cdd28b84546c4eebf56a9256dab" kind="function"><name>copyFrom</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a09558f398ffd237a147416ed4b2f816f" kind="function"><name>copyTo</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a9a479a77b968c79c83665ade6a7f5f1c" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ac5cacd21aee427a1f603bac4ca8cd276" kind="function"><name>get_knngraph</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a1a37e481a5405e222d8b55196f24f743" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a7d8f56aff2b732ce74fbc0f09af45e63" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a5ea7dee38e40f66b86d892bab2b6b80e" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ad4938acd1d31afd49c81fbb5211121c3" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" kind="function"><name>add_sa_codes</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a33fb89fd722f072ba9b9cd633309a878" kind="function"><name>searchFromCpuPaged_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a7b7674f8b7dd7e7e724861a77ac39f25" kind="function"><name>searchNonPaged_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a5d23bf6a7ae58efc6bd3a94ec51859ba" kind="function"><name>searchImpl_</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" kind="variable"><name>metric_type</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" kind="class"><name>faiss::gpu::GpuIndexBinaryFlat</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1aa5486bb18c4dd2bf2acdb1324b31940b" kind="variable"><name>resources_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a280f27e2529d4ce6e08520c7687254c3" kind="variable"><name>binaryFlatConfig_</name></member>
@@ -2375,6 +2415,8 @@
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a85919341ea47e6dec7968e29d09cbb1e" kind="variable"><name>hnsw</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a66ef25000227ce004b285cfa39dadb24" kind="variable"><name>own_fields</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -9753,17 +9795,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d142" kind="namespace"><name>faiss::@142</name>
+  <compound refid="namespacefaiss_1_1_0d143" kind="namespace"><name>faiss::@143</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d151" kind="namespace"><name>faiss::@151</name>
+  <compound refid="namespacefaiss_1_1_0d152" kind="namespace"><name>faiss::@152</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d169" kind="namespace"><name>faiss::@169</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d171" kind="namespace"><name>faiss::@171</name>
+  <compound refid="namespacefaiss_1_1_0d170" kind="namespace"><name>faiss::@170</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d172" kind="namespace"><name>faiss::@172</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d173" kind="namespace"><name>faiss::@173</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d174" kind="namespace"><name>faiss::@174</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -10036,6 +10078,8 @@
   </compound>
   <compound refid="GpuIndex_8h" kind="file"><name>GpuIndex.h</name>
   </compound>
+  <compound refid="GpuIndexBinaryCagra_8h" kind="file"><name>GpuIndexBinaryCagra.h</name>
+  </compound>
   <compound refid="GpuIndexBinaryFlat_8h" kind="file"><name>GpuIndexBinaryFlat.h</name>
   </compound>
   <compound refid="GpuIndexCagra_8h" kind="file"><name>GpuIndexCagra.h</name>
@@ -10053,6 +10097,8 @@
   <compound refid="GpuIndicesOptions_8h" kind="file"><name>GpuIndicesOptions.h</name>
   </compound>
   <compound refid="GpuResources_8h" kind="file"><name>GpuResources.h</name>
+  </compound>
+  <compound refid="BinaryCuvsCagra_8cuh" kind="file"><name>BinaryCuvsCagra.cuh</name>
   </compound>
   <compound refid="BinaryDistance_8cuh" kind="file"><name>BinaryDistance.cuh</name>
   </compound>

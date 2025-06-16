@@ -8,6 +8,7 @@
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryHash" prot="public" virt="non-virtual">faiss::IndexBinaryHash</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryIVF" prot="public" virt="non-virtual">faiss::IndexBinaryIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryMultiHash" prot="public" virt="non-virtual">faiss::IndexBinaryMultiHash</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryCagra</derivedcompoundref>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryFlat</derivedcompoundref>
     <includes refid="IndexBinary_8h" local="no">IndexBinary.h</includes>
     <sectiondef kind="public-type">
@@ -183,6 +184,7 @@
         <argsstring>(idx_t n, const uint8_t *x)</argsstring>
         <name>train</name>
         <qualifiedname>faiss::IndexBinary::train</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a495d6b525bb80241efd78dd1e020cbed">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a7de4bb8e82f0dae621c87b44cfb64404">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a4b4b1ba42e6af7c30ccbaf0fc0f38034">train</reimplementedby>
@@ -228,6 +230,7 @@
         <name>add</name>
         <qualifiedname>faiss::IndexBinary::add</qualifiedname>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a64b3ec0e12450654de038fd0abfbb367">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a8a49bf5b326d594e7e44cd7531eac5bf">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1ac4f01196a335a9b2433e5c16396c1fd7">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a2490dc0e115b19195372488d0b3163d0">add</reimplementedby>
@@ -498,6 +501,7 @@
         <argsstring>()=0</argsstring>
         <name>reset</name>
         <qualifiedname>faiss::IndexBinary::reset</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a9a479a77b968c79c83665ade6a7f5f1c">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1ac8f14dd3257963082fa638d24df244d6">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a487be675843e3146ee15bef3ee004a85">reset</reimplementedby>
@@ -826,6 +830,12 @@
         </childnode>
       </node>
       <node id="8">
+        <label>faiss::gpu::GpuIndexBinaryCagra</label>
+        <link refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
         <label>faiss::gpu::GpuIndexBinaryFlat</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat"/>
         <childnode refid="1" relation="public-inheritance">
