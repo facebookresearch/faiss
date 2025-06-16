@@ -16,7 +16,6 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
-#include <faiss/impl/io_macros.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/invlists/InvertedListsIOHook.h>

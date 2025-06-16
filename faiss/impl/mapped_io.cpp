@@ -6,15 +6,12 @@
  */
 
 #include <stdio.h>
-#include <string.h>
 
 #if defined(__linux__) || defined(__FreeBSD__)
 
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #elif defined(_WIN32)
 
