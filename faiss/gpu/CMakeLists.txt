@@ -26,10 +26,13 @@ set(FAISS_GPU_SRC
   GpuIndex.cu
   GpuIndexBinaryFlat.cu
   GpuIndexFlat.cu
+  GpuIndexIMI.cu
+  GpuIndexIMIPQ.cu
   GpuIndexIVF.cu
   GpuIndexIVFFlat.cu
   GpuIndexIVFPQ.cu
   GpuIndexIVFScalarQuantizer.cu
+  GpuMultiIndex2.cu
   GpuResources.cpp
   StandardGpuResources.cpp
   impl/BinaryDistance.cu
@@ -37,6 +40,9 @@ set(FAISS_GPU_SRC
   impl/BroadcastSum.cu
   impl/Distance.cu
   impl/FlatIndex.cu
+  impl/IMIAppend.cu
+  impl/IMIBase.cu
+  impl/IMIPQ.cu
   impl/IndexUtils.cu
   impl/IVFAppend.cu
   impl/IVFBase.cu
@@ -50,12 +56,15 @@ set(FAISS_GPU_SRC
   impl/InterleavedCodes.cpp
   impl/L2Norm.cu
   impl/L2Select.cu
+  impl/MultiIndex2.cu
   impl/PQScanMultiPassPrecomputed.cu
   impl/RemapIndices.cpp
   impl/VectorResidual.cu
   impl/IcmEncoder.cu
   utils/BlockSelectFloat.cu
   utils/DeviceUtils.cu
+  utils/FixedDeviceMemory.cpp
+  utils/MultiSequence.cu
   utils/StackDeviceMemory.cpp
   utils/Timer.cpp
   utils/WarpSelectFloat.cu
@@ -93,11 +102,14 @@ set(FAISS_GPU_HEADERS
   GpuIndex.h
   GpuIndexBinaryFlat.h
   GpuIndexFlat.h
+  GpuIndexIMI.h
+  GpuIndexIMIPQ.h
   GpuIndexIVF.h
   GpuIndexIVFFlat.h
   GpuIndexIVFPQ.h
   GpuIndexIVFScalarQuantizer.h
   GpuIndicesOptions.h
+  GpuMultiIndex2.h
   GpuResources.h
   StandardGpuResources.h
   impl/BinaryDistance.cuh
@@ -106,6 +118,9 @@ set(FAISS_GPU_HEADERS
   impl/Distance.cuh
   impl/DistanceUtils.cuh
   impl/FlatIndex.cuh
+  impl/IMIAppend.cuh
+  impl/IMIBase.cuh
+  impl/IMIPQ.cuh
   impl/GeneralDistance.cuh
   impl/GpuScalarQuantizer.cuh
   impl/IndexUtils.h
@@ -119,6 +134,7 @@ set(FAISS_GPU_HEADERS
   impl/InterleavedCodes.h
   impl/L2Norm.cuh
   impl/L2Select.cuh
+  impl/MultiIndex2.cuh
   impl/PQCodeDistances-inl.cuh
   impl/PQCodeDistances.cuh
   impl/PQCodeLoad.cuh
@@ -138,6 +154,7 @@ set(FAISS_GPU_HEADERS
   utils/DeviceTensor.cuh
   utils/DeviceUtils.h
   utils/DeviceVector.cuh
+  utils/FixedDeviceMemory.h
   utils/Float16.cuh
   utils/HostTensor-inl.cuh
   utils/HostTensor.cuh
@@ -149,6 +166,8 @@ set(FAISS_GPU_HEADERS
   utils/MergeNetworkBlock.cuh
   utils/MergeNetworkUtils.cuh
   utils/MergeNetworkWarp.cuh
+  utils/MultiSequence.cuh
+  utils/MultiSequence-inl.cuh
   utils/NoTypeTensor.cuh
   utils/Pair.cuh
   utils/PtxUtils.cuh

@@ -95,6 +95,7 @@ if(FAISS_ENABLE_GPU)
   else()
     add_subdirectory(faiss/gpu)
   endif()
+  add_subdirectory(faiss/gpu/demos)
 endif()
 
 if(FAISS_ENABLE_PYTHON)
