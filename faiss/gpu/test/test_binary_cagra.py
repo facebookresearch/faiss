@@ -55,8 +55,9 @@ class TestComputeGT(unittest.TestCase):
         self.do_compute_GT()
 
 
-@unittest.skip(
-    "Disabled until Faiss supports cuVS 12.8 in CI.")
+@unittest.skipIf(
+    "CUVS" not in faiss.get_compile_options(),
+    "only if cuVS is compiled in")
 class TestInterop(unittest.TestCase):
 
     def do_interop(self):
