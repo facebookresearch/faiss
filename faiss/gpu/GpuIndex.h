@@ -282,5 +282,7 @@ bool isGpuIndex(faiss::Index* index);
 /// Does the given CPU index instance have a corresponding GPU implementation?
 bool isGpuIndexImplemented(faiss::Index* index);
 
+int struct_packing_test_cuda(int q);
+
 } // namespace gpu
 } // namespace faiss
