@@ -290,6 +290,32 @@
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
     <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912f" prot="public" static="no" strong="no">
+        <type></type>
+        <name>NumericType</name>
+        <qualifiedname>faiss::NumericType</qualifiedname>
+        <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fac5c3cac87aecdf173850923b29f8b7fa" prot="public">
+          <name>Float32</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa5f19b796a0b240566043d85e02d89916" prot="public">
+          <name>Float16</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="61" column="1" bodyfile="faiss/Index.h" bodystart="61" bodyend="64"/>
+      </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1afd12191c638da74760ff397cf319752c" prot="public" static="no" strong="no">
         <type></type>
         <name>MetricType</name>
@@ -3326,6 +3352,24 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="658" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="658" bodyend="685"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4f255b2339b7fb86093b14e279b27fe1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::get_numeric_type_size</definition>
+        <argsstring>(NumericType numeric_type)</argsstring>
+        <name>get_numeric_type_size</name>
+        <qualifiedname>faiss::get_numeric_type_size</qualifiedname>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="66" column="15" bodyfile="faiss/Index.h" bodystart="66" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

@@ -75,6 +75,8 @@
         </childnode>
         <childnode refid="56" relation="include">
         </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
@@ -102,6 +104,8 @@
         <childnode refid="70" relation="include">
         </childnode>
         <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="73" relation="include">
         </childnode>
