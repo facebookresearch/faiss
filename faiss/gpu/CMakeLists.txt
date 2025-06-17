@@ -250,6 +250,7 @@ if(FAISS_ENABLE_CUVS)
           impl/CuvsFlatIndex.cuh
           impl/CuvsIVFFlat.cuh
           impl/CuvsIVFPQ.cuh
+          utils/CuvsFilterConvert.h
           utils/CuvsUtils.h)
   list(APPEND FAISS_GPU_SRC
           GpuIndexBinaryCagra.cu
@@ -259,6 +260,7 @@ if(FAISS_ENABLE_CUVS)
           impl/CuvsFlatIndex.cu
           impl/CuvsIVFFlat.cu
           impl/CuvsIVFPQ.cu
+          utils/CuvsFilterConvert.cu
           utils/CuvsUtils.cu)
 endif()
 
@@ -299,6 +301,7 @@ if(FAISS_ENABLE_CUVS)
     impl/CuvsFlatIndex.cu
     impl/CuvsIVFFlat.cu
     impl/CuvsIVFPQ.cu
+    utils/CuvsFilterConvert.cu
     utils/CuvsUtils.cu
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
