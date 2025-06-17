@@ -84,7 +84,7 @@
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="16"><highlight class="comment">///<sp/>Utility<sp/>function<sp/>to<sp/>translate<sp/>(list<sp/>id,<sp/>offset)<sp/>to<sp/>a<sp/>user<sp/>index<sp/>on</highlight></codeline>
 <codeline lineno="17"><highlight class="comment">///<sp/>the<sp/>CPU.<sp/>In<sp/>a<sp/>cpp<sp/>in<sp/>order<sp/>to<sp/>use<sp/>OpenMP.</highlight></codeline>
-<codeline lineno="18"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ivfOffsetToUserIndex(</highlight></codeline>
+<codeline lineno="18" refid="namespacefaiss_1_1gpu_1a515c8e59be866b46dc43041c138022f7" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a515c8e59be866b46dc43041c138022f7" kindref="member">ivfOffsetToUserIndex</ref>(</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>indices,</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>numLists,</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>queries,</highlight></codeline>

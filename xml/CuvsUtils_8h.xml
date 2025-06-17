@@ -182,15 +182,15 @@
 <codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="61"><highlight class="comment">///<sp/>Identify<sp/>matrix<sp/>rows<sp/>containing<sp/>non<sp/>NaN<sp/>values.<sp/>validRows[i]<sp/>is<sp/>false<sp/>if<sp/>row</highlight></codeline>
 <codeline lineno="62"><highlight class="comment">///<sp/>i<sp/>contains<sp/>a<sp/>NaN<sp/>value<sp/>and<sp/>true<sp/>otherwise.</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validRowIndices(</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline lineno="63" refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" kindref="member">validRowIndices</ref>(</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal">*<sp/>validRows);</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="68"><highlight class="comment">///<sp/>Filter<sp/>out<sp/>matrix<sp/>rows<sp/>containing<sp/>NaN<sp/>values.<sp/>The<sp/>vectors<sp/>and<sp/>indices<sp/>are</highlight></codeline>
 <codeline lineno="69"><highlight class="comment">///<sp/>updated<sp/>in-place.</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"></highlight><highlight class="normal"><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>inplaceGatherFilteredRows(</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline lineno="70" refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/><ref refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" kindref="member">inplaceGatherFilteredRows</ref>(</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>

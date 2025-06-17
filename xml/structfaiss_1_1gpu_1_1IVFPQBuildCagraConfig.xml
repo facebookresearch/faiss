@@ -89,7 +89,7 @@
         <location file="faiss/gpu/GpuIndexCagra.h" line="86" column="14" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="86" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a0c4f52f09b36894948535a41f2dee860" prot="public" static="no" mutable="no">
-        <type>codebook_gen</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" kindref="member">codebook_gen</ref></type>
         <definition>codebook_gen faiss::gpu::IVFPQBuildCagraConfig::codebook_kind</definition>
         <argsstring></argsstring>
         <name>codebook_kind</name>

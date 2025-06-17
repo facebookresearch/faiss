@@ -201,7 +201,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>For MemorySpace::Temporary, how much space is immediately available without cudaMalloc allocation? </para>
+<para>For <ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a3cbdb1d642f55fc4c351b62f6f259f76" kindref="member">MemorySpace::Temporary</ref>, how much space is immediately available without cudaMalloc allocation? </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

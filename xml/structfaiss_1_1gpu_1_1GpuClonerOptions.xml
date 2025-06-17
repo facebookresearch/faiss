@@ -7,12 +7,12 @@
     <includes refid="GpuClonerOptions_8h" local="no">GpuClonerOptions.h</includes>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" static="no" mutable="no">
-        <type>IndicesOptions</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">IndicesOptions</ref></type>
         <definition>IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
         <qualifiedname>faiss::gpu::GpuClonerOptions::indicesOptions</qualifiedname>
-        <initializer>= INDICES_64_BIT</initializer>
+        <initializer>= <ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" kindref="member">INDICES_64_BIT</ref></initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

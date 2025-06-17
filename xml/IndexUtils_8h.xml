@@ -80,7 +80,7 @@
 <codeline lineno="17"><highlight class="comment">///<sp/>Returns<sp/>the<sp/>maximum<sp/>k-selection<sp/>value<sp/>supported<sp/>based<sp/>on<sp/>the<sp/>CUDA<sp/>SDK<sp/>that</highlight></codeline>
 <codeline lineno="18"><highlight class="comment">///<sp/>we<sp/>were<sp/>compiled<sp/>with.<sp/>.cu<sp/>files<sp/>can<sp/>use<sp/>DeviceDefs.cuh,<sp/>but<sp/>this<sp/>is<sp/>for</highlight></codeline>
 <codeline lineno="19"><highlight class="comment">///<sp/>non-CUDA<sp/>files</highlight></codeline>
-<codeline lineno="20"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getMaxKSelection();</highlight></codeline>
+<codeline lineno="20" refid="namespacefaiss_1_1gpu_1af43e39c84e5b12e107a71dfa5d840e60" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1af43e39c84e5b12e107a71dfa5d840e60" kindref="member">getMaxKSelection</ref>();</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Validate<sp/>the<sp/>k<sp/>parameter<sp/>for<sp/>search</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>validateKSelect(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k);</highlight></codeline>

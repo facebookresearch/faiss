@@ -2110,11 +2110,11 @@
           <declname>pqCentroidData</declname>
         </param>
         <param>
-          <type>IndicesOptions</type>
+          <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">IndicesOptions</ref></type>
           <declname>indicesOptions</declname>
         </param>
         <param>
-          <type>MemorySpace</type>
+          <type><ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67" kindref="member">MemorySpace</ref></type>
           <declname>space</declname>
         </param>
         <briefdescription>

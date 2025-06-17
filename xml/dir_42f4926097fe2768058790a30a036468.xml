@@ -8,6 +8,7 @@
     <innerfile refid="Comparators_8cuh">Comparators.cuh</innerfile>
     <innerfile refid="ConversionOperators_8cuh">ConversionOperators.cuh</innerfile>
     <innerfile refid="CopyUtils_8cuh">CopyUtils.cuh</innerfile>
+    <innerfile refid="CuvsFilterConvert_8h">CuvsFilterConvert.h</innerfile>
     <innerfile refid="CuvsUtils_8h">CuvsUtils.h</innerfile>
     <innerfile refid="DeviceDefs_8cuh">DeviceDefs.cuh</innerfile>
     <innerfile refid="DeviceTensor-inl_8cuh">DeviceTensor-inl.cuh</innerfile>

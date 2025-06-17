@@ -9795,17 +9795,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d143" kind="namespace"><name>faiss::@143</name>
+  <compound refid="namespacefaiss_1_1_0d144" kind="namespace"><name>faiss::@144</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d152" kind="namespace"><name>faiss::@152</name>
+  <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d170" kind="namespace"><name>faiss::@170</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d172" kind="namespace"><name>faiss::@172</name>
+  <compound refid="namespacefaiss_1_1_0d171" kind="namespace"><name>faiss::@171</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d173" kind="namespace"><name>faiss::@173</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d174" kind="namespace"><name>faiss::@174</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d175" kind="namespace"><name>faiss::@175</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -9861,115 +9861,116 @@
     <member refid="simdlib__neon_8h_1ad44a584d601e8deadd14e5406c1f15b0" kind="function"><name>vshrq</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1gpu" kind="namespace"><name>faiss::gpu</name>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>
-    <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268af656bbf613964dcf710b771b0918ab30" kind="enumvalue"><name>BF16</name></member>
-    <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" kind="enum"><name>IndicesDataType</name></member>
-    <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" kind="enumvalue"><name>I64</name></member>
-    <member refid="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" kind="enumvalue"><name>I32</name></member>
-    <member refid="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992ac" kind="enum"><name>graph_build_algo</name></member>
-    <member refid="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992aca024a07775560847f41dcb5aa52c37418" kind="enumvalue"><name>IVF_PQ</name></member>
-    <member refid="GpuIndexCagra_8h_1aa0e933a28e0037517f9678db957992aca5c5827c864a6a539617cb236291f0285" kind="enumvalue"><name>NN_DESCENT</name></member>
-    <member refid="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" kind="enum"><name>codebook_gen</name></member>
-    <member refid="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39a5056773a9c21a05e14106e853dc39c42" kind="enumvalue"><name>PER_SUBSPACE</name></member>
-    <member refid="GpuIndexCagra_8h_1aa3d8d5d9d02d583d49ccb9d2c70e8a39ab4bc06123f1a290656a492b25ebab336" kind="enumvalue"><name>PER_CLUSTER</name></member>
-    <member refid="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02" kind="enum"><name>search_algo</name></member>
-    <member refid="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" kind="enumvalue"><name>SINGLE_CTA</name></member>
-    <member refid="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb" kind="enumvalue"><name>MULTI_CTA</name></member>
-    <member refid="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02a244534a9bc2ff7a11ac470ef0eff013b" kind="enumvalue"><name>MULTI_KERNEL</name></member>
-    <member refid="GpuIndexCagra_8h_1a26fa43c3f1c5f5fef391e79a6ced2c02ae1f2d5134ed2543d38a0de9751cf75d9" kind="enumvalue"><name>AUTO</name></member>
-    <member refid="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821e" kind="enum"><name>hash_mode</name></member>
-    <member refid="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821ea50b7748612b28db487d115f220bb77ab" kind="enumvalue"><name>HASH</name></member>
-    <member refid="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821ea9b9c17e13f0e3dc9860a26e08b59b2a7" kind="enumvalue"><name>SMALL</name></member>
-    <member refid="GpuIndexCagra_8h_1a9b883db6f85c9d03606d01b0fd01821eae1f2d5134ed2543d38a0de9751cf75d9" kind="enumvalue"><name>AUTO</name></member>
-    <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" kind="enum"><name>IndicesOptions</name></member>
-    <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81" kind="enumvalue"><name>INDICES_CPU</name></member>
-    <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c" kind="enumvalue"><name>INDICES_IVF</name></member>
-    <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459ad702a8b1a6bcefaa8d731762e4f88936" kind="enumvalue"><name>INDICES_32_BIT</name></member>
-    <member refid="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" kind="enumvalue"><name>INDICES_64_BIT</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437" kind="enum"><name>AllocType</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a0fcde2e6fdc2c0afd9a35bde9e99a269" kind="enumvalue"><name>Other</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a547b2cb3c7589068effabb0cad9fa907" kind="enumvalue"><name>FlatData</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a0b8e7919f13d089aef4f3bb6fd8420ab" kind="enumvalue"><name>IVFLists</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a65a8f1712a80b76e79e2e36087ece51f" kind="enumvalue"><name>Quantizer</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a73a4afa64cdd0c13b4bc55087eedcc83" kind="enumvalue"><name>QuantizerPrecomputedCodes</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a6da735df4e3424ba16ed6877129cf52b" kind="enumvalue"><name>TemporaryMemoryBuffer</name></member>
-    <member refid="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437adeddb60bbeb3d0fd449dc5473bfbae74" kind="enumvalue"><name>TemporaryMemoryOverflow</name></member>
-    <member refid="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" kind="enum"><name>MemorySpace</name></member>
-    <member refid="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a3cbdb1d642f55fc4c351b62f6f259f76" kind="enumvalue"><name>Temporary</name></member>
-    <member refid="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a18edc24f65a6948be1fd9a2c27df51cc" kind="enumvalue"><name>Device</name></member>
-    <member refid="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67a0ee0f76a9dabbd16f80c5382472af6d6" kind="enumvalue"><name>Unified</name></member>
-    <member refid="GpuCloner_8h_1a5f1fb499181c1e6a2a156ce4b071e54e" kind="function"><name>index_gpu_to_cpu</name></member>
-    <member refid="GpuCloner_8h_1a056f88b1bc8e3bbb2160fe35a67bc28b" kind="function"><name>index_cpu_to_gpu</name></member>
-    <member refid="GpuCloner_8h_1a4d22dc47b90fe147b32189ca1a899533" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
-    <member refid="GpuCloner_8h_1aca74bf972d4db094d43771a2fa5f338f" kind="function"><name>index_binary_gpu_to_cpu</name></member>
-    <member refid="GpuCloner_8h_1aea7a3f16c36dbe87022432f6a704bde5" kind="function"><name>index_binary_cpu_to_gpu</name></member>
-    <member refid="GpuCloner_8h_1ac850eca0a26eea1be04e90bb9a0f03c6" kind="function"><name>index_binary_cpu_to_gpu_multiple</name></member>
-    <member refid="GpuDistance_8h_1abd4378248b25ecbc8f277ce7ce5bfbe5" kind="function"><name>should_use_cuvs</name></member>
-    <member refid="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
-    <member refid="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" kind="function"><name>bfKnn_tiling</name></member>
-    <member refid="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" kind="function"><name>bruteForceKnn</name></member>
-    <member refid="GpuIndex_8h_1a575dd856231662ae3e06b1fd2147a8a1" kind="function"><name>should_use_cuvs</name></member>
-    <member refid="GpuIndex_8h_1ade84aeef8931feb5d026c6f5b02070f1" kind="function"><name>tryCastGpuIndex</name></member>
-    <member refid="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" kind="function"><name>isGpuIndex</name></member>
-    <member refid="GpuIndex_8h_1a9a5eeb989c1d853a58aa65a8af310372" kind="function"><name>isGpuIndexImplemented</name></member>
-    <member refid="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" kind="function"><name>allocTypeToString</name></member>
-    <member refid="GpuResources_8h_1a26325bc7abaa18271fbe76c2bfbf1c64" kind="function"><name>memorySpaceToString</name></member>
-    <member refid="GpuResources_8h_1a899d29db52c5400a548baa534667f1c5" kind="function"><name>makeDevAlloc</name></member>
-    <member refid="GpuResources_8h_1a25ba473fa8b757298399a9898435424a" kind="function"><name>makeTempAlloc</name></member>
-    <member refid="GpuResources_8h_1acc39275d82143dd1663807a635e59cf9" kind="function"><name>makeSpaceAlloc</name></member>
-    <member refid="IndexUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60" kind="function"><name>getMaxKSelection</name></member>
-    <member refid="IndexUtils_8h_1ad2df4aca9cbd2dcfe0a721ce9dbacfae" kind="function"><name>validateKSelect</name></member>
-    <member refid="IndexUtils_8h_1a31363ef889dec438a8d7fb99096900b1" kind="function"><name>validateNProbe</name></member>
-    <member refid="InterleavedCodes_8h_1acda5ee38c3dac001ea72db98c99b74a3" kind="function"><name>unpackNonInterleaved</name></member>
-    <member refid="InterleavedCodes_8h_1a6751f9cbfed27f2fa200b6a46e0300c8" kind="function"><name>unpackInterleaved</name></member>
-    <member refid="InterleavedCodes_8h_1af5fa5a4ee8352024850c45cdceeca8df" kind="function"><name>packNonInterleaved</name></member>
-    <member refid="InterleavedCodes_8h_1ab4c5f626cbe81460dde953a379142215" kind="function"><name>packInterleaved</name></member>
-    <member refid="RemapIndices_8h_1a515c8e59be866b46dc43041c138022f7" kind="function"><name>ivfOffsetToUserIndex</name></member>
-    <member refid="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" kind="function"><name>newTestSeed</name></member>
-    <member refid="TestUtils_8h_1a97a43b6f2ad18a336a6ffb7d182e70e3" kind="function"><name>setTestSeed</name></member>
-    <member refid="TestUtils_8h_1a58c0d857ccd6d5003f38f05969a04d07" kind="function"><name>relativeError</name></member>
-    <member refid="TestUtils_8h_1aa0974d57bcb32037493b2e50f4bc6553" kind="function"><name>randVal</name></member>
-    <member refid="TestUtils_8h_1aeaf4a47f6d9c0f1f21f6841a7dd3cb48" kind="function"><name>randBool</name></member>
-    <member refid="TestUtils_8h_1ab667286f1786526a19d5186f2df348a4" kind="function"><name>randSelect</name></member>
-    <member refid="TestUtils_8h_1aca3d71130e61aebd85684e5c7b443c23" kind="function"><name>randVecs</name></member>
-    <member refid="TestUtils_8h_1a43baee1452f9fc4b3a6e60cfbb4c08e1" kind="function"><name>randBinaryVecs</name></member>
-    <member refid="TestUtils_8h_1ac9eef9d99be03444b5391bc5615d0d08" kind="function"><name>roundToHalf</name></member>
-    <member refid="TestUtils_8h_1af10d6d642f9c390100d2b8a31203918f" kind="function"><name>compareIndices</name></member>
-    <member refid="TestUtils_8h_1aea8cc0513413b621ba2bcc3c5de02663" kind="function"><name>compareIndices</name></member>
-    <member refid="TestUtils_8h_1a44bd51d4a1b6c300dbb9ac2192dce14b" kind="function"><name>compareLists</name></member>
-    <member refid="TestUtils_8h_1a589a55d85f293c1ed9905e5aac936776" kind="function"><name>testIVFEquality</name></member>
-    <member refid="CuvsUtils_8h_1a4ad217abc64c139f6788145db3b4b4b6" kind="function"><name>metricFaissToCuvs</name></member>
-    <member refid="CuvsUtils_8h_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
-    <member refid="CuvsUtils_8h_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>
-    <member refid="DeviceUtils_8h_1a18ddaf734a629ded5ad2a2f235937298" kind="function"><name>getCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1abf0b5b971122c7c024f70a2e690870ea" kind="function"><name>setCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1aaeb2757087735aef66e7ec5ba134530a" kind="function"><name>getNumDevices</name></member>
-    <member refid="DeviceUtils_8h_1aaf3d8c41cb926052dcdf4988a323bc3b" kind="function"><name>profilerStart</name></member>
-    <member refid="DeviceUtils_8h_1aee97ca97dec791446ce147f0fe68db74" kind="function"><name>profilerStop</name></member>
-    <member refid="DeviceUtils_8h_1a9aa4762fd8451c5f9b67072f4a4880e2" kind="function"><name>synchronizeAllDevices</name></member>
-    <member refid="DeviceUtils_8h_1a542b2a71bc3a5e411606a7adca087acc" kind="function"><name>getDeviceProperties</name></member>
-    <member refid="DeviceUtils_8h_1a210fa34b658677ebf264f99fb84ba166" kind="function"><name>getCurrentDeviceProperties</name></member>
-    <member refid="DeviceUtils_8h_1aec530c2ba3468b1edd6e9eceb864e797" kind="function"><name>getMaxThreads</name></member>
-    <member refid="DeviceUtils_8h_1a7aa4505c9349ef84ae046e7973107366" kind="function"><name>getMaxThreadsCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a69e6e5488bcbf6d837070397ccf0edfb" kind="function"><name>getMaxGrid</name></member>
-    <member refid="DeviceUtils_8h_1a736811b64cc68bb4d0ca5429640dd6b4" kind="function"><name>getMaxGridCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163" kind="function"><name>getMaxSharedMemPerBlock</name></member>
-    <member refid="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3" kind="function"><name>getMaxSharedMemPerBlockCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b" kind="function"><name>getDeviceForAddress</name></member>
-    <member refid="DeviceUtils_8h_1ae57d0b0e0c7d5529d4aee4cbd432a474" kind="function"><name>getFullUnifiedMemSupport</name></member>
-    <member refid="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kind="function"><name>getFullUnifiedMemSupportCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37" kind="function"><name>getTensorCoreSupport</name></member>
-    <member refid="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817" kind="function"><name>getTensorCoreSupportCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a4f1b25409e96c8fee1814a0631470a23" kind="function"><name>getWarpSize</name></member>
-    <member refid="DeviceUtils_8h_1a59e67ef6dc543409cc9f981d755df14b" kind="function"><name>getWarpSizeCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732" kind="function"><name>getFreeMemory</name></member>
-    <member refid="DeviceUtils_8h_1a5a1d0d4863e18f7c0c154089d57dd61a" kind="function"><name>getFreeMemoryCurrentDevice</name></member>
-    <member refid="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" kind="function"><name>streamWaitBase</name></member>
-    <member refid="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" kind="function"><name>streamWait</name></member>
-    <member refid="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" kind="function"><name>streamWait</name></member>
-    <member refid="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" kind="function"><name>streamWait</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268af656bbf613964dcf710b771b0918ab30" kind="enumvalue"><name>BF16</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6b68daa1ef37853ef9cab2ae9007b480" kind="enum"><name>IndicesDataType</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6b68daa1ef37853ef9cab2ae9007b480ae7e62f6928f76df671b5a0379793fab6" kind="enumvalue"><name>I64</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6b68daa1ef37853ef9cab2ae9007b480ad878ea6016bfe01729548bf442de5a8b" kind="enumvalue"><name>I32</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992ac" kind="enum"><name>graph_build_algo</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992aca024a07775560847f41dcb5aa52c37418" kind="enumvalue"><name>IVF_PQ</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992aca5c5827c864a6a539617cb236291f0285" kind="enumvalue"><name>NN_DESCENT</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" kind="enum"><name>codebook_gen</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39a5056773a9c21a05e14106e853dc39c42" kind="enumvalue"><name>PER_SUBSPACE</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39ab4bc06123f1a290656a492b25ebab336" kind="enumvalue"><name>PER_CLUSTER</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02" kind="enum"><name>search_algo</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" kind="enumvalue"><name>SINGLE_CTA</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb" kind="enumvalue"><name>MULTI_CTA</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a244534a9bc2ff7a11ac470ef0eff013b" kind="enumvalue"><name>MULTI_KERNEL</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02ae1f2d5134ed2543d38a0de9751cf75d9" kind="enumvalue"><name>AUTO</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821e" kind="enum"><name>hash_mode</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821ea50b7748612b28db487d115f220bb77ab" kind="enumvalue"><name>HASH</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821ea9b9c17e13f0e3dc9860a26e08b59b2a7" kind="enumvalue"><name>SMALL</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821eae1f2d5134ed2543d38a0de9751cf75d9" kind="enumvalue"><name>AUTO</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kind="enum"><name>IndicesOptions</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a588811aea072aa57c268dec24d16ad81" kind="enumvalue"><name>INDICES_CPU</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a86cdd363f1311a43e0e99ebdc909311c" kind="enumvalue"><name>INDICES_IVF</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459ad702a8b1a6bcefaa8d731762e4f88936" kind="enumvalue"><name>INDICES_32_BIT</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" kind="enumvalue"><name>INDICES_64_BIT</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437" kind="enum"><name>AllocType</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a0fcde2e6fdc2c0afd9a35bde9e99a269" kind="enumvalue"><name>Other</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a547b2cb3c7589068effabb0cad9fa907" kind="enumvalue"><name>FlatData</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a0b8e7919f13d089aef4f3bb6fd8420ab" kind="enumvalue"><name>IVFLists</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a65a8f1712a80b76e79e2e36087ece51f" kind="enumvalue"><name>Quantizer</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a73a4afa64cdd0c13b4bc55087eedcc83" kind="enumvalue"><name>QuantizerPrecomputedCodes</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a6da735df4e3424ba16ed6877129cf52b" kind="enumvalue"><name>TemporaryMemoryBuffer</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437adeddb60bbeb3d0fd449dc5473bfbae74" kind="enumvalue"><name>TemporaryMemoryOverflow</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67" kind="enum"><name>MemorySpace</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a3cbdb1d642f55fc4c351b62f6f259f76" kind="enumvalue"><name>Temporary</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a18edc24f65a6948be1fd9a2c27df51cc" kind="enumvalue"><name>Device</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a0ee0f76a9dabbd16f80c5382472af6d6" kind="enumvalue"><name>Unified</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a5f1fb499181c1e6a2a156ce4b071e54e" kind="function"><name>index_gpu_to_cpu</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a056f88b1bc8e3bbb2160fe35a67bc28b" kind="function"><name>index_cpu_to_gpu</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a4d22dc47b90fe147b32189ca1a899533" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aca74bf972d4db094d43771a2fa5f338f" kind="function"><name>index_binary_gpu_to_cpu</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aea7a3f16c36dbe87022432f6a704bde5" kind="function"><name>index_binary_cpu_to_gpu</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ac850eca0a26eea1be04e90bb9a0f03c6" kind="function"><name>index_binary_cpu_to_gpu_multiple</name></member>
+    <member refid="namespacefaiss_1_1gpu_1abd4378248b25ecbc8f277ce7ce5bfbe5" kind="function"><name>should_use_cuvs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ac7e9ee53cc7034bf2f4b2c1902ca2571" kind="function"><name>bfKnn_tiling</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ae2b4be0946d7ca9dbac7a03dbc6fd908" kind="function"><name>bruteForceKnn</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a575dd856231662ae3e06b1fd2147a8a1" kind="function"><name>should_use_cuvs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ade84aeef8931feb5d026c6f5b02070f1" kind="function"><name>tryCastGpuIndex</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a0a59a854dc33533d84251c97ce2e16e0" kind="function"><name>isGpuIndex</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9a5eeb989c1d853a58aa65a8af310372" kind="function"><name>isGpuIndexImplemented</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a01cfc3c8a312c3e60e1909eeb0941301" kind="function"><name>allocTypeToString</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26325bc7abaa18271fbe76c2bfbf1c64" kind="function"><name>memorySpaceToString</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a899d29db52c5400a548baa534667f1c5" kind="function"><name>makeDevAlloc</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a25ba473fa8b757298399a9898435424a" kind="function"><name>makeTempAlloc</name></member>
+    <member refid="namespacefaiss_1_1gpu_1acc39275d82143dd1663807a635e59cf9" kind="function"><name>makeSpaceAlloc</name></member>
+    <member refid="namespacefaiss_1_1gpu_1af43e39c84e5b12e107a71dfa5d840e60" kind="function"><name>getMaxKSelection</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ad2df4aca9cbd2dcfe0a721ce9dbacfae" kind="function"><name>validateKSelect</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a31363ef889dec438a8d7fb99096900b1" kind="function"><name>validateNProbe</name></member>
+    <member refid="namespacefaiss_1_1gpu_1acda5ee38c3dac001ea72db98c99b74a3" kind="function"><name>unpackNonInterleaved</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6751f9cbfed27f2fa200b6a46e0300c8" kind="function"><name>unpackInterleaved</name></member>
+    <member refid="namespacefaiss_1_1gpu_1af5fa5a4ee8352024850c45cdceeca8df" kind="function"><name>packNonInterleaved</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ab4c5f626cbe81460dde953a379142215" kind="function"><name>packInterleaved</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a515c8e59be866b46dc43041c138022f7" kind="function"><name>ivfOffsetToUserIndex</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6985d5edeae8143e4f1680b1428e55fc" kind="function"><name>newTestSeed</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a97a43b6f2ad18a336a6ffb7d182e70e3" kind="function"><name>setTestSeed</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a58c0d857ccd6d5003f38f05969a04d07" kind="function"><name>relativeError</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa0974d57bcb32037493b2e50f4bc6553" kind="function"><name>randVal</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aeaf4a47f6d9c0f1f21f6841a7dd3cb48" kind="function"><name>randBool</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ab667286f1786526a19d5186f2df348a4" kind="function"><name>randSelect</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aca3d71130e61aebd85684e5c7b443c23" kind="function"><name>randVecs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a43baee1452f9fc4b3a6e60cfbb4c08e1" kind="function"><name>randBinaryVecs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ac9eef9d99be03444b5391bc5615d0d08" kind="function"><name>roundToHalf</name></member>
+    <member refid="namespacefaiss_1_1gpu_1af10d6d642f9c390100d2b8a31203918f" kind="function"><name>compareIndices</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aea8cc0513413b621ba2bcc3c5de02663" kind="function"><name>compareIndices</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a44bd51d4a1b6c300dbb9ac2192dce14b" kind="function"><name>compareLists</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a589a55d85f293c1ed9905e5aac936776" kind="function"><name>testIVFEquality</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a0e7259c8fad696cd1c584575b1acf981" kind="function"><name>convert_to_bitset</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a4ad217abc64c139f6788145db3b4b4b6" kind="function"><name>metricFaissToCuvs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a18ddaf734a629ded5ad2a2f235937298" kind="function"><name>getCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1abf0b5b971122c7c024f70a2e690870ea" kind="function"><name>setCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aaeb2757087735aef66e7ec5ba134530a" kind="function"><name>getNumDevices</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aaf3d8c41cb926052dcdf4988a323bc3b" kind="function"><name>profilerStart</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aee97ca97dec791446ce147f0fe68db74" kind="function"><name>profilerStop</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a9aa4762fd8451c5f9b67072f4a4880e2" kind="function"><name>synchronizeAllDevices</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a542b2a71bc3a5e411606a7adca087acc" kind="function"><name>getDeviceProperties</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a210fa34b658677ebf264f99fb84ba166" kind="function"><name>getCurrentDeviceProperties</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aec530c2ba3468b1edd6e9eceb864e797" kind="function"><name>getMaxThreads</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7aa4505c9349ef84ae046e7973107366" kind="function"><name>getMaxThreadsCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a69e6e5488bcbf6d837070397ccf0edfb" kind="function"><name>getMaxGrid</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a736811b64cc68bb4d0ca5429640dd6b4" kind="function"><name>getMaxGridCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ab671a87a6284fc4d2fec44400ca5d163" kind="function"><name>getMaxSharedMemPerBlock</name></member>
+    <member refid="namespacefaiss_1_1gpu_1accf2b1c27fb6cbd2b384266d42f8c9a3" kind="function"><name>getMaxSharedMemPerBlockCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a90940c17958ddf1b0f5a7f86b556788b" kind="function"><name>getDeviceForAddress</name></member>
+    <member refid="namespacefaiss_1_1gpu_1ae57d0b0e0c7d5529d4aee4cbd432a474" kind="function"><name>getFullUnifiedMemSupport</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" kind="function"><name>getFullUnifiedMemSupportCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a5de148f49baef8d80b3dd4a1509bec37" kind="function"><name>getTensorCoreSupport</name></member>
+    <member refid="namespacefaiss_1_1gpu_1abf99b9aa3d1433ad0a69e7cccd949817" kind="function"><name>getTensorCoreSupportCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a4f1b25409e96c8fee1814a0631470a23" kind="function"><name>getWarpSize</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a59e67ef6dc543409cc9f981d755df14b" kind="function"><name>getWarpSizeCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a202fab8f3a469474cb41064f0f5c8732" kind="function"><name>getFreeMemory</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a5a1d0d4863e18f7c0c154089d57dd61a" kind="function"><name>getFreeMemoryCurrentDevice</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a4e6905505fb0c0d1525037408ee0a389" kind="function"><name>streamWaitBase</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a64ae6cf687076b6b0f6a956e42d009c8" kind="function"><name>streamWait</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a26377a820f76459a3451aa2664b6326f" kind="function"><name>streamWait</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a0ef5a2acf5c02c590e5029c061f463d8" kind="function"><name>streamWait</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1gpu_1_1utils" kind="namespace"><name>faiss::gpu::utils</name>
     <member refid="StaticUtils_8h_1a3bc4691d4731a93fbf5fcec46f5cf04d" kind="function"><name>divDown</name></member>
@@ -10183,6 +10184,8 @@
   <compound refid="ConversionOperators_8cuh" kind="file"><name>ConversionOperators.cuh</name>
   </compound>
   <compound refid="CopyUtils_8cuh" kind="file"><name>CopyUtils.cuh</name>
+  </compound>
+  <compound refid="CuvsFilterConvert_8h" kind="file"><name>CuvsFilterConvert.h</name>
   </compound>
   <compound refid="CuvsUtils_8h" kind="file"><name>CuvsUtils.h</name>
   </compound>

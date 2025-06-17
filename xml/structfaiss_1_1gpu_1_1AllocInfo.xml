@@ -6,12 +6,12 @@
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1ae927d4e6e7b86c3541ffd0106f3b6d34" prot="public" static="no" mutable="no">
-        <type>AllocType</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437" kindref="member">AllocType</ref></type>
         <definition>AllocType faiss::gpu::AllocInfo::type</definition>
         <argsstring></argsstring>
         <name>type</name>
         <qualifiedname>faiss::gpu::AllocInfo::type</qualifiedname>
-        <initializer>= AllocType::Other</initializer>
+        <initializer>= <ref refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437a0fcde2e6fdc2c0afd9a35bde9e99a269" kindref="member">AllocType::Other</ref></initializer>
         <briefdescription>
 <para>The internal category of the allocation. </para>
         </briefdescription>
@@ -38,12 +38,12 @@
         <location file="faiss/gpu/GpuResources.h" line="119" column="9" bodyfile="faiss/gpu/GpuResources.h" bodystart="119" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" prot="public" static="no" mutable="no">
-        <type>MemorySpace</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67" kindref="member">MemorySpace</ref></type>
         <definition>MemorySpace faiss::gpu::AllocInfo::space</definition>
         <argsstring></argsstring>
         <name>space</name>
         <qualifiedname>faiss::gpu::AllocInfo::space</qualifiedname>
-        <initializer>= MemorySpace::Device</initializer>
+        <initializer>= <ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a18edc24f65a6948be1fd9a2c27df51cc" kindref="member">MemorySpace::Device</ref></initializer>
         <briefdescription>
 <para>The memory space of the allocation. </para>
         </briefdescription>
@@ -93,7 +93,7 @@
         <name>AllocInfo</name>
         <qualifiedname>faiss::gpu::AllocInfo::AllocInfo</qualifiedname>
         <param>
-          <type>AllocType</type>
+          <type><ref refid="namespacefaiss_1_1gpu_1a7038aea27b7026c4b0b4a7afeb1ba437" kindref="member">AllocType</ref></type>
           <declname>at</declname>
         </param>
         <param>
@@ -101,7 +101,7 @@
           <declname>dev</declname>
         </param>
         <param>
-          <type>MemorySpace</type>
+          <type><ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67" kindref="member">MemorySpace</ref></type>
           <declname>sp</declname>
         </param>
         <param>

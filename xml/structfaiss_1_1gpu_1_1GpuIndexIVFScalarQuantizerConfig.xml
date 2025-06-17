@@ -21,12 +21,12 @@
         <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="23" column="10" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1af432221761d48e4753f501208a60264d" prot="public" static="no" mutable="no">
-        <type>IndicesOptions</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" kindref="member">IndicesOptions</ref></type>
         <definition>IndicesOptions faiss::gpu::GpuIndexIVFConfig::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
         <qualifiedname>faiss::gpu::GpuIndexIVFConfig::indicesOptions</qualifiedname>
-        <initializer>= INDICES_64_BIT</initializer>
+        <initializer>= <ref refid="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459a3173a4e316b70ff921a20943bc055aac" kindref="member">INDICES_64_BIT</ref></initializer>
         <briefdescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>
         </briefdescription>
@@ -84,12 +84,12 @@
         <location file="faiss/gpu/GpuIndex.h" line="34" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
-        <type>MemorySpace</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67" kindref="member">MemorySpace</ref></type>
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
         <qualifiedname>faiss::gpu::GpuIndexConfig::memorySpace</qualifiedname>
-        <initializer>= MemorySpace::Device</initializer>
+        <initializer>= <ref refid="namespacefaiss_1_1gpu_1a308a493158ec240731ef7f87029fbd67a18edc24f65a6948be1fd9a2c27df51cc" kindref="member">MemorySpace::Device</ref></initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

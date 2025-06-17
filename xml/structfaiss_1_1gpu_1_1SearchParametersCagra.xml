@@ -54,7 +54,7 @@
         <location file="faiss/gpu/GpuIndexCagra.h" line="208" column="12" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="208" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1SearchParametersCagra_1ab54130d05220deca4e0401f49203194e" prot="public" static="no" mutable="no">
-        <type>search_algo</type>
+        <type><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02" kindref="member">search_algo</ref></type>
         <definition>search_algo faiss::gpu::SearchParametersCagra::algo</definition>
         <argsstring></argsstring>
         <name>algo</name>
