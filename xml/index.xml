@@ -885,7 +885,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a09558f398ffd237a147416ed4b2f816f" kind="function"><name>copyTo</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a9a479a77b968c79c83665ade6a7f5f1c" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ac5cacd21aee427a1f603bac4ca8cd276" kind="function"><name>get_knngraph</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a1a37e481a5405e222d8b55196f24f743" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ab55c347db8bdb5ae0fa61805220b603f" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a7d8f56aff2b732ce74fbc0f09af45e63" kind="function"><name>range_search</name></member>

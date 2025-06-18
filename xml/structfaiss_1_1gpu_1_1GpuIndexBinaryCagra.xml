@@ -237,10 +237,10 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexBinaryCagra.h" line="73" column="17"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a1a37e481a5405e222d8b55196f24f743" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ab55c347db8bdb5ae0fa61805220b603f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::GpuIndexBinaryCagra::search</definition>
-        <argsstring>(idx_t n, const uint8_t *x, idx_t k, int *distances, faiss::idx_t *labels, const faiss::SearchParameters *params=nullptr) const</argsstring>
+        <argsstring>(idx_t n, const uint8_t *x, idx_t k, int *distances, faiss::idx_t *labels, const faiss::SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
         <qualifiedname>faiss::gpu::GpuIndexBinaryCagra::search</qualifiedname>
         <param>
@@ -1088,7 +1088,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a9a479a77b968c79c83665ade6a7f5f1c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>reset</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ae7e1d29e5f39bd801140172b300f3ff8" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>resources_</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a1a37e481a5405e222d8b55196f24f743" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ab55c347db8bdb5ae0fa61805220b603f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586" prot="public" virt="pure-virtual" ambiguityscope="faiss::IndexBinary::"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search_and_reconstruct</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a33fb89fd722f072ba9b9cd633309a878" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>searchFromCpuPaged_</name></member>
