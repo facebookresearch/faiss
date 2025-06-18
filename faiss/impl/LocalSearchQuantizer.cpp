@@ -19,13 +19,11 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/hamming.h> // BitstringWriter
 #include <faiss/utils/utils.h>
 
 #include <faiss/utils/approx_topk/approx_topk.h>
 
 // this is needed for prefetching
-#include <faiss/impl/platform_macros.h>
 
 #ifdef __AVX2__
 #include <xmmintrin.h>

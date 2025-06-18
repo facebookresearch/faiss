@@ -35,8 +35,6 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/index_io.h>
 
 namespace faiss {
@@ -96,6 +94,9 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
+        if (icg->get_numeric_type() == faiss::NumericType::Float16) {
+            res->base_level_only = true;
+        }
         icg->copyTo(res);
         return res;
     }
@@ -237,7 +238,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         GpuIndexCagra* res =
                 new GpuIndexCagra(provider, icg->d, icg->metric_type, config);
-        res->copyFrom(icg);
+        res->copyFrom(icg, icg->get_numeric_type());
         return res;
     }
 #endif
