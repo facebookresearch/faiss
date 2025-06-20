@@ -19,6 +19,7 @@
 #include <faiss/gpu/utils/Limits.cuh>
 #include <faiss/gpu/utils/MatrixMult.cuh>
 
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <thrust/device_ptr.h>
 #include <thrust/execution_policy.h>
 #include <thrust/fill.h>
@@ -201,7 +202,7 @@ void runDistance(
 
     // We can have any number of vectors to query against, even less than k, in
     // which case we'll return -1 for the index
-    FAISS_ASSERT(k <= GPU_MAX_SELECTION_K); // select limitation
+    FAISS_ASSERT(k <= getMaxKSelection(false)); // select limitation
 
     // Temporary output memory space we'll use
     DeviceTensor<float, 2, true> distanceBuf1(
