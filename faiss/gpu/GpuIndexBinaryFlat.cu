@@ -148,7 +148,7 @@ void GpuIndexBinaryFlat::search(
 
     FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
 
-    validateKSelect(k);
+    validateKSelect(k, binaryFlatConfig_.use_cuvs);
 
     // The input vectors may be too large for the GPU, but we still
     // assume that the output distances and labels are not.

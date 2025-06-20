@@ -56,7 +56,8 @@ void testFlat(const TestFlatOptions& opt) {
     int k = opt.useFloat16
             ? std::min(faiss::gpu::randVal(1, 50), numVecs)
             : std::min(
-                      faiss::gpu::randVal(1, faiss::gpu::getMaxKSelection()),
+                      faiss::gpu::randVal(
+                              1, faiss::gpu::getMaxKSelection(opt.use_cuvs)),
                       numVecs);
     if (opt.kOverride > 0) {
         k = opt.kOverride;
@@ -164,7 +165,7 @@ TEST(TestGpuIndexFlat, L2_Float32) {
 
 // At least one test for the k > 1024 select
 TEST(TestGpuIndexFlat, L2_k_2048) {
-    if (faiss::gpu::getMaxKSelection() >= 2048) {
+    if (faiss::gpu::getMaxKSelection(false) >= 2048) {
         TestFlatOptions opt;
         opt.metric = faiss::MetricType::METRIC_L2;
         opt.useFloat16 = false;

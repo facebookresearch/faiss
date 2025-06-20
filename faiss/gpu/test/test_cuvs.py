@@ -15,6 +15,21 @@ from faiss.contrib.datasets import SyntheticDataset
     "only if CUVS is compiled in")
 class TestBfKnn(unittest.TestCase):
 
+    def test_large_k_search(self):
+        k = 10_000
+        ds = SyntheticDataset(32, 100_000, 100_000, 1000)
+        res = faiss.StandardGpuResources()
+        config = faiss.GpuIndexFlatConfig()
+        config.use_cuvs = True
+        index_gpu = faiss.GpuIndexFlatL2(res, ds.d, config)
+
+        index_gpu.add(ds.get_database())
+
+        # Try larger than 2048
+        _, I = index_gpu.search(ds.get_queries(), k)
+        np.testing.assert_equal(I.shape, (ds.nq, k))
+
+
     def test_bfKnn(self):
 
         ds = SyntheticDataset(32, 0, 4321, 1234)
