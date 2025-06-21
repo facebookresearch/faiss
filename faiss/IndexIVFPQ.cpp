@@ -185,6 +185,14 @@ void IndexIVFPQ::encode_vectors(
     }
 }
 
+void IndexIVFPQ::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* listnos,
+        float* x) const {
+    return decode_multiple(n, listnos, codes, x);
+}
+
 void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
     size_t coarse_size = coarse_code_size();
 
