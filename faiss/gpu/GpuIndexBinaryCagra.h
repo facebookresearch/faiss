@@ -79,7 +79,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             idx_t k,
             int* distances,
             faiss::idx_t* labels,
-            const faiss::SearchParameters* params = nullptr) const;
+            const faiss::SearchParameters* params = nullptr) const override;
 
    protected:
     /// Called from search when the input data is on the CPU;
