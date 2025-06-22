@@ -1117,6 +1117,7 @@ Index* read_index(IOReader* f, int io_flags) {
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
             READ1(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+            READ1(idx_hnsw_cagra->numeric_type_);
         }
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
