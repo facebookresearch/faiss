@@ -289,10 +289,10 @@ struct GowerDistance {
 
     __host__ __device__ void handle(float a, float b) {
         // Skip NaN values
-        if (a != a || b != b) {  // NaN check (NaN != NaN)
+        if (a != a || b != b) { // NaN check (NaN != NaN)
             return;
         }
-        
+
         if (a >= 0 && b >= 0) {
             // Numeric dimensions should be in [0,1] range
             if (a > 1 || b > 1) {
@@ -314,14 +314,14 @@ struct GowerDistance {
     }
 
     __host__ __device__ float reduce() {
-        if (valid_dims == 0 || dist != dist) {  // NaN check
+        if (valid_dims == 0 || dist != dist) { // NaN check
             return NAN;
         }
         return dist / valid_dims;
     }
 
     __host__ __device__ void combine(const GowerDistance& v) {
-        if (dist != dist || v.dist != v.dist) {  // NaN check
+        if (dist != dist || v.dist != v.dist) { // NaN check
             dist = NAN;
             return;
         }

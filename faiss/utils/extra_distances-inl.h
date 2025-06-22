@@ -169,12 +169,12 @@ inline float VectorDistance<METRIC_GOWER>::operator()(
         const float* y) const {
     float accu = 0;
     size_t valid_dims = 0;
-    
+
     for (size_t i = 0; i < d; i++) {
         if (std::isnan(x[i]) || std::isnan(y[i])) {
             continue;
         }
-        
+
         if (x[i] >= 0 && y[i] >= 0) {
             if (x[i] > 1 || y[i] > 1) {
                 return std::numeric_limits<float>::quiet_NaN();
@@ -190,11 +190,11 @@ inline float VectorDistance<METRIC_GOWER>::operator()(
         }
         valid_dims++;
     }
-    
+
     if (valid_dims == 0) {
         return std::numeric_limits<float>::quiet_NaN();
     }
-    return  accu / valid_dims;
+    return accu / valid_dims;
 }
 
 /***************************************************************************
