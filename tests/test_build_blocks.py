@@ -562,3 +562,16 @@ class TestMapInt64ToInt64(unittest.TestCase):
     def xx_test_large(self):
         # don't run by default because it's slow
         self.do_test(2 ** 21, 10 ** 6)
+
+
+class TestStructPacking(unittest.TestCase): 
+    """ Verify if the size structures as seen from SWIG and C++ are the same """
+
+    def test_swig(self):   
+        sizes = np.array([
+            (faiss.struct_packing_test_cpp(q),
+            faiss.struct_packing_test_swig(q)) 
+            for q in range(20)
+        ])
+        print(sizes)
+        np.testing.assert_array_equal(sizes[:, 0], sizes[:, 1])
