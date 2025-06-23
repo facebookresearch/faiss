@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,16 +11,12 @@
 
 #include <faiss/index_factory.h>
 
-#include <cinttypes>
-#include <cmath>
-
 #include <map>
 
 #include <regex>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
-#include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
@@ -34,6 +30,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -41,6 +38,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -68,6 +66,7 @@ namespace {
  */
 
 bool re_match(const std::string& s, const std::string& pat, std::smatch& sm) {
+    // @lint-ignore CLANGTIDY
     return std::regex_match(s, sm, std::regex(pat));
 }
 
@@ -165,19 +164,20 @@ const std::string aq_norm_pattern =
 const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";
 
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
-        std::string stok,
+        const std::string& stok,
         MetricType metric) {
     if (stok == "") {
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind("_");
+    int pos = stok.rfind('_');
     return aq_search_type[stok.substr(pos)];
 }
 
 std::vector<size_t> aq_parse_nbits(std::string stok) {
     std::vector<size_t> nbits;
     std::smatch sm;
+    // @lint-ignore CLANGTIDY
     while (std::regex_search(stok, sm, std::regex("[^q]([0-9]+)x([0-9]+)"))) {
         int M = std::stoi(sm[1].str());
         int nbit = std::stoi(sm[2].str());
@@ -186,6 +186,8 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     }
     return nbits;
 }
+
+const std::string rabitq_pattern = "(RaBitQ)";
 
 /***************************************************************
  * Parse VectorTransform
@@ -309,7 +311,8 @@ IndexIVF* parse_IndexIVF(
         const std::string& code_string,
         std::unique_ptr<Index>& quantizer,
         size_t nlist,
-        MetricType mt) {
+        MetricType mt,
+        bool own_il) {
     std::smatch sm;
     auto match = [&sm, &code_string](const std::string pattern) {
         return re_match(code_string, pattern, sm);
@@ -318,18 +321,25 @@ IndexIVF* parse_IndexIVF(
     int d = quantizer->d;
 
     if (match("Flat")) {
-        return new IndexIVFFlat(get_q(), d, nlist, mt);
+        return new IndexIVFFlat(get_q(), d, nlist, mt, own_il);
     }
     if (match("FlatDedup")) {
-        return new IndexIVFFlatDedup(get_q(), d, nlist, mt);
+        return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
-                get_q(), d, nlist, sq_types[sm[1].str()], mt);
+                get_q(),
+                d,
+                nlist,
+                sq_types[sm[1].str()],
+                mt,
+                /*by_residual=*/true,
+                own_il);
     }
     if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = mres_to_int(sm[1]), nbit = mres_to_int(sm[2], 8, 1);
-        IndexIVFPQ* index_ivf = new IndexIVFPQ(get_q(), d, nlist, M, nbit, mt);
+        IndexIVFPQ* index_ivf =
+                new IndexIVFPQ(get_q(), d, nlist, M, nbit, mt, own_il);
         index_ivf->do_polysemous_training = sm[3].str() != "np";
         return index_ivf;
     }
@@ -338,13 +348,13 @@ IndexIVF* parse_IndexIVF(
                 mt == METRIC_L2,
                 "IVFPQR not implemented for inner product search");
         int M1 = mres_to_int(sm[1]), M2 = mres_to_int(sm[2]);
-        return new IndexIVFPQR(get_q(), d, nlist, M1, 8, M2, 8);
+        return new IndexIVFPQR(get_q(), d, nlist, M1, 8, M2, 8, own_il);
     }
     if (match("PQ([0-9]+)x4fs(r?)(_[0-9]+)?")) {
         int M = mres_to_int(sm[1]);
         int bbs = mres_to_int(sm[3], 32, 1);
-        IndexIVFPQFastScan* index_ivf =
-                new IndexIVFPQFastScan(get_q(), d, nlist, M, 4, mt, bbs);
+        IndexIVFPQFastScan* index_ivf = new IndexIVFPQFastScan(
+                get_q(), d, nlist, M, 4, mt, bbs, own_il);
         index_ivf->by_residual = sm[2].str() == "r";
         return index_ivf;
     }
@@ -355,11 +365,11 @@ IndexIVF* parse_IndexIVF(
         IndexIVF* index_ivf;
         if (sm[1].str() == "RQ") {
             index_ivf = new IndexIVFResidualQuantizer(
-                    get_q(), d, nlist, nbits, mt, st);
+                    get_q(), d, nlist, nbits, mt, st, own_il);
         } else {
             FAISS_THROW_IF_NOT(nbits.size() > 0);
             index_ivf = new IndexIVFLocalSearchQuantizer(
-                    get_q(), d, nlist, nbits.size(), nbits[0], mt, st);
+                    get_q(), d, nlist, nbits.size(), nbits[0], mt, st, own_il);
         }
         return index_ivf;
     }
@@ -371,10 +381,10 @@ IndexIVF* parse_IndexIVF(
         IndexIVF* index_ivf;
         if (sm[1].str() == "PRQ") {
             index_ivf = new IndexIVFProductResidualQuantizer(
-                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st, own_il);
         } else {
             index_ivf = new IndexIVFProductLocalSearchQuantizer(
-                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st, own_il);
         }
         return index_ivf;
     }
@@ -385,10 +395,10 @@ IndexIVF* parse_IndexIVF(
         IndexIVFAdditiveQuantizerFastScan* index_ivf;
         if (sm[1].str() == "RQ") {
             index_ivf = new IndexIVFResidualQuantizerFastScan(
-                    get_q(), d, nlist, M, 4, mt, st, bbs);
+                    get_q(), d, nlist, M, 4, mt, st, bbs, own_il);
         } else {
             index_ivf = new IndexIVFLocalSearchQuantizerFastScan(
-                    get_q(), d, nlist, M, 4, mt, st, bbs);
+                    get_q(), d, nlist, M, 4, mt, st, bbs, own_il);
         }
         index_ivf->by_residual = (sm[3].str() == "r");
         return index_ivf;
@@ -402,10 +412,10 @@ IndexIVF* parse_IndexIVF(
         IndexIVFAdditiveQuantizerFastScan* index_ivf;
         if (sm[1].str() == "PRQ") {
             index_ivf = new IndexIVFProductResidualQuantizerFastScan(
-                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs, own_il);
         } else {
             index_ivf = new IndexIVFProductLocalSearchQuantizerFastScan(
-                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs, own_il);
         }
         index_ivf->by_residual = (sm[4].str() == "r");
         return index_ivf;
@@ -423,8 +433,8 @@ IndexIVF* parse_IndexIVF(
         // the rationale for -1e10 is that this corresponds to simple
         // thresholding
         float period = sm[3].length() > 0 ? std::stof(sm[3]) : -1e10;
-        IndexIVFSpectralHash* index_ivf =
-                new IndexIVFSpectralHash(get_q(), d, nlist, outdim, period);
+        IndexIVFSpectralHash* index_ivf = new IndexIVFSpectralHash(
+                get_q(), d, nlist, outdim, period, own_il);
         index_ivf->replace_vt(vt.release(), true);
         if (sm[4].length()) {
             std::string s = sm[4].str();
@@ -436,6 +446,9 @@ IndexIVF* parse_IndexIVF(
                     /* s == "m" ? */ IndexIVFSpectralHash::Thresh_median;
         }
         return index_ivf;
+    }
+    if (match(rabitq_pattern)) {
+        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
     }
     return nullptr;
 }
@@ -658,6 +671,11 @@ Index* parse_other_indexes(
         }
     }
 
+    // IndexRaBitQ
+    if (match(rabitq_pattern)) {
+        return new IndexRaBitQ(d, metric);
+    }
+
     return nullptr;
 }
 
@@ -667,7 +685,8 @@ Index* parse_other_indexes(
 std::unique_ptr<Index> index_factory_sub(
         int d,
         std::string description,
-        MetricType metric) {
+        MetricType metric,
+        bool own_invlists = true) {
     // handle composite indexes
 
     bool verbose = index_factory_verbose;
@@ -828,7 +847,7 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexRowwiseMinMax, fp32 version
     if (description.compare(0, 7, "MinMax,") == 0) {
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string sub_index_string = description.substr(comma + 1);
         auto sub_index = index_factory_sub(d, sub_index_string, metric);
 
@@ -840,7 +859,7 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexRowwiseMinMax, fp16 version
     if (description.compare(0, 11, "MinMaxFP16,") == 0) {
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string sub_index_string = description.substr(comma + 1);
         auto sub_index = index_factory_sub(d, sub_index_string, metric);
 
@@ -854,7 +873,7 @@ std::unique_ptr<Index> index_factory_sub(
     {
         size_t nlist;
         bool use_2layer;
-        size_t comma = description.find(",");
+        size_t comma = description.find(',');
         std::string coarse_string = description.substr(0, comma);
         // Match coarse quantizer part first
         std::unique_ptr<Index> quantizer(parse_coarse_quantizer(
@@ -884,8 +903,8 @@ std::unique_ptr<Index> index_factory_sub(
                 return std::unique_ptr<Index>(index_2l);
             }
 
-            IndexIVF* index_ivf =
-                    parse_IndexIVF(code_description, quantizer, nlist, metric);
+            IndexIVF* index_ivf = parse_IndexIVF(
+                    code_description, quantizer, nlist, metric, own_invlists);
 
             FAISS_THROW_IF_NOT_FMT(
                     index_ivf,
@@ -901,25 +920,32 @@ std::unique_ptr<Index> index_factory_sub(
 
 } // anonymous namespace
 
-Index* index_factory(int d, const char* description, MetricType metric) {
-    return index_factory_sub(d, description, metric).release();
+Index* index_factory(
+        int d,
+        const char* description,
+        MetricType metric,
+        bool own_invlists) {
+    return index_factory_sub(d, description, metric, own_invlists).release();
 }
 
-IndexBinary* index_binary_factory(int d, const char* description) {
+IndexBinary* index_binary_factory(
+        int d,
+        const char* description,
+        bool own_invlists) {
     IndexBinary* index = nullptr;
 
     int ncentroids = -1;
     int M, nhash, b;
 
     if (sscanf(description, "BIVF%d_HNSW%d", &ncentroids, &M) == 2) {
-        IndexBinaryIVF* index_ivf =
-                new IndexBinaryIVF(new IndexBinaryHNSW(d, M), d, ncentroids);
+        IndexBinaryIVF* index_ivf = new IndexBinaryIVF(
+                new IndexBinaryHNSW(d, M), d, ncentroids, own_invlists);
         index_ivf->own_fields = true;
         index = index_ivf;
 
     } else if (sscanf(description, "BIVF%d", &ncentroids) == 1) {
-        IndexBinaryIVF* index_ivf =
-                new IndexBinaryIVF(new IndexBinaryFlat(d), d, ncentroids);
+        IndexBinaryIVF* index_ivf = new IndexBinaryIVF(
+                new IndexBinaryFlat(d), d, ncentroids, own_invlists);
         index_ivf->own_fields = true;
         index = index_ivf;
 

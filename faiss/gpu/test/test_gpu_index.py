@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ class TestIVFSearchPreassigned(unittest.TestCase):
         k = 50
 
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_raft = False
+        config.use_cuvs = False
         idx_gpu = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
         idx_gpu.nprobe = nprobe
 
@@ -59,7 +59,7 @@ class TestIVFSearchPreassigned(unittest.TestCase):
         k = 50
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.use_raft = False
+        config.use_cuvs = False
         idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, 4, 8, faiss.METRIC_L2, config)
         idx_gpu.nprobe = nprobe
 
@@ -141,7 +141,6 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
         # construct a GPU index using the same trained coarse quantizer
         # from the CPU index
         config = faiss.GpuIndexIVFFlatConfig()
-        config.use_raft = False
         idx_gpu = faiss.GpuIndexIVFFlat(res, q, d, nlist, faiss.METRIC_L2, config)
         assert(idx_gpu.is_trained)
         idx_gpu.add(xb)
@@ -155,6 +154,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
         d_c, i_c = idx_cpu.search(xq, k)
         self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
         self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+
 
     def test_ivfsq_pu_coarse(self):
         res = faiss.StandardGpuResources()
@@ -233,7 +233,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
         # construct a GPU index using the same trained coarse quantizer
         # from the CPU index
         config = faiss.GpuIndexIVFPQConfig()
-        config.use_raft = False
+        config.use_cuvs = False
         idx_gpu = faiss.GpuIndexIVFPQ(
             res, idx_coarse_cpu, d, nlist_lvl_2, 4, 8, faiss.METRIC_L2, config)
         assert(not idx_gpu.is_trained)
@@ -414,7 +414,7 @@ class TestIVFIndices(unittest.TestCase):
 
         # Store values using 32-bit indices instead
         config.indicesOptions = faiss.INDICES_32_BIT
-        config.use_raft = False
+        config.use_cuvs = False
         idx = faiss.GpuIndexIVFFlat(res, d, nlist, faiss.METRIC_L2, config)
         idx.train(xb)
         idx.add_with_ids(xb, xb_indices)
@@ -439,7 +439,6 @@ class TestIVFIndices(unittest.TestCase):
         xb_indices = (xb_indices_base + 4294967296).astype('int64')
 
         config = faiss.GpuIndexIVFPQConfig()
-        config.use_raft = False
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)
@@ -450,6 +449,8 @@ class TestIVFIndices(unittest.TestCase):
 
         # Store values using 32-bit indices instead
         config.indicesOptions = faiss.INDICES_32_BIT
+        # 32-bit indices are not supported with cuVS
+        config.use_cuvs = False
         idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
                                   faiss.METRIC_L2, config)
         idx.train(xb)
@@ -501,7 +502,7 @@ class TestSQ_to_gpu(unittest.TestCase):
         index = faiss.index_factory(32, "SQfp16")
         index.add(np.random.rand(1000, 32).astype(np.float32))
         config = faiss.GpuClonerOptions()
-        config.use_raft = False
+        config.use_cuvs = False
         gpu_index = faiss.index_cpu_to_gpu(res, 0, index, config)
         self.assertIsInstance(gpu_index, faiss.GpuIndexFlat)
 

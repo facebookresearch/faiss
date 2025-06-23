@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@
 #include <faiss/gpu/impl/L2Norm.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
-#include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/MathOperators.cuh>
 #include <faiss/gpu/utils/PtxUtils.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
@@ -41,7 +40,7 @@ __global__ void l2NormRowMajor(
     // these are fine to be int (just based on block dimensions)
     int numWarps = utils::divUp(blockDim.x, kWarpSize);
     int laneId = getLaneId();
-    int warpId = threadIdx.x / kWarpSize;
+    auto warpId = threadIdx.x / kWarpSize;
 
     bool lastRowTile = (blockIdx.x == (gridDim.x - 1));
     idx_t rowStart = idx_t(blockIdx.x) * RowTileSize;
@@ -274,6 +273,16 @@ void runL2Norm(
         bool normSquared,
         cudaStream_t stream) {
     runL2Norm<half, half2>(input, inputRowMajor, output, normSquared, stream);
+}
+
+void runL2Norm(
+        Tensor<__nv_bfloat16, 2, true>& input,
+        bool inputRowMajor,
+        Tensor<float, 1, true>& output,
+        bool normSquared,
+        cudaStream_t stream) {
+    runL2Norm<__nv_bfloat16, __nv_bfloat162>(
+            input, inputRowMajor, output, normSquared, stream);
 }
 
 } // namespace gpu

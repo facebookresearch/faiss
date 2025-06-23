@@ -1,4 +1,4 @@
-name: update-doxygen
+name: Update Doxygen
 on:
   push:
     branches:

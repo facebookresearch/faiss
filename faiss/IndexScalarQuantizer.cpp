@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,6 @@
 
 #include <omp.h>
 
-#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -123,12 +122,15 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
         size_t nlist,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric,
-        bool by_residual)
-        : IndexIVF(quantizer, d, nlist, 0, metric), sq(d, qtype) {
+        bool by_residual,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists), sq(d, qtype) {
     code_size = sq.code_size;
     this->by_residual = by_residual;
-    // was not known at construction time
-    invlists->code_size = code_size;
+    if (invlists) {
+        // was not known at construction time
+        invlists->code_size = code_size;
+    }
     is_trained = false;
 }
 
@@ -255,7 +257,8 @@ void IndexIVFScalarQuantizer::add_core(
 
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     return sq.select_InvertedListScanner(
             metric_type, quantizer, store_pairs, sel, by_residual);
 }

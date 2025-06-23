@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,7 +68,11 @@ struct IndexBinaryIVF : IndexBinary {
      * identifier. The pointer is borrowed: the quantizer should not
      * be deleted while the IndexBinaryIVF is in use.
      */
-    IndexBinaryIVF(IndexBinary* quantizer, size_t d, size_t nlist);
+    IndexBinaryIVF(
+            IndexBinary* quantizer,
+            size_t d,
+            size_t nlist,
+            bool own_invlists = true);
 
     IndexBinaryIVF();
 

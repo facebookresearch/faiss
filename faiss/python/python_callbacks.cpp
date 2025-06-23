@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -131,6 +131,30 @@ bool PyCallbackIDSelector::is_member(faiss::idx_t id) const {
 }
 
 PyCallbackIDSelector::~PyCallbackIDSelector() {
+    PyThreadLock gil;
+    Py_DECREF(callback);
+}
+
+/***********************************************************
+ * Callbacks for IVF index sharding
+ ***********************************************************/
+
+PyCallbackShardingFunction::PyCallbackShardingFunction(PyObject* callback)
+        : callback(callback) {
+    PyThreadLock gil;
+    Py_INCREF(callback);
+}
+
+int64_t PyCallbackShardingFunction::operator()(int64_t i, int64_t shard_count) {
+    PyThreadLock gil;
+    PyObject* shard_id = PyObject_CallFunction(callback, "LL", i, shard_count);
+    if (shard_id == nullptr) {
+        FAISS_THROW_MSG("propagate py error");
+    }
+    return PyLong_AsLongLong(shard_id);
+}
+
+PyCallbackShardingFunction::~PyCallbackShardingFunction() {
     PyThreadLock gil;
     Py_DECREF(callback);
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@
 #include <faiss/gpu/utils/Limits.cuh>
 #include <faiss/gpu/utils/MatrixMult.cuh>
 
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <thrust/device_ptr.h>
 #include <thrust/execution_policy.h>
 #include <thrust/fill.h>
@@ -201,7 +202,7 @@ void runDistance(
 
     // We can have any number of vectors to query against, even less than k, in
     // which case we'll return -1 for the index
-    FAISS_ASSERT(k <= GPU_MAX_SELECTION_K); // select limitation
+    FAISS_ASSERT(k <= getMaxKSelection(false)); // select limitation
 
     // Temporary output memory space we'll use
     DeviceTensor<float, 2, true> distanceBuf1(
@@ -504,6 +505,27 @@ void runAllPairwiseL2Distance(
             outDistances);
 }
 
+void runAllPairwiseL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<__nv_bfloat16>(
+            true,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+
 void runAllPairwiseIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -533,6 +555,26 @@ void runAllPairwiseIPDistance(
         bool queriesRowMajor,
         Tensor<float, 2, true>& outDistances) {
     runAllPairwiseDistance<half>(
+            false,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            nullptr,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+
+void runAllPairwiseIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<__nv_bfloat16>(
             false,
             res,
             stream,
@@ -596,6 +638,32 @@ void runL2Distance(
             ignoreOutDistances);
 }
 
+void runL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        bool ignoreOutDistances) {
+    runL2Distance<__nv_bfloat16>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices,
+            ignoreOutDistances);
+}
+
 void runIPDistance(
         GpuResources* res,
         cudaStream_t stream,
@@ -629,6 +697,28 @@ void runIPDistance(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices) {
     runIPDistance<half>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices);
+}
+
+void runIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<__nv_bfloat16, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<__nv_bfloat16, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices) {
+    runIPDistance<__nv_bfloat16>(
             res,
             stream,
             vectors,

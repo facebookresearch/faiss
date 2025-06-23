@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
-#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -29,8 +28,9 @@ IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(
         Index* quantizer,
         size_t d,
         size_t nlist,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), aq(aq) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists), aq(aq) {
     by_residual = true;
 }
 
@@ -186,10 +186,10 @@ struct AQInvertedListScannerDecompress : AQInvertedListScanner {
     float coarse_dis = 0;
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        AQInvertedListScanner::set_list(list_no, coarse_dis);
+    void set_list(idx_t list_no, float coarse_dis_2) override {
+        AQInvertedListScanner::set_list(list_no, coarse_dis_2);
         if (ia.by_residual) {
-            this->coarse_dis = coarse_dis;
+            this->coarse_dis = coarse_dis_2;
         }
     }
 
@@ -254,7 +254,8 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
 
 InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
     if (metric_type == METRIC_INNER_PRODUCT) {
         if (aq->search_type == AdditiveQuantizer::ST_decompress) {
@@ -301,10 +302,20 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t nlist,
         const std::vector<size_t>& nbits,
         MetricType metric,
-        Search_type_t search_type)
-        : IndexIVFAdditiveQuantizer(&rq, quantizer, d, nlist, metric),
+        Search_type_t search_type,
+        bool own_invlists)
+        : IndexIVFAdditiveQuantizer(
+                  &rq,
+                  quantizer,
+                  d,
+                  nlist,
+                  metric,
+                  own_invlists),
           rq(d, nbits, search_type) {
-    code_size = invlists->code_size = rq.code_size;
+    code_size = rq.code_size;
+    if (invlists) {
+        invlists->code_size = code_size;
+    }
 }
 
 IndexIVFResidualQuantizer::IndexIVFResidualQuantizer()
@@ -317,14 +328,16 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        bool own_invlists)
         : IndexIVFResidualQuantizer(
                   quantizer,
                   d,
                   nlist,
                   std::vector<size_t>(M, nbits),
                   metric,
-                  search_type) {}
+                  search_type,
+                  own_invlists) {}
 
 IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() = default;
 
@@ -339,10 +352,20 @@ IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type)
-        : IndexIVFAdditiveQuantizer(&lsq, quantizer, d, nlist, metric),
+        Search_type_t search_type,
+        bool own_invlists)
+        : IndexIVFAdditiveQuantizer(
+                  &lsq,
+                  quantizer,
+                  d,
+                  nlist,
+                  metric,
+                  own_invlists),
           lsq(d, M, nbits, search_type) {
-    code_size = invlists->code_size = lsq.code_size;
+    code_size = lsq.code_size;
+    if (invlists) {
+        invlists->code_size = code_size;
+    }
 }
 
 IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer()
@@ -362,10 +385,20 @@ IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer(
         size_t Msub,
         size_t nbits,
         MetricType metric,
-        Search_type_t search_type)
-        : IndexIVFAdditiveQuantizer(&prq, quantizer, d, nlist, metric),
+        Search_type_t search_type,
+        bool own_invlists)
+        : IndexIVFAdditiveQuantizer(
+                  &prq,
+                  quantizer,
+                  d,
+                  nlist,
+                  metric,
+                  own_invlists),
           prq(d, nsplits, Msub, nbits, search_type) {
-    code_size = invlists->code_size = prq.code_size;
+    code_size = prq.code_size;
+    if (invlists) {
+        invlists->code_size = code_size;
+    }
 }
 
 IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer()
@@ -385,10 +418,20 @@ IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer(
         size_t Msub,
         size_t nbits,
         MetricType metric,
-        Search_type_t search_type)
-        : IndexIVFAdditiveQuantizer(&plsq, quantizer, d, nlist, metric),
+        Search_type_t search_type,
+        bool own_invlists)
+        : IndexIVFAdditiveQuantizer(
+                  &plsq,
+                  quantizer,
+                  d,
+                  nlist,
+                  metric,
+                  own_invlists),
           plsq(d, nsplits, Msub, nbits, search_type) {
-    code_size = invlists->code_size = plsq.code_size;
+    code_size = plsq.code_size;
+    if (invlists) {
+        invlists->code_size = code_size;
+    }
 }
 
 IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer()

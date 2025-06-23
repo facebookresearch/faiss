@@ -1,11 +1,10 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-// Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c -*-
 
 /// Macros and typedefs for C wrapper API declarations
@@ -33,6 +32,12 @@ typedef float faiss_distance_t; ///< all distances between vectors are this type
 /// if the downcast is valid, and `NULL` otherwise.
 #define FAISS_DECLARE_INDEX_DOWNCAST(clazz) \
     Faiss##clazz* faiss_##clazz##_cast(FaissIndex*);
+
+/// Declare a dynamic downcast operation from a base `FaissIndexBinary*` pointer
+/// type to a more specific index type. The function returns the same pointer
+/// if the downcast is valid, and `NULL` otherwise.
+#define FAISS_DECLARE_INDEX_BINARY_DOWNCAST(clazz) \
+    Faiss##clazz* faiss_##clazz##_cast(FaissIndexBinary*);
 
 /// Declare a dynamic downcast operation from a base `FaissSearchParameters*`
 /// pointer type to a more specific search parameters type. The function returns

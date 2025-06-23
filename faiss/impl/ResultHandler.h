@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -534,7 +534,7 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C, use_sel> {
             try {
                 // finalize the partial result
                 pres.finalize();
-            } catch (const faiss::FaissException& e) {
+            } catch ([[maybe_unused]] const faiss::FaissException& e) {
                 // Do nothing if allocation fails in finalizing partial results.
 #ifndef NDEBUG
                 std::cerr << e.what() << std::endl;
@@ -598,7 +598,7 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C, use_sel> {
             if (partial_results.size() > 0) {
                 RangeSearchPartialResult::merge(partial_results);
             }
-        } catch (const faiss::FaissException& e) {
+        } catch ([[maybe_unused]] const faiss::FaissException& e) {
             // Do nothing if allocation fails in merge.
 #ifndef NDEBUG
             std::cerr << e.what() << std::endl;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -260,7 +260,7 @@ void exhaustive_L2sqr_fused_cmax(
     const size_t nx_p = (nx / NX_POINTS_PER_LOOP) * NX_POINTS_PER_LOOP;
     // the main loop.
 #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
+    for (int64_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
         kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP>(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
     }

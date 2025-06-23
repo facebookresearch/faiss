@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -34,7 +34,7 @@ class TestFactory(unittest.TestCase):
         except RuntimeError:
             pass
         else:
-            assert False, "should do a runtime error"
+            raise AssertionError("should do a runtime error")
 
     def test_factory_2(self):
 
@@ -61,6 +61,14 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(128, "OPQ16_64,Flat")
         assert index.sa_code_size() == 64 * 4
         assert index.chain.at(0).d_out == 64
+
+    def test_factory_6(self):
+        index = faiss.index_factory(128, "RaBitQ")
+        assert index.d == 128
+        assert index.metric_type == faiss.METRIC_L2
+        index = faiss.index_factory(128, "IVF256,RaBitQ")
+        assert index.d == 128
+        assert index.metric_type == faiss.METRIC_L2
 
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")

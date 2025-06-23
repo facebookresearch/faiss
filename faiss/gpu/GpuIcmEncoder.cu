@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -96,7 +96,7 @@ void GpuIcmEncoder::encode(
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         size_t i0 = idx * base_shard_size + std::min(size_t(idx), n % nshards);
         size_t ni = base_shard_size;
-        if (ni < n % nshards) {
+        if (idx < n % nshards) {
             ++ni;
         }
         if (ni <= 0) { // only if n < nshards

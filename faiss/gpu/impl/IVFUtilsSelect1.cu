@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -90,7 +90,7 @@ __global__ void pass1SelectLists(
 
             // Write out the final k-selected values; they should be all
             // together
-            for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            for (auto i = threadIdx.x; i < k; i += blockDim.x) {
                 heapDistances[queryId][sliceId][i] = smemK[i];
                 heapIndices[queryId][sliceId][i] = idx_t(smemV[i]);
             }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -210,7 +210,8 @@ struct IndexIVF : Index, IndexIVFInterface {
             size_t d,
             size_t nlist,
             size_t code_size,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void reset() override;
 
@@ -258,7 +259,8 @@ struct IndexIVF : Index, IndexIVFInterface {
      * @param codes  codes to add size n * sa_code_size()
      * @param xids   corresponding ids, size n
      */
-    void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids);
+    void add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids)
+            override;
 
     /** Train the encoder for the vectors.
      *
@@ -311,11 +313,14 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
-     * The default search implementation uses this to compute the distances
+     * The default search implementation uses this to compute the distances.
+     * Use sel instead of params->sel, because sel is initialized with
+     * params->sel, but may get overridden by IndexIVF's internal logic.
      */
     virtual InvertedListScanner* get_InvertedListScanner(
             bool store_pairs = false,
-            const IDSelector* sel = nullptr) const;
+            const IDSelector* sel = nullptr,
+            const IVFSearchParameters* params = nullptr) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
@@ -435,7 +440,7 @@ struct IndexIVF : Index, IndexIVFInterface {
     size_t sa_code_size() const override;
 
     /** encode a set of vectors
-     * sa_encode will call encode_vector with include_listno=true
+     * sa_encode will call encode_vectors with include_listno=true
      * @param n      nb of vectors to encode
      * @param x      the vectors to encode
      * @param bytes  output array for the codes

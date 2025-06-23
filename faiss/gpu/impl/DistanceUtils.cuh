@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -303,7 +303,7 @@ __global__ void incrementIndex(
         int k,
         idx_t increment) {
     for (idx_t i = blockIdx.y; i < indices.getSize(0); i += gridDim.y) {
-        for (int j = threadIdx.x; j < k; j += blockDim.x) {
+        for (auto j = threadIdx.x; j < k; j += blockDim.x) {
             indices[i][idx_t(blockIdx.x) * k + j] += blockIdx.x * increment;
         }
     }

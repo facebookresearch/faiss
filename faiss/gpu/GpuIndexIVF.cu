@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,7 +92,7 @@ void GpuIndexIVF::init_() {
         GpuIndexFlatConfig config = ivfConfig_.flatConfig;
         // inherit our same device
         config.device = config_.device;
-        config.use_raft = config_.use_raft;
+        config.use_cuvs = config_.use_cuvs;
 
         if (metric_type == faiss::METRIC_L2) {
             quantizer = new GpuIndexFlatL2(resources_, d, config);
@@ -154,7 +154,7 @@ void GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
     FAISS_ASSERT(index->nlist > 0);
     nlist = index->nlist;
 
-    validateNProbe(index->nprobe);
+    validateNProbe(index->nprobe, should_use_cuvs(config_));
     nprobe = index->nprobe;
 
     // The metric type may have changed as well, so we might have to
@@ -317,7 +317,7 @@ int GpuIndexIVF::getCurrentNProbe_(const SearchParameters* params) const {
         }
     }
 
-    validateNProbe(use_nprobe);
+    validateNProbe(use_nprobe, should_use_cuvs(config_));
     // We use int internally for nprobe
     return int(use_nprobe);
 }
@@ -367,7 +367,7 @@ void GpuIndexIVF::search_preassigned(
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "GpuIndexIVF not trained");
     FAISS_ASSERT(baseIndex_);
 
-    validateKSelect(k);
+    validateKSelect(k, should_use_cuvs(config_));
 
     if (n == 0 || k == 0) {
         // nothing to search
@@ -375,7 +375,7 @@ void GpuIndexIVF::search_preassigned(
     }
 
     idx_t use_nprobe = params ? params->nprobe : this->nprobe;
-    validateNProbe(use_nprobe);
+    validateNProbe(use_nprobe, should_use_cuvs(config_));
 
     size_t max_codes = params ? params->max_codes : this->max_codes;
     FAISS_THROW_IF_NOT_FMT(

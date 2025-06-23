@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,7 +23,6 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
@@ -41,8 +40,9 @@ IndexIVFFastScan::IndexIVFFastScan(
         size_t d,
         size_t nlist,
         size_t code_size,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, code_size, metric) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, code_size, metric, own_invlists) {
     // unlike other indexes, we prefer no residuals for performance reasons.
     by_residual = false;
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
@@ -56,23 +56,30 @@ IndexIVFFastScan::IndexIVFFastScan() {
 }
 
 void IndexIVFFastScan::init_fastscan(
+        Quantizer* fine_quantizer,
         size_t M,
-        size_t nbits,
+        size_t nbits_init,
         size_t nlist,
         MetricType /* metric */,
-        int bbs) {
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    FAISS_THROW_IF_NOT(nbits == 4);
+        int bbs_2,
+        bool own_invlists) {
+    FAISS_THROW_IF_NOT(bbs_2 % 32 == 0);
+    FAISS_THROW_IF_NOT(nbits_init == 4);
+    FAISS_THROW_IF_NOT(fine_quantizer->d == d);
 
+    this->fine_quantizer = fine_quantizer;
     this->M = M;
-    this->nbits = nbits;
-    this->bbs = bbs;
-    ksub = (1 << nbits);
+    this->nbits = nbits_init;
+    this->bbs = bbs_2;
+    ksub = (1 << nbits_init);
     M2 = roundup(M, 2);
     code_size = M2 / 2;
+    FAISS_THROW_IF_NOT(code_size == fine_quantizer->code_size);
 
     is_trained = false;
-    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+    if (own_invlists) {
+        replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+    }
 }
 
 void IndexIVFFastScan::init_code_packer() {
@@ -812,7 +819,7 @@ void IndexIVFFastScan::search_implem_1(
                     heap_ids,
                     scaler);
             nlist_visited++;
-            ndis++;
+            ndis += ls;
         }
         heap_reorder<C>(k, heap_dis, heap_ids);
     }
@@ -923,7 +930,7 @@ void IndexIVFFastScan::search_implem_10(
 
     bool single_LUT = !lookup_table_is_3d();
 
-    size_t ndis = 0;
+    size_t ndis = 0, nlist_visited = 0;
     int qmap1[1];
 
     handler.q_map = qmap1;
@@ -971,13 +978,14 @@ void IndexIVFFastScan::search_implem_10(
                     handler,
                     scaler);
 
-            ndis++;
+            ndis += ls;
+            nlist_visited++;
         }
     }
 
     handler.end();
     *ndis_out = ndis;
-    *nlist_out = nlist;
+    *nlist_out = nlist_visited;
 }
 
 void IndexIVFFastScan::search_implem_12(
@@ -1029,15 +1037,15 @@ void IndexIVFFastScan::search_implem_12(
 
     // prepare the result handlers
 
-    int qbs2 = this->qbs2 ? this->qbs2 : 11;
+    int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
 
     std::vector<uint16_t> tmp_bias;
     if (biases.get()) {
-        tmp_bias.resize(qbs2);
+        tmp_bias.resize(actual_qbs2);
         handler.dbias = tmp_bias.data();
     }
 
-    size_t ndis = 0;
+    size_t ndis = 0, nlist_visited = 0;
 
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
@@ -1046,7 +1054,7 @@ void IndexIVFFastScan::search_implem_12(
         int list_no = qcs[i0].list_no;
         size_t i1 = i0 + 1;
 
-        while (i1 < qcs.size() && i1 < i0 + qbs2) {
+        while (i1 < qcs.size() && i1 < i0 + actual_qbs2) {
             if (qcs[i1].list_no != list_no) {
                 break;
             }
@@ -1059,6 +1067,7 @@ void IndexIVFFastScan::search_implem_12(
             i0 = i1;
             continue;
         }
+        nlist_visited++;
 
         // re-organize LUTs and biases into the right order
         int nc = i1 - i0;
@@ -1066,7 +1075,7 @@ void IndexIVFFastScan::search_implem_12(
         std::vector<int> q_map(nc), lut_entries(nc);
         AlignedTable<uint8_t> LUT(nc * dim12);
         memset(LUT.get(), -1, nc * dim12);
-        int qbs = pq4_preferred_qbs(nc);
+        int qbs_for_list = pq4_preferred_qbs(nc);
 
         for (size_t i = i0; i < i1; i++) {
             const QC& qc = qcs[i];
@@ -1078,7 +1087,11 @@ void IndexIVFFastScan::search_implem_12(
             }
         }
         pq4_pack_LUT_qbs_q_map(
-                qbs, M2, dis_tables.get(), lut_entries.data(), LUT.get());
+                qbs_for_list,
+                M2,
+                dis_tables.get(),
+                lut_entries.data(),
+                LUT.get());
 
         // access the inverted list
 
@@ -1094,7 +1107,13 @@ void IndexIVFFastScan::search_implem_12(
         handler.id_map = ids.get();
 
         pq4_accumulate_loop_qbs(
-                qbs, list_size, M2, codes.get(), LUT.get(), handler, scaler);
+                qbs_for_list,
+                list_size,
+                M2,
+                codes.get(),
+                LUT.get(),
+                handler,
+                scaler);
         // prepare for next loop
         i0 = i1;
     }
@@ -1107,7 +1126,7 @@ void IndexIVFFastScan::search_implem_12(
     IVFFastScan_stats.t_scan += t_scan;
 
     *ndis_out = ndis;
-    *nlist_out = nlist;
+    *nlist_out = nlist_visited;
 }
 
 void IndexIVFFastScan::search_implem_14(
@@ -1232,11 +1251,11 @@ void IndexIVFFastScan::search_implem_14(
                 is_max, impl, n, k, local_dis.data(), local_idx.data(), sel));
         handler->begin(normalizers.get());
 
-        int qbs2 = this->qbs2 ? this->qbs2 : 11;
+        int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
 
         std::vector<uint16_t> tmp_bias;
         if (biases.get()) {
-            tmp_bias.resize(qbs2);
+            tmp_bias.resize(actual_qbs2);
             handler->dbias = tmp_bias.data();
         }
 
@@ -1256,7 +1275,7 @@ void IndexIVFFastScan::search_implem_14(
             std::vector<int> q_map(nc), lut_entries(nc);
             AlignedTable<uint8_t> LUT(nc * dim12);
             memset(LUT.get(), -1, nc * dim12);
-            int qbs = pq4_preferred_qbs(nc);
+            int qbs_for_list = pq4_preferred_qbs(nc);
 
             for (size_t i = i0; i < i1; i++) {
                 const QC& qc = qcs[i];
@@ -1269,7 +1288,11 @@ void IndexIVFFastScan::search_implem_14(
                 }
             }
             pq4_pack_LUT_qbs_q_map(
-                    qbs, M2, dis_tables.get(), lut_entries.data(), LUT.get());
+                    qbs_for_list,
+                    M2,
+                    dis_tables.get(),
+                    lut_entries.data(),
+                    LUT.get());
 
             // access the inverted list
 
@@ -1285,7 +1308,7 @@ void IndexIVFFastScan::search_implem_14(
             handler->id_map = ids.get();
 
             pq4_accumulate_loop_qbs(
-                    qbs,
+                    qbs_for_list,
                     list_size,
                     M2,
                     codes.get(),
@@ -1340,34 +1363,30 @@ void IndexIVFFastScan::reconstruct_from_offset(
         int64_t offset,
         float* recons) const {
     // unpack codes
+    size_t coarse_size = coarse_code_size();
+    std::vector<uint8_t> code(coarse_size + code_size, 0);
+    encode_listno(list_no, code.data());
     InvertedLists::ScopedCodes list_codes(invlists, list_no);
-    std::vector<uint8_t> code(code_size, 0);
-    BitstringWriter bsw(code.data(), code_size);
+    BitstringWriter bsw(code.data() + coarse_size, code_size);
+
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
                 pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m);
         bsw.write(c, nbits);
     }
-    sa_decode(1, code.data(), recons);
 
-    // add centroid to it
-    if (by_residual) {
-        std::vector<float> centroid(d);
-        quantizer->reconstruct(list_no, centroid.data());
-        for (int i = 0; i < d; ++i) {
-            recons[i] += centroid[i];
-        }
-    }
+    sa_decode(1, code.data(), recons);
 }
 
 void IndexIVFFastScan::reconstruct_orig_invlists() {
     FAISS_THROW_IF_NOT(orig_invlists != nullptr);
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
+#pragma omp parallel for if (nlist > 100)
+    for (idx_t list_no = 0; list_no < nlist; list_no++) {
         InvertedLists::ScopedCodes codes(invlists, list_no);
         InvertedLists::ScopedIds ids(invlists, list_no);
-        size_t list_size = orig_invlists->list_size(list_no);
+        size_t list_size = invlists->list_size(list_no);
         std::vector<uint8_t> code(code_size, 0);
 
         for (size_t offset = 0; offset < list_size; offset++) {
@@ -1383,6 +1402,30 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
             idx_t id = ids.get()[offset];
 
             orig_invlists->add_entry(list_no, id, code.data());
+        }
+    }
+}
+
+void IndexIVFFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
+        const {
+    size_t coarse_size = coarse_code_size();
+
+#pragma omp parallel if (n > 1)
+    {
+        std::vector<float> residual(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * (code_size + coarse_size);
+            int64_t list_no = decode_listno(code);
+            float* xi = x + i * d;
+            fine_quantizer->decode(code + coarse_size, xi, 1);
+            if (by_residual) {
+                quantizer->reconstruct(list_no, residual.data());
+                for (size_t j = 0; j < d; j++) {
+                    xi[j] += residual[j];
+                }
+            }
         }
     }
 }

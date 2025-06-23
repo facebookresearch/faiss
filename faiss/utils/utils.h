@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,7 +37,7 @@ std::string get_compile_options();
  * Get some stats about the system
  **************************************************/
 
-// Expose FAISS version as a string
+// Expose Faiss version as a string
 std::string get_version();
 
 /// ms elapsed since some arbitrary epoch
@@ -90,11 +90,12 @@ size_t merge_result_table_with(
         bool keep_min = true,
         int64_t translation = 0);
 
-/// a balanced assignment has a IF of 1
-double imbalance_factor(int n, int k, const int64_t* assign);
+/// a balanced assignment has a IF of 1, a completely unbalanced assignment has
+/// an IF = k.
+double imbalance_factor(int64_t n, int k, const int64_t* assign);
 
 /// same, takes a histogram as input
-double imbalance_factor(int k, const int* hist);
+double imbalance_factor(int k, const int64_t* hist);
 
 /// compute histogram on v
 int ivec_hist(size_t n, const int* v, int vmax, int* hist);

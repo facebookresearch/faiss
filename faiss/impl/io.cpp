@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -260,7 +260,7 @@ std::string fourcc_inv(uint32_t x) {
 std::string fourcc_inv_printable(uint32_t x) {
     char cstr[5];
     fourcc_inv(x, cstr);
-    std::string str = "";
+    std::string str;
     for (int i = 0; i < 4; i++) {
         uint8_t c = cstr[i];
         if (32 <= c && c < 127) {

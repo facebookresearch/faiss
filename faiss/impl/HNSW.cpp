@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,12 @@
 #include <faiss/impl/HNSW.h>
 
 #include <cstddef>
-#include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/prefetch.h>
-
-#include <faiss/impl/platform_macros.h>
 
 #ifdef __AVX2__
 #include <immintrin.h>
@@ -32,6 +29,7 @@ namespace faiss {
  **************************************************************/
 
 int HNSW::nb_neighbors(int layer_no) const {
+    FAISS_THROW_IF_NOT(layer_no + 1 < cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no + 1] -
             cum_nneighbor_per_level[layer_no];
 }
@@ -166,10 +164,10 @@ void HNSW::print_neighbor_stats(int level) const {
 }
 
 void HNSW::fill_with_random_links(size_t n) {
-    int max_level = prepare_level_tab(n);
+    int max_level_2 = prepare_level_tab(n);
     RandomGenerator rng2(456);
 
-    for (int level = max_level - 1; level >= 0; --level) {
+    for (int level = max_level_2 - 1; level >= 0; --level) {
         std::vector<int> elts;
         for (int i = 0; i < n; i++) {
             if (levels[i] > level) {
@@ -210,16 +208,16 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         }
     }
 
-    int max_level = 0;
+    int max_level_2 = 0;
     for (int i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
-        if (pt_level > max_level)
-            max_level = pt_level;
+        if (pt_level > max_level_2)
+            max_level_2 = pt_level;
         offsets.push_back(offsets.back() + cum_nb_neighbors(pt_level + 1));
     }
     neighbors.resize(offsets.back(), -1);
 
-    return max_level;
+    return max_level_2;
 }
 
 /** Enumerate vertices from nearest to farthest from query, keep a
@@ -351,6 +349,8 @@ void add_link(
     }
 }
 
+} // namespace
+
 /// search neighbors on a single level, starting from an entry point
 void search_neighbors_to_add(
         HNSW& hnsw,
@@ -359,10 +359,8 @@ void search_neighbors_to_add(
         int entry_point,
         float d_entry_point,
         int level,
-        VisitedTable& vt) {
-    // selects a version
-    const bool reference_version = false;
-
+        VisitedTable& vt,
+        bool reference_version) {
     // top is nearest candidate
     std::priority_queue<NodeDistFarther> candidates;
 
@@ -385,7 +383,14 @@ void search_neighbors_to_add(
         size_t begin, end;
         hnsw.neighbor_range(currNode, level, &begin, &end);
 
-        // select a version, based on a flag
+        // The reference version is not used, but kept here because:
+        // 1. It is easier to switch back if the optimized version has a problem
+        // 2. It serves as a starting point for new optimizations
+        // 3. It helps understand the code
+        // 4. It ensures the reference version is still compilable if the
+        // optimized version changes
+        // The reference and the optimized versions' results are compared in
+        // test_hnsw.cpp
         if (reference_version) {
             // a reference version
             for (size_t i = begin; i < end; i++) {
@@ -470,8 +475,6 @@ void search_neighbors_to_add(
     vt.advance();
 }
 
-} // namespace
-
 /// Finds neighbors and builds links with them, starting from an entry
 /// point. The own neighbor list is assumed to be locked.
 void HNSW::add_links_starting_from(
@@ -493,17 +496,17 @@ void HNSW::add_links_starting_from(
 
     ::faiss::shrink_neighbor_list(ptdis, link_targets, M, keep_max_size_level0);
 
-    std::vector<storage_idx_t> neighbors;
-    neighbors.reserve(link_targets.size());
+    std::vector<storage_idx_t> neighbors_to_add;
+    neighbors_to_add.reserve(link_targets.size());
     while (!link_targets.empty()) {
         storage_idx_t other_id = link_targets.top().id;
         add_link(*this, ptdis, pt_id, other_id, level, keep_max_size_level0);
-        neighbors.push_back(other_id);
+        neighbors_to_add.push_back(other_id);
         link_targets.pop();
     }
 
     omp_unset_lock(&locks[pt_id]);
-    for (storage_idx_t other_id : neighbors) {
+    for (storage_idx_t other_id : neighbors_to_add) {
         omp_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
         omp_unset_lock(&locks[other_id]);
@@ -585,15 +588,22 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in,
-        const SearchParametersHNSW* params) {
+        const SearchParameters* params) {
     int nres = nres_in;
     int ndis = 0;
 
     // can be overridden by search params
-    bool do_dis_check = params ? params->check_relative_distance
-                               : hnsw.check_relative_distance;
-    int efSearch = params ? params->efSearch : hnsw.efSearch;
-    const IDSelector* sel = params ? params->sel : nullptr;
+    bool do_dis_check = hnsw.check_relative_distance;
+    int efSearch = hnsw.efSearch;
+    const IDSelector* sel = nullptr;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            do_dis_check = hnsw_params->check_relative_distance;
+            efSearch = hnsw_params->efSearch;
+        }
+        sel = params->sel;
+    }
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -915,15 +925,22 @@ HNSWStats HNSW::search(
         DistanceComputer& qdis,
         ResultHandler<C>& res,
         VisitedTable& vt,
-        const SearchParametersHNSW* params) const {
+        const SearchParameters* params) const {
     HNSWStats stats;
     if (entry_point == -1) {
         return stats;
     }
     int k = extract_k_from_ResultHandler(res);
 
-    bool bounded_queue =
-            params ? params->bounded_queue : this->search_bounded_queue;
+    bool bounded_queue = this->search_bounded_queue;
+    int efSearch = this->efSearch;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            bounded_queue = hnsw_params->bounded_queue;
+            efSearch = hnsw_params->efSearch;
+        }
+    }
 
     //  greedy search on upper levels
     storage_idx_t nearest = entry_point;
@@ -935,7 +952,7 @@ HNSWStats HNSW::search(
         stats.combine(local_stats);
     }
 
-    int ef = std::max(params ? params->efSearch : efSearch, k);
+    int ef = std::max(efSearch, k);
     if (bounded_queue) { // this is the most common branch
         MinimaxHeap candidates(ef);
 
@@ -975,9 +992,17 @@ void HNSW::search_level_0(
         int search_type,
         HNSWStats& search_stats,
         VisitedTable& vt,
-        const SearchParametersHNSW* params) const {
+        const SearchParameters* params) const {
     const HNSW& hnsw = *this;
-    auto efSearch = params ? params->efSearch : hnsw.efSearch;
+
+    auto efSearch = hnsw.efSearch;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            efSearch = hnsw_params->efSearch;
+        }
+    }
+
     int k = extract_k_from_ResultHandler(res);
 
     if (search_type == 1) {
@@ -1057,7 +1082,7 @@ void HNSW::permute_entries(const idx_t* map) {
     // swap everyone
     std::swap(levels, new_levels);
     std::swap(offsets, new_offsets);
-    std::swap(neighbors, new_neighbors);
+    neighbors = std::move(new_neighbors);
 }
 
 /**************************************************************

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -212,12 +212,16 @@ nn::Int32Tensor2D QINCoStep::encode(
     // repeated codebook
     Tensor2D zqs_r(n * K, d);  // size n, K, d
     Tensor2D cc(n * K, d * 2); // size n, K, d * 2
-    size_t d = this->d;
 
-    auto copy_row = [d](Tensor2D& t, size_t i, size_t j, const float* data) {
-        assert(i <= t.shape[0] && j <= t.shape[1]);
-        memcpy(t.data() + i * t.shape[1] + j, data, sizeof(float) * d);
-    };
+    size_t local_d = this->d;
+
+    auto copy_row =
+            [local_d](Tensor2D& t, size_t i, size_t j, const float* data) {
+                assert(i <= t.shape[0] && j <= t.shape[1]);
+                memcpy(t.data() + i * t.shape[1] + j,
+                       data,
+                       sizeof(float) * local_d);
+            };
 
     // manual broadcasting
     for (size_t i = 0; i < n; i++) {

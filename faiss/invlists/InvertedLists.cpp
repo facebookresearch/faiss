@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -181,7 +181,7 @@ size_t InvertedLists::copy_subset_to(
 }
 
 double InvertedLists::imbalance_factor() const {
-    std::vector<int> hist(nlist);
+    std::vector<int64_t> hist(nlist);
 
     for (size_t i = 0; i < nlist; i++) {
         hist[i] = list_size(i);
@@ -330,8 +330,8 @@ void ArrayInvertedLists::update_entries(
 }
 
 void ArrayInvertedLists::permute_invlists(const idx_t* map) {
-    std::vector<std::vector<uint8_t>> new_codes(nlist);
-    std::vector<std::vector<idx_t>> new_ids(nlist);
+    std::vector<MaybeOwnedVector<uint8_t>> new_codes(nlist);
+    std::vector<MaybeOwnedVector<idx_t>> new_ids(nlist);
 
     for (size_t i = 0; i < nlist; i++) {
         size_t o = map[i];

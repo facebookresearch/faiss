@@ -1,7 +1,6 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
-# This source code is licensed under the BSD-style license found in the
+# This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
@@ -36,6 +35,9 @@ set(FAISS_TEST_SRC
   test_common_ivf_empty_index.cpp
   test_callback.cpp
   test_utils.cpp
+  test_hamming.cpp
+  test_mmap.cpp
+  test_zerocopy.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -44,7 +46,9 @@ include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_test)
 
-target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+if (FAISS_ENABLE_PYTHON)
+  target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -80,7 +84,6 @@ find_package(GTest CONFIG REQUIRED)
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   GTest::gtest_main
-  $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 

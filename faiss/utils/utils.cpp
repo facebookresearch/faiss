@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,8 +14,6 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
-
-#include <sys/types.h>
 
 #ifdef _MSC_VER
 #define NOMINMAX
@@ -35,7 +33,6 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 
 #ifndef FINTEGER
@@ -387,7 +384,7 @@ size_t ranklist_intersection_size(
     return count;
 }
 
-double imbalance_factor(int k, const int* hist) {
+double imbalance_factor(int k, const int64_t* hist) {
     double tot = 0, uf = 0;
 
     for (int i = 0; i < k; i++) {
@@ -399,9 +396,9 @@ double imbalance_factor(int k, const int* hist) {
     return uf;
 }
 
-double imbalance_factor(int n, int k, const int64_t* assign) {
-    std::vector<int> hist(k, 0);
-    for (int i = 0; i < n; i++) {
+double imbalance_factor(int64_t n, int k, const int64_t* assign) {
+    std::vector<int64_t> hist(k, 0);
+    for (int64_t i = 0; i < n; i++) {
         hist[assign[i]]++;
     }
 
@@ -589,9 +586,9 @@ int64_t count_gt(int64_t n, const T* row, T threshold) {
 } // namespace
 
 template <typename T>
-void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
-    this->L_res = L_res_2;
-    L_res_2[0] = 0;
+void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_init) {
+    this->L_res = L_res_init;
+    L_res_init[0] = 0;
     int64_t j = 0;
     for (int64_t i = 0; i < nq; i++) {
         int64_t n_in;
@@ -602,11 +599,11 @@ void CombinerRangeKNN<T>::compute_sizes(int64_t* L_res_2) {
             n_in = lim_remain[j + 1] - lim_remain[j];
             j++;
         }
-        L_res_2[i + 1] = n_in; // L_res_2[i] + n_in;
+        L_res_init[i + 1] = n_in; // L_res_init[i] + n_in;
     }
     // cumsum
     for (int64_t i = 0; i < nq; i++) {
-        L_res_2[i + 1] += L_res_2[i];
+        L_res_init[i + 1] += L_res_init[i];
     }
 }
 

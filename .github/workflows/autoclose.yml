@@ -1,4 +1,4 @@
-name: Close inactive issues
+name: Close Inactive Issues
 on:
   schedule:
     - cron: "30 1 * * *"
@@ -13,7 +13,6 @@ jobs:
       - uses: actions/stale@v5
         with:
           only-labels: autoclose
-          labels-to-remove-when-unstale: autoclose
           days-before-issue-stale: 7
           days-before-issue-close: 7
           stale-issue-label: "stale"

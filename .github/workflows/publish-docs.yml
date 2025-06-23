@@ -1,4 +1,4 @@
-name: publish-docs
+name: Publish Docs
 on:
   page_build:
     branches:

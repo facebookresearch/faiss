@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@ template <typename T>
 struct GetCudaType;
 
 #ifdef USE_AMD_ROCM
+
 template <>
 struct GetCudaType<float> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_32F;
@@ -30,7 +31,14 @@ template <>
 struct GetCudaType<half> {
     static constexpr hipblasDatatype_t Type = HIPBLAS_R_16F;
 };
+
+template <>
+struct GetCudaType<__hip_bfloat16> {
+    static constexpr hipblasDatatype_t Type = HIPBLAS_R_16B;
+};
+
 #else
+
 template <>
 struct GetCudaType<float> {
     static constexpr cudaDataType_t Type = CUDA_R_32F;
@@ -40,6 +48,12 @@ template <>
 struct GetCudaType<half> {
     static constexpr cudaDataType_t Type = CUDA_R_16F;
 };
+
+template <>
+struct GetCudaType<__nv_bfloat16> {
+    static constexpr cudaDataType_t Type = CUDA_R_16BF;
+};
+
 #endif
 
 template <typename AT, typename BT>

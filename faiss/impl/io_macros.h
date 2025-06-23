@@ -1,11 +1,13 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+#include <faiss/impl/maybe_owned_vector.h>
 
 /*************************************************************
  * I/O macros
@@ -43,13 +45,6 @@
         FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
         (vec).resize(size);                                          \
         READANDCHECK((vec).data(), size);                            \
-    }
-
-#define READSTRING(s)                     \
-    {                                     \
-        size_t size = (s).size();         \
-        WRITEANDCHECK(&size, 1);          \
-        WRITEANDCHECK((s).c_str(), size); \
     }
 
 #define WRITEANDCHECK(ptr, n)                         \

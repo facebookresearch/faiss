@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -114,10 +114,8 @@ __global__ void gatherReconstructByIds(
     auto vec = vecs[id];
     auto outVec = out[blockIdx.x];
 
-    Convert<T, float> conv;
-
     for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
-        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
+        outVec[i] = id == idx_t(-1) ? 0.0f : ConvertTo<float>::to(vec[i]);
     }
 }
 
@@ -131,10 +129,8 @@ __global__ void gatherReconstructByRange(
     auto vec = vecs[id];
     auto outVec = out[blockIdx.x];
 
-    Convert<T, float> conv;
-
     for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
-        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
+        outVec[i] = id == idx_t(-1) ? 0.0f : ConvertTo<float>::to(vec[i]);
     }
 }
 

@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -5,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2023-2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,6 +161,10 @@ GpuMemoryReservation::~GpuMemoryReservation() {
 
 GpuResources::~GpuResources() = default;
 
+bool GpuResources::supportsBFloat16CurrentDevice() {
+    return supportsBFloat16(getCurrentDevice());
+}
+
 cublasHandle_t GpuResources::getBlasHandleCurrentDevice() {
     return getBlasHandle(getCurrentDevice());
 }
@@ -168,7 +173,7 @@ cudaStream_t GpuResources::getDefaultStreamCurrentDevice() {
     return getDefaultStream(getCurrentDevice());
 }
 
-#if defined USE_NVIDIA_RAFT
+#if defined USE_NVIDIA_CUVS
 raft::device_resources& GpuResources::getRaftHandleCurrentDevice() {
     return getRaftHandle(getCurrentDevice());
 }

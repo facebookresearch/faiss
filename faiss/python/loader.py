@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -8,9 +8,8 @@ import subprocess
 import logging
 import os
 
+from packaging.version import Version
 
-def Version(v):
-    return [int(x) for x in v.split('.')]
 
 def supported_instruction_sets():
     """
@@ -67,6 +66,9 @@ def supported_instruction_sets():
             result.add("AVX2")
         if "avx512" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
             result.add("AVX512")
+        if "avx512_fp16" in numpy.distutils.cpuinfo.cpu.info[0].get('flags', ""):
+            # avx512_fp16 is supported starting SPR
+            result.add("AVX512_SPR")
         if is_sve_supported():
             result.add("SVE")
         for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
@@ -92,8 +94,20 @@ else:
     instruction_sets.add(opt_level)
 
 loaded = False
+has_AVX512_SPR = any("AVX512_SPR" in x.upper() for x in instruction_sets)
+if has_AVX512_SPR:
+    try:
+        logger.info("Loading faiss with AVX512-SPR support.")
+        from .swigfaiss_avx512_spr import *
+        logger.info("Successfully loaded faiss with AVX512-SPR support.")
+        loaded = True
+    except ImportError as e:
+        logger.info(f"Could not load library with AVX512-SPR support due to:\n{e!r}")
+        # reset so that we load without AVX512 below
+        loaded = False
+
 has_AVX512 = any("AVX512" in x.upper() for x in instruction_sets)
-if has_AVX512:
+if has_AVX512 and not loaded:
     try:
         logger.info("Loading faiss with AVX512 support.")
         from .swigfaiss_avx512 import *

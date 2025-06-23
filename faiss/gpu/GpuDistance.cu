@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -5,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2023, NVIDIA CORPORATION.
+ * Copyright (c) 2023-2024, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +30,12 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/Float16.cuh>
+#include <optional>
 
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/utils/RaftUtils.h>
+#if defined USE_NVIDIA_CUVS
+#include <cuvs/neighbors/brute_force.hpp>
+#include <faiss/gpu/utils/CuvsUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/error.hpp>
@@ -40,26 +44,19 @@
 #include <raft/core/temporary_device_buffer.hpp>
 #include <raft/linalg/unary_op.cuh>
 #include <raft/neighbors/brute_force.cuh>
-#define RAFT_NAME "raft"
 #endif
 
 namespace faiss {
 namespace gpu {
 
-#if defined USE_NVIDIA_RAFT
-using namespace raft::distance;
-using namespace raft::neighbors;
-#endif
-
-bool should_use_raft(GpuDistanceParams args) {
-    cudaDeviceProp prop;
+bool should_use_cuvs(GpuDistanceParams args) {
     int dev = args.device >= 0 ? args.device : getCurrentDevice();
-    cudaGetDeviceProperties(&prop, dev);
+    auto prop = getDeviceProperties(dev);
 
     if (prop.major < 7)
         return false;
 
-    return args.use_raft;
+    return args.use_cuvs;
 }
 
 template <typename T>
@@ -235,15 +232,35 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     FAISS_THROW_IF_NOT_MSG(
             args.vectorType == args.queryType,
             "limitation: both vectorType and queryType must currently "
-            "be the same (F32 or F16");
+            "be the same (F32 / F16 / BF16");
 
-#if defined USE_NVIDIA_RAFT
-    // Note: For now, RAFT bfknn requires queries and vectors to be same layout
-    if (should_use_raft(args) && args.queriesRowMajor == args.vectorsRowMajor) {
-        DistanceType distance = metricFaissToRaft(args.metric, false);
+#if defined USE_NVIDIA_CUVS
+    // Note: For now, cuVS bfknn requires queries and vectors to be same layout
+    if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor &&
+        args.outIndicesType == IndicesDataType::I64 &&
+        args.vectorType == DistanceDataType::F32 && args.k > 0) {
+        cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);
 
         auto resImpl = prov->getResources();
         auto res = resImpl.get();
+        // If the user specified a device, then ensure that it is currently set
+        int device = -1;
+        if (args.device == -1) {
+            // Original behavior if no device is specified, use the current CUDA
+            // thread local device
+            device = getCurrentDevice();
+        } else {
+            // Otherwise, use the device specified in `args`
+            device = args.device;
+
+            FAISS_THROW_IF_NOT_FMT(
+                    device >= 0 && device < getNumDevices(),
+                    "bfKnn: device specified must be -1 (current CUDA thread local device) "
+                    "or within the range [0, %d)",
+                    getNumDevices());
+        }
+
+        DeviceScope scope(device);
         raft::device_resources& handle = res->getRaftHandleCurrentDevice();
         auto stream = res->getDefaultStreamCurrentDevice();
 
@@ -299,9 +316,10 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         raft::vector_extent<int64_t>(num_queries));
                 norms_view = norms->view();
             }
-            raft::neighbors::brute_force::index idx(
+
+            cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
-            raft::neighbors::brute_force::search<float, idx_t>(
+            cuvs::neighbors::brute_force::search(
                     handle, idx, search.view(), inds.view(), dists.view());
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
@@ -322,20 +340,26 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                             reinterpret_cast<const float*>(args.queries)),
                     raft::matrix_extent<int64_t>(num_queries, dims));
 
-            std::vector<raft::device_matrix_view<
+            std::optional<raft::temporary_device_buffer<
                     const float,
-                    int64_t,
-                    raft::col_major>>
-                    index_vec = {index.view()};
+                    raft::vector_extent<int64_t>>>
+                    norms;
+            std::optional<raft::device_vector_view<const float, int64_t>>
+                    norms_view;
+            if (args.vectorNorms) {
+                norms = raft::make_readonly_temporary_device_buffer<
+                        const float,
+                        int64_t>(
+                        handle,
+                        args.vectorNorms,
+                        raft::vector_extent<int64_t>(num_queries));
+                norms_view = norms->view();
+            }
 
-            brute_force::knn(
-                    handle,
-                    index_vec,
-                    search.view(),
-                    inds.view(),
-                    dists.view(),
-                    distance,
-                    metric_arg);
+            cuvs::neighbors::brute_force::index<float> idx(
+                    handle, index.view(), norms_view, distance, metric_arg);
+            cuvs::neighbors::brute_force::search(
+                    handle, idx, search.view(), inds.view(), dists.view());
         }
 
         if (args.metric == MetricType::METRIC_Lp) {
@@ -357,16 +381,22 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         handle.sync_stream();
     } else
 #else
-    if (should_use_raft(args)) {
+    if (should_use_cuvs(args)) {
         FAISS_THROW_IF_NOT_MSG(
-                !should_use_raft(args),
-                "RAFT has not been compiled into the current version so it cannot be used.");
+                !should_use_cuvs(args),
+                "cuVS has not been compiled into the current version so it cannot be used.");
     } else
 #endif
             if (args.vectorType == DistanceDataType::F32) {
         bfKnnConvert<float>(prov, args);
     } else if (args.vectorType == DistanceDataType::F16) {
         bfKnnConvert<half>(prov, args);
+    } else if (args.vectorType == DistanceDataType::BF16) {
+        if (prov->getResources()->supportsBFloat16CurrentDevice()) {
+            bfKnnConvert<__nv_bfloat16>(prov, args);
+        } else {
+            FAISS_THROW_MSG("not compiled with bfloat16 support");
+        }
     } else {
         FAISS_THROW_MSG("unknown vectorType");
     }
@@ -433,8 +463,10 @@ void bfKnn_single_query_shard(
             args.k > 0,
             "bfKnn_tiling: tiling vectors is only supported for k > 0");
     size_t distance_size = args.vectorType == DistanceDataType::F32 ? 4
-            : args.vectorType == DistanceDataType::F16              ? 2
-                                                                    : 0;
+            : (args.vectorType == DistanceDataType::F16 ||
+               args.vectorType == DistanceDataType::BF16)
+            ? 2
+            : 0;
     FAISS_THROW_IF_NOT_MSG(
             distance_size > 0, "bfKnn_tiling: unknown vectorType");
     size_t shard_size = vectorsMemoryLimit / (args.dims * distance_size);
@@ -491,8 +523,10 @@ void bfKnn_tiling(
             args.k > 0,
             "bfKnn_tiling: tiling queries is only supported for k > 0");
     size_t distance_size = args.queryType == DistanceDataType::F32 ? 4
-            : args.queryType == DistanceDataType::F16              ? 2
-                                                                   : 0;
+            : (args.queryType == DistanceDataType::F16 ||
+               args.queryType == DistanceDataType::BF16)
+            ? 2
+            : 0;
     FAISS_THROW_IF_NOT_MSG(
             distance_size > 0, "bfKnn_tiling: unknown queryType");
     size_t label_size = args.outIndicesType == IndicesDataType::I64 ? 8

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +29,15 @@ void IndexFlatCodes::add(idx_t n, const float* x) {
     }
     codes.resize((ntotal + n) * code_size);
     sa_encode(n, x, codes.data() + (ntotal * code_size));
+    ntotal += n;
+}
+
+void IndexFlatCodes::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes_in,
+        const idx_t* /* xids */) {
+    codes.resize((ntotal + n) * code_size);
+    memcpy(codes.data() + (ntotal * code_size), codes_in, n * code_size);
     ntotal += n;
 }
 
@@ -101,7 +110,7 @@ CodePacker* IndexFlatCodes::get_CodePacker() const {
 }
 
 void IndexFlatCodes::permute_entries(const idx_t* perm) {
-    std::vector<uint8_t> new_codes(codes.size());
+    MaybeOwnedVector<uint8_t> new_codes(codes.size());
 
     for (idx_t i = 0; i < ntotal; i++) {
         memcpy(new_codes.data() + i * code_size,

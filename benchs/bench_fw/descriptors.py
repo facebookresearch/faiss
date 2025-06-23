@@ -83,6 +83,29 @@ class DatasetDescriptor:
 
     embedding_column: Optional[str] = None
 
+    # only when the embedding column is a map
+    embedding_column_key: Optional[Any] = None
+
+    embedding_id_column: Optional[str] = None
+
+    # only used when previous_assignment_table is set
+    # this represents the centroid id that the embedding was mapped to
+    # in a previous clustering job
+    centroid_id_column: Optional[str] = None
+
+    # filters on the dataset where each filter is a
+    # string rep of a filter expression
+    filters: Optional[List[str]] = None
+
+    # unused in open-source
+    splits_distribution: Optional[List[List[bytes]]] = None
+
+    # unused in open-source
+    splits: Optional[List[bytes]] = None
+
+    # unused in open-source
+    serialized_df: Optional[str] = None
+
     sampling_rate: Optional[float] = None
 
     # sampling column for xdb
@@ -94,6 +117,10 @@ class DatasetDescriptor:
 
     # desc_name
     desc_name: Optional[str] = None
+
+    filename_suffix: Optional[str] = None
+
+    normalize_L2: bool = False
 
     def __hash__(self):
         return hash(self.get_filename())
@@ -118,6 +145,8 @@ class DatasetDescriptor:
             ).replace("=", "_").replace("/", "_")
         if self.num_vectors is not None:
             filename += f"_{self.num_vectors}"
+        if self.filename_suffix is not None:
+            filename += f"_{self.filename_suffix}"
         filename += "."
 
         self.desc_name = filename
@@ -203,6 +232,9 @@ class CodecDescriptor(IndexBaseDescriptor):
     factory: Optional[str] = None
     construction_params: Optional[List[Dict[str, int]]] = None
     training_vectors: Optional[DatasetDescriptor] = None
+    normalize_l2: bool = False
+    is_spherical: bool = False
+    FILENAME_PREFIX: str = "xt"
 
     def __post_init__(self):
         self.get_name()
@@ -243,7 +275,7 @@ class CodecDescriptor(IndexBaseDescriptor):
         name += f"d_{self.d}.{self.metric.upper()}."
         if self.factory != "Flat":
             assert self.training_vectors is not None
-            name += self.training_vectors.get_filename("xt")
+            name += self.training_vectors.get_filename(CodecDescriptor.FILENAME_PREFIX)
         name += IndexBaseDescriptor.param_dict_list_to_name(self.construction_params)
         return name
 
@@ -267,6 +299,7 @@ class CodecDescriptor(IndexBaseDescriptor):
 class IndexDescriptor(IndexBaseDescriptor):
     codec_desc: Optional[CodecDescriptor] = None
     database_desc: Optional[DatasetDescriptor] = None
+    FILENAME_PREFIX: str = "xb"
 
     def __hash__(self):
         return hash(str(self))
@@ -279,14 +312,14 @@ class IndexDescriptor(IndexBaseDescriptor):
 
     def get_name(self) -> str:
         if self.desc_name is None:
-            self.desc_name = self.codec_desc.get_name() + self.database_desc.get_filename(prefix="xb")
+            self.desc_name = self.codec_desc.get_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
 
         return self.desc_name
 
     def flat_name(self):
         if self.flat_desc_name is not None:
             return self.flat_desc_name
-        self.flat_desc_name = self.codec_desc.flat_name() + self.database_desc.get_filename(prefix="xb")
+        self.flat_desc_name = self.codec_desc.flat_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
         return self.flat_desc_name
 
     # alias is used to refer when index is uploaded to blobstore and refered again
@@ -302,6 +335,7 @@ class KnnDescriptor(IndexBaseDescriptor):
     query_dataset: Optional[DatasetDescriptor] = None
     search_params: Optional[Dict[str, int]] = None
     reconstruct: bool = False
+    FILENAME_PREFIX: str = "q"
     # range metric definitions
     # key: name
     # value: one of the following:
@@ -327,22 +361,25 @@ class KnnDescriptor(IndexBaseDescriptor):
         return hash(str(self))
 
     def get_name(self):
+        if self.desc_name is not None:
+            return self.desc_name
         name = self.index_desc.get_name()
         name += IndexBaseDescriptor.param_dict_to_name(self.search_params)
-        name += self.query_dataset.get_filename("q")
+        name += self.query_dataset.get_filename(KnnDescriptor.FILENAME_PREFIX)
         name += f"k_{self.k}."
         name += f"t_{self.num_threads}."
         if self.reconstruct:
             name += "rec."
         else:
             name += "knn."
+        self.desc_name = name
         return name
 
     def flat_name(self):
         if self.flat_desc_name is not None:
             return self.flat_desc_name
         name = self.index_desc.flat_name()
-        name += self.query_dataset.get_filename("q")
+        name += self.query_dataset.get_filename(KnnDescriptor.FILENAME_PREFIX)
         name += f"k_{self.k}."
         name += f"t_{self.num_threads}."
         if self.reconstruct:

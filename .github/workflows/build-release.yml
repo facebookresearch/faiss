@@ -1,0 +1,144 @@
+on:
+  workflow_call:
+    secrets:
+      ANACONDA_API_TOKEN:
+        required: true
+env:
+  OMP_NUM_THREADS: '10'
+  MKL_THREADING_LAYER: GNU
+jobs:
+  linux-x86_64-packages:
+    name: Linux x86_64 packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+  linux-x86_64-GPU-packages-CUDA-11-4-4:
+    name: Linux x86_64 GPU packages (CUDA 11.4.4)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
+      FAISS_FLATTEN_CONDA_INCLUDES: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+          cuda: "11.4.4"
+  linux-x86_64-GPU-CUVS-packages-CUDA11-8-0:
+    name: Linux x86_64 GPU w/ cuVS packages (CUDA 11.8.0)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+          cuvs: "ON"
+          cuda: "11.8.0"
+  linux-x86_64-GPU-packages-CUDA-12-1-1:
+    name: Linux x86_64 GPU packages (CUDA 12.1.1)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+          cuda: "12.1.1"
+  linux-x86_64-GPU-CUVS-packages-CUDA12-4-0:
+    name: Linux x86_64 GPU w/ cuVS packages (CUDA 12.4.0)
+    runs-on: 4-core-ubuntu-gpu-t4
+    env:
+      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+          cuvs: "ON"
+          cuda: "12.4.0"
+  windows-x86_64-packages:
+    name: Windows x86_64 packages
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+  osx-arm64-packages:
+    name: OSX arm64 packages
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main
+  linux-arm64-packages:
+    name: Linux arm64 packages
+    runs-on: 2-core-ubuntu-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Build and Package (conda)
+        uses: ./.github/actions/build_conda
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        with:
+          label: main

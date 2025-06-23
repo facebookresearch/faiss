@@ -1,0 +1,136 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
+{% set number = GIT_DESCRIBE_NUMBER %}
+{% if cudatoolkit == '11.8.0' %}
+{% set cuda_constraints=">=11.4,<12" %}
+{% set libcublas_constraints=">=11.6,<12" %}
+{% set cudart_constraints="=12.6.77" %}
+{% elif cudatoolkit == '12.4.0' %}
+{% set cuda_constraints=">=12.1,<12.5" %}
+{% set libcublas_constraints=">=12.1,<13" %}
+{% set cudart_constraints=">=12.4,<12.5" %}
+{% endif %}
+
+package:
+  name: faiss-pkg
+  version: {{ version }}
+
+build:
+  number: {{ number }}
+
+about:
+  home: https://github.com/facebookresearch/faiss
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A library for efficient similarity search and clustering of dense vectors.
+
+source:
+  git_url: ../../
+
+outputs:
+  - name: libfaiss
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
+    script: build-lib-arm64.sh  # [not x86_64]
+    script: build-lib.bat  # [win]
+    build:
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}_cuvs{{ suffix }}"
+      run_exports:
+        - {{ pin_compatible('libfaiss', exact=True) }}
+      script_env:
+        - CUDA_ARCHS
+    requirements:
+      build:
+        - {{ compiler('cxx') }} =12.4
+        - sysroot_linux-64 =2.17 # [linux64]
+        - llvm-openmp  # [osx]
+        - cmake >=3.30.4
+        - make =4.2 # [not win]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - mkl =2023  # [x86_64]
+        - mkl-devel =2023  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
+        - cuda-cudart {{ cudart_constraints }}
+        - cuda-cudart-dev {{ cudart_constraints }}
+        - cuda-cudart-static {{ cudart_constraints }}
+        - cuda-cudart_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-dev_linux-64 {{ cudart_constraints }}  # [linux64]
+        - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
+      host:
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - mkl =2023  # [x86_64]
+        - openblas =0.3.30 # [not x86_64]
+        - libcuvs =25.04
+        - cuda-version {{ cuda_constraints }}
+      run:
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - mkl =2023  # [x86_64]
+        - openblas =0.3.30 # [not x86_64]
+        - cuda-cudart {{ cuda_constraints }}
+        - libcublas {{ libcublas_constraints }}
+        - libcuvs =25.04
+        - cuda-version {{ cuda_constraints }}
+        - libnvjitlink
+    test:
+      requires:
+        - conda-build
+      commands:
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+
+  - name: faiss-gpu-cuvs
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
+    script: build-pkg-arm64.sh # [not x86_64]
+    script: build-pkg.bat  # [win]
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
+    requirements:
+      build:
+        - {{ compiler('cxx') }} =12.4
+        - sysroot_linux-64 =2.17 # [linux64]
+        - swig =4.0
+        - cmake >=3.26.4
+        - make =4.2 # [not win]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - mkl =2023.0  # [x86_64]
+        - cuda-toolkit {{ cudatoolkit }}
+      host:
+        - mkl =2023.0  # [x86_64]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+      run:
+        - mkl =2023.0  # [x86_64]
+        - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - packaging
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+    test:
+      requires:
+        - numpy >=1.19,<2
+        - scipy
+        - pytorch <2.5
+        - pytorch-cuda {{ cuda_constraints }}
+      commands:
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+        - cp tests/common_faiss_tests.py faiss/gpu/test
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+        - sh test_cpu_dispatch.sh  # [linux64]
+      files:
+        - test_cpu_dispatch.sh  # [linux64]
+      source_files:
+        - tests/
+        - faiss/gpu/test/

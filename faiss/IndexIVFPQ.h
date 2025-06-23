@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,7 +56,8 @@ struct IndexIVFPQ : IndexIVF {
             size_t nlist,
             size_t M,
             size_t nbits_per_idx,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void encode_vectors(
             idx_t n,
@@ -134,7 +135,8 @@ struct IndexIVFPQ : IndexIVF {
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
-            const IDSelector* sel) const override;
+            const IDSelector* sel,
+            const IVFSearchParameters* params) const override;
 
     /// build precomputed table
     void precompute_table();

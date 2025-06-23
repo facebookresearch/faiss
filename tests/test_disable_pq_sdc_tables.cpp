@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,15 @@
 pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 TEST(IO, TestReadHNSWPQ_whenSDCDisabledFlagPassed_thenDisableSDCTable) {
-    Tempfilename index_filename(&temp_file_mutex, "/tmp/faiss_TestReadHNSWPQ");
+    // Create a temp file name with a randomized component for stress runs
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> dist(0, 9999999);
+    std::string temp_file_name =
+            "/tmp/faiss_TestReadHNSWPQ" + std::to_string(int(dist(mt)));
+    Tempfilename index_filename(&temp_file_mutex, temp_file_name);
+
+    // Create a HNSW index with PQ encoding
     int d = 32, n = 256;
     std::default_random_engine rng(123);
     std::uniform_real_distribution<float> u(0, 100);

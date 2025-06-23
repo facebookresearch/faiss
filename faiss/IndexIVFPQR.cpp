@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,8 +30,16 @@ IndexIVFPQR::IndexIVFPQR(
         size_t M,
         size_t nbits_per_idx,
         size_t M_refine,
-        size_t nbits_per_idx_refine)
-        : IndexIVFPQ(quantizer, d, nlist, M, nbits_per_idx),
+        size_t nbits_per_idx_refine,
+        bool own_invlists)
+        : IndexIVFPQ(
+                  quantizer,
+                  d,
+                  nlist,
+                  M,
+                  nbits_per_idx,
+                  METRIC_L2,
+                  own_invlists),
           refine_pq(d, M_refine, nbits_per_idx_refine),
           k_factor(4) {
     by_residual = true;

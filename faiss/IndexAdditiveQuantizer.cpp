@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
-#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -222,7 +221,6 @@ FlatCodesDistanceComputer* IndexAdditiveQuantizer::
                     return new AQDistanceComputerLUT<
                             false,
                             AdditiveQuantizer::ST_norm_cqint8>(*this);
-                    break;
 #undef DISPATCH
                 default:
                     FAISS_THROW_FMT(
@@ -528,7 +526,7 @@ void ResidualCoarseQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params_in) const {
-    float beam_factor = this->beam_factor;
+    float actual_beam_factor = this->beam_factor;
     if (params_in) {
         auto params =
                 dynamic_cast<const SearchParametersResidualCoarseQuantizer*>(
@@ -536,15 +534,15 @@ void ResidualCoarseQuantizer::search(
         FAISS_THROW_IF_NOT_MSG(
                 params,
                 "need SearchParametersResidualCoarseQuantizer parameters");
-        beam_factor = params->beam_factor;
+        actual_beam_factor = params->beam_factor;
     }
 
-    if (beam_factor < 0) {
+    if (actual_beam_factor < 0) {
         AdditiveCoarseQuantizer::search(n, x, k, distances, labels);
         return;
     }
 
-    int beam_size = int(k * beam_factor);
+    int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
         beam_size = ntotal;
     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
@@ -121,7 +122,7 @@ struct HNSW {
 
     /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
     /// for all levels. this is where all storage goes.
-    std::vector<storage_idx_t> neighbors;
+    MaybeOwnedVector<storage_idx_t> neighbors;
 
     /// entry point in the search structure (one of the points with maximum
     /// level
@@ -200,7 +201,7 @@ struct HNSW {
             DistanceComputer& qdis,
             ResultHandler<C>& res,
             VisitedTable& vt,
-            const SearchParametersHNSW* params = nullptr) const;
+            const SearchParameters* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
@@ -212,7 +213,7 @@ struct HNSW {
             int search_type,
             HNSWStats& search_stats,
             VisitedTable& vt,
-            const SearchParametersHNSW* params = nullptr) const;
+            const SearchParameters* params = nullptr) const;
 
     void reset();
 
@@ -264,7 +265,7 @@ int search_from_candidates(
         HNSWStats& stats,
         int level,
         int nres_in = 0,
-        const SearchParametersHNSW* params = nullptr);
+        const SearchParameters* params = nullptr);
 
 HNSWStats greedy_update_nearest(
         const HNSW& hnsw,
@@ -280,5 +281,15 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         int ef,
         VisitedTable* vt,
         HNSWStats& stats);
+
+void search_neighbors_to_add(
+        HNSW& hnsw,
+        DistanceComputer& qdis,
+        std::priority_queue<HNSW::NodeDistCloser>& results,
+        int entry_point,
+        float d_entry_point,
+        int level,
+        VisitedTable& vt,
+        bool reference_version = false);
 
 } // namespace faiss

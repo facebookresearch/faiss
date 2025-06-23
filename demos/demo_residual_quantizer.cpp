@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -103,7 +103,7 @@ int main() {
         index.is_trained = true;
 
         // override vectors
-        index.codes = raw_codes;
+        index.codes = faiss::MaybeOwnedVector<uint8_t>(raw_codes);
         index.ntotal = nb;
 
         tic();

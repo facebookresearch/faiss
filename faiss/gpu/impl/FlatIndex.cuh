@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -95,6 +96,9 @@ class FlatIndex {
 
     /// Free all storage
     void reset();
+
+    // Add a virtual destructor to avoid warnings
+    virtual ~FlatIndex() {}
 
    protected:
     /// Collection of GPU resources that we use

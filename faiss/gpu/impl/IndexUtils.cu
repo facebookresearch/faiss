@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,23 +18,26 @@ namespace gpu {
 /// Returns the maximum k-selection value supported based on the CUDA SDK that
 /// we were compiled with. .cu files can use DeviceDefs.cuh, but this is for
 /// non-CUDA files
-int getMaxKSelection() {
+int getMaxKSelection(bool use_cuvs) {
+    if (use_cuvs) {
+        return 16384;
+    }
     return GPU_MAX_SELECTION_K;
 }
 
-void validateKSelect(int k) {
+void validateKSelect(int k, bool use_cuvs) {
     FAISS_THROW_IF_NOT_FMT(
-            k > 0 && k <= getMaxKSelection(),
+            k > 0 && k <= getMaxKSelection(use_cuvs),
             "GPU index only supports min/max-K selection up to %d (requested %d)",
-            getMaxKSelection(),
+            getMaxKSelection(use_cuvs),
             k);
 }
 
-void validateNProbe(size_t nprobe) {
+void validateNProbe(size_t nprobe, bool use_cuvs) {
     FAISS_THROW_IF_NOT_FMT(
-            nprobe > 0 && nprobe <= (size_t)getMaxKSelection(),
+            nprobe > 0 && nprobe <= (size_t)getMaxKSelection(use_cuvs),
             "GPU IVF index only supports nprobe selection up to %d (requested %zu)",
-            getMaxKSelection(),
+            getMaxKSelection(use_cuvs),
             nprobe);
 }
 

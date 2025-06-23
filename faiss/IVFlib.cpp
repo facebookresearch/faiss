@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 #include <omp.h>
 
 #include <memory>
+#include <numeric>
 
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
@@ -16,7 +17,9 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/MetaIndexes.h>
+#include <faiss/clone_index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/index_io.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -199,7 +202,27 @@ static void shift_and_add(
 }
 
 template <class T>
+static void shift_and_add(
+        MaybeOwnedVector<T>& dst,
+        size_t remove,
+        const MaybeOwnedVector<T>& src) {
+    if (remove > 0)
+        memmove(dst.data(),
+                dst.data() + remove,
+                (dst.size() - remove) * sizeof(T));
+    size_t insert_point = dst.size() - remove;
+    dst.resize(insert_point + src.size());
+    memcpy(dst.data() + insert_point, src.data(), src.size() * sizeof(T));
+}
+
+template <class T>
 static void remove_from_begin(std::vector<T>& v, size_t remove) {
+    if (remove > 0)
+        v.erase(v.begin(), v.begin() + remove);
+}
+
+template <class T>
+static void remove_from_begin(MaybeOwnedVector<T>& v, size_t remove) {
     if (remove > 0)
         v.erase(v.begin(), v.begin() + remove);
 }
@@ -517,6 +540,196 @@ void ivf_residual_add_from_flat_codes(
         }
     }
     index->ntotal += nb;
+}
+
+int64_t DefaultShardingFunction::operator()(int64_t i, int64_t shard_count) {
+    return i % shard_count;
+}
+
+void handle_ivf(
+        faiss::IndexIVF* index,
+        int64_t shard_count,
+        const std::string& filename_template,
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    std::vector<faiss::IndexIVF*> sharded_indexes(shard_count);
+    auto clone = static_cast<faiss::IndexIVF*>(faiss::clone_index(index));
+    clone->quantizer->reset();
+    for (int64_t i = 0; i < shard_count; i++) {
+        sharded_indexes[i] =
+                static_cast<faiss::IndexIVF*>(faiss::clone_index(clone));
+        if (generate_ids) {
+            // Assume the quantizer does not natively support add_with_ids.
+            sharded_indexes[i]->quantizer =
+                    new IndexIDMap2(sharded_indexes[i]->quantizer);
+        }
+    }
+
+    // assign centroids to each sharded Index based on sharding_function, and
+    // add them to the quantizer of each sharded index
+    std::vector<std::vector<float>> sharded_centroids(shard_count);
+    std::vector<std::vector<idx_t>> xids(shard_count);
+    for (int64_t i = 0; i < index->quantizer->ntotal; i++) {
+        int64_t shard_id = (*sharding_function)(i, shard_count);
+        // Since the quantizer does not natively support add_with_ids, we simply
+        // generate them.
+        xids[shard_id].push_back(i);
+        float* reconstructed = new float[index->quantizer->d];
+        index->quantizer->reconstruct(i, reconstructed);
+        sharded_centroids[shard_id].insert(
+                sharded_centroids[shard_id].end(),
+                &reconstructed[0],
+                &reconstructed[index->quantizer->d]);
+        delete[] reconstructed;
+    }
+    for (int64_t i = 0; i < shard_count; i++) {
+        if (generate_ids) {
+            sharded_indexes[i]->quantizer->add_with_ids(
+                    sharded_centroids[i].size() / index->quantizer->d,
+                    sharded_centroids[i].data(),
+                    xids[i].data());
+        } else {
+            sharded_indexes[i]->quantizer->add(
+                    sharded_centroids[i].size() / index->quantizer->d,
+                    sharded_centroids[i].data());
+        }
+    }
+
+    for (int64_t i = 0; i < shard_count; i++) {
+        char fname[256];
+        snprintf(fname, 256, filename_template.c_str(), i);
+        faiss::write_index(sharded_indexes[i], fname);
+    }
+
+    for (int64_t i = 0; i < shard_count; i++) {
+        delete sharded_indexes[i];
+    }
+}
+
+void handle_binary_ivf(
+        faiss::IndexBinaryIVF* index,
+        int64_t shard_count,
+        const std::string& filename_template,
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    std::vector<faiss::IndexBinaryIVF*> sharded_indexes(shard_count);
+
+    auto clone = static_cast<faiss::IndexBinaryIVF*>(
+            faiss::clone_binary_index(index));
+    clone->quantizer->reset();
+
+    for (int64_t i = 0; i < shard_count; i++) {
+        sharded_indexes[i] = static_cast<faiss::IndexBinaryIVF*>(
+                faiss::clone_binary_index(clone));
+        if (generate_ids) {
+            // Assume the quantizer does not natively support add_with_ids.
+            sharded_indexes[i]->quantizer =
+                    new IndexBinaryIDMap2(sharded_indexes[i]->quantizer);
+        }
+    }
+
+    // assign centroids to each sharded Index based on sharding_function, and
+    // add them to the quantizer of each sharded index
+    int64_t reconstruction_size = index->quantizer->d / 8;
+    std::vector<std::vector<uint8_t>> sharded_centroids(shard_count);
+    std::vector<std::vector<idx_t>> xids(shard_count);
+    for (int64_t i = 0; i < index->quantizer->ntotal; i++) {
+        int64_t shard_id = (*sharding_function)(i, shard_count);
+        // Since the quantizer does not natively support add_with_ids, we simply
+        // generate them.
+        xids[shard_id].push_back(i);
+        uint8_t* reconstructed = new uint8_t[reconstruction_size];
+        index->quantizer->reconstruct(i, reconstructed);
+        sharded_centroids[shard_id].insert(
+                sharded_centroids[shard_id].end(),
+                &reconstructed[0],
+                &reconstructed[reconstruction_size]);
+        delete[] reconstructed;
+    }
+    for (int64_t i = 0; i < shard_count; i++) {
+        if (generate_ids) {
+            sharded_indexes[i]->quantizer->add_with_ids(
+                    sharded_centroids[i].size() / reconstruction_size,
+                    sharded_centroids[i].data(),
+                    xids[i].data());
+        } else {
+            sharded_indexes[i]->quantizer->add(
+                    sharded_centroids[i].size() / reconstruction_size,
+                    sharded_centroids[i].data());
+        }
+    }
+
+    for (int64_t i = 0; i < shard_count; i++) {
+        char fname[256];
+        snprintf(fname, 256, filename_template.c_str(), i);
+        faiss::write_index_binary(sharded_indexes[i], fname);
+    }
+
+    for (int64_t i = 0; i < shard_count; i++) {
+        delete sharded_indexes[i];
+    }
+}
+
+template <typename IndexType>
+void sharding_helper(
+        IndexType* index,
+        int64_t shard_count,
+        const std::string& filename_template,
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    FAISS_THROW_IF_MSG(index->quantizer->ntotal == 0, "No centroids to shard.");
+    FAISS_THROW_IF_MSG(
+            filename_template.find("%d") == std::string::npos,
+            "Invalid filename_template. Must contain format specifier for shard count.");
+
+    DefaultShardingFunction default_sharding_function;
+    if (sharding_function == nullptr) {
+        sharding_function = &default_sharding_function;
+    }
+
+    if (typeid(IndexType) == typeid(faiss::IndexIVF)) {
+        handle_ivf(
+                dynamic_cast<faiss::IndexIVF*>(index),
+                shard_count,
+                filename_template,
+                sharding_function,
+                generate_ids);
+    } else if (typeid(IndexType) == typeid(faiss::IndexBinaryIVF)) {
+        handle_binary_ivf(
+                dynamic_cast<faiss::IndexBinaryIVF*>(index),
+                shard_count,
+                filename_template,
+                sharding_function,
+                generate_ids);
+    }
+}
+
+void shard_ivf_index_centroids(
+        faiss::IndexIVF* index,
+        int64_t shard_count,
+        const std::string& filename_template,
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    sharding_helper(
+            index,
+            shard_count,
+            filename_template,
+            sharding_function,
+            generate_ids);
+}
+
+void shard_binary_ivf_index_centroids(
+        faiss::IndexBinaryIVF* index,
+        int64_t shard_count,
+        const std::string& filename_template,
+        ShardingFunction* sharding_function,
+        bool generate_ids) {
+    sharding_helper(
+            index,
+            shard_count,
+            filename_template,
+            sharding_function,
+            generate_ids);
 }
 
 } // namespace ivflib

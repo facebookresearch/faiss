@@ -16,7 +16,7 @@ The GPU implementation can accept input from either CPU or GPU memory. On a serv
 
 ## Installing
 
-Faiss comes with precompiled libraries for Anaconda in Python, see [faiss-cpu](https://anaconda.org/pytorch/faiss-cpu) and [faiss-gpu](https://anaconda.org/pytorch/faiss-gpu). The library is mostly implemented in C++, the only dependency is a [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) implementation. Optional GPU support is provided via CUDA or AMD ROCm, and the Python interface is also optional. It compiles with cmake. See [INSTALL.md](INSTALL.md) for details.
+Faiss comes with precompiled libraries for Anaconda in Python, see [faiss-cpu](https://anaconda.org/pytorch/faiss-cpu), [faiss-gpu](https://anaconda.org/pytorch/faiss-gpu) and [faiss-gpu-cuvs](https://anaconda.org/pytorch/faiss-gpu-cuvs). The library is mostly implemented in C++, the only dependency is a [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) implementation. Optional GPU support is provided via CUDA or AMD ROCm, and the Python interface is also optional. The backend GPU implementations of NVIDIA [cuVS](https://github.com/rapidsai/cuvs) can also be enabled optionally. It compiles with cmake. See [INSTALL.md](INSTALL.md) for details.
 
 ## How Faiss works
 
@@ -80,7 +80,7 @@ For the GPU version of Faiss, please cite:
 
 ## Join the Faiss community
 
-For public discussion of Faiss or for questions, there is a Facebook group at https://www.facebook.com/groups/faissusers/
+For public discussion of Faiss or for questions, visit https://github.com/facebookresearch/faiss/discussions.
 
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.

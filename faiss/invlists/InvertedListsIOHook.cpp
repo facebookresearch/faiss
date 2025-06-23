@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,9 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <faiss/invlists/OnDiskInvertedLists.h>
-#endif // !_MSC_VER
+#endif // !_WIN32
 
 namespace faiss {
 
@@ -33,7 +33,7 @@ namespace {
 /// std::vector that deletes its contents
 struct IOHookTable : std::vector<InvertedListsIOHook*> {
     IOHookTable() {
-#ifndef _MSC_VER
+#ifndef _WIN32
         push_back(new OnDiskInvertedListsIOHook());
 #endif
         push_back(new BlockInvertedListsIOHook());

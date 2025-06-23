@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,6 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/Clustering.h>
-#include <faiss/IndexFlat.h>
 
 #include <faiss/utils/hamming.h>
 
@@ -47,10 +46,14 @@ IndexIVFPQ::IndexIVFPQ(
         size_t nlist,
         size_t M,
         size_t nbits_per_idx,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), pq(d, M, nbits_per_idx) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
+          pq(d, M, nbits_per_idx) {
     code_size = pq.code_size;
-    invlists->code_size = code_size;
+    if (own_invlists) {
+        invlists->code_size = code_size;
+    }
     is_trained = false;
     by_residual = true;
     use_precomputed_table = 0;
@@ -1202,6 +1205,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
               sel(sel) {
         this->store_pairs = store_pairs;
         this->keep_max = is_similarity_metric(METRIC_TYPE);
+        this->code_size = this->pq.code_size;
     }
 
     void set_query(const float* query) override {
@@ -1322,7 +1326,8 @@ InvertedListScanner* get_InvertedListScanner2(
 
 InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     if (sel) {
         return get_InvertedListScanner2<true>(*this, store_pairs, sel);
     } else {

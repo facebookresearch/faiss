@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
-
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -103,7 +102,7 @@ use_gpu = False
 if use_gpu:
     # if this fails, it means that the GPU version was not comp
     assert faiss.StandardGpuResources, \
-        "FAISS was not compiled with GPU support, or loading _swigfaiss_gpu.so failed"
+        "Faiss was not compiled with GPU support, or loading _swigfaiss_gpu.so failed"
     res = faiss.StandardGpuResources()
     dev_no = 0
 

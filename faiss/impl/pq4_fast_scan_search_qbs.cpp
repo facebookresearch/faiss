@@ -1,5 +1,5 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/simd_result_handlers.h>
-#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 
