@@ -61,7 +61,7 @@ outputs:
         - mkl =2023.1.0  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.29 # [not x86_64]
+        - openblas =0.3.30 # [not x86_64]
       run:
         - python {{ python }}
         {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
@@ -72,7 +72,7 @@ outputs:
         - mkl =2023.1.0  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.29 # [not x86_64]
+        - openblas =0.3.30 # [not x86_64]
     test:
       requires:
         - conda-build =25.1.2
