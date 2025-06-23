@@ -54,8 +54,10 @@ void GpuParameterSpace::initialize(const Index* index) {
         ParameterRange& pr = add_range("nprobe");
         for (int i = 0; i < 12; i++) {
             size_t nprobe = 1 << i;
-            if (nprobe >= ix->getNumLists() || nprobe > getMaxKSelection())
+            if (nprobe >= ix->getNumLists() ||
+                nprobe > getMaxKSelection(false)) {
                 break;
+            }
             pr.values.push_back(nprobe);
         }
 
