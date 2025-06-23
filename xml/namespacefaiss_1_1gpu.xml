@@ -898,12 +898,17 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="142" column="11" declfile="faiss/gpu/GpuResources.h" declline="142" declcolumn="11"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1_1gpu_1af43e39c84e5b12e107a71dfa5d840e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a5de8f95774724bdf8796cf226773615d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::gpu::getMaxKSelection</definition>
-        <argsstring>()</argsstring>
+        <argsstring>(bool use_cuvs=false)</argsstring>
         <name>getMaxKSelection</name>
         <qualifiedname>faiss::gpu::getMaxKSelection</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>use_cuvs</declname>
+          <defval>false</defval>
+        </param>
         <briefdescription>
 <para>A collection of various utility functions for index implementation. </para>
         </briefdescription>
@@ -914,15 +919,20 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/IndexUtils.h" line="20" column="5" declfile="faiss/gpu/impl/IndexUtils.h" declline="20" declcolumn="5"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1_1gpu_1ad2df4aca9cbd2dcfe0a721ce9dbacfae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a7216961417b5ed8c67740536031ff694" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::validateKSelect</definition>
-        <argsstring>(int k)</argsstring>
+        <argsstring>(int k, bool use_cuvs=false)</argsstring>
         <name>validateKSelect</name>
         <qualifiedname>faiss::gpu::validateKSelect</qualifiedname>
         <param>
           <type>int</type>
           <declname>k</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>use_cuvs</declname>
+          <defval>false</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -932,15 +942,20 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/IndexUtils.h" line="23" column="6" declfile="faiss/gpu/impl/IndexUtils.h" declline="23" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a31363ef889dec438a8d7fb99096900b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a6df8ef747b7fdc7ffe43b40ea28b4430" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::validateNProbe</definition>
-        <argsstring>(size_t nprobe)</argsstring>
+        <argsstring>(size_t nprobe, bool use_cuvs=false)</argsstring>
         <name>validateNProbe</name>
         <qualifiedname>faiss::gpu::validateNProbe</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nprobe</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>use_cuvs</declname>
+          <defval>false</defval>
         </param>
         <briefdescription>
         </briefdescription>

@@ -10295,9 +10295,9 @@
     <member refid="namespacefaiss_1_1gpu_1a899d29db52c5400a548baa534667f1c5" kind="function"><name>makeDevAlloc</name></member>
     <member refid="namespacefaiss_1_1gpu_1a25ba473fa8b757298399a9898435424a" kind="function"><name>makeTempAlloc</name></member>
     <member refid="namespacefaiss_1_1gpu_1acc39275d82143dd1663807a635e59cf9" kind="function"><name>makeSpaceAlloc</name></member>
-    <member refid="namespacefaiss_1_1gpu_1af43e39c84e5b12e107a71dfa5d840e60" kind="function"><name>getMaxKSelection</name></member>
-    <member refid="namespacefaiss_1_1gpu_1ad2df4aca9cbd2dcfe0a721ce9dbacfae" kind="function"><name>validateKSelect</name></member>
-    <member refid="namespacefaiss_1_1gpu_1a31363ef889dec438a8d7fb99096900b1" kind="function"><name>validateNProbe</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a5de8f95774724bdf8796cf226773615d" kind="function"><name>getMaxKSelection</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7216961417b5ed8c67740536031ff694" kind="function"><name>validateKSelect</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6df8ef747b7fdc7ffe43b40ea28b4430" kind="function"><name>validateNProbe</name></member>
     <member refid="namespacefaiss_1_1gpu_1acda5ee38c3dac001ea72db98c99b74a3" kind="function"><name>unpackNonInterleaved</name></member>
     <member refid="namespacefaiss_1_1gpu_1a6751f9cbfed27f2fa200b6a46e0300c8" kind="function"><name>unpackInterleaved</name></member>
     <member refid="namespacefaiss_1_1gpu_1af5fa5a4ee8352024850c45cdceeca8df" kind="function"><name>packNonInterleaved</name></member>
