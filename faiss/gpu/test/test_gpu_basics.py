@@ -177,7 +177,7 @@ class TestAlternativeDistances(unittest.TestCase):
 
     @unittest.skipIf(
         "CUVS" in faiss.get_compile_options(),
-        "only if CUVS is compiled in")
+        "only if CUVS is not compiled in")
     def do_test_gower(self):
         """Special test for Gower distance with mixed numeric/categorical data"""
         res = faiss.StandardGpuResources()
