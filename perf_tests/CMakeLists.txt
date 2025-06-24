@@ -6,6 +6,7 @@
 # @lint-ignore-every LINEWRAP
 project(faiss_perf_tests)
 set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_INSTALL_DOCS OFF)
 
 include(FetchContent)
 FetchContent_Declare(googlebenchmark
