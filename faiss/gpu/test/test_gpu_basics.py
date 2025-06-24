@@ -175,6 +175,9 @@ class TestAlternativeDistances(unittest.TestCase):
         Dnew, Inew = index.search(xq, 10)
         np.testing.assert_array_equal(Inew, Iref)
 
+    @unittest.skipIf(
+        "CUVS" not in faiss.get_compile_options(),
+        "only if CUVS is compiled in")
     def do_test_gower(self):
         """Special test for Gower distance with mixed numeric/categorical data"""
         res = faiss.StandardGpuResources()
