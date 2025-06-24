@@ -16,7 +16,7 @@ from zipfile import ZipFile
 import faiss  # @manual=//faiss/python:pyfaiss
 
 import numpy as np
-import submitit
+import submitit  # @manual=fbsource//third-party/submitit:submitit
 from faiss.contrib.datasets import (  # @manual=//faiss/contrib:faiss_contrib
     dataset_from_name,
 )
