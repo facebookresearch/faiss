@@ -409,6 +409,14 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752ca6fa7c42681d0022558a10e89b3be24a8" prot="public">
+          <name>METRIC_GOWER</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Gower&apos;s distance - numeric dimensions are in [0,1] and categorical dimensions are negative integers </para>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -417,7 +425,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="41"/>
+        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="44"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
@@ -574,7 +582,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="44" column="1" bodyfile="faiss/MetricType.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/MetricType.h" line="47" column="1" bodyfile="faiss/MetricType.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -4053,7 +4061,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="48" column="16" bodyfile="faiss/MetricType.h" bodystart="48" bodyend="51"/>
+        <location file="faiss/MetricType.h" line="51" column="16" bodyfile="faiss/MetricType.h" bodystart="51" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6210,7 +6218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="174" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="174" bodyend="201"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="208" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="208" bodyend="236"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

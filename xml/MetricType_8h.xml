@@ -874,22 +874,25 @@
 <codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Squared<sp/>Eucliden<sp/>distance,<sp/>ignoring<sp/>NaNs</highlight></codeline>
 <codeline lineno="38" refid="namespacefaiss_1afd12191c638da74760ff397cf319752cacb32f4fe0d27316f90eda03ffe999f85" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cacb32f4fe0d27316f90eda03ffe999f85" kindref="member">METRIC_NaNEuclidean</ref>,</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>abs(x<sp/>|<sp/>y):<sp/>the<sp/>distance<sp/>to<sp/>a<sp/>hyperplane</highlight></codeline>
-<codeline lineno="40" refid="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" kindref="member">METRIC_ABS_INNER_PRODUCT</ref>,</highlight></codeline>
-<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="43"><highlight class="comment">///<sp/>all<sp/>vector<sp/>indices<sp/>are<sp/>this<sp/>type</highlight></codeline>
-<codeline lineno="44" refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>=<sp/>int64_t;</highlight></codeline>
+<codeline lineno="40" refid="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" kindref="member">METRIC_ABS_INNER_PRODUCT</ref>,</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Gower&apos;s<sp/>distance<sp/>-<sp/>numeric<sp/>dimensions<sp/>are<sp/>in<sp/>[0,1]<sp/>and<sp/>categorical</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>dimensions<sp/>are<sp/>negative<sp/>integers</highlight></codeline>
+<codeline lineno="43" refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca6fa7c42681d0022558a10e89b3be24a8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca6fa7c42681d0022558a10e89b3be24a8" kindref="member">METRIC_GOWER</ref>,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="46"><highlight class="comment">///<sp/>this<sp/>function<sp/>is<sp/>used<sp/>to<sp/>distinguish<sp/>between<sp/>min<sp/>and<sp/>max<sp/>indexes<sp/>since</highlight></codeline>
-<codeline lineno="47"><highlight class="comment">///<sp/>we<sp/>need<sp/>to<sp/>support<sp/>similarity<sp/>and<sp/>dis-similarity<sp/>metrics<sp/>in<sp/>a<sp/>flexible<sp/>way</highlight></codeline>
-<codeline lineno="48" refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(<ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type)<sp/>{</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>((metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref>)<sp/>||</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kindref="member">METRIC_Jaccard</ref>));</highlight></codeline>
-<codeline lineno="51"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"></highlight></codeline>
-<codeline lineno="53"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="46"><highlight class="comment">///<sp/>all<sp/>vector<sp/>indices<sp/>are<sp/>this<sp/>type</highlight></codeline>
+<codeline lineno="47" refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>=<sp/>int64_t;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="49"><highlight class="comment">///<sp/>this<sp/>function<sp/>is<sp/>used<sp/>to<sp/>distinguish<sp/>between<sp/>min<sp/>and<sp/>max<sp/>indexes<sp/>since</highlight></codeline>
+<codeline lineno="50"><highlight class="comment">///<sp/>we<sp/>need<sp/>to<sp/>support<sp/>similarity<sp/>and<sp/>dis-similarity<sp/>metrics<sp/>in<sp/>a<sp/>flexible<sp/>way</highlight></codeline>
+<codeline lineno="51" refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(<ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>((metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref>)<sp/>||</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kindref="member">METRIC_Jaccard</ref>));</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/MetricType.h"/>
   </compounddef>

@@ -9670,6 +9670,7 @@
     <member refid="structfaiss_1_1VectorDistance_1abcb39e66cd757963c21107996bad3dad" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a1523b33f2aa08df81f83f43eee34d862" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a5ae7f94d000b8bf75f1a27d99dd78148" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a88aef585bc77a6654095aabc7171e75e" kind="function"><name>operator()</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorIOReader" kind="struct"><name>faiss::VectorIOReader</name>
     <member refid="structfaiss_1_1VectorIOReader_1a0bc2d0055617f0da626a8377f6d76b42" kind="variable"><name>data</name></member>
@@ -9856,6 +9857,7 @@
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kind="enumvalue"><name>METRIC_Jaccard</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752cacb32f4fe0d27316f90eda03ffe999f85" kind="enumvalue"><name>METRIC_NaNEuclidean</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752cac12f43bac93c99814265411de06a39df" kind="enumvalue"><name>METRIC_ABS_INNER_PRODUCT</name></member>
+    <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca6fa7c42681d0022558a10e89b3be24a8" kind="enumvalue"><name>METRIC_GOWER</name></member>
     <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
     <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
     <member refid="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" kind="typedef"><name>IndexIDMap2</name></member>

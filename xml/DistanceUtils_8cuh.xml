@@ -289,6 +289,63 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>denominator;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">struct<sp/>GowerDistance<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>GowerDistance()<sp/>:<sp/>dist(0),<sp/>valid_dims(0)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>bool<sp/>kDirection<sp/>=<sp/>false;<sp/>//<sp/>minimize</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>float<sp/>kIdentityData<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>float<sp/>kMaxDistance<sp/>=<sp/>std::numeric_limits&lt;float&gt;::max();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>void<sp/>handle(float<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Skip<sp/>NaN<sp/>values</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(a<sp/>!=<sp/>a<sp/>||<sp/>b<sp/>!=<sp/>b)<sp/>{<sp/>//<sp/>NaN<sp/>check<sp/>(NaN<sp/>!=<sp/>NaN)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(a<sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>b<sp/>&gt;=<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Numeric<sp/>dimensions<sp/>should<sp/>be<sp/>in<sp/>[0,1]<sp/>range</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(a<sp/>&gt;<sp/>1<sp/>||<sp/>b<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Mark<sp/>as<sp/>invalid<sp/>by<sp/>setting<sp/>to<sp/>NaN</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>NAN;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Numeric<sp/>distance:<sp/>absolute<sp/>difference</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>+=<sp/>fabsf(a<sp/>-<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>if<sp/>(a<sp/>&lt;<sp/>0<sp/>&amp;&amp;<sp/>b<sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Categorical<sp/>dimensions:<sp/>0<sp/>if<sp/>same,<sp/>1<sp/>if<sp/>different</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>+=<sp/>(a<sp/>!=<sp/>b)<sp/>?<sp/>1.0f<sp/>:<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Invalid<sp/>mixing<sp/>of<sp/>numeric<sp/>and<sp/>categorical</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>NAN;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valid_dims++;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>float<sp/>reduce()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(valid_dims<sp/>==<sp/>0<sp/>||<sp/>dist<sp/>!=<sp/>dist)<sp/>{<sp/>//<sp/>NaN<sp/>check</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>NAN;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>dist<sp/>/<sp/>valid_dims;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>void<sp/>combine(const<sp/>GowerDistance&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(dist<sp/>!=<sp/>dist<sp/>||<sp/>v.dist<sp/>!=<sp/>v.dist)<sp/>{<sp/>//<sp/>NaN<sp/>check</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>NAN;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>+=<sp/>v.dist;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valid_dims<sp/>+=<sp/>v.valid_dims;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>GowerDistance<sp/>zero()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>GowerDistance();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>dist;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>valid_dims;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>bool<sp/>InnerContig&gt;</highlight></codeline>
 <codeline><highlight class="normal">Tensor&lt;T,<sp/>2,<sp/>InnerContig&gt;<sp/>sliceCentroids(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>2,<sp/>InnerContig&gt;&amp;<sp/>centroids,</highlight></codeline>
