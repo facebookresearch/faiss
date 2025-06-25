@@ -12,6 +12,9 @@
 {% elif cudatoolkit == '12.1.1' %}
 {% set cuda_constraints=">=12.1,<13" %}
 {% set libcublas_constraints=">=12.1,<13" %}
+{% elif cudatoolkit == '12.8' %}
+{% set cuda_constraints=">=12.8,<12.9" %}
+{% set libcublas_constraints=">=12.8,<12.9" %}
 {% endif %}
 
 package:
