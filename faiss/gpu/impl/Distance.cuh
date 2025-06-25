@@ -278,6 +278,13 @@ void allPairwiseDistanceOnDevice(
                     outDistances,
                     JaccardSimilarity(),
                     stream);
+        } else if (metric == faiss::MetricType::METRIC_GOWER) {
+            runGeneralDistanceKernel(
+                    tVectorsDimInnermost,
+                    tQueriesDimInnermost,
+                    outDistances,
+                    GowerDistance(),
+                    stream);
         } else {
             FAISS_THROW_FMT("unimplemented metric type %d", metric);
         }
@@ -433,6 +440,16 @@ void bfKnnOnDevice(
                     tQueriesDimInnermost,
                     k,
                     JaccardSimilarity(),
+                    outDistances,
+                    outIndices);
+        } else if (metric == faiss::MetricType::METRIC_GOWER) {
+            runGeneralDistance(
+                    resources,
+                    stream,
+                    tVectorsDimInnermost,
+                    tQueriesDimInnermost,
+                    k,
+                    GowerDistance(),
                     outDistances,
                     outIndices);
         } else {
