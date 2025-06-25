@@ -12,6 +12,9 @@ import unittest
 
 from common_faiss_tests import get_dataset_2
 
+from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.evaluation import check_ref_knn_with_draws
+
 import scipy.spatial.distance
 
 
@@ -305,3 +308,27 @@ class TestHNSW(unittest.TestCase):
 
         for q in range(nq):
             assert np.all(D[q] == dis[q, I[q]])
+
+
+class TestIVF(unittest.TestCase):
+    """ since it has a distance computer, IVF should work """
+
+    def test_ivf(self):
+
+        ds = SyntheticDataset(10, 1000, 200, 20)
+        mt = faiss.METRIC_L1
+
+        Dref, Iref = faiss.knn(ds.get_queries(), ds.get_database(), 10, mt)
+        index = faiss.IndexIVFFlat(faiss.IndexFlat(ds.d), ds.d, 20, mt)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 10
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        inter = faiss.eval_intersection(Iref, Inew)
+        self.assertGreater(inter, Iref.size * 0.9)
+
+        index.nprobe = index.nlist 
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew) 
