@@ -152,17 +152,6 @@ inline float VectorDistance<METRIC_NaNEuclidean>::operator()(
     return float(d) / float(present) * accu;
 }
 
-template <>
-inline float VectorDistance<METRIC_ABS_INNER_PRODUCT>::operator()(
-        const float* x,
-        const float* y) const {
-    float accu = 0;
-    for (size_t i = 0; i < d; i++) {
-        accu += fabs(x[i] * y[i]);
-    }
-    return accu;
-}
-
 /***************************************************************************
  * Dispatching function that takes a metric type and a consumer object
  * the consumer object should contain a retun type T and a operation template
@@ -193,7 +182,6 @@ typename Consumer::T dispatch_VectorDistance(
         DISPATCH_VD(METRIC_JensenShannon);
         DISPATCH_VD(METRIC_Jaccard);
         DISPATCH_VD(METRIC_NaNEuclidean);
-        DISPATCH_VD(METRIC_ABS_INNER_PRODUCT);
         default:
             FAISS_THROW_FMT("Invalid metric %d", metric);
     }
