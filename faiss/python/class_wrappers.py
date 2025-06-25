@@ -236,7 +236,10 @@ def handle_Index(the_class):
         assert d == self.d
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
         x = np.ascontiguousarray(x, dtype=x.dtype)
-        self.add_c(n, swig_ptr(x), numeric_type)
+        if numeric_type == faiss.Float32:
+            self.add_c(n, swig_ptr(x))
+        else:
+            self.add_c(n, swig_ptr(x), numeric_type)
 
     def replacement_add_with_ids(self, x, ids):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
@@ -258,7 +261,10 @@ def handle_Index(the_class):
         x = np.ascontiguousarray(x, dtype=x.dtype)
         ids = np.ascontiguousarray(ids, dtype='int64')
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
-        self.add_with_ids_c(n, swig_ptr(x), numeric_type, swig_ptr(ids))
+        if numeric_type == faiss.Float32:
+            self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+        else:
+            self.add_with_ids_c(n, swig_ptr(x), numeric_type, swig_ptr(ids))
 
     def replacement_assign(self, x, k, labels=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -306,7 +312,10 @@ def handle_Index(the_class):
         assert d == self.d
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
         x = np.ascontiguousarray(x, dtype=x.dtype)
-        self.train_c(n, swig_ptr(x), numeric_type)
+        if numeric_type == faiss.Float32:
+            self.train_c(n, swig_ptr(x))
+        else:
+            self.train_c(n, swig_ptr(x), numeric_type)
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
