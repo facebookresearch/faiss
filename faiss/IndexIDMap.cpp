@@ -34,6 +34,17 @@ void sync_d(IndexBinary* index) {
 
 } // anonymous namespace
 
+template <typename componentT>
+NumericType component_t_to_numeric() {
+    if constexpr (std::is_same<componentT, float>::value) {
+        return NumericType::Float32;
+    } else if constexpr (std::is_same<componentT, uint8_t>::value) {
+        return NumericType::UInt8;
+    } else {
+        FAISS_THROW_MSG("Unsupported component_t");
+    }
+}
+
 /*****************************************************
  * IndexIDMap implementation
  *******************************************************/
@@ -70,7 +81,9 @@ template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::train(
         idx_t n,
         const typename IndexT::component_t* x) {
-    train(n, static_cast<const void*>(x), NumericType::Float32);
+    train(n,
+          static_cast<const void*>(x),
+          component_t_to_numeric<typename IndexT::component_t>());
 }
 
 template <typename IndexT>
@@ -97,7 +110,11 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
         idx_t n,
         const typename IndexT::component_t* x,
         const idx_t* xids) {
-    add_with_ids(n, static_cast<const void*>(x), NumericType::Float32, xids);
+    add_with_ids(
+            n,
+            static_cast<const void*>(x),
+            component_t_to_numeric<typename IndexT::component_t>(),
+            xids);
 }
 
 template <typename IndexT>
@@ -184,7 +201,7 @@ void IndexIDMapTemplate<IndexT>::search(
         const SearchParameters* params) const {
     search(n,
            static_cast<const void*>(x),
-           NumericType::Float32,
+           component_t_to_numeric<typename IndexT::component_t>(),
            k,
            distances,
            labels,

@@ -43,13 +43,10 @@ def _check_dtype_uint8(codes):
     return np.ascontiguousarray(codes)
 
 def _np_type_to_faiss_numeric(np_type):
-    if np_type == np.float32:
-        return faiss.Float32
-    elif np_type == np.float16:
+    if np_type == np.float16:
         return faiss.Float16
-    else:
-        raise TypeError("Input data must be ndarray of dtype "
-                        " float32 or float16, but found %s" % (np_type))
+    else:   # default
+        return faiss.Float32
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
     """ Replaces a method in a class with another version. The old method
@@ -231,15 +228,16 @@ def handle_Index(the_class):
             Query vectors, shape (n, d) where d is appropriate for the index.
             `dtype` must be float32.
         """
-
         n, d = x.shape
         assert d == self.d
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
-        x = np.ascontiguousarray(x, dtype=x.dtype)
+        
         if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
             self.add_c(n, swig_ptr(x))
-        else:
-            self.add_c(n, swig_ptr(x), numeric_type)
+        else:   # fp16
+            x = np.ascontiguousarray(x, dtype='float16')
+            self.add_c(n, swig_ptr(x), faiss.Float16)
 
     def replacement_add_with_ids(self, x, ids):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
@@ -258,13 +256,15 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
-        x = np.ascontiguousarray(x, dtype=x.dtype)
+
         ids = np.ascontiguousarray(ids, dtype='int64')
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
             self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
-        else:
-            self.add_with_ids_c(n, swig_ptr(x), numeric_type, swig_ptr(ids))
+        else:   # fp16
+            x = np.ascontiguousarray(x, dtype='float16')
+            self.add_with_ids_c(n, swig_ptr(x), faiss.Float16, swig_ptr(ids))
 
     def replacement_assign(self, x, k, labels=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -311,11 +311,13 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
-        x = np.ascontiguousarray(x, dtype=x.dtype)
+
         if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
             self.train_c(n, swig_ptr(x))
         else:
-            self.train_c(n, swig_ptr(x), numeric_type)
+            x = np.ascontiguousarray(x, dtype='float16')
+            self.train_c(n, swig_ptr(x), faiss.Float16)
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -346,7 +348,6 @@ def handle_Index(the_class):
 
         n, d = x.shape
         numeric_type = _np_type_to_faiss_numeric(x.dtype)
-        x = np.ascontiguousarray(x, dtype=x.dtype)
         
         assert d == self.d
 
@@ -363,9 +364,11 @@ def handle_Index(the_class):
             assert I.shape == (n, k)
         
         if numeric_type == faiss.Float32:
+            x = np.ascontiguousarray(x, dtype='float32')
             self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
         else:
-            self.search_c(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
+            x = np.ascontiguousarray(x, dtype='float16')
+            self.search_c(n, swig_ptr(x), faiss.Float16, k, swig_ptr(D), swig_ptr(I), params)
         
         return D, I
 
@@ -860,6 +863,7 @@ def handle_Index(the_class):
 def handle_IndexBinary(the_class):
 
     def replacement_add(self, x):
+        print("inside uint")
         n, d = x.shape
         x = _check_dtype_uint8(x)
         assert d == self.code_size
