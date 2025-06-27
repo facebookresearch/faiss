@@ -66,6 +66,12 @@ struct IndexIVFPQ : IndexIVF {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* listnos,
+            float* x) const override;
+
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
     void add_core(

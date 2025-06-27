@@ -80,6 +80,27 @@ void IndexIVFRaBitQ::encode_vectors(
     }
 }
 
+void IndexIVFRaBitQ::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* listnos,
+        float* x) const {
+#pragma omp parallel
+    {
+        std::vector<float> centroid(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * code_size;
+            int64_t list_no = listnos[i];
+            float* xi = x + i * d;
+
+            quantizer->reconstruct(list_no, centroid.data());
+            rabitq.decode_core(code, xi, 1, centroid.data());
+        }
+    }
+}
+
 void IndexIVFRaBitQ::add_core(
         idx_t n,
         const float* x,
