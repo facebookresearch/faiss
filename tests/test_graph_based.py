@@ -437,6 +437,48 @@ class TestNSG(unittest.TestCase):
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
         np.testing.assert_array_equal(indices, gt)
 
+    def test_nsg_supports_pre_built_knn_graph(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+        self.assertTrue(index.is_built)
+
+    def test_nsg_with_pre_built_knn_graph_throws_when_rebuilding_via_add(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+        self.assertTrue(index.is_built)
+
+        index.GK = 32
+        index.train(self.xb)
+        with self.assertRaises(RuntimeError) as context:
+            index.add(self.xb)
+
+        self.assertIn(
+            "NSG does not support incremental addition",
+            str(context.exception)
+        )
+
+    def test_nsg_rebuild_throws_with_pre_built_knn_graph(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+
+        with self.assertRaises(RuntimeError) as context:
+            index.build(self.xb, knn_graph)
+
+        self.assertIn("The IndexNSG is already built", str(context.exception))
+
     def test_nsg_pq(self):
         """Test IndexNSGPQ"""
         d = self.xq.shape[1]

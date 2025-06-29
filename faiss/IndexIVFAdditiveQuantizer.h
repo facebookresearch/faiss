@@ -35,7 +35,8 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
             Index* quantizer,
             size_t d,
             size_t nlist,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     explicit IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq);
 
@@ -82,7 +83,8 @@ struct IndexIVFResidualQuantizer : IndexIVFAdditiveQuantizer {
             size_t nlist,
             const std::vector<size_t>& nbits,
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
+            bool own_invlists = true);
 
     IndexIVFResidualQuantizer(
             Index* quantizer,
@@ -91,7 +93,8 @@ struct IndexIVFResidualQuantizer : IndexIVFAdditiveQuantizer {
             size_t M,     /* number of subquantizers */
             size_t nbits, /* number of bit per subvector index */
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
+            bool own_invlists = true);
 
     IndexIVFResidualQuantizer();
 
@@ -118,7 +121,8 @@ struct IndexIVFLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
             size_t M,     /* number of subquantizers */
             size_t nbits, /* number of bit per subvector index */
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
+            bool own_invlists = true);
 
     IndexIVFLocalSearchQuantizer();
 
@@ -147,7 +151,8 @@ struct IndexIVFProductResidualQuantizer : IndexIVFAdditiveQuantizer {
             size_t Msub,
             size_t nbits,
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
+            bool own_invlists = true);
 
     IndexIVFProductResidualQuantizer();
 
@@ -176,7 +181,8 @@ struct IndexIVFProductLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
             size_t Msub,
             size_t nbits,
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
+            bool own_invlists = true);
 
     IndexIVFProductLocalSearchQuantizer();
 

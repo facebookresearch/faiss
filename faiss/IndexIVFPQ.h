@@ -56,7 +56,8 @@ struct IndexIVFPQ : IndexIVF {
             size_t nlist,
             size_t M,
             size_t nbits_per_idx,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void encode_vectors(
             idx_t n,

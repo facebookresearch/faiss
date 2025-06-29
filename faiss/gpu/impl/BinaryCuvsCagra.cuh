@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024-2025, NVIDIA CORPORATION.
+ * Copyright (c) 2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,65 +26,45 @@
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
+#include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <optional>
 
 #include <faiss/MetricType.h>
 
 #include <cuvs/neighbors/cagra.hpp>
-#include <cuvs/neighbors/ivf_pq.hpp>
 
 namespace faiss {
 
-/// Algorithm used to build underlying CAGRA graph
-enum class cagra_build_algo { IVF_PQ, NN_DESCENT };
-
-enum class cagra_search_algo { SINGLE_CTA, MULTI_CTA };
-
-enum class cagra_hash_mode { HASH, SMALL, AUTO };
-
 namespace gpu {
 
-template <typename data_t = float>
-class CuvsCagra {
+class BinaryCuvsCagra {
    public:
-    CuvsCagra(
+    BinaryCuvsCagra(
             GpuResources* resources,
             int dim,
             idx_t intermediate_graph_degree,
             idx_t graph_degree,
-            faiss::cagra_build_algo graph_build_algo,
-            size_t nn_descent_niter,
             bool store_dataset,
-            faiss::MetricType metric,
-            float metricArg,
-            IndicesOptions indicesOptions,
-            std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params =
-                    std::nullopt,
-            std::optional<cuvs::neighbors::ivf_pq::search_params>
-                    ivf_pq_search_params = std::nullopt,
-            float refine_rate = 2.0f,
-            bool guarantee_connectivity = false);
+            IndicesOptions indicesOptions);
 
-    CuvsCagra(
+    BinaryCuvsCagra(
             GpuResources* resources,
             int dim,
             idx_t n,
             int graph_degree,
-            const data_t* dataset,
+            const uint8_t* train_dataset,
             const idx_t* knn_graph,
-            faiss::MetricType metric,
-            float metricArg,
             IndicesOptions indicesOptions);
 
-    ~CuvsCagra() = default;
+    ~BinaryCuvsCagra() = default;
 
-    void train(idx_t n, const data_t* x);
+    void train(idx_t n, const uint8_t* x);
 
     void search(
-            Tensor<data_t, 2, true>& queries,
+            Tensor<uint8_t, 2, true>& queries,
             int k,
-            Tensor<float, 2, true>& outDistances,
+            Tensor<int, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
             idx_t max_queries,
             idx_t itopk_size,
@@ -106,14 +86,14 @@ class CuvsCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const data_t* get_training_dataset() const;
+    const uint8_t* get_training_dataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
     /// Training dataset
-    const data_t* storage_;
+    const uint8_t* storage_;
     int n_;
 
     /// Expected dimensionality of the vectors
@@ -126,30 +106,13 @@ class CuvsCagra {
     /// an IndexHNSWCagra object.
     bool store_dataset_ = true;
 
-    /// Metric type of the index
-    faiss::MetricType metric_;
-
-    /// Metric arg
-    float metricArg_;
-
     /// Parameters to build cuVS CAGRA index
-    faiss::cagra_build_algo graph_build_algo_;
     cuvs::neighbors::cagra::index_params index_params_;
 
-    /// Parameters to build CAGRA graph using IVF PQ
-    std::optional<cuvs::neighbors::ivf_pq::index_params> ivf_pq_params_;
-    std::optional<cuvs::neighbors::ivf_pq::search_params> ivf_pq_search_params_;
-    std::optional<float> refine_rate_;
-
-    /// Parameters to build CAGRA graph using NN Descent
-    size_t nn_descent_niter_ = 20;
-
-    /// Parameter to use MST optimization to guarantee graph connectivity
-    bool guarantee_connectivity_ = false;
-
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>
+            cuvs_index{nullptr};
 };
+
 } // namespace gpu
 } // namespace faiss

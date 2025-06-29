@@ -47,7 +47,8 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             size_t M,
             size_t nbits,
             MetricType metric = METRIC_L2,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
     IndexIVFPQFastScan();
 

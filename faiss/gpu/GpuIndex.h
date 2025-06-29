@@ -77,11 +77,17 @@ class GpuIndex : public faiss::Index {
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add(idx_t, const float* x) override;
+    void add(idx_t, const void* x, NumericType numeric_type) override;
 
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
+    void add_with_ids(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) override;
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
@@ -93,6 +99,14 @@ class GpuIndex : public faiss::Index {
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,
@@ -125,9 +139,23 @@ class GpuIndex : public faiss::Index {
    protected:
     /// Copy what we need from the CPU equivalent
     void copyFrom(const faiss::Index* index);
+    void copyFrom(const faiss::Index* index, NumericType numeric_type) {
+        if (numeric_type == NumericType::Float32) {
+            copyFrom(index, NumericType::Float32);
+        } else {
+            FAISS_THROW_MSG("GpuIndex::copyFrom: unsupported numeric type");
+        }
+    }
 
     /// Copy what we have to the CPU equivalent
     void copyTo(faiss::Index* index) const;
+    void copyTo(const faiss::Index* index, NumericType numeric_type) {
+        if (numeric_type == NumericType::Float32) {
+            copyTo(index, NumericType::Float32);
+        } else {
+            FAISS_THROW_MSG("GpuIndex::copyTo: unsupported numeric type");
+        }
+    }
 
     /// Does addImpl_ require IDs? If so, and no IDs are provided, we will
     /// generate them sequentially based on the order in which the IDs are added
@@ -136,6 +164,18 @@ class GpuIndex : public faiss::Index {
     /// Overridden to actually perform the add
     /// All data is guaranteed to be resident on our device
     virtual void addImpl_(idx_t n, const float* x, const idx_t* ids) = 0;
+
+    virtual void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) {
+        if (numeric_type == NumericType::Float32) {
+            addImpl_(n, static_cast<const float*>(x), ids);
+        } else {
+            FAISS_THROW_MSG("GpuIndex::addImpl_: unsupported numeric type");
+        }
+    };
 
     /// Overridden to actually perform the search
     /// All data is guaranteed to be resident on our device
@@ -147,13 +187,44 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
+    virtual void searchImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const {
+        if (numeric_type == NumericType::Float32) {
+            searchImpl_(
+                    n,
+                    static_cast<const float*>(x),
+                    k,
+                    distances,
+                    labels,
+                    params);
+        } else {
+            FAISS_THROW_MSG("GpuIndex::searchImpl_: unsupported numeric type");
+        }
+    }
+
    private:
     /// Handles paged adds if the add set is too large, passes to
     /// addImpl_ to actually perform the add for the current page
     void addPaged_(idx_t n, const float* x, const idx_t* ids);
+    void addPaged_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids);
 
     /// Calls addImpl_ for a single page of GPU-resident data
     void addPage_(idx_t n, const float* x, const idx_t* ids);
+    void addPage_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids);
 
     /// Calls searchImpl_ for a single page of GPU-resident data
     void searchNonPaged_(
@@ -164,11 +235,28 @@ class GpuIndex : public faiss::Index {
             idx_t* outIndicesData,
             const SearchParameters* params) const;
 
+    void searchNonPaged_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            int k,
+            float* outDistancesData,
+            idx_t* outIndicesData,
+            const SearchParameters* params) const;
+
     /// Calls searchImpl_ for a single page of GPU-resident data,
     /// handling paging of the data and copies from the CPU
     void searchFromCpuPaged_(
             idx_t n,
             const float* x,
+            int k,
+            float* outDistancesData,
+            idx_t* outIndicesData,
+            const SearchParameters* params) const;
+    void searchFromCpuPaged_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             int k,
             float* outDistancesData,
             idx_t* outIndicesData,

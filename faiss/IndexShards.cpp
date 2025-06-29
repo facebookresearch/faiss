@@ -199,8 +199,6 @@ void IndexShardsTemplate<IndexT>::search(
         distance_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     int64_t nshard = this->count();
@@ -219,7 +217,7 @@ void IndexShardsTemplate<IndexT>::search(
         }
     }
 
-    auto fn = [n, k, x, &all_distances, &all_labels, &translations](
+    auto fn = [n, k, x, params, &all_distances, &all_labels, &translations](
                       int no, const IndexT* index) {
         if (index->verbose) {
             printf("begin query shard %d on %" PRId64 " points\n", no, n);
@@ -230,7 +228,8 @@ void IndexShardsTemplate<IndexT>::search(
                 x,
                 k,
                 all_distances.data() + no * k * n,
-                all_labels.data() + no * k * n);
+                all_labels.data() + no * k * n,
+                params);
 
         translate_labels(
                 n * k, all_labels.data() + no * k * n, translations[no]);
