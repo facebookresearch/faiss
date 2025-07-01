@@ -93,7 +93,7 @@ jobs:
           cuda: "12.4.0"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v4

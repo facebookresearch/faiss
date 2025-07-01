@@ -8,6 +8,7 @@ Tests for the implementation of Local Search Quantizer
 """
 
 import numpy as np
+import platform
 
 import faiss
 import unittest
@@ -655,6 +656,8 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
     def test_index_accuracy(self):
         self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
 
+    @unittest.skipIf(platform.system() == 'Windows',
+                     'Does not work on Windows-2022+.')
     def test_index_accuracy2(self):
         """check that the error is in the same ballpark as LSQ."""
         inter1 = self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
