@@ -10,9 +10,9 @@
 
 :: Build vanilla version (no avx).
 cmake -B _build_python_%PY_VER% ^
-      -T v141 ^
+      -T v143 ^
       -A x64 ^
-      -G "Visual Studio 16 2019" ^
+      -G "Visual Studio 17 2022" ^
       -DFAISS_ENABLE_GPU=OFF ^
       -DPython_EXECUTABLE=%PYTHON% ^
       faiss/python
