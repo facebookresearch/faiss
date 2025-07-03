@@ -30,7 +30,6 @@
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
-#include <algorithm>
 
 namespace faiss {
 namespace gpu {
@@ -51,8 +50,6 @@ CuvsCagra::CuvsCagra(
                 ivf_pq_search_params,
         float refine_rate)
         : resources_(resources),
-          storage_(nullptr),
-          n_(0),
           dim_(dim),
           graph_build_algo_(graph_build_algo),
           nn_descent_niter_(nn_descent_niter),
@@ -94,8 +91,6 @@ CuvsCagra::CuvsCagra(
         float metricArg,
         IndicesOptions indicesOptions)
         : resources_(resources),
-          storage_(nullptr),
-          n_(0),
           dim_(dim),
           metric_(metric),
           metricArg_(metricArg) {
@@ -111,9 +106,7 @@ CuvsCagra::CuvsCagra(
 
     FAISS_ASSERT(distances_on_gpu == knn_graph_on_gpu);
 
-    // Copy the distances data instead of just storing a pointer
-    storage_ = new float[n * dim];
-    std::copy(distances, distances + n * dim, storage_);
+    storage_ = distances;
     n_ = n;
 
     const raft::device_resources& raft_handle =
@@ -165,17 +158,7 @@ CuvsCagra::CuvsCagra(
 }
 
 void CuvsCagra::train(idx_t n, const float* x) {
-    // Copy the training data instead of just storing a pointer
-    // This is necessary because the input data might be temporary memory
-    // that gets deallocated after the training call
-    if (storage_ != nullptr && storage_ != x) {
-        // Free previous storage if it was allocated by us
-        delete[] storage_;
-    }
-
-    // Allocate new storage and copy the data
-    storage_ = new float[n * dim_];
-    std::copy(x, x + n * dim_, storage_);
+    storage_ = x;
     n_ = n;
 
     const raft::device_resources& raft_handle =
@@ -307,12 +290,6 @@ void CuvsCagra::search(
 
 void CuvsCagra::reset() {
     cuvs_index.reset();
-    // Free allocated storage
-    if (storage_ != nullptr) {
-        delete[] storage_;
-        storage_ = nullptr;
-    }
-    n_ = 0;
 }
 
 idx_t CuvsCagra::get_knngraph_degree() const {
