@@ -470,6 +470,24 @@ class TestSearchParams(unittest.TestCase):
         self.assertTrue(sel1.this.own())
         self.assertTrue(sel2.this.own())
 
+    def test_ownership_2(self):
+        res = []
+        for _ in range(20):
+            params = faiss.SearchParameters()
+            subset = np.arange(0, 5000000)
+            params.sel = faiss.IDSelectorBatch(subset)
+            mem_usage = faiss.get_mem_usage_kb() / 1024**2
+            res.append(round(mem_usage, 2))
+        print(res)
+        self.assertTrue(res[-1] < 0.9)
+
+    def test_ownership_3(self):
+        subset = np.arange(0, 5000000)
+        sel = faiss.IDSelectorBatch(subset)
+        assert sel.this.own()    # True: correct
+        _ = faiss.SearchParameters(sel=sel)
+        assert sel.this.own()   # False: why???
+
 
 class TestSelectorCallback(unittest.TestCase):
 
