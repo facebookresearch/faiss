@@ -80,6 +80,19 @@ struct Limits<idx_t> {
     }
 };
 
+constexpr ushort kUShortMax = std::numeric_limits<ushort>::max();
+constexpr ushort kUshortMin = std::numeric_limits<ushort>::min();
+
+template <>
+struct Limits<ushort> {
+    static __device__ __host__ inline ushort getMin() {
+        return kUshortMin;
+    }
+    static __device__ __host__ inline ushort getMax() {
+        return kUShortMax;
+    }
+};
+
 template <typename K, typename V>
 struct Limits<Pair<K, V>> {
     static __device__ __host__ inline Pair<K, V> getMin() {
