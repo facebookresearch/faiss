@@ -47,6 +47,7 @@ set(FAISS_SRC
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
+  IndexSVSUncompressed.cpp
   IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
@@ -145,6 +146,7 @@ set(FAISS_HEADERS
   IndexScalarQuantizer.h
   IndexShards.h
   IndexShardsIVF.h
+  IndexSVSUncompressed.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -250,7 +252,6 @@ endif()
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
 add_library(faiss ${FAISS_SRC})
-
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -320,9 +321,25 @@ if(NOT WIN32)
   endif()
 endif()
 
+# Experimental SVS cmake build
+include(FetchContent)
+set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.8-dev/svs-shared-library-0.0.8-NIGHTLY-20250630.tar.gz")
+FetchContent_Declare(
+    svs
+    URL "${SVS_URL}"
+)
+FetchContent_MakeAvailable(svs)
+list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
+find_package(svs REQUIRED)
+
+target_link_libraries(faiss PUBLIC svs::svs)
+
 # Handle `#include <faiss/foo.h>`.
+# Handle `#include <svs/foo.h>`.
 target_include_directories(faiss PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+  $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+)
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_avx2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
