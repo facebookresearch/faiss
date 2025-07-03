@@ -42,7 +42,7 @@ def supported_instruction_sets():
         try:
             import numpy.distutils.cpuinfo
             return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
-        except (ModuleNotFoundError, ImportError):
+        except ImportError:
             # check if SVE is supported by checking the auxval
             # using values defined as:
             # #define AT_HWCAP 16
