@@ -646,7 +646,7 @@ class TestReconsException(unittest.TestCase):
             index.reconstruct, 100001
         )
 
-    def test_reconstuct_after_add(self):
+    def test_reconstruct_after_add(self):
         index = faiss.index_factory(10, 'IVF5,SQfp16')
         index.train(faiss.randn((100, 10), 123))
         index.add(faiss.randn((100, 10), 345))
@@ -656,6 +656,26 @@ class TestReconsException(unittest.TestCase):
         # should not raise an exception
         index.reconstruct(5)
         index.reconstruct(150)
+
+    def test_reconstruct_larger_ntotal(self):
+        vect_dim = 5
+        n_vectors = 10
+
+        # Create the dataset
+        data = np.random.randint(100, size=(n_vectors, vect_dim))
+
+        # Build index
+        index = faiss.IndexFlatL2(vect_dim)
+        index.add(data)
+
+        # Reconstruct < ntotal (10) without an issue
+        index.reconstruct(9)
+
+        # Reconstruct >= ntotal (10), assert exception raise
+        self.assertRaises(
+            RuntimeError,
+            index.reconstruct, 10
+        )
 
 
 class TestReconsHash(unittest.TestCase):

@@ -264,7 +264,7 @@ void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
-    validateKSelect(k);
+    validateKSelect(k, should_use_cuvs(config_));
 
     auto stream = resources_->getDefaultStream(config_.device);
 
@@ -288,7 +288,7 @@ void GpuIndex::search(
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
-    validateKSelect(k);
+    validateKSelect(k, should_use_cuvs(config_));
 
     if (n == 0 || k == 0) {
         // nothing to search

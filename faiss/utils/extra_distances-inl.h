@@ -163,6 +163,40 @@ inline float VectorDistance<METRIC_ABS_INNER_PRODUCT>::operator()(
     return accu;
 }
 
+template <>
+inline float VectorDistance<METRIC_GOWER>::operator()(
+        const float* x,
+        const float* y) const {
+    float accu = 0;
+    size_t valid_dims = 0;
+
+    for (size_t i = 0; i < d; i++) {
+        if (std::isnan(x[i]) || std::isnan(y[i])) {
+            continue;
+        }
+
+        if (x[i] >= 0 && y[i] >= 0) {
+            if (x[i] > 1 || y[i] > 1) {
+                return std::numeric_limits<float>::quiet_NaN();
+            }
+            // Numeric dimensions are in [0,1]
+            accu += fabs(x[i] - y[i]);
+        } else if (x[i] < 0 && y[i] < 0) {
+            // Categorical dimensions are negative values
+            accu += float(int(x[i] != y[i]));
+        } else {
+            // Invalid representation
+            return std::numeric_limits<float>::quiet_NaN();
+        }
+        valid_dims++;
+    }
+
+    if (valid_dims == 0) {
+        return std::numeric_limits<float>::quiet_NaN();
+    }
+    return accu / valid_dims;
+}
+
 /***************************************************************************
  * Dispatching function that takes a metric type and a consumer object
  * the consumer object should contain a retun type T and a operation template
@@ -194,6 +228,7 @@ typename Consumer::T dispatch_VectorDistance(
         DISPATCH_VD(METRIC_Jaccard);
         DISPATCH_VD(METRIC_NaNEuclidean);
         DISPATCH_VD(METRIC_ABS_INNER_PRODUCT);
+        DISPATCH_VD(METRIC_GOWER);
         default:
             FAISS_THROW_FMT("Invalid metric %d", metric);
     }
