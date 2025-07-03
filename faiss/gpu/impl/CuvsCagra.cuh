@@ -111,7 +111,7 @@ class CuvsCagra {
     GpuResources* resources_;
 
     /// Training dataset
-    const float* storage_;
+    float* storage_;
     int n_;
 
     /// Expected dimensionality of the vectors

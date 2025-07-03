@@ -14,6 +14,7 @@
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <vector>
+#include <cmath>
 #include "GpuClonerOptions_c.h"
 #include "macros_impl.h"
 
@@ -22,10 +23,21 @@ using faiss::gpu::GpuClonerOptions;
 using faiss::gpu::GpuMultipleClonerOptions;
 using faiss::gpu::GpuResourcesProvider;
 
+
+
 int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
+    if (gpu_index == nullptr) {
+        return -1;
+    }
+
+    if (p_out == nullptr) {
+        return -1;
+    }
+
     try {
         auto cpu_index = faiss::gpu::index_gpu_to_cpu(
                 reinterpret_cast<const Index*>(gpu_index));
+
         *p_out = reinterpret_cast<FaissIndex*>(cpu_index);
     }
     CATCH_AND_HANDLE
