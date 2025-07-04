@@ -138,7 +138,7 @@ swig_add_library(swigfaiss_avx2
   SOURCES swigfaiss_avx2.swig
 )
 set_property(TARGET swigfaiss_avx2 PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(swigfaiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
