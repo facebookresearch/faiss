@@ -78,7 +78,7 @@ bool read_vector_base(
         const std::optional<size_t> beforeknown_size,
         const std::optional<size_t> size_multiplier) {
     // check if the use case is right
-    if constexpr (is_maybe_owned_vector_v<VectorT>) {
+    if constexpr (is_maybe_owned_vector_v(VectorT)) {
         // is it a mmap-enabled reader?
         MappedFileIOReader* mf = dynamic_cast<MappedFileIOReader*>(f);
         if (mf != nullptr) {
