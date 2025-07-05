@@ -61,6 +61,7 @@ struct DistanceComputer;
 enum NumericType {
     Float32,
     Float16,
+    UInt8,
 };
 
 inline size_t get_numeric_type_size(NumericType numeric_type) {
