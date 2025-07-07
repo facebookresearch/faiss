@@ -44,6 +44,7 @@ class TestSearch(unittest.TestCase):
     # not exploitable, hence the flag test on that as well.
     @unittest.skipUnless(
         ('AVX2' in faiss.get_compile_options() or
+        'AVX512' in faiss.get_compile_options() or
         'NEON' in faiss.get_compile_options()) and
         "OPTIMIZE" in faiss.get_compile_options(),
         "only test while building with avx2 or neon")
