@@ -44,9 +44,7 @@ namespace faiss {
 namespace gpu {
 
 // Function declarations
-void test_converted_cpu_index_search(const faiss::Index* cpu_index);
-void test_gpu_index_before_conversion(const faiss::Index* gpu_index);
-void test_cpu_index_after_copyto(const faiss::Index* cpu_index);
+
 
 /**********************************************************
  * Cloning to CPU
@@ -76,33 +74,22 @@ void ToCPUCloner::merge_index(Index* dst, Index* src, bool successive_ids) {
 }
 
 Index* ToCPUCloner::clone_Index(const Index* index) {
-    printf("🔍 C++: ToCPUCloner::clone_Index called\n");
-    printf("  - Input index: %p\n", (void*)index);
-
     if (auto ifl = dynamic_cast<const GpuIndexFlat*>(index)) {
-        printf("  - Converting GpuIndexFlat to IndexFlat\n");
         IndexFlat* res = new IndexFlat();
         ifl->copyTo(res);
-        printf("  - GpuIndexFlat conversion completed\n");
         return res;
     } else if (auto ifl = dynamic_cast<const GpuIndexIVFFlat*>(index)) {
-        printf("  - Converting GpuIndexIVFFlat to IndexIVFFlat\n");
         IndexIVFFlat* res = new IndexIVFFlat();
         ifl->copyTo(res);
-        printf("  - GpuIndexIVFFlat conversion completed\n");
         return res;
     } else if (
             auto ifl = dynamic_cast<const GpuIndexIVFScalarQuantizer*>(index)) {
-        printf("  - Converting GpuIndexIVFScalarQuantizer to IndexIVFScalarQuantizer\n");
         IndexIVFScalarQuantizer* res = new IndexIVFScalarQuantizer();
         ifl->copyTo(res);
-        printf("  - GpuIndexIVFScalarQuantizer conversion completed\n");
         return res;
     } else if (auto ipq = dynamic_cast<const GpuIndexIVFPQ*>(index)) {
-        printf("  - Converting GpuIndexIVFPQ to IndexIVFPQ\n");
         IndexIVFPQ* res = new IndexIVFPQ();
         ipq->copyTo(res);
-        printf("  - GpuIndexIVFPQ conversion completed\n");
         return res;
 
         // for IndexShards and IndexReplicas we assume that the
@@ -112,19 +99,12 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
     }
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
-        printf("  - Converting GpuIndexCagra to IndexHNSWCagra\n");
         IndexHNSWCagra* res = new IndexHNSWCagra();
-
         icg->copyTo(res);
-        printf("  - GpuIndexCagra conversion completed\n");
-        printf("  - base_level_only flag: %s\n", res->base_level_only ? "true" : "false");
-        printf("  - num_base_level_search_entrypoints: %d\n", res->num_base_level_search_entrypoints);
-
         return res;
     }
 #endif
     else if (auto ish = dynamic_cast<const IndexShards*>(index)) {
-        printf("  - Converting IndexShards\n");
         int nshard = ish->count();
         FAISS_ASSERT(nshard > 0);
         Index* res = clone_Index(ish->at(0));
@@ -133,52 +113,21 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
             merge_index(res, res_i, ish->successive_ids);
             delete res_i;
         }
-        printf("  - IndexShards conversion completed\n");
         return res;
     } else if (auto ipr = dynamic_cast<const IndexReplicas*>(index)) {
-        printf("  - Converting IndexReplicas\n");
         // just clone one of the replicas
         FAISS_ASSERT(ipr->count() > 0);
         auto result = clone_Index(ipr->at(0));
-        printf("  - IndexReplicas conversion completed\n");
         return result;
     } else {
-        printf("  - Using default Cloner::clone_Index for unknown type\n");
         auto result = Cloner::clone_Index(index);
-        printf("  - Default conversion completed\n");
         return result;
     }
 }
 
 faiss::Index* index_gpu_to_cpu(const faiss::Index* gpu_index) {
-    printf("🔍 C++: index_gpu_to_cpu called\n");
-    printf("  - Input gpu_index: %p\n", (void*)gpu_index);
-    printf("  - Input index ntotal: %ld\n", gpu_index->ntotal);
-    printf("  - Input index dimension: %d\n", gpu_index->d);
-    printf("  - Input index is_trained: %s\n", gpu_index->is_trained ? "true" : "false");
-
     ToCPUCloner cl;
-
-    // Test search on GPU index before conversion
-    printf("🔍 Testing GPU index before conversion in GpuCloner...\n");
-    test_gpu_index_before_conversion(gpu_index);
-
     auto result = cl.clone_Index(gpu_index);
-
-    printf("  - Conversion result: %p\n", (void*)result);
-    if (result != nullptr) {
-        printf("  - Result index ntotal: %ld\n", result->ntotal);
-        printf("  - Result index dimension: %d\n", result->d);
-        printf("  - Result index is_trained: %s\n", result->is_trained ? "true" : "false");
-
-        // Test search on the converted CPU index
-        printf("🔍 Testing converted CPU index in GpuCloner...\n");
-        test_converted_cpu_index_search(result);
-    } else {
-        printf("❌ C++: ERROR - clone_Index returned null!\n");
-    }
-
-    printf("✅ C++: index_gpu_to_cpu completed\n");
     return result;
 }
 
@@ -647,125 +596,7 @@ faiss::IndexBinary* index_binary_cpu_to_gpu_multiple(
     }
 }
 
-// Test function to verify CPU index immediately after copyTo
-void test_cpu_index_after_copyto(const faiss::Index* cpu_index) {
-    try {
-        // Create a simple test query
-        std::vector<float> query(128, 2.0f); // 128 dimensions, all 2.0f
 
-        // Allocate result arrays
-        std::vector<float> distances(20);
-        std::vector<faiss::idx_t> labels(20);
-
-        // Perform search
-        cpu_index->search(1, query.data(), 20, distances.data(), labels.data());
-
-        printf("  - After copyTo CPU index search results:\n");
-        printf("    Top 5 results: ");
-        for (int i = 0; i < 5 && i < 20; i++) {
-            printf("(%ld:%.1f) ", labels[i], distances[i]);
-        }
-        printf("\n");
-
-        // Check for any NaN or zero distances
-        bool has_nan_or_zero = false;
-        for (int i = 0; i < 20; i++) {
-            if (std::isnan(distances[i]) || distances[i] == 0.0f) {
-                has_nan_or_zero = true;
-                break;
-            }
-        }
-
-        if (has_nan_or_zero) {
-            printf("  - ⚠️  WARNING: Found NaN or zero distances after copyTo!\n");
-        } else {
-            printf("  - ✅ After copyTo CPU index search results look valid\n");
-        }
-
-    } catch (const std::exception& e) {
-        printf("  - ❌ Error testing after copyTo CPU index search: %s\n", e.what());
-    }
-}
-
-// Test function to verify GPU index before conversion
-void test_gpu_index_before_conversion(const faiss::Index* gpu_index) {
-    try {
-        // Create a simple test query
-        std::vector<float> query(128, 2.0f); // 128 dimensions, all 2.0f
-
-        // Allocate result arrays
-        std::vector<float> distances(20);
-        std::vector<faiss::idx_t> labels(20);
-
-        // Perform search
-        gpu_index->search(1, query.data(), 20, distances.data(), labels.data());
-
-        printf("  - GpuCloner GPU index search results:\n");
-        printf("    Top 5 results: ");
-        for (int i = 0; i < 5 && i < 20; i++) {
-            printf("(%ld:%.1f) ", labels[i], distances[i]);
-        }
-        printf("\n");
-
-        // Check for any NaN or zero distances
-        bool has_nan_or_zero = false;
-        for (int i = 0; i < 20; i++) {
-            if (std::isnan(distances[i]) || distances[i] == 0.0f) {
-                has_nan_or_zero = true;
-                break;
-            }
-        }
-
-        if (has_nan_or_zero) {
-            printf("  - ⚠️  WARNING: Found NaN or zero distances in GpuCloner GPU results!\n");
-        } else {
-            printf("  - ✅ GpuCloner GPU index search results look valid\n");
-        }
-
-    } catch (const std::exception& e) {
-        printf("  - ❌ Error testing GpuCloner GPU index search: %s\n", e.what());
-    }
-}
-
-// Test function to verify converted CPU index search
-void test_converted_cpu_index_search(const faiss::Index* cpu_index) {
-    try {
-        // Create a simple test query
-        std::vector<float> query(128, 2.0f); // 128 dimensions, all 2.0f
-
-        // Allocate result arrays
-        std::vector<float> distances(20);
-        std::vector<faiss::idx_t> labels(20);
-
-        // Perform search
-        cpu_index->search(1, query.data(), 20, distances.data(), labels.data());
-
-        printf("  - GpuCloner CPU index search results:\n");
-        printf("    Top 5 results: ");
-        for (int i = 0; i < 5 && i < 20; i++) {
-            printf("(%ld:%.1f) ", labels[i], distances[i]);
-        }
-        printf("\n");
-
-        // Check for any NaN or zero distances
-        bool has_nan_or_zero = false;
-        for (int i = 0; i < 20; i++) {
-            if (std::isnan(distances[i]) || distances[i] == 0.0f) {
-                has_nan_or_zero = true;
-                break;
-            }
-        }
-
-        if (has_nan_or_zero) {
-            printf("  - ⚠️  WARNING: Found NaN or zero distances in GpuCloner CPU results!\n");
-        } else {
-            printf("  - ✅ GpuCloner CPU index search results look valid\n");
-        }
-
-    } catch (const std::exception& e) {
-        printf("  - ❌ Error testing GpuCloner CPU index search: %s\n", e.what());
-    }
-}
 
 } // namespace gpu
 } // namespace faiss

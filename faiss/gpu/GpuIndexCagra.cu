@@ -210,9 +210,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
 
     DeviceScope scope(config_.device);
 
-    printf("🔍 C++: GpuIndexCagra::copyTo called\n");
-    printf("  - GPU index ntotal: %ld, d: %d\n", this->ntotal, this->d);
-
     //
     // Index information
     //
@@ -244,35 +241,21 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
 
     auto dataset = index_->get_training_dataset();
     bool allocation = false;
-    printf("  - Dataset pointer: %p\n", dataset);
-    printf("  - Dataset device: %d\n", getDeviceForAddress(dataset));
-
 
     if (getDeviceForAddress(dataset) >= 0) {
         train_dataset = new float[n_train * index->d];
         allocation = true;
-        printf("  - Copying %ld vectors from GPU to CPU\n", n_train);
         raft::copy(
                 train_dataset,
                 dataset,
                 n_train * index->d,
                 this->resources_->getRaftHandleCurrentDevice().get_stream());
-
-        // Debug: Check first few values after GPU->CPU copy
-        printf("  - After GPU->CPU copy, first 5 values: [%.3f, %.3f, %.3f, %.3f, %.3f]\n",
-               train_dataset[0], train_dataset[1], train_dataset[2], train_dataset[3], train_dataset[4]);
-        printf("  - After GPU->CPU copy, values at d, d+1, d+2, d+3, d+4: [%.3f, %.3f, %.3f, %.3f, %.3f]\n",
-               train_dataset[index->d], train_dataset[index->d+1], train_dataset[index->d+2], train_dataset[index->d+3], train_dataset[index->d+4]);
     } else {
         train_dataset = const_cast<float*>(dataset);
-        printf("  - Using CPU dataset directly\n");
-        printf("  - CPU dataset first 5 values: [%.3f, %.3f, %.3f, %.3f, %.3f]\n",
-               train_dataset[0], train_dataset[1], train_dataset[2], train_dataset[3], train_dataset[4]);
     }
 
         // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
-    printf("  - Adding %ld vectors to CPU index\n", n_train);
     if (!index->base_level_only) {
         index->add(n_train, train_dataset);
     } else {
@@ -281,22 +264,7 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         index->ntotal = n_train;
     }
 
-    // Debug: Check vectors in CPU index after adding
-    if (index->storage) {
-        auto flat_storage = dynamic_cast<IndexFlat*>(index->storage);
-        if (flat_storage) {
-            const float* vectors = flat_storage->get_xb();
-            printf("  - After adding to CPU index, first 5 values: [%.3f, %.3f, %.3f, %.3f, %.3f]\n",
-                   vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]);
-            printf("  - After adding to CPU index, values at d, d+1, d+2, d+3, d+4: [%.3f, %.3f, %.3f, %.3f, %.3f]\n",
-                   vectors[index->d], vectors[index->d+1], vectors[index->d+2], vectors[index->d+3], vectors[index->d+4]);
-        }
-    }
 
-    // Test search immediately after adding vectors to CPU index
-    printf("🔍 Testing CPU index immediately after adding vectors...\n");
-    fflush(stdout);
-    test_cpu_index_after_copyto(index);
 
     if (allocation) {
         delete[] train_dataset;

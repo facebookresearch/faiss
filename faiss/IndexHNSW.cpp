@@ -923,8 +923,6 @@ void IndexHNSWCagra::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    printf("🔍 C++: IndexHNSWCagra::search called\n");
-
     if (!base_level_only) {
         IndexHNSW::search(n, x, k, distances, labels, params);
     } else {
