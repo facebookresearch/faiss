@@ -175,6 +175,48 @@ class TestAlternativeDistances(unittest.TestCase):
         Dnew, Inew = index.search(xq, 10)
         np.testing.assert_array_equal(Inew, Iref)
 
+    @unittest.skipIf(
+        "CUVS" in faiss.get_compile_options(),
+        "only if CUVS is not compiled in")
+    def do_test_gower(self):
+        """Special test for Gower distance with mixed numeric/categorical data"""
+        res = faiss.StandardGpuResources()
+        d = 32
+        nb = 1000
+        nq = 100
+
+        rs = np.random.RandomState(123)
+
+        # Create mixed data: first half numeric [0,1], second half categorical (negative)
+        xb = np.zeros((nb, d), dtype='float32')
+        xq = np.zeros((nq, d), dtype='float32')
+
+        # Numeric features in [0,1] range
+        xb[:, :d//2] = rs.rand(nb, d//2)
+        xq[:, :d//2] = rs.rand(nq, d//2)
+
+        # Categorical features (negative integers)
+        xb[:, d//2:] = -rs.randint(1, 5, size=(nb, d//2)).astype('float32')
+        xq[:, d//2:] = -rs.randint(1, 5, size=(nq, d//2)).astype('float32')
+
+        # CPU reference
+        index_ref = faiss.IndexFlat(d, faiss.METRIC_GOWER)
+        index_ref.add(xb)
+        Dref, Iref = index_ref.search(xq, 10)
+
+        # GPU test: build from CPU index
+        index = faiss.GpuIndexFlat(res, index_ref)
+        Dnew, Inew = index.search(xq, 10)
+        np.testing.assert_array_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref, rtol=1e-6)
+
+        # GPU test: build from scratch
+        index = faiss.GpuIndexFlat(res, d, faiss.METRIC_GOWER)
+        index.add(xb)
+        Dnew, Inew = index.search(xq, 10)
+        np.testing.assert_array_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref, rtol=1e-6)
+
     def test_L1(self):
         self.do_test(faiss.METRIC_L1)
 
@@ -183,6 +225,9 @@ class TestAlternativeDistances(unittest.TestCase):
 
     def test_Lp(self):
         self.do_test(faiss.METRIC_Lp, 0.7)
+
+    def test_gower(self):
+        self.do_test_gower()
 
 
 class TestGpuRef(unittest.TestCase):
@@ -417,6 +462,56 @@ class TestAllPairwiseDistance(unittest.TestCase):
             print('f16', np.abs(ref_d_f16 - out_d_f16).max())
 
             np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 4e-3)
+
+    def test_gower_pairwise(self):
+        """Test Gower distance with GPU pairwise distance computation"""
+        d = 16
+        k = 100
+        nb = k  # all pairwise distance should be the same as nb = k
+        nq = 10
+
+        rs = np.random.RandomState(123)
+        
+        # Create mixed data: first half numeric [0,1], second half categorical (negative)
+        xs = np.zeros((nb, d), dtype=np.float32)
+        qs = np.zeros((nq, d), dtype=np.float32)
+        
+        # Numeric features in [0,1] range
+        xs[:, :d//2] = rs.rand(nb, d//2)
+        qs[:, :d//2] = rs.rand(nq, d//2)
+        
+        # Categorical features (negative integers)
+        xs[:, d//2:] = -rs.randint(1, 4, size=(nb, d//2)).astype('float32')
+        qs[:, d//2:] = -rs.randint(1, 4, size=(nq, d//2)).astype('float32')
+
+        res = faiss.StandardGpuResources()
+
+        # Get ground truth using IndexFlat
+        index = faiss.IndexFlat(d, faiss.METRIC_GOWER)
+        index.add(xs)
+        ref_d, _ = index.search(qs, k)
+
+        out_d = np.empty((nq, k), dtype=np.float32)
+
+        # Test GPU pairwise computation
+        params = faiss.GpuDistanceParams()
+        params.metric = faiss.METRIC_GOWER
+        params.k = -1  # all pairwise
+        params.dims = d
+        params.vectors = faiss.swig_ptr(xs)
+        params.numVectors = nb
+        params.queries = faiss.swig_ptr(qs)
+        params.numQueries = nq
+        params.outDistances = faiss.swig_ptr(out_d)
+        params.device = 0  # Use GPU 0
+
+        faiss.bfKnn(res, params)
+
+        # IndexFlat will sort the results, so we need to do the same on our end
+        out_d = np.sort(out_d, axis=1)
+
+        print('Gower max diff:', np.abs(ref_d - out_d).max())
+        np.testing.assert_allclose(ref_d, out_d, atol=1e-5)
 
 
 
