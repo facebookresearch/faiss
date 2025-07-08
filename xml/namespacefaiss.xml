@@ -908,7 +908,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="536" column="23" declfile="faiss/IndexIVF.h" declline="536" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="550" column="23" declfile="faiss/IndexIVF.h" declline="550" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -922,7 +922,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="554" column="32" declfile="faiss/IndexIVF.h" declline="554" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="568" column="32" declfile="faiss/IndexIVF.h" declline="568" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -964,7 +964,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="148" column="22" declfile="faiss/IndexIVFPQ.h" declline="148" declcolumn="22"/>
+        <location file="faiss/IndexIVFPQ.h" line="154" column="22" declfile="faiss/IndexIVFPQ.h" declline="154" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae040bf76054f16979b15559f8ffc5727" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref></type>
@@ -978,7 +978,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="188" column="34" declfile="faiss/IndexIVFPQ.h" declline="188" declcolumn="34"/>
+        <location file="faiss/IndexIVFPQ.h" line="194" column="34" declfile="faiss/IndexIVFPQ.h" declline="194" declcolumn="34"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexPQStats" kindref="compound">IndexPQStats</ref></type>
@@ -3984,7 +3984,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="161" column="6" declfile="faiss/IndexIVFPQ.h" declline="161" declcolumn="6"/>
+        <location file="faiss/IndexIVFPQ.h" line="167" column="6" declfile="faiss/IndexIVFPQ.h" declline="167" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
