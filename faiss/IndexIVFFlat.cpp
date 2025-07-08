@@ -122,6 +122,18 @@ void IndexIVFFlat::encode_vectors(
     }
 }
 
+void IndexIVFFlat::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* /*listnos*/,
+        float* x) const {
+    for (size_t i = 0; i < n; i++) {
+        const uint8_t* code = codes + i * code_size;
+        float* xi = x + i * d;
+        memcpy(xi, code, code_size);
+    }
+}
+
 void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     size_t coarse_size = coarse_code_size();
     for (size_t i = 0; i < n; i++) {

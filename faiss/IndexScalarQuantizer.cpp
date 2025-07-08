@@ -182,6 +182,15 @@ void IndexIVFScalarQuantizer::encode_vectors(
     }
 }
 
+void IndexIVFScalarQuantizer::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t*,
+        float* x) const {
+    FAISS_THROW_IF_NOT(is_trained);
+    return sq.decode(codes, x, n);
+}
+
 void IndexIVFScalarQuantizer::sa_decode(idx_t n, const uint8_t* codes, float* x)
         const {
     std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
