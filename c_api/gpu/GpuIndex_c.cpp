@@ -22,7 +22,6 @@ using faiss::gpu::GpuIndexConfig;
 DEFINE_GETTER(GpuIndexConfig, int, device)
 
 int faiss_index_gpu_to_cpu_new(const FaissIndex* gpu_index, FaissIndex** p_out) {
-    // Call the existing function from GpuAutoTune_c.cpp
     int result = faiss_index_gpu_to_cpu(gpu_index, p_out);
     return result;
 }
@@ -32,7 +31,6 @@ int faiss_index_cpu_to_gpu_new(
         int device,
         const FaissIndex* index,
         FaissGpuIndex** p_out) {
-    // Call the existing function from GpuAutoTune_c.cpp
     return faiss_index_cpu_to_gpu(provider, device, index, p_out);
 }
 
@@ -60,8 +58,6 @@ int faiss_GpuIndexCagra_new(
     }
     CATCH_AND_HANDLE
 }
-
-
 
 int faiss_SearchParametersCagra_new(
         FaissSearchParameters** p_params,
