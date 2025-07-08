@@ -171,11 +171,11 @@ set(FAISS_GPU_HEADERS
 
 set(CUDA_LIBS CUDA::cudart CUDA::cublas)
 if(FAISS_GPU_STATIC)
-	if(FAISS_ENABLE_ROCM)
-		message(WARNING "Linking ROCm staticcally is unsupported at the time. Continuing with dynamic linking.")
-	else()
-		set(CUDA_LIBS CUDA::cudart_static CUDA::cublas_static)
-	endif()
+  if(FAISS_ENABLE_ROCM)
+    message(WARNING "Linking ROCm staticcally is unsupported at the time. Continuing with dynamic linking.")
+  else()
+    set(CUDA_LIBS CUDA::cudart_static CUDA::cublas_static)
+  endif()
 endif()
 
 function(generate_ivf_interleaved_code)
