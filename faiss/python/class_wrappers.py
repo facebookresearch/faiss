@@ -228,9 +228,10 @@ def handle_Index(the_class):
         assert d == self.d
         if numeric_type == faiss.Float32:
             x = np.ascontiguousarray(x, dtype='float32')
+            self.add_c(n, swig_ptr(x))
         else:
             x = np.ascontiguousarray(x, dtype='float16')
-        self.add_c(n, swig_ptr(x))
+            self.add_c(n, swig_ptr(x), faiss.Float16)
 
     def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
