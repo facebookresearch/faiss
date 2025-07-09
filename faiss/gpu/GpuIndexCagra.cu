@@ -29,7 +29,6 @@
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <optional>
 #include <vector>
-#include <cmath>
 
 namespace faiss {
 namespace gpu {
@@ -254,7 +253,7 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         train_dataset = const_cast<float*>(dataset);
     }
 
-        // turn off as level 0 is copied from CAGRA graph
+    // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
     if (!index->base_level_only) {
         index->add(n_train, train_dataset);
@@ -263,8 +262,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         index->storage->add(n_train, train_dataset);
         index->ntotal = n_train;
     }
-
-
 
     if (allocation) {
         delete[] train_dataset;

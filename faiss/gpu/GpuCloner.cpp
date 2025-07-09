@@ -38,13 +38,9 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/index_io.h>
 #include <vector>
-#include <cmath>
 
 namespace faiss {
 namespace gpu {
-
-// Function declarations
-
 
 /**********************************************************
  * Cloning to CPU
@@ -595,8 +591,6 @@ faiss::IndexBinary* index_binary_cpu_to_gpu_multiple(
         return ret;
     }
 }
-
-
 
 } // namespace gpu
 } // namespace faiss

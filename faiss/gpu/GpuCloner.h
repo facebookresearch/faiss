@@ -117,7 +117,5 @@ faiss::IndexBinary* index_binary_cpu_to_gpu_multiple(
         const faiss::IndexBinary* index,
         const GpuMultipleClonerOptions* options = nullptr);
 
-
-
 } // namespace gpu
 } // namespace faiss
