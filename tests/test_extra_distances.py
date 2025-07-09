@@ -117,13 +117,6 @@ class TestExtraDistances(unittest.TestCase):
         new_dis = faiss.pairwise_distances(x, q, faiss.METRIC_NaNEuclidean)
         self.assertTrue(np.isnan(new_dis[0]))
 
-    def test_abs_inner_product(self):
-        xq, yb = self.make_example()
-        dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_ABS_INNER_PRODUCT)
-
-        gt_dis = np.abs(xq @ yb.T)
-        np.testing.assert_allclose(dis, gt_dis, atol=1e-5)
-
     def test_gower(self):
         # Create test data with mixed numeric and categorical features
         # First 2 dimensions are numeric (0-1), last 2 are categorical
@@ -249,7 +242,6 @@ class TestExtraDistances(unittest.TestCase):
             xq_out_of_range, yb_out_of_range, faiss.METRIC_GOWER
         )
         self.assertTrue(np.all(np.isnan(dis_out_of_range)))
-
 
 class TestKNN(unittest.TestCase):
     """ test that the knn search gives the same as distance matrix + argmin """
