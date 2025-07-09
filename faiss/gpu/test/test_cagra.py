@@ -15,7 +15,7 @@ import numpy as np
     "only if cuVS is compiled in")
 class TestComputeGT(unittest.TestCase):
 
-    def do_compute_GT(self, metric, fp16):
+    def do_compute_GT(self, metric, numeric_type):
         d = 64
         k = 12
         ds = datasets.SyntheticDataset(d, 0, 10000, 100)
@@ -31,31 +31,31 @@ class TestComputeGT(unittest.TestCase):
         cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
 
         index = faiss.GpuIndexCagra(res, d, metric, cagraIndexConfig)
-        database = ds.get_database().astype(np.float16) if fp16 else ds.get_database()
-        index.train(database)
-        queries = ds.get_queries().astype(np.float16) if fp16 else ds.get_queries()
-        Dnew, Inew = index.search(queries, k)
+        database = ds.get_database().astype(np.float16) if numeric_type == faiss.Float16  else ds.get_database()
+        index.train(database, numeric_type = numeric_type)
+        queries = ds.get_queries().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_queries()
+        Dnew, Inew = index.search(queries, k, numeric_type = numeric_type)
         
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
     def test_compute_GT_L2(self):
-        self.do_compute_GT(faiss.METRIC_L2, False)
+        self.do_compute_GT(faiss.METRIC_L2, faiss.Float32)
 
     def test_compute_GT_IP(self):
-        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, False)
+        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT,  faiss.Float32)
 
     def test_compute_GT_L2_FP16(self):
-        self.do_compute_GT(faiss.METRIC_L2, True)
+        self.do_compute_GT(faiss.METRIC_L2,  faiss.Float16)
 
     def test_compute_GT_IP_FP16(self):
-        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, True)
+        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT,  faiss.Float16)
 
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
 class TestInterop(unittest.TestCase):
 
-    def do_interop(self, metric, fp16):
+    def do_interop(self, metric, numeric_type):
         d = 64
         k = 12
         ds = datasets.SyntheticDataset(d, 0, 10000, 100)
@@ -63,10 +63,10 @@ class TestInterop(unittest.TestCase):
         res = faiss.StandardGpuResources()
 
         index = faiss.GpuIndexCagra(res, d, metric)
-        database = ds.get_database().astype(np.float16) if fp16 else ds.get_database()
-        index.train(database)
-        queries = ds.get_queries().astype(np.float16) if fp16 else ds.get_queries()
-        Dnew, Inew = index.search(queries, k)
+        database = ds.get_database().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_database()
+        index.train(database, numeric_type = numeric_type)
+        queries = ds.get_queries().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_queries()
+        Dnew, Inew = index.search(queries, k, numeric_type = numeric_type)
 
         cpu_index = faiss.index_gpu_to_cpu(index)
         # cpu index always search in fp32
@@ -78,21 +78,21 @@ class TestInterop(unittest.TestCase):
             faiss.serialize_index(cpu_index))
 
         gpu_index = faiss.index_cpu_to_gpu(res, 0, deserialized_index)
-        Dnew2, Inew2 = gpu_index.search(queries, k)
+        Dnew2, Inew2 = gpu_index.search(queries, k, numeric_type = numeric_type)
 
         evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
 
     def test_interop_L2(self):
-        self.do_interop(faiss.METRIC_L2, False)
+        self.do_interop(faiss.METRIC_L2, faiss.Float32)
 
     def test_interop_IP(self):
-        self.do_interop(faiss.METRIC_INNER_PRODUCT, False)
+        self.do_interop(faiss.METRIC_INNER_PRODUCT, faiss.Float32)
 
     def test_interop_L2_FP16(self):
-        self.do_interop(faiss.METRIC_L2, True)
+        self.do_interop(faiss.METRIC_L2,  faiss.Float16)
 
     def test_interop_IP_FP16(self):
-        self.do_interop(faiss.METRIC_INNER_PRODUCT, True)
+        self.do_interop(faiss.METRIC_INNER_PRODUCT,  faiss.Float16)
 
 
 @unittest.skipIf(
@@ -100,7 +100,7 @@ class TestInterop(unittest.TestCase):
     "only if cuVS is compiled in")
 class TestIDMapCagra(unittest.TestCase):
 
-    def do_IDMapCagra(self, metric, fp16):
+    def do_IDMapCagra(self, metric, numeric_type):
         d = 64
         k = 12
         ds = datasets.SyntheticDataset(d, 0, 10000, 100)
@@ -110,23 +110,23 @@ class TestIDMapCagra(unittest.TestCase):
 
         index = faiss.GpuIndexCagra(res, d, metric)
         idMapIndex = faiss.IndexIDMap(index)
-        database = ds.get_database().astype(np.float16) if fp16 else ds.get_database()
-        idMapIndex.train(database)
-        ids = [i for i in range(10000)]
-        idMapIndex.add_with_ids(database, ids)
-        queries = ds.get_queries().astype(np.float16) if fp16 else ds.get_queries()
-        Dnew, Inew = idMapIndex.search(queries, k)
+        database = ds.get_database().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_database()
+        idMapIndex.train(database, numeric_type = numeric_type)
+        ids = np.array([i for i in range(10000)])
+        idMapIndex.add_with_ids(database, ids, numeric_type = numeric_type)
+        queries = ds.get_queries().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_queries()
+        Dnew, Inew = idMapIndex.search(queries, k, numeric_type = numeric_type)
 
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
     def test_IDMapCagra_L2(self):
-        self.do_IDMapCagra(faiss.METRIC_L2, False)
+        self.do_IDMapCagra(faiss.METRIC_L2, faiss.Float32)
 
     def test_IDMapCagra_IP(self):
-        self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT, False)
+        self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT, faiss.Float32)
 
     def test_IDMapCagra_L2_FP16(self):
-        self.do_IDMapCagra(faiss.METRIC_L2, True)
+        self.do_IDMapCagra(faiss.METRIC_L2,  faiss.Float16)
 
     def test_IDMapCagra_IP_FP16(self):
-        self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT, True)
+        self.do_IDMapCagra(faiss.METRIC_INNER_PRODUCT,  faiss.Float16)
