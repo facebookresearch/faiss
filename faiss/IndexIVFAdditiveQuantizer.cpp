@@ -90,6 +90,31 @@ void IndexIVFAdditiveQuantizer::encode_vectors(
     }
 }
 
+void IndexIVFAdditiveQuantizer::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* listnos,
+        float* x) const {
+#pragma omp parallel if (n > 1000)
+    {
+        std::vector<float> residual(d);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * (code_size);
+            float* xi = x + i * d;
+            aq->decode(code, xi, 1);
+            if (by_residual) {
+                int64_t list_no = listnos[i];
+                quantizer->reconstruct(list_no, residual.data());
+                for (size_t j = 0; j < d; j++) {
+                    xi[j] += residual[j];
+                }
+            }
+        }
+    }
+}
+
 void IndexIVFAdditiveQuantizer::sa_decode(
         idx_t n,
         const uint8_t* codes,

@@ -169,6 +169,15 @@ set(FAISS_GPU_HEADERS
   utils/warpselect/WarpSelectImpl.cuh
 )
 
+set(CUDA_LIBS CUDA::cudart CUDA::cublas)
+if(FAISS_GPU_STATIC)
+  if(FAISS_ENABLE_ROCM)
+    message(WARNING "Linking ROCm staticcally is unsupported at the time. Continuing with dynamic linking.")
+  else()
+    set(CUDA_LIBS CUDA::cudart_static CUDA::cublas_static)
+  endif()
+endif()
+
 function(generate_ivf_interleaved_code)
   set(SUB_CODEC_TYPE
     "faiss::gpu::Codec<0, 1>"
@@ -351,7 +360,7 @@ else()
 
 
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_objs PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  target_link_libraries(faiss_gpu_objs PRIVATE ${CUDA_LIBS} $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
   target_compile_options(faiss_gpu_objs PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all
     --expt-extended-lambda --expt-relaxed-constexpr
