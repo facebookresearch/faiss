@@ -315,28 +315,6 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances-inl.h" line="136" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="136" bodyend="153"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a5ae7f94d000b8bf75f1a27d99dd78148" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>float</type>
-        <definition>float faiss::VectorDistance&lt; METRIC_ABS_INNER_PRODUCT &gt;::operator()</definition>
-        <argsstring>(const float *x, const float *y) const</argsstring>
-        <name>operator()</name>
-        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>y</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="156" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="156" bodyend="164"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a88aef585bc77a6654095aabc7171e75e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::VectorDistance&lt; METRIC_GOWER &gt;::operator()</definition>
@@ -357,7 +335,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="167" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="167" bodyend="198"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="156" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="156" bodyend="187"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -381,7 +359,6 @@
       <member refid="structfaiss_1_1VectorDistance_1ac839930aa4b3c1db70146b54212385d6" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1VectorDistance_1abcb39e66cd757963c21107996bad3dad" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1VectorDistance_1a1523b33f2aa08df81f83f43eee34d862" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
-      <member refid="structfaiss_1_1VectorDistance_1a5ae7f94d000b8bf75f1a27d99dd78148" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1VectorDistance_1a88aef585bc77a6654095aabc7171e75e" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
     </listofallmembers>
   </compounddef>
