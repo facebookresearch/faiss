@@ -37,7 +37,6 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/index_io.h>
-#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -113,18 +112,15 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
     } else if (auto ipr = dynamic_cast<const IndexReplicas*>(index)) {
         // just clone one of the replicas
         FAISS_ASSERT(ipr->count() > 0);
-        auto result = clone_Index(ipr->at(0));
-        return result;
+        return clone_Index(ipr->at(0));
     } else {
-        auto result = Cloner::clone_Index(index);
-        return result;
+        return Cloner::clone_Index(index);
     }
 }
 
 faiss::Index* index_gpu_to_cpu(const faiss::Index* gpu_index) {
     ToCPUCloner cl;
-    auto result = cl.clone_Index(gpu_index);
-    return result;
+    return cl.clone_Index(gpu_index);
 }
 
 /**********************************************************

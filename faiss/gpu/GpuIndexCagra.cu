@@ -23,12 +23,10 @@
 
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
-#include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <optional>
-#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -237,7 +235,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
 
     auto n_train = this->ntotal;
     float* train_dataset;
-
     auto dataset = index_->get_training_dataset();
     bool allocation = false;
 
