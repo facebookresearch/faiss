@@ -237,7 +237,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     float* train_dataset;
     auto dataset = index_->get_training_dataset();
     bool allocation = false;
-
     if (getDeviceForAddress(dataset) >= 0) {
         train_dataset = new float[n_train * index->d];
         allocation = true;
@@ -259,7 +258,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         index->storage->add(n_train, train_dataset);
         index->ntotal = n_train;
     }
-
     if (allocation) {
         delete[] train_dataset;
     }

@@ -11,7 +11,6 @@
 #define FAISS_GPU_INDEX_C_H
 
 #include "../Index_c.h"
-#include "../faiss_c.h"
 #include "StandardGpuResources_c.h"
 #ifdef __cplusplus
 extern "C" {

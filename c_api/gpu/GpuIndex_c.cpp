@@ -14,7 +14,6 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/impl/FaissAssert.h>
-#include <vector>
 
 using faiss::gpu::GpuIndexConfig;
 

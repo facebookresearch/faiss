@@ -22,7 +22,6 @@ using faiss::gpu::GpuClonerOptions;
 using faiss::gpu::GpuMultipleClonerOptions;
 using faiss::gpu::GpuResourcesProvider;
 
-
 int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
     try {
         if (gpu_index == nullptr) {
@@ -35,7 +34,6 @@ int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
 
         auto cpu_index = faiss::gpu::index_gpu_to_cpu(
                 reinterpret_cast<const Index*>(gpu_index));
-
         *p_out = reinterpret_cast<FaissIndex*>(cpu_index);
     }
     CATCH_AND_HANDLE
