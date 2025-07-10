@@ -12,12 +12,15 @@
 
 #include "../Index_c.h"
 #include "StandardGpuResources_c.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 FAISS_DECLARE_CLASS(GpuIndexConfig)
+
 FAISS_DECLARE_GETTER(GpuIndexConfig, int, device)
+
 FAISS_DECLARE_CLASS_INHERITED(GpuIndex, Index)
 
 FAISS_DECLARE_CLASS(SearchParameters)
