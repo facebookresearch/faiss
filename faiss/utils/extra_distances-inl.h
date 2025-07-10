@@ -153,17 +153,6 @@ inline float VectorDistance<METRIC_NaNEuclidean>::operator()(
 }
 
 template <>
-inline float VectorDistance<METRIC_ABS_INNER_PRODUCT>::operator()(
-        const float* x,
-        const float* y) const {
-    float accu = 0;
-    for (size_t i = 0; i < d; i++) {
-        accu += fabs(x[i] * y[i]);
-    }
-    return accu;
-}
-
-template <>
 inline float VectorDistance<METRIC_GOWER>::operator()(
         const float* x,
         const float* y) const {
@@ -227,7 +216,6 @@ typename Consumer::T dispatch_VectorDistance(
         DISPATCH_VD(METRIC_JensenShannon);
         DISPATCH_VD(METRIC_Jaccard);
         DISPATCH_VD(METRIC_NaNEuclidean);
-        DISPATCH_VD(METRIC_ABS_INNER_PRODUCT);
         DISPATCH_VD(METRIC_GOWER);
         default:
             FAISS_THROW_FMT("Invalid metric %d", metric);

@@ -43,6 +43,12 @@ struct IndexIVFFlat : IndexIVF {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const override;
+
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
             const IDSelector* sel,

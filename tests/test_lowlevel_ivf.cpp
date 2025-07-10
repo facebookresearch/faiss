@@ -22,6 +22,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
+#include <faiss/utils/distances.h>
 
 using namespace faiss;
 
@@ -110,6 +111,23 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
     std::vector<uint8_t> codes(index_ivf->code_size * nb);
     index_ivf->quantizer->assign(nb, xbt, list_nos.data());
     index_ivf->encode_vectors(nb, xbt, list_nos.data(), codes.data());
+
+    /** Test independent decoding
+     *
+     * Encode and decode twice on each vector and compare the first time decoded
+     * vector and second time decoded vector (test decoding consistency only due
+     * to data loss during encode and decode).
+     */
+    std::vector<float> decoded(nb * dt);
+    std::vector<uint8_t> codes2(codes);
+    std::vector<float> decoded2(nb * dt);
+    index_ivf->decode_vectors(
+            nb, codes.data(), list_nos.data(), decoded.data());
+    index_ivf->encode_vectors(nb, xbt, list_nos.data(), codes2.data());
+    index_ivf->decode_vectors(
+            nb, codes2.data(), list_nos.data(), decoded2.data());
+    EXPECT_LT(
+            faiss::fvec_L2sqr(decoded.data(), decoded2.data(), nb * dt), 1e-5);
 
     // compare with normal IVF addition
 
@@ -246,6 +264,14 @@ TEST(TestLowLevelIVF, IVFPQL2) {
 
 TEST(TestLowLevelIVF, IVFPQIP) {
     test_lowlevel_access("IVF32,PQ4np", METRIC_INNER_PRODUCT);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQ) {
+    test_lowlevel_access("IVF32,RaBitQ", METRIC_L2);
+}
+
+TEST(TestLowLevelIVF, IVFRQ) {
+    test_lowlevel_access("IVF32,RQ16x8", METRIC_L2);
 }
 
 /*************************************************************

@@ -254,6 +254,20 @@ struct IndexIVF : Index, IndexIVFInterface {
             uint8_t* codes,
             bool include_listno = false) const = 0;
 
+    /** Decodes a set of vectors as they would appear in a given set of inverted
+     * lists (inverse of encode_vectors)
+     *
+     * @param codes      input codes, size n * code_size
+     * @param x          output decoded vectors
+     * @param list_nos   input listnos, size n
+     *
+     */
+    virtual void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const;
+
     /** Add vectors that are computed with the standalone codec
      *
      * @param codes  codes to add size n * sa_code_size()
