@@ -265,6 +265,7 @@
     <innerclass refid="classfaiss_1_1ThreadedIndex" prot="public">faiss::ThreadedIndex</innerclass>
     <innerclass refid="structfaiss_1_1TimeoutCallback" prot="public">faiss::TimeoutCallback</innerclass>
     <innerclass refid="structfaiss_1_1Top1BlockResultHandler" prot="public">faiss::Top1BlockResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1TopkBlockResultHandler" prot="public">faiss::TopkBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1TransformedVectors" prot="public">faiss::TransformedVectors</innerclass>
     <innerclass refid="structfaiss_1_1VectorDistance" prot="public">faiss::VectorDistance</innerclass>
     <innerclass refid="structfaiss_1_1VectorIOReader" prot="public">faiss::VectorIOReader</innerclass>
@@ -694,7 +695,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="615" column="22" bodyfile="faiss/utils/distances.h" bodystart="286" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="615" declcolumn="22"/>
+        <location file="faiss/impl/ResultHandler.h" line="624" column="22" bodyfile="faiss/utils/distances.h" bodystart="286" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="624" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
@@ -3303,7 +3304,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="618" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="618" bodyend="655"/>
+        <location file="faiss/impl/ResultHandler.h" line="627" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="627" bodyend="664"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -3351,7 +3352,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="658" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="658" bodyend="685"/>
+        <location file="faiss/impl/ResultHandler.h" line="667" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="667" bodyend="694"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f255b2339b7fb86093b14e279b27fe1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>

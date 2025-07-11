@@ -2,10 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BlockResultHandler" kind="struct" language="C++" prot="public">
     <compoundname>faiss::BlockResultHandler</compoundname>
-    <derivedcompoundref refid="structfaiss_1_1HeapBlockResultHandler" prot="public" virt="non-virtual">faiss::HeapBlockResultHandler&lt; C, use_sel &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1RangeSearchBlockResultHandler" prot="public" virt="non-virtual">faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1ReservoirBlockResultHandler" prot="public" virt="non-virtual">faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1Top1BlockResultHandler" prot="public" virt="non-virtual">faiss::Top1BlockResultHandler&lt; C, use_sel &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1TopkBlockResultHandler" prot="public" virt="non-virtual">faiss::TopkBlockResultHandler&lt; C, use_sel &gt;</derivedcompoundref>
     <templateparamlist>
       <param>
         <type>class C</type>
@@ -208,27 +206,33 @@
         <label>faiss::BlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1BlockResultHandler"/>
       </node>
-      <node id="2">
+      <node id="4">
         <label>faiss::HeapBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1HeapBlockResultHandler"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="2">
         <label>faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1RangeSearchBlockResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::ReservoirBlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1ReservoirBlockResultHandler"/>
-        <childnode refid="1" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::Top1BlockResultHandler&lt; C, use_sel &gt;</label>
         <link refid="structfaiss_1_1Top1BlockResultHandler"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::TopkBlockResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1TopkBlockResultHandler"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

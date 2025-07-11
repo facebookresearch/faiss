@@ -1920,19 +1920,19 @@
   <compound refid="structfaiss_1_1HeapBlockResultHandler" kind="struct"><name>faiss::HeapBlockResultHandler</name>
     <member refid="structfaiss_1_1HeapBlockResultHandler_1a9cdcd8ef0585a3c52a479ca83a0048b2" kind="typedef"><name>T</name></member>
     <member refid="structfaiss_1_1HeapBlockResultHandler_1a594209b72bbddd8e8097ccadca111d9d" kind="typedef"><name>TI</name></member>
-    <member refid="structfaiss_1_1HeapBlockResultHandler_1a81012d963d5563f2098a79cf24614bbc" kind="variable"><name>heap_dis_tab</name></member>
-    <member refid="structfaiss_1_1HeapBlockResultHandler_1a5706e7739deb3e187d39a85a46e227c1" kind="variable"><name>heap_ids_tab</name></member>
-    <member refid="structfaiss_1_1HeapBlockResultHandler_1a72548e4b4776f5b5348a28f2b8978263" kind="variable"><name>k</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
-    <member refid="structfaiss_1_1HeapBlockResultHandler_1a85d6dc4b6db3b3eb2f08d932b1f0fdac" kind="function"><name>HeapBlockResultHandler</name></member>
+    <member refid="structfaiss_1_1HeapBlockResultHandler_1ac8f60e8bf2fd0c0b65f0162183e8cae5" kind="function"><name>HeapBlockResultHandler</name></member>
     <member refid="structfaiss_1_1HeapBlockResultHandler_1a10e5ce933348f3f2b9d03500b6acf4bd" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1HeapBlockResultHandler_1adca82a0eaf5e3043019bbabfd495ba62" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1HeapBlockResultHandler_1ac195e5664ea4c2e286ee60f88ac42d89" kind="function"><name>end_multiple</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" kind="function"><name>is_in_selection</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a31fc9b5908b749dd048a84ab9034b938" kind="variable"><name>dis_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1aeb8984bfb42398ce145c8dcf2573ce77" kind="variable"><name>ids_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1af19604c6025ccce89f2a52b96889d9be" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler" kind="struct"><name>faiss::simd_result_handlers::HeapHandler</name>
     <member refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a85e527b03ac85f7f45a73b9453433a5c" kind="typedef"><name>T</name></member>
@@ -8342,18 +8342,18 @@
   <compound refid="structfaiss_1_1ReservoirBlockResultHandler" kind="struct"><name>faiss::ReservoirBlockResultHandler</name>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a78cd7df64e2a8da5500174964520ad74" kind="typedef"><name>T</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1ad78241e44f10900f3297c25a350b2bb6" kind="typedef"><name>TI</name></member>
-    <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a5a83b53cdd4a2d3b6b4ee255472e88c9" kind="variable"><name>heap_dis_tab</name></member>
-    <member refid="structfaiss_1_1ReservoirBlockResultHandler_1add28f4e7a9cbc12d36b146f09b9e98ba" kind="variable"><name>heap_ids_tab</name></member>
-    <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a98f1dee5a60a5bd295f2591df08a17f6" kind="variable"><name>k</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a0e77c75526e9b13131c31e0988bb9bca" kind="variable"><name>capacity</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a1e3a8ca5cc4f9f2656e906e03ac01406" kind="variable"><name>reservoir_dis</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a42adb1d6b8587d9f7819e557dda6d0f6" kind="variable"><name>reservoir_ids</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a1f8208a769a7fa9219f293b3733e3685" kind="variable"><name>reservoirs</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a31fc9b5908b749dd048a84ab9034b938" kind="variable"><name>dis_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1aeb8984bfb42398ce145c8dcf2573ce77" kind="variable"><name>ids_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1af19604c6025ccce89f2a52b96889d9be" kind="variable"><name>k</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
-    <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a854054693619aa5697322075c6d40e83" kind="function"><name>ReservoirBlockResultHandler</name></member>
+    <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a30ebbbf6e2fb02b147ebba93e7465434" kind="function"><name>ReservoirBlockResultHandler</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a5c1ecb241b622441dba447dac3d0010f" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a3999c61c59d095883e32b49dc1b396ca" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1ReservoirBlockResultHandler_1a69d5995ceb23214316dd46bfd892baf5" kind="function"><name>end_multiple</name></member>
@@ -9642,16 +9642,34 @@
   <compound refid="structfaiss_1_1Top1BlockResultHandler" kind="struct"><name>faiss::Top1BlockResultHandler</name>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1a17eff0af17462fcd07a61ca3f8ca215a" kind="typedef"><name>T</name></member>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1a24cd769fe4670a3f905f192cbc4d646c" kind="typedef"><name>TI</name></member>
-    <member refid="structfaiss_1_1Top1BlockResultHandler_1a794e8be288a612391e29f7d407c04823" kind="variable"><name>dis_tab</name></member>
-    <member refid="structfaiss_1_1Top1BlockResultHandler_1af1b8189824b54ae8d886ce1aa78306a7" kind="variable"><name>ids_tab</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
-    <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1a41022bb717e1d2dfe3b8d95ba389bc9e" kind="function"><name>Top1BlockResultHandler</name></member>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1a0242e20e7315f31203919b83dc4ea3d0" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1a611551062bb08d03aa730c7f153000d9" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1Top1BlockResultHandler_1aa803dc0047211d2f2ddef1eccfd64379" kind="function"><name>add_result</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" kind="function"><name>add_results</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a6839e4eb6d26a994dac3d248918f9f97" kind="function"><name>end_multiple</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" kind="function"><name>is_in_selection</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a31fc9b5908b749dd048a84ab9034b938" kind="variable"><name>dis_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1aeb8984bfb42398ce145c8dcf2573ce77" kind="variable"><name>ids_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1af19604c6025ccce89f2a52b96889d9be" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1TopkBlockResultHandler" kind="struct"><name>faiss::TopkBlockResultHandler</name>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1acc3cad94fddf7c7e4db7273bf06a70c2" kind="typedef"><name>T</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1ae6bce856c4a4d678753df92239277606" kind="typedef"><name>TI</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a31fc9b5908b749dd048a84ab9034b938" kind="variable"><name>dis_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1aeb8984bfb42398ce145c8dcf2573ce77" kind="variable"><name>ids_tab</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1af19604c6025ccce89f2a52b96889d9be" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" kind="variable"><name>nq</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" kind="variable"><name>i0</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" kind="variable"><name>i1</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a3808d2a32fa551ef9f45bde840f9b89e" kind="function"><name>TopkBlockResultHandler</name></member>
+    <member refid="structfaiss_1_1TopkBlockResultHandler_1a852ebfc78e3d18c146627bb9f552e333" kind="function"><name>~TopkBlockResultHandler</name></member>
+    <member refid="structfaiss_1_1BlockResultHandler_1a6fdfd97929109943fec48be75f50f61b" kind="function"><name>begin_multiple</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" kind="function"><name>add_results</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a6839e4eb6d26a994dac3d248918f9f97" kind="function"><name>end_multiple</name></member>
     <member refid="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" kind="function"><name>is_in_selection</name></member>
