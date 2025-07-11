@@ -8,6 +8,11 @@
 namespace faiss {
 namespace metal {
 
+struct DistanceLabel {
+    float distance;
+    int label;
+};
+
 class MetalResources {
    public:
     virtual ~MetalResources();
@@ -39,9 +44,11 @@ class MetalKernels {
     void l2Distance(
             id<MTLBuffer> query,
             id<MTLBuffer> data,
-            id<MTLBuffer> distances,
+            id<MTLBuffer> dist_labels,
             int d,
             int n);
+
+    void bitonicSort(id<MTLBuffer> data, int size);
 
     private:
     std::shared_ptr<MetalResources> resources_;

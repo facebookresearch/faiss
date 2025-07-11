@@ -17,3 +17,20 @@ class TestMetal(unittest.TestCase):
 
         index = faiss.MetalIndexHNSW(128, 32)
         self.assertIsNotNone(index)
+
+    def test_search(self):
+        d = 64
+        nb = 1000
+        nq = 100
+        k = 10
+
+        xt = np.random.rand(nb, d).astype("float32")
+        xq = np.random.rand(nq, d).astype("float32")
+
+        index = faiss.MetalIndexFlat(d)
+        index.add(xt)
+
+        D, I = index.search(xq, k)
+
+        self.assertEqual(I.shape, (nq, k))
+        self.assertEqual(D.shape, (nq, k))

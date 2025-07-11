@@ -54,36 +54,29 @@ void MetalIndexFlat::search(
                                                   length:n * d * sizeof(float)
                                                  options:MTLResourceStorageModeShared];
 
-    id<MTLBuffer> distances_buffer = [device newBufferWithLength:n * ntotal_ * sizeof(float)
-                                                         options:MTLResourceStorageModeShared];
+    id<MTLBuffer> dist_labels_buffer = [device newBufferWithLength:n * ntotal_ * sizeof(DistanceLabel)
+                                                            options:MTLResourceStorageModeShared];
 
     for (int i = 0; i < n; ++i) {
         kernels.l2Distance(
                 query_buffer,
                 vectors_,
-                distances_buffer,
+                dist_labels_buffer,
                 d,
                 ntotal_);
     }
 
-    // For now, we just copy the distances back to the host and do the rest of the
-    // work on the CPU. This is inefficient, but it's a start.
-    float* all_distances = (float*)[distances_buffer contents];
+    // Now we have the distances and labels, we need to find the top-k for each query.
+    // We can do this by sorting the distances and taking the first k.
+    kernels.bitonicSort(dist_labels_buffer, n * ntotal_);
 
-    // Find the k-nearest neighbors on the CPU
+    // Copy the results back to the host
+    DistanceLabel* dist_labels = (DistanceLabel*)[dist_labels_buffer contents];
+
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < k; ++j) {
-            float min_dist = -1.0f;
-            idx_t min_idx = -1;
-            for (int l = 0; l < ntotal_; ++l) {
-                float dist = all_distances[i * ntotal_ + l];
-                if (min_dist < 0 || dist < min_dist) {
-                    min_dist = dist;
-                    min_idx = l;
-                }
-            }
-            distances[i * k + j] = min_dist;
-            labels[i * k + j] = min_idx;
+            distances[i * k + j] = dist_labels[i * ntotal_ + j].distance;
+            labels[i * k + j] = dist_labels[i * ntotal_ + j].label;
         }
     }
 }

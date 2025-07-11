@@ -87,7 +87,7 @@ void MetalKernels::addVectors(id<MTLBuffer> inA, id<MTLBuffer> inB, id<MTLBuffer
 void MetalKernels::l2Distance(
         id<MTLBuffer> query,
         id<MTLBuffer> data,
-        id<MTLBuffer> distances,
+        id<MTLBuffer> dist_labels,
         int d,
         int n) {
     NSError* error = nil;
@@ -104,7 +104,7 @@ void MetalKernels::l2Distance(
     [commandEncoder setComputePipelineState:pipelineState];
     [commandEncoder setBuffer:query offset:0 atIndex:0];
     [commandEncoder setBuffer:data offset:0 atIndex:1];
-    [commandEncoder setBuffer:distances offset:0 atIndex:2];
+    [commandEncoder setBuffer:dist_labels offset:0 atIndex:2];
     [commandEncoder setBytes:&d length:sizeof(int) atIndex:3];
 
     MTLSize gridSize = MTLSizeMake(n, 1, 1);
@@ -115,6 +115,50 @@ void MetalKernels::l2Distance(
     MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
 
     [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+}
+
+void MetalKernels::bitonicSort(id<MTLBuffer> data, int size) {
+    NSError* error = nil;
+    id<MTLFunction> sortFunction = [library_ newFunctionWithName:@"bitonic_sort"];
+    FAISS_THROW_IF_NOT_MSG(sortFunction, "Could not create Metal function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:sortFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:data offset:0 atIndex:0];
+
+    uint num_stages = 0;
+    for (uint temp = size; temp > 1; temp >>= 1) {
+        num_stages++;
+    }
+
+    for (uint stage = 0; stage < num_stages; stage++) {
+        for (uint pass_of_stage = 0; pass_of_stage < stage + 1; pass_of_stage++) {
+            uint direction = (pass_of_stage == stage) ? 1 : 0;
+            [commandEncoder setBytes:&size length:sizeof(uint) atIndex:1];
+            [commandEncoder setBytes:&stage length:sizeof(uint) atIndex:2];
+            [commandEncoder setBytes:&pass_of_stage length:sizeof(uint) atIndex:3];
+            [commandEncoder setBytes:&direction length:sizeof(uint) atIndex:4];
+
+            MTLSize gridSize = MTLSizeMake(size / 2, 1, 1);
+            NSUInteger threadGroupSize = [pipelineState maxTotalThreadsPerThreadgroup];
+            if (threadGroupSize > size/2) {
+                threadGroupSize = size/2;
+            }
+            MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
+
+            [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+        }
+    }
+
     [commandEncoder endEncoding];
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
