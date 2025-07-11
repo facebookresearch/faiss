@@ -104,6 +104,11 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;
+    void add_with_idsEx(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) override;
 
     size_t remove_ids(const IDSelector& sel) override;
 

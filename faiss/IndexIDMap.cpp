@@ -300,15 +300,28 @@ IndexIDMap2Template<IndexT>::IndexIDMap2Template(IndexT* index)
         : IndexIDMapTemplate<IndexT>(index) {}
 
 template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_with_idsEx(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* xids) {
+    size_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_with_idsEx(n, x, numeric_type, xids);
+    for (size_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map[this->id_map[i]] = i;
+    }
+}
+
+template <typename IndexT>
 void IndexIDMap2Template<IndexT>::add_with_ids(
         idx_t n,
         const typename IndexT::component_t* x,
         const idx_t* xids) {
-    size_t prev_ntotal = this->ntotal;
-    IndexIDMapTemplate<IndexT>::add_with_ids(n, x, xids);
-    for (size_t i = prev_ntotal; i < this->ntotal; i++) {
-        rev_map[this->id_map[i]] = i;
-    }
+    add_with_idsEx(
+            n,
+            static_cast<const void*>(x),
+            component_t_to_numeric<typename IndexT::component_t>(),
+            xids);
 }
 
 template <typename IndexT>
