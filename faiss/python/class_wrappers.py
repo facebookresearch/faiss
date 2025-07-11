@@ -42,6 +42,13 @@ def _check_dtype_uint8(codes):
                         " uint8, but found %s" % ("codes", codes.dtype))
     return np.ascontiguousarray(codes)
 
+def _numeric_to_str(numeric_type):
+    if numeric_type == faiss.Float32:
+        return 'float32'
+    elif numeric_type == faiss.Float16:
+        return 'float16'
+    else:
+        raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
     """ Replaces a method in a class with another version. The old method
@@ -226,12 +233,8 @@ def handle_Index(the_class):
 
         n, d = x.shape
         assert d == self.d
-        if numeric_type == faiss.Float32:
-            x = np.ascontiguousarray(x, dtype='float32')
-            self.add_c(n, swig_ptr(x))
-        else:
-            x = np.ascontiguousarray(x, dtype='float16')
-            self.add_c(n, swig_ptr(x), faiss.Float16)
+        x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        self.addEx(n, swig_ptr(x), numeric_type)
 
     def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
@@ -250,13 +253,9 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
-        
-        if numeric_type == faiss.Float32:
-            x = np.ascontiguousarray(x, dtype='float32')
-            self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
-        else:
-            x = np.ascontiguousarray(x, dtype='float16')
-            self.add_with_ids_c(n, swig_ptr(x), faiss.Float16, swig_ptr(ids))
+        x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        self.add_with_idsEx(n, swig_ptr(x), numeric_type, swig_ptr(ids))
+
 
     def replacement_assign(self, x, k, labels=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -302,12 +301,8 @@ def handle_Index(the_class):
         """
         n, d = x.shape
         assert d == self.d
-        if numeric_type == faiss.Float32:
-            x = np.ascontiguousarray(x, dtype='float32')
-            self.train_c(n, swig_ptr(x))
-        else:
-            x = np.ascontiguousarray(x, dtype='float16')
-            self.train_c(n, swig_ptr(x), faiss.Float16)
+        x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        self.trainEx(n, swig_ptr(x), numeric_type)
         
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None, numeric_type = faiss.Float32):
@@ -338,10 +333,7 @@ def handle_Index(the_class):
         """
 
         n, d = x.shape
-        if numeric_type == faiss.Float32:
-            x = np.ascontiguousarray(x, dtype='float32')
-        else:
-            x = np.ascontiguousarray(x, dtype='float16')
+        x = np.ascontiguousarray(x, _numeric_to_str(numeric_type))
         assert d == self.d
 
         assert k > 0
@@ -356,10 +348,7 @@ def handle_Index(the_class):
         else:
             assert I.shape == (n, k)
 
-        if numeric_type == faiss.Float32:
-            self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
-        else:
-            self.search_c(n, swig_ptr(x), faiss.Float16, k, swig_ptr(D), swig_ptr(I), params)
+        self.searchEx(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):

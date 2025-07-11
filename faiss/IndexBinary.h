@@ -8,6 +8,7 @@
 #ifndef FAISS_INDEX_BINARY_H
 #define FAISS_INDEX_BINARY_H
 
+#include <cstdint>
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -54,15 +55,13 @@ struct IndexBinary {
      * @param x      training vecors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
-    // This typed train function is a dummy to enable overriding of typed train
-    // function in the templated IndexIDMap struct.
-    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void trainEx(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             train(n, static_cast<const uint8_t*>(x));
         } else {
             FAISS_THROW_MSG("IndexBinary::train: unsupported numeric type");
         }
-    }
+    };
 
     /** Add n vectors of dimension d to the index.
      *
@@ -70,15 +69,13 @@ struct IndexBinary {
      * @param x      input matrix, size n * d / 8
      */
     virtual void add(idx_t n, const uint8_t* x) = 0;
-    // This typed add function is a dummy to enable overriding of typed add
-    // function in the templated IndexIDMap struct.
-    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void addEx(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             add(n, static_cast<const uint8_t*>(x));
         } else {
             FAISS_THROW_MSG("IndexBinary::add: unsupported numeric type");
         }
-    }
+    };
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -88,9 +85,7 @@ struct IndexBinary {
      * @param xids if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const uint8_t* x, const idx_t* xids);
-    // This typed add_with_ids function is a dummy to enable overriding of typed
-    // add_with_ids function in the templated IndexIDMap struct.
-    virtual void add_with_ids(
+    virtual void add_with_idsEx(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -101,7 +96,7 @@ struct IndexBinary {
             FAISS_THROW_MSG(
                     "IndexBinary::add_with_ids: unsupported numeric type");
         }
-    }
+    };
 
     /** Query n vectors of dimension d to the index.
      *
@@ -119,9 +114,7 @@ struct IndexBinary {
             int32_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
-    // This typed search function is a dummy to enable overriding of typed
-    // search function in the templated IndexIDMap struct.
-    virtual void search(
+    virtual void searchEx(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -139,7 +132,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
         }
-    }
+    };
 
     /** Query n vectors of dimension d to the index.
      *

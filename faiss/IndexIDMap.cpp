@@ -60,6 +60,16 @@ IndexIDMapTemplate<IndexT>::IndexIDMapTemplate(IndexT* index) : index(index) {
 }
 
 template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::addEx(
+        idx_t,
+        const void*,
+        NumericType numeric_type) {
+    FAISS_THROW_MSG(
+            "add does not make sense with IndexIDMap, "
+            "use add_with_ids");
+}
+
+template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::add(
         idx_t,
         const typename IndexT::component_t*) {
@@ -69,11 +79,11 @@ void IndexIDMapTemplate<IndexT>::add(
 }
 
 template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::train(
+void IndexIDMapTemplate<IndexT>::trainEx(
         idx_t n,
         const void* x,
         NumericType numeric_type) {
-    index->train(n, x, numeric_type);
+    index->trainEx(n, x, numeric_type);
     this->is_trained = index->is_trained;
 }
 
@@ -81,9 +91,9 @@ template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::train(
         idx_t n,
         const typename IndexT::component_t* x) {
-    train(n,
-          static_cast<const void*>(x),
-          component_t_to_numeric<typename IndexT::component_t>());
+    trainEx(n,
+            static_cast<const void*>(x),
+            component_t_to_numeric<typename IndexT::component_t>());
 }
 
 template <typename IndexT>
@@ -94,12 +104,12 @@ void IndexIDMapTemplate<IndexT>::reset() {
 }
 
 template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::add_with_ids(
+void IndexIDMapTemplate<IndexT>::add_with_idsEx(
         idx_t n,
         const void* x,
         NumericType numeric_type,
         const idx_t* xids) {
-    index->add(n, x, numeric_type);
+    index->addEx(n, x, numeric_type);
     for (idx_t i = 0; i < n; i++)
         id_map.push_back(xids[i]);
     this->ntotal = index->ntotal;
@@ -110,7 +120,7 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
         idx_t n,
         const typename IndexT::component_t* x,
         const idx_t* xids) {
-    add_with_ids(
+    add_with_idsEx(
             n,
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
@@ -156,7 +166,7 @@ struct ScopedSelChange {
 } // namespace
 
 template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::search(
+void IndexIDMapTemplate<IndexT>::searchEx(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -183,7 +193,7 @@ void IndexIDMapTemplate<IndexT>::search(
             sel_change.set(params_non_const, &this_idtrans);
         }
     }
-    index->search(n, x, numeric_type, k, distances, labels, params);
+    index->searchEx(n, x, numeric_type, k, distances, labels, params);
     idx_t* li = labels;
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; i++) {
@@ -199,13 +209,14 @@ void IndexIDMapTemplate<IndexT>::search(
         typename IndexT::distance_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    search(n,
-           static_cast<const void*>(x),
-           component_t_to_numeric<typename IndexT::component_t>(),
-           k,
-           distances,
-           labels,
-           params);
+    searchEx(
+            n,
+            static_cast<const void*>(x),
+            component_t_to_numeric<typename IndexT::component_t>(),
+            k,
+            distances,
+            labels,
+            params);
 }
 
 template <typename IndexT>
