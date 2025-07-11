@@ -254,6 +254,7 @@ def handle_Index(the_class):
         assert d == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+        ids = np.ascontiguousarray(ids, dtype='int64')
         self.add_with_idsEx(n, swig_ptr(x), numeric_type, swig_ptr(ids))
 
 

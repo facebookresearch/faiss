@@ -742,7 +742,7 @@ class TestMerge(unittest.TestCase):
                 index = faiss.read_index(tmpdir + "/trained.index")
                 i0, i1 = int(bno * ds.nb / ns), int((bno + 1) * ds.nb / ns)
                 if shift_ids:
-                    index.add_with_ids(ds.xb[i0:i1], np.arange(0, int(ds.nb / ns)))
+                    index.add_with_ids(ds.xb[i0:i1], np.arange(0, ds.nb / ns))
                 else:
                     index.add_with_ids(ds.xb[i0:i1], np.arange(i0, i1))
                 faiss.write_index(index, tmpdir + "/block_%d.index" % bno)
