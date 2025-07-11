@@ -63,6 +63,22 @@ class MetalKernels {
             id<MTLBuffer> out_labels,
             int nq);
 
+    void ivfpq_scan_per_query(
+            id<MTLBuffer> queries,
+            id<MTLBuffer> db_codes,
+            id<MTLBuffer> db_ids,
+            id<MTLBuffer> list_offsets,
+            id<MTLBuffer> coarse_assign,
+            id<MTLBuffer> dist_tables,
+            int nprobe,
+            int d,
+            int k,
+            int M,
+            int ksub,
+            id<MTLBuffer> out_distances,
+            id<MTLBuffer> out_labels,
+            int nq);
+
     private:
     std::shared_ptr<MetalResources> resources_;
     id<MTLLibrary> library_;

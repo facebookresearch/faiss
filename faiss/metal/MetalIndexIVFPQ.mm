@@ -73,53 +73,47 @@ void MetalIndexIVFPQ::search(
     float* coarse_dist = new float[n * nprobe];
     quantizer->search(n, x, nprobe, coarse_dist, coarse_assign);
 
-    idx_t* offsets = (idx_t*)[offsets_ contents];
-    uint8_t* codes = (uint8_t*)[codes_ contents];
-    idx_t* ids = (idx_t*)[ids_ contents];
+    MetalKernels kernels(resources_);
 
-    for (idx_t i = 0; i < n; ++i) {
-        std::vector<float> all_distances;
-        std::vector<idx_t> all_labels;
+    id<MTLDevice> device = resources_->getDevice(0);
+    id<MTLBuffer> query_buffer = [device newBufferWithBytes:x
+                                                  length:n * d * sizeof(float)
+                                                 options:MTLResourceStorageModeShared];
 
-        float* dist_table = new float[pq.ksub * pq.M];
-        pq.compute_distance_tables(1, x + i * d, dist_table);
+    id<MTLBuffer> coarse_assign_buffer = [device newBufferWithBytes:coarse_assign
+                                                            length:n * nprobe * sizeof(idx_t)
+                                                           options:MTLResourceStorageModeShared];
 
-        for (int j = 0; j < nprobe; ++j) {
-            idx_t list_no = coarse_assign[i * nprobe + j];
-            idx_t start = offsets[list_no];
-            idx_t end = offsets[list_no + 1];
+    float* dist_table = new float[pq.ksub * pq.M];
+    pq.compute_distance_tables(n, x, dist_table);
+    id<MTLBuffer> dist_tables_buffer = [device newBufferWithBytes:dist_table
+                                                          length:n * pq.ksub * pq.M * sizeof(float)
+                                                         options:MTLResourceStorageModeShared];
+    delete[] dist_table;
 
-            for (idx_t l = start; l < end; ++l) {
-                float dist = pq.compute_distance_from_tables(
-                        codes + l * code_size, dist_table);
-                all_distances.push_back(dist);
-                all_labels.push_back(ids[l]);
-            }
-        }
+    id<MTLBuffer> out_distances_buffer = [device newBufferWithLength:n * k * sizeof(float)
+                                                              options:MTLResourceStorageModeShared];
+    id<MTLBuffer> out_labels_buffer = [device newBufferWithLength:n * k * sizeof(idx_t)
+                                                          options:MTLResourceStorageModeShared];
 
-        delete[] dist_table;
+    kernels.ivfpq_scan_per_query(
+            query_buffer,
+            codes_,
+            ids_,
+            offsets_,
+            coarse_assign_buffer,
+            dist_tables_buffer,
+            nprobe,
+            d,
+            k,
+            pq.M,
+            pq.ksub,
+            out_distances_buffer,
+            out_labels_buffer,
+            n);
 
-        // This is a naive top-k selection. A more efficient implementation
-        // would use a heap.
-        for (int j = 0; j < k; ++j) {
-            float min_dist = -1.0f;
-            idx_t min_idx = -1;
-            int min_pos = -1;
-
-            for (size_t l = 0; l < all_distances.size(); ++l) {
-                if (min_dist < 0 || all_distances[l] < min_dist) {
-                    min_dist = all_distances[l];
-                    min_idx = all_labels[l];
-                    min_pos = l;
-                }
-            }
-            distances[i * k + j] = min_dist;
-            labels[i * k + j] = min_idx;
-            if (min_pos != -1) {
-                all_distances[min_pos] = -1.0f;
-            }
-        }
-    }
+    memcpy(distances, [out_distances_buffer contents], n * k * sizeof(float));
+    memcpy(labels, [out_labels_buffer contents], n * k * sizeof(idx_t));
 
     delete[] coarse_assign;
     delete[] coarse_dist;

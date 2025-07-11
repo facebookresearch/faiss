@@ -212,5 +212,59 @@ void MetalKernels::ivfflat_scan_per_query(
     [commandBuffer waitUntilCompleted];
 }
 
+void MetalKernels::ivfpq_scan_per_query(
+        id<MTLBuffer> queries,
+        id<MTLBuffer> db_codes,
+        id<MTLBuffer> db_ids,
+        id<MTLBuffer> list_offsets,
+        id<MTLBuffer> coarse_assign,
+        id<MTLBuffer> dist_tables,
+        int nprobe,
+        int d,
+        int k,
+        int M,
+        int ksub,
+        id<MTLBuffer> out_distances,
+        id<MTLBuffer> out_labels,
+        int nq) {
+    NSError* error = nil;
+    id<MTLFunction> scanFunction = [library_ newFunctionWithName:@"ivfpq_scan_per_query"];
+    FAISS_THROW_IF_NOT_MSG(scanFunction, "Could not create Metal function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:scanFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:queries offset:0 atIndex:0];
+    [commandEncoder setBuffer:db_codes offset:0 atIndex:1];
+    [commandEncoder setBuffer:db_ids offset:0 atIndex:2];
+    [commandEncoder setBuffer:list_offsets offset:0 atIndex:3];
+    [commandEncoder setBuffer:coarse_assign offset:0 atIndex:4];
+    [commandEncoder setBuffer:dist_tables offset:0 atIndex:5];
+    [commandEncoder setBytes:&nprobe length:sizeof(int) atIndex:6];
+    [commandEncoder setBytes:&d length:sizeof(int) atIndex:7];
+    [commandEncoder setBytes:&k length:sizeof(int) atIndex:8];
+    [commandEncoder setBytes:&M length:sizeof(int) atIndex:9];
+    [commandEncoder setBytes:&ksub length:sizeof(int) atIndex:10];
+    [commandEncoder setBuffer:out_distances offset:0 atIndex:11];
+    [commandEncoder setBuffer:out_labels offset:0 atIndex:12];
+
+    MTLSize gridSize = MTLSizeMake(nq, 1, 1);
+    NSUInteger threadGroupSize = [pipelineState maxTotalThreadsPerThreadgroup];
+    if (threadGroupSize > nq) {
+        threadGroupSize = nq;
+    }
+    MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+}
+
 } // namespace metal
 } // namespace faiss

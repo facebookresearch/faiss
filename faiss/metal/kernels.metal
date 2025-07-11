@@ -102,6 +102,52 @@ void heap_push(thread float* distances, thread int* labels, thread uint& size, u
     }
 }
 
+kernel void ivfpq_scan_per_query(
+    const device float* queries,
+    const device uint8_t* db_codes,
+    const device int* db_ids,
+    const device int* list_offsets,
+    const device int* coarse_assign,
+    const device float* dist_tables,
+    uint nprobe,
+    uint d,
+    uint k,
+    uint M,
+    uint ksub,
+    device float* out_distances,
+    device int* out_labels,
+    uint query_id [[threadgroup_position_in_grid]]) {
+
+    const device float* query = queries + query_id * d;
+    const device float* query_dist_table = dist_tables + query_id * M * ksub;
+
+    // A simple max-heap for top-k selection
+    float heap_distances[1024];
+    int heap_labels[1024];
+    uint heap_size = 0;
+
+    for (uint i = 0; i < nprobe; ++i) {
+        uint list_no = coarse_assign[query_id * nprobe + i];
+        uint start = list_offsets[list_no];
+        uint end = list_offsets[list_no + 1];
+
+        for (uint j = start; j < end; ++j) {
+            float dist = 0.0f;
+            for (uint m = 0; m < M; ++m) {
+                dist += query_dist_table[m * ksub + db_codes[j * M + m]];
+            }
+
+            heap_push(heap_distances, heap_labels, heap_size, k, dist, db_ids[j]);
+        }
+    }
+
+    // For now, just copy the heap to the output
+    for (uint i = 0; i < heap_size; ++i) {
+        out_distances[query_id * k + i] = heap_distances[i];
+        out_labels[query_id * k + i] = heap_labels[i];
+    }
+}
+
 kernel void ivfflat_scan_per_query(
     const device float* queries,
     const device float* db_vectors,
