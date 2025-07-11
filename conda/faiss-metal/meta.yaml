@@ -1,0 +1,75 @@
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
+{% set number = GIT_DESCRIBE_NUMBER %}
+
+package:
+  name: faiss-metal-pkg
+  version: {{ version }}
+
+build:
+  number: {{ number }}
+
+about:
+  home: https://github.com/facebookresearch/faiss
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A library for efficient similarity search and clustering of dense vectors.
+
+source:
+  git_url: ../../
+
+outputs:
+  - name: libfaiss-metal
+    script: build-lib-osx.sh
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_metal{{ suffix }}"
+      run_exports:
+        - {{ pin_compatible('libfaiss-metal', exact=True) }}
+    requirements:
+      build:
+        - python {{ python }}
+        - {{ compiler('cxx') }}
+        - cmake >=3.24.0
+        - make =4.4
+      host:
+        - python {{ python }}
+      run:
+        - python {{ python }}
+    test:
+      requires:
+        - conda-build =25.1.2
+      commands:
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT
+        - conda inspect linkages -p $PREFIX $PKG_NAME
+        - conda inspect objects -p $PREFIX $PKG_NAME
+
+  - name: faiss-metal
+    script: build-pkg-osx.sh
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_metal{{ suffix }}"
+    requirements:
+      build:
+        - python {{ python }}
+        - {{ compiler('cxx') }}
+        - swig =4.0
+        - cmake >=3.24.0
+        - make =4.4
+      host:
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - {{ pin_subpackage('libfaiss-metal', exact=True) }}
+      run:
+        - python {{ python }}
+        - numpy >=1.19,<2
+        - packaging
+        - {{ pin_subpackage('libfaiss-metal', exact=True) }}
+    test:
+      requires:
+        - numpy >=1.19,<2
+        - scipy
+        - pytorch <2.5
+      imports:
+        - faiss
+      commands:
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_metal.py"

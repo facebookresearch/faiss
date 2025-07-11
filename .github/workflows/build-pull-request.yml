@@ -155,6 +155,17 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+  macos-metal:
+    name: macOS arm64 Metal (cmake)
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          toolchain: metal.cmake
+          
   linux-arm64-conda:
     name: Linux arm64 (conda)
     needs: linux-x86_64-cmake

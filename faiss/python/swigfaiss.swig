@@ -194,6 +194,15 @@ typedef uint64_t size_t;
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexIVFRaBitQ.h>
 
+#ifdef FAISS_ENABLE_METAL
+#include <faiss/metal/MetalResources.h>
+#include <faiss/metal/MetalIndexFlat.h>
+#include <faiss/metal/MetalIndexIVFFlat.h>
+#include <faiss/metal/MetalIndexIVFPQ.h>
+#include <faiss/metal/MetalIndexHNSW.h>
+#endif
+
+
 %}
 
 /********************************************************
@@ -659,7 +668,15 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/impl/RaBitQuantizer.h>
 %include <faiss/IndexRaBitQ.h>
-%include <faiss/IndexIVFRaBitQ.h>
+%include  <faiss/IndexIVFRaBitQ.h>
+
+#ifdef FAISS_ENABLE_METAL
+%include <faiss/metal/MetalResources.h>
+%include <faiss/metal/MetalIndexFlat.h>
+%include <faiss/metal/MetalIndexIVFFlat.h>
+%include <faiss/metal/MetalIndexIVFPQ.h>
+%include <faiss/metal/MetalIndexHNSW.h>
+#endif
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -826,6 +843,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+#ifdef FAISS_ENABLE_METAL
+    DOWNCAST_GPU ( MetalIndexFlat )
+    DOWNCAST_GPU ( MetalIndexIVFFlat )
+    DOWNCAST_GPU ( MetalIndexIVFPQ )
+    DOWNCAST_GPU ( MetalIndexHNSW )
+#endif
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

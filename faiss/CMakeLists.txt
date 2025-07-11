@@ -241,6 +241,11 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
 )
 
+if(FAISS_ENABLE_METAL)
+  list(APPEND FAISS_SRC metal/MetalResources.mm metal/MetalMemoryPool.mm metal/MetalIndexFlat.mm metal/MetalIndexIVFFlat.mm metal/MetalIndexIVFPQ.mm metal/MetalIndexHNSW.mm metal/MetalMultiGpu.mm metal/MetalMixedPrecision.mm metal/MetalVectorTransform.mm)
+  list(APPEND FAISS_HEADERS metal/MetalResources.h metal/MetalMemoryPool.h metal/MetalIndexFlat.h metal/MetalIndexIVFFlat.h metal/MetalIndexIVFPQ.h metal/MetalIndexHNSW.h metal/MetalMultiGpu.h metal/MetalMixedPrecision.h metal/MetalVectorTransform.h)
+endif()
+
 if(NOT WIN32)
   list(APPEND FAISS_SRC invlists/OnDiskInvertedLists.cpp)
   list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
@@ -250,6 +255,15 @@ endif()
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
 add_library(faiss ${FAISS_SRC})
+
+if(FAISS_ENABLE_METAL)
+  set_source_files_properties(metal/MetalResources.mm PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(metal/MetalResources.mm PROPERTIES MACOSX_RPATH ON)
+  target_compile_features(faiss PUBLIC cxx_objc_hybrid_from_header)
+
+  add_library(faiss_metal_kernels METAL faiss/metal/kernels.metal)
+  target_link_libraries(faiss PRIVATE faiss_metal_kernels)
+endif()
 
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
@@ -377,12 +391,14 @@ if(FAISS_USE_LTO)
   endif()
 endif()
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+if(NOT APPLE)
+  find_package(OpenMP REQUIRED)
+  target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 if(FAISS_ENABLE_MKL)
   find_package(MKL)
@@ -406,6 +422,10 @@ else()
   target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
+endif()
+
+if(FAISS_ENABLE_METAL)
+  target_link_libraries(faiss PRIVATE ${METAL_LIBRARY} ${FOUNDATION_LIBRARY})
 endif()
 
 install(TARGETS faiss

@@ -166,3 +166,7 @@ if(FAISS_ENABLE_GPU)
     add_subdirectory(gpu)
   endif()
 endif()
+
+if(FAISS_ENABLE_METAL)
+  add_subdirectory(metal)
+endif()

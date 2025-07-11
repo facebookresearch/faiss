@@ -16,6 +16,10 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  toolchain:
+    description: 'CMake toolchain file to use.'
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -132,6 +136,7 @@ runs:
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
+              -DCMAKE_TOOLCHAIN_FILE=${{ inputs.toolchain && format('../../cmake/toolchains/{0}', inputs.toolchain) || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .
         make -k -C build -j$(nproc)

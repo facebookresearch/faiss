@@ -1,0 +1,2 @@
+add_library(faiss_c_metal MetalResources_c.mm)
+target_link_libraries(faiss_c_metal PRIVATE faiss_c)

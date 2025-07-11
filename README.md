@@ -31,6 +31,8 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 
 The optional GPU implementation provides what is likely (as of March 2017) the fastest exact and approximate (compressed-domain) nearest neighbor search implementation for high-dimensional vectors, fastest Lloyd's k-means, and fastest small k-selection algorithm known. [The implementation is detailed here](https://arxiv.org/abs/1702.08734).
 
+Faiss also supports Apple's Metal for GPU acceleration on Apple Silicon. See [the Metal backend documentation](doc/metal.md) for details.
+
 ## Full documentation of Faiss
 
 The following are entry points for documentation:
