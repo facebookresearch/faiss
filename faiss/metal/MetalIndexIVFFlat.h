@@ -26,8 +26,9 @@ class MetalIndexIVFFlat : public faiss::IndexIVFFlat {
 
    private:
     std::shared_ptr<MetalResources> resources_;
-    std::vector<std::vector<idx_t>> inverted_lists_;
-    std::vector<std::vector<float>> inverted_lists_vectors_;
+    id<MTLBuffer> vectors_;
+    id<MTLBuffer> ids_;
+    id<MTLBuffer> offsets_;
 };
 
 } // namespace metal

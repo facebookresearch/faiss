@@ -50,6 +50,19 @@ class MetalKernels {
 
     void bitonicSort(id<MTLBuffer> data, int size);
 
+    void ivfflat_scan_per_query(
+            id<MTLBuffer> queries,
+            id<MTLBuffer> db_vectors,
+            id<MTLBuffer> db_ids,
+            id<MTLBuffer> list_offsets,
+            id<MTLBuffer> coarse_assign,
+            int nprobe,
+            int d,
+            int k,
+            id<MTLBuffer> out_distances,
+            id<MTLBuffer> out_labels,
+            int nq);
+
     private:
     std::shared_ptr<MetalResources> resources_;
     id<MTLLibrary> library_;

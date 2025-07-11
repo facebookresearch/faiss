@@ -28,6 +28,9 @@ class MetalIndexIVFPQ : public faiss::IndexIVFPQ {
 
    private:
     std::shared_ptr<MetalResources> resources_;
+    id<MTLBuffer> codes_;
+    id<MTLBuffer> ids_;
+    id<MTLBuffer> offsets_;
 };
 
 } // namespace metal
