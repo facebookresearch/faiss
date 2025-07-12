@@ -12,7 +12,8 @@ MetalIndexHNSW::MetalIndexHNSW(
       resources_(resources) {}
 
 void MetalIndexHNSW::add(idx_t n, const float* x) {
-    FAISS_THROW_MSG("Metal IndexHNSW::add not yet implemented");
+    // For now, we use the CPU-based implementation for graph construction.
+    faiss::IndexHNSW::add(n, x);
 }
 
 void MetalIndexHNSW::search(
@@ -21,7 +22,8 @@ void MetalIndexHNSW::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    FAISS_THROW_MSG("Metal IndexHNSW::search not yet implemented");
+    // For now, we use the CPU-based implementation for search.
+    faiss::IndexHNSW::search(n, x, k, distances, labels);
 }
 
 } // namespace metal

@@ -110,3 +110,24 @@ class TestMetal(unittest.TestCase):
 
         self.assertTrue(np.allclose(D_cpu, D_metal))
         self.assertTrue(np.array_equal(I_cpu, I_metal))
+
+    def test_hnsw(self):
+        d = 64
+        nb = 1000
+        nq = 100
+        k = 10
+        M = 32
+
+        xt = np.random.rand(nb, d).astype("float32")
+        xq = np.random.rand(nq, d).astype("float32")
+
+        cpu_index = faiss.IndexHNSWFlat(d, M)
+        cpu_index.add(xt)
+        D_cpu, I_cpu = cpu_index.search(xq, k)
+
+        metal_index = faiss.MetalIndexHNSW(d, M)
+        metal_index.add(xt)
+        D_metal, I_metal = metal_index.search(xq, k)
+
+        self.assertTrue(np.allclose(D_cpu, D_metal))
+        self.assertTrue(np.array_equal(I_cpu, I_metal))
