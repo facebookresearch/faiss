@@ -124,6 +124,24 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
                 cagraConfig_.guarantee_connectivity);
         std::get<std::shared_ptr<CuvsCagra<half>>>(index_)->train(
                 n, static_cast<const half*>(x));
+    } else if (numeric_type == NumericType::UInt8) {
+        index_ = std::make_shared<CuvsCagra<uint8_t>>(
+                this->resources_.get(),
+                this->d,
+                cagraConfig_.intermediate_graph_degree,
+                cagraConfig_.graph_degree,
+                static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
+                cagraConfig_.nn_descent_niter,
+                cagraConfig_.store_dataset,
+                this->metric_type,
+                this->metric_arg,
+                INDICES_64_BIT,
+                ivf_pq_params,
+                ivf_pq_search_params,
+                cagraConfig_.refine_rate,
+                cagraConfig_.guarantee_connectivity);
+        std::get<std::shared_ptr<CuvsCagra<uint8_t>>>(index_)->train(
+                n, static_cast<const uint8_t*>(x));
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::train unsupported data type");
     }
@@ -207,6 +225,28 @@ void GpuIndexCagra::searchImpl_(
                 const_cast<half*>(static_cast<const half*>(x)), {n, this->d});
 
         std::get<std::shared_ptr<CuvsCagra<half>>>(index_)->search(
+                queries,
+                k,
+                outDistances,
+                outLabels,
+                params->max_queries,
+                params->itopk_size,
+                params->max_iterations,
+                static_cast<faiss::cagra_search_algo>(params->algo),
+                params->team_size,
+                params->search_width,
+                params->min_iterations,
+                params->thread_block_size,
+                static_cast<faiss::cagra_hash_mode>(params->hashmap_mode),
+                params->hashmap_min_bitlen,
+                params->hashmap_max_fill_rate,
+                params->num_random_samplings,
+                params->seed);
+    } else if (numeric_type == NumericType::UInt8) {
+        Tensor<uint8_t, 2, true> queries(
+                const_cast<uint8_t*>(static_cast<const uint8_t*>(x)), {n, this->d});
+
+        std::get<std::shared_ptr<CuvsCagra<uint8_t>>>(index_)->search(
                 queries,
                 k,
                 outDistances,
