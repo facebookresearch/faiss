@@ -244,7 +244,8 @@ void GpuIndexCagra::searchImpl_(
                 params->seed);
     } else if (numeric_type == NumericType::UInt8) {
         Tensor<uint8_t, 2, true> queries(
-                const_cast<uint8_t*>(static_cast<const uint8_t*>(x)), {n, this->d});
+                const_cast<uint8_t*>(static_cast<const uint8_t*>(x)),
+                {n, this->d});
 
         std::get<std::shared_ptr<CuvsCagra<uint8_t>>>(index_)->search(
                 queries,
