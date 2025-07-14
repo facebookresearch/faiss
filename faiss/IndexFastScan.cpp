@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <omp.h>
 #include <faiss/IndexFastScan.h>
 
 #include <cassert>
 #include <climits>
 #include <memory>
 
-#include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -311,7 +311,7 @@ void IndexFastScan::search_dispatch_implem(
         search_implem_234<Cfloat>(n, x, k, distances, labels, scaler);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
-        int nt = std::min(omp_get_max_threads(), int(n));
+        int nt = 1;
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
                 search_implem_12<C>(n, x, k, distances, labels, impl, scaler);
@@ -320,7 +320,7 @@ void IndexFastScan::search_dispatch_implem(
             }
         } else {
             // explicitly slice over threads
-#pragma omp parallel for num_threads(nt)
+ #pragma omp parallel for num_threads(nt)
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
@@ -369,7 +369,7 @@ void IndexFastScan::search_implem_234(
         }
     }
 
-#pragma omp parallel for if (n > 1000)
+ if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
         int64_t* heap_ids = labels + i * k;
         float* heap_dis = distances + i * k;

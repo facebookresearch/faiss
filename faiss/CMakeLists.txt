@@ -251,6 +251,10 @@ set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
 add_library(faiss ${FAISS_SRC})
 
+if(FAISS_ENABLE_METAL)
+  add_subdirectory(metal)
+endif()
+
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -377,12 +381,29 @@ if(FAISS_USE_LTO)
   endif()
 endif()
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+if(APPLE)
+  find_package(OpenMP)
+  if(OpenMP_FOUND)
+    target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
+    target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+    target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+    target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
+    target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+  else()
+    target_compile_definitions(faiss PRIVATE _OPENMP)
+    target_compile_definitions(faiss_avx2 PRIVATE _OPENMP)
+    target_compile_definitions(faiss_avx512 PRIVATE _OPENMP)
+    target_compile_definitions(faiss_avx512_spr PRIVATE _OPENMP)
+    target_compile_definitions(faiss_sve PRIVATE _OPENMP)
+  endif()
+else()
+  find_package(OpenMP REQUIRED)
+  target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 if(FAISS_ENABLE_MKL)
   find_package(MKL)
@@ -408,7 +429,11 @@ else()
   target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
 endif()
 
-install(TARGETS faiss
+if(FAISS_ENABLE_METAL)
+  target_link_libraries(faiss PRIVATE ${METAL_LIBRARY} ${FOUNDATION_LIBRARY})
+endif()
+
+install(TARGETS faiss faiss_metal_kernels
   EXPORT faiss-targets
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

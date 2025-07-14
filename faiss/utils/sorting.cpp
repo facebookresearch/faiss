@@ -9,7 +9,6 @@
 
 #include <faiss/utils/sorting.h>
 
-#include <omp.h>
 #include <algorithm>
 
 #include <faiss/impl/FaissAssert.h>
@@ -60,7 +59,6 @@ void parallel_merge(
     s2s[nt - 1].i1 = s2.i1;
 
     // not sure parallel actually helps here
-#pragma omp parallel for num_threads(nt)
     for (int t = 0; t < nt; t++) {
         s1s[t].i0 = s1.i0 + s1.len() * t / nt;
         s1s[t].i1 = s1.i0 + s1.len() * (t + 1) / nt;
@@ -92,7 +90,6 @@ void parallel_merge(
     assert(sws[nt - 1].i1 == s1.i1);
 
     // do the actual merging
-#pragma omp parallel for num_threads(nt)
     for (int t = 0; t < nt; t++) {
         SegmentS sw = sws[t];
         SegmentS s1t = s1s[t];
@@ -138,7 +135,7 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
     // 2 result tables, during merging, flip between them
     size_t *permB = perm2, *permA = perm;
 
-    int nt = omp_get_max_threads();
+    int nt = 1;
     { // prepare correct permutation so that the result ends in perm
       // at final iteration
         int nseg = nt;
@@ -148,7 +145,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
         }
     }
 
-#pragma omp parallel
     for (size_t i = 0; i < n; i++) {
         permA[i] = i;
     }
@@ -158,7 +154,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
     std::vector<SegmentS> segs(nt);
 
     // independent sorts
-#pragma omp parallel for
     for (int t = 0; t < nt; t++) {
         size_t i0 = t * n / nt;
         size_t i1 = (t + 1) * n / nt;
@@ -166,8 +161,7 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
         std::sort(permA + seg.i0, permA + seg.i1, comp);
         segs[t] = seg;
     }
-    int prev_nested = omp_get_nested();
-    omp_set_nested(1);
+    int prev_nested = 0;
 
     int nseg = nt;
     while (nseg > 1) {
@@ -175,7 +169,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
         int sub_nt = nseg % 2 == 0 ? nt : nt - 1;
         int sub_nseg1 = nseg / 2;
 
-#pragma omp parallel for num_threads(nseg1)
         for (int s = 0; s < nseg; s += 2) {
             if (s + 1 == nseg) { // otherwise isolated segment
                 memcpy(permB + segs[s].i0,
@@ -196,7 +189,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
         std::swap(permA, permB);
     }
     assert(permA == perm);
-    omp_set_nested(prev_nested);
     delete[] perm2;
 }
 
@@ -256,10 +248,9 @@ void bucket_sort_parallel(
         int64_t* perm,
         int nt_in) {
     memset(lims, 0, sizeof(*lims) * (vmax + 1));
-#pragma omp parallel num_threads(nt_in)
     {
-        int nt = omp_get_num_threads(); // might be different from nt_in
-        int rank = omp_get_thread_num();
+        int nt = 1; // might be different from nt_in
+        int rank = 0;
         std::vector<int64_t> local_lims(vmax + 1);
 
         // range of indices handled by this thread
@@ -271,16 +262,13 @@ void bucket_sort_parallel(
         for (size_t i = i0; i < i1; i++) {
             local_lims[vals[i]]++;
         }
-#pragma omp critical
         { // accumulate histograms (not shifted indices to prepare cumsum)
             for (size_t i = 0; i < vmax; i++) {
                 lims[i + 1] += local_lims[i];
             }
         }
-#pragma omp barrier
 
         double t1 = getmillisecs();
-#pragma omp master
         {
             // compute cumulative sum
             for (size_t i = 0; i < vmax; i++) {
@@ -288,9 +276,7 @@ void bucket_sort_parallel(
             }
             FAISS_THROW_IF_NOT(lims[vmax] == nval);
         }
-#pragma omp barrier
 
-#pragma omp critical
         { // current thread grabs a slot in the buckets
             for (size_t i = 0; i < vmax; i++) {
                 size_t nv = local_lims[i];
@@ -300,16 +286,13 @@ void bucket_sort_parallel(
         }
 
         double t2 = getmillisecs();
-#pragma omp barrier
         { // populate buckets, this is the slowest operation
             for (size_t i = i0; i < i1; i++) {
                 perm[local_lims[vals[i]]++] = i;
             }
         }
-#pragma omp barrier
         double t3 = getmillisecs();
 
-#pragma omp master
         { // shift back lims
             for (size_t i = vmax; i > 0; i--) {
                 lims[i] = lims[i - 1];
@@ -482,10 +465,9 @@ void bucket_sort_inplace_parallel(
             nbucket); // DON'T use std::vector<bool> that cannot be accessed
                       // safely from multiple threads!!!
 
-#pragma omp parallel num_threads(nt_in)
     {
-        int nt = omp_get_num_threads(); // might be different from nt_in (?)
-        int rank = omp_get_thread_num();
+        int nt = 1; // might be different from nt_in (?)
+        int rank = 0;
         std::vector<int64_t> local_lims(nbucket + 1);
 
         // range of indices handled by this thread
@@ -496,7 +478,6 @@ void bucket_sort_inplace_parallel(
         for (size_t i = i0; i < i1; i++) {
             local_lims[vals[i]]++;
         }
-#pragma omp critical
         { // accumulate histograms (not shifted indices to prepare cumsum)
             for (size_t i = 0; i < nbucket; i++) {
                 lims[i + 1] += local_lims[i];
@@ -504,11 +485,9 @@ void bucket_sort_inplace_parallel(
             all_to_write.push_back(ToWrite<TI>(nbucket));
         }
 
-#pragma omp barrier
         // this thread's things to write
         ToWrite<TI>& to_write = all_to_write[rank];
 
-#pragma omp master
         {
             // compute cumulative sum
             for (size_t i = 0; i < nbucket; i++) {
@@ -546,14 +525,12 @@ void bucket_sort_inplace_parallel(
         // and collect the elements that are overwritten for the next round
         int round = 0;
         for (;;) {
-#pragma omp barrier
 
             size_t n_to_write = 0;
             for (const ToWrite<TI>& to_write_2 : all_to_write) {
                 n_to_write += to_write_2.lims.back();
             }
 
-#pragma omp master
             {
                 if (verbose >= 1) {
                     printf("ROUND %d n_to_write=%zd\n", round, n_to_write);
@@ -592,7 +569,6 @@ void bucket_sort_inplace_parallel(
             }
             round++;
 
-#pragma omp barrier
 
             ToWrite<TI> next_to_write(nbucket);
 
@@ -635,7 +611,6 @@ void bucket_sort_inplace_parallel(
                 }
             }
             next_to_write.bucket_sort();
-#pragma omp barrier
             all_to_write[rank].swap(next_to_write);
         }
     }
@@ -708,7 +683,6 @@ inline int64_t hash_function(int64_t x) {
 
 void hashtable_int64_to_int64_init(int log2_capacity, int64_t* tab) {
     size_t capacity = (size_t)1 << log2_capacity;
-#pragma omp parallel for
     for (int64_t i = 0; i < capacity; i++) {
         tab[2 * i] = -1;
         tab[2 * i + 1] = -1;
@@ -728,7 +702,6 @@ void hashtable_int64_to_int64_add(
     int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
     size_t nbucket = (size_t)1 << log2_nbucket;
 
-#pragma omp parallel for
     for (int64_t i = 0; i < n; i++) {
         hk[i] = hash_function(keys[i]) & mask;
         bucket_no[i] = hk[i] >> (log2_capacity - log2_nbucket);
@@ -742,10 +715,9 @@ void hashtable_int64_to_int64_add(
             nbucket,
             lims.data(),
             perm.data(),
-            omp_get_max_threads());
+            1);
 
     int num_errors = 0;
-#pragma omp parallel for reduction(+ : num_errors)
     for (int64_t bucket = 0; bucket < nbucket; bucket++) {
         size_t k0 = bucket << (log2_capacity - log2_nbucket);
         size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
@@ -792,7 +764,6 @@ void hashtable_int64_to_int64_lookup(
     int64_t mask = capacity - 1;
     int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
 
-#pragma omp parallel for
     for (int64_t i = 0; i < n; i++) {
         int64_t k = keys[i];
         int64_t hk = hash_function(k) & mask;

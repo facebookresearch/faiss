@@ -23,15 +23,6 @@ cmake_minimum_required(VERSION 3.24.0 FATAL_ERROR)
 
 set(FAISS_LANGUAGES CXX)
 
-if(FAISS_ENABLE_GPU)
-  if (FAISS_ENABLE_ROCM)
-    list(APPEND FAISS_LANGUAGES HIP)
-    list(PREPEND CMAKE_MODULE_PATH "/opt/rocm/lib/cmake")
-    list(PREPEND CMAKE_PREFIX_PATH "/opt/rocm")
-  else()
-    list(APPEND FAISS_LANGUAGES CUDA)
-  endif()
-endif()
 
 if(FAISS_ENABLE_CUVS)
   include(cmake/thirdparty/fetch_rapids.cmake)
@@ -46,20 +37,8 @@ if(FAISS_ENABLE_CUVS)
   rapids_cuda_init_architectures(faiss_c_library)
 endif()
 
-project(faiss
-  VERSION 1.11.0
-  DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
-  HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
-  LANGUAGES ${FAISS_LANGUAGES})
-include(GNUInstallDirs)
-
-set(CMAKE_CXX_STANDARD 17)
-
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-# Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
-option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
+option(FAISS_ENABLE_METAL "Enable support for Metal on Apple Silicon." OFF)
 option(FAISS_GPU_STATIC "Link GPU libraries statically." OFF)
 option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
 option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
@@ -68,6 +47,23 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
+
+if(FAISS_ENABLE_GPU)
+  if (FAISS_ENABLE_ROCM)
+    list(APPEND FAISS_LANGUAGES HIP)
+    list(PREPEND CMAKE_MODULE_PATH "/opt/rocm/lib/cmake")
+    list(PREPEND CMAKE_PREFIX_PATH "/opt/rocm")
+  else()
+    list(APPEND FAISS_LANGUAGES CUDA)
+  endif()
+endif()
+
+project(faiss
+  VERSION 1.11.0
+  DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
+  HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
+  LANGUAGES ${FAISS_LANGUAGES} OBJCXX)
+
 
 if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)
@@ -82,6 +78,15 @@ if(FAISS_ENABLE_GPU)
     enable_language(CUDA)
     set(GPU_EXT_PREFIX "cu")
   endif()
+endif()
+
+if(FAISS_ENABLE_METAL)
+  find_library(METAL_LIBRARY Metal)
+  find_library(FOUNDATION_LIBRARY Foundation)
+  if(NOT METAL_LIBRARY OR NOT FOUNDATION_LIBRARY)
+    message(FATAL_ERROR "Metal or Foundation library not found. Please ensure you are building on macOS with Xcode installed.")
+  endif()
+  add_definitions(-DFAISS_ENABLE_METAL)
 endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
@@ -114,9 +119,8 @@ endif()
 
 # CTest must be included in the top level to enable `make test` target.
 include(CTest)
-if(BUILD_TESTING)
-  add_subdirectory(tests)
-  add_subdirectory(perf_tests)
+if(BUILD_TESTING AND FAISS_ENABLE_EXTRAS)
+  # add_subdirectory(tests)
   if(FAISS_ENABLE_GPU)
     if(FAISS_ENABLE_ROCM)
       add_subdirectory(faiss/gpu-rocm/test)

@@ -11,7 +11,6 @@
 #include <mutex>
 #include <vector>
 
-#include <omp.h>
 
 #include <faiss/Index.h>
 #include <faiss/impl/AuxIndexStructures.h>

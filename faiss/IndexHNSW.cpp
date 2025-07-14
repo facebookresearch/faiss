@@ -164,7 +164,6 @@ void hnsw_add_vertices(
                             *dis,
                             pt_level,
                             pt_id,
-                            locks,
                             vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
@@ -519,7 +518,7 @@ void IndexHNSW::init_level_0_from_entry_points(
             dis->set_query(vec.data());
 
             hnsw.add_links_starting_from(
-                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks.data(), vt);
+                    *dis, pt_id, nearest, (*dis)(nearest), 0, vt);
 
             if (verbose && i % 10000 == 0) {
                 printf("  %d / %d\r", i, n);

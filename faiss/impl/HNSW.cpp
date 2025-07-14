@@ -109,8 +109,6 @@ void HNSW::print_neighbor_stats(int level) const {
            level,
            nb_neighbors(level));
     size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
-#pragma omp parallel for reduction(+ : tot_neigh) reduction(+ : tot_common) \
-        reduction(+ : tot_reciprocal) reduction(+ : n_node)
     for (int i = 0; i < levels.size(); i++) {
         if (levels[i] > level) {
             n_node++;
@@ -483,7 +481,6 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
@@ -505,13 +502,9 @@ void HNSW::add_links_starting_from(
         link_targets.pop();
     }
 
-    omp_unset_lock(&locks[pt_id]);
     for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
     }
-    omp_set_lock(&locks[pt_id]);
 }
 
 /**************************************************************
@@ -522,13 +515,11 @@ void HNSW::add_with_locks(
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     //  greedy search on upper levels
 
     storage_idx_t nearest;
-#pragma omp critical
     {
         nearest = entry_point;
 
@@ -542,7 +533,6 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
 
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
@@ -558,12 +548,10 @@ void HNSW::add_with_locks(
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
 
     if (pt_level > max_level) {
         max_level = pt_level;

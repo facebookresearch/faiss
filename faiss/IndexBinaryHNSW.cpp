@@ -131,7 +131,6 @@ void hnsw_add_vertices(
                             *dis,
                             pt_level,
                             pt_id,
-                            locks,
                             vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
