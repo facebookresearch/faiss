@@ -68,7 +68,8 @@ void MetalIndexIVFPQ::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
     idx_t* coarse_assign = new idx_t[n * nprobe];
     float* coarse_dist = new float[n * nprobe];
     quantizer->search(n, x, nprobe, coarse_dist, coarse_assign);

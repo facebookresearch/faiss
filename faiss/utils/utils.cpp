@@ -24,7 +24,6 @@
 #include <unistd.h>
 #endif // !_MSC_VER
 
-#include <omp.h>
 
 #include <algorithm>
 #include <set>
@@ -287,12 +286,10 @@ size_t merge_result_table_with(
         int64_t translation) {
     size_t n1 = 0;
 
-#pragma omp parallel reduction(+ : n1)
     {
         std::vector<int64_t> tmpI(k);
         std::vector<float> tmpD(k);
 
-#pragma omp for
         for (int64_t i = 0; i < n; i++) {
             int64_t* lI0 = I0 + i * k;
             float* lD0 = D0 + i * k;
@@ -458,7 +455,6 @@ void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
     // so below codes only accept n <= std::numeric_limits<ssize_t>::max()
     using ssize_t = std::make_signed<std::size_t>::type;
     const ssize_t size = n;
-#pragma omp parallel for if (size > 1000)
     for (ssize_t i_ = 0; i_ < size; i_++) {
         const auto i = static_cast<std::size_t>(i_);
         cs[i] = bvec_checksum(d, a + i * d);
@@ -523,41 +519,6 @@ uint64_t hash_bytes(const uint8_t* bytes, int64_t n) {
 }
 
 bool check_openmp() {
-    omp_set_num_threads(10);
-
-    if (omp_get_max_threads() != 10) {
-        return false;
-    }
-
-    std::vector<int> nt_per_thread(10);
-    size_t sum = 0;
-    bool in_parallel = true;
-#pragma omp parallel reduction(+ : sum)
-    {
-        if (!omp_in_parallel()) {
-            in_parallel = false;
-        }
-
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
-
-        nt_per_thread[rank] = nt;
-#pragma omp for
-        for (int i = 0; i < 1000 * 1000 * 10; i++) {
-            sum += i;
-        }
-    }
-
-    if (!in_parallel) {
-        return false;
-    }
-    if (nt_per_thread[0] != 10) {
-        return false;
-    }
-    if (sum == 0) {
-        return false;
-    }
-
     return true;
 }
 

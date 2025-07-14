@@ -36,7 +36,7 @@ set(FAISS_C_SRC
 )
 
 add_library(faiss_c ${FAISS_C_SRC})
-target_link_libraries(faiss_c PRIVATE faiss)
+target_link_libraries(faiss_c PRIVATE faiss faiss_metal)
 
 add_library(faiss_c_avx2 ${FAISS_C_SRC})
 target_link_libraries(faiss_c_avx2 PRIVATE faiss_avx2)

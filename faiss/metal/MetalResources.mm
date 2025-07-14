@@ -1,4 +1,6 @@
 #include "MetalResources.h"
+#include "MetalDataTypes.h"
+#include <algorithm>
 
 namespace faiss {
 namespace metal {
@@ -50,8 +52,26 @@ MetalKernels::MetalKernels(std::shared_ptr<MetalResources> resources)
     : resources_(resources) {
     NSError* error = nil;
     id<MTLDevice> device = resources->getDevice(0);
-    library_ = [device newDefaultLibrary];
-    FAISS_THROW_IF_NOT_MSG(library_, "Could not create default Metal library");
+    
+    // Try to load the kernels metallib file
+    NSString* libraryPath = @"build/faiss/metal/kernels.metallib";
+    NSURL* libraryURL = [NSURL fileURLWithPath:libraryPath];
+    library_ = [device newLibraryWithURL:libraryURL error:&error];
+    
+    if (!library_) {
+        // Try relative path
+        libraryPath = @"faiss/metal/kernels.metallib";
+        libraryURL = [NSURL fileURLWithPath:libraryPath];
+        library_ = [device newLibraryWithURL:libraryURL error:&error];
+    }
+    
+    if (!library_) {
+        // Try loading from default library as fallback
+        library_ = [device newDefaultLibrary];
+    }
+    
+    FAISS_THROW_IF_NOT_FMT(library_, "Could not create Metal library, error: %s", 
+                           error ? [[error description] UTF8String] : "Unknown error");
 }
 
 void MetalKernels::addVectors(id<MTLBuffer> inA, id<MTLBuffer> inB, id<MTLBuffer> out, int n) {
@@ -84,7 +104,7 @@ void MetalKernels::addVectors(id<MTLBuffer> inA, id<MTLBuffer> inB, id<MTLBuffer
     [commandBuffer waitUntilCompleted];
 }
 
-void MetalKernels::l2Distance(
+id<MTLCommandBuffer> MetalKernels::l2DistanceAsync(
         id<MTLBuffer> query,
         id<MTLBuffer> data,
         id<MTLBuffer> dist_labels,
@@ -106,6 +126,7 @@ void MetalKernels::l2Distance(
     [commandEncoder setBuffer:data offset:0 atIndex:1];
     [commandEncoder setBuffer:dist_labels offset:0 atIndex:2];
     [commandEncoder setBytes:&d length:sizeof(int) atIndex:3];
+    [commandEncoder setBytes:&n length:sizeof(int) atIndex:4];
 
     MTLSize gridSize = MTLSizeMake(n, 1, 1);
     NSUInteger threadGroupSize = [pipelineState maxTotalThreadsPerThreadgroup];
@@ -117,6 +138,17 @@ void MetalKernels::l2Distance(
     [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
     [commandEncoder endEncoding];
     [commandBuffer commit];
+    
+    return commandBuffer;
+}
+
+void MetalKernels::l2Distance(
+        id<MTLBuffer> query,
+        id<MTLBuffer> data,
+        id<MTLBuffer> dist_labels,
+        int d,
+        int n) {
+    id<MTLCommandBuffer> commandBuffer = l2DistanceAsync(query, data, dist_labels, d, n);
     [commandBuffer waitUntilCompleted];
 }
 
@@ -259,6 +291,252 @@ void MetalKernels::ivfpq_scan_per_query(
         threadGroupSize = nq;
     }
     MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+}
+
+void MetalKernels::hnsw_search(
+        id<MTLBuffer> queries,
+        id<MTLBuffer> db_vectors,
+        id<MTLBuffer> levels,
+        id<MTLBuffer> graph_offsets,
+        id<MTLBuffer> graph_neighbors,
+        int d,
+        int k,
+        int ef,
+        int M,
+        int nb,
+        id<MTLBuffer> out_distances,
+        id<MTLBuffer> out_labels,
+        int entry_point) {
+    NSError* error = nil;
+    id<MTLFunction> searchFunction = [library_ newFunctionWithName:@"hnsw_search"];
+    FAISS_THROW_IF_NOT_MSG(searchFunction, "Could not create Metal function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:searchFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:queries offset:0 atIndex:0];
+    [commandEncoder setBuffer:db_vectors offset:0 atIndex:1];
+    [commandEncoder setBuffer:levels offset:0 atIndex:2];
+    [commandEncoder setBuffer:graph_offsets offset:0 atIndex:3];
+    [commandEncoder setBuffer:graph_neighbors offset:0 atIndex:4];
+    [commandEncoder setBytes:&d length:sizeof(int) atIndex:5];
+    [commandEncoder setBytes:&k length:sizeof(int) atIndex:6];
+    [commandEncoder setBytes:&ef length:sizeof(int) atIndex:7];
+    [commandEncoder setBytes:&M length:sizeof(int) atIndex:8];
+    [commandEncoder setBytes:&nb length:sizeof(int) atIndex:9];
+    [commandEncoder setBuffer:out_distances offset:0 atIndex:10];
+    [commandEncoder setBuffer:out_labels offset:0 atIndex:11];
+    [commandEncoder setBytes:&entry_point length:sizeof(int) atIndex:12];
+
+    MTLSize gridSize = MTLSizeMake(1, 1, 1);  // Process one query at a time
+    MTLSize threadgroupSize = MTLSizeMake(1, 1, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+}
+
+id<MTLCommandBuffer> MetalKernels::innerProductDistanceAsync(
+        id<MTLBuffer> query,
+        id<MTLBuffer> data,
+        id<MTLBuffer> dist_labels,
+        int d,
+        int n) {
+    NSError* error = nil;
+    id<MTLFunction> ipFunction = [library_ newFunctionWithName:@"inner_product_distance"];
+    FAISS_THROW_IF_NOT_MSG(ipFunction, "Could not create inner_product_distance function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:ipFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:query offset:0 atIndex:0];
+    [commandEncoder setBuffer:data offset:0 atIndex:1];
+    [commandEncoder setBuffer:dist_labels offset:0 atIndex:2];
+    [commandEncoder setBytes:&d length:sizeof(int) atIndex:3];
+    [commandEncoder setBytes:&n length:sizeof(int) atIndex:4];
+
+    MTLSize gridSize = MTLSizeMake(n, 1, 1);
+    NSUInteger threadGroupSize = [pipelineState maxTotalThreadsPerThreadgroup];
+    if (threadGroupSize > n) {
+        threadGroupSize = n;
+    }
+    MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    
+    return commandBuffer;
+}
+
+void MetalKernels::innerProductDistance(
+        id<MTLBuffer> query,
+        id<MTLBuffer> data,
+        id<MTLBuffer> dist_labels,
+        int d,
+        int n) {
+    id<MTLCommandBuffer> commandBuffer = innerProductDistanceAsync(query, data, dist_labels, d, n);
+    [commandBuffer waitUntilCompleted];
+}
+
+id<MTLCommandBuffer> MetalKernels::selectTopKAsync(
+        id<MTLBuffer> distances,
+        id<MTLBuffer> out_distances,
+        id<MTLBuffer> out_labels,
+        int n,
+        int k,
+        int query_id) {
+    NSError* error = nil;
+    id<MTLFunction> topKFunction = [library_ newFunctionWithName:@"select_top_k"];
+    FAISS_THROW_IF_NOT_MSG(topKFunction, "Could not create select_top_k function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:topKFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:distances offset:0 atIndex:0];
+    [commandEncoder setBuffer:out_distances offset:0 atIndex:1];
+    [commandEncoder setBuffer:out_labels offset:0 atIndex:2];
+    [commandEncoder setBytes:&n length:sizeof(int) atIndex:3];
+    [commandEncoder setBytes:&k length:sizeof(int) atIndex:4];
+    [commandEncoder setBytes:&query_id length:sizeof(int) atIndex:5];
+
+    MTLSize gridSize = MTLSizeMake(1, 1, 1);
+    MTLSize threadgroupSize = MTLSizeMake(1, 1, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    
+    return commandBuffer;
+}
+
+void MetalKernels::selectTopK(
+        id<MTLBuffer> distances,
+        id<MTLBuffer> out_distances,
+        id<MTLBuffer> out_labels,
+        int n,
+        int k,
+        int query_id) {
+    id<MTLCommandBuffer> commandBuffer = selectTopKAsync(distances, out_distances, out_labels, n, k, query_id);
+    [commandBuffer waitUntilCompleted];
+}
+
+void MetalKernels::l2DistanceBatch(
+        id<MTLBuffer> queries,
+        id<MTLBuffer> data,
+        id<MTLBuffer> distances,
+        int d,
+        int n,
+        int nq) {
+    NSError* error = nil;
+    id<MTLFunction> batchFunction = [library_ newFunctionWithName:@"l2_distance_batch"];
+    FAISS_THROW_IF_NOT_MSG(batchFunction, "Could not create l2_distance_batch function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:batchFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:queries offset:0 atIndex:0];
+    [commandEncoder setBuffer:data offset:0 atIndex:1];
+    [commandEncoder setBuffer:distances offset:0 atIndex:2];
+    [commandEncoder setBytes:&d length:sizeof(int) atIndex:3];
+    [commandEncoder setBytes:&n length:sizeof(int) atIndex:4];
+    [commandEncoder setBytes:&nq length:sizeof(int) atIndex:5];
+
+    // 2D grid for queries x database vectors
+    MTLSize gridSize = MTLSizeMake(nq, n, 1);
+    NSUInteger maxThreads = [pipelineState maxTotalThreadsPerThreadgroup];
+    
+    // Find optimal threadgroup size
+    NSUInteger threadsX = 1;
+    NSUInteger threadsY = maxThreads;
+    
+    // Try to balance the threadgroup dimensions
+    if (nq < maxThreads && n < maxThreads) {
+        threadsX = nq;
+        threadsY = std::min((NSUInteger)n, maxThreads / threadsX);
+    } else if (nq >= maxThreads) {
+        threadsX = maxThreads;
+        threadsY = 1;
+    }
+    
+    MTLSize threadgroupSize = MTLSizeMake(threadsX, threadsY, 1);
+
+    [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+    [commandEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+}
+
+void MetalKernels::innerProductDistanceBatch(
+        id<MTLBuffer> queries,
+        id<MTLBuffer> data,
+        id<MTLBuffer> distances,
+        int d,
+        int n,
+        int nq) {
+    NSError* error = nil;
+    id<MTLFunction> batchFunction = [library_ newFunctionWithName:@"inner_product_batch"];
+    FAISS_THROW_IF_NOT_MSG(batchFunction, "Could not create inner_product_batch function");
+
+    id<MTLComputePipelineState> pipelineState = [resources_->getDevice(0) newComputePipelineStateWithFunction:batchFunction error:&error];
+    FAISS_THROW_IF_NOT_FMT(pipelineState, "Failed to create compute pipeline state, error %s", [[error description] UTF8String]);
+
+    id<MTLCommandQueue> commandQueue = resources_->getCommandQueue(0);
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+
+    [commandEncoder setComputePipelineState:pipelineState];
+    [commandEncoder setBuffer:queries offset:0 atIndex:0];
+    [commandEncoder setBuffer:data offset:0 atIndex:1];
+    [commandEncoder setBuffer:distances offset:0 atIndex:2];
+    [commandEncoder setBytes:&d length:sizeof(int) atIndex:3];
+    [commandEncoder setBytes:&n length:sizeof(int) atIndex:4];
+    [commandEncoder setBytes:&nq length:sizeof(int) atIndex:5];
+
+    // 2D grid for queries x database vectors
+    MTLSize gridSize = MTLSizeMake(nq, n, 1);
+    NSUInteger maxThreads = [pipelineState maxTotalThreadsPerThreadgroup];
+    
+    // Find optimal threadgroup size
+    NSUInteger threadsX = 1;
+    NSUInteger threadsY = maxThreads;
+    
+    // Try to balance the threadgroup dimensions
+    if (nq < maxThreads && n < maxThreads) {
+        threadsX = nq;
+        threadsY = std::min((NSUInteger)n, maxThreads / threadsX);
+    } else if (nq >= maxThreads) {
+        threadsX = maxThreads;
+        threadsY = 1;
+    }
+    
+    MTLSize threadgroupSize = MTLSizeMake(threadsX, threadsY, 1);
 
     [commandEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
     [commandEncoder endEncoding];

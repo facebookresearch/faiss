@@ -9,7 +9,6 @@
 
 #include <faiss/impl/PolysemousTraining.h>
 
-#include <omp.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -764,7 +763,7 @@ void PolysemousTraining::optimize_reproduce_distances(
     int nbits = pq.nbits;
 
     size_t mem1 = memory_usage_per_thread(pq);
-    int nt = std::min(omp_get_max_threads(), int(pq.M));
+    int nt = 1;
     FAISS_THROW_IF_NOT_FMT(
             mem1 < max_memory,
             "Polysemous training will use %zd bytes per thread, while the max is set to %zd",
@@ -778,7 +777,6 @@ void PolysemousTraining::optimize_reproduce_distances(
                 nt);
     }
 
-#pragma omp parallel for num_threads(nt)
     for (int m = 0; m < pq.M; m++) {
         std::vector<double> dis_table;
 
@@ -845,7 +843,6 @@ void PolysemousTraining::optimize_ranking(
         pq.compute_sdc_table();
     }
 
-#pragma omp parallel for
     for (int m = 0; m < pq.M; m++) {
         size_t nq, nb;
         std::vector<uint32_t> codes;     // query codes, then db codes

@@ -11,7 +11,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include <omp.h>
 
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
@@ -182,8 +181,7 @@ struct HNSW {
             storage_idx_t nearest,
             float d_nearest,
             int level,
-            omp_lock_t* locks,
-            VisitedTable& vt,
+                        VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
     /** add point pt_id on all levels <= pt_level and build the link
@@ -192,8 +190,7 @@ struct HNSW {
             DistanceComputer& ptdis,
             int pt_level,
             int pt_id,
-            std::vector<omp_lock_t>& locks,
-            VisitedTable& vt,
+                        VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
     /// search interface for 1 point, single thread

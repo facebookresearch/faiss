@@ -1,6 +1,8 @@
 #include "MetalIndexFlat.h"
 #include "MetalResources.h"
-#include "MetalKernels.h"
+#include "MetalDataTypes.h"
+#include <algorithm>
+#include <vector>
 
 namespace faiss {
 namespace metal {
@@ -42,42 +44,97 @@ void MetalIndexFlat::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
-    if (n == 0) {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (n == 0 || ntotal_ == 0) {
         return;
     }
 
     MetalKernels kernels(resources_);
-
     id<MTLDevice> device = resources_->getDevice(0);
-    id<MTLBuffer> query_buffer = [device newBufferWithBytes:x
-                                                  length:n * d * sizeof(float)
-                                                 options:MTLResourceStorageModeShared];
-
-    id<MTLBuffer> dist_labels_buffer = [device newBufferWithLength:n * ntotal_ * sizeof(DistanceLabel)
-                                                            options:MTLResourceStorageModeShared];
-
-    for (int i = 0; i < n; ++i) {
-        kernels.l2Distance(
-                query_buffer,
-                vectors_,
-                dist_labels_buffer,
-                d,
-                ntotal_);
-    }
-
-    // Now we have the distances and labels, we need to find the top-k for each query.
-    // We can do this by sorting the distances and taking the first k.
-    kernels.bitonicSort(dist_labels_buffer, n * ntotal_);
-
-    // Copy the results back to the host
-    DistanceLabel* dist_labels = (DistanceLabel*)[dist_labels_buffer contents];
-
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < k; ++j) {
-            distances[i * k + j] = dist_labels[i * ntotal_ + j].distance;
-            labels[i * k + j] = dist_labels[i * ntotal_ + j].label;
+    
+    // Use batched search for better performance
+    const int batch_size = 32;  // Process queries in batches
+    
+    for (idx_t batch_start = 0; batch_start < n; batch_start += batch_size) {
+        idx_t batch_end = (batch_start + batch_size < n) ? batch_start + batch_size : n;
+        idx_t batch_queries = batch_end - batch_start;
+        
+        // Allocate buffers for batch
+        id<MTLBuffer> queries_buffer = [device newBufferWithBytes:x + batch_start * d
+                                                          length:batch_queries * d * sizeof(float)
+                                                         options:MTLResourceStorageModeShared];
+        
+        id<MTLBuffer> all_distances_buffer = [device newBufferWithLength:batch_queries * ntotal_ * sizeof(float)
+                                                                 options:MTLResourceStorageModeShared];
+        
+        // Compute all distances for this batch
+        if (metric_type == METRIC_L2) {
+            kernels.l2DistanceBatch(queries_buffer, vectors_, all_distances_buffer, d, ntotal_, batch_queries);
+        } else {
+            kernels.innerProductDistanceBatch(queries_buffer, vectors_, all_distances_buffer, d, ntotal_, batch_queries);
         }
+        
+        // Select top-k for each query in the batch
+        float* all_distances = (float*)[all_distances_buffer contents];
+        
+        for (idx_t i = 0; i < batch_queries; ++i) {
+            idx_t q = batch_start + i;
+            float* query_distances = all_distances + i * ntotal_;
+            
+            // Create distance-label pairs
+            std::vector<std::pair<float, idx_t>> dist_idx_pairs;
+            dist_idx_pairs.reserve(ntotal_);
+            
+            for (idx_t j = 0; j < ntotal_; ++j) {
+                dist_idx_pairs.emplace_back(query_distances[j], j);
+            }
+            
+            // Partial sort to get top k
+            std::partial_sort(dist_idx_pairs.begin(), 
+                            dist_idx_pairs.begin() + k, 
+                            dist_idx_pairs.end());
+            
+            // Copy results
+            for (idx_t j = 0; j < k; ++j) {
+                distances[q * k + j] = dist_idx_pairs[j].first;
+                labels[q * k + j] = dist_idx_pairs[j].second;
+            }
+        }
+    }
+    
+    return;
+    
+    // Old per-query implementation below (kept for reference)
+    for (idx_t q = 0; q < n; ++q) {
+        // Create buffers
+        id<MTLBuffer> query_buffer = [device newBufferWithBytes:x + q * d
+                                                      length:d * sizeof(float)
+                                                     options:MTLResourceStorageModeShared];
+        
+        id<MTLBuffer> dist_labels_buffer = [device newBufferWithLength:ntotal_ * sizeof(DistanceLabel)
+                                                                options:MTLResourceStorageModeShared];
+        
+        id<MTLBuffer> out_distances_buffer = [device newBufferWithLength:k * sizeof(float)
+                                                                  options:MTLResourceStorageModeShared];
+        
+        id<MTLBuffer> out_labels_buffer = [device newBufferWithLength:k * sizeof(idx_t)
+                                                              options:MTLResourceStorageModeShared];
+        
+        // Compute distances
+        if (metric_type == METRIC_L2) {
+            kernels.l2Distance(query_buffer, vectors_, dist_labels_buffer, d, ntotal_);
+        } else if (metric_type == METRIC_INNER_PRODUCT) {
+            kernels.innerProductDistance(query_buffer, vectors_, dist_labels_buffer, d, ntotal_);
+        }
+        
+        // Select top-k
+        kernels.selectTopK(dist_labels_buffer, out_distances_buffer, out_labels_buffer, 
+                          ntotal_, k, 0);
+        
+        // Copy results back
+        memcpy(distances + q * k, [out_distances_buffer contents], k * sizeof(float));
+        memcpy(labels + q * k, [out_labels_buffer contents], k * sizeof(idx_t));
     }
 }
 

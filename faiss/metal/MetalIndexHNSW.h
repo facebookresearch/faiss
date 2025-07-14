@@ -20,10 +20,18 @@ class MetalIndexHNSW : public faiss::IndexHNSW {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
    private:
+    void sync_with_gpu();
     std::shared_ptr<MetalResources> resources_;
+    id<MTLBuffer> vectors_;
+    id<MTLBuffer> levels_;
+    id<MTLBuffer> neighbors_;
+    id<MTLBuffer> graph_offsets_;
+    id<MTLBuffer> graph_neighbors_;
+    bool is_gpu_sync_;
 };
 
 } // namespace metal

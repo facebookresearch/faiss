@@ -40,6 +40,10 @@ set(FAISS_TEST_SRC
   test_zerocopy.cpp
 )
 
+if(FAISS_ENABLE_METAL)
+  list(APPEND FAISS_TEST_SRC test_metal_hnsw.cpp)
+endif()
+
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
 include(../cmake/link_to_faiss_lib.cmake)
@@ -54,7 +58,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG 58d77fa8070e8cec2dc1ed015d66b454c8d78850 # release-1.12.1
+  GIT_TAG v1.14.0 # release-1.12.1
   OVERRIDE_FIND_PACKAGE)
 set(BUILD_GMOCK CACHE BOOL OFF)
 set(INSTALL_GTEST CACHE BOOL OFF)
@@ -78,13 +82,12 @@ endif()
 ]=])
 endif()
 
-find_package(OpenMP REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(faiss_test PRIVATE
-  OpenMP::OpenMP_CXX
   GTest::gtest_main
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
+  $<$<BOOL:${FAISS_ENABLE_METAL}>:faiss_metal>
 )
 
 # Defines `gtest_discover_tests()`.

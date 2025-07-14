@@ -1,6 +1,7 @@
 #pragma once
 
 #include <faiss/IndexFlat.h>
+#include <faiss/MetricType.h>
 #include "MetalResources.h"
 
 namespace faiss {
@@ -20,7 +21,8 @@ class MetalIndexFlat : public faiss::IndexFlat {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
    private:
     std::shared_ptr<MetalResources> resources_;

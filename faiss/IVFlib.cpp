@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IVFlib.h>
 #include <omp.h>
+#include <faiss/IVFlib.h>
 
 #include <memory>
 #include <numeric>
