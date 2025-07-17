@@ -94,7 +94,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
-        if (icg->get_numeric_type() == faiss::NumericType::Float16) {
+        if (icg->get_numeric_type() != faiss::NumericType::Float32) {
             res->base_level_only = true;
         }
         icg->copyTo(res);
