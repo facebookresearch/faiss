@@ -77,13 +77,13 @@ class GpuIndex : public faiss::Index {
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add(idx_t, const float* x) override;
-    void add(idx_t, const void* x, NumericType numeric_type) override;
+    void addEx(idx_t, const void* x, NumericType numeric_type) override;
 
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
-    void add_with_ids(
+    void add_with_idsEx(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -103,7 +103,7 @@ class GpuIndex : public faiss::Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
-    void search(
+    void searchEx(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -165,7 +165,7 @@ class GpuIndex : public faiss::Index {
     /// All data is guaranteed to be resident on our device
     virtual void addImpl_(idx_t n, const float* x, const idx_t* ids) = 0;
 
-    virtual void addImpl_(
+    virtual void addImplEx_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -187,7 +187,7 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
-    virtual void searchImpl_(
+    virtual void searchImplEx_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
