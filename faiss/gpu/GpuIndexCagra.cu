@@ -124,6 +124,24 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
                 cagraConfig_.guarantee_connectivity);
         std::get<std::shared_ptr<CuvsCagra<half>>>(index_)->train(
                 n, static_cast<const half*>(x));
+    } else if (numeric_type == NumericType::Int8) {
+        index_ = std::make_shared<CuvsCagra<int8_t>>(
+                this->resources_.get(),
+                this->d,
+                cagraConfig_.intermediate_graph_degree,
+                cagraConfig_.graph_degree,
+                static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
+                cagraConfig_.nn_descent_niter,
+                cagraConfig_.store_dataset,
+                this->metric_type,
+                this->metric_arg,
+                INDICES_64_BIT,
+                ivf_pq_params,
+                ivf_pq_search_params,
+                cagraConfig_.refine_rate,
+                cagraConfig_.guarantee_connectivity);
+        std::get<std::shared_ptr<CuvsCagra<int8_t>>>(index_)->train(
+                n, static_cast<const int8_t*>(x));
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::train unsupported data type");
     }
@@ -224,6 +242,29 @@ void GpuIndexCagra::searchImpl_(
                 params->hashmap_max_fill_rate,
                 params->num_random_samplings,
                 params->seed);
+    } else if (numeric_type == NumericType::Int8) {
+        Tensor<int8_t, 2, true> queries(
+                const_cast<int8_t*>(static_cast<const int8_t*>(x)),
+                {n, this->d});
+
+        std::get<std::shared_ptr<CuvsCagra<int8_t>>>(index_)->search(
+                queries,
+                k,
+                outDistances,
+                outLabels,
+                params->max_queries,
+                params->itopk_size,
+                params->max_iterations,
+                static_cast<faiss::cagra_search_algo>(params->algo),
+                params->team_size,
+                params->search_width,
+                params->min_iterations,
+                params->thread_block_size,
+                static_cast<faiss::cagra_hash_mode>(params->hashmap_mode),
+                params->hashmap_min_bitlen,
+                params->hashmap_max_fill_rate,
+                params->num_random_samplings,
+                params->seed);
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::searchImpl_ unsupported data type");
     }
@@ -306,6 +347,21 @@ void GpuIndexCagra::copyFrom(
                 this->metric_type,
                 this->metric_arg,
                 INDICES_64_BIT);
+    } else if (numeric_type == NumericType::Int8) {
+        auto base_index = dynamic_cast<IndexScalarQuantizer*>(index->storage);
+        FAISS_ASSERT(base_index);
+        auto dataset = (int8_t*)base_index->codes.data();
+
+        index_ = std::make_shared<CuvsCagra<int8_t>>(
+                this->resources_.get(),
+                this->d,
+                index->ntotal,
+                hnsw.nb_neighbors(0),
+                dataset,
+                knn_graph.data(),
+                this->metric_type,
+                this->metric_arg,
+                INDICES_64_BIT);
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::copyFrom unsupported data type");
     }
@@ -340,6 +396,9 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     } else if (numeric_type_ == NumericType::Float16) {
         graph_degree = std::get<std::shared_ptr<CuvsCagra<half>>>(index_)
                                ->get_knngraph_degree();
+    } else if (numeric_type_ == NumericType::Int8) {
+        graph_degree = std::get<std::shared_ptr<CuvsCagra<int8_t>>>(index_)
+                               ->get_knngraph_degree();
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::copyTo unsupported data type");
     }
@@ -358,6 +417,10 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         }
     } else if (numeric_type_ == NumericType::Float16) {
         auto qtype = ScalarQuantizer::QT_fp16;
+        index->storage =
+                new IndexScalarQuantizer(index->d, qtype, this->metric_type);
+    } else if (numeric_type_ == NumericType::Int8) {
+        auto qtype = ScalarQuantizer::QT_8bit_direct_signed;
         index->storage =
                 new IndexScalarQuantizer(index->d, qtype, this->metric_type);
     }
@@ -423,6 +486,38 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         if (!index->base_level_only) {
             FAISS_THROW_MSG(
                     "Only base level copy is supported for FP16 types in GpuIndexCagra::copyTo");
+        } else {
+            index->hnsw.prepare_level_tab(n_train, false);
+            index->storage->add_sa_codes(
+                    n_train, (uint8_t*)train_dataset, nullptr);
+            index->ntotal = n_train;
+        }
+
+        if (allocation) {
+            delete[] train_dataset;
+        }
+    } else if (numeric_type_ == NumericType::Int8) {
+        int8_t* train_dataset;
+        const int8_t* dataset =
+                std::get<std::shared_ptr<CuvsCagra<int8_t>>>(index_)
+                        ->get_training_dataset();
+        if (getDeviceForAddress(dataset) >= 0) {
+            train_dataset = new int8_t[n_train * index->d];
+            allocation = true;
+            raft::copy(
+                    train_dataset,
+                    dataset,
+                    n_train * index->d,
+                    this->resources_->getRaftHandleCurrentDevice()
+                            .get_stream());
+        } else {
+            train_dataset = const_cast<int8_t*>(dataset);
+        }
+
+        index->init_level0 = false;
+        if (!index->base_level_only) {
+            FAISS_THROW_MSG(
+                    "Only base level copy is supported for Int8 types in GpuIndexCagra::copyTo");
         } else {
             index->hnsw.prepare_level_tab(n_train, false);
             index->storage->add_sa_codes(
