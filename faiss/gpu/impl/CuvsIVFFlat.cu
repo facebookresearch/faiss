@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -427,13 +427,11 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
     // Precompute the centers vector norms for L2Expanded distance
     if (this->metric_ == faiss::METRIC_L2) {
         cuvs_index->allocate_center_norms(raft_handle);
-        raft::linalg::rowNorm(
+        raft::linalg::rowNorm<raft::linalg::L2Norm, true, float, uint32_t>(
                 cuvs_index->center_norms().value().data_handle(),
                 cuvs_index->centers().data_handle(),
                 cuvs_index->dim(),
                 (uint32_t)nlist,
-                raft::linalg::L2Norm,
-                true,
                 raft_handle.get_stream());
     }
 }
