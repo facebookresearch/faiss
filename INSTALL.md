@@ -98,7 +98,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=25.06
+  - libcuvs=25.08
 - for the python bindings:
   - python 3,
   - numpy,
@@ -114,13 +114,13 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 The libcuvs dependency should be installed via conda:
 1. With CUDA 12.0 - 12.5:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.06 'cuda-version>=12.0,<=12.5'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.08 'cuda-version>=12.0,<=12.5'
 ```
 2. With CUDA 11.4 - 11.8
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.06 'cuda-version>=11.4,<=11.8'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.08 'cuda-version>=11.4,<=11.8'
 ```
-For more ways to install cuVS 25.06, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 25.08, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ## Step 1: invoking CMake
 

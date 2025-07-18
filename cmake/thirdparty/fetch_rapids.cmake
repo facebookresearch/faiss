@@ -15,7 +15,7 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 # =============================================================================
-set(RAPIDS_VERSION "25.06")
+set(RAPIDS_VERSION "25.08")
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
     if(NOT rapids-cmake-version)
