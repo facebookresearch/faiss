@@ -126,7 +126,6 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 }
 
 void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
-    std::cout << "dim" << dim_ << std::endl;
     storage_ = x;
     n_ = n;
 

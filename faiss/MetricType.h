@@ -36,8 +36,6 @@ enum MetricType {
     METRIC_Jaccard,
     /// Squared Eucliden distance, ignoring NaNs
     METRIC_NaNEuclidean,
-    /// abs(x | y): the distance to a hyperplane
-    METRIC_ABS_INNER_PRODUCT,
     /// Gower's distance - numeric dimensions are in [0,1] and categorical
     /// dimensions are negative integers
     METRIC_GOWER,

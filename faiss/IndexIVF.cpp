@@ -959,6 +959,14 @@ bool IndexIVF::check_ids_sorted() const {
     return nflip == 0;
 }
 
+void IndexIVF::decode_vectors(
+        idx_t /*n*/,
+        const uint8_t* /*codes*/,
+        const idx_t* /*list_nos*/,
+        float* /*x*/) const {
+    FAISS_THROW_MSG("decode_vectors not implemented");
+}
+
 /* standalone codec interface */
 size_t IndexIVF::sa_code_size() const {
     size_t coarse_size = coarse_code_size();
