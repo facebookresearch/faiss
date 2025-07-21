@@ -10,6 +10,12 @@
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 
+#include "test_util.h"
+
+namespace {
+pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
+}
+
 TEST(SVSIO, WriteAndReadIndex) {
     const faiss::idx_t d = 64;
     faiss::IndexSVSUncompressed index(d);
@@ -21,16 +27,17 @@ TEST(SVSIO, WriteAndReadIndex) {
     }
     index.add(100, xb.data());
 
-    const std::string path = "/tmp/test_svs_index.faiss";
+    std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
 
     // Serialize
-    ASSERT_NO_THROW({ faiss::write_index(&index, path.c_str()); });
+    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
     // Deserialize
     faiss::IndexSVSUncompressed* loaded = nullptr;
     ASSERT_NO_THROW({
         loaded = dynamic_cast<faiss::IndexSVSUncompressed*>(
-                faiss::read_index(path.c_str()));
+                faiss::read_index(filename.c_str()));
     });
 
     // Basic checks
