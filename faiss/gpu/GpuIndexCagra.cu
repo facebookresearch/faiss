@@ -152,7 +152,15 @@ void GpuIndexCagra::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     FAISS_THROW_MSG("adding vectors is not supported by GpuIndexCagra.");
 };
 
-void GpuIndexCagra::searchImplEx_(
+void GpuIndexCagra::addImpl_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
+    GpuIndex::addImpl_(n, x, numeric_type, ids);
+}
+
+void GpuIndexCagra::searchImpl_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -240,7 +248,7 @@ void GpuIndexCagra::searchImpl_(
         float* distances,
         idx_t* labels,
         const SearchParameters* search_params) const {
-    searchImplEx_(
+    searchImpl_(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,

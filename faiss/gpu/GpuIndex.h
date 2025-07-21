@@ -165,7 +165,7 @@ class GpuIndex : public faiss::Index {
     /// All data is guaranteed to be resident on our device
     virtual void addImpl_(idx_t n, const float* x, const idx_t* ids) = 0;
 
-    virtual void addImplEx_(
+    virtual void addImpl_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -187,7 +187,7 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
-    virtual void searchImplEx_(
+    virtual void searchImpl_(
             idx_t n,
             const void* x,
             NumericType numeric_type,

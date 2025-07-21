@@ -233,13 +233,13 @@ void GpuIndex::addPage_(
                     stream,
                     {n});
 
-            addImplEx_(
+            addImpl_(
                     n,
                     static_cast<const void*>(vecs.data()),
                     numeric_type,
                     ids ? indices.data() : nullptr);
         } else {
-            addImplEx_(
+            addImpl_(
                     n,
                     static_cast<const void*>(vecs.data()),
                     numeric_type,
@@ -411,7 +411,7 @@ void GpuIndex::searchNonPaged_(
                 stream,
                 {n, this->d});
 
-        searchImplEx_(
+        searchImpl_(
                 n,
                 static_cast<const void*>(vecs.data()),
                 numeric_type,
@@ -600,7 +600,7 @@ void GpuIndex::searchFromCpuPaged_(
                 auto outIndicesSlice =
                         outIndices.narrowOutermost(cur3, numToProcess);
 
-                searchImplEx_(
+                searchImpl_(
                         numToProcess,
                         static_cast<const void*>(bufGpus[cur3BufIndex]->data()),
                         numeric_type,

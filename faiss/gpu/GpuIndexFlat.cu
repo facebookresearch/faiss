@@ -216,6 +216,14 @@ void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     this->ntotal += n;
 }
 
+void GpuIndexFlat::addImpl_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
+    GpuIndex::addImpl_(n, x, numeric_type, ids);
+}
+
 void GpuIndexFlat::searchImpl_(
         idx_t n,
         const float* x,
@@ -234,6 +242,17 @@ void GpuIndexFlat::searchImpl_(
 
     data_->query(
             queries, k, metric_type, metric_arg, outDistances, outLabels, true);
+}
+
+void GpuIndexFlat::searchImpl_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        int k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    GpuIndex::searchImpl_(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexFlat::reconstruct(idx_t key, float* out) const {

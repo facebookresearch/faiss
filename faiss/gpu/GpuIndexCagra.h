@@ -285,6 +285,11 @@ struct GpuIndexCagra : public GpuIndex {
     bool addImplRequiresIDs_() const override;
 
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -294,7 +299,7 @@ struct GpuIndexCagra : public GpuIndex {
             float* distances,
             idx_t* labels,
             const SearchParameters* search_params) const override;
-    void searchImplEx_(
+    void searchImpl_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
