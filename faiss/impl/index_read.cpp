@@ -45,6 +45,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSVSUncompressed.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1227,6 +1228,31 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
+    } else if (h == fourcc("SvUC")) {
+        auto svsuc = new IndexSVSUncompressed();
+
+        // Read class properties
+        READ1(svsuc->d);
+        READ1(svsuc->metric_type);
+        READ1(svsuc->num_threads);
+        READ1(svsuc->graph_max_degree);
+        READ1(svsuc->alpha);
+        READ1(svsuc->search_window_size);
+        READ1(svsuc->search_buffer_capacity);
+        READ1(svsuc->construction_window_size);
+        READ1(svsuc->max_candidate_pool_size);
+        READ1(svsuc->prune_to);
+        READ1(svsuc->use_full_search_history);
+
+        // Read the binary blob from which impl will be reconstructed
+        uint64_t blob_size;
+        READ1(blob_size);
+        std::string blob(blob_size, '\0');
+        READANDCHECK(blob.data(), blob_size);
+        std::stringstream ss(std::move(blob));
+        svsuc->deserialize_impl(ss);
+
+        idx = svsuc;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

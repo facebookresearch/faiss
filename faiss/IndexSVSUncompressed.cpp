@@ -8,25 +8,116 @@
 #include <faiss/IndexSVSUncompressed.h>
 #include "faiss/Index.h"
 
+#include "svs/core/data.h"
+
+#include <filesystem>
+#include <sstream>
+
 namespace faiss {
 
-IndexSVSUncompressed::IndexSVSUncompressed(
-    idx_t d, 
-    MetricType metric,
-    idx_t num_threads,
-    idx_t graph_max_degree
-):Index(d, metric), num_threads{num_threads}, graph_max_degree{graph_max_degree} {
+namespace detail {
+struct SVSTempDirectory {
+    std::filesystem::path root;
+    std::filesystem::path config;
+    std::filesystem::path graph;
+    std::filesystem::path data;
+
+    SVSTempDirectory() {
+        root = std::filesystem::temp_directory_path() /
+                ("faiss_svs_" + std::to_string(std::rand()));
+        config = root / "config";
+        graph = root / "graph";
+        data = root / "data";
+
+        std::filesystem::create_directories(config);
+        std::filesystem::create_directories(graph);
+        std::filesystem::create_directories(data);
+    }
+
+    ~SVSTempDirectory() {
+        std::error_code ec;
+        std::filesystem::remove_all(root, ec); // best-effort cleanup
+    }
+};
+
+void write_files_to_stream(const SVSTempDirectory& tmp, std::ostream& out) {
+    for (const auto& dir : {tmp.config, tmp.graph, tmp.data}) {
+        const std::string dir_name = dir.filename().string(); // "config", etc.
+        for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+            const std::string filename = entry.path().filename().string();
+
+            const uint64_t dir_len = dir_name.size();
+            const uint64_t file_len = filename.size();
+            const uint64_t file_size = std::filesystem::file_size(entry.path());
+
+            out.write(reinterpret_cast<const char*>(&dir_len), sizeof(dir_len));
+            out.write(dir_name.data(), dir_len);
+
+            out.write(
+                    reinterpret_cast<const char*>(&file_len), sizeof(file_len));
+            out.write(filename.data(), file_len);
+
+            out.write(
+                    reinterpret_cast<const char*>(&file_size),
+                    sizeof(file_size));
+
+            std::ifstream in(entry.path(), std::ios::binary);
+            FAISS_THROW_IF_NOT_MSG(
+                    in, "Failed to open temp SVS file for reading");
+
+            out << in.rdbuf();
+        }
+    }
 }
 
-void IndexSVSUncompressed::add(idx_t n, const float* x) {
+void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
+    while (in && in.peek() != EOF) {
+        uint64_t dir_len, file_len, file_size;
 
+        in.read(reinterpret_cast<char*>(&dir_len), sizeof(dir_len));
+        std::string dir_name(dir_len, '\0');
+        in.read(dir_name.data(), dir_len);
+
+        in.read(reinterpret_cast<char*>(&file_len), sizeof(file_len));
+        std::string filename(file_len, '\0');
+        in.read(filename.data(), file_len);
+
+        in.read(reinterpret_cast<char*>(&file_size), sizeof(file_size));
+        std::vector<char> buffer(file_size);
+        in.read(buffer.data(), file_size);
+
+        std::filesystem::path base;
+        if (dir_name == "config") {
+            base = tmp.config;
+        } else if (dir_name == "graph") {
+            base = tmp.graph;
+        } else if (dir_name == "data") {
+            base = tmp.data;
+        } else {
+            FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
+        }
+
+        std::filesystem::path full_path = base / filename;
+        std::ofstream out(full_path, std::ios::binary);
+        FAISS_THROW_IF_NOT_MSG(out, "Failed to open temp SVS file for writing");
+        out.write(buffer.data(), buffer.size());
+    }
+}
+
+} // namespace detail
+
+IndexSVSUncompressed::IndexSVSUncompressed() = default;
+
+IndexSVSUncompressed::IndexSVSUncompressed(idx_t d, MetricType metric)
+        : Index(d, metric) {}
+
+void IndexSVSUncompressed::add(idx_t n, const float* x) {
     // construct sequential labels
     std::vector<size_t> labels(n);
     std::iota(labels.begin(), labels.end(), nlabels);
     nlabels += n;
 
-
-    if(!impl) {
+    if (!impl) {
         init_impl(n, x, labels);
         return;
     }
@@ -40,17 +131,15 @@ void IndexSVSUncompressed::reset() {
     nlabels = 0;
 }
 
-IndexSVSUncompressed::~IndexSVSUncompressed() {
-}
+IndexSVSUncompressed::~IndexSVSUncompressed() {}
 
 void IndexSVSUncompressed::search(
-    idx_t n,
-    const float* x,
-    idx_t k,
-    float* distances,
-    idx_t* labels,
-    const SearchParameters* params
-) const {
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
     auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
@@ -62,45 +151,103 @@ void IndexSVSUncompressed::search(
     impl->search(results.view(), queries, sp);
 
     svs::threads::parallel_for(
-        impl->get_threadpool_handle(),
-        svs::threads::StaticPartition(n),
-        [&](auto is, auto SVS_UNUSED(tid)) {
-            for(auto i : is) {
-                for(idx_t j = 0; j < k; ++j) {
-                    labels[j + i * k] = results.index(i, j);
-                    distances[j + i * k] = results.distance(i, j);
+            impl->get_threadpool_handle(),
+            svs::threads::StaticPartition(n),
+            [&](auto is, auto SVS_UNUSED(tid)) {
+                for (auto i : is) {
+                    for (idx_t j = 0; j < k; ++j) {
+                        labels[j + i * k] = results.index(i, j);
+                        distances[j + i * k] = results.distance(i, j);
+                    }
                 }
-            }
-        }
-    );
+            });
 }
 
-void IndexSVSUncompressed::init_impl(idx_t n, const float* x, const std::vector<size_t>& labels) {
+void IndexSVSUncompressed::init_impl(
+        idx_t n,
+        const float* x,
+        const std::vector<size_t>& labels) {
     auto data = svs::data::SimpleData<float>(n, d);
 
     auto threadpool = svs::threads::as_threadpool(num_threads);
 
     svs::threads::parallel_for(
-        threadpool,
-        svs::threads::StaticPartition(n),
-        [&](auto is, auto SVS_UNUSED(tid)) {
-            for(auto i : is) {
-                data.set_datum(i, std::span<const float>(x + i * d, d));
-            }
-        }
-    );
+            threadpool,
+            svs::threads::StaticPartition(n),
+            [&](auto is, auto SVS_UNUSED(tid)) {
+                for (auto i : is) {
+                    data.set_datum(i, std::span<const float>(x + i * d, d));
+                }
+            });
 
-    svs::index::vamana::VamanaBuildParameters build_parameters{alpha, graph_max_degree, construction_window_size, max_candidate_pool_size, prune_to, use_full_search_history};
+    svs::index::vamana::VamanaBuildParameters build_parameters{
+            alpha,
+            graph_max_degree,
+            construction_window_size,
+            max_candidate_pool_size,
+            prune_to,
+            use_full_search_history};
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-          impl = std::make_unique<svs::DynamicVamana>(svs::DynamicVamana::build<float>(build_parameters, std::move(data), labels, svs::DistanceIP(), std::move(threadpool)));
-          break;
+            impl = std::make_unique<svs::DynamicVamana>(
+                    svs::DynamicVamana::build<float>(
+                            build_parameters,
+                            std::move(data),
+                            labels,
+                            svs::DistanceIP(),
+                            std::move(threadpool)));
+            break;
         case METRIC_L2:
-          impl = std::make_unique<svs::DynamicVamana>(svs::DynamicVamana::build<float>(build_parameters, std::move(data), labels, svs::DistanceL2(), std::move(threadpool)));
-          break;
+            impl = std::make_unique<svs::DynamicVamana>(
+                    svs::DynamicVamana::build<float>(
+                            build_parameters,
+                            std::move(data),
+                            labels,
+                            svs::DistanceL2(),
+                            std::move(threadpool)));
+            break;
         default:
-          FAISS_ASSERT(!"not supported SVS distance");
+            FAISS_ASSERT(!"not supported SVS distance");
+    }
+}
+
+void IndexSVSUncompressed::serialize_impl(std::ostream& out) const {
+    FAISS_THROW_IF_NOT_MSG(
+            impl, "Cannot serialize: SVS index not initialized.");
+
+    // Write index to temporary files and concatenate the contents
+    detail::SVSTempDirectory tmp;
+    impl->save(tmp.config, tmp.graph, tmp.data);
+    detail::write_files_to_stream(tmp, out);
+}
+
+void IndexSVSUncompressed::deserialize_impl(std::istream& in) {
+    // Write stream to files that can be read by DynamicVamana::assemble()
+    detail::SVSTempDirectory tmp;
+    detail::write_stream_to_files(in, tmp);
+
+    switch (metric_type) {
+        case METRIC_INNER_PRODUCT:
+            impl = std::make_unique<svs::DynamicVamana>(
+                    svs::DynamicVamana::assemble<float>(
+                            tmp.config.string(),
+                            svs::GraphLoader(tmp.graph.string()),
+                            svs::VectorDataLoader<float>(tmp.data.string()),
+                            svs::distance::DistanceIP(),
+                            num_threads));
+            break;
+        case METRIC_L2:
+            impl = std::make_unique<svs::DynamicVamana>(
+                    svs::DynamicVamana::assemble<float>(
+                            tmp.config.string(),
+                            svs::GraphLoader(tmp.graph.string()),
+                            svs::VectorDataLoader<float>(tmp.data.string()),
+                            svs::distance::DistanceL2(),
+                            num_threads));
+            break;
+        default:
+            FAISS_ASSERT(!"not supported SVS distance");
     }
 }
 
