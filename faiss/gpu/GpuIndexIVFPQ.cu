@@ -490,7 +490,7 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
 }
 
 void GpuIndexIVFPQ::train(idx_t n, const void* x, NumericType numeric_type) {
-    Index::train(n, x, numeric_type);
+    GpuIndex::train(n, x, numeric_type);
 }
 
 void GpuIndexIVFPQ::setIndex_(

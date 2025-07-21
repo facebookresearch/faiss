@@ -325,7 +325,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
 }
 
 void GpuIndexIVFFlat::train(idx_t n, const void* x, NumericType numeric_type) {
-    Index::train(n, x, numeric_type);
+    GpuIndex::train(n, x, numeric_type);
 }
 
 void GpuIndexIVFFlat::setIndex_(
