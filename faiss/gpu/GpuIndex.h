@@ -77,13 +77,13 @@ class GpuIndex : public faiss::Index {
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add(idx_t, const float* x) override;
-    void addEx(idx_t, const void* x, NumericType numeric_type) override;
+    void add(idx_t, const void* x, NumericType numeric_type) override;
 
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
-    void add_with_idsEx(
+    void add_with_ids(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -103,7 +103,7 @@ class GpuIndex : public faiss::Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
-    void searchEx(
+    void search(
             idx_t n,
             const void* x,
             NumericType numeric_type,

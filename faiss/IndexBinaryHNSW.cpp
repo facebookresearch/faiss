@@ -196,6 +196,10 @@ void IndexBinaryHNSW::train(idx_t n, const uint8_t* x) {
     is_trained = true;
 }
 
+void IndexBinaryHNSW::train(idx_t n, const void* x, NumericType numeric_type) {
+    IndexBinary::train(n, x, numeric_type);
+}
+
 void IndexBinaryHNSW::search(
         idx_t n,
         const uint8_t* x,
@@ -235,6 +239,17 @@ void IndexBinaryHNSW::search(
     }
 }
 
+void IndexBinaryHNSW::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        int32_t* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    IndexBinary::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     FAISS_THROW_IF_NOT(is_trained);
     int n0 = ntotal;
@@ -242,6 +257,10 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     ntotal = storage->ntotal;
 
     hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+}
+
+void IndexBinaryHNSW::add(idx_t n, const void* x, NumericType numeric_type) {
+    IndexBinary::add(n, x, numeric_type);
 }
 
 void IndexBinaryHNSW::reset() {

@@ -42,7 +42,7 @@ GpuIndexCagra::GpuIndexCagra(
     this->is_trained = false;
 }
 
-void GpuIndexCagra::trainEx(idx_t n, const void* x, NumericType numeric_type) {
+void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
     numeric_type_ = numeric_type;
     bool index_is_initialized = !std::holds_alternative<std::monostate>(index_);
 
@@ -133,15 +133,15 @@ void GpuIndexCagra::trainEx(idx_t n, const void* x, NumericType numeric_type) {
 }
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
-    trainEx(n, static_cast<const void*>(x), NumericType::Float32);
+    train(n, static_cast<const void*>(x), NumericType::Float32);
 }
 
-void GpuIndexCagra::addEx(idx_t n, const void* x, NumericType numeric_type) {
-    trainEx(n, x, numeric_type);
+void GpuIndexCagra::add(idx_t n, const void* x, NumericType numeric_type) {
+    train(n, x, numeric_type);
 }
 
 void GpuIndexCagra::add(idx_t n, const float* x) {
-    addEx(n, x, NumericType::Float32);
+    add(n, x, NumericType::Float32);
 }
 
 bool GpuIndexCagra::addImplRequiresIDs_() const {

@@ -167,6 +167,10 @@ void GpuIndexFlat::train(idx_t n, const float* x) {
     // nothing to do
 }
 
+void GpuIndexFlat::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 void GpuIndexFlat::add(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
@@ -189,6 +193,10 @@ void GpuIndexFlat::add(idx_t n, const float* x) {
         // Otherwise, perform the paging
         GpuIndex::add(n, x);
     }
+}
+
+void GpuIndexFlat::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
 }
 
 bool GpuIndexFlat::addImplRequiresIDs_() const {

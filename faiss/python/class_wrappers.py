@@ -234,7 +234,10 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
-        self.addEx(n, swig_ptr(x), numeric_type)
+        if numeric_type == faiss.Float32:
+            self.add_c(n, swig_ptr(x))
+        else:
+            self.add_c(n, swig_ptr(x), numeric_type)
 
     def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
@@ -255,7 +258,10 @@ def handle_Index(the_class):
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
         ids = np.ascontiguousarray(ids, dtype='int64')
-        self.add_with_idsEx(n, swig_ptr(x), numeric_type, swig_ptr(ids))
+        if numeric_type == faiss.Float32:
+            self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+        else:
+            self.add_with_ids_c(n, swig_ptr(x), numeric_type, swig_ptr(ids))
 
 
     def replacement_assign(self, x, k, labels=None):
@@ -303,7 +309,10 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
-        self.trainEx(n, swig_ptr(x), numeric_type)
+        if numeric_type == faiss.Float32:
+            self.train_c(n, swig_ptr(x))
+        else:
+            self.train_c(n, swig_ptr(x), numeric_type)
         
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None, numeric_type = faiss.Float32):
@@ -349,7 +358,10 @@ def handle_Index(the_class):
         else:
             assert I.shape == (n, k)
 
-        self.searchEx(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
+        if numeric_type == faiss.Float32:
+            self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
+        else:
+            self.search_c(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
@@ -888,7 +900,7 @@ def handle_IndexBinary(the_class):
         self.search_c(n, swig_ptr(x),
                       k, swig_ptr(distances),
                       swig_ptr(labels),
-                      params=params)
+                      params)
         return distances, labels
 
     def replacement_search_preassigned(self, x, k, Iq, Dq):

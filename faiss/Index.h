@@ -127,7 +127,7 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
-    virtual void trainEx(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             train(n, static_cast<const float*>(x));
         } else {
@@ -145,7 +145,7 @@ struct Index {
      */
     virtual void add(idx_t n, const float* x) = 0;
 
-    virtual void addEx(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             add(n, static_cast<const float*>(x));
         } else {
@@ -163,7 +163,7 @@ struct Index {
      * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
-    virtual void add_with_idsEx(
+    virtual void add_with_ids(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -194,7 +194,7 @@ struct Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
 
-    virtual void searchEx(
+    virtual void search(
             idx_t n,
             const void* x,
             NumericType numeric_type,
