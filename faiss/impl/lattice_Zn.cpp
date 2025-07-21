@@ -18,7 +18,6 @@
 #include <queue>
 #include <unordered_set>
 
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/distances.h>
 
 namespace faiss {
