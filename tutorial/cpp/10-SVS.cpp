@@ -11,6 +11,7 @@
 #include <random>
 
 #include <faiss/IndexSVSUncompressed.h>
+#include <faiss/index_io.h>
 
 using idx_t = faiss::idx_t;
 
@@ -66,8 +67,45 @@ int main() {
         delete[] D;
     }
 
+    std::cout << "Persisting index to disk and reloading." << std::endl;
+
+    faiss::write_index(&index, "/tmp/test_svs_index.faiss");
+    faiss::IndexSVSUncompressed* reloaded =
+            dynamic_cast<faiss::IndexSVSUncompressed*>(
+                    faiss::read_index("/tmp/test_svs_index.faiss"));
+    FAISS_THROW_IF_NOT_MSG(reloaded, "Failed to reload index from disk");
+
+    { // search xq
+        idx_t* I = new idx_t[k * nq];
+        float* D = new float[k * nq];
+
+        reloaded->search(nq, xq, k, D, I);
+
+        printf("I=\n");
+        for (int i = nq - 5; i < nq; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5zd ", I[i * k + j]);
+            printf("\n");
+        }
+
+        printf("D=\n");
+        for (int i = nq - 5; i < nq; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5f ", D[i * k + j]);
+            printf("\n");
+        }
+
+        delete[] I;
+        delete[] D;
+    }
+
+    delete reloaded;
+
     delete[] xb;
     delete[] xq;
+
+    // delete the temporary file
+    std::remove("/tmp/test_svs_index.faiss");
 
     return 0;
 }
