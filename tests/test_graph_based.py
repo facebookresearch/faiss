@@ -139,6 +139,10 @@ class TestHNSW(unittest.TestCase):
         # infinite loop
         index.add(zero_vecs)
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_hnsw_IP(self):
         d = self.xq.shape[1]
 
