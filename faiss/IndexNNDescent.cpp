@@ -100,6 +100,10 @@ void IndexNNDescent::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexNNDescent::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 void IndexNNDescent::search(
         idx_t n,
         const float* x,
@@ -152,6 +156,17 @@ void IndexNNDescent::search(
     }
 }
 
+void IndexNNDescent::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexNNDescent::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(
             storage,
@@ -170,6 +185,10 @@ void IndexNNDescent::add(idx_t n, const float* x) {
 
     std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
     nndescent.build(*dis, ntotal, verbose);
+}
+
+void IndexNNDescent::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
 }
 
 void IndexNNDescent::reset() {

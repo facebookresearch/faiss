@@ -167,6 +167,10 @@ void GpuIndexFlat::train(idx_t n, const float* x) {
     // nothing to do
 }
 
+void GpuIndexFlat::train(idx_t n, const void* x, NumericType numeric_type) {
+    GpuIndex::train(n, x, numeric_type);
+}
+
 void GpuIndexFlat::add(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
@@ -191,6 +195,10 @@ void GpuIndexFlat::add(idx_t n, const float* x) {
     }
 }
 
+void GpuIndexFlat::add(idx_t n, const void* x, NumericType numeric_type) {
+    GpuIndex::add(n, x, numeric_type);
+}
+
 bool GpuIndexFlat::addImplRequiresIDs_() const {
     return false;
 }
@@ -206,6 +214,14 @@ void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
 
     data_->add(x, n, resources_->getDefaultStream(config_.device));
     this->ntotal += n;
+}
+
+void GpuIndexFlat::addImpl_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* ids) {
+    GpuIndex::addImpl_(n, x, numeric_type, ids);
 }
 
 void GpuIndexFlat::searchImpl_(
@@ -226,6 +242,17 @@ void GpuIndexFlat::searchImpl_(
 
     data_->query(
             queries, k, metric_type, metric_arg, outDistances, outLabels, true);
+}
+
+void GpuIndexFlat::searchImpl_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        int k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    GpuIndex::searchImpl_(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexFlat::reconstruct(idx_t key, float* out) const {

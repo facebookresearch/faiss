@@ -132,11 +132,25 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
 
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
             idx_t n,
             const float* x,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const override;
+
+    void searchImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             int k,
             float* distances,
             idx_t* labels,

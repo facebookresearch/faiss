@@ -94,6 +94,10 @@ void IndexFastScan::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+void IndexFastScan::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
+}
+
 CodePacker* IndexFastScan::get_CodePacker() const {
     return new CodePackerPQ4(M, bbs);
 }
@@ -268,6 +272,17 @@ void IndexFastScan::search(
     } else {
         search_dispatch_implem<false>(n, x, k, distances, labels, nullptr);
     }
+}
+
+void IndexFastScan::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 template <bool is_max>
