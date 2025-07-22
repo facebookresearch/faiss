@@ -45,6 +45,13 @@ void IndexScalarQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexScalarQuantizer::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 void IndexScalarQuantizer::search(
         idx_t n,
         const float* x,
@@ -87,6 +94,17 @@ void IndexScalarQuantizer::search(
             }
         }
     }
+}
+
+void IndexScalarQuantizer::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 FlatCodesDistanceComputer* IndexScalarQuantizer::get_FlatCodesDistanceComputer()

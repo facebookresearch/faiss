@@ -8,6 +8,7 @@
 #ifndef FAISS_INDEX_BINARY_H
 #define FAISS_INDEX_BINARY_H
 
+#include <cstdint>
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -54,6 +55,13 @@ struct IndexBinary {
      * @param x      training vecors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
+    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+        if (numeric_type == NumericType::UInt8) {
+            train(n, static_cast<const uint8_t*>(x));
+        } else {
+            FAISS_THROW_MSG("IndexBinary::train: unsupported numeric type");
+        }
+    };
 
     /** Add n vectors of dimension d to the index.
      *
@@ -61,6 +69,13 @@ struct IndexBinary {
      * @param x      input matrix, size n * d / 8
      */
     virtual void add(idx_t n, const uint8_t* x) = 0;
+    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+        if (numeric_type == NumericType::UInt8) {
+            add(n, static_cast<const uint8_t*>(x));
+        } else {
+            FAISS_THROW_MSG("IndexBinary::add: unsupported numeric type");
+        }
+    };
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -70,6 +85,18 @@ struct IndexBinary {
      * @param xids if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const uint8_t* x, const idx_t* xids);
+    virtual void add_with_ids(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) {
+        if (numeric_type == NumericType::UInt8) {
+            add_with_ids(n, static_cast<const uint8_t*>(x), xids);
+        } else {
+            FAISS_THROW_MSG(
+                    "IndexBinary::add_with_ids: unsupported numeric type");
+        }
+    };
 
     /** Query n vectors of dimension d to the index.
      *
@@ -87,6 +114,25 @@ struct IndexBinary {
             int32_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
+    virtual void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            int32_t* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const {
+        if (numeric_type == NumericType::UInt8) {
+            search(n,
+                   static_cast<const uint8_t*>(x),
+                   k,
+                   distances,
+                   labels,
+                   params);
+        } else {
+            FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
+        }
+    };
 
     /** Query n vectors of dimension d to the index.
      *

@@ -171,6 +171,7 @@ struct AdditiveCoarseQuantizer : Index {
 
     /// N/A
     void add(idx_t n, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
@@ -179,9 +180,19 @@ struct AdditiveCoarseQuantizer : Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
+
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// N/A
     void reset() override;

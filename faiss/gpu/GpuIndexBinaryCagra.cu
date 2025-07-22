@@ -92,8 +92,22 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
     this->ntotal = n;
 }
 
+void GpuIndexBinaryCagra::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    IndexBinary::train(n, x, numeric_type);
+}
+
 void GpuIndexBinaryCagra::add(idx_t n, const uint8_t* x) {
     train(n, x);
+}
+
+void GpuIndexBinaryCagra::add(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    IndexBinary::add(n, x, numeric_type);
 }
 
 void GpuIndexBinaryCagra::search(
@@ -156,6 +170,17 @@ void GpuIndexBinaryCagra::search(
     // Copy back if necessary
     fromDevice<int, 2>(outDistances, distances, stream);
     fromDevice<idx_t, 2>(outIndices, labels, stream);
+}
+
+void GpuIndexBinaryCagra::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        int* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    IndexBinary::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexBinaryCagra::searchNonPaged_(
