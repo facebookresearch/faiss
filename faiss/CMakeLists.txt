@@ -47,7 +47,9 @@ set(FAISS_SRC
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
-  IndexSVSUncompressed.cpp
+  IndexSVS.cpp
+  IndexSVSLVQ4x4.cpp
+  #IndexSVSLeanVec4x4.cpp
   IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
@@ -146,7 +148,9 @@ set(FAISS_HEADERS
   IndexScalarQuantizer.h
   IndexShards.h
   IndexShardsIVF.h
-  IndexSVSUncompressed.h
+  IndexSVS.h
+  IndexSVSLVQ4x4.h
+  #IndexSVSLeanVec4x4.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -332,7 +336,7 @@ FetchContent_MakeAvailable(svs)
 list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
 find_package(svs REQUIRED)
 
-target_link_libraries(faiss PUBLIC svs::svs)
+target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
 
 # Handle `#include <faiss/foo.h>`.
 # Handle `#include <svs/foo.h>`.

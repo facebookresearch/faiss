@@ -194,6 +194,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexIVFRaBitQ.h>
 
+#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSLVQ4x4.h>
+
 %}
 
 /********************************************************
@@ -680,6 +683,9 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/utils/approx_topk/mode.h>
 
+%include  <faiss/IndexSVS.h>
+%include  <faiss/IndexSVSLVQ4x4.h>
+
 #ifdef GPU_WRAPPER
 
 #ifdef FAISS_ENABLE_ROCM
@@ -826,6 +832,8 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+    DOWNCAST ( IndexSVSLVQ4x4 )
+    DOWNCAST ( IndexSVS )
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

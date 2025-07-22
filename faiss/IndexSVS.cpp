@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVSUncompressed.h>
+#include <faiss/IndexSVS.h>
 #include "faiss/Index.h"
 
 #include "svs/core/data.h"
@@ -106,34 +106,47 @@ void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
 
 } // namespace detail
 
-IndexSVSUncompressed::IndexSVSUncompressed() = default;
+IndexSVS::IndexSVS() : Index{}, num_threads{1}, graph_max_degree{64} {}
 
-IndexSVSUncompressed::IndexSVSUncompressed(idx_t d, MetricType metric)
-        : Index(d, metric) {}
+IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {}
 
-void IndexSVSUncompressed::add(idx_t n, const float* x) {
-    // construct sequential labels
-    std::vector<size_t> labels(n);
-    std::iota(labels.begin(), labels.end(), nlabels);
-    nlabels += n;
+IndexSVS::~IndexSVS() {
+    if (impl) {
+        delete impl;
+    }
+}
 
+void IndexSVS::add(idx_t n, const float* x) {
     if (!impl) {
-        init_impl(n, x, labels);
+        init_impl(n, x);
         return;
     }
+
+    // construct sequential labels
+    std::vector<size_t> labels(n);
+
+    svs::threads::parallel_for(
+            impl->get_threadpool_handle(),
+            svs::threads::StaticPartition(n),
+            [&](auto is, auto SVS_UNUSED(tid)) {
+                for (auto i : is) {
+                    labels[i] = ntotal + i;
+                }
+            });
+    ntotal += n;
 
     auto data = svs::data::ConstSimpleDataView<float>(x, n, d);
     impl->add_points(data, labels);
 }
 
-void IndexSVSUncompressed::reset() {
-    impl.reset();
-    nlabels = 0;
+void IndexSVS::reset() {
+    if (impl) {
+        delete impl;
+    }
+    ntotal = 0;
 }
 
-IndexSVSUncompressed::~IndexSVSUncompressed() {}
-
-void IndexSVSUncompressed::search(
+void IndexSVS::search(
         idx_t n,
         const float* x,
         idx_t k,
@@ -141,34 +154,25 @@ void IndexSVSUncompressed::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(is_trained);
 
     auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
 
     // TODO: use params for SVS search parameters
     auto sp = impl->get_search_parameters();
     sp.buffer_config({search_window_size, search_buffer_capacity});
-    auto results = svs::QueryResult<size_t>{queries.size(), k};
-    impl->search(results.view(), queries, sp);
-
-    svs::threads::parallel_for(
-            impl->get_threadpool_handle(),
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    for (idx_t j = 0; j < k; ++j) {
-                        labels[j + i * k] = results.index(i, j);
-                        distances[j + i * k] = results.distance(i, j);
-                    }
-                }
-            });
+    // TODO: faiss use int64_t as label whereas SVS uses size_t?
+    auto results = svs::QueryResultView<size_t>{
+            svs::MatrixView<size_t>{
+                    svs::make_dims(n, k),
+                    static_cast<size_t*>(static_cast<void*>(labels))},
+            svs::MatrixView<float>{svs::make_dims(n, k), distances}};
+    impl->search(results, queries, sp);
 }
 
-void IndexSVSUncompressed::init_impl(
-        idx_t n,
-        const float* x,
-        const std::vector<size_t>& labels) {
+void IndexSVS::init_impl(idx_t n, const float* x) {
+    std::vector<size_t> labels(n);
     auto data = svs::data::SimpleData<float>(n, d);
-
     auto threadpool = svs::threads::as_threadpool(num_threads);
 
     svs::threads::parallel_for(
@@ -177,8 +181,10 @@ void IndexSVSUncompressed::init_impl(
             [&](auto is, auto SVS_UNUSED(tid)) {
                 for (auto i : is) {
                     data.set_datum(i, std::span<const float>(x + i * d, d));
+                    labels[i] = ntotal + i;
                 }
             });
+    ntotal += n;
 
     svs::index::vamana::VamanaBuildParameters build_parameters{
             alpha,
@@ -190,20 +196,20 @@ void IndexSVSUncompressed::init_impl(
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = std::make_unique<svs::DynamicVamana>(
+            impl = new svs::DynamicVamana(
                     svs::DynamicVamana::build<float>(
-                            build_parameters,
+                            std::move(build_parameters),
                             std::move(data),
-                            labels,
+                            std::move(labels),
                             svs::DistanceIP(),
                             std::move(threadpool)));
             break;
         case METRIC_L2:
-            impl = std::make_unique<svs::DynamicVamana>(
+            impl = new svs::DynamicVamana(
                     svs::DynamicVamana::build<float>(
-                            build_parameters,
+                            std::move(build_parameters),
                             std::move(data),
-                            labels,
+                            std::move(labels),
                             svs::DistanceL2(),
                             std::move(threadpool)));
             break;
@@ -212,7 +218,7 @@ void IndexSVSUncompressed::init_impl(
     }
 }
 
-void IndexSVSUncompressed::serialize_impl(std::ostream& out) const {
+void IndexSVS::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
@@ -222,29 +228,32 @@ void IndexSVSUncompressed::serialize_impl(std::ostream& out) const {
     detail::write_files_to_stream(tmp, out);
 }
 
-void IndexSVSUncompressed::deserialize_impl(std::istream& in) {
+void IndexSVS::deserialize_impl(std::istream& in) {
+    FAISS_THROW_IF_MSG(
+            impl, "Cannot deserialize: SVS index already initialized.");
+
     // Write stream to files that can be read by DynamicVamana::assemble()
     detail::SVSTempDirectory tmp;
     detail::write_stream_to_files(in, tmp);
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = std::make_unique<svs::DynamicVamana>(
-                    svs::DynamicVamana::assemble<float>(
-                            tmp.config.string(),
-                            svs::GraphLoader(tmp.graph.string()),
-                            svs::VectorDataLoader<float>(tmp.data.string()),
-                            svs::distance::DistanceIP(),
-                            num_threads));
+            impl = new svs::DynamicVamana(
+                    svs::DynamicVamana::build<float>(
+                            build_parameters,
+                            std::move(data),
+                            labels,
+                            svs::DistanceIP(),
+                            std::move(threadpool)));
             break;
         case METRIC_L2:
-            impl = std::make_unique<svs::DynamicVamana>(
-                    svs::DynamicVamana::assemble<float>(
-                            tmp.config.string(),
-                            svs::GraphLoader(tmp.graph.string()),
-                            svs::VectorDataLoader<float>(tmp.data.string()),
-                            svs::distance::DistanceL2(),
-                            num_threads));
+            impl = new svs::DynamicVamana(
+                    svs::DynamicVamana::build<float>(
+                            build_parameters,
+                            std::move(data),
+                            labels,
+                            svs::DistanceL2(),
+                            std::move(threadpool)));
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");
