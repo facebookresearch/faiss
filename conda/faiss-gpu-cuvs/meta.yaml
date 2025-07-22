@@ -6,11 +6,6 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.4,<12" %}
-{% set libcublas_constraints=">=11.6,<12" %}
-{% set cudart_constraints="=12.6.77" %}
-{% elif cudatoolkit == '12.4.0' %}
 {% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% set cudart_constraints=">=12.4,<12.5" %}
