@@ -13,7 +13,6 @@
 #include <benchmark/benchmark.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/perf_tests/utils.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 
 using namespace faiss;
