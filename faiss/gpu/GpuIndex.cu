@@ -431,7 +431,7 @@ void GpuIndex::searchNonPaged_(
                 stream,
                 {n, this->d});
 
-        searchImplEx_(
+        searchImpl_(
                 n,
                 static_cast<const void*>(vecs.data()),
                 numeric_type,
