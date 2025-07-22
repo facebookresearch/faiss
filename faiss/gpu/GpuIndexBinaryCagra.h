@@ -52,6 +52,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// the base dataset. Use this function when you want to add vectors with
     /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
     void add(idx_t n, const uint8_t* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
@@ -59,6 +60,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// of vectors (without IDs) to the index. There is no external quantizer to
     /// be trained here.
     void train(idx_t n, const uint8_t* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
@@ -80,6 +82,14 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             int* distances,
             faiss::idx_t* labels,
             const faiss::SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            int* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
    protected:
     /// Called from search when the input data is on the CPU;

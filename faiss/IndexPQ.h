@@ -36,10 +36,19 @@ struct IndexPQ : IndexFlatCodes {
     IndexPQ();
 
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,
@@ -142,6 +151,7 @@ struct MultiIndexQuantizer : Index {
             size_t nbits); ///< number of bit per subvector index
 
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
@@ -150,9 +160,19 @@ struct MultiIndexQuantizer : Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// add and reset will crash at runtime
     void add(idx_t n, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
+
     void reset() override;
 
     MultiIndexQuantizer() {}
@@ -179,10 +199,19 @@ struct MultiIndexQuantizer2 : MultiIndexQuantizer {
             Index* assign_index_1);
 
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,

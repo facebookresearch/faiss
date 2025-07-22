@@ -31,9 +31,15 @@ struct IndexIDMapTemplate : IndexT {
     /// @param xids if non-null, ids to store for the vectors (size n)
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;
+    void add_with_ids(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) override;
 
     /// this will fail. Use add_with_ids
     void add(idx_t n, const component_t* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
@@ -42,8 +48,17 @@ struct IndexIDMapTemplate : IndexT {
             distance_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            distance_t* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void train(idx_t n, const component_t* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     void reset() override;
 
@@ -89,6 +104,11 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;
+    void add_with_ids(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) override;
 
     size_t remove_ids(const IDSelector& sel) override;
 
