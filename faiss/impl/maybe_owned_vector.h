@@ -295,8 +295,7 @@ struct is_maybe_owned_vector : std::false_type {};
 template <typename T>
 struct is_maybe_owned_vector<MaybeOwnedVector<T>> : std::true_type {};
 
-template <typename T>
-inline constexpr bool is_maybe_owned_vector_v = is_maybe_owned_vector<T>::value;
+#define is_maybe_owned_vector_v(T) is_maybe_owned_vector<T>::value
 
 template <typename T>
 bool operator==(
