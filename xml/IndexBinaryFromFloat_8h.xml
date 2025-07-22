@@ -4,20 +4,20 @@
     <compoundname>IndexBinaryFromFloat.h</compoundname>
     <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
     <incdepgraph>
-      <node id="7">
+      <node id="8">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -33,6 +33,8 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/IndexBinaryFromFloat.h</label>
@@ -40,10 +42,10 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="11">
@@ -51,13 +53,13 @@
         <link refid="FaissAssert_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -65,25 +67,25 @@
         <link refid="FaissException_8h_source"/>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-      </node>
-      <node id="10">
-        <label>cstdint</label>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
         <label>cstdio</label>
       </node>
       <node id="16">
@@ -92,13 +94,13 @@
       <node id="13">
         <label>exception</label>
       </node>
-      <node id="4">
+      <node id="5">
         <label>sstream</label>
       </node>
-      <node id="5">
+      <node id="6">
         <label>string</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>typeinfo</label>
       </node>
       <node id="14">

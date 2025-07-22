@@ -227,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="85" column="16" bodyfile="faiss/Index.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/Index.h" line="86" column="16" bodyfile="faiss/Index.h" bodystart="86" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

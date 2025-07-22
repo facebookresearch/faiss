@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="85" column="16" bodyfile="faiss/Index.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/Index.h" line="86" column="16" bodyfile="faiss/Index.h" bodystart="86" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="87" column="13" bodyfile="faiss/Index.h" bodystart="87" bodyend="87"/>
+        <location file="faiss/Index.h" line="88" column="13" bodyfile="faiss/Index.h" bodystart="88" bodyend="88"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -131,7 +131,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/Index.h" line="83" column="1" bodyfile="faiss/Index.h" bodystart="83" bodyend="88"/>
+    <location file="faiss/Index.h" line="84" column="1" bodyfile="faiss/Index.h" bodystart="84" bodyend="89"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParameters</scope><name>sel</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParameters</scope><name>~SearchParameters</name></member>

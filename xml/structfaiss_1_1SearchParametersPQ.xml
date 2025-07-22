@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="114" column="28" bodyfile="faiss/IndexPQ.h" bodystart="114" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="123" column="28" bodyfile="faiss/IndexPQ.h" bodystart="123" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersPQ_1a7ba60c49fd2d92eb8cb40da1c3769983" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="115" column="9" bodyfile="faiss/IndexPQ.h" bodystart="115" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="124" column="9" bodyfile="faiss/IndexPQ.h" bodystart="124" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="85" column="16" bodyfile="faiss/Index.h" bodystart="85" bodyend="-1"/>
+        <location file="faiss/Index.h" line="86" column="16" bodyfile="faiss/Index.h" bodystart="86" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -86,7 +86,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPQ.h" line="113" column="1" bodyfile="faiss/IndexPQ.h" bodystart="113" bodyend="116"/>
+    <location file="faiss/IndexPQ.h" line="122" column="1" bodyfile="faiss/IndexPQ.h" bodystart="122" bodyend="125"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParametersPQ_1a7ba60c49fd2d92eb8cb40da1c3769983" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPQ</scope><name>polysemous_ht</name></member>
       <member refid="structfaiss_1_1SearchParametersPQ_1a8e25e7f19298b57d0f68065ec8901c81" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPQ</scope><name>search_type</name></member>
