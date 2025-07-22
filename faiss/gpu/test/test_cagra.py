@@ -19,20 +19,34 @@ class TestComputeGT(unittest.TestCase):
         d = 64
         k = 12
         ds = datasets.SyntheticDataset(d, 0, 10000, 100)
-        Dref, Iref = faiss.knn(ds.get_queries(), ds.get_database(), k, metric)
+        
+        # Get the data
+        database = ds.get_database()
+        queries = ds.get_queries()
+        
+        # Normalize for inner product to avoid duplicate neighbors
+        if metric == faiss.METRIC_INNER_PRODUCT:
+            # Normalize database vectors
+            database = database / np.linalg.norm(database, axis=1, keepdims=True)
+            # Normalize query vectors
+            queries = queries / np.linalg.norm(queries, axis=1, keepdims=True)
+        
+        Dref, Iref = faiss.knn(queries, database, k, metric)
 
         res = faiss.StandardGpuResources()
 
         # attempt to set custom IVF-PQ params
         cagraIndexConfig = faiss.GpuIndexCagraConfig()
+        cagraIndexConfig.graph_degree = 32
+        cagraIndexConfig.intermediate_graph_degree = 64
         cagraIndexIVFPQConfig = faiss.IVFPQBuildCagraConfig()
-        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.1
+        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.5
         cagraIndexConfig.ivf_pq_params = cagraIndexIVFPQConfig
         cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
 
         index = faiss.GpuIndexCagra(res, d, metric, cagraIndexConfig)
-        index.train(ds.get_database())
-        Dnew, Inew = index.search(ds.get_queries(), k)
+        index.train(database)
+        Dnew, Inew = index.search(queries, k)
         
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
@@ -40,7 +54,7 @@ class TestComputeGT(unittest.TestCase):
         self.do_compute_GT(faiss.METRIC_L2)
 
     def test_compute_GT_IP(self):
-        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT)
+        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT) 
 
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
@@ -57,8 +71,10 @@ class TestComputeGTFP16(unittest.TestCase):
 
         # attempt to set custom IVF-PQ params
         cagraIndexConfig = faiss.GpuIndexCagraConfig()
+        cagraIndexConfig.graph_degree = 32
+        cagraIndexConfig.intermediate_graph_degree = 64
         cagraIndexIVFPQConfig = faiss.IVFPQBuildCagraConfig()
-        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.1
+        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.5
         cagraIndexConfig.ivf_pq_params = cagraIndexIVFPQConfig
         cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
 
