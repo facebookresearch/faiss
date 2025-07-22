@@ -58,11 +58,8 @@ class TestComputeGT(unittest.TestCase):
     def test_compute_GT_IP(self):
         self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, faiss.Float32)
 
-    def test_compute_GT_L2_FP16(self):
-        self.do_compute_GT(faiss.METRIC_L2, faiss.Float16)
-
-    def test_compute_GT_IP(self):
-        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT)
+    def test_compute_GT_IP_FP16(self):
+        self.do_compute_GT(faiss.METRIC_INNER_PRODUCT, faiss.Float16)
 
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
