@@ -230,6 +230,10 @@ void IndexHNSW::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexHNSW::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 namespace {
 
 template <class BlockResultHandler>
@@ -311,6 +315,17 @@ void IndexHNSW::search(
     }
 }
 
+void IndexHNSW::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexHNSW::range_search(
         idx_t n,
         const float* x,
@@ -340,6 +355,10 @@ void IndexHNSW::add(idx_t n, const float* x) {
     ntotal = storage->ntotal;
 
     hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+}
+
+void IndexHNSW::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
 }
 
 void IndexHNSW::reset() {
@@ -657,6 +676,10 @@ void IndexHNSWPQ::train(idx_t n, const float* x) {
     (dynamic_cast<IndexPQ*>(storage))->pq.compute_sdc_table();
 }
 
+void IndexHNSWPQ::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 /**************************************************************
  * IndexHNSWSQ implementation
  **************************************************************/
@@ -864,6 +887,17 @@ void IndexHNSW2Level::search(
     }
 }
 
+void IndexHNSW2Level::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexHNSW2Level::flip_to_ivf() {
     Index2Layer* storage2l = dynamic_cast<Index2Layer*>(storage);
 
@@ -933,6 +967,10 @@ void IndexHNSWCagra::add(idx_t n, const float* x) {
     IndexHNSW::add(n, x);
 }
 
+void IndexHNSWCagra::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
+}
+
 void IndexHNSWCagra::search(
         idx_t n,
         const float* x,
@@ -982,6 +1020,17 @@ void IndexHNSWCagra::search(
                 1, // search_type
                 params);
     }
+}
+
+void IndexHNSWCagra::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 faiss::NumericType IndexHNSWCagra::get_numeric_type() const {
