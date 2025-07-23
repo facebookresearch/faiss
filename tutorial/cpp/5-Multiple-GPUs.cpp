@@ -28,14 +28,16 @@ int main() {
     float* xq = new float[d * nq];
 
     for (int i = 0; i < nb; i++) {
-        for (int j = 0; j < d; j++)
+        for (int j = 0; j < d; j++) {
             xb[d * i + j] = distrib(rng);
+        }
         xb[d * i] += i / 1000.;
     }
 
     for (int i = 0; i < nq; i++) {
-        for (int j = 0; j < d; j++)
+        for (int j = 0; j < d; j++) {
             xq[d * i + j] = distrib(rng);
+        }
         xq[d * i] += i / 1000.;
     }
 
@@ -70,15 +72,17 @@ int main() {
         // print results
         printf("I (5 first results)=\n");
         for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < k; j++)
+            for (int j = 0; j < k; j++) {
                 printf("%5ld ", I[i * k + j]);
+            }
             printf("\n");
         }
 
         printf("I (5 last results)=\n");
         for (int i = nq - 5; i < nq; i++) {
-            for (int j = 0; j < k; j++)
+            for (int j = 0; j < k; j++) {
                 printf("%5ld ", I[i * k + j]);
+            }
             printf("\n");
         }
 

@@ -254,8 +254,9 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         // here we store either as a full or a sparse data buffer
         size_t n_non0 = 0;
         for (size_t i = 0; i < ails->nlist; i++) {
-            if (ails->ids[i].size() > 0)
+            if (ails->ids[i].size() > 0) {
                 n_non0++;
+            }
         }
         if (n_non0 > ails->nlist / 2) {
             uint32_t list_type = fourcc("full");
@@ -738,8 +739,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index_header(ixpt, f);
         int nt = ixpt->chain.size();
         WRITE1(nt);
-        for (int i = 0; i < nt; i++)
+        for (int i = 0; i < nt; i++) {
             write_VectorTransform(ixpt->chain[i], f);
+        }
         write_index(ixpt->index, f);
     } else if (
             const MultiIndexQuantizer* imiq =

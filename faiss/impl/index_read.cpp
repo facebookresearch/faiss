@@ -1101,18 +1101,24 @@ Index* read_index(IOReader* f, int io_flags) {
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2")) {
         IndexHNSW* idxhnsw = nullptr;
-        if (h == fourcc("IHNf"))
+        if (h == fourcc("IHNf")) {
             idxhnsw = new IndexHNSWFlat();
-        if (h == fourcc("IHNp"))
+        }
+        if (h == fourcc("IHNp")) {
             idxhnsw = new IndexHNSWPQ();
-        if (h == fourcc("IHNs"))
+        }
+        if (h == fourcc("IHNs")) {
             idxhnsw = new IndexHNSWSQ();
-        if (h == fourcc("IHN2"))
+        }
+        if (h == fourcc("IHN2")) {
             idxhnsw = new IndexHNSW2Level();
-        if (h == fourcc("IHNc"))
+        }
+        if (h == fourcc("IHNc")) {
             idxhnsw = new IndexHNSWCagra();
-        if (h == fourcc("IHc2"))
+        }
+        if (h == fourcc("IHc2")) {
             idxhnsw = new IndexHNSWCagra();
+        }
         read_index_header(idxhnsw, f);
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);
@@ -1135,12 +1141,15 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("INSf") || h == fourcc("INSp") || h == fourcc("INSs")) {
         IndexNSG* idxnsg;
-        if (h == fourcc("INSf"))
+        if (h == fourcc("INSf")) {
             idxnsg = new IndexNSGFlat();
-        if (h == fourcc("INSp"))
+        }
+        if (h == fourcc("INSp")) {
             idxnsg = new IndexNSGPQ();
-        if (h == fourcc("INSs"))
+        }
+        if (h == fourcc("INSs")) {
             idxnsg = new IndexNSGSQ();
+        }
         read_index_header(idxnsg, f);
         READ1(idxnsg->GK);
         READ1(idxnsg->build_type);

@@ -55,11 +55,13 @@ Nhood::Nhood(const Nhood& other) {
 /// Insert a point into the candidate pool
 void Nhood::insert(int id, float dist) {
     LockGuard guard(lock);
-    if (dist > pool.front().distance)
+    if (dist > pool.front().distance) {
         return;
+    }
     for (int i = 0; i < pool.size(); i++) {
-        if (id == pool[i].id)
+        if (id == pool[i].id) {
             return;
+        }
     }
     if (pool.size() < pool.capacity()) {
         pool.push_back(Neighbor(id, dist, true));
@@ -118,22 +120,26 @@ int insert_into_pool(Neighbor* addr, int size, Neighbor nn) {
     }
     while (left < right - 1) {
         int mid = (left + right) / 2;
-        if (addr[mid].distance > nn.distance)
+        if (addr[mid].distance > nn.distance) {
             right = mid;
-        else
+        } else {
             left = mid;
+        }
     }
     // check equal ID
 
     while (left > 0) {
-        if (addr[left].distance < nn.distance)
+        if (addr[left].distance < nn.distance) {
             break;
-        if (addr[left].id == nn.id)
+        }
+        if (addr[left].id == nn.id) {
             return size + 1;
+        }
         left--;
     }
-    if (addr[left].id == nn.id || addr[right].id == nn.id)
+    if (addr[left].id == nn.id || addr[right].id == nn.id) {
         return size + 1;
+    }
     memmove((char*)&addr[right + 1],
             &addr[right],
             (size - right) * sizeof(Neighbor));
@@ -191,8 +197,9 @@ void NNDescent::update() {
         auto& nn = graph[n];
         std::sort(nn.pool.begin(), nn.pool.end());
 
-        if (nn.pool.size() > L)
+        if (nn.pool.size() > L) {
             nn.pool.resize(L);
+        }
         nn.pool.reserve(L); // keep the pool size be L
 
         int maxl = std::min(nn.M + S, (int)nn.pool.size());
@@ -470,8 +477,9 @@ void NNDescent::search(
                 Neighbor nn(id, dist, true);
                 int r = insert_into_pool(retset.data(), L_2, nn);
 
-                if (r < nk)
+                if (r < nk) {
                     nk = r;
+                }
             }
         }
         if (nk <= k) {
