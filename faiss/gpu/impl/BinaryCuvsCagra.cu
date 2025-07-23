@@ -151,7 +151,8 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
                 graph_build_params(index_params_.intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter_;
-        graph_build_params.metric = cuvs::distance::DistanceType::BitwiseHamming;
+        graph_build_params.metric =
+                cuvs::distance::DistanceType::BitwiseHamming;
         index_params_.graph_build_params = graph_build_params;
     } else {
         cuvs::neighbors::cagra::graph_build_params::iterative_search_params
