@@ -984,10 +984,12 @@ void train_Uniform(
         vmin = HUGE_VAL;
         vmax = -HUGE_VAL;
         for (size_t i = 0; i < n; i++) {
-            if (x[i] < vmin)
+            if (x[i] < vmin) {
                 vmin = x[i];
-            if (x[i] > vmax)
+            }
+            if (x[i] > vmax) {
                 vmax = x[i];
+            }
         }
         float vexp = (vmax - vmin) * rs_arg;
         vmin -= vexp;
@@ -1010,10 +1012,12 @@ void train_Uniform(
         // TODO just do a quickselect
         std::sort(x_copy.begin(), x_copy.end());
         int o = int(rs_arg * n);
-        if (o < 0)
+        if (o < 0) {
             o = 0;
-        if (o > n - o)
+        }
+        if (o > n - o) {
             o = n / 2;
+        }
         vmin = x_copy[o];
         vmax = x_copy[n - 1 - o];
 
@@ -1023,10 +1027,12 @@ void train_Uniform(
         {
             vmin = HUGE_VAL, vmax = -HUGE_VAL;
             for (size_t i = 0; i < n; i++) {
-                if (x[i] < vmin)
+                if (x[i] < vmin) {
                     vmin = x[i];
-                if (x[i] > vmax)
+                }
+                if (x[i] > vmax) {
                     vmax = x[i];
+                }
                 sx += x[i];
             }
             b = vmin;
@@ -1042,10 +1048,12 @@ void train_Uniform(
             for (idx_t i = 0; i < n; i++) {
                 float xi = x[i];
                 float ni = floor((xi - b) / a + 0.5);
-                if (ni < 0)
+                if (ni < 0) {
                     ni = 0;
-                if (ni >= k)
+                }
+                if (ni >= k) {
                     ni = k - 1;
+                }
                 err1 += sqr(xi - (ni * a + b));
                 sn += ni;
                 sn2 += ni * ni;
@@ -1054,8 +1062,9 @@ void train_Uniform(
 
             if (err1 == last_err) {
                 iter_last_err++;
-                if (iter_last_err == 16)
+                if (iter_last_err == 16) {
                     break;
+                }
             } else {
                 last_err = err1;
                 iter_last_err = 0;
@@ -1070,8 +1079,9 @@ void train_Uniform(
                 fflush(stdout);
             }
         }
-        if (verbose)
+        if (verbose) {
             printf("\n");
+        }
 
         vmin = b;
         vmax = b + a * (k - 1);
@@ -1099,10 +1109,12 @@ void train_NonUniform(
         for (size_t i = 1; i < n; i++) {
             const float* xi = x + i * d;
             for (size_t j = 0; j < d; j++) {
-                if (xi[j] < vmin[j])
+                if (xi[j] < vmin[j]) {
                     vmin[j] = xi[j];
-                if (xi[j] > vmax[j])
+                }
+                if (xi[j] > vmax[j]) {
                     vmax[j] = xi[j];
+                }
             }
         }
         float* vdiff = vmax;
@@ -2065,16 +2077,18 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++) {
         squant->encode_vector(x + i * d, codes + i * code_size);
+    }
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++) {
         squant->decode_vector(codes + i * code_size, x + i * d);
+    }
 }
 
 SQDistanceComputer* ScalarQuantizer::get_distance_computer(

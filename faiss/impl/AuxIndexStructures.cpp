@@ -168,23 +168,26 @@ void RangeSearchPartialResult::merge(
         std::vector<RangeSearchPartialResult*>& partial_results,
         bool do_delete) {
     int npres = partial_results.size();
-    if (npres == 0)
+    if (npres == 0) {
         return;
+    }
     RangeSearchResult* result = partial_results[0]->res;
     size_t nx = result->nq;
 
     // count
     for (const RangeSearchPartialResult* pres : partial_results) {
-        if (!pres)
+        if (!pres) {
             continue;
+        }
         for (const RangeQueryResult& qres : pres->queries) {
             result->lims[qres.qno] += qres.nres;
         }
     }
     result->do_allocation();
     for (int j = 0; j < npres; j++) {
-        if (!partial_results[j])
+        if (!partial_results[j]) {
             continue;
+        }
         partial_results[j]->copy_result(true);
         if (do_delete) {
             delete partial_results[j];
