@@ -106,7 +106,7 @@ void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
 
 } // namespace detail
 
-IndexSVS::IndexSVS() : Index{}, num_threads{1}, graph_max_degree{64} {}
+IndexSVS::IndexSVS() : Index{} {}
 
 IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {}
 
@@ -196,22 +196,20 @@ void IndexSVS::init_impl(idx_t n, const float* x) {
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = new svs::DynamicVamana(
-                    svs::DynamicVamana::build<float>(
-                            std::move(build_parameters),
-                            std::move(data),
-                            std::move(labels),
-                            svs::DistanceIP(),
-                            std::move(threadpool)));
+            impl = new svs::DynamicVamana(svs::DynamicVamana::build<float>(
+                    std::move(build_parameters),
+                    std::move(data),
+                    std::move(labels),
+                    svs::DistanceIP(),
+                    std::move(threadpool)));
             break;
         case METRIC_L2:
-            impl = new svs::DynamicVamana(
-                    svs::DynamicVamana::build<float>(
-                            std::move(build_parameters),
-                            std::move(data),
-                            std::move(labels),
-                            svs::DistanceL2(),
-                            std::move(threadpool)));
+            impl = new svs::DynamicVamana(svs::DynamicVamana::build<float>(
+                    std::move(build_parameters),
+                    std::move(data),
+                    std::move(labels),
+                    svs::DistanceL2(),
+                    std::move(threadpool)));
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");
@@ -238,22 +236,20 @@ void IndexSVS::deserialize_impl(std::istream& in) {
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = new svs::DynamicVamana(
-                    svs::DynamicVamana::build<float>(
-                            build_parameters,
-                            std::move(data),
-                            labels,
-                            svs::DistanceIP(),
-                            std::move(threadpool)));
+            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
+                    tmp.config.string(),
+                    svs::GraphLoader(tmp.graph.string()),
+                    svs::VectorDataLoader<float>(tmp.data.string()),
+                    svs::distance::DistanceIP(),
+                    num_threads));
             break;
         case METRIC_L2:
-            impl = new svs::DynamicVamana(
-                    svs::DynamicVamana::build<float>(
-                            build_parameters,
-                            std::move(data),
-                            labels,
-                            svs::DistanceL2(),
-                            std::move(threadpool)));
+            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
+                    tmp.config.string(),
+                    svs::GraphLoader(tmp.graph.string()),
+                    svs::VectorDataLoader<float>(tmp.data.string()),
+                    svs::distance::DistanceL2(),
+                    num_threads));
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");

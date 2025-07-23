@@ -38,3 +38,6 @@ target_link_libraries(11-SVSLVQ4x4 PRIVATE faiss)
 
 add_executable(12-SVSLeanVec4x4 EXCLUDE_FROM_ALL 12-SVSLeanVec4x4.cpp)
 target_link_libraries(12-SVSLeanVec4x4 PRIVATE faiss)
+
+add_executable(13-tmp-svscomp EXCLUDE_FROM_ALL 13-tmp-svscomp.cpp)
+target_link_libraries(13-tmp-svscomp PRIVATE faiss)

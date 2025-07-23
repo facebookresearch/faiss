@@ -45,7 +45,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
-#include <faiss/IndexSVSUncompressed.h>
+#include <faiss/IndexSVS.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1229,20 +1229,20 @@ Index* read_index(IOReader* f, int io_flags) {
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
     } else if (h == fourcc("SvUC")) {
-        auto svsuc = new IndexSVSUncompressed();
+        auto svs = new IndexSVS();
 
         // Read class properties
-        READ1(svsuc->d);
-        READ1(svsuc->metric_type);
-        READ1(svsuc->num_threads);
-        READ1(svsuc->graph_max_degree);
-        READ1(svsuc->alpha);
-        READ1(svsuc->search_window_size);
-        READ1(svsuc->search_buffer_capacity);
-        READ1(svsuc->construction_window_size);
-        READ1(svsuc->max_candidate_pool_size);
-        READ1(svsuc->prune_to);
-        READ1(svsuc->use_full_search_history);
+        READ1(svs->d);
+        READ1(svs->metric_type);
+        READ1(svs->num_threads);
+        READ1(svs->graph_max_degree);
+        READ1(svs->alpha);
+        READ1(svs->search_window_size);
+        READ1(svs->search_buffer_capacity);
+        READ1(svs->construction_window_size);
+        READ1(svs->max_candidate_pool_size);
+        READ1(svs->prune_to);
+        READ1(svs->use_full_search_history);
 
         // Read the binary blob from which impl will be reconstructed
         uint64_t blob_size;
@@ -1250,9 +1250,9 @@ Index* read_index(IOReader* f, int io_flags) {
         std::string blob(blob_size, '\0');
         READANDCHECK(blob.data(), blob_size);
         std::stringstream ss(std::move(blob));
-        svsuc->deserialize_impl(ss);
+        svs->deserialize_impl(ss);
 
-        idx = svsuc;
+        idx = svs;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

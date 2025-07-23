@@ -10,15 +10,9 @@
 
 namespace faiss {
 
-IndexSVSLVQ4x8::IndexSVSLVQ4x8(
-    idx_t d, 
-    MetricType metric,
-    idx_t num_threads,
-    idx_t graph_max_degree
-): IndexSVSLVQ4x4(d, metric, num_threads, graph_max_degree) {
-}
+IndexSVSLVQ4x8::IndexSVSLVQ4x8(idx_t d, MetricType metric)
+        : IndexSVSLVQ4x4(d, metric) {}
 
-IndexSVSLVQ4x8::~IndexSVSLVQ4x8() {
-}
+IndexSVSLVQ4x8::~IndexSVSLVQ4x8() {}
 
 } // namespace faiss

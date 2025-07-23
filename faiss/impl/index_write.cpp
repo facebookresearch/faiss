@@ -43,7 +43,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
-#include <faiss/IndexSVSUncompressed.h>
+#include <faiss/IndexSVS.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -880,27 +880,25 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->by_residual);
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
-    } else if (
-            const IndexSVSUncompressed* svsuc =
-                    dynamic_cast<const IndexSVSUncompressed*>(idx)) {
+    } else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
         uint32_t h = fourcc("SvUC"); // TODO: clarify fourcc code for SVS
         // Write header tag
         WRITE1(h);
 
-        WRITE1(svsuc->d);
-        WRITE1(svsuc->metric_type);
-        WRITE1(svsuc->num_threads);
-        WRITE1(svsuc->graph_max_degree);
-        WRITE1(svsuc->alpha);
-        WRITE1(svsuc->search_window_size);
-        WRITE1(svsuc->search_buffer_capacity);
-        WRITE1(svsuc->construction_window_size);
-        WRITE1(svsuc->max_candidate_pool_size);
-        WRITE1(svsuc->prune_to);
-        WRITE1(svsuc->use_full_search_history);
+        WRITE1(svs->d);
+        WRITE1(svs->metric_type);
+        WRITE1(svs->num_threads);
+        WRITE1(svs->graph_max_degree);
+        WRITE1(svs->alpha);
+        WRITE1(svs->search_window_size);
+        WRITE1(svs->search_buffer_capacity);
+        WRITE1(svs->construction_window_size);
+        WRITE1(svs->max_candidate_pool_size);
+        WRITE1(svs->prune_to);
+        WRITE1(svs->use_full_search_history);
 
         std::stringstream ss;
-        svsuc->serialize_impl(ss);
+        svs->serialize_impl(ss);
         std::string blob = ss.str();
 
         // Write blob size and contents

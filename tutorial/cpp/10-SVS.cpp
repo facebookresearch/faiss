@@ -70,16 +70,15 @@ int main() {
     std::cout << "Persisting index to disk and reloading." << std::endl;
 
     faiss::write_index(&index, "/tmp/test_svs_index.faiss");
-    faiss::IndexSVSUncompressed* reloaded =
-            dynamic_cast<faiss::IndexSVSUncompressed*>(
-                    faiss::read_index("/tmp/test_svs_index.faiss"));
+    faiss::IndexSVS* reloaded = dynamic_cast<faiss::IndexSVS*>(
+            faiss::read_index("/tmp/test_svs_index.faiss"));
     FAISS_THROW_IF_NOT_MSG(reloaded, "Failed to reload index from disk");
 
     { // search xq
         idx_t* I = new idx_t[k * nq];
         float* D = new float[k * nq];
 
-        reloaded->search(nq, xq, k, D, I);
+        reloaded->search(nq, xb, k, D, I);
 
         printf("I=\n");
         for (int i = nq - 5; i < nq; i++) {
