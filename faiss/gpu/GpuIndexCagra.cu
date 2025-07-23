@@ -358,18 +358,26 @@ void GpuIndexCagra::copyFrom(
     } else if (numeric_type == NumericType::Int8) {
         auto base_index = dynamic_cast<IndexScalarQuantizer*>(index->storage);
         FAISS_ASSERT(base_index);
-        auto dataset = (int8_t*)base_index->codes.data();
+        auto dataset = (uint8_t*)base_index->codes.data();
+
+        // decode what was encded by Quantizer8bitDirectSigned in
+        // ScalarQuantizer
+        int8_t* decoded_train_dataset = new int8_t[index->ntotal * index->d];
+        for (int i = 0; i < index->ntotal * this->d; i++) {
+            decoded_train_dataset[i] = dataset[i] - 128;
+        }
 
         index_ = std::make_shared<CuvsCagra<int8_t>>(
                 this->resources_.get(),
                 this->d,
                 index->ntotal,
                 hnsw.nb_neighbors(0),
-                dataset,
+                decoded_train_dataset,
                 knn_graph.data(),
                 this->metric_type,
                 this->metric_arg,
                 INDICES_64_BIT);
+        delete[] decoded_train_dataset;
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::copyFrom unsupported data type");
     }
@@ -528,8 +536,14 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
                     "Only base level copy is supported for Int8 types in GpuIndexCagra::copyTo");
         } else {
             index->hnsw.prepare_level_tab(n_train, false);
+            // applying encoding logic of Quantizer8bitDirectSigned
+            uint8_t* encoded_train_dataset = new uint8_t[n_train * index->d];
+            for (int i = 0; i < n_train * index->d; i++) {
+                encoded_train_dataset[i] = train_dataset[i] + 128;
+            }
             index->storage->add_sa_codes(
-                    n_train, (uint8_t*)train_dataset, nullptr);
+                    n_train, encoded_train_dataset, nullptr);
+            delete[] encoded_train_dataset;
             index->ntotal = n_train;
         }
 
