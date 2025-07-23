@@ -9,7 +9,6 @@
 
 #include <faiss/Index2Layer.h>
 
-#include <faiss/impl/platform_macros.h>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>

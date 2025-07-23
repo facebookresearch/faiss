@@ -9,14 +9,9 @@
 
 #include <faiss/IndexNNDescent.h>
 
-#include <omp.h>
-
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
-
-#include <queue>
-#include <unordered_set>
 
 #ifdef __SSE__
 #endif
@@ -24,9 +19,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/random.h>
 
 extern "C" {
 
