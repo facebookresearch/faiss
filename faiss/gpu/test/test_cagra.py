@@ -49,7 +49,7 @@ class TestComputeGT(unittest.TestCase):
         index.train(database, numeric_type=numeric_type)
         queries = ds.get_queries().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_queries()
         Dnew, Inew = index.search(queries, k, numeric_type=numeric_type)
-        
+
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
     def test_compute_GT_L2(self):
@@ -77,15 +77,23 @@ class TestInterop(unittest.TestCase):
         res = faiss.StandardGpuResources()
 
         index = faiss.GpuIndexCagra(res, d, metric)
-        database = ds.get_database().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_database()
+        database = (
+            ds.get_database().astype(np.float16)
+            if numeric_type == faiss.Float16
+            else ds.get_database()
+        )
         index.train(database, numeric_type=numeric_type)
-        queries = ds.get_queries().astype(np.float16) if numeric_type == faiss.Float16 else ds.get_queries()
+        queries = (
+            ds.get_queries().astype(np.float16)
+            if numeric_type == faiss.Float16
+            else ds.get_queries()
+        )
         Dnew, Inew = index.search(queries, k, numeric_type=numeric_type)
 
         cpu_index = faiss.index_gpu_to_cpu(index)
         # cpu index always search in fp32
         Dref, Iref = cpu_index.search(ds.get_queries(), k)
-        
+
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
         deserialized_index = faiss.deserialize_index(
