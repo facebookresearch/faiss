@@ -50,18 +50,18 @@ void ToCPUCloner::merge_index(Index* dst, Index* src, bool successive_ids) {
         FAISS_ASSERT(ifl2);
         FAISS_ASSERT(successive_ids);
         ifl->add(ifl2->ntotal, ifl2->get_xb());
-    } else if (auto ifl = dynamic_cast<IndexIVFFlat*>(dst)) {
+    } else if (auto ivfFlat = dynamic_cast<IndexIVFFlat*>(dst)) {
         auto ifl2 = dynamic_cast<IndexIVFFlat*>(src);
         FAISS_ASSERT(ifl2);
-        ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
-    } else if (auto ifl = dynamic_cast<IndexIVFScalarQuantizer*>(dst)) {
+        ivfFlat->merge_from(*ifl2, successive_ids ? ivfFlat->ntotal : 0);
+    } else if (auto ivfSQ = dynamic_cast<IndexIVFScalarQuantizer*>(dst)) {
         auto ifl2 = dynamic_cast<IndexIVFScalarQuantizer*>(src);
         FAISS_ASSERT(ifl2);
-        ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
-    } else if (auto ifl = dynamic_cast<IndexIVFPQ*>(dst)) {
+        ivfSQ->merge_from(*ifl2, successive_ids ? ivfSQ->ntotal : 0);
+    } else if (auto ivfPQ = dynamic_cast<IndexIVFPQ*>(dst)) {
         auto ifl2 = dynamic_cast<IndexIVFPQ*>(src);
         FAISS_ASSERT(ifl2);
-        ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
+        ivfPQ->merge_from(*ifl2, successive_ids ? ivfPQ->ntotal : 0);
     } else {
         FAISS_ASSERT(!"merging not implemented for this type of class");
     }
@@ -72,14 +72,15 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
         IndexFlat* res = new IndexFlat();
         ifl->copyTo(res);
         return res;
-    } else if (auto ifl = dynamic_cast<const GpuIndexIVFFlat*>(index)) {
+    } else if (auto gpuIvfFlat = dynamic_cast<const GpuIndexIVFFlat*>(index)) {
         IndexIVFFlat* res = new IndexIVFFlat();
-        ifl->copyTo(res);
+        gpuIvfFlat->copyTo(res);
         return res;
     } else if (
-            auto ifl = dynamic_cast<const GpuIndexIVFScalarQuantizer*>(index)) {
+            auto gpuIvfSQ =
+                    dynamic_cast<const GpuIndexIVFScalarQuantizer*>(index)) {
         IndexIVFScalarQuantizer* res = new IndexIVFScalarQuantizer();
-        ifl->copyTo(res);
+        gpuIvfSQ->copyTo(res);
         return res;
     } else if (auto ipq = dynamic_cast<const GpuIndexIVFPQ*>(index)) {
         IndexIVFPQ* res = new IndexIVFPQ();
@@ -163,7 +164,8 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         }
         assert(gif->getNumVecs() == index->ntotal);
         return gif;
-    } else if (auto ifl = dynamic_cast<const faiss::IndexIVFFlat*>(index)) {
+    } else if (
+            auto cpuIvfFlat = dynamic_cast<const faiss::IndexIVFFlat*>(index)) {
         GpuIndexIVFFlatConfig config;
         config.device = device;
         config.indicesOptions = indicesOptions;
@@ -172,15 +174,19 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.allowCpuCoarseQuantizer = allowCpuCoarseQuantizer;
 
         GpuIndexIVFFlat* res = new GpuIndexIVFFlat(
-                provider, ifl->d, ifl->nlist, ifl->metric_type, config);
-        if (reserveVecs > 0 && ifl->ntotal == 0) {
+                provider,
+                cpuIvfFlat->d,
+                cpuIvfFlat->nlist,
+                cpuIvfFlat->metric_type,
+                config);
+        if (reserveVecs > 0 && cpuIvfFlat->ntotal == 0) {
             res->reserveMemory(reserveVecs);
         }
 
-        res->copyFrom(ifl);
+        res->copyFrom(cpuIvfFlat);
         return res;
     } else if (
-            auto ifl = dynamic_cast<const faiss::IndexIVFScalarQuantizer*>(
+            auto cpuIvfSQ = dynamic_cast<const faiss::IndexIVFScalarQuantizer*>(
                     index)) {
         GpuIndexIVFScalarQuantizerConfig config;
         config.device = device;
@@ -191,17 +197,17 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
 
         GpuIndexIVFScalarQuantizer* res = new GpuIndexIVFScalarQuantizer(
                 provider,
-                ifl->d,
-                ifl->nlist,
-                ifl->sq.qtype,
-                ifl->metric_type,
-                ifl->by_residual,
+                cpuIvfSQ->d,
+                cpuIvfSQ->nlist,
+                cpuIvfSQ->sq.qtype,
+                cpuIvfSQ->metric_type,
+                cpuIvfSQ->by_residual,
                 config);
-        if (reserveVecs > 0 && ifl->ntotal == 0) {
+        if (reserveVecs > 0 && cpuIvfSQ->ntotal == 0) {
             res->reserveMemory(reserveVecs);
         }
 
-        res->copyFrom(ifl);
+        res->copyFrom(cpuIvfSQ);
         return res;
     } else if (auto ipq = dynamic_cast<const faiss::IndexIVFPQ*>(index)) {
         if (verbose) {
