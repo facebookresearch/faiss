@@ -115,6 +115,13 @@ void IndexPreTransform::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexPreTransform::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 const float* IndexPreTransform::apply_chain(idx_t n, const float* x) const {
     const float* prev_x = x;
     std::unique_ptr<const float[]> del;
@@ -150,6 +157,10 @@ void IndexPreTransform::add(idx_t n, const float* x) {
     ntotal = index->ntotal;
 }
 
+void IndexPreTransform::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
+}
+
 void IndexPreTransform::add_with_ids(
         idx_t n,
         const float* x,
@@ -183,6 +194,17 @@ void IndexPreTransform::search(
     std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
     index->search(
             n, xt, k, distances, labels, extract_index_search_params(params));
+}
+
+void IndexPreTransform::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexPreTransform::range_search(

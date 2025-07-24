@@ -57,7 +57,7 @@ class TestComputeGT(unittest.TestCase):
         index = faiss.GpuIndexCagra(res, d, metric, cagraIndexConfig)
         index.train(data_base_nt, numeric_type=numeric_type)
         Dnew, Inew = index.search(data_query_nt, k, numeric_type=numeric_type)
-        
+
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
     def test_compute_GT_L2(self):
@@ -111,7 +111,7 @@ class TestInterop(unittest.TestCase):
         cpu_index = faiss.index_gpu_to_cpu(index)
         # cpu index always search in fp32
         Dref, Iref = cpu_index.search(data_query, k)
-        
+
         evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
 
         deserialized_index = faiss.deserialize_index(
