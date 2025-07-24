@@ -155,8 +155,9 @@ void search_and_return_centroids(
             n, x, nprobe, cent_dis.data(), cent_nos.data());
 
     if (query_centroid_ids) {
-        for (size_t i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++) {
             query_centroid_ids[i] = cent_nos[i * nprobe];
+        }
     }
 
     index_ivf->search_preassigned(
@@ -165,13 +166,15 @@ void search_and_return_centroids(
     for (size_t i = 0; i < n * k; i++) {
         idx_t label = labels[i];
         if (label < 0) {
-            if (result_centroid_ids)
+            if (result_centroid_ids) {
                 result_centroid_ids[i] = -1;
+            }
         } else {
             long list_no = lo_listno(label);
             long list_index = lo_offset(label);
-            if (result_centroid_ids)
+            if (result_centroid_ids) {
                 result_centroid_ids[i] = list_no;
+            }
             labels[i] = index_ivf->invlists->get_single_id(list_no, list_index);
         }
     }
@@ -192,10 +195,11 @@ static void shift_and_add(
         std::vector<T>& dst,
         size_t remove,
         const std::vector<T>& src) {
-    if (remove > 0)
+    if (remove > 0) {
         memmove(dst.data(),
                 dst.data() + remove,
                 (dst.size() - remove) * sizeof(T));
+    }
     size_t insert_point = dst.size() - remove;
     dst.resize(insert_point + src.size());
     memcpy(dst.data() + insert_point, src.data(), src.size() * sizeof(T));
@@ -206,10 +210,11 @@ static void shift_and_add(
         MaybeOwnedVector<T>& dst,
         size_t remove,
         const MaybeOwnedVector<T>& src) {
-    if (remove > 0)
+    if (remove > 0) {
         memmove(dst.data(),
                 dst.data() + remove,
                 (dst.size() - remove) * sizeof(T));
+    }
     size_t insert_point = dst.size() - remove;
     dst.resize(insert_point + src.size());
     memcpy(dst.data() + insert_point, src.data(), src.size() * sizeof(T));
@@ -217,14 +222,16 @@ static void shift_and_add(
 
 template <class T>
 static void remove_from_begin(std::vector<T>& v, size_t remove) {
-    if (remove > 0)
+    if (remove > 0) {
         v.erase(v.begin(), v.begin() + remove);
+    }
 }
 
 template <class T>
 static void remove_from_begin(MaybeOwnedVector<T>& v, size_t remove) {
-    if (remove > 0)
+    if (remove > 0) {
         v.erase(v.begin(), v.begin() + remove);
+    }
 }
 
 void SlidingIndexWindow::step(const Index* sub_index, bool remove_oldest) {

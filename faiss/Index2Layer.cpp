@@ -92,13 +92,14 @@ void Index2Layer::train(idx_t n, const float* x) {
                 x + i * d, residuals.data() + i * d, assign[i]);
     }
 
-    if (verbose)
+    if (verbose) {
         printf("training %zdx%zd product quantizer on %" PRId64
                " vectors in %dD\n",
                pq.M,
                pq.ksub,
                n,
                d);
+    }
     pq.verbose = verbose;
     pq.train(n, residuals.data());
 
