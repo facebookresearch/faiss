@@ -31,9 +31,9 @@ class TestComputeGT(unittest.TestCase):
             # Normalize for inner product to avoid duplicate neighbors
             if metric == faiss.METRIC_INNER_PRODUCT:
                 # Normalize database vectors
-                database = database / np.linalg.norm(database, axis=1, keepdims=True)
+                data_base = data_base / np.linalg.norm(data_base, axis=1, keepdims=True)
                 # Normalize query vectors
-                queries = queries / np.linalg.norm(queries, axis=1, keepdims=True)
+                data_query = data_query / np.linalg.norm(data_query, axis=1, keepdims=True)
             if numeric_type == faiss.Float16:
                 data_base_nt = data_base.astype(np.float16)
                 data_query_nt = data_query.astype(np.float16)
