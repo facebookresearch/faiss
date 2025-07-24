@@ -536,6 +536,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPQ_1afa55822157caed252017ba5f776542b9">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a8a6069be92fce0793c1f4d53d82684a1">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a230892841133237ca679fc1c6ffda463">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a34c9ba20c30ac1f3124d5725bf3ceac6">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1af42d629f8d1a421f085642fb075786f8">train</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>

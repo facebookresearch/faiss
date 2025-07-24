@@ -436,6 +436,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPQ_1afa55822157caed252017ba5f776542b9">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a8a6069be92fce0793c1f4d53d82684a1">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a230892841133237ca679fc1c6ffda463">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a34c9ba20c30ac1f3124d5725bf3ceac6">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1af42d629f8d1a421f085642fb075786f8">train</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -474,6 +475,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVF_1aa077263442b467067919e9695d87f54c">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a06ecc74ead5a190fa18e7049712e94f4">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a9cde8825521748fa853ab05817a9582f">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5e93d8c1c81502bc2c194189fd3741f5">add</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a4623299669398638be699825bfc33f1b">add</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -608,6 +610,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a30da49e99ee873d19fa8c2027aa3d2a3">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a90d21dc206dd938f14cadc3ab22bfd79">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a9df244cbdb86f94f59abf5b5fcc425f5">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1abb8cb51196c7786ad4cbf5bbe599a4e5">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1ad9b4e45b422979127d0e968ef3fad448">search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>

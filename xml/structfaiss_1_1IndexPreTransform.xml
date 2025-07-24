@@ -257,6 +257,33 @@
         </inbodydescription>
         <location file="faiss/IndexPreTransform.h" line="40" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a34c9ba20c30ac1f3124d5725bf3ceac6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexPreTransform::train</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type) override</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::IndexPreTransform::train</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a15f423d765d61747f3a6506412c02467">train</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPreTransform.h" line="41" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1ada11e582b389ec392a51c99a4825108b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::IndexPreTransform::add</definition>
@@ -297,7 +324,34 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="42" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="43" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a5e93d8c1c81502bc2c194189fd3741f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexPreTransform::add</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type) override</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::IndexPreTransform::add</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a9489eebf0dd164c81c971002e2e5e114">add</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPreTransform.h" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1aa37b7428e0ac315db5e52b1cb1e42605" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -352,7 +406,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="44" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="46" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1ae1ecff1b7b2d5d61a65492a5c5cf863b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -368,7 +422,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="46" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="48" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a5781db5439f1d0f06cb3bf4c71ac0563" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -388,7 +442,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="50" column="12"/>
+        <location file="faiss/IndexPreTransform.h" line="52" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a4315b6cdbb28bd11c7ff1ed8da2b9108" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -472,7 +526,51 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="52" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="54" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1abb8cb51196c7786ad4cbf5bbe599a4e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexPreTransform::search</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>search</name>
+        <qualifiedname>faiss::IndexPreTransform::search</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1ae844fbb9e2d501432204dcb249f76fca">search</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPreTransform.h" line="61" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a5374e209bc7577e848577c1d21fb5260" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -544,7 +642,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="61" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="71" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -586,7 +684,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="68" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="78" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a02ebb27dd56aec9a93c50bd6b96184e7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -640,7 +738,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="70" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="80" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a6082f6ca04afc943d5e1c729f24de283" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -736,7 +834,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="72" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="82" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a9e7dd691b5b270c2e03102d03e830a26" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const float *</type>
@@ -759,7 +857,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="83" column="17"/>
+        <location file="faiss/IndexPreTransform.h" line="93" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a71b5230e481fb4ff95b6df6aeba7f28d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -786,7 +884,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="87" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="97" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a4e0180e2aa2aacaa2532660bdb4f9b8c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -803,7 +901,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="89" column="22"/>
+        <location file="faiss/IndexPreTransform.h" line="99" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1ad803358238737eda7f185b486e6081fe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -819,7 +917,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="92" column="12"/>
+        <location file="faiss/IndexPreTransform.h" line="102" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a5fc4aff1479e447435e1f08b2a88d1d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -873,7 +971,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="93" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="103" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -927,7 +1025,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="94" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="104" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -952,7 +1050,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="96" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="106" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -972,7 +1070,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="97" column="10"/>
+        <location file="faiss/IndexPreTransform.h" line="107" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1abba7af253f0dc2566923586e2ede0f7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -986,86 +1084,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="99" column="5"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a15f423d765d61747f3a6506412c02467" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::train</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::Index::train</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1adef732a57083ffc83ac6af89ad0868b0">train</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a3fef9400feedc8c70089ed9350409d6f">train</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1ad0172cc5ee448b2e9e17b5a0b20ff073">train</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3edb8ddc22546d2bb4f0eaa3c6fffe37">train</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1af53f7221925acf9f71319a751c358bb3">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a73255101a06b79eddef5024baae0bed4">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSW_1a08884e8855ccbbc2a63a93f8c5215f30">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1a7020b159665c1a3f03002c8a73e03ef0">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1add686d58b4b4a6d9c744fdc6b7704a17">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1ad47c7862c6672eedc72d39aa15257ca0">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexNNDescent_1aca1b946401081044bb54728a8bfc56e8">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPQ_1afa55822157caed252017ba5f776542b9">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a8a6069be92fce0793c1f4d53d82684a1">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a230892841133237ca679fc1c6ffda463">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1af42d629f8d1a421f085642fb075786f8">train</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="130" column="18" bodyfile="faiss/Index.h" bodystart="130" bodyend="136"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a9489eebf0dd164c81c971002e2e5e114" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::add</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
-        <name>add</name>
-        <qualifiedname>faiss::Index::add</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a04d230c3696e8db409689c13383a3f9b">add</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aa4309712cf21872a39b330a0ca657328">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1af2f98255d9c47cbcb26a47fad50333fa">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1a4ff032c4d8a367f6e2053cfccde0339f">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlat1D_1ac1b0376aa1afe2769945121f1cc0af39">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1acaa6fb5418f9ce9b7396850179f28c55">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSW_1aa1f7e0096e0a9321a3f664e786724fd8">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1ae24aab8a7485df8b27d61e9fffea939b">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1aa077263442b467067919e9695d87f54c">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a06ecc74ead5a190fa18e7049712e94f4">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a9cde8825521748fa853ab05817a9582f">add</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a4623299669398638be699825bfc33f1b">add</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="148" column="18" bodyfile="faiss/Index.h" bodystart="148" bodyend="154"/>
+        <location file="faiss/IndexPreTransform.h" line="109" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a8747bf2484000c41dd1d9503a73f289a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1099,64 +1118,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/Index.h" line="166" column="18" bodyfile="faiss/Index.h" bodystart="166" bodyend="176"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1ae844fbb9e2d501432204dcb249f76fca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::search</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const</argsstring>
-        <name>search</name>
-        <qualifiedname>faiss::Index::search</qualifiedname>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1ac69f251ede0b23bcfbaab22e6c465987">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a9d7df9a7d49f35fd102371b71bb43ab4">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1aa56bb5bb4a464d7f4fb66dbc26676016">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlat_1a712a2b9ebf8d49925bc0e44441fe7125">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlat1D_1a6853318a5af0a4893cbbddab55411882">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ade01ebedc5362b5cd03162a33f982ec7">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSW_1adf9f5f5e3261951d84940e68dc0e6a74">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSW2Level_1a26f0adeab26a6844333fbb8f8a642f27">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1ae886f6d7e839d0452a07a40b376aaea4">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a01e78f696dbd5c1c125eb1ef9ac19a10">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexNNDescent_1adf46510a1e9e1d6c2a62d41e3d39554c">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPQ_1a30da49e99ee873d19fa8c2027aa3d2a3">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a90d21dc206dd938f14cadc3ab22bfd79">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a9df244cbdb86f94f59abf5b5fcc425f5">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1ad9b4e45b422979127d0e968ef3fad448">search</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>k</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>distances</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>labels</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="197" column="18" bodyfile="faiss/Index.h" bodystart="197" bodyend="215"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1513,10 +1474,10 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPreTransform.h" line="25" column="1" bodyfile="faiss/IndexPreTransform.h" bodystart="25" bodyend="100"/>
+    <location file="faiss/IndexPreTransform.h" line="25" column="1" bodyfile="faiss/IndexPreTransform.h" bodystart="25" bodyend="110"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPreTransform_1ada11e582b389ec392a51c99a4825108b" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1a9489eebf0dd164c81c971002e2e5e114" prot="public" virt="virtual" ambiguityscope="faiss::Index::"><scope>faiss::IndexPreTransform</scope><name>add</name></member>
+      <member refid="structfaiss_1_1IndexPreTransform_1a5e93d8c1c81502bc2c194189fd3741f5" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1aa37b7428e0ac315db5e52b1cb1e42605" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add_with_ids</name></member>
       <member refid="structfaiss_1_1Index_1a8747bf2484000c41dd1d9503a73f289a" prot="public" virt="virtual" ambiguityscope="faiss::Index::"><scope>faiss::IndexPreTransform</scope><name>add_with_ids</name></member>
@@ -1553,10 +1514,10 @@
       <member refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>sa_decode</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a5fc4aff1479e447435e1f08b2a88d1d6" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>sa_encode</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a4315b6cdbb28bd11c7ff1ed8da2b9108" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>search</name></member>
-      <member refid="structfaiss_1_1Index_1ae844fbb9e2d501432204dcb249f76fca" prot="public" virt="virtual" ambiguityscope="faiss::Index::"><scope>faiss::IndexPreTransform</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexPreTransform_1abb8cb51196c7786ad4cbf5bbe599a4e5" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a6082f6ca04afc943d5e1c729f24de283" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>search_and_reconstruct</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a370dc8afa7357850d9031585ec8e2291" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1a15f423d765d61747f3a6506412c02467" prot="public" virt="virtual" ambiguityscope="faiss::Index::"><scope>faiss::IndexPreTransform</scope><name>train</name></member>
+      <member refid="structfaiss_1_1IndexPreTransform_1a34c9ba20c30ac1f3124d5725bf3ceac6" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>train</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>~Index</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1abba7af253f0dc2566923586e2ede0f7b" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>~IndexPreTransform</name></member>

@@ -5891,11 +5891,14 @@
     <member refid="structfaiss_1_1IndexPreTransform_1a78aff6770a778c2fd507fcb144adc021" kind="function"><name>IndexPreTransform</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1ab50b970ce770a8b9c1ceaede44fd43f6" kind="function"><name>prepend_transform</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a370dc8afa7357850d9031585ec8e2291" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1a34c9ba20c30ac1f3124d5725bf3ceac6" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1ada11e582b389ec392a51c99a4825108b" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1a5e93d8c1c81502bc2c194189fd3741f5" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1aa37b7428e0ac315db5e52b1cb1e42605" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1ae1ecff1b7b2d5d61a65492a5c5cf863b" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a5781db5439f1d0f06cb3bf4c71ac0563" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a4315b6cdbb28bd11c7ff1ed8da2b9108" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1abb8cb51196c7786ad4cbf5bbe599a4e5" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a5374e209bc7577e848577c1d21fb5260" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a02ebb27dd56aec9a93c50bd6b96184e7" kind="function"><name>reconstruct_n</name></member>
@@ -5909,10 +5912,7 @@
     <member refid="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1abba7af253f0dc2566923586e2ede0f7b" kind="function"><name>~IndexPreTransform</name></member>
-    <member refid="structfaiss_1_1Index_1a15f423d765d61747f3a6506412c02467" kind="function"><name>train</name></member>
-    <member refid="structfaiss_1_1Index_1a9489eebf0dd164c81c971002e2e5e114" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1Index_1a8747bf2484000c41dd1d9503a73f289a" kind="function"><name>add_with_ids</name></member>
-    <member refid="structfaiss_1_1Index_1ae844fbb9e2d501432204dcb249f76fca" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
     <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
