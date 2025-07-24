@@ -18,6 +18,7 @@ class TestComputeGT(unittest.TestCase):
     def do_compute_GT(self, metric, numeric_type):
         d = 64
         k = 12
+
         if numeric_type == faiss.Int8:
             data_base_nt = np.random.randint(-128, 128, size=(10000, d), dtype=np.int8)
             data_query_nt = np.random.randint(-128, 128, size=(100, d), dtype=np.int8)
@@ -27,6 +28,12 @@ class TestComputeGT(unittest.TestCase):
             ds = datasets.SyntheticDataset(d, 0, 10000, 100)
             data_base = ds.get_database()  #fp32
             data_query = ds.get_queries()   #fp32
+            # Normalize for inner product to avoid duplicate neighbors
+            if metric == faiss.METRIC_INNER_PRODUCT:
+                # Normalize database vectors
+                database = database / np.linalg.norm(database, axis=1, keepdims=True)
+                # Normalize query vectors
+                queries = queries / np.linalg.norm(queries, axis=1, keepdims=True)
             if numeric_type == faiss.Float16:
                 data_base_nt = data_base.astype(np.float16)
                 data_query_nt = data_query.astype(np.float16)
@@ -40,8 +47,10 @@ class TestComputeGT(unittest.TestCase):
 
         # attempt to set custom IVF-PQ params
         cagraIndexConfig = faiss.GpuIndexCagraConfig()
+        cagraIndexConfig.graph_degree = 32
+        cagraIndexConfig.intermediate_graph_degree = 64
         cagraIndexIVFPQConfig = faiss.IVFPQBuildCagraConfig()
-        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.1
+        cagraIndexIVFPQConfig.kmeans_trainset_fraction = 0.5
         cagraIndexConfig.ivf_pq_params = cagraIndexIVFPQConfig
         cagraIndexConfig.build_algo = faiss.graph_build_algo_IVF_PQ
 

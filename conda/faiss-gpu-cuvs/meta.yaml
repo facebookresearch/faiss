@@ -6,11 +6,6 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.4,<12" %}
-{% set libcublas_constraints=">=11.6,<12" %}
-{% set cudart_constraints="=12.6.77" %}
-{% elif cudatoolkit == '12.4.0' %}
 {% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% set cudart_constraints=">=12.4,<12.5" %}
@@ -66,7 +61,7 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl =2023  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
-        - libcuvs =25.04
+        - libcuvs =25.08
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
@@ -74,7 +69,7 @@ outputs:
         - openblas =0.3.30 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =25.04
+        - libcuvs =25.08
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
     test:
