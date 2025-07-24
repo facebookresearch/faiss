@@ -20,24 +20,18 @@
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQR.h>
-#include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
-#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
-#include <faiss/VectorTransform.h>
 
 #include <faiss/IndexBinaryFlat.h>
-#include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexBinaryIVF.h>
 
 namespace faiss {
 

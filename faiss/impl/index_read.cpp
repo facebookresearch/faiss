@@ -1099,7 +1099,7 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
-            h == fourcc("IHN2") || h == fourcc("IHNc")) {
+            h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2")) {
         IndexHNSW* idxhnsw = nullptr;
         if (h == fourcc("IHNf")) {
             idxhnsw = new IndexHNSWFlat();
@@ -1116,13 +1116,20 @@ Index* read_index(IOReader* f, int io_flags) {
         if (h == fourcc("IHNc")) {
             idxhnsw = new IndexHNSWCagra();
         }
+        if (h == fourcc("IHc2")) {
+            idxhnsw = new IndexHNSWCagra();
+        }
         read_index_header(idxhnsw, f);
-        if (h == fourcc("IHNc")) {
+        if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
             READ1(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
-            READ1(idx_hnsw_cagra->numeric_type_);
+            if (h == fourcc("IHc2")) {
+                READ1(idx_hnsw_cagra->numeric_type_);
+            } else { // cagra before numeric_type_ was introduced
+                idx_hnsw_cagra->set_numeric_type(faiss::Float32);
+            }
         }
         read_HNSW(&idxhnsw->hnsw, f);
         idxhnsw->storage = read_index(f, io_flags);
