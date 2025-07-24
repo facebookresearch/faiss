@@ -110,8 +110,9 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
         NumericType numeric_type,
         const idx_t* xids) {
     index->add(n, x, numeric_type);
-    for (idx_t i = 0; i < n; i++)
+    for (idx_t i = 0; i < n; i++) {
         id_map.push_back(xids[i]);
+    }
     this->ntotal = index->ntotal;
 }
 
@@ -286,8 +287,9 @@ void IndexIDMapTemplate<IndexT>::merge_from(IndexT& otherIndex, idx_t add_id) {
 
 template <typename IndexT>
 IndexIDMapTemplate<IndexT>::~IndexIDMapTemplate() {
-    if (own_fields)
+    if (own_fields) {
         delete index;
+    }
 }
 
 /*****************************************************
