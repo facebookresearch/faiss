@@ -451,8 +451,9 @@ void search_knn_hamming_heap(
                         list_size, scodes.get(), ids, simi, idxi, k);
 
                 nscan += list_size;
-                if (max_codes && nscan >= max_codes)
+                if (max_codes && nscan >= max_codes) {
                     break;
+                }
             }
 
             ndis += nscan;
@@ -539,8 +540,9 @@ void search_knn_hamming_count(
             }
 
             nscan += list_size;
-            if (max_codes && nscan >= max_codes)
+            if (max_codes && nscan >= max_codes) {
                 break;
+            }
         }
         ndis += nscan;
 
@@ -857,8 +859,9 @@ void IndexBinaryIVF::range_search_preassigned(
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
             idx_t key = assign[i * nprobe_2 + ik]; /* select the list  */
-            if (key < 0)
+            if (key < 0) {
                 return;
+            }
             FAISS_THROW_IF_NOT_FMT(
                     key < (idx_t)nlist,
                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
@@ -867,8 +870,9 @@ void IndexBinaryIVF::range_search_preassigned(
                     nlist);
             const size_t list_size = invlists->list_size(key);
 
-            if (list_size == 0)
+            if (list_size == 0) {
                 return;
+            }
 
             InvertedLists::ScopedCodes scodes(invlists, key);
             InvertedLists::ScopedIds ids(invlists, key);

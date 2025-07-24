@@ -315,8 +315,9 @@ Index* Cloner::clone_Index(const Index* index) {
         res->metric_arg = ipt->metric_arg;
 
         res->index = clone_Index(ipt->index);
-        for (int i = 0; i < ipt->chain.size(); i++)
+        for (int i = 0; i < ipt->chain.size(); i++) {
             res->chain.push_back(clone_VectorTransform(ipt->chain[i]));
+        }
         res->own_fields = true;
         return res;
     } else if (

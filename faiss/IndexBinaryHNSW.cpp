@@ -154,8 +154,9 @@ void hnsw_add_vertices(
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++)
+    for (int i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
+    }
 }
 
 } // anonymous namespace
