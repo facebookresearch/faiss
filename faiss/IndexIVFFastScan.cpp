@@ -8,7 +8,6 @@
 #include <faiss/IndexIVFFastScan.h>
 
 #include <cassert>
-#include <cinttypes>
 #include <cstdio>
 #include <set>
 
