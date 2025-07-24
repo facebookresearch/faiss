@@ -15,9 +15,12 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 # =============================================================================
-set(RAPIDS_VERSION "25.04")
+set(RAPIDS_VERSION "25.08")
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
+    if(NOT rapids-cmake-version)
+        set(rapids-cmake-version ${RAPIDS_VERSION})
+    endif()
     file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-${RAPIDS_VERSION}/RAPIDS.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
 endif()
