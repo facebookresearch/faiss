@@ -47,10 +47,12 @@ void IndexLattice::train(idx_t n, const float* x) {
     for (idx_t i = 0; i < n; i++) {
         for (int sq = 0; sq < nsq; sq++) {
             float norm2 = fvec_norm_L2sqr(x + i * d + sq * dsq, dsq);
-            if (norm2 > maxs[sq])
+            if (norm2 > maxs[sq]) {
                 maxs[sq] = norm2;
-            if (norm2 < mins[sq])
+            }
+            if (norm2 < mins[sq]) {
                 mins[sq] = norm2;
+            }
         }
     }
 
@@ -79,10 +81,12 @@ void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
         for (int j = 0; j < nsq; j++) {
             float nj = (sqrtf(fvec_norm_L2sqr(xi, dsq)) - mins[j]) * sc /
                     (maxs[j] - mins[j]);
-            if (nj < 0)
+            if (nj < 0) {
                 nj = 0;
-            if (nj >= sc)
+            }
+            if (nj >= sc) {
                 nj = sc - 1;
+            }
             wr.write((int64_t)nj, scale_nbit);
             wr.write(zn_sphere_codec.encode(xi), lattice_nbit);
             xi += dsq;

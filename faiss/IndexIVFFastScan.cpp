@@ -796,11 +796,13 @@ void IndexIVFFastScan::search_implem_1(
                 LUT = dis_tables.get() + (i * nprobe + j) * dim12;
             }
             idx_t list_no = cq.ids[i * nprobe + j];
-            if (list_no < 0)
+            if (list_no < 0) {
                 continue;
+            }
             size_t ls = orig_invlists->list_size(list_no);
-            if (ls == 0)
+            if (ls == 0) {
                 continue;
+            }
             InvertedLists::ScopedCodes codes(orig_invlists, list_no);
             InvertedLists::ScopedIds ids(orig_invlists, list_no);
 
@@ -867,11 +869,13 @@ void IndexIVFFastScan::search_implem_2(
                 LUT = dis_tables.get() + (i * nprobe + j) * dim12;
             }
             idx_t list_no = cq.ids[i * nprobe + j];
-            if (list_no < 0)
+            if (list_no < 0) {
                 continue;
+            }
             size_t ls = orig_invlists->list_size(list_no);
-            if (ls == 0)
+            if (ls == 0) {
                 continue;
+            }
             InvertedLists::ScopedCodes codes(orig_invlists, list_no);
             InvertedLists::ScopedIds ids(orig_invlists, list_no);
 

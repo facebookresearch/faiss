@@ -48,8 +48,9 @@ void IndexPreTransform::prepend_transform(VectorTransform* ltrans) {
 
 IndexPreTransform::~IndexPreTransform() {
     if (own_fields) {
-        for (int i = 0; i < chain.size(); i++)
+        for (int i = 0; i < chain.size(); i++) {
             delete chain[i];
+        }
         delete index;
     }
 }
@@ -94,8 +95,9 @@ void IndexPreTransform::train(idx_t n, const float* x) {
             }
             index->train(n, prev_x);
         }
-        if (i == last_untrained)
+        if (i == last_untrained) {
             break;
+        }
         if (verbose) {
             printf("   Applying transform %d/%zd\n", i, chain.size());
         }

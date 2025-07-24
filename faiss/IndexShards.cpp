@@ -31,11 +31,13 @@ void sync_d(IndexBinary* index) {
 
 // add translation to all valid labels
 void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
-    if (translation == 0)
+    if (translation == 0) {
         return;
+    }
     for (int64_t i = 0; i < n; i++) {
-        if (labels[i] < 0)
+        if (labels[i] < 0) {
             continue;
+        }
         labels[i] += translation;
     }
 }
