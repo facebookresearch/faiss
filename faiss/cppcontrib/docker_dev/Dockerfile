@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-RUN apt update && apt install -y python3 python3-pip gcc g++ mc git swig sudo libomp-dev libopenblas-dev wget
+RUN apt update && apt install -y python3 python3-pip gcc g++ mc git swig sudo libomp-dev libopenblas-dev wget libgflags-dev
 RUN pip3 install numpy==1.26.4 scipy pytest
 RUN cd /root && git clone https://github.com/facebookresearch/faiss
 RUN wget -qO- "https://cmake.org/files/v3.26/cmake-3.26.5-linux-x86_64.tar.gz" | sudo tar --strip-components=1 -xz -C /usr/local
