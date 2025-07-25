@@ -23,12 +23,14 @@ int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
     // returns min. This is an O(n) operation
     int i = heap.k - 1;
     while (i >= 0) {
-        if (heap.ids[i] != -1)
+        if (heap.ids[i] != -1) {
             break;
+        }
         i--;
     }
-    if (i == -1)
+    if (i == -1) {
         return -1;
+    }
     int imin = i;
     float vmin = heap.dis[i];
     i--;
@@ -39,8 +41,9 @@ int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
         }
         i--;
     }
-    if (vmin_out)
+    if (vmin_out) {
         *vmin_out = vmin;
+    }
     int ret = heap.ids[imin];
     heap.ids[imin] = -1;
     --heap.nvalid;
@@ -300,8 +303,9 @@ int reference_search_from_candidates(
         // a reference version
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            if (v1 < 0) {
                 break;
+            }
             if (vt.get(v1)) {
                 continue;
             }
@@ -356,8 +360,9 @@ faiss::HNSWStats reference_greedy_update_nearest(
 
         for (size_t i = begin; i < end; i++) {
             faiss::HNSW::storage_idx_t v = hnsw.neighbors[i];
-            if (v < 0)
+            if (v < 0) {
                 break;
+            }
             ndis += 1;
             float dis = qdis(v);
             if (dis < d_nearest) {
