@@ -316,13 +316,20 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa7a76285f7e279a179c116218a1aadba1" prot="public">
+          <name>Int8</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="61" column="1" bodyfile="faiss/Index.h" bodystart="61" bodyend="65"/>
+        <location file="faiss/Index.h" line="61" column="1" bodyfile="faiss/Index.h" bodystart="61" bodyend="66"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1afd12191c638da74760ff397cf319752c" prot="public" static="no" strong="no">
         <type></type>
@@ -3377,7 +3384,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="67" column="15" bodyfile="faiss/Index.h" bodystart="67" bodyend="77"/>
+        <location file="faiss/Index.h" line="68" column="15" bodyfile="faiss/Index.h" bodystart="68" bodyend="81"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

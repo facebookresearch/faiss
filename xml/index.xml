@@ -966,7 +966,7 @@
   <compound refid="structfaiss_1_1gpu_1_1GpuIndexCagra" kind="struct"><name>faiss::gpu::GpuIndexCagra</name>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a1fe07efe184d5e1811aec1020d47e2ba" kind="variable"><name>cagraConfig_</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1aeb6c2c39363d18848d127e3a14fb7594" kind="variable"><name>numeric_type_</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ada0c1eaf9bdbaaf1c2b26a5c342c75c2" kind="variable"><name>index_</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a65bd168068e8fc2138022f8beaae520c" kind="variable"><name>index_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30" kind="variable"><name>resources_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" kind="variable"><name>config_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" kind="variable"><name>minPagedSize_</name></member>
@@ -9928,6 +9928,7 @@
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fac5c3cac87aecdf173850923b29f8b7fa" kind="enumvalue"><name>Float32</name></member>
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa5f19b796a0b240566043d85e02d89916" kind="enumvalue"><name>Float16</name></member>
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa28587803fff68768664d9bebd946579d" kind="enumvalue"><name>UInt8</name></member>
+    <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa7a76285f7e279a179c116218a1aadba1" kind="enumvalue"><name>Int8</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kind="enum"><name>MetricType</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kind="enumvalue"><name>METRIC_INNER_PRODUCT</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kind="enumvalue"><name>METRIC_L2</name></member>
