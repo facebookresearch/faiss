@@ -337,5 +337,6 @@ const data_t* CuvsCagra<data_t>::get_training_dataset() const {
 
 template class CuvsCagra<float>;
 template class CuvsCagra<half>;
+template class CuvsCagra<int8_t>;
 } // namespace gpu
 } // namespace faiss

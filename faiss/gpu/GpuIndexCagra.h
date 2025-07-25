@@ -317,7 +317,8 @@ struct GpuIndexCagra : public GpuIndex {
     std::variant<
             std::monostate,
             std::shared_ptr<CuvsCagra<float>>,
-            std::shared_ptr<CuvsCagra<half>>>
+            std::shared_ptr<CuvsCagra<half>>,
+            std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
 };
 
