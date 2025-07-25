@@ -51,6 +51,15 @@ project(faiss
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
+
+# Force OpenMP_CUDA so MSVC+CUDA builds don’t abort when FAISS_ENABLE_GPU=ON
+if(FAISS_ENABLE_GPU)
+set(OpenMP_CUDA_FOUND TRUE CACHE BOOL "Force OpenMP CUDA lookup" FORCE)
+set(OpenMP_CUDA_FLAGS "" CACHE STRING "Empty OpenMP CUDA flags" FORCE)
+set(OpenMP_CUDA_LIB_NAMES "" CACHE STRING "Empty OpenMP CUDA libs" FORCE)
+endif()
+
+
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
