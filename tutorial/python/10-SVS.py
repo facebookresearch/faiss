@@ -6,16 +6,18 @@
 import numpy as np
 
 d = 64                           # dimension
-nb = 100000                      # database size
-nq = 10000                       # nb of queries
+nb = 1000                        # database size
+nq = 5                           # nb of queries
 np.random.seed(1234)             # make reproducible
 xb = np.random.random((nb, d)).astype('float32')
 xb[:, 0] += np.arange(nb) / 1000.
 xq = np.random.random((nq, d)).astype('float32')
 xq[:, 0] += np.arange(nq) / 1000.
 
+"""
 import faiss                        # make faiss available
-index = faiss.IndexSVS(d, num_threads)           # build the index
+index = faiss.IndexSVS(d)           # build the index
+index.num_threads = 72
 
 # index = faiss.IndexSVSLVQ4x4(d)   # build the SVSLVQ4x4 index
 # index = faiss.IndexSVSLVQ4x8(d)   # build the SVSLVQ4x4 index
@@ -35,4 +37,16 @@ print(D)
 D, I = index.search(xq, k)     # actual search
 print(I[:5])                   # neighbors of the 5 first queries
 print(I[-5:])                  # neighbors of the 5 last queries
+"""
 
+import faiss
+import svs
+
+idx = faiss.IndexSVSFlat(d, faiss.METRIC_L2)
+idx.add(xb)
+D, I = idx.search(xq, 4)
+print(I)
+
+idx = svs.Flat(xb, svs.DistanceType.L2)
+I, D = idx.search(xq, 4)
+print(I)

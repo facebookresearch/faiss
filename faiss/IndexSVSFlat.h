@@ -7,48 +7,47 @@
 
 #pragma once
 
-#include <vector>
+#include <memory>
 #include <numeric>
+#include <variant>
+#include <vector>
 
 #include "faiss/Index.h"
-#include <faiss/impl/FaissAssert.h>
 
-#include "svs/index/flat/flat.h"
+#include "svs/core/distance.h"
+
+namespace svs {
+class Flat;
+}
 
 namespace faiss {
 
-struct IndexSVSFlatFlat : IndexSVS {
+struct IndexSVSFlat : Index {
+    // sequential labels
+    size_t nlabels{0};
+    size_t num_threads = 1;
 
-  IndexSVSFlat(
-      idx_t d, 
-      MetricType metric = METRIC_L2,
-      idx_t num_threads = 32,
-      idx_t graph_max_degree = 64
-  );
+    IndexSVSFlat() = default;
+    IndexSVSFlat(idx_t d, MetricType metric = METRIC_L2);
 
-  ~IndexSVSFlat() override;
+    ~IndexSVSFlat();
 
-  void add(idx_t n, const float* x) override;
+    void add(idx_t n, const float* x) override;
 
-  void search(
-      idx_t n,
-      const float* x,
-      idx_t k,
-      float* distances,
-      idx_t* labels,
-      const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
-  void reset();
+    void reset() override;
 
-  virtual void init_impl(idx_t n, const float* x);
+   protected:
+    void init_impl(idx_t n, const float* x);
 
-  // sequential labels
-  size_t nlabels{0};
-
-  std::unique_ptr<svs::DynamicVamana> impl;
-
-
-  size_t num_threads;
+    svs::Flat* impl{nullptr};
 };
 
 } // namespace faiss

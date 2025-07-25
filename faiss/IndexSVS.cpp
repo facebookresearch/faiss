@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVS.h>
+#include "faiss/IndexSVS.h"
 #include "faiss/Index.h"
 
 #include "svs/core/data.h"
+#include "svs/orchestrators/dynamic_vamana.h"
 
 #include <filesystem>
 #include <sstream>

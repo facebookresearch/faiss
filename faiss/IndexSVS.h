@@ -10,11 +10,12 @@
 #include <numeric>
 #include <vector>
 
-#include <faiss/impl/FaissAssert.h>
 #include "faiss/Index.h"
+#include "faiss/impl/FaissAssert.h"
 
-#include "svs/orchestrators/dynamic_vamana.h"
-#include "svs/orchestrators/vamana.h"
+namespace svs {
+class DynamicVamana;
+}
 
 namespace faiss {
 
@@ -37,7 +38,7 @@ struct IndexSVS : Index {
 
     IndexSVS(idx_t d, MetricType metric = METRIC_L2);
 
-    ~IndexSVS() override;
+    virtual ~IndexSVS() override;
 
     void add(idx_t n, const float* x) override;
 

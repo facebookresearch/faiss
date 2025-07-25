@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVSLVQ4x4.h>
-
+#include "faiss/IndexSVSLVQ4x4.h"
+#include "svs/orchestrators/dynamic_vamana.h"
 namespace faiss {
 
 IndexSVSLVQ4x4::IndexSVSLVQ4x4(idx_t d, MetricType metric)
