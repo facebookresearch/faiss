@@ -94,8 +94,9 @@ Index* make_merged_index(
         int i) {
     Index* merged_index = clone_index(trained_index);
     for (int j = i - window_size + 1; j <= i; j++) {
-        if (j < 0 || j >= total_size)
+        if (j < 0 || j >= total_size) {
             continue;
+        }
         std::unique_ptr<Index> sub_index(clone_index(sub_indexes[j].get()));
         IndexIVF* ivf0 = ivflib::extract_index_ivf(merged_index);
         IndexIVF* ivf1 = ivflib::extract_index_ivf(sub_index.get());
@@ -157,13 +158,15 @@ int test_sliding_invlists(const char* index_key) {
         // update the index
         std::vector<const InvertedLists*> ils;
         for (int j = i - window_size + 1; j <= i; j++) {
-            if (j < 0 || j >= total_size)
+            if (j < 0 || j >= total_size) {
                 continue;
+            }
             ils.push_back(
                     ivflib::extract_index_ivf(sub_indexes[j].get())->invlists);
         }
-        if (ils.size() == 0)
+        if (ils.size() == 0) {
             continue;
+        }
 
         ConcatenatedInvertedLists* ci =
                 new ConcatenatedInvertedLists(ils.size(), ils.data());
