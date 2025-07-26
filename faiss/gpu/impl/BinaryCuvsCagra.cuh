@@ -45,6 +45,8 @@ class BinaryCuvsCagra {
             int dim,
             idx_t intermediate_graph_degree,
             idx_t graph_degree,
+            faiss::cagra_build_algo graph_build_algo,
+            size_t nn_descent_niter,
             bool store_dataset,
             IndicesOptions indicesOptions);
 
@@ -107,7 +109,11 @@ class BinaryCuvsCagra {
     bool store_dataset_ = true;
 
     /// Parameters to build cuVS CAGRA index
+    faiss::cagra_build_algo graph_build_algo_;
     cuvs::neighbors::cagra::index_params index_params_;
+
+    /// Parameters to build CAGRA graph using NN Descent
+    size_t nn_descent_niter_ = 20;
 
     /// Instance of trained cuVS CAGRA index
     std::shared_ptr<cuvs::neighbors::cagra::index<uint8_t, uint32_t>>

@@ -32,6 +32,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #include <cstddef>
+#include <cstdio>
 
 #include <optional>
 #include "GpuResources.h"
@@ -56,6 +57,12 @@ GpuIndexBinaryCagra::GpuIndexBinaryCagra(
             "must be divisible by 8 (passed %d)",
             this->d);
 
+    // default to NN_DESCENT if IVF_PQ is set
+    if (cagraConfig_.build_algo == graph_build_algo::IVF_PQ) {
+        fprintf(stderr,
+                "WARNING: IVF_PQ is not supported for binary CAGRA. "
+                "Defaulting to NN_DESCENT\n");
+    }
     this->is_trained = false;
 }
 
@@ -83,6 +90,8 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
             this->d,
             cagraConfig_.intermediate_graph_degree,
             cagraConfig_.graph_degree,
+            static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
+            cagraConfig_.nn_descent_niter,
             cagraConfig_.store_dataset,
             INDICES_64_BIT);
 
