@@ -148,8 +148,9 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 
         bool one_list() {
             idx_t list_no = pf->get_next_list();
-            if (list_no == -1)
+            if (list_no == -1) {
                 return false;
+            }
             const OnDiskInvertedLists* od = pf->od;
             od->locks->lock_1(list_no);
             size_t n = od->list_size(list_no);
@@ -195,8 +196,9 @@ struct OnDiskInvertedLists::OngoingPrefetch {
     static void* prefetch_list(void* arg) {
         Thread* th = static_cast<Thread*>(arg);
 
-        while (th->one_list())
+        while (th->one_list()) {
             ;
+        }
 
         return nullptr;
     }
@@ -404,8 +406,9 @@ void OnDiskInvertedLists::update_entries(
         const idx_t* ids_in,
         const uint8_t* codes_in) {
     FAISS_THROW_IF_NOT(!read_only);
-    if (n_entry == 0)
+    if (n_entry == 0) {
         return;
+    }
     [[maybe_unused]] const List& l = lists[list_no];
     assert(n_entry + offset <= l.size);
     idx_t* ids = const_cast<idx_t*>(get_ids(list_no));
@@ -515,8 +518,9 @@ size_t OnDiskInvertedLists::allocate_slot(size_t capacity) {
 
 void OnDiskInvertedLists::free_slot(size_t offset, size_t capacity) {
     // should hold lock2
-    if (capacity == 0)
+    if (capacity == 0) {
         return;
+    }
 
     auto it = slots.begin();
     while (it != slots.end() && it->offset <= offset) {
