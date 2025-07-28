@@ -47,8 +47,10 @@ def _numeric_to_str(numeric_type):
         return 'float32'
     elif numeric_type == faiss.Float16:
         return 'float16'
+    elif numeric_type == faiss.Int8:
+        return 'int8'
     else:
-        raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
+        raise ValueError("numeric type must be either faiss.Float32, faiss.Float16, or faiss.Int8")
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
     """ Replaces a method in a class with another version. The old method

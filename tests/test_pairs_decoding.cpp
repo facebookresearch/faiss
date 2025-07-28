@@ -87,8 +87,9 @@ bool test_search_centroid(const char* index_key) {
                 break;
             }
         }
-        if (!found)
+        if (!found) {
             return false;
+        }
     }
     return true;
 }
@@ -145,8 +146,9 @@ int test_search_and_return_centroids(const char* index_key) {
         int list_no = result_centroid_ids[i];
         int result_no = newI[i];
 
-        if (result_no < 0)
+        if (result_no < 0) {
             continue;
+        }
 
         bool found = false;
 
@@ -159,8 +161,9 @@ int test_search_and_return_centroids(const char* index_key) {
                 break;
             }
         }
-        if (!found)
+        if (!found) {
             return 2;
+        }
     }
     return 0;
 }
