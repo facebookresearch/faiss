@@ -144,7 +144,7 @@ void HNSW::print_neighbor_stats(int level) const {
                         n_reciprocal++;
                         continue;
                     }
-                    if (neighset.contains(i3)) {
+                    if (neighset.count(i3)) {
                         neighset.erase(i3);
                         n_common++;
                     }
