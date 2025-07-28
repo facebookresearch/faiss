@@ -54,8 +54,9 @@ float* fvecs_read(const char* fname, size_t* d_out, size_t* n_out) {
     assert(nr == n * (d + 1) || !"could not read whole file");
 
     // shift array to remove row headers
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++) {
         memmove(x + i * d, x + 1 + i * (d + 1), d * sizeof(*x));
+    }
 
     fclose(f);
     return x;
@@ -230,12 +231,15 @@ int main() {
             int gt_nn = gt[i * k];
             for (int j = 0; j < k; j++) {
                 if (I[i * k + j] == gt_nn) {
-                    if (j < 1)
+                    if (j < 1) {
                         n_1++;
-                    if (j < 10)
+                    }
+                    if (j < 10) {
                         n_10++;
-                    if (j < 100)
+                    }
+                    if (j < 100) {
                         n_100++;
+                    }
                 }
             }
         }
