@@ -293,7 +293,7 @@ void compareLists(
             if (t == -1) {
                 EXPECT_EQ(lookup(refInd, query, result, dim1, dim2), t);
             } else {
-                bool uniqueIndex = !uniqueIndices.contains(t);
+                bool uniqueIndex = uniqueIndices.count(t) == 0;
                 if (assertOnErr) {
                     EXPECT_TRUE(uniqueIndex) << configMsg << " " << query << " "
                                              << result << " " << t;
