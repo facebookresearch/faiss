@@ -321,3 +321,86 @@ and you can run
 $ python demos/demo_auto_tune.py
 ```
 to test the GPU code.
+
+## Build for Web browsers
+
+### Setup Emscripten
+
+Refer to [Download Emscripten](https://emscripten.org/docs/getting_started/downloads.html) to setup emscripten.
+
+### Build `flang` from LLVM for wasm target
+
+Get LLVM Source
+```bash
+git clone https://github.com/llvm/llvm-project.git
+```
+
+Build `flang` with `wasm32` target
+```bash
+LLVM_ROOT = <llvm source directory>
+BUILD_PATH = <built binaries directory>
+
+cmake -G Ninja -S ${LLVM_ROOT}/llvm -B ${BUILD_PATH} \
+  -DCMAKE_INSTALL_PREFIX=llvm-18.1.1 \
+  -DCMAKE_BUILD_TYPE=MinSizeRel \
+  -DLLVM_DEFAULT_TARGET_TRIPLE="wasm32-unknown-emscripten" \
+  -DLLVM_TARGETS_TO_BUILD="WebAssembly" \
+  -DLLVM_ENABLE_PROJECTS="clang;flang;mlir
+```
+
+Add built binaries to path
+```bash 
+export PATH=${BUILD_PATH}/bin:$PATH
+```
+
+### Build BLAS/LAPACK static libraries
+Get LLVM Source
+```bash
+git clone -b enable-web https://github.com/grf53/faiss-web.git
+cd faiss-web
+```
+
+Move to `web_deps` directory
+```bash
+cd web_deps
+```
+
+Run build scripts
+```bash
+./build_libblas.sh    # build libblas.a
+./build_liblapack.sh  # build liblapack.a
+```
+
+Run build scripts with designated tools
+```bash
+FC=flang-new ./build_libblas.sh    # build libblas.a
+FC=flang-new ./build_liblapack.sh  # build liblapack.a
+```
+
+- FC: Fortan compiler (default: flang)
+- AR: Archiver (default: emar)
+- RANLIB: Static library modifier (default: emranlib)
+
+### Build FAISS
+```bash
+mkdir -p build-wasm
+```
+
+```bash
+cp build-wasm
+```
+
+```bash
+emcmake cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DFAISS_OPT_LEVEL=generic \
+    -DFAISS_ENABLE_GPU=OFF \
+    -DFAISS_ENABLE_PYTHON=OFF \
+    -DFAISS_ENABLE_C_API=OFF \
+    -DFAISS_ENABLE_EXTRAS=OFF \
+    -DBUILD_TESTING=OFF
+```
+
+```bash
+emmake make faiss -j12  # build faiss/libfaiss.a
+```
