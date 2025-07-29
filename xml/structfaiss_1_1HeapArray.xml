@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="472" column="28" bodyfile="faiss/utils/Heap.h" bodystart="472" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="479" column="28" bodyfile="faiss/utils/Heap.h" bodystart="479" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1HeapArray_1a46eb2eae9e79a0dd7ab720283619a5a9" prot="public" static="no">
         <type>C::T</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="473" column="27" bodyfile="faiss/utils/Heap.h" bodystart="473" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="480" column="27" bodyfile="faiss/utils/Heap.h" bodystart="480" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="475" column="12" bodyfile="faiss/utils/Heap.h" bodystart="475" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="482" column="12" bodyfile="faiss/utils/Heap.h" bodystart="482" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="476" column="12" bodyfile="faiss/utils/Heap.h" bodystart="476" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="483" column="12" bodyfile="faiss/utils/Heap.h" bodystart="483" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" prot="public" static="no" mutable="no">
         <type>TI *</type>
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="477" column="8" bodyfile="faiss/utils/Heap.h" bodystart="477" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="484" column="8" bodyfile="faiss/utils/Heap.h" bodystart="484" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" prot="public" static="no" mutable="no">
         <type>T *</type>
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="478" column="7" bodyfile="faiss/utils/Heap.h" bodystart="478" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="485" column="7" bodyfile="faiss/utils/Heap.h" bodystart="485" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="481" column="7" bodyfile="faiss/utils/Heap.h" bodystart="481" bodyend="483"/>
+        <location file="faiss/utils/Heap.h" line="488" column="7" bodyfile="faiss/utils/Heap.h" bodystart="488" bodyend="490"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a492695267029cdd40776d87e749ab106" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>TI *</type>
@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="486" column="8" bodyfile="faiss/utils/Heap.h" bodystart="486" bodyend="488"/>
+        <location file="faiss/utils/Heap.h" line="493" column="8" bodyfile="faiss/utils/Heap.h" bodystart="493" bodyend="495"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -152,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="491" column="10"/>
+        <location file="faiss/utils/Heap.h" line="498" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -232,7 +232,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="501" column="10"/>
+        <location file="faiss/utils/Heap.h" line="508" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -293,7 +293,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="513" column="10"/>
+        <location file="faiss/utils/Heap.h" line="520" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -352,7 +352,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="526" column="10"/>
+        <location file="faiss/utils/Heap.h" line="533" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -367,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="535" column="10"/>
+        <location file="faiss/utils/Heap.h" line="542" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -407,7 +407,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="542" column="10"/>
+        <location file="faiss/utils/Heap.h" line="549" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -415,7 +415,7 @@
     <detaileddescription>
 <para>a template structure for a set of [min|max]-heaps it is tailored so that the actual data of the heaps can just live in compact arrays. </para>
     </detaileddescription>
-    <location file="faiss/utils/Heap.h" line="471" column="1" bodyfile="faiss/utils/Heap.h" bodystart="471" bodyend="543"/>
+    <location file="faiss/utils/Heap.h" line="478" column="1" bodyfile="faiss/utils/Heap.h" bodystart="478" bodyend="550"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn</name></member>
       <member refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_query_subset_with_ids</name></member>
