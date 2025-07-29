@@ -22,7 +22,7 @@
  */
 
 #include <faiss/IndexBinaryFlat.h>
-#include <faiss/IndexBinaryHNSWCagra.h>
+#include <faiss/IndexBinaryHNSW.h>
 
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/GpuIndexCagra.h>
@@ -291,24 +291,6 @@ void GpuIndexBinaryCagra::searchImpl_(
     }
 }
 
-void GpuIndexBinaryCagra::reset() {
-    DeviceScope scope(cagraConfig_.device);
-
-    if (index_) {
-        index_->reset();
-        this->ntotal = 0;
-        this->is_trained = false;
-    } else {
-        FAISS_ASSERT(this->ntotal == 0);
-    }
-}
-
-std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
-    FAISS_ASSERT(index_ && this->is_trained);
-
-    return index_->get_knngraph();
-}
-
 void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
     FAISS_ASSERT(index);
 
@@ -333,7 +315,7 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
         size_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
-            knn_graph[i * graph_degree + (j - begin)] = hnsw.neighbors[j];
+            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] = hnsw.neighbors[j];
         }
     }
 
@@ -385,7 +367,7 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     auto n_train = this->ntotal;
     auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
-    auto train_data = toHost<uint8_t, 2>(
+    auto train_dataset = toHost<uint8_t, 2>(
             const_cast<uint8_t*>(index_->get_training_dataset()),
             stream,
             {idx_t(n_train), this->d / 8});
@@ -393,10 +375,10 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
     if (!index->base_level_only) {
-        index->add(n_train, train_dataset);
+        index->add(n_train, train_dataset.data());
     } else {
         index->hnsw.prepare_level_tab(n_train, false);
-        index->storage->add(n_train, train_dataset);
+        index->storage->add(n_train, train_dataset.data());
         index->ntotal = n_train;
     }
 
@@ -415,6 +397,24 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
 
     index->init_level0 = true;
     index->keep_max_size_level0 = false;
+}
+
+void GpuIndexBinaryCagra::reset() {
+    DeviceScope scope(cagraConfig_.device);
+
+    if (index_) {
+        index_->reset();
+        this->ntotal = 0;
+        this->is_trained = false;
+    } else {
+        FAISS_ASSERT(this->ntotal == 0);
+    }
+}
+
+std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
+    FAISS_ASSERT(index_ && this->is_trained);
+
+    return index_->get_knngraph();
 }
 
 } // namespace gpu

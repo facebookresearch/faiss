@@ -24,8 +24,10 @@
 #pragma once
 
 #include <faiss/IndexBinary.h>
-#include <faiss/IndexBinaryHNSWCagra.h>
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
+
+#include <memory>
 
 namespace faiss {
 namespace gpu {

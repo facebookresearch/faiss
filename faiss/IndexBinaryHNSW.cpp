@@ -26,6 +26,9 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
+#include <algorithm>
+#include <random>
+
 namespace faiss {
 
 /**************************************************************
@@ -326,6 +329,131 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     FAISS_ASSERT(flat_storage != nullptr);
     BuildDistanceComputer bd;
     return dispatch_HammingComputer(code_size, bd, flat_storage);
+}
+
+/**************************************************************
+ * IndexBinaryHNSWCagra implementation
+ **************************************************************/
+
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {storage = nullptr;}
+
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M) 
+        : IndexBinaryHNSW(d, M) {
+    storage = new IndexBinaryFlat(d);
+    own_fields = true;
+    is_trained = true;
+    init_level0 = true;
+    keep_max_size_level0 = true;
+}
+
+void IndexBinaryHNSWCagra::add(idx_t n, const uint8_t* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !base_level_only,
+            "Cannot add vectors when base_level_only is set to True");
+
+    IndexBinaryHNSW::add(n, x);
+}
+
+void IndexBinaryHNSWCagra::search(
+        idx_t n,
+        const uint8_t* x,
+        idx_t k,
+        int32_t* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    
+    if (!base_level_only) {
+        IndexBinaryHNSW::search(n, x, k, distances, labels, params);
+    } else {
+        // Search only the base level with random entry points
+        std::vector<storage_idx_t> nearest(n);
+        std::vector<int32_t> nearest_d(n);
+        
+        IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
+        FAISS_ASSERT(flat_storage != nullptr);
+
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* q = x + i * code_size;
+            HammingComputerDefault hc(q, code_size);
+            
+            nearest[i] = -1;
+            nearest_d[i] = std::numeric_limits<int32_t>::max();
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal - 1);
+
+            // Select best entry point from random candidates
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                
+                // Compute distance to this candidate
+                const uint8_t* yi = flat_storage->xb.data() + idx * code_size;
+                int distance = hc.hamming(yi);
+                
+                if (distance < nearest_d[i]) {
+                    nearest[i] = idx;
+                    nearest_d[i] = distance;
+                }
+            }
+            FAISS_THROW_IF_NOT_MSG(
+                    nearest[i] >= 0, "Could not find a valid entrypoint.");
+        }
+
+        SearchParametersHNSW hnsw_params;
+        if (params) {
+            hnsw_params = *dynamic_cast<const SearchParametersHNSW*>(params);
+        }
+        hnsw_params.efSearch = std::max(hnsw_params.efSearch, (int)k);
+        
+        // Search level 0
+#pragma omp for
+        for (idx_t i = 0; i < n; i++) {
+            HammingComputerDefault hc(x + i * code_size, code_size);
+            VisitedTable vt(ntotal);
+            
+            HNSW::MinimaxHeap candidates(k);
+            candidates.push(nearest[i], nearest_d[i]);
+            vt.set(nearest[i]);
+            
+            std::priority_queue<std::pair<int32_t, idx_t>> w;
+            w.push(std::make_pair(-nearest_d[i], nearest[i]));
+            
+            while (!w.empty()) {
+                int32_t d0 = -w.top().first;
+                idx_t v0 = w.top().second;
+                w.pop();
+                
+                if (d0 > candidates.dis[0]) {
+                    break;
+                }
+                
+                size_t begin, end;
+                hnsw.neighbor_range(v0, 0, &begin, &end);
+                
+                for (size_t j = begin; j < end; j++) {
+                    idx_t v1 = hnsw.neighbors[j];
+                    if (v1 < 0) break;
+                    if (vt.get(v1)) continue;
+                    vt.set(v1);
+                    
+                    const uint8_t* y1 = flat_storage->xb.data() + v1 * code_size;
+                    int32_t d1 = hc.hamming(y1);
+                    
+                    candidates.push(v1, d1);
+                    if (d1 < candidates.dis[0]) {
+                        w.push(std::make_pair(-d1, v1));
+                    }
+                }
+            }
+            
+            for (size_t j = 0; j < k; j++) {
+                labels[i * k + j] = candidates.ids[j];
+                distances[i * k + j] = candidates.dis[j];
+            }
+        }
+    }
 }
 
 } // namespace faiss

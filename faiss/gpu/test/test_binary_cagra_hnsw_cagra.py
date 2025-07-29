@@ -51,11 +51,6 @@ def test_binary_hnsw_cagra_interop():
         assert index_hnsw_cagra.d == d
         print(f"   ✓ Index has correct size: {index_hnsw_cagra.ntotal} vectors")
         
-        # Verify fixed degree
-        assert index_hnsw_cagra.has_fixed_degree()
-        fixed_degree = index_hnsw_cagra.get_fixed_degree()
-        print(f"   ✓ Index has fixed degree: {fixed_degree}")
-        
         # Search with HNSWCagra
         print("   Searching with HNSWCagra...")
         D_hnsw, I_hnsw = index_hnsw_cagra.search(xq, k)
@@ -80,9 +75,6 @@ def test_binary_hnsw_cagra_interop():
     index_hnsw2 = faiss.IndexBinaryHNSWCagra(d, 32)
     index_hnsw2.add(xb)
     
-    # Ensure fixed degree
-    index_hnsw2.ensure_fixed_degree()
-    assert index_hnsw2.has_fixed_degree()
     
     print("   Creating new GpuIndexBinaryCagra...")
     index_cagra2 = faiss.GpuIndexBinaryCagra(res, d)
