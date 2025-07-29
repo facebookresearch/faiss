@@ -52,14 +52,15 @@ struct IndexSVS : Index {
 
     void reset() override;
 
+    /* Serialization and deserialization helpers */
     void serialize_impl(std::ostream& out) const;
     void deserialize_impl(std::istream& in);
 
-   protected:
+    /* The actual SVS implementation */
     svs::DynamicVamana* impl{nullptr};
 
-   private:
-    virtual void init_impl(idx_t n, const float* x);
+    /* Initializes the implementation, using the provided data */
+    void init_impl(idx_t n, const float* x);
 };
 
 } // namespace faiss

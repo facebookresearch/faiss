@@ -1228,7 +1228,8 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
-    } else if (h == fourcc("SvUC")) {
+    } else if (h == fourcc("ISVD") || h == fourcc("IS44")) {
+        // SVS dynamic vamana
         auto svs = new IndexSVS();
 
         // Read class properties
@@ -1251,16 +1252,22 @@ Index* read_index(IOReader* f, int io_flags) {
         READANDCHECK(blob.data(), blob_size);
         std::stringstream ss(std::move(blob));
         svs->deserialize_impl(ss);
-
         idx = svs;
-    } else {
-        FAISS_THROW_FMT(
-                "Index type 0x%08x (\"%s\") not recognized",
-                h,
-                fourcc_inv_printable(h).c_str());
-        idx = nullptr;
+    } else if (h == fourcc("ISVS")) {
+        // SVS static vamana
+    } else if (h == fourcc("ISVF")) {
+        // SVS Flat
+        auto svs = new IndexSVSFlat();
     }
-    return idx;
+}
+else {
+    FAISS_THROW_FMT(
+            "Index type 0x%08x (\"%s\") not recognized",
+            h,
+            fourcc_inv_printable(h).c_str());
+    idx = nullptr;
+}
+return idx;
 }
 
 Index* read_index(FILE* f, int io_flags) {

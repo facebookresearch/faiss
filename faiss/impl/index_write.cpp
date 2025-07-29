@@ -44,6 +44,8 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSFlat.h>
+#include <faiss/IndexSVSLVQ4x4.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -881,8 +883,15 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
     } else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
-        uint32_t h = fourcc("SvUC"); // TODO: clarify fourcc code for SVS
-        // Write header tag
+        uint32_t h;
+
+        if (dynamic_cast<const IndexSVSLVQ4x4*>(idx)) {
+            // LVQ4x4
+            h = fourcc("IS44");
+        } else {
+            // dynamic vamana
+            h = fourcc("ISVD");
+        }
         WRITE1(h);
 
         WRITE1(svs->d);
@@ -905,6 +914,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint64_t blob_size = blob.size();
         WRITE1(blob_size);
         WRITEANDCHECK(blob.data(), blob_size);
+    } else if (
+            const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }

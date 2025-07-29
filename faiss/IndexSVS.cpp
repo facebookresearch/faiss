@@ -7,6 +7,7 @@
 
 #include "faiss/IndexSVS.h"
 #include "faiss/Index.h"
+#include "faiss/MetricType.h"
 
 #include "svs/core/data.h"
 #include "svs/orchestrators/dynamic_vamana.h"
@@ -109,7 +110,9 @@ void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
 
 IndexSVS::IndexSVS() : Index{} {}
 
-IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {}
+IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {
+    alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
+}
 
 IndexSVS::~IndexSVS() {
     if (impl) {

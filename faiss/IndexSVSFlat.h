@@ -44,10 +44,11 @@ struct IndexSVSFlat : Index {
 
     void reset() override;
 
-   protected:
-    void init_impl(idx_t n, const float* x);
-
+    /* The actual SVS implementation */
     svs::Flat* impl{nullptr};
+
+    /* Initializes the implementation, using the provided data */
+    virtual void init_impl(idx_t n, const float* x);
 };
 
 } // namespace faiss
