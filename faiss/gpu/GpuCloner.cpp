@@ -16,6 +16,7 @@
 #include <faiss/IndexFlat.h>
 #if defined USE_NVIDIA_CUVS
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexBinaryHNSW.h>
 #endif
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
