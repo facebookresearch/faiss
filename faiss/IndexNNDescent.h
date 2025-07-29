@@ -42,9 +42,11 @@ struct IndexNNDescent : Index {
     ~IndexNNDescent() override;
 
     void add(idx_t n, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Trains the storage if needed
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// entry point for search
     void search(
@@ -54,7 +56,14 @@ struct IndexNNDescent : Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
-
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
     void reconstruct(idx_t key, float* recons) const override;
 
     void reset() override;

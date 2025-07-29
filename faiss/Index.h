@@ -61,6 +61,8 @@ struct DistanceComputer;
 enum NumericType {
     Float32,
     Float16,
+    UInt8,
+    Int8,
 };
 
 inline size_t get_numeric_type_size(NumericType numeric_type) {
@@ -69,6 +71,9 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
             return 4;
         case NumericType::Float16:
             return 2;
+        case NumericType::UInt8:
+        case NumericType::Int8:
+            return 1;
         default:
             FAISS_THROW_MSG(
                     "Unknown Numeric Type. Only supports Float32, Float16");

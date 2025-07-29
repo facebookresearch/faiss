@@ -280,8 +280,9 @@ size_t ArrayInvertedLists::add_entries(
         size_t n_entry,
         const idx_t* ids_in,
         const uint8_t* code) {
-    if (n_entry == 0)
+    if (n_entry == 0) {
         return 0;
+    }
     assert(list_no < nlist);
     size_t o = ids[list_no].size();
     ids[list_no].resize(o + n_entry);
@@ -526,8 +527,9 @@ void SliceInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     std::vector<idx_t> translated_list_nos;
     for (int j = 0; j < nlist; j++) {
         idx_t list_no = list_nos[j];
-        if (list_no < 0)
+        if (list_no < 0) {
             continue;
+        }
         translated_list_nos.push_back(translate_list_no(this, list_no));
     }
     il->prefetch_lists(translated_list_nos.data(), translated_list_nos.size());
@@ -630,8 +632,9 @@ void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     std::vector<int> n_per_il(ils.size(), 0);
     for (int j = 0; j < nlist; j++) {
         idx_t list_no = list_nos[j];
-        if (list_no < 0)
+        if (list_no < 0) {
             continue;
+        }
         int i = ilno[j] = translate_list_no(this, list_no);
         n_per_il[i]++;
     }
@@ -642,8 +645,9 @@ void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     std::vector<idx_t> sorted_list_nos(cum_n_per_il.back());
     for (int j = 0; j < nlist; j++) {
         idx_t list_no = list_nos[j];
-        if (list_no < 0)
+        if (list_no < 0) {
             continue;
+        }
         int i = ilno[j];
         list_no -= cumsz[i];
         sorted_list_nos[cum_n_per_il[i]++] = list_no;
@@ -716,8 +720,9 @@ void MaskedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     std::vector<idx_t> list0, list1;
     for (int i = 0; i < nlist; i++) {
         idx_t list_no = list_nos[i];
-        if (list_no < 0)
+        if (list_no < 0) {
             continue;
+        }
         size_t sz = il0->list_size(list_no);
         (sz ? list0 : list1).push_back(list_no);
     }
@@ -782,8 +787,9 @@ void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     std::vector<idx_t> list0;
     for (int i = 0; i < nlist; i++) {
         idx_t list_no = list_nos[i];
-        if (list_no < 0)
+        if (list_no < 0) {
             continue;
+        }
         if (il0->list_size(list_no) < maxsize) {
             list0.push_back(list_no);
         }

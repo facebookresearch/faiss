@@ -54,6 +54,7 @@ class GpuIndexBinaryFlat : public IndexBinary {
     void copyTo(faiss::IndexBinaryFlat* index) const;
 
     void add(faiss::idx_t n, const uint8_t* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     void reset() override;
 
@@ -65,6 +66,14 @@ class GpuIndexBinaryFlat : public IndexBinary {
             int32_t* distances,
             faiss::idx_t* labels,
             const faiss::SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            int32_t* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(faiss::idx_t key, uint8_t* recons) const override;
 

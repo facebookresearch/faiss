@@ -38,8 +38,9 @@ struct HammingComputerM8 {
     int hamming(const uint8_t* b8) const {
         const uint64_t* b = (uint64_t*)b8;
         int accu = 0;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) {
             accu += popcount64(a[i] ^ b[i]);
+        }
         return accu;
     }
 
@@ -67,8 +68,9 @@ struct HammingComputerM4 {
     int hamming(const uint8_t* b8) const {
         const uint32_t* b = (uint32_t*)b8;
         int accu = 0;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) {
             accu += popcount64(a[i] ^ b[i]);
+        }
         return accu;
     }
 

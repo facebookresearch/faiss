@@ -217,12 +217,19 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /// Trains the quantizer and calls train_encoder to train sub-quantizers
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Calls add_with_ids with NULL ids
     void add(idx_t n, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// default implementation that calls encode_vectors
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
+    void add_with_ids(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) override;
 
     /** Implementation of vector addition where the vector assignments are
      * predefined. The default implementation hands over the code extraction to
@@ -253,6 +260,20 @@ struct IndexIVF : Index, IndexIVFInterface {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listno = false) const = 0;
+
+    /** Decodes a set of vectors as they would appear in a given set of inverted
+     * lists (inverse of encode_vectors)
+     *
+     * @param codes      input codes, size n * code_size
+     * @param x          output decoded vectors
+     * @param list_nos   input listnos, size n
+     *
+     */
+    virtual void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const;
 
     /** Add vectors that are computed with the standalone codec
      *
@@ -299,6 +320,14 @@ struct IndexIVF : Index, IndexIVFInterface {
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,

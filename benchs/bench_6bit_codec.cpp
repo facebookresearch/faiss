@@ -52,8 +52,9 @@ static void bench(benchmark::State& state) {
 
     size_t ndiff = 0;
     for (size_t i = 0; i < codes.size(); i++) {
-        if (codes[i] != codes2[i])
+        if (codes[i] != codes2[i]) {
             ndiff++;
+        }
     }
 
     state.counters["ndiff_for_idempotence"] = ndiff;

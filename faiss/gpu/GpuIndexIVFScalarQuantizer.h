@@ -88,6 +88,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
 
     /// Trains the coarse and scalar quantizer based on the given vector data
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
    protected:
     /// Validates index SQ parameters

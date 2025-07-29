@@ -40,10 +40,19 @@ struct IndexScalarQuantizer : IndexFlatCodes {
     IndexScalarQuantizer();
 
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void search(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,
@@ -87,6 +96,12 @@ struct IndexIVFScalarQuantizer : IndexIVF {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listnos = false) const override;
+
+    void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const override;
 
     void add_core(
             idx_t n,

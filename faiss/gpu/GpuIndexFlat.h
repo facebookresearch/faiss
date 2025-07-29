@@ -81,9 +81,11 @@ class GpuIndexFlat : public GpuIndex {
 
     /// This index is not trained, so this does nothing
     void train(idx_t n, const float* x) override;
+    void train(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Overrides to avoid excessive copies
     void add(idx_t, const float* x) override;
+    void add(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Reconstruction methods; prefer the batch reconstruct as it will
     /// be more efficient
@@ -121,11 +123,24 @@ class GpuIndexFlat : public GpuIndex {
 
     /// Called from GpuIndex for add
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
             idx_t n,
             const float* x,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const override;
+    void searchImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             int k,
             float* distances,
             idx_t* labels,

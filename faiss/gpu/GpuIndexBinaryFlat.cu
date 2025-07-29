@@ -124,6 +124,10 @@ void GpuIndexBinaryFlat::add(idx_t n, const uint8_t* x) {
     this->ntotal += n;
 }
 
+void GpuIndexBinaryFlat::add(idx_t n, const void* x, NumericType numeric_type) {
+    IndexBinary::add(n, x, numeric_type);
+}
+
 void GpuIndexBinaryFlat::reset() {
     DeviceScope scope(binaryFlatConfig_.device);
 
@@ -191,6 +195,17 @@ void GpuIndexBinaryFlat::search(
     // Copy back if necessary
     fromDevice<int32_t, 2>(outDistances, distances, stream);
     fromDevice<idx_t, 2>(outIndices, labels, stream);
+}
+
+void GpuIndexBinaryFlat::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        int32_t* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    IndexBinary::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexBinaryFlat::searchNonPaged_(

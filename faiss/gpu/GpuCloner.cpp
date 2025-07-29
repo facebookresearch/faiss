@@ -94,7 +94,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
-        if (icg->get_numeric_type() == faiss::NumericType::Float16) {
+        if (icg->get_numeric_type() != faiss::NumericType::Float32) {
             res->base_level_only = true;
         }
         icg->copyTo(res);
@@ -292,14 +292,16 @@ void ToGpuClonerMultiple::copy_ivf_shard(
         idx_t i0 = i * index_ivf->ntotal / n;
         idx_t i1 = (i + 1) * index_ivf->ntotal / n;
 
-        if (verbose)
+        if (verbose) {
             printf("IndexShards shard %ld indices %ld:%ld\n", i, i0, i1);
+        }
         index_ivf->copy_subset_to(
                 *idx2, InvertedLists::SUBSET_TYPE_ID_RANGE, i0, i1);
         FAISS_ASSERT(idx2->ntotal == i1 - i0);
     } else if (shard_type == 1) {
-        if (verbose)
+        if (verbose) {
             printf("IndexShards shard %ld select modulo %ld = %ld\n", i, n, i);
+        }
         index_ivf->copy_subset_to(
                 *idx2, InvertedLists::SUBSET_TYPE_ID_MOD, n, i);
     } else if (shard_type == 4) {

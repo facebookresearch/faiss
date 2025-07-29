@@ -164,14 +164,12 @@ def add_ref_in_function(function_name, parameter_no):
     setattr(this_module, function_name, replacement_function)
 
 
-try:
+if "GPU" in get_compile_options():
     add_ref_in_constructor(GpuIndexIVFFlat, 1)
     add_ref_in_constructor(GpuIndexBinaryFlat, 1)
     add_ref_in_constructor(GpuIndexFlat, 1)
     add_ref_in_constructor(GpuIndexIVFPQ, 1)
     add_ref_in_constructor(GpuIndexIVFScalarQuantizer, 1)
-except NameError as e:
-    logger.info("Failed to load GPU Faiss: %s. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss." % e.args[0])
 
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)

@@ -53,8 +53,9 @@ inline void heap_pop(size_t k, typename C::T* bh_val, typename C::TI* bh_ids) {
     while (1) {
         i1 = i << 1;
         i2 = i1 + 1;
-        if (i1 > k)
+        if (i1 > k) {
             break;
+        }
         if ((i2 == k + 1) ||
             C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
             if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
@@ -220,8 +221,9 @@ inline void heap_pop(size_t k, std::pair<typename C::T, typename C::TI>* bh) {
     while (1) {
         i1 = i << 1;
         i2 = i1 + 1;
-        if (i1 > k)
+        if (i1 > k) {
             break;
+        }
         if ((i2 == k + 1) ||
             C::cmp2(bh[i1].first, bh[i2].first, bh[i1].second, bh[i2].second)) {
             if (C::cmp2(val, bh[i1].first, id, bh[i1].second)) {
@@ -320,15 +322,18 @@ inline void heap_heapify(
         const typename C::T* x = nullptr,
         const typename C::TI* ids = nullptr,
         size_t k0 = 0) {
-    if (k0 > 0)
+    if (k0 > 0) {
         assert(x);
+    }
 
     if (ids) {
-        for (size_t i = 0; i < k0; i++)
+        for (size_t i = 0; i < k0; i++) {
             heap_push<C>(i + 1, bh_val, bh_ids, x[i], ids[i]);
+        }
     } else {
-        for (size_t i = 0; i < k0; i++)
+        for (size_t i = 0; i < k0; i++) {
             heap_push<C>(i + 1, bh_val, bh_ids, x[i], i);
+        }
     }
 
     for (size_t i = k0; i < k; i++) {
@@ -373,18 +378,19 @@ inline void heap_addn(
         const typename C::TI* ids,
         size_t n) {
     size_t i;
-    if (ids)
+    if (ids) {
         for (i = 0; i < n; i++) {
             if (C::cmp(bh_val[0], x[i])) {
                 heap_replace_top<C>(k, bh_val, bh_ids, x[i], ids[i]);
             }
         }
-    else
+    } else {
         for (i = 0; i < n; i++) {
             if (C::cmp(bh_val[0], x[i])) {
                 heap_replace_top<C>(k, bh_val, bh_ids, x[i], i);
             }
         }
+    }
 }
 
 /* Partial instanciation for heaps with TI = int64_t */
@@ -433,8 +439,9 @@ inline size_t heap_reorder(
         heap_pop<C>(k - i, bh_val, bh_ids);
         bh_val[k - ii - 1] = val;
         bh_ids[k - ii - 1] = id;
-        if (id != -1)
+        if (id != -1) {
             ii++;
+        }
     }
     /* Count the number of elements which are effectively returned */
     size_t nel = ii;
@@ -573,17 +580,20 @@ inline void indirect_heap_pop(
     while (1) {
         size_t i1 = i << 1;
         size_t i2 = i1 + 1;
-        if (i1 > k)
+        if (i1 > k) {
             break;
+        }
         typename C::TI id1 = bh_ids[i1], id2 = bh_ids[i2];
         if (i2 == k + 1 || C::cmp(bh_val[id1], bh_val[id2])) {
-            if (C::cmp(val, bh_val[id1]))
+            if (C::cmp(val, bh_val[id1])) {
                 break;
+            }
             bh_ids[i] = id1;
             i = i1;
         } else {
-            if (C::cmp(val, bh_val[id2]))
+            if (C::cmp(val, bh_val[id2])) {
                 break;
+            }
             bh_ids[i] = id2;
             i = i2;
         }
@@ -602,8 +612,9 @@ inline void indirect_heap_push(
     size_t i = k;
     while (i > 1) {
         size_t i_father = i >> 1;
-        if (!C::cmp(val, bh_val[bh_ids[i_father]]))
+        if (!C::cmp(val, bh_val[bh_ids[i_father]])) {
             break;
+        }
         bh_ids[i] = bh_ids[i_father];
         i = i_father;
     }
