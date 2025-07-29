@@ -1193,12 +1193,14 @@ void simd_histogram_8(
 
     // complete with remaining bins
     for (int i = (n & ~15); i < n; i++) {
-        if (data[i] < min)
+        if (data[i] < min) {
             continue;
+        }
         uint16_t v = data[i] - min;
         v >>= shift;
-        if (v < 8)
+        if (v < 8) {
             hist[v]++;
+        }
     }
 }
 
@@ -1247,12 +1249,14 @@ void simd_histogram_16(
     }
 
     for (int i = (n & ~15); i < n; i++) {
-        if (data[i] < min)
+        if (data[i] < min) {
             continue;
+        }
         uint16_t v = data[i] - min;
         v >>= shift;
-        if (v < 16)
+        if (v < 16) {
             hist[v]++;
+        }
     }
 }
 

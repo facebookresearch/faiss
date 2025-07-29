@@ -9,7 +9,6 @@
 {% set cuda_constraints=">=12.1,<12.5" %}
 {% set libcublas_constraints=">=12.1,<13" %}
 {% set cudart_constraints=">=12.4,<12.5" %}
-{% endif %}
 
 package:
   name: faiss-pkg
