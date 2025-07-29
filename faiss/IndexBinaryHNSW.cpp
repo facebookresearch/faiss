@@ -339,9 +339,6 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {storage = null
 
 IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M) 
         : IndexBinaryHNSW(d, M) {
-    storage = new IndexBinaryFlat(d);
-    own_fields = true;
-    is_trained = true;
     init_level0 = true;
     keep_max_size_level0 = true;
 }
