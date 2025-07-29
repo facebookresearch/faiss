@@ -370,7 +370,6 @@ void IndexBinaryHNSWCagra::search(
         using RH = HeapBlockResultHandler<HNSW::C>;
         RH bres(n, distances_f, labels, k);
 
-        // First, find the best entry points for all queries
         std::vector<storage_idx_t> nearest(n);
         std::vector<float> nearest_d(n);
 
@@ -411,7 +410,6 @@ void IndexBinaryHNSWCagra::search(
                 res.begin(i);
                 dis->set_query((float*)(x + i * code_size));
 
-                // Use HNSW's search_level_0
                 hnsw.search_level_0(
                         *dis,
                         res,
