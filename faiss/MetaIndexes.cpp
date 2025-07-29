@@ -203,7 +203,7 @@ void IndexRandom::search(
                 for (;;) {
                     // yes I know it's not strictly uniform...
                     ii = rng.rand_int64() % ntotal;
-                    if (!map.contains(ii)) {
+                    if (map.find(ii) == map.end()) {
                         break;
                     }
                 }

@@ -438,7 +438,7 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
             // then we erase this entry
             if (!sel.is_member(it->second)) {
                 // if the second is not erased
-                if (!replace.contains(it->first)) {
+                if (replace.find(it->first) == replace.end()) {
                     replace[it->first] = it->second;
                 } else { // remember we should add an element
                     std::pair<idx_t, idx_t> new_entry(
@@ -471,7 +471,7 @@ size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel) {
         InvertedLists::ScopedIds idsi(invlists, i);
         while (j < l) {
             if (sel.is_member(idsi[j])) {
-                if (!replace.contains(idsi[j])) {
+                if (replace.find(idsi[j]) == replace.end()) {
                     l--;
                     invlists->update_entry(
                             i,

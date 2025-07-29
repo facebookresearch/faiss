@@ -155,9 +155,9 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
                 cuvs::distance::DistanceType::BitwiseHamming;
         index_params_.graph_build_params = graph_build_params;
     } else {
-        cuvs::neighbors::cagra::graph_build_params::iterative_search_params
-                graph_build_params;
-        index_params_.graph_build_params = graph_build_params;
+    cuvs::neighbors::cagra::graph_build_params::iterative_search_params
+            graph_build_params;
+    index_params_.graph_build_params = graph_build_params;
     }
 
     if (getDeviceForAddress(x) >= 0) {

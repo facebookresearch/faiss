@@ -24,7 +24,7 @@
 #pragma once
 
 #include <faiss/IndexBinary.h>
-#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryHNSWCagra.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 
 namespace faiss {
@@ -64,11 +64,11 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
-    void copyFrom(const faiss::IndexBinaryHNSW* index);
+    void copyFrom(const faiss::IndexBinaryHNSWCagra* index);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
-    void copyTo(faiss::IndexBinaryHNSW* index) const;
+    void copyTo(faiss::IndexBinaryHNSWCagra* index) const;
 
     void reset() override;
 
