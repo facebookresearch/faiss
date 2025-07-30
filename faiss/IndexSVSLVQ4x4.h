@@ -33,7 +33,7 @@ struct IndexSVSLVQ4x4 : IndexSVS {
     IndexSVSLVQ4x4() = default;
     IndexSVSLVQ4x4(idx_t d, MetricType metric = METRIC_L2);
 
-    ~IndexSVSLVQ4x4() override;
+    ~IndexSVSLVQ4x4() override = default;
 
     void init_impl(idx_t n, const float* x) override;
 

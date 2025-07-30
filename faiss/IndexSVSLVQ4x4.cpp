@@ -12,8 +12,6 @@ namespace faiss {
 IndexSVSLVQ4x4::IndexSVSLVQ4x4(idx_t d, MetricType metric)
         : IndexSVS(d, metric) {}
 
-IndexSVSLVQ4x4::~IndexSVSLVQ4x4() {}
-
 void IndexSVSLVQ4x4::init_impl(idx_t n, const float* x) {
     // TODO: support ConstSimpleDataView in SVS shared/static lib
     const auto data =

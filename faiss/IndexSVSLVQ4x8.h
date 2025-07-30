@@ -23,6 +23,8 @@ struct IndexSVSLVQ4x8 : IndexSVSLVQ4x4 {
     IndexSVSLVQ4x8() = default;
 
     IndexSVSLVQ4x8(idx_t d, MetricType metric = METRIC_L2);
+
+    ~IndexSVSLVQ4x8() override = default;
 };
 
 } // namespace faiss

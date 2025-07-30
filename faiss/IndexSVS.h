@@ -39,10 +39,6 @@ struct SVSTempDirectory {
 } // namespace detail
 
 struct IndexSVS : Index {
-    // sequential labels
-    size_t nlabels{0};
-
-    // default parameters
     size_t num_threads = 1;
     size_t graph_max_degree = 64;
     float alpha = 1.2;
