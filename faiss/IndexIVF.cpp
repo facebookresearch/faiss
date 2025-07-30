@@ -60,19 +60,22 @@ void Level1Quantizer::train_q1(
         MetricType metric_type) {
     size_t d = quantizer->d;
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
-        if (verbose)
+        if (verbose) {
             printf("IVF quantizer does not need training.\n");
+        }
     } else if (quantizer_trains_alone == 1) {
-        if (verbose)
+        if (verbose) {
             printf("IVF quantizer trains alone...\n");
+        }
         quantizer->verbose = verbose;
         quantizer->train(n, x);
         FAISS_THROW_IF_NOT_MSG(
                 quantizer->ntotal == nlist,
                 "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
-        if (verbose)
+        if (verbose) {
             printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
+        }
 
         Clustering clus(d, nlist, cp);
         quantizer->reset();
@@ -181,10 +184,22 @@ void IndexIVF::add(idx_t n, const float* x) {
     add_with_ids(n, x, nullptr);
 }
 
+void IndexIVF::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
+}
+
 void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     std::unique_ptr<idx_t[]> coarse_idx(new idx_t[n]);
     quantizer->assign(n, x, coarse_idx.get());
     add_core(n, x, xids, coarse_idx.get());
+}
+
+void IndexIVF::add_with_ids(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* xids) {
+    Index::add_with_ids(n, x, numeric_type, xids);
 }
 
 void IndexIVF::add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids) {
@@ -233,8 +248,9 @@ void IndexIVF::add_core(
     size_t nadd = 0, nminus1 = 0;
 
     for (size_t i = 0; i < n; i++) {
-        if (coarse_idx[i] < 0)
+        if (coarse_idx[i] < 0) {
             nminus1++;
+        }
     }
 
     std::unique_ptr<uint8_t[]> flat_codes(new uint8_t[n * code_size]);
@@ -389,6 +405,17 @@ void IndexIVF::search(
     }
 }
 
+void IndexIVF::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexIVF::search_preassigned(
         idx_t n,
         const float* x,
@@ -469,8 +496,9 @@ void IndexIVF::search_preassigned(
         // initialize + reorder a result heap
 
         auto init_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
+            if (!do_heap_init) {
                 return;
+            }
             if (metric_type == METRIC_INNER_PRODUCT) {
                 heap_heapify<HeapForIP>(k, simi, idxi);
             } else {
@@ -490,8 +518,9 @@ void IndexIVF::search_preassigned(
         };
 
         auto reorder_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
+            if (!do_heap_init) {
                 return;
+            }
             if (metric_type == METRIC_INNER_PRODUCT) {
                 heap_reorder<HeapForIP>(k, simi, idxi);
             } else {
@@ -807,8 +836,9 @@ void IndexIVF::range_search_preassigned(
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
             idx_t key = keys[i * nprobe + ik]; /* select the list  */
-            if (key < 0)
+            if (key < 0) {
                 return;
+            }
             FAISS_THROW_IF_NOT_FMT(
                     key < (idx_t)nlist,
                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
@@ -1180,6 +1210,10 @@ void IndexIVF::train(idx_t n, const float* x) {
     }
 
     is_trained = true;
+}
+
+void IndexIVF::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
 }
 
 idx_t IndexIVF::train_encoder_num_vectors() const {

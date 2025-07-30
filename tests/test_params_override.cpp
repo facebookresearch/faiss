@@ -103,11 +103,13 @@ int test_params_override(const char* index_key, MetricType metric) {
     params.nprobe = 9;
     auto res9new = search_index_with_params(index.get(), xq.data(), &params);
 
-    if (res2ref != res2new)
+    if (res2ref != res2new) {
         return 2;
+    }
 
-    if (res9ref != res9new)
+    if (res9ref != res9new) {
         return 9;
+    }
 
     return 0;
 }
@@ -272,11 +274,13 @@ int test_params_override_binary(const char* index_key) {
     params.nprobe = 9;
     auto res9new = search_index_with_params(index.get(), xq.data(), &params);
 
-    if (res2ref != res2new)
+    if (res2ref != res2new) {
         return 2;
+    }
 
-    if (res9ref != res9new)
+    if (res9ref != res9new) {
         return 9;
+    }
 
     return 0;
 }

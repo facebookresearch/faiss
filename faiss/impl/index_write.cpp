@@ -254,8 +254,9 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         // here we store either as a full or a sparse data buffer
         size_t n_non0 = 0;
         for (size_t i = 0; i < ails->nlist; i++) {
-            if (ails->ids[i].size() > 0)
+            if (ails->ids[i].size() > 0) {
                 n_non0++;
+            }
         }
         if (n_non0 > ails->nlist / 2) {
             uint32_t list_type = fourcc("full");
@@ -738,8 +739,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index_header(ixpt, f);
         int nt = ixpt->chain.size();
         WRITE1(nt);
-        for (int i = 0; i < nt; i++)
+        for (int i = 0; i < nt; i++) {
             write_VectorTransform(ixpt->chain[i], f);
+        }
         write_index(ixpt->index, f);
     } else if (
             const MultiIndexQuantizer* imiq =
@@ -770,12 +772,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWPQ*>(idx)      ? fourcc("IHNp")
                 : dynamic_cast<const IndexHNSWSQ*>(idx)      ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx)  ? fourcc("IHN2")
-                : dynamic_cast<const IndexHNSWCagra*>(idx)   ? fourcc("IHNc")
+                : dynamic_cast<const IndexHNSWCagra*>(idx)   ? fourcc("IHc2")
                                                              : 0;
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);
         write_index_header(idxhnsw, f);
-        if (h == fourcc("IHNc")) {
+        if (h == fourcc("IHc2")) {
             WRITE1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<const IndexHNSWCagra*>(idxhnsw);
             WRITE1(idx_hnsw_cagra->base_level_only);

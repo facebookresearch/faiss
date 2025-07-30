@@ -20,24 +20,18 @@
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQR.h>
-#include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
-#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
-#include <faiss/VectorTransform.h>
 
 #include <faiss/IndexBinaryFlat.h>
-#include <faiss/IndexBinaryHNSW.h>
-#include <faiss/IndexBinaryIVF.h>
 
 namespace faiss {
 
@@ -137,8 +131,9 @@ bool OperatingPoints::add(
         int i;
         // stricto sensu this should be a bissection
         for (i = 0; i < a.size(); i++) {
-            if (a[i].perf >= perf)
+            if (a[i].perf >= perf) {
                 break;
+            }
         }
         assert(i < a.size());
         if (t < a[i].t) {
@@ -166,8 +161,9 @@ int OperatingPoints::merge_with(
     int n_add = 0;
     for (int i = 0; i < other.all_pts.size(); i++) {
         const OperatingPoint& op = other.all_pts[i];
-        if (add(op.perf, op.t, prefix + op.key, op.cno))
+        if (add(op.perf, op.t, prefix + op.key, op.cno)) {
             n_add++;
+        }
     }
     return n_add;
 }
@@ -175,15 +171,17 @@ int OperatingPoints::merge_with(
 /// get time required to obtain a given performance measure
 double OperatingPoints::t_for_perf(double perf) const {
     const std::vector<OperatingPoint>& a = optimal_pts;
-    if (perf > a.back().perf)
+    if (perf > a.back().perf) {
         return 1e50;
+    }
     int i0 = -1, i1 = a.size() - 1;
     while (i0 + 1 < i1) {
         int imed = (i0 + i1 + 1) / 2;
-        if (a[imed].perf < perf)
+        if (a[imed].perf < perf) {
             i0 = imed;
-        else
+        } else {
             i1 = imed;
+        }
     }
     return a[i1].t;
 }
@@ -273,8 +271,9 @@ ParameterSpace::ParameterSpace (Index *index):
 
 size_t ParameterSpace::n_combinations() const {
     size_t n = 1;
-    for (int i = 0; i < parameter_ranges.size(); i++)
+    for (int i = 0; i < parameter_ranges.size(); i++) {
         n *= parameter_ranges[i].values.size();
+    }
     return n;
 }
 
@@ -304,8 +303,9 @@ bool ParameterSpace::combination_ge(size_t c1, size_t c2) const {
         int nval = parameter_ranges[i].values.size();
         size_t j1 = c1 % nval;
         size_t j2 = c2 % nval;
-        if (!(j1 >= j2))
+        if (!(j1 >= j2)) {
             return false;
+        }
         c1 /= nval;
         c2 /= nval;
     }
@@ -318,8 +318,9 @@ static void init_pq_ParameterRange(
     if (pq.code_size % 4 == 0) {
         // Polysemous not supported for code sizes that are not a
         // multiple of 4
-        for (int i = 2; i <= pq.code_size * 8 / 2; i += 2)
+        for (int i = 2; i <= pq.code_size * 8 / 2; i += 2) {
             pr.values.push_back(i);
+        }
     }
     pr.values.push_back(pq.code_size * 8);
 }
@@ -360,8 +361,9 @@ void ParameterSpace::initialize(const Index* index) {
             ParameterRange& pr = add_range("nprobe");
             for (int i = 0; i < 13; i++) {
                 size_t nprobe = 1 << i;
-                if (nprobe >= ix->nlist)
+                if (nprobe >= ix->nlist) {
                     break;
+                }
                 pr.values.push_back(nprobe);
             }
         }
@@ -599,12 +601,14 @@ void ParameterSpace::update_bounds(
         double* upper_bound_perf,
         double* lower_bound_t) const {
     if (combination_ge(cno, op.cno)) {
-        if (op.t > *lower_bound_t)
+        if (op.t > *lower_bound_t) {
             *lower_bound_t = op.t;
+        }
     }
     if (combination_ge(op.cno, cno)) {
-        if (op.perf < *upper_bound_perf)
+        if (op.perf < *upper_bound_perf) {
             *upper_bound_perf = op.perf;
+        }
     }
 }
 
@@ -633,7 +637,7 @@ void ParameterSpace::explore(
 
             bool keep = ops->add(perf, t_search, combination_name(cno), cno);
 
-            if (verbose)
+            if (verbose) {
                 printf("  %zd/%zd: %s perf=%.3f t=%.3f s %s\n",
                        cno,
                        n_comb,
@@ -641,14 +645,16 @@ void ParameterSpace::explore(
                        perf,
                        t_search,
                        keep ? "*" : "");
+            }
         }
         return;
     }
 
     int n_exp = n_experiments;
 
-    if (n_exp > n_comb)
+    if (n_exp > n_comb) {
         n_exp = n_comb;
+    }
     FAISS_THROW_IF_NOT(n_comb == 1 || n_exp > 2);
     std::vector<int> perm(n_comb);
     // make sure the slowest and fastest experiment are run
@@ -656,19 +662,21 @@ void ParameterSpace::explore(
     if (n_comb > 1) {
         perm[1] = n_comb - 1;
         rand_perm(&perm[2], n_comb - 2, 1234);
-        for (int i = 2; i < perm.size(); i++)
+        for (int i = 2; i < perm.size(); i++) {
             perm[i]++;
+        }
     }
 
     for (size_t xp = 0; xp < n_exp; xp++) {
         size_t cno = perm[xp];
 
-        if (verbose)
+        if (verbose) {
             printf("  %zd/%d: cno=%zd %s ",
                    xp,
                    n_exp,
                    cno,
                    combination_name(cno).c_str());
+        }
 
         {
             double lower_bound_t = 0.0;
@@ -681,13 +689,15 @@ void ParameterSpace::explore(
                         &lower_bound_t);
             }
             double best_t = ops->t_for_perf(upper_bound_perf);
-            if (verbose)
+            if (verbose) {
                 printf("bounds [perf<=%.3f t>=%.3f] %s",
                        upper_bound_perf,
                        lower_bound_t,
                        best_t <= lower_bound_t ? "skip\n" : "");
-            if (best_t <= lower_bound_t)
+            }
+            if (best_t <= lower_bound_t) {
                 continue;
+            }
         }
 
         set_index_parameters(index, cno);
@@ -704,8 +714,9 @@ void ParameterSpace::explore(
 #pragma omp parallel for
                 for (idx_t q0 = 0; q0 < nq; q0 += batchsize) {
                     size_t q1 = q0 + batchsize;
-                    if (q1 > nq)
+                    if (q1 > nq) {
                         q1 = nq;
+                    }
                     index->search(
                             q1 - q0,
                             xq + q0 * index->d,
@@ -716,8 +727,9 @@ void ParameterSpace::explore(
             } else {
                 for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
                     size_t q1 = q0 + batchsize;
-                    if (q1 > nq)
+                    if (q1 > nq) {
                         q1 = nq;
+                    }
                     index->search(
                             q1 - q0,
                             xq + q0 * index->d,
@@ -737,13 +749,14 @@ void ParameterSpace::explore(
 
         bool keep = ops->add(perf, t_search, combination_name(cno), cno);
 
-        if (verbose)
+        if (verbose) {
             printf(" perf %.3f t %.3f (%d %s) %s\n",
                    perf,
                    t_search,
                    nrun,
                    nrun >= 2 ? "runs" : "run",
                    keep ? "*" : "");
+        }
     }
 }
 

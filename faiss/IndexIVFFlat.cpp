@@ -292,6 +292,13 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     IndexIVFFlat::train(n2, x2.get());
 }
 
+void IndexIVFFlatDedup::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 void IndexIVFFlatDedup::add_with_ids(
         idx_t na,
         const float* x,
@@ -358,6 +365,14 @@ void IndexIVFFlatDedup::add_with_ids(
                n_dup);
     }
     ntotal += n_add;
+}
+
+void IndexIVFFlatDedup::add_with_ids(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const idx_t* xids) {
+    Index::add_with_ids(n, x, numeric_type, xids);
 }
 
 void IndexIVFFlatDedup::search_preassigned(

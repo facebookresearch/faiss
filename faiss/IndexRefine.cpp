@@ -129,10 +129,11 @@ void IndexRefine::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (int i = 0; i < n * k_base; i++)
+    for (int i = 0; i < n * k_base; i++) {
         assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    }
 
-        // parallelize over queries
+    // parallelize over queries
 #pragma omp parallel if (n > 1)
     {
         std::unique_ptr<DistanceComputer> dc(
@@ -143,8 +144,9 @@ void IndexRefine::search(
             idx_t ij = i * k_base;
             for (idx_t j = 0; j < k_base; j++) {
                 idx_t idx = base_labels[ij];
-                if (idx < 0)
+                if (idx < 0) {
                     break;
+                }
                 base_distances[ij] = (*dc)(idx);
                 ij++;
             }
@@ -238,10 +240,12 @@ void IndexRefine::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 }
 
 IndexRefine::~IndexRefine() {
-    if (own_fields)
+    if (own_fields) {
         delete base_index;
-    if (own_refine_index)
+    }
+    if (own_refine_index) {
         delete refine_index;
+    }
 }
 
 /***************************************************
@@ -312,8 +316,9 @@ void IndexRefineFlat::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (int i = 0; i < n * k_base; i++)
+    for (int i = 0; i < n * k_base; i++) {
         assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    }
 
     // compute refined distances
     auto rf = dynamic_cast<const IndexFlat*>(refine_index);

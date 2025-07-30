@@ -285,6 +285,11 @@ struct GpuIndexCagra : public GpuIndex {
     bool addImplRequiresIDs_() const override;
 
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -312,7 +317,8 @@ struct GpuIndexCagra : public GpuIndex {
     std::variant<
             std::monostate,
             std::shared_ptr<CuvsCagra<float>>,
-            std::shared_ptr<CuvsCagra<half>>>
+            std::shared_ptr<CuvsCagra<half>>,
+            std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
 };
 

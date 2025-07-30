@@ -32,12 +32,15 @@ void MatrixStats::PerDimStats::add(float x) {
         n_inf++;
         return;
     }
-    if (x == 0)
+    if (x == 0) {
         n0++;
-    if (x < min)
+    }
+    if (x < min) {
         min = x;
-    if (x > max)
+    }
+    if (x > max) {
         max = x;
+    }
     sum += x;
     sum2 += (double)x * (double)x;
 }
@@ -46,8 +49,9 @@ void MatrixStats::PerDimStats::compute_mean_std() {
     n_valid = n - n_nan - n_inf;
     mean = sum / n_valid;
     double var = sum2 / n_valid - mean * mean;
-    if (var < 0)
+    if (var < 0) {
         var = 0;
+    }
     stddev = sqrt(var);
 }
 
@@ -95,10 +99,12 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
             if (sum2 == 0) {
                 n0++;
             } else {
-                if (sum2 < min_norm2)
+                if (sum2 < min_norm2) {
                     min_norm2 = sum2;
-                if (sum2 > max_norm2)
+                }
+                if (sum2 > max_norm2) {
                     max_norm2 = sum2;
+                }
             }
         }
 
@@ -194,10 +200,12 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
                 n_dangerous_range++;
             }
 
-            if (st.stddev > max_std)
+            if (st.stddev > max_std) {
                 max_std = st.stddev;
-            if (st.stddev < min_std)
+            }
+            if (st.stddev < min_std) {
                 min_std = st.stddev;
+            }
         }
 
         if (n0_2 == 0) {
